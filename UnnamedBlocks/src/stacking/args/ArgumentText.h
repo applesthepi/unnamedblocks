@@ -6,29 +6,35 @@
 class ArgumentText : public Argument
 {
 public:
-	ArgumentText(sf::Vector2u relitivePosition, const char* text)
+	ArgumentText(sf::Vector2u relitivePosition, std::string text)
 		:Argument(relitivePosition)
 	{
 		m_Text = text;
 		m_TextAgent = sf::Text(text, *Global::Font, Global::BlockHeight - 10);
 
 		m_TextAgent.setFillColor(sf::Color::Black);
-
-		m_background = sf::RectangleShape(sf::Vector2f(GetArgumentRawWidth(), Global::BlockHeight));
-		m_background.setFillColor(sf::Color::White);
+		m_TextAgent.setString(m_Text);
+		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
+		m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
 	}
 
-	void Render(sf::RenderWindow* window) override
+	void FrameUpdate(sf::RenderWindow* window) override
 	{
-		m_background.setSize(sf::Vector2f(GetArgumentRawWidth(), Global::BlockHeight));
-		m_background.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
-
 		m_TextAgent.setString(m_Text);
-		m_TextAgent.setCharacterSize(Global::BlockHeight - 10);
+		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
 		m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
+	}
 
-		window->draw(m_background);
-		window->draw(m_TextAgent);
+	void Render(sf::RenderTexture* render, sf::RenderWindow* window) override
+	{
+		if (render == nullptr)
+		{
+			window->draw(m_TextAgent);
+		}
+		else
+		{
+			render->draw(m_TextAgent);
+		}
 	}
 
 	unsigned int GetArgumentRawWidth() override
@@ -37,7 +43,6 @@ public:
 	}
 
 private:
-	const char* m_Text;
+	std::string m_Text;
 	sf::Text m_TextAgent;
-	sf::RectangleShape m_background;
 };

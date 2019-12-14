@@ -92,6 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,6 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,6 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,6 +143,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,21 +155,53 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Global.cpp" />
+    <ClCompile Include="src\handlers\Logger.cpp" />
+    <ClCompile Include="src\handlers\MessageHandler.cpp" />
+    <ClCompile Include="src\handlers\ProjectHandler.cpp" />
+    <ClCompile Include="src\handlers\runtime\ByteHandler.cpp" />
+    <ClCompile Include="src\handlers\runtime\ObjectHandler.cpp" />
+    <ClCompile Include="src\handlers\runtime\RuntimeHandler.cpp" />
+    <ClCompile Include="src\handlers\runtime\ThreadHandler.cpp" />
+    <ClCompile Include="src\handlers\runtime\VariableHandler.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\registries\BlockRegistry.cpp" />
     <ClCompile Include="src\stacking\args\Argument.cpp" />
     <ClCompile Include="src\stacking\Block.cpp" />
     <ClCompile Include="src\stacking\Plane.cpp" />
     <ClCompile Include="src\stacking\Stack.cpp" />
+    <ClCompile Include="src\ui\Button.cpp" />
+    <ClCompile Include="src\ui\TypingSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\content\ContentBytes.h" />
+    <ClInclude Include="src\content\ContentExecution.h" />
+    <ClInclude Include="src\content\ContentObjects.h" />
+    <ClInclude Include="src\content\ContentOperations.h" />
+    <ClInclude Include="src\content\ContentTextures.h" />
+    <ClInclude Include="src\content\ContentThreading.h" />
+    <ClInclude Include="src\content\ContentTransform.h" />
+    <ClInclude Include="src\content\ContentVariables.h" />
     <ClInclude Include="src\Global.h" />
+    <ClInclude Include="src\handlers\Logger.h" />
+    <ClInclude Include="src\handlers\MessageHandler.h" />
+    <ClInclude Include="src\handlers\ProjectHandler.h" />
+    <ClInclude Include="src\handlers\runtime\ByteHandler.h" />
+    <ClInclude Include="src\handlers\runtime\ObjectHandler.h" />
+    <ClInclude Include="src\handlers\runtime\RuntimeHandler.h" />
+    <ClInclude Include="src\handlers\runtime\ThreadHandler.h" />
+    <ClInclude Include="src\handlers\runtime\VariableHandler.h" />
     <ClInclude Include="src\registries\BlockRegistry.h" />
+    <ClInclude Include="src\content\ContentLoader.h" />
     <ClInclude Include="src\stacking\args\Argument.h" />
+    <ClInclude Include="src\stacking\args\ArgumentBoolean.h" />
+    <ClInclude Include="src\stacking\args\ArgumentString.h" />
     <ClInclude Include="src\stacking\args\ArgumentText.h" />
+    <ClInclude Include="src\stacking\args\ArgumetReal.h" />
     <ClInclude Include="src\stacking\Block.h" />
     <ClInclude Include="src\stacking\Plane.h" />
     <ClInclude Include="src\stacking\Stack.h" />
+    <ClInclude Include="src\ui\Button.h" />
+    <ClInclude Include="src\ui\TypingSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

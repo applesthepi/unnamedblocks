@@ -2,61 +2,76 @@
 
 void BlockRegistry::Initialize()
 {
-	m_blockArgs = new std::vector<std::vector<BlockArgument>>();
-	m_blockUnlocalizedNames = new std::vector<std::string>();
+	m_blocks = new std::vector<RegBlock>();
+	m_catagories = new std::vector<RegCatagory>();
 }
 
-void BlockRegistry::CreateBlock(std::string unlocalizedName, std::vector<BlockArgument> args)
+void BlockRegistry::CreateCatagory(RegCatagory catagory)
 {
-	m_blockUnlocalizedNames->push_back(unlocalizedName);
-	m_blockArgs->push_back(args);
+	m_catagories->push_back(catagory);
 }
 
-std::vector<BlockArgument>* BlockRegistry::GetHeapedBlockArguments(std::string unlocalizedName)
+void BlockRegistry::CreateBlock(RegBlock block)
 {
-	for (unsigned int i = 0; i < m_blockUnlocalizedNames->size(); i++)
+	m_blocks->push_back(block);
+}
+
+const RegBlock* BlockRegistry::GetBlock(std::string unlocalizedName)
+{
+	for (unsigned int i = 0; i < m_blocks->size(); i++)
 	{
-		if ((*m_blockUnlocalizedNames)[i] == unlocalizedName);
-		{
-			std::vector<BlockArgument>* args = new std::vector<BlockArgument>();
-			*args = (*m_blockArgs)[i];
-			return args;
-		}
+		if ((*m_blocks)[i].UnlocalizedName == unlocalizedName)
+			return (const RegBlock*)(&(*m_blocks)[i]);
 	}
 
 	return nullptr;
 }
 
-std::vector<std::vector<BlockArgument>>* BlockRegistry::m_blockArgs;
+const RegCatagory* BlockRegistry::GetCatagory(std::string unlocalizedName)
+{
+	for (unsigned int i = 0; i < m_catagories->size(); i++)
+	{
+		if ((*m_catagories)[i].UnlocalizedName == unlocalizedName)
+			return (const RegCatagory*)(&(*m_catagories)[i]);
+	}
 
-std::vector<std::string>* BlockRegistry::m_blockUnlocalizedNames;
+	return nullptr;
+}
 
-void BlockArgument::SetupTEXT(const char* value)
+std::vector<RegBlock>* BlockRegistry::GetBlocks()
+{
+	return m_blocks;
+}
+
+std::vector<RegCatagory>* BlockRegistry::GetCatagories()
+{
+	return m_catagories;
+}
+
+std::vector<RegBlock>* BlockRegistry::m_blocks;
+
+std::vector<RegCatagory>* BlockRegistry::m_catagories;
+
+void BlockArgument::SetupTEXT(std::string value)
 {
 	Type = BlockArgumentType::TEXT;
-	T_STRING = value;
+	Value = value;
 }
 
-void BlockArgument::SetupREAL(double value)
+void BlockArgument::SetupREAL(std::string value)
 {
 	Type = BlockArgumentType::REAL;
-	T_REAL = value;
+	Value = value;
 }
 
-void BlockArgument::SetupBOOL(bool value)
+void BlockArgument::SetupBOOL(std::string value)
 {
 	Type = BlockArgumentType::BOOL;
-	T_BOOL = value;
+	Value = value;
 }
 
-void BlockArgument::SetupSTRING(const char* value)
+void BlockArgument::SetupSTRING(std::string value)
 {
 	Type = BlockArgumentType::STRING;
-	T_STRING = value;
-}
-
-void BlockArgument::SetupObject(unsigned long long value)
-{
-	Type = BlockArgumentType::OBJECT;
-	T_UINT64 = value;
+	Value = value;
 }
