@@ -14,7 +14,7 @@ public:
 
 	static bool Running;
 	static bool ManualRenderingEnabled;
-	static sf::RenderWindow Window;
+	static sf::RenderWindow* Window;
 private:
 	static Plane* m_planeCopy;
 	static std::thread* m_runningThread;

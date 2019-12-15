@@ -11,17 +11,17 @@
 
 void ThreadWindowManager()
 {
-	RuntimeHandler::Window.create(sf::VideoMode(1280, 720), "Unnamed Blocks Runtime");
-	RuntimeHandler::Window.setVerticalSyncEnabled(true);
+	RuntimeHandler::Window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Unnamed Blocks Runtime");
+	RuntimeHandler::Window->setVerticalSyncEnabled(true);
 
 	while (RuntimeHandler::Running)
 	{
 		sf::Event ev;
-		while (RuntimeHandler::Window.pollEvent(ev))
+		while (RuntimeHandler::Window->pollEvent(ev))
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				RuntimeHandler::Window.close();
+				RuntimeHandler::Window->close();
 				RuntimeHandler::Running = false;
 			}
 		}
@@ -33,7 +33,7 @@ void ThreadWindowManager()
 	}
 
 	//shutdown
-
+	delete RuntimeHandler::Window;
 	RuntimeHandler::CleanUp();
 }
 
@@ -93,12 +93,12 @@ void RuntimeHandler::CleanUp()
 void RuntimeHandler::ManualRender()
 {
 	m_renderMutex.lock();
-	Window.clear();
+	Window->clear();
 
-	ObjectHandler::FrameUpdate(&Window);
-	ObjectHandler::Render(&Window);
+	ObjectHandler::FrameUpdate(Window);
+	ObjectHandler::Render(Window);
 
-	Window.display();
+	Window->display();
 	m_renderMutex.unlock();
 }
 
@@ -106,7 +106,7 @@ bool RuntimeHandler::Running;
 
 bool RuntimeHandler::ManualRenderingEnabled;
 
-sf::RenderWindow RuntimeHandler::Window;
+sf::RenderWindow* RuntimeHandler::Window;
 
 Plane* RuntimeHandler::m_planeCopy;
 

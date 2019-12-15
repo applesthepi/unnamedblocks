@@ -15,6 +15,9 @@
 
 #include <iostream>
 
+#if PLATFORM == linux
+#include <X11/Xlib.h>
+#endif
 std::vector<Button*> catagoryButtons;
 std::vector<Button*> contextButtons;
 ContextSystem sys;
@@ -116,8 +119,13 @@ static void ReloadCatagory(unsigned index)
 
 int main()
 {
+#if PLATFORM == linux
+	XInitThreads();
+	Logger::Info("Linux build");
+#endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");
 
+	
 	// Window Setup
 
 	sf::RenderWindow window;

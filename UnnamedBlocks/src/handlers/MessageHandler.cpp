@@ -5,7 +5,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <functional>
-
 void ThreadAsyncMessage(std::mutex* mutex, std::vector<Message*>* messages)
 {
 	while (Global::ApplicationRunning)
