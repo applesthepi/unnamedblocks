@@ -17,6 +17,11 @@ public:
 	static std::vector<std::function<void(int)>*>* PressFunctions;
 	static bool* WasDown;
 	static int* PressRepeatIndex;
+#ifdef LINUX
 	static std::chrono::time_point<std::chrono::system_clock>* PressRepeatStartTime;
 	static std::chrono::time_point<std::chrono::system_clock>* PressRepeatIncTime;
+#else
+	static std::chrono::time_point<std::chrono::steady_clock>* PressRepeatStartTime;
+	static std::chrono::time_point<std::chrono::steady_clock>* PressRepeatIncTime;
+#endif
 };

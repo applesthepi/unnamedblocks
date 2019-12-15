@@ -18,7 +18,11 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	selectionForStacks.push_back(stack);
 	selectionForBlockSync.push_back(false);
 
+#ifdef LINUX
 	std::chrono::time_point<std::chrono::system_clock> last = std::chrono::high_resolution_clock::now();
+#else
+	std::chrono::time_point<std::chrono::steady_clock> last = std::chrono::high_resolution_clock::now();
+#endif
 
 	while (RuntimeHandler::Running && *running)
 	{
