@@ -203,7 +203,7 @@ public:
 		};
 	}
 
-	void FrameUpdate(sf::RenderWindow* window)
+	void FrameUpdate(sf::RenderWindow* window) override
 	{
 		m_TextAgent.setString(m_Text);
 		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
@@ -294,12 +294,12 @@ public:
 		return m_background.getLocalBounds().width;
 	}
 
-	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
+	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button) override
 	{
 		if (down)
 		{
-			if (position.x > GetRealAbsolutePosition().x&& position.x < GetRealAbsolutePosition().x + GetArgumentRawWidth() &&
-				position.y > GetRealAbsolutePosition().y&& position.y < GetRealAbsolutePosition().y + Global::BlockHeight)
+			if (position.x > (int32_t)GetRealAbsolutePosition().x&& position.x < (int32_t)(GetRealAbsolutePosition().x + GetArgumentRawWidth()) &&
+				position.y > (int32_t)GetRealAbsolutePosition().y&& position.y < (int32_t)(GetRealAbsolutePosition().y + Global::BlockHeight))
 			{
 				if (button == sf::Mouse::Left)
 				{
@@ -368,15 +368,8 @@ public:
 					return true;
 				}
 			}
-			else
-			{
-				return false;
-			}
 		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 
 	bool HasData() override

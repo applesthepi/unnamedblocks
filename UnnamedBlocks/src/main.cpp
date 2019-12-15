@@ -311,11 +311,11 @@ int main()
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				bool* result = new bool(false);
+				bool result = false;
 
-				MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", result));
+				MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", &result));
 
-				if (*result)
+				if (result)
 				{
 					window.close();
 				}

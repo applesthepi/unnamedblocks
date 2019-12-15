@@ -32,13 +32,12 @@ public:
 private:
 	std::vector<Block*> m_blocks;
 	sf::Vector2i m_setPosition;
-	sf::Vector2i* m_relitivePosition;
-	sf::Vector2i* m_absolutePosition;
+	sf::Vector2i m_relitivePosition;
+	sf::Vector2i m_absolutePosition;
 	sf::Vector2u* m_planePosition;
 	sf::Vector2u* m_planeInnerPosition;
 
-	bool m_wasDown;
-	bool m_dragging;
+	bool m_dragging = false;
 	bool m_cutRendering;
 	sf::Vector2i m_draggingMouseBegin;
 	std::function<void(Stack* stack)>* m_functionAdd;

@@ -76,8 +76,8 @@ std::vector<std::function<void(int)>*>* TypingSystem::PressFunctions;
 bool* TypingSystem::WasDown;
 int* TypingSystem::PressRepeatIndex;
 
-std::chrono::time_point<std::chrono::steady_clock>* TypingSystem::PressRepeatStartTime;
-std::chrono::time_point<std::chrono::steady_clock>* TypingSystem::PressRepeatIncTime;
+std::chrono::time_point<std::chrono::system_clock>* TypingSystem::PressRepeatStartTime;
+std::chrono::time_point<std::chrono::system_clock>* TypingSystem::PressRepeatIncTime;
 
 void TypingSystem::Initialization()
 {
@@ -185,7 +185,7 @@ void TypingSystem::RunStroke(unsigned int c, bool* currentPress)
 	{
 		WasDown[c] = false;
 
-		if (*PressRepeatIndex == c)
+		if ((uint32_t)*PressRepeatIndex == c)
 		{
 			delete PressRepeatStartTime;
 			delete PressRepeatIncTime;
@@ -197,10 +197,10 @@ void TypingSystem::RunStroke(unsigned int c, bool* currentPress)
 	{
 		WasDown[c] = true;
 		*PressRepeatIndex = c;
-		PressRepeatStartTime = new std::chrono::time_point<std::chrono::steady_clock>();
+		PressRepeatStartTime = new std::chrono::time_point<std::chrono::system_clock>();
 		*PressRepeatStartTime = std::chrono::high_resolution_clock::now();
 
-		PressRepeatIncTime = new std::chrono::time_point<std::chrono::steady_clock>();
+		PressRepeatIncTime = new std::chrono::time_point<std::chrono::system_clock>();
 		*PressRepeatIncTime = std::chrono::high_resolution_clock::now();
 
 		for (unsigned long long int i = 0; i < PressFunctions->size(); i++)
@@ -216,7 +216,7 @@ void TypingSystem::RunArrowStroke(unsigned int c, bool* currentPress)
 	{
 		WasDown[c] = false;
 
-		if (*PressRepeatIndex == c)
+		if ((uint32_t)*PressRepeatIndex == c)
 		{
 			delete PressRepeatStartTime;
 			delete PressRepeatIncTime;
@@ -228,10 +228,10 @@ void TypingSystem::RunArrowStroke(unsigned int c, bool* currentPress)
 	{
 		WasDown[c] = true;
 		*PressRepeatIndex = c;
-		PressRepeatStartTime = new std::chrono::time_point<std::chrono::steady_clock>();
+		PressRepeatStartTime = new std::chrono::time_point<std::chrono::system_clock>();
 		*PressRepeatStartTime = std::chrono::high_resolution_clock::now();
 
-		PressRepeatIncTime = new std::chrono::time_point<std::chrono::steady_clock>();
+		PressRepeatIncTime = new std::chrono::time_point<std::chrono::system_clock>();
 		*PressRepeatIncTime = std::chrono::high_resolution_clock::now();
 
 		for (unsigned long long int i = 0; i < PressFunctions->size(); i++)

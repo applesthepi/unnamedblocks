@@ -5,9 +5,7 @@
 
 Stack::Stack(sf::Vector2i relitivePosition)
 {
-	m_relitivePosition = new sf::Vector2i();
 	m_setPosition = relitivePosition;
-	m_absolutePosition = new sf::Vector2i();
 	m_functionSplit = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
 	m_functionContext = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
 	m_functionContextCallback = new std::function<void(unsigned int index)>();
@@ -98,8 +96,6 @@ Stack::Stack(sf::Vector2i relitivePosition)
 
 Stack::~Stack()
 {
-	delete m_absolutePosition;
-	delete m_relitivePosition;
 	delete m_functionSplit;
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
@@ -120,7 +116,7 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 
 void Stack::AddBlock(Block* block)
 {
-	block->SetupInStack(m_blocks.size(), m_absolutePosition, m_relitivePosition, m_functionSplit, m_functionContext);
+	block->SetupInStack(m_blocks.size(), &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
 	m_blocks.push_back(block);
 }
 
@@ -128,7 +124,7 @@ void Stack::ReloadAllBlocks()
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		m_blocks[i]->SetupInStack(i, m_absolutePosition, m_relitivePosition, m_functionSplit, m_functionContext);
+		m_blocks[i]->SetupInStack(i, &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
 	}
 }
 
@@ -168,13 +164,13 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 	{
 		if (mouseDown)
 		{
-			m_relitivePosition->x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x - m_planeInnerPosition->x;
-			m_relitivePosition->y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y - m_planeInnerPosition->y;
+			m_relitivePosition.x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x - m_planeInnerPosition->x;
+			m_relitivePosition.y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y - m_planeInnerPosition->y;
 		}
 		else
 		{
-			m_relitivePosition->x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x;
-			m_relitivePosition->y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y;
+			m_relitivePosition.x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x;
+			m_relitivePosition.y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y;
 
 			m_dragging = false;
 			Global::Dragging = false;
@@ -220,21 +216,21 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 			}
 
 			//revert
-			m_relitivePosition->x = m_setPosition.x - m_planeInnerPosition->x;
-			m_relitivePosition->y = m_setPosition.y - m_planeInnerPosition->y;
+			m_relitivePosition.x = m_setPosition.x - m_planeInnerPosition->x;
+			m_relitivePosition.y = m_setPosition.y - m_planeInnerPosition->y;
 
 			ReloadAllBlocks();
 		}
 	}
 	else
 	{
-		m_relitivePosition->x = m_setPosition.x - m_planeInnerPosition->x;
-		m_relitivePosition->y = m_setPosition.y - m_planeInnerPosition->y;
+		m_relitivePosition.x = m_setPosition.x - m_planeInnerPosition->x;
+		m_relitivePosition.y = m_setPosition.y - m_planeInnerPosition->y;
 
 	}
 
-	m_absolutePosition->x = m_relitivePosition->x + m_planePosition->x;
-	m_absolutePosition->y = m_relitivePosition->y + m_planePosition->y;
+	m_absolutePosition.x = m_relitivePosition.x + m_planePosition->x;
+	m_absolutePosition.y = m_relitivePosition.y + m_planePosition->y;
 
 	if (Global::Dragging && Global::DraggingStack == this)
 	{
@@ -270,12 +266,12 @@ unsigned int Stack::GetBlockCount()
 
 sf::Vector2i Stack::GetAbsolutePosition()
 {
-	return *m_absolutePosition;
+	return m_absolutePosition;
 }
 
 sf::Vector2i Stack::GetRelitivePosition()
 {
-	return *m_relitivePosition;
+	return m_relitivePosition;
 }
 
 sf::Vector2i Stack::GetSetPosition()
@@ -308,8 +304,8 @@ Block* Stack::GetBlock(unsigned int index)
 
 void Stack::CopyEverything(Stack* stack)
 {
-	*m_absolutePosition = stack->GetAbsolutePosition();
-	*m_relitivePosition = stack->GetRelitivePosition();
+	m_absolutePosition = stack->GetAbsolutePosition();
+	m_relitivePosition = stack->GetRelitivePosition();
 
 	for (unsigned int i = 0; i < stack->GetBlockCount(); i++)
 	{

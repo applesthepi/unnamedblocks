@@ -16,7 +16,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	selectionForBlocks.push_back(0);
 	selectionForBlockSync.push_back(false);
 
-	std::chrono::time_point<std::chrono::steady_clock> last = std::chrono::high_resolution_clock::now();
+	std::chrono::time_point<std::chrono::system_clock> last = std::chrono::high_resolution_clock::now();
 
 	runningMutex->lock();
 	while (RuntimeHandler::Running && *running)

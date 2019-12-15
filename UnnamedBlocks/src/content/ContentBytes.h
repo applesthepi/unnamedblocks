@@ -1,5 +1,5 @@
 #pragma once
-
+#include <math.h>
 #include "registries/BlockRegistry.h"
 #include "handlers/runtime/ObjectHandler.h"
 #include "handlers/runtime/VariableHandler.h"
@@ -158,7 +158,7 @@ void ContentLoadBytes()
 				return false;
 			}
 
-			address = unsigned long long(*value);
+			address = (unsigned long long)(*value);
 
 			bool result = ByteHandler::DeallocateBytes(address, bytes);
 			if (!result)
@@ -246,7 +246,7 @@ void ContentLoadBytes()
 				return false;
 			}
 
-			address = unsigned long long(*addressVar);
+			address = (unsigned long long)(*addressVar);
 
 			bool result = ByteHandler::SetByte(address, charValue);
 			if (!result)
@@ -308,7 +308,7 @@ void ContentLoadBytes()
 				return false;
 			}
 
-			address = unsigned long long(*addressVar);
+			address = (unsigned long long)(*addressVar);
 
 			unsigned char* gotByte = ByteHandler::GetByte(address);
 			if (gotByte == nullptr)

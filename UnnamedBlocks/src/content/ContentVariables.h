@@ -412,7 +412,7 @@ void ContentLoadVariables()
 			else if (resultString != nullptr)
 				Logger::Info("[STRING] " + (*resultString));
 			else if (resultBool != nullptr)
-				Logger::Info("[BOOL] " + (*resultBool) ? "true" : "false");
+				Logger::Info(std::string("[BOOL] ") + ((*resultBool) ? "true" : "false"));
 			else
 			{
 				Logger::Error("variable \"" + varText + "\" does not exist");

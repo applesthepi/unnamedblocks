@@ -117,8 +117,7 @@ am_unnamedblocks_OBJECTS = src/main.$(OBJEXT) \
 	src/registries/BlockRegistry.$(OBJEXT) src/Global.$(OBJEXT) \
 	src/ui/Button.$(OBJEXT) src/ui/TypingSystem.$(OBJEXT)
 unnamedblocks_OBJECTS = $(am_unnamedblocks_OBJECTS)
-unnamedblocks_DEPENDENCIES = pthread sfml-system sfml-network \
-	sfml-window sfml-graphics sfml-audio
+unnamedblocks_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -298,9 +297,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -Isrc
+AM_CPPFLAGS = -Isrc -ggdb -Wall
 unnamedblocks_SOURCES = src/main.cpp src/handlers/runtime/RuntimeHandler.cpp src/handlers/runtime/VariableHandler.cpp src/handlers/runtime/ByteHandler.cpp src/handlers/runtime/ThreadHandler.cpp src/handlers/runtime/ObjectHandler.cpp src/handlers/Logger.cpp src/handlers/ProjectHandler.cpp src/handlers/MessageHandler.cpp src/stacking/Block.cpp src/stacking/args/Argument.cpp src/stacking/Plane.cpp src/stacking/Stack.cpp src/registries/BlockRegistry.cpp src/Global.cpp src/ui/Button.cpp src/ui/TypingSystem.cpp
-unnamedblocks_LDADD = pthread sfml-system sfml-network sfml-window sfml-graphics sfml-audio
+unnamedblocks_LDADD = -lpthread -lsfml-system -lsfml-network -lsfml-window -lsfml-graphics -lsfml-audio
 all: all-am
 
 .SUFFIXES:

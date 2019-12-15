@@ -1,5 +1,6 @@
 #include "VariableHandler.h"
 #include "handlers/Logger.h"
+#include <cstring>
 
 #define MEM_COUNT 10000
 

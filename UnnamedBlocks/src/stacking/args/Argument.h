@@ -6,7 +6,7 @@ class Argument
 {
 public:
 	Argument(sf::Vector2u relitivePosition);
-
+	virtual ~Argument() = default;
 	void SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute);
 
 	virtual void Deallocate();

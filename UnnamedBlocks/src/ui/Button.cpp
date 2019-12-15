@@ -102,8 +102,9 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 	}
 
 	sf::Vector2i mousePosition = sf::Mouse::getPosition(*window);
-	if (mousePosition.x > m_position.x && mousePosition.x < m_position.x + m_size.x &&
-		mousePosition.y > m_position.y && mousePosition.y < m_position.y + m_size.y &&
+	if (mousePosition.x > m_position.x && mousePosition.x < (int32_t)(m_position.x + m_size.x) &&
+		mousePosition.y > m_position.y && mousePosition.y < (int32_t)(m_position.y + m_size.y) &&
+
 		sf::Mouse::isButtonPressed(sf::Mouse::Left) && !m_wasDown)
 	{
 		m_wasDown = true;

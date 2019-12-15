@@ -1,5 +1,5 @@
 #pragma once
-
+#include <math.h>
 #include "registries/BlockRegistry.h"
 #include "handlers/runtime/ObjectHandler.h"
 #include "handlers/runtime/VariableHandler.h"
@@ -371,7 +371,7 @@ void ContentLoadOperations()
 				return false;
 			}
 
-			return VariableHandler::SetReal(varText.c_str(), unsigned long long(floor(*gotVar)) % unsigned long long(floor(opValue)));
+			return VariableHandler::SetReal(varText.c_str(), (unsigned long long)(floor(*gotVar)) % (unsigned long long)(floor(opValue)));
 		};
 
 		block->Execute = execute;

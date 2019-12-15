@@ -195,8 +195,8 @@ void Plane::FrameUpdate(sf::RenderWindow* window)
 
 		for (unsigned int i = 0; i < Planes->size(); i++)
 		{
-			if (draggingStack->GetAbsolutePosition().x > (*Planes)[i]->GetPosition().x && draggingStack->GetAbsolutePosition().x < (*Planes)[i]->GetPosition().x + (*Planes)[i]->GetSize().x &&
-				draggingStack->GetAbsolutePosition().y >(*Planes)[i]->GetPosition().y && draggingStack->GetAbsolutePosition().y < (*Planes)[i]->GetPosition().y + (*Planes)[i]->GetSize().y)
+			if (draggingStack->GetAbsolutePosition().x > (int32_t)((*Planes)[i]->GetPosition().x) && draggingStack->GetAbsolutePosition().x < (int32_t)((*Planes)[i]->GetPosition().x + (*Planes)[i]->GetSize().x) &&
+				draggingStack->GetAbsolutePosition().y >(int32_t)((*Planes)[i]->GetPosition().y) && draggingStack->GetAbsolutePosition().y < (int32_t)((*Planes)[i]->GetPosition().y + (*Planes)[i]->GetSize().y))
 			{
 				Global::DraggingPlaneOver = (void*)((*Planes)[i]);
 
@@ -211,13 +211,13 @@ void Plane::FrameUpdate(sf::RenderWindow* window)
 
 			unsigned int blockCount = m_stacks[i]->GetBlockCount();
 
-			if (draggingStack->GetAbsolutePosition().x > m_stacks[i]->GetAbsolutePosition().x - Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < m_stacks[i]->GetAbsolutePosition().x + Global::BlockConnectDistance &&
-				draggingStack->GetAbsolutePosition().y > m_stacks[i]->GetAbsolutePosition().y - (Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < m_stacks[i]->GetAbsolutePosition().y + (Global::BlockHeight / 2) + (blockCount * Global::BlockHeight))
+			if (draggingStack->GetAbsolutePosition().x > (int32_t)(m_stacks[i]->GetAbsolutePosition().x - Global::BlockConnectDistance) && draggingStack->GetAbsolutePosition().x < (int32_t)(m_stacks[i]->GetAbsolutePosition().x + Global::BlockConnectDistance) &&
+				draggingStack->GetAbsolutePosition().y > (int32_t)(m_stacks[i]->GetAbsolutePosition().y - (Global::BlockHeight / 2)) && draggingStack->GetAbsolutePosition().y < (int32_t)(m_stacks[i]->GetAbsolutePosition().y + (Global::BlockHeight / 2) + (blockCount * Global::BlockHeight)))
 			{
 				for (unsigned int a = 0; a < blockCount + 1; a++)
 				{
-					if (draggingStack->GetAbsolutePosition().x > m_stacks[i]->GetAbsolutePosition().x - Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < m_stacks[i]->GetAbsolutePosition().x + Global::BlockConnectDistance &&
-						draggingStack->GetAbsolutePosition().y >= m_stacks[i]->GetAbsolutePosition().y - (Global::BlockHeight / 2) + (a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < m_stacks[i]->GetAbsolutePosition().y + (Global::BlockHeight / 2) + (a * Global::BlockHeight))
+					if (draggingStack->GetAbsolutePosition().x > (int32_t)(m_stacks[i]->GetAbsolutePosition().x - Global::BlockConnectDistance) && draggingStack->GetAbsolutePosition().x < (int32_t)(m_stacks[i]->GetAbsolutePosition().x + Global::BlockConnectDistance) &&
+						draggingStack->GetAbsolutePosition().y >= (int32_t)(m_stacks[i]->GetAbsolutePosition().y - (Global::BlockHeight / 2) + (a * Global::BlockHeight)) && draggingStack->GetAbsolutePosition().y < (int32_t)(m_stacks[i]->GetAbsolutePosition().y + (Global::BlockHeight / 2) + (a * Global::BlockHeight)))
 					{
 						unsigned int blockWidth = 0;
 						if (a == 0)
@@ -312,8 +312,8 @@ Stack* Plane::GetStack(unsigned int index)
 
 void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
 {
-	if (position.x > m_position->x&& position.x < m_position->x + m_size.x &&
-		position.y > m_position->y&& position.y < m_position->y + m_size.y)
+	if (position.x > (int32_t)m_position->x&& position.x < (int32_t)(m_position->x + m_size.x) &&
+		position.y > (int32_t)m_position->y&& position.y < (int32_t)(m_position->y + m_size.y))
 	{
 		if (m_dragging && !down)
 		{

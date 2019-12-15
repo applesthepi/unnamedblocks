@@ -1,4 +1,6 @@
 #include "ByteHandler.h"
+#include <cstring>
+#include <cstdlib>
 
 void ByteHandler::Alloc()
 {
@@ -56,6 +58,7 @@ bool ByteHandler::DeallocateBytes(unsigned long long address, unsigned long long
 
 	memset(m_bytes + address, 0, size);
 	memset(m_bytesBinary + address, false, size);
+	return true;
 }
 
 unsigned char* ByteHandler::GetByte(unsigned long long address)

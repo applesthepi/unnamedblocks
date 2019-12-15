@@ -86,7 +86,6 @@ void MessageHandler::RunSyncMessages()
 		Button* buttonContinue = new Button(sf::Vector2i(10, 30), sf::Vector2u(100, 24), callbackButtonContinue);
 		Button* buttonCancel = new Button(sf::Vector2i(390, 30), sf::Vector2u(100, 24), callbackButtonCancel);
 		std::string title;
-		std::string* result = (*m_messages)[i]->Result;
 		std::string answer = std::string();
 		bool finish = false;
 		bool answerBool = false;

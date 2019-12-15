@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+#include <math.h>
 #include "registries/BlockRegistry.h"
 #include "handlers/runtime/ObjectHandler.h"
 #include "handlers/runtime/VariableHandler.h"
