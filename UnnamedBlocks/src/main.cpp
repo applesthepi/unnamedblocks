@@ -15,7 +15,7 @@
 
 #include <iostream>
 
-#if PLATFORM == linux
+#ifdef LINUX
 #include <X11/Xlib.h>
 #endif
 std::vector<Button*> catagoryButtons;
@@ -119,7 +119,7 @@ static void ReloadCatagory(unsigned index)
 
 int main()
 {
-#if PLATFORM == linux
+#ifdef LINUX
 	XInitThreads();
 	Logger::Info("Linux build");
 #endif
