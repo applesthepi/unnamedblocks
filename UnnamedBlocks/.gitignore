@@ -5,3 +5,4 @@ config.status
 Makefile
 .vs
 .ycm_extra_conf.py
+build
