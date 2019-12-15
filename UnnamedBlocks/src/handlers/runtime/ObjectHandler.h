@@ -13,7 +13,8 @@ public:
 	unsigned long long Id;
 	unsigned int ImageIndex;
 	sf::Vector2f Position;
-	float Scale;
+	sf::Vector2f Scale;
+	float Angle;
 
 	std::vector<sf::Texture*> Textures;
 	std::vector<sf::Sprite*> Sprites;

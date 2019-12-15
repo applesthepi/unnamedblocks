@@ -175,6 +175,7 @@
   <ItemGroup>
     <ClInclude Include="src\content\ContentBytes.h" />
     <ClInclude Include="src\content\ContentExecution.h" />
+    <ClInclude Include="src\content\ContentInput.h" />
     <ClInclude Include="src\content\ContentObjects.h" />
     <ClInclude Include="src\content\ContentOperations.h" />
     <ClInclude Include="src\content\ContentTextures.h" />

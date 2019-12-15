@@ -155,5 +155,8 @@
     <ClInclude Include="src\stacking\args\ArgumentBoolean.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\content\ContentInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
