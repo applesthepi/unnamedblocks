@@ -1,5 +1,6 @@
 #include "RuntimeHandler.h"
 
+
 #include "ObjectHandler.h"
 #include "ThreadHandler.h"
 #include "VariableHandler.h"
@@ -24,12 +25,19 @@ void ThreadWindowManager()
 				RuntimeHandler::Window->close();
 				RuntimeHandler::Running = false;
 			}
+			else if (ev.type == sf::Event::MouseWheelMoved)
+			{
+				RuntimeHandler::AddScroll(ev.mouseWheel.delta);
+			}
 		}
-
-		std::cout << "manual rendering: " << RuntimeHandler::ManualRenderingEnabled << std::endl;
 
 		if (!RuntimeHandler::ManualRenderingEnabled)
 			RuntimeHandler::ManualRender();
+		else if (RuntimeHandler::ManualRenderFrame)
+		{
+			RuntimeHandler::ManualRender();
+			RuntimeHandler::ManualRenderFrame = false;
+		}
 	}
 
 	//shutdown
@@ -42,11 +50,6 @@ void RuntimeHandler::Run(Plane* planeCopy)
 	if (Running)
 		return;
 
-	Running = true;
-	ManualRenderingEnabled = false;
-
-	m_planeCopy = planeCopy;
-
 	std::vector<unsigned long long> locations;
 	for (unsigned long long i = 0; i < planeCopy->GetStackCount(); i++)
 	{
@@ -54,14 +57,34 @@ void RuntimeHandler::Run(Plane* planeCopy)
 		{
 			locations.push_back(i);
 		}
+		else if (planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName() == "vin_thread_function_define")
+		{
+			const RegBlock* regBlock = BlockRegistry::GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
+			BlockRuntimeReturn args = planeCopy->GetStack(i)->GetBlock(0)->GetUsedArgumentsRuntime();
+
+			std::string functionText = (*args.Args)[0].substr(1, (*args.Args)[0].length() - 1);
+
+			if ((*args.Args)[0][0] == '1')
+			{
+				Logger::Error("expecting text only! got \"" + functionText + "\"");
+				return;
+			}
+
+			m_stackFunctions.push_back(functionText);
+			m_stackIndices.push_back(i);
+		}
 	}
 
 	if (locations.size() == 0)
 	{
 		Logger::Error("you must have atleast 1 opening for the program to run");
-		Running = false;
 		return;
 	}
+
+	Running = true;
+	ManualRenderingEnabled = false;
+
+	m_planeCopy = planeCopy;
 
 	ThreadHandler::Alloc(planeCopy);
 	ObjectHandler::Alloc();
@@ -77,6 +100,52 @@ void RuntimeHandler::Run(Plane* planeCopy)
 	m_runningThread->detach();
 }
 
+void RuntimeHandler::ManualRender()
+{
+	m_renderMutex.lock();
+	Window->clear();
+
+	ObjectHandler::FrameUpdate(Window);
+	ObjectHandler::Render(Window);
+
+	Window->display();
+	m_renderMutex.unlock();
+}
+
+int RuntimeHandler::GetScrolled()
+{
+	m_scrollMutex.lock();
+	int scrolled = m_scrolled;
+	m_scrollMutex.unlock();
+
+	return scrolled;
+}
+
+void RuntimeHandler::AddScroll(int value)
+{
+	m_scrollMutex.lock();
+	m_scrolled += value;
+	m_scrollMutex.unlock();
+}
+
+void RuntimeHandler::ResetScrolled()
+{
+	m_scrollMutex.lock();
+	m_scrolled = 0;
+	m_scrollMutex.unlock();
+}
+
+int RuntimeHandler::PerformFunctionSearch(std::string functionName)
+{
+	for (unsigned int i = 0; i < m_stackFunctions.size(); i++)
+	{
+		if (m_stackFunctions[i] == functionName)
+			return m_stackIndices[i];
+	}
+
+	return -1;
+}
+
 void RuntimeHandler::CleanUp()
 {
 	ThreadHandler::KillJoinAll();
@@ -90,19 +159,9 @@ void RuntimeHandler::CleanUp()
 	delete m_planeCopy;
 }
 
-void RuntimeHandler::ManualRender()
-{
-	m_renderMutex.lock();
-	Window->clear();
-
-	ObjectHandler::FrameUpdate(Window);
-	ObjectHandler::Render(Window);
-
-	Window->display();
-	m_renderMutex.unlock();
-}
-
 bool RuntimeHandler::Running;
+
+bool RuntimeHandler::ManualRenderFrame;
 
 bool RuntimeHandler::ManualRenderingEnabled;
 
@@ -113,3 +172,11 @@ Plane* RuntimeHandler::m_planeCopy;
 std::thread* RuntimeHandler::m_runningThread;
 
 std::mutex RuntimeHandler::m_renderMutex;
+
+std::mutex RuntimeHandler::m_scrollMutex;
+
+int RuntimeHandler::m_scrolled;
+
+std::vector<unsigned int> RuntimeHandler::m_stackIndices;
+
+std::vector<std::string> RuntimeHandler::m_stackFunctions;

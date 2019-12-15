@@ -19,9 +19,7 @@ private:
 	static std::vector<std::thread*>* m_activeThreads;
 	static std::vector<unsigned long long>* m_activeThreadIds;
 	static std::vector<bool*>* m_activeThreadRunning;
-	static std::vector<std::mutex*>* m_activeThreadRunningMutex;
 	static std::vector<bool*>* m_activeThreadDone;
-	static std::vector<std::mutex*>* m_activeThreadDoneMutex;
 	static unsigned long long m_counter;
 	static Plane* m_plane;
 };

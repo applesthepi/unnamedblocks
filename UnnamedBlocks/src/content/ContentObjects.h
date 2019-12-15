@@ -40,7 +40,8 @@ void ContentLoadObjects()
 			RuntimeObject* run = new RuntimeObject();
 			run->ImageIndex = 0;
 			run->Position = sf::Vector2f(0.0f, 0.0f);
-			run->Scale = 0.0f;
+			run->Scale = sf::Vector2f(1.0f, 1.0f);
+			run->Angle = 0.0;
 
 			bool result = VariableHandler::SetReal(realText.c_str(), ObjectHandler::CreateObject(run));
 			if (!result)

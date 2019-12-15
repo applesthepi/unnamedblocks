@@ -16,8 +16,9 @@ public:
 	void ReloadAllBlocks();
 	void Render(sf::RenderTexture* render, sf::RenderWindow* window);
 	void FrameUpdate(sf::RenderWindow* window);
-	void SetupInPlane(sf::Vector2u* planePosition, sf::Vector2u* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver);
+	void SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver);
 
+	void* GetPlanePointer();
 	unsigned int GetBlockCount();
 	sf::Vector2i GetAbsolutePosition();
 	sf::Vector2i GetRelitivePosition();
@@ -35,7 +36,7 @@ private:
 	sf::Vector2i m_relitivePosition;
 	sf::Vector2i m_absolutePosition;
 	sf::Vector2u* m_planePosition;
-	sf::Vector2u* m_planeInnerPosition;
+	sf::Vector2i* m_planeInnerPosition;
 
 	bool m_dragging = false;
 	bool m_cutRendering;

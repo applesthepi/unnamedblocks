@@ -13,17 +13,20 @@ public:
 
 	void AddStack(Stack* stack);
 	void Render(sf::RenderWindow* window);
+	void RenderConnection(sf::RenderWindow* window);
 	void FrameUpdate(sf::RenderWindow* window);
 	void DeleteAllBlocks();
 	void CopyEverything(Plane* plane);
 	unsigned int GetStackCount();
 	sf::Vector2u GetSize();
 	sf::Vector2u GetPosition();
-	sf::Vector2u GetInnterPosition();
+	sf::Vector2i GetInnterPosition();
 	sf::Vector2u GetAbsolutePosition();
 	void SetPosition(sf::Vector2u position);
 	void SetSize(sf::Vector2u size);
 	Stack* GetStack(unsigned int index);
+	bool IsToolbar();
+	const std::vector<Stack*>* GetAllStacks();
 
 	void MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 
@@ -31,11 +34,11 @@ public:
 private:
 	std::vector<Stack*> m_stacks;
 	sf::Vector2u* m_position;
-	sf::Vector2u* m_innerPosition;
+	sf::Vector2i* m_innerPosition;
 	sf::Vector2u* m_absolutePosition;
 	sf::Vector2u m_size;
 	sf::Vector2i m_draggingMouseStart;
-	sf::Vector2u m_draggingStart;
+	sf::Vector2i m_draggingStart;
 	std::function<void(Stack* stack)>* m_functionAdd;
 	std::function<void(Stack* stack)>* m_functionRemove;
 	std::function<void(Stack* stack)>* m_functionMoveTop;

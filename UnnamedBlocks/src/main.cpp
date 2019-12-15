@@ -287,7 +287,7 @@ int main()
 		buttonRun->SetButtonModeText("run", sf::Color(200, 200, 200), 12);
 	}
 
-	toolbarPlane = new Plane(sf::Vector2u(5, (catagoryButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catagoryButtons.size() * (16 + 5)) + 5)) - 5));
+	toolbarPlane = new Plane(sf::Vector2u(5, (catagoryButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catagoryButtons.size() * (16 + 5)) + 5)) - 5), true);
 	Plane::Planes->push_back(toolbarPlane);
 
 	{
@@ -421,8 +421,8 @@ int main()
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y), sf::Vector2u(300, 16), callback0));
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (1 * 16)), sf::Vector2u(300, 16), callback1));
 
-					contextButtons[0]->SetButtonModeText("duplicate", sf::Color(50, 50, 50), 12);
-					contextButtons[1]->SetButtonModeText("delete", sf::Color(50, 50, 50), 12);
+					contextButtons[0]->SetButtonModeText("duplicate", sf::Color(70, 70, 70), 12);
+					contextButtons[1]->SetButtonModeText("delete", sf::Color(70, 70, 70), 12);
 				}
 			}
 		}
@@ -443,6 +443,10 @@ int main()
 
 		toolbarPlane->Render(&window);
 		primaryPlane->Render(&window);
+
+		//render connections
+		toolbarPlane->RenderConnection(&window);
+		primaryPlane->RenderConnection(&window);
 
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->Render(nullptr, &window);

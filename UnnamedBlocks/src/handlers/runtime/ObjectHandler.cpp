@@ -27,7 +27,11 @@ void ObjectHandler::FrameUpdate(sf::RenderWindow* window)
 	{
 		RuntimeObject* obj = (*m_objects)[i];
 		if (obj->ImageIndex < obj->Sprites.size())
+		{
 			obj->Sprites[obj->ImageIndex]->setPosition(obj->Position);
+			obj->Sprites[obj->ImageIndex]->setScale(obj->Scale);
+			obj->Sprites[obj->ImageIndex]->setRotation(obj->Angle);
+		}
 	}
 	ObjectHandler::ObjectMutex->unlock();
 }

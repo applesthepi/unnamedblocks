@@ -6,25 +6,24 @@
 #include "handlers/runtime/VariableHandler.h"
 #include <iostream>
 
-void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, std::mutex* runningMutex, bool* done, std::mutex* doneMutex)
+void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, bool* done)
 {
 	std::vector<unsigned int> markLocations;
 	std::vector<std::string> markLocationNames;
 	std::vector<unsigned int> selectionForBlocks;
+	std::vector<unsigned int> selectionForStacks;
 	std::vector<bool> selectionForBlockSync;
 
 	selectionForBlocks.push_back(0);
+	selectionForStacks.push_back(stack);
 	selectionForBlockSync.push_back(false);
 
 	std::chrono::time_point<std::chrono::system_clock> last = std::chrono::high_resolution_clock::now();
 
-	runningMutex->lock();
 	while (RuntimeHandler::Running && *running)
 	{
-		runningMutex->unlock();
-
-		const RegBlock* regBlock = BlockRegistry::GetBlock(plane->GetStack(stack)->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
-		BlockRuntimeReturn args = plane->GetStack(stack)->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
+		const RegBlock* regBlock = BlockRegistry::GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
+		BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
 
 		if (regBlock->UnlocalizedName == "vin_execution_mark")
 		{
@@ -40,6 +39,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			if ((*args.Args)[0][0] == '1')
 			{
 				Logger::Error("expecting text only! got \"" + varText + "\"");
+				*done = true;
 				return;
 			}
 
@@ -52,6 +52,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			if ((*args.Args)[0][0] == '1')
 			{
 				Logger::Error("expecting text only! got \"" + varText + "\"");
+				*done = true;
 				return;
 			}
 
@@ -60,7 +61,18 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		else if (regBlock->UnlocalizedName == "vin_execution_render_frame")
 		{
 			if (RuntimeHandler::ManualRenderingEnabled)
-				RuntimeHandler::ManualRender();
+			{
+				RuntimeHandler::ManualRenderFrame = true;
+
+				while (RuntimeHandler::ManualRenderFrame)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				}
+			}
+			else
+			{
+				Logger::Warn("can not render unless manual rendering is enabled");
+			}
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_goto")
 		{
@@ -77,6 +89,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + indexText + "\" does not exist");
+					*done = true;
 					return;
 				}
 
@@ -92,17 +105,105 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				}
 			}
 		}
+		else if (regBlock->UnlocalizedName == "vin_execution_goto_if")
+		{
+			std::string indexText = (*args.Args)[0].substr(1, (*args.Args)[0].length() - 1);
+			std::string conditionText = (*args.Args)[1].substr(1, (*args.Args)[1].length() - 1);
+
+			bool condition = false;
+			if ((*args.Args)[1][0] == '0')
+			{
+				condition = conditionText == "1";
+			}
+			else
+			{
+				bool* value = VariableHandler::GetBool(conditionText.c_str());
+				if (value == nullptr)
+				{
+					Logger::Error("variable \"" + conditionText + "\" does not exist");
+					*done = true;
+					return;
+				}
+
+				condition = *value;
+			}
+
+			if (condition)
+			{
+				std::string name = std::string();
+				if ((*args.Args)[0][0] == '0')
+				{
+					name = indexText;
+				}
+				else
+				{
+					std::string* value = VariableHandler::GetString(indexText.c_str());
+					if (value == nullptr)
+					{
+						Logger::Error("variable \"" + indexText + "\" does not exist");
+						*done = true;
+						return;
+					}
+
+					name = *value;
+				}
+
+				for (unsigned int i = 0; i < markLocationNames.size(); i++)
+				{
+					if (markLocationNames[i] == name)
+					{
+						selectionForBlocks[0] = markLocations[i];
+						break;
+					}
+				}
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_thread_function_call")
+		{
+			std::string functionText = (*args.Args)[0].substr(1, (*args.Args)[0].length() - 1);
+
+			std::string functionName = std::string();
+
+			if ((*args.Args)[0][0] == '0')
+				functionName = functionText;
+			else
+			{
+				std::string* value = VariableHandler::GetString(functionText.c_str());
+				if (value == nullptr)
+				{
+					Logger::Error("variable \"" + functionText + "\" does not exist");
+					*done = true;
+					return;
+				}
+
+				functionName = *value;
+			}
+
+			int searchResult = RuntimeHandler::PerformFunctionSearch(functionName);
+			if (searchResult == -1)
+			{
+				Logger::Error("function \"" + functionName + "\" does not exist");
+				*done = true;
+				return;
+			}
+
+			selectionForBlocks[0]++;
+
+			selectionForBlocks.insert(selectionForBlocks.begin(), 0);
+			selectionForStacks.insert(selectionForStacks.begin(), searchResult);
+		}
 		else if (regBlock->Execute == nullptr)
 		{
 			Logger::Warn("no execution for block \"" + regBlock->UnlocalizedName + "\"");
 		}
 		else
 		{
-			BlockRuntimeReturn args = plane->GetStack(stack)->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
+			BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
 
 			if (!(*regBlock->Execute)(args.Args))
 			{
 				Logger::Error("block execution failed for block \"" + std::to_string(selectionForBlocks[0]) + "\"");
+				*done = true;
 				return;
 			}
 		}
@@ -113,25 +214,32 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
-			std::cout << "times pasted: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - last).count() << std::endl;
+			
 			last = std::chrono::high_resolution_clock::now();
 		}
 
 		selectionForBlocks[0]++;
 
-		runningMutex->lock();
-
-		if (selectionForBlocks[0] >= plane->GetStack(stack)->GetBlockCount())
+		if (selectionForBlocks[0] >= plane->GetStack(selectionForStacks[0])->GetBlockCount())
 		{
-			*running = false;
+			if (selectionForStacks.size() > 1)
+			{
+				selectionForStacks.erase(selectionForStacks.begin());
+				selectionForBlocks.erase(selectionForBlocks.begin());
+
+				if (selectionForBlocks[0] >= plane->GetStack(selectionForStacks[0])->GetBlockCount())
+				{
+					*running = false;
+				}
+			}
+			else
+			{
+				*running = false;
+			}
 		}
 	}
 
-	runningMutex->unlock();
-
-	doneMutex->lock();
 	*done = true;
-	doneMutex->unlock();
 }
 
 void ThreadHandler::Alloc(Plane* plane)
@@ -139,9 +247,8 @@ void ThreadHandler::Alloc(Plane* plane)
 	m_activeThreads = new std::vector<std::thread*>();
 	m_activeThreadIds = new std::vector<unsigned long long>();
 	m_activeThreadRunning = new std::vector<bool*>();
-	m_activeThreadRunningMutex = new std::vector<std::mutex*>();
 	m_activeThreadDone = new std::vector<bool*>();
-	m_activeThreadDoneMutex = new std::vector<std::mutex*>();
+	m_counter = 0;
 
 	m_plane = plane;
 }
@@ -149,49 +256,29 @@ void ThreadHandler::Alloc(Plane* plane)
 void ThreadHandler::Dealloc()
 {
 	for (unsigned int i = 0; i < m_activeThreads->size(); i++)
-	{
 		delete (*m_activeThreads)[i];
-	}
 
 	for (unsigned int i = 0; i < m_activeThreadRunning->size(); i++)
 		delete (*m_activeThreadRunning)[i];
 
-	for (unsigned int i = 0; i < m_activeThreadRunningMutex->size(); i++)
-		delete (*m_activeThreadRunningMutex)[i];
-
 	for (unsigned int i = 0; i < m_activeThreadDone->size(); i++)
 		delete (*m_activeThreadDone)[i];
-
-	for (unsigned int i = 0; i < m_activeThreadDoneMutex->size(); i++)
-		delete (*m_activeThreadDoneMutex)[i];
 
 	delete m_activeThreads;
 	delete m_activeThreadIds;
 	delete m_activeThreadRunning;
-	delete m_activeThreadRunningMutex;
 	delete m_activeThreadDone;
-	delete m_activeThreadDoneMutex;
 }
 
 void ThreadHandler::KillJoinAll()
 {
 	for (unsigned int i = 0; i < m_activeThreads->size(); i++)
-	{
 		KillThread((*m_activeThreadIds)[i]);
-	}
 
 	for (unsigned int i = 0; i < m_activeThreadDone->size(); i++)
 	{
-		(*m_activeThreadDoneMutex)[i]->lock();
-
 		while (!*(*m_activeThreadDone)[i])
-		{
-			(*m_activeThreadDoneMutex)[i]->unlock();
 			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			(*m_activeThreadDoneMutex)[i]->lock();
-		}
-
-		(*m_activeThreadDoneMutex)[i]->unlock();
 	}
 }
 
@@ -202,16 +289,10 @@ unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex)
 	bool* running = new bool(true);
 	m_activeThreadRunning->push_back(running);
 
-	std::mutex* runningMutex = new std::mutex();
-	m_activeThreadRunningMutex->push_back(runningMutex);
-
 	bool* done = new bool(false);
 	m_activeThreadDone->push_back(done);
 
-	std::mutex* doneMutex = new std::mutex();
-	m_activeThreadDoneMutex->push_back(doneMutex);
-
-	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, runningMutex, done, doneMutex);
+	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done);
 	run->detach();
 	m_activeThreads->push_back(run);
 
@@ -224,9 +305,7 @@ bool ThreadHandler::KillThread(unsigned long long threadId)
 	{
 		if ((*m_activeThreadIds)[i] == threadId)
 		{
-			(*m_activeThreadRunningMutex)[i]->lock();
 			*((*m_activeThreadRunning)[i]) = false;
-			(*m_activeThreadRunningMutex)[i]->unlock();
 
 			return true;
 		}
@@ -241,11 +320,7 @@ std::vector<unsigned long long>* ThreadHandler::m_activeThreadIds;
 
 std::vector<bool*>* ThreadHandler::m_activeThreadRunning;
 
-std::vector<std::mutex*>* ThreadHandler::m_activeThreadRunningMutex;
-
 std::vector<bool*>* ThreadHandler::m_activeThreadDone;
-
-std::vector<std::mutex*>* ThreadHandler::m_activeThreadDoneMutex;
 
 unsigned long long ThreadHandler::m_counter;
 

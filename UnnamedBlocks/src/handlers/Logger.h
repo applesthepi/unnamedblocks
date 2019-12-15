@@ -26,6 +26,13 @@ public:
 		printf(" [ERROR] %s\n", message.c_str());
 		m_logMutex.unlock();
 	}
+
+	static void Debug(std::string message)
+	{
+		m_logMutex.lock();
+		printf(" [DEBUG] %s\n", message.c_str());
+		m_logMutex.unlock();
+	}
 private:
 	static std::mutex m_logMutex;
 };

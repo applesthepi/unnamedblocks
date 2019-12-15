@@ -8,6 +8,7 @@
 #include "ContentThreading.h"
 #include "ContentOperations.h"
 #include "ContentExecution.h"
+#include "ContentInput.h"
 
 class ContentLoader
 {
@@ -86,6 +87,15 @@ public:
 			BlockRegistry::CreateCatagory(*cat);
 		}
 
+		{
+			RegCatagory* cat = new RegCatagory();
+			cat->Color = sf::Color(123, 188, 199);
+			cat->DisplayName = "input";
+			cat->UnlocalizedName = "vin_input";
+
+			BlockRegistry::CreateCatagory(*cat);
+		}
+
 		ContentLoadObjects();
 		ContentLoadTextures();
 		ContentLoadTransform();
@@ -94,5 +104,6 @@ public:
 		ContentLoadThreading();
 		ContentLoadOperations();
 		ContentLoadExecution();
+		ContentLoadInput();
 	}
 };

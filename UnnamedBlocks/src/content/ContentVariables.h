@@ -403,20 +403,27 @@ void ContentLoadVariables()
 		{
 			std::string varText = (*args)[0].substr(1, (*args)[0].length() - 1);
 
-			double* resultReal = VariableHandler::GetReal(varText.c_str());
-			std::string* resultString = VariableHandler::GetString(varText.c_str());
-			bool* resultBool = VariableHandler::GetBool(varText.c_str());
-
-			if (resultReal != nullptr)
-				Logger::Info("[REAL] " + std::to_string(*resultReal));
-			else if (resultString != nullptr)
-				Logger::Info("[STRING] " + (*resultString));
-			else if (resultBool != nullptr)
-				Logger::Info(std::string("[BOOL] ") + ((*resultBool) ? "true" : "false"));
+			if ((*args)[0][0] == '0')
+			{
+				Logger::Info("[RAW] " + varText);
+			}
 			else
 			{
-				Logger::Error("variable \"" + varText + "\" does not exist");
-				return false;
+				double* resultReal = VariableHandler::GetReal(varText.c_str());
+				std::string* resultString = VariableHandler::GetString(varText.c_str());
+				bool* resultBool = VariableHandler::GetBool(varText.c_str());
+
+				if (resultReal != nullptr)
+					Logger::Info("[REAL] " + std::to_string(*resultReal));
+				else if (resultString != nullptr)
+					Logger::Info("[STRING] " + (*resultString));
+				else if (resultBool != nullptr)
+					Logger::Info("[BOOL] " + ((*resultBool) ? std::string("true") : std::string("false")));
+				else
+				{
+					Logger::Error("variable \"" + varText + "\" does not exist");
+					return false;
+				}
 			}
 
 			return true;

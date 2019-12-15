@@ -180,6 +180,49 @@ public:
 				m_textTrailedStart = 0;
 				m_textMarkerPosition = m_Text.length();
 			}
+			else if (key == 131)
+			{
+				if (m_textMarkerPosition != m_textTrailedStart)
+				{
+					std::string cpy;
+
+					for (unsigned int i = std::min(m_textMarkerPosition, m_textTrailedStart); i < std::max(m_textMarkerPosition, m_textTrailedStart); i++)
+						cpy += m_Text[i];
+
+					sf::Clipboard::setString(cpy);
+				}
+			}
+			else if (key == 132)
+			{
+				if (m_textMarkerPosition == m_textTrailedStart)
+				{
+					std::string clip = sf::Clipboard::getString();
+					m_Text.insert(m_textMarkerPosition, clip);
+					m_TextAgent.setString(m_Text);
+
+					m_textMarkerPosition += clip.length();
+					m_textTrailedStart += clip.length();
+				}
+				else
+				{
+					std::string newText;
+					for (unsigned int i = 0; i < std::min(m_textMarkerPosition, m_textTrailedStart); i++)
+						newText += m_Text[i];
+
+					std::string clip = sf::Clipboard::getString();
+
+					newText += clip;
+
+					for (unsigned int i = std::max(m_textMarkerPosition, m_textTrailedStart); i < m_Text.length(); i++)
+						newText += m_Text[i];
+
+					m_Text = newText;
+					m_TextAgent.setString(m_Text);
+
+					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart) + clip.length();
+					m_textTrailedStart = m_textMarkerPosition;
+				}
+			}
 			else
 			{
 				if (m_variableMode)
@@ -210,7 +253,7 @@ public:
 						m_textTrailedStart = m_textMarkerPosition;
 					}
 				}
-				else if (key == 48 || key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key == 56 || key == 57 || key == 58 || key == 46)
+				else if (key == 48 || key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key == 56 || key == 57 || key == 58 || key == 46 || key == 45)
 				{
 					if (m_textMarkerPosition == m_textTrailedStart)
 					{
