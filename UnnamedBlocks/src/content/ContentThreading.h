@@ -196,7 +196,7 @@ void ContentLoadThreading()
 			}
 
 			double threadId = ThreadHandler::SummonThread(searchResult);
-			Logger::Debug("summoned thread");
+			Logger::Debug("summoned thread " + std::to_string(threadId));
 
 			bool worked = VariableHandler::SetReal(varText.c_str(), threadId);
 			if (!worked)
@@ -205,6 +205,65 @@ void ContentLoadThreading()
 				Logger::Error("variable \"" + varText + "\" does not exist");
 				return false;
 			}
+
+			return true;
+		};
+
+		block->Execute = execute;
+		BlockRegistry::CreateBlock(*block);
+	}
+
+	{
+		RegBlock* block = new RegBlock();
+
+		std::vector<BlockArgument> argList = std::vector<BlockArgument>();
+
+		BlockArgument arg0 = BlockArgument();
+		BlockArgument arg1 = BlockArgument();
+
+		arg0.SetupTEXT("kill thread");
+		arg1.SetupREAL("1threadId");
+
+		argList.push_back(arg0);
+		argList.push_back(arg1);
+
+		block->Args = argList;
+		block->Catagory = "vin_threading";
+		block->UnlocalizedName = "vin_thread_kill_thread";
+
+		std::function<bool(std::vector<std::string>*)>* execute = new std::function<bool(std::vector<std::string>*)>();
+		*execute = [](std::vector<std::string>* args)
+		{
+			std::string functionText = (*args)[0].substr(1, (*args)[0].length() - 1);
+			
+			unsigned long long threadId;
+
+			if ((*args)[0][0] == '0')
+			{
+				try
+				{
+					threadId = std::stoull(functionText);
+				}
+				catch (std::invalid_argument & e)
+				{
+					Logger::Error("invalid argument exception: expected real but got \"" + functionText + "\"");
+					return false;
+				}
+			}
+			else
+			{
+				double* value = VariableHandler::GetReal(functionText.c_str());
+				if (value == nullptr)
+				{
+					Logger::Error("variable \"" + functionText + "\" does not exist");
+					return false;
+				}
+
+				threadId = *value;
+			}
+
+			bool result = ThreadHandler::KillThread(threadId);
+			Logger::Debug("killed thread " + std::to_string(threadId));
 
 			return true;
 		};

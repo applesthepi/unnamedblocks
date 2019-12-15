@@ -1,5 +1,6 @@
 #include "Stack.h"
 #include "Global.h"
+#include "Plane.h"
 
 #include <iostream>
 
@@ -185,7 +186,18 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 
 				Stack* connectedStack = (Stack*)Global::DraggingStackConnected;
 				unsigned int connectedBlockIndex = Global::DraggingStackConnectedIndex;
+				/*
+				std::cout << "connecting stuff" << std::endl;
 
+				if (((Plane*)connectedStack->GetPlanePointer())->IsToolbar())
+				{
+					Global::CutRenderingPlane = true;
+					(*m_functionRemove)(this);
+					(*m_functionAddOver)(this);
+					std::cout << "canceling, is toolbar" << std::endl;
+					return;
+				}
+				*/
 				for (unsigned int i = 0; i < connectedBlockIndex; i++)
 				{
 					blocks.push_back(connectedStack->GetBlock(i));
@@ -211,6 +223,12 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 			{
 				if (Global::DraggingPlaneOver == nullptr)
 				{
+					if (((Plane*)m_planePtr)->IsToolbar())
+					{
+						delete this;
+						return;
+					}
+
 					(*m_functionAdd)(this);
 				}
 				else
@@ -252,7 +270,7 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 	}
 }
 
-void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2u* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver)
+void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver)
 {
 	m_planePosition = planePosition;
 	m_planeInnerPosition = planeInnerPosition;
@@ -261,6 +279,11 @@ void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2u* planeInnerPo
 	m_functionMoveTop = functionMoveTop;
 	m_functionAddOver = functionAddOver;
 	m_planePtr = planePtr;
+}
+
+void* Stack::GetPlanePointer()
+{
+	return m_planePtr;
 }
 
 unsigned int Stack::GetBlockCount()

@@ -253,7 +253,7 @@ public:
 						m_textTrailedStart = m_textMarkerPosition;
 					}
 				}
-				else if (key == 48 || key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key == 56 || key == 57 || key == 58 || key == 46)
+				else if (key == 48 || key == 49 || key == 50 || key == 51 || key == 52 || key == 53 || key == 54 || key == 55 || key == 56 || key == 57 || key == 58 || key == 46 || key == 45)
 				{
 					if (m_textMarkerPosition == m_textTrailedStart)
 					{
