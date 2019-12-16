@@ -116,11 +116,16 @@ void Plane::AddStack(Stack* stack)
 
 void Plane::Render(sf::RenderWindow* window)
 {
-	
+	//sf::Shader blankShader;
+	//blankShader.loadFromFile("res/black.vs", "res/black.fs");
+
+	//sf::RectangleShape blackRect = sf::RectangleShape((sf::Vector2f)m_size);
 
 	sf::RenderTexture rT;
 	rT.create(m_size.x, m_size.y);
-	
+	rT.clear(sf::Color(0, 0, 0, 0));
+	//rT.draw(blackRect, &blackShader);
+
 	for (unsigned int i = 0; i < m_stacks.size(); i++)
 	{
 		m_stacks[i]->Render(&rT, window);
@@ -135,7 +140,7 @@ void Plane::Render(sf::RenderWindow* window)
 	sf::Sprite sp = sf::Sprite(rT.getTexture());
 	sp.setTextureRect(sf::IntRect(0, rT.getSize().y, rT.getSize().x, -1 * rT.getSize().y));
 	sp.setPosition(sf::Vector2f(m_position->x, m_position->y));
-
+	
 	if (Global::Dragging && Global::DraggingPlaneOver == this)
 	{
 		sf::RectangleShape shape = sf::RectangleShape(sf::Vector2f(m_background.getSize().x + 2, m_background.getSize().y + 2));
@@ -147,7 +152,7 @@ void Plane::Render(sf::RenderWindow* window)
 
 	sf::Shader shader;
 	shader.loadFromFile("res/dots.vs", "res/dots.fs");
-	shader.setUniform("windowSize", sf::Glsl::Vec2(window->getSize().x, window->getSize().y));
+	shader.setUniform("windowSize", sf::Vector2f(200.0f, 200.0f));
 	shader.setUniform("planeInnerPosition", sf::Glsl::Vec2(m_innerPosition->x / 2, m_innerPosition->y / -2));
 	//TODO future settings
 	shader.setUniform("dotMod", 30.0f);
