@@ -1,4 +1,5 @@
+#!/bin/bash
 make maintainer-clean
 git add -A
-git commit -m "[scripted commit]"
+git commit -m $1
 git push
