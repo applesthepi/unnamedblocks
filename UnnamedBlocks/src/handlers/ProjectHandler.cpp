@@ -9,6 +9,7 @@ void ProjectHandler::Initialize()
 
 void ProjectHandler::LoadProject(std::string path, Plane* plane)
 {
+	plane->SetInnerPosition(sf::Vector2i(0, 0));
 	plane->DeleteAllBlocks();
 	std::ifstream stream;
 	stream.open(path);

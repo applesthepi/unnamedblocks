@@ -16,7 +16,7 @@ void ShaderRegistry::ReloadAllShaders()
     std::string prefix;
     if (Global::GpuType == GpuMan::INTEL)
         prefix = "intel_";
-    else if (Global::GpuType == GpuMan::INTEL)
+    else if (Global::GpuType == GpuMan::NVIDIA)
         prefix = "nvidia_";
     else
     {

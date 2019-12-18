@@ -66,6 +66,9 @@
     <ClCompile Include="src\handlers\runtime\ByteHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\registries\ShaderRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stacking\Block.h">
@@ -156,6 +159,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\content\ContentInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\registries\ShaderRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
