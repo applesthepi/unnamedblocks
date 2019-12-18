@@ -20,7 +20,8 @@ public:
 	unsigned int GetStackCount();
 	sf::Vector2u GetSize();
 	sf::Vector2u GetPosition();
-	sf::Vector2i GetInnterPosition();
+	sf::Vector2i GetInnerPosition();
+	void SetInnerPosition(sf::Vector2i position);
 	sf::Vector2u GetAbsolutePosition();
 	void SetPosition(sf::Vector2u position);
 	void SetSize(sf::Vector2u size);

@@ -80,7 +80,7 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 	*m_functionAddOver = [&](Stack* stack)
 	{
 		((Plane*)Global::DraggingPlaneOver)->AddStack(stack);
-		stack->SetRelitivePosition(stack->GetSetPosition() - (*m_innerPosition - ((Plane*)Global::DraggingPlaneOver)->GetInnterPosition()));
+		stack->SetRelitivePosition(stack->GetSetPosition() - (*m_innerPosition - ((Plane*)Global::DraggingPlaneOver)->GetInnerPosition()));
 	};
 
 	m_draggingConnection = sf::RectangleShape(sf::Vector2f(0, 4));
@@ -279,7 +279,7 @@ void Plane::DeleteAllBlocks()
 void Plane::CopyEverything(Plane* plane)
 {
 	*m_position = plane->GetPosition();
-	*m_innerPosition = plane->GetInnterPosition();
+	*m_innerPosition = plane->GetInnerPosition();
 	*m_absolutePosition = plane->GetAbsolutePosition();
 	
 	for (unsigned int i = 0; i < plane->GetStackCount(); i++)
@@ -305,9 +305,14 @@ sf::Vector2u Plane::GetPosition()
 	return *m_position;
 }
 
-sf::Vector2i Plane::GetInnterPosition()
+sf::Vector2i Plane::GetInnerPosition()
 {
 	return *m_innerPosition;
+}
+
+void Plane::SetInnerPosition(sf::Vector2i position)
+{
+	*m_innerPosition = position;
 }
 
 sf::Vector2u Plane::GetAbsolutePosition()

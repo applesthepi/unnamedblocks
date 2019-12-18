@@ -15,7 +15,10 @@
 #include "handlers/runtime/RuntimeHandler.h"
 
 #include <iostream>
-#include <GL/gl.h>
+#include <GL/glew.h>
+//#include <GL/GLU.h>
+#include <GL/GL.h>
+//#include <SFML/OpenGL.hpp>
 #include <cstring>
 
 #ifdef LINUX

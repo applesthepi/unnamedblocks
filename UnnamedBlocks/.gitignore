@@ -1,6 +1,8 @@
 *.o
 unnamedblocks
 **/.deps
+*.dll
+dep
 config.status
 Makefile
 .vs
