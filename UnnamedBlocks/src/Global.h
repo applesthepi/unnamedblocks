@@ -4,6 +4,11 @@
 #include <string>
 #include <functional>
 
+enum GpuMan
+{
+	INTEL, NVIDIA
+};
+
 enum ContextType
 {
 	NONE, BLOCK
@@ -74,4 +79,5 @@ public:
 	static bool SkipFrame;
 	static bool ContextActive;
 	static ContextSystem Context;
+	static GpuMan GpuType;
 };

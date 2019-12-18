@@ -1,5 +1,6 @@
 #include "stacking/Plane.h"
 
+#include "registries/ShaderRegistry.h"
 #include "registries/BlockRegistry.h"
 #include "content/ContentLoader.h"
 
@@ -14,6 +15,8 @@
 #include "handlers/runtime/RuntimeHandler.h"
 
 #include <iostream>
+#include <GL/gl.h>
+#include <cstring>
 
 #ifdef LINUX
 #include <X11/Xlib.h>
@@ -124,12 +127,30 @@ int main()
 	Logger::Info("Linux build");
 #endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");
-
 	
+	ShaderRegistry::Initialize();
+
 	// Window Setup
 
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(1280, 720, 32), "Unnamed Blocks", sf::Style::Default);
+
+	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
+
+	if (strcmp(gpuVendor, "Intel Open Source Technology Center") == 0)
+	{
+		Logger::Info("loading intel shaders");
+		Global::GpuType = GpuMan::INTEL;
+	}
+	else if (strcmp(gpuVendor, "NVIDIA Corporation") == 0)
+	{
+		Logger::Info("loading nvidia shaders");
+		Global::GpuType = GpuMan::NVIDIA;
+	}
+	else
+		Logger::Warn("gpu not detected; using default shaders");
+
+	ShaderRegistry::ReloadAllShaders();
 
 	// Default Settings
 
@@ -328,7 +349,7 @@ int main()
 					window.close();
 				}
 			}
-			if (ev.type == sf::Event::Resized)
+			else if (ev.type == sf::Event::Resized)
 			{
 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
 				window.setView(sf::View(visibleArea));

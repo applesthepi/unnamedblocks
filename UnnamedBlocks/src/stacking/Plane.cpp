@@ -1,3 +1,4 @@
+#include "registries/ShaderRegistry.h"
 #include "Plane.h"
 #include "Global.h"
 
@@ -150,16 +151,17 @@ void Plane::Render(sf::RenderWindow* window)
 		window->draw(shape);
 	}
 
-	sf::Shader shader;
-	shader.loadFromFile("res/dots.vs", "res/dots.fs");
-	shader.setUniform("windowSize", sf::Vector2f(200.0f, 200.0f));
-	shader.setUniform("planeInnerPosition", sf::Glsl::Vec2(m_innerPosition->x / 2, m_innerPosition->y / -2));
+	sf::Shader* shader = ShaderRegistry::GetShader("dots");
+	if (Global::GpuType == GpuMan::NVIDIA)
+		shader->setUniform("windowSize", sf::Vector2f(200.0f, 200.0f));
+	
+	shader->setUniform("planeInnerPosition", sf::Glsl::Vec2(m_innerPosition->x / 2, m_innerPosition->y / -2));
 	//TODO future settings
-	shader.setUniform("dotMod", 30.0f);
-	shader.setUniform("backgroundColor", sf::Glsl::Vec3(40 / 255.0f, 40 / 255.0f, 40 / 255.0f));
-	shader.setUniform("dotColor", sf::Glsl::Vec3(70 / 255.0f, 70 / 255.0f, 70 / 255.0f));
+	shader->setUniform("dotMod", 40.0f);
+	shader->setUniform("backgroundColor", sf::Glsl::Vec3(40 / 255.0f, 40 / 255.0f, 40 / 255.0f));
+	shader->setUniform("dotColor", sf::Glsl::Vec3(70 / 255.0f, 70 / 255.0f, 70 / 255.0f));
 
-	window->draw(m_background, &shader);
+	window->draw(m_background, shader);
 	window->draw(sp);//all blocks inside the stack
 
 	if (!m_toolbar)

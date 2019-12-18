@@ -102,20 +102,21 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_unnamedblocks_OBJECTS = src/main.$(OBJEXT) \
-	src/handlers/runtime/RuntimeHandler.$(OBJEXT) \
-	src/handlers/runtime/VariableHandler.$(OBJEXT) \
-	src/handlers/runtime/ByteHandler.$(OBJEXT) \
-	src/handlers/runtime/ThreadHandler.$(OBJEXT) \
-	src/handlers/runtime/ObjectHandler.$(OBJEXT) \
-	src/handlers/Logger.$(OBJEXT) \
-	src/handlers/ProjectHandler.$(OBJEXT) \
-	src/handlers/MessageHandler.$(OBJEXT) \
-	src/stacking/Block.$(OBJEXT) \
-	src/stacking/args/Argument.$(OBJEXT) \
-	src/stacking/Plane.$(OBJEXT) src/stacking/Stack.$(OBJEXT) \
-	src/registries/BlockRegistry.$(OBJEXT) src/Global.$(OBJEXT) \
-	src/ui/Button.$(OBJEXT) src/ui/TypingSystem.$(OBJEXT)
+am_unnamedblocks_OBJECTS = ./src/Global.$(OBJEXT) \
+	./src/ui/TypingSystem.$(OBJEXT) ./src/ui/Button.$(OBJEXT) \
+	./src/handlers/MessageHandler.$(OBJEXT) \
+	./src/handlers/Logger.$(OBJEXT) \
+	./src/handlers/ProjectHandler.$(OBJEXT) \
+	./src/handlers/runtime/VariableHandler.$(OBJEXT) \
+	./src/handlers/runtime/ObjectHandler.$(OBJEXT) \
+	./src/handlers/runtime/ByteHandler.$(OBJEXT) \
+	./src/handlers/runtime/ThreadHandler.$(OBJEXT) \
+	./src/handlers/runtime/RuntimeHandler.$(OBJEXT) \
+	./src/registries/ShaderRegistry.$(OBJEXT) \
+	./src/registries/BlockRegistry.$(OBJEXT) \
+	./src/stacking/args/Argument.$(OBJEXT) \
+	./src/stacking/Block.$(OBJEXT) ./src/stacking/Plane.$(OBJEXT) \
+	./src/stacking/Stack.$(OBJEXT) ./src/main.$(OBJEXT)
 unnamedblocks_OBJECTS = $(am_unnamedblocks_OBJECTS)
 unnamedblocks_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -133,21 +134,23 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = src/$(DEPDIR)/Global.Po src/$(DEPDIR)/main.Po \
-	src/handlers/$(DEPDIR)/Logger.Po \
-	src/handlers/$(DEPDIR)/MessageHandler.Po \
-	src/handlers/$(DEPDIR)/ProjectHandler.Po \
-	src/handlers/runtime/$(DEPDIR)/ByteHandler.Po \
-	src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po \
-	src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po \
-	src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po \
-	src/handlers/runtime/$(DEPDIR)/VariableHandler.Po \
-	src/registries/$(DEPDIR)/BlockRegistry.Po \
-	src/stacking/$(DEPDIR)/Block.Po \
-	src/stacking/$(DEPDIR)/Plane.Po \
-	src/stacking/$(DEPDIR)/Stack.Po \
-	src/stacking/args/$(DEPDIR)/Argument.Po \
-	src/ui/$(DEPDIR)/Button.Po src/ui/$(DEPDIR)/TypingSystem.Po
+am__depfiles_remade = ./src/$(DEPDIR)/Global.Po \
+	./src/$(DEPDIR)/main.Po ./src/handlers/$(DEPDIR)/Logger.Po \
+	./src/handlers/$(DEPDIR)/MessageHandler.Po \
+	./src/handlers/$(DEPDIR)/ProjectHandler.Po \
+	./src/handlers/runtime/$(DEPDIR)/ByteHandler.Po \
+	./src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po \
+	./src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po \
+	./src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po \
+	./src/handlers/runtime/$(DEPDIR)/VariableHandler.Po \
+	./src/registries/$(DEPDIR)/BlockRegistry.Po \
+	./src/registries/$(DEPDIR)/ShaderRegistry.Po \
+	./src/stacking/$(DEPDIR)/Block.Po \
+	./src/stacking/$(DEPDIR)/Plane.Po \
+	./src/stacking/$(DEPDIR)/Stack.Po \
+	./src/stacking/args/$(DEPDIR)/Argument.Po \
+	./src/ui/$(DEPDIR)/Button.Po \
+	./src/ui/$(DEPDIR)/TypingSystem.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -298,8 +301,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -Isrc -ggdb -Wall -D LINUX
-unnamedblocks_SOURCES = src/main.cpp src/handlers/runtime/RuntimeHandler.cpp src/handlers/runtime/VariableHandler.cpp src/handlers/runtime/ByteHandler.cpp src/handlers/runtime/ThreadHandler.cpp src/handlers/runtime/ObjectHandler.cpp src/handlers/Logger.cpp src/handlers/ProjectHandler.cpp src/handlers/MessageHandler.cpp src/stacking/Block.cpp src/stacking/args/Argument.cpp src/stacking/Plane.cpp src/stacking/Stack.cpp src/registries/BlockRegistry.cpp src/Global.cpp src/ui/Button.cpp src/ui/TypingSystem.cpp
-unnamedblocks_LDADD = -lpthread -lsfml-system -lsfml-network -lsfml-window -lsfml-graphics -lsfml-audio -lX11
+unnamedblocks_SOURCES = ./src/Global.cpp ./src/ui/TypingSystem.cpp ./src/ui/Button.cpp ./src/handlers/MessageHandler.cpp ./src/handlers/Logger.cpp ./src/handlers/ProjectHandler.cpp ./src/handlers/runtime/VariableHandler.cpp ./src/handlers/runtime/ObjectHandler.cpp ./src/handlers/runtime/ByteHandler.cpp ./src/handlers/runtime/ThreadHandler.cpp ./src/handlers/runtime/RuntimeHandler.cpp ./src/registries/ShaderRegistry.cpp ./src/registries/BlockRegistry.cpp ./src/stacking/args/Argument.cpp ./src/stacking/Block.cpp ./src/stacking/Plane.cpp ./src/stacking/Stack.cpp ./src/main.cpp 
+unnamedblocks_LDADD = -lpthread -lsfml-system -lsfml-network -lsfml-window -lsfml-graphics -lsfml-audio -lX11 -lGL
 all: all-am
 
 .SUFFIXES:
@@ -380,87 +383,91 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 src/$(am__dirstamp):
-	@$(MKDIR_P) src
+	@$(MKDIR_P) ./src
 	@: > src/$(am__dirstamp)
 src/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/$(DEPDIR)
+	@$(MKDIR_P) ./src/$(DEPDIR)
 	@: > src/$(DEPDIR)/$(am__dirstamp)
-src/main.$(OBJEXT): src/$(am__dirstamp) src/$(DEPDIR)/$(am__dirstamp)
-src/handlers/runtime/$(am__dirstamp):
-	@$(MKDIR_P) src/handlers/runtime
-	@: > src/handlers/runtime/$(am__dirstamp)
-src/handlers/runtime/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/handlers/runtime/$(DEPDIR)
-	@: > src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-src/handlers/runtime/RuntimeHandler.$(OBJEXT):  \
-	src/handlers/runtime/$(am__dirstamp) \
-	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-src/handlers/runtime/VariableHandler.$(OBJEXT):  \
-	src/handlers/runtime/$(am__dirstamp) \
-	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-src/handlers/runtime/ByteHandler.$(OBJEXT):  \
-	src/handlers/runtime/$(am__dirstamp) \
-	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-src/handlers/runtime/ThreadHandler.$(OBJEXT):  \
-	src/handlers/runtime/$(am__dirstamp) \
-	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-src/handlers/runtime/ObjectHandler.$(OBJEXT):  \
-	src/handlers/runtime/$(am__dirstamp) \
-	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-src/handlers/$(am__dirstamp):
-	@$(MKDIR_P) src/handlers
-	@: > src/handlers/$(am__dirstamp)
-src/handlers/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/handlers/$(DEPDIR)
-	@: > src/handlers/$(DEPDIR)/$(am__dirstamp)
-src/handlers/Logger.$(OBJEXT): src/handlers/$(am__dirstamp) \
-	src/handlers/$(DEPDIR)/$(am__dirstamp)
-src/handlers/ProjectHandler.$(OBJEXT): src/handlers/$(am__dirstamp) \
-	src/handlers/$(DEPDIR)/$(am__dirstamp)
-src/handlers/MessageHandler.$(OBJEXT): src/handlers/$(am__dirstamp) \
-	src/handlers/$(DEPDIR)/$(am__dirstamp)
-src/stacking/$(am__dirstamp):
-	@$(MKDIR_P) src/stacking
-	@: > src/stacking/$(am__dirstamp)
-src/stacking/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/stacking/$(DEPDIR)
-	@: > src/stacking/$(DEPDIR)/$(am__dirstamp)
-src/stacking/Block.$(OBJEXT): src/stacking/$(am__dirstamp) \
-	src/stacking/$(DEPDIR)/$(am__dirstamp)
-src/stacking/args/$(am__dirstamp):
-	@$(MKDIR_P) src/stacking/args
-	@: > src/stacking/args/$(am__dirstamp)
-src/stacking/args/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/stacking/args/$(DEPDIR)
-	@: > src/stacking/args/$(DEPDIR)/$(am__dirstamp)
-src/stacking/args/Argument.$(OBJEXT):  \
-	src/stacking/args/$(am__dirstamp) \
-	src/stacking/args/$(DEPDIR)/$(am__dirstamp)
-src/stacking/Plane.$(OBJEXT): src/stacking/$(am__dirstamp) \
-	src/stacking/$(DEPDIR)/$(am__dirstamp)
-src/stacking/Stack.$(OBJEXT): src/stacking/$(am__dirstamp) \
-	src/stacking/$(DEPDIR)/$(am__dirstamp)
-src/registries/$(am__dirstamp):
-	@$(MKDIR_P) src/registries
-	@: > src/registries/$(am__dirstamp)
-src/registries/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/registries/$(DEPDIR)
-	@: > src/registries/$(DEPDIR)/$(am__dirstamp)
-src/registries/BlockRegistry.$(OBJEXT):  \
-	src/registries/$(am__dirstamp) \
-	src/registries/$(DEPDIR)/$(am__dirstamp)
-src/Global.$(OBJEXT): src/$(am__dirstamp) \
+./src/Global.$(OBJEXT): src/$(am__dirstamp) \
 	src/$(DEPDIR)/$(am__dirstamp)
 src/ui/$(am__dirstamp):
-	@$(MKDIR_P) src/ui
+	@$(MKDIR_P) ./src/ui
 	@: > src/ui/$(am__dirstamp)
 src/ui/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) src/ui/$(DEPDIR)
+	@$(MKDIR_P) ./src/ui/$(DEPDIR)
 	@: > src/ui/$(DEPDIR)/$(am__dirstamp)
-src/ui/Button.$(OBJEXT): src/ui/$(am__dirstamp) \
+./src/ui/TypingSystem.$(OBJEXT): src/ui/$(am__dirstamp) \
 	src/ui/$(DEPDIR)/$(am__dirstamp)
-src/ui/TypingSystem.$(OBJEXT): src/ui/$(am__dirstamp) \
+./src/ui/Button.$(OBJEXT): src/ui/$(am__dirstamp) \
 	src/ui/$(DEPDIR)/$(am__dirstamp)
+src/handlers/$(am__dirstamp):
+	@$(MKDIR_P) ./src/handlers
+	@: > src/handlers/$(am__dirstamp)
+src/handlers/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ./src/handlers/$(DEPDIR)
+	@: > src/handlers/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/MessageHandler.$(OBJEXT): src/handlers/$(am__dirstamp) \
+	src/handlers/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/Logger.$(OBJEXT): src/handlers/$(am__dirstamp) \
+	src/handlers/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/ProjectHandler.$(OBJEXT): src/handlers/$(am__dirstamp) \
+	src/handlers/$(DEPDIR)/$(am__dirstamp)
+src/handlers/runtime/$(am__dirstamp):
+	@$(MKDIR_P) ./src/handlers/runtime
+	@: > src/handlers/runtime/$(am__dirstamp)
+src/handlers/runtime/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ./src/handlers/runtime/$(DEPDIR)
+	@: > src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/runtime/VariableHandler.$(OBJEXT):  \
+	src/handlers/runtime/$(am__dirstamp) \
+	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/runtime/ObjectHandler.$(OBJEXT):  \
+	src/handlers/runtime/$(am__dirstamp) \
+	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/runtime/ByteHandler.$(OBJEXT):  \
+	src/handlers/runtime/$(am__dirstamp) \
+	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/runtime/ThreadHandler.$(OBJEXT):  \
+	src/handlers/runtime/$(am__dirstamp) \
+	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+./src/handlers/runtime/RuntimeHandler.$(OBJEXT):  \
+	src/handlers/runtime/$(am__dirstamp) \
+	src/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+src/registries/$(am__dirstamp):
+	@$(MKDIR_P) ./src/registries
+	@: > src/registries/$(am__dirstamp)
+src/registries/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ./src/registries/$(DEPDIR)
+	@: > src/registries/$(DEPDIR)/$(am__dirstamp)
+./src/registries/ShaderRegistry.$(OBJEXT):  \
+	src/registries/$(am__dirstamp) \
+	src/registries/$(DEPDIR)/$(am__dirstamp)
+./src/registries/BlockRegistry.$(OBJEXT):  \
+	src/registries/$(am__dirstamp) \
+	src/registries/$(DEPDIR)/$(am__dirstamp)
+src/stacking/args/$(am__dirstamp):
+	@$(MKDIR_P) ./src/stacking/args
+	@: > src/stacking/args/$(am__dirstamp)
+src/stacking/args/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ./src/stacking/args/$(DEPDIR)
+	@: > src/stacking/args/$(DEPDIR)/$(am__dirstamp)
+./src/stacking/args/Argument.$(OBJEXT):  \
+	src/stacking/args/$(am__dirstamp) \
+	src/stacking/args/$(DEPDIR)/$(am__dirstamp)
+src/stacking/$(am__dirstamp):
+	@$(MKDIR_P) ./src/stacking
+	@: > src/stacking/$(am__dirstamp)
+src/stacking/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ./src/stacking/$(DEPDIR)
+	@: > src/stacking/$(DEPDIR)/$(am__dirstamp)
+./src/stacking/Block.$(OBJEXT): src/stacking/$(am__dirstamp) \
+	src/stacking/$(DEPDIR)/$(am__dirstamp)
+./src/stacking/Plane.$(OBJEXT): src/stacking/$(am__dirstamp) \
+	src/stacking/$(DEPDIR)/$(am__dirstamp)
+./src/stacking/Stack.$(OBJEXT): src/stacking/$(am__dirstamp) \
+	src/stacking/$(DEPDIR)/$(am__dirstamp)
+./src/main.$(OBJEXT): src/$(am__dirstamp) \
+	src/$(DEPDIR)/$(am__dirstamp)
 
 unnamedblocks$(EXEEXT): $(unnamedblocks_OBJECTS) $(unnamedblocks_DEPENDENCIES) $(EXTRA_unnamedblocks_DEPENDENCIES) 
 	@rm -f unnamedblocks$(EXEEXT)
@@ -468,34 +475,35 @@ unnamedblocks$(EXEEXT): $(unnamedblocks_OBJECTS) $(unnamedblocks_DEPENDENCIES) $
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
-	-rm -f src/*.$(OBJEXT)
-	-rm -f src/handlers/*.$(OBJEXT)
-	-rm -f src/handlers/runtime/*.$(OBJEXT)
-	-rm -f src/registries/*.$(OBJEXT)
-	-rm -f src/stacking/*.$(OBJEXT)
-	-rm -f src/stacking/args/*.$(OBJEXT)
-	-rm -f src/ui/*.$(OBJEXT)
+	-rm -f ./src/*.$(OBJEXT)
+	-rm -f ./src/handlers/*.$(OBJEXT)
+	-rm -f ./src/handlers/runtime/*.$(OBJEXT)
+	-rm -f ./src/registries/*.$(OBJEXT)
+	-rm -f ./src/stacking/*.$(OBJEXT)
+	-rm -f ./src/stacking/args/*.$(OBJEXT)
+	-rm -f ./src/ui/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/Global.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/$(DEPDIR)/Logger.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/$(DEPDIR)/MessageHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/$(DEPDIR)/ProjectHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/runtime/$(DEPDIR)/ByteHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/handlers/runtime/$(DEPDIR)/VariableHandler.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/registries/$(DEPDIR)/BlockRegistry.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/stacking/$(DEPDIR)/Block.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/stacking/$(DEPDIR)/Plane.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/stacking/$(DEPDIR)/Stack.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/stacking/args/$(DEPDIR)/Argument.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/ui/$(DEPDIR)/Button.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@src/ui/$(DEPDIR)/TypingSystem.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/$(DEPDIR)/Global.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/$(DEPDIR)/main.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/$(DEPDIR)/Logger.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/$(DEPDIR)/MessageHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/$(DEPDIR)/ProjectHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/runtime/$(DEPDIR)/ByteHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/handlers/runtime/$(DEPDIR)/VariableHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/registries/$(DEPDIR)/BlockRegistry.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/registries/$(DEPDIR)/ShaderRegistry.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/stacking/$(DEPDIR)/Block.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/stacking/$(DEPDIR)/Plane.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/stacking/$(DEPDIR)/Stack.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/stacking/args/$(DEPDIR)/Argument.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/ui/$(DEPDIR)/Button.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./src/ui/$(DEPDIR)/TypingSystem.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -801,23 +809,24 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f src/$(DEPDIR)/Global.Po
-	-rm -f src/$(DEPDIR)/main.Po
-	-rm -f src/handlers/$(DEPDIR)/Logger.Po
-	-rm -f src/handlers/$(DEPDIR)/MessageHandler.Po
-	-rm -f src/handlers/$(DEPDIR)/ProjectHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/ByteHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/VariableHandler.Po
-	-rm -f src/registries/$(DEPDIR)/BlockRegistry.Po
-	-rm -f src/stacking/$(DEPDIR)/Block.Po
-	-rm -f src/stacking/$(DEPDIR)/Plane.Po
-	-rm -f src/stacking/$(DEPDIR)/Stack.Po
-	-rm -f src/stacking/args/$(DEPDIR)/Argument.Po
-	-rm -f src/ui/$(DEPDIR)/Button.Po
-	-rm -f src/ui/$(DEPDIR)/TypingSystem.Po
+		-rm -f ./src/$(DEPDIR)/Global.Po
+	-rm -f ./src/$(DEPDIR)/main.Po
+	-rm -f ./src/handlers/$(DEPDIR)/Logger.Po
+	-rm -f ./src/handlers/$(DEPDIR)/MessageHandler.Po
+	-rm -f ./src/handlers/$(DEPDIR)/ProjectHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/ByteHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/VariableHandler.Po
+	-rm -f ./src/registries/$(DEPDIR)/BlockRegistry.Po
+	-rm -f ./src/registries/$(DEPDIR)/ShaderRegistry.Po
+	-rm -f ./src/stacking/$(DEPDIR)/Block.Po
+	-rm -f ./src/stacking/$(DEPDIR)/Plane.Po
+	-rm -f ./src/stacking/$(DEPDIR)/Stack.Po
+	-rm -f ./src/stacking/args/$(DEPDIR)/Argument.Po
+	-rm -f ./src/ui/$(DEPDIR)/Button.Po
+	-rm -f ./src/ui/$(DEPDIR)/TypingSystem.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -865,23 +874,24 @@ installcheck-am:
 maintainer-clean: maintainer-clean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f src/$(DEPDIR)/Global.Po
-	-rm -f src/$(DEPDIR)/main.Po
-	-rm -f src/handlers/$(DEPDIR)/Logger.Po
-	-rm -f src/handlers/$(DEPDIR)/MessageHandler.Po
-	-rm -f src/handlers/$(DEPDIR)/ProjectHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/ByteHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po
-	-rm -f src/handlers/runtime/$(DEPDIR)/VariableHandler.Po
-	-rm -f src/registries/$(DEPDIR)/BlockRegistry.Po
-	-rm -f src/stacking/$(DEPDIR)/Block.Po
-	-rm -f src/stacking/$(DEPDIR)/Plane.Po
-	-rm -f src/stacking/$(DEPDIR)/Stack.Po
-	-rm -f src/stacking/args/$(DEPDIR)/Argument.Po
-	-rm -f src/ui/$(DEPDIR)/Button.Po
-	-rm -f src/ui/$(DEPDIR)/TypingSystem.Po
+		-rm -f ./src/$(DEPDIR)/Global.Po
+	-rm -f ./src/$(DEPDIR)/main.Po
+	-rm -f ./src/handlers/$(DEPDIR)/Logger.Po
+	-rm -f ./src/handlers/$(DEPDIR)/MessageHandler.Po
+	-rm -f ./src/handlers/$(DEPDIR)/ProjectHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/ByteHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/ObjectHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/RuntimeHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/ThreadHandler.Po
+	-rm -f ./src/handlers/runtime/$(DEPDIR)/VariableHandler.Po
+	-rm -f ./src/registries/$(DEPDIR)/BlockRegistry.Po
+	-rm -f ./src/registries/$(DEPDIR)/ShaderRegistry.Po
+	-rm -f ./src/stacking/$(DEPDIR)/Block.Po
+	-rm -f ./src/stacking/$(DEPDIR)/Plane.Po
+	-rm -f ./src/stacking/$(DEPDIR)/Stack.Po
+	-rm -f ./src/stacking/args/$(DEPDIR)/Argument.Po
+	-rm -f ./src/ui/$(DEPDIR)/Button.Po
+	-rm -f ./src/ui/$(DEPDIR)/TypingSystem.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 

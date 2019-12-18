@@ -36,3 +36,4 @@ bool Global::ContextActive;
 
 ContextSystem Global::Context;
 
+GpuMan Global::GpuType;
