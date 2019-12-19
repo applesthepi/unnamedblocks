@@ -27,6 +27,10 @@ Stack::Stack(sf::Vector2i relitivePosition)
 	*m_functionContextCallback = [&](unsigned int index)
 	{
 		Global::Context.Type = ContextType::NONE;
+		Plane* plane = (Plane*)m_planePtr;
+		if (plane->IsToolbar())
+			return;
+		
 		unsigned int blockIndex = std::stoul(Global::ContextData);
 
 		if (index == 0)
@@ -72,10 +76,15 @@ Stack::Stack(sf::Vector2i relitivePosition)
 		}
 		else if (index == 3)
 		{
-			Global::SkipFrame = true;
-			delete m_blocks[blockIndex];
-			m_blocks.erase(m_blocks.begin() + blockIndex);
-			ReloadAllBlocks();
+			if (blockIndex == 0)
+				(*m_functionRemove)(this);
+			else
+			{
+				Global::SkipFrame = true;
+				delete m_blocks[blockIndex];
+				m_blocks.erase(m_blocks.begin() + blockIndex);
+				ReloadAllBlocks();
+			}
 		}
 	};
 

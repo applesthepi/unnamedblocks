@@ -104,7 +104,8 @@ int main()
 
 	// Default Settings
 
-	window.setVerticalSyncEnabled(true);
+	window.setVerticalSyncEnabled(false);
+	window.setFramerateLimit(150);
 
 	// Initialization
 
