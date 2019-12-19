@@ -2,6 +2,7 @@
 
 #include "registries/ShaderRegistry.h"
 #include "registries/BlockRegistry.h"
+#include "registries/ButtonRegistry.h"
 #include "content/ContentLoader.h"
 
 #include "ui/Button.h"
@@ -15,74 +16,20 @@
 #include "handlers/runtime/RuntimeHandler.h"
 
 #include <iostream>
-#include <GL/glew.h>
-//#include <GL/GLU.h>
-#include <GL/GL.h>
-//#include <SFML/OpenGL.hpp>
 #include <cstring>
+
+#include <GL/glew.h>
+#include <GL/GL.h>
 
 #ifdef LINUX
 #include <X11/Xlib.h>
 #endif
-std::vector<Button*> catagoryButtons;
+
 std::vector<Button*> contextButtons;
+std::vector<Button*> toolbarButtons;
+std::vector<Button*> catButtons;
+
 ContextSystem sys;
-
-Button* buttonNew;
-Button* buttonOpen;
-Button* buttonSave;
-Button* buttonSaveAs;
-Button* buttonRun;
-
-static void FrameUpdateUI(sf::RenderWindow* window)
-{
-	for (unsigned int i = 0; i < catagoryButtons.size(); i++)
-	{
-		catagoryButtons[i]->FrameUpdate(window);
-	}
-
-	if (Global::ContextActive)
-	{
-		for (unsigned int i = 0; i < contextButtons.size(); i++)
-		{
-			contextButtons[i]->FrameUpdate(window);
-		}
-	}
-
-	buttonNew->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * 0) + 10, 5));
-	buttonOpen->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * 1) + 10, 5));
-	buttonSave->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * 2) + 10, 5));
-	buttonSaveAs->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * 3) + 10, 5));
-	buttonRun->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5));
-
-	buttonNew->FrameUpdate(window);
-	buttonOpen->FrameUpdate(window);
-	buttonSave->FrameUpdate(window);
-	buttonSaveAs->FrameUpdate(window);
-	buttonRun->FrameUpdate(window);
-}
-
-static void RenderUI(sf::RenderWindow* window)
-{
-	for (unsigned int i = 0; i < catagoryButtons.size(); i++)
-	{
-		catagoryButtons[i]->Render(window);
-	}
-
-	if (Global::ContextActive)
-	{
-		for (unsigned int i = 0; i < contextButtons.size(); i++)
-		{
-			contextButtons[i]->Render(window);
-		}
-	}
-
-	buttonNew->Render(window);
-	buttonOpen->Render(window);
-	buttonSave->Render(window);
-	buttonSaveAs->Render(window);
-	buttonRun->Render(window);
-}
 
 static Plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
@@ -166,6 +113,7 @@ int main()
 	BlockRegistry::Initialize();
 	MessageHandler::Initialize();
 	TypingSystem::Initialization();
+	ButtonRegistry::Initialize();
 
 	Plane::Planes = new std::vector<Plane*>();
 
@@ -175,8 +123,6 @@ int main()
 
 	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
 	Plane::Planes->push_back(primaryPlane);
-
-	catagoryButtons = std::vector<Button*>();
 
 	for (unsigned int i = 0; i < BlockRegistry::GetCatagories()->size(); i++)
 	{
@@ -192,7 +138,8 @@ int main()
 		Button* cat = new Button(sf::Vector2i(5, 5 + (i * (16 + 5))), sf::Vector2u(100, 16), callback);
 		cat->SetButtonModeText((*BlockRegistry::GetCatagories())[i].DisplayName, (*BlockRegistry::GetCatagories())[i].Color, 12);
 
-		catagoryButtons.push_back(cat);
+		catButtons.push_back(cat);
+		ButtonRegistry::AddButton(cat);
 	}
 
 	{
@@ -209,8 +156,11 @@ int main()
 			}
 		};
 
-		buttonNew = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 0) + 10, 5), sf::Vector2u(100, 16), function);
-		buttonNew->SetButtonModeText("new", sf::Color(200, 200, 200), 12);
+		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 0) + 10, 5), sf::Vector2u(100, 16), function);
+		button->SetButtonModeText("new", sf::Color(200, 200, 200), 12);
+
+		toolbarButtons.push_back(button);
+		ButtonRegistry::AddButton(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
@@ -233,8 +183,11 @@ int main()
 			delete result;
 		};
 
-		buttonOpen = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 1) + 10, 5), sf::Vector2u(100, 16), function);
-		buttonOpen->SetButtonModeText("open", sf::Color(200, 200, 200), 12);
+		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 1) + 10, 5), sf::Vector2u(100, 16), function);
+		button->SetButtonModeText("open", sf::Color(200, 200, 200), 12);
+
+		toolbarButtons.push_back(button);
+		ButtonRegistry::AddButton(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
@@ -265,8 +218,11 @@ int main()
 			}
 		};
 
-		buttonSave = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 2) + 10, 5), sf::Vector2u(100, 16), function);
-		buttonSave->SetButtonModeText("save", sf::Color(200, 200, 200), 12);
+		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 2) + 10, 5), sf::Vector2u(100, 16), function);
+		button->SetButtonModeText("save", sf::Color(200, 200, 200), 12);
+
+		toolbarButtons.push_back(button);
+		ButtonRegistry::AddButton(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
@@ -289,8 +245,11 @@ int main()
 			delete result;
 		};
 
-		buttonSaveAs = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 3) + 10, 5), sf::Vector2u(100, 16), function);
-		buttonSaveAs->SetButtonModeText("saveas", sf::Color(200, 200, 200), 12);
+		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 3) + 10, 5), sf::Vector2u(100, 16), function);
+		button->SetButtonModeText("saveas", sf::Color(200, 200, 200), 12);
+
+		toolbarButtons.push_back(button);
+		ButtonRegistry::AddButton(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
@@ -307,11 +266,14 @@ int main()
 			RuntimeHandler::Run(planeCopy);
 		};
 
-		buttonRun = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
-		buttonRun->SetButtonModeText("run", sf::Color(200, 200, 200), 12);
+		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
+		button->SetButtonModeText("run", sf::Color(200, 200, 200), 12);
+
+		toolbarButtons.push_back(button);
+		ButtonRegistry::AddButton(button);
 	}
 
-	toolbarPlane = new Plane(sf::Vector2u(5, (catagoryButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catagoryButtons.size() * (16 + 5)) + 5)) - 5), true);
+	toolbarPlane = new Plane(sf::Vector2u(5, (catButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5), true);
 	Plane::Planes->push_back(toolbarPlane);
 
 	{
@@ -363,7 +325,7 @@ int main()
 		
 		//engine frame update
 	
-		toolbarPlane->SetSize(sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catagoryButtons.size() * (16 + 5)) + 5)) - 5));
+		toolbarPlane->SetSize(sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5));
 		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, 16 + 10));
 		primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
 		
@@ -371,51 +333,82 @@ int main()
 
 		if (window.hasFocus())
 		{
-			TypingSystem::Update();
-			FrameUpdateUI(&window);
+			Global::MousePosition = sf::Mouse::getPosition(window);
 
-			for (unsigned int i = 0; i < catagoryButtons.size(); i++)
+			TypingSystem::Update();
+			ButtonRegistry::FrameUpdateUI(&window);
+
+			for (unsigned int i = 0; i < catButtons.size(); i++)
 			{
-				catagoryButtons[i]->SetSize(sf::Vector2u(Global::ToolbarWidth, 16));
+				catButtons[i]->SetSize(sf::Vector2u(Global::ToolbarWidth, 16));
 			}
 
 			if (!wasDownLeft && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				wasDownLeft = true;
-				primaryPlane->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
-				toolbarPlane->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
+
+				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, true))
+				{
+					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Left);
+					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Left);
+				}
 			}
 			else if (wasDownLeft && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
 				wasDownLeft = false;
-				primaryPlane->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
-				toolbarPlane->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
+
+				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, false))
+				{
+					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Left);
+					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Left);
+				}
 			}
 
 			if (!wasDownMiddle && sf::Mouse::isButtonPressed(sf::Mouse::Middle))
 			{
 				wasDownMiddle = true;
-				primaryPlane->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Middle);
-				toolbarPlane->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Middle);
+
+				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Middle, true))
+				{
+					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Middle);
+					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Middle);
+				}
 			}
 			else if (wasDownMiddle && !sf::Mouse::isButtonPressed(sf::Mouse::Middle))
 			{
 				wasDownMiddle = false;
-				primaryPlane->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Middle);
-				toolbarPlane->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Middle);
+
+				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Middle, false))
+				{
+					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Middle);
+					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Middle);
+				}
 			}
 
 			if (!wasDownRight && sf::Mouse::isButtonPressed(sf::Mouse::Right))
 			{
 				wasDownRight = true;
-				primaryPlane->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Right);
-				toolbarPlane->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Right);
+
+				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Right, true))
+				{
+					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Right);
+					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Right);
+				}
 			}
 			else if (wasDownRight && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
 			{
 				wasDownRight = false;
-				primaryPlane->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Right);
-				toolbarPlane->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Right);
+
+				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Right, false))
+				{
+					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
+					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
+				}
+			}
+
+			for (unsigned int i = 0; i < toolbarButtons.size(); i++)
+			{
+				toolbarButtons[i]->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * i) + 10, 5));
 			}
 		}
 
@@ -424,8 +417,12 @@ int main()
 			if (Global::Context.Position != sys.Position || Global::Context.Type != sys.Type)
 			{
 				sys = Global::Context;
+
 				for (unsigned int i = 0; i < contextButtons.size(); i++)
+				{
+					ButtonRegistry::RemoveButton(contextButtons[i]);
 					delete contextButtons[i];
+				}
 
 				contextButtons.clear();
 
@@ -436,17 +433,43 @@ int main()
 					{
 						(*Global::Context.Callback)(0);
 					};
+
 					std::function<void()>* callback1 = new std::function<void()>();
 					*callback1 = []()
 					{
 						(*Global::Context.Callback)(1);
 					};
-					
+
+					std::function<void()>* callback2 = new std::function<void()>();
+					*callback2 = []()
+					{
+						(*Global::Context.Callback)(2);
+					};
+
+					std::function<void()>* callback3 = new std::function<void()>();
+					*callback3 = []()
+					{
+						(*Global::Context.Callback)(3);
+					};
+
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y), sf::Vector2u(300, 16), callback0));
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (1 * 16)), sf::Vector2u(300, 16), callback1));
+					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (2 * 16)), sf::Vector2u(300, 16), callback2));
+					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (3 * 16)), sf::Vector2u(300, 16), callback3));
 
-					contextButtons[0]->SetButtonModeText("duplicate", sf::Color(70, 70, 70), 12);
-					contextButtons[1]->SetButtonModeText("delete", sf::Color(70, 70, 70), 12);
+					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(70, 70, 70), 12);
+					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(70, 70, 70), 12);
+					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(70, 70, 70), 12);
+					contextButtons[3]->SetButtonModeText("delete block", sf::Color(70, 70, 70), 12);
+
+					ButtonRegistry::AddButton(contextButtons[0]);
+					ButtonRegistry::AddButton(contextButtons[1]);
+					ButtonRegistry::AddButton(contextButtons[2]);
+					ButtonRegistry::AddButton(contextButtons[3]);
+				}
+				else if (sys.Type == ContextType::NONE)
+				{
+					Global::ContextActive = false;
 				}
 			}
 		}
@@ -475,7 +498,7 @@ int main()
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->Render(nullptr, &window);
 
-		RenderUI(&window);
+		ButtonRegistry::RenderUI(&window);
 		
 		if (Global::SkipFrame)
 		{

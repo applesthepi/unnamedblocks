@@ -100,18 +100,6 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 
 		m_modeText->setPosition(m_position.x + 2, m_position.y);
 	}
-
-	sf::Vector2i mousePosition = sf::Mouse::getPosition(*window);
-	if (mousePosition.x > m_position.x && mousePosition.x < (int32_t)(m_position.x + m_size.x) &&
-		mousePosition.y > m_position.y && mousePosition.y < (int32_t)(m_position.y + m_size.y) &&
-
-		sf::Mouse::isButtonPressed(sf::Mouse::Left) && !m_wasDown)
-	{
-		m_wasDown = true;
-		(*m_functionCallback)();
-	}
-	else if (!sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		m_wasDown = false;
 }
 
 void Button::Render(sf::RenderWindow* window)
@@ -139,5 +127,31 @@ void Button::SetSize(sf::Vector2u size)
 void Button::SetPosition(sf::Vector2i position)
 {
 	m_position = position;
+}
+
+bool Button::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
+{
+	if (button == sf::Mouse::Left)
+	{
+		bool over = position.x > m_position.x&& position.x < (int32_t)(m_position.x + m_size.x) && position.y > m_position.y&& position.y < (int32_t)(m_position.y + m_size.y);
+		if (over && down && !m_wasDown)
+		{
+			m_wasDown = true;
+			return true;
+		}
+		else if (over && !down && m_wasDown)
+		{
+			m_wasDown = false;
+			(*m_functionCallback)();
+			return true;
+		}
+		else if (!over && !down)
+		{
+			m_wasDown = false;
+			return false;
+		}
+	}
+
+	return false;
 }
 

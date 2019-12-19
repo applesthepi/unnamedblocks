@@ -59,6 +59,8 @@ public:
 		SkipFrame = false;
 		ContextActive = false;
 		Context = ContextSystem(ContextType::NONE, sf::Vector2i(0, 0), nullptr);
+		ContextData = "";
+		MousePosition = sf::Vector2i(0, 0);
 	}
 
 	static unsigned int BlockHeight;
@@ -80,4 +82,6 @@ public:
 	static bool ContextActive;
 	static ContextSystem Context;
 	static GpuMan GpuType;
+	static std::string ContextData;
+	static sf::Vector2i MousePosition;
 };

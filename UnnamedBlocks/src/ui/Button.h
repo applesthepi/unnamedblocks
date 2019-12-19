@@ -22,6 +22,7 @@ public:
 
 	void SetSize(sf::Vector2u size);
 	void SetPosition(sf::Vector2i position);
+	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 private:
 	sf::Vector2i m_position;
 	sf::Vector2u m_size;

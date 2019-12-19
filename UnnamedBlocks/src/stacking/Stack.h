@@ -5,6 +5,11 @@
 #include <vector>
 #include <functional>
 
+enum DraggingType
+{
+	DOWN, UP
+};
+
 class Stack
 {
 public:
@@ -28,6 +33,8 @@ public:
 	unsigned int GetBlockWidth(unsigned int index);
 	Block* GetBlock(unsigned int index);
 	void CopyEverything(Stack* stack);
+	void DragDown(sf::Vector2i mousePosition);
+	void DragUp(sf::Vector2i mousePosition);
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 private:
@@ -38,6 +45,7 @@ private:
 	sf::Vector2u* m_planePosition;
 	sf::Vector2i* m_planeInnerPosition;
 
+	DraggingType m_draggingType;
 	bool m_dragging = false;
 	bool m_cutRendering;
 	sf::Vector2i m_draggingMouseBegin;

@@ -12,6 +12,7 @@ Stack::Stack(sf::Vector2i relitivePosition)
 	m_functionContextCallback = new std::function<void(unsigned int index)>();
 	m_cutRendering = false;
 	m_contextBlockIndex = 0;
+	m_draggingType = DraggingType::DOWN;
 
 	*m_functionContext = [&](unsigned int index, sf::Vector2i mousePosition)
 	{
@@ -20,17 +21,20 @@ Stack::Stack(sf::Vector2i relitivePosition)
 		Global::Context.Type = ContextType::BLOCK;
 		Global::Context.Position.x = mousePosition.x + 5;
 		Global::Context.Position.y = mousePosition.y + 5;
+		Global::ContextData = std::to_string(index);
 	};
 
 	*m_functionContextCallback = [&](unsigned int index)
 	{
+		Global::Context.Type = ContextType::NONE;
+		unsigned int blockIndex = std::stoul(Global::ContextData);
+
 		if (index == 0)
 		{
-			//TODO test this
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(500, 0));
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight));
 			(*m_functionAdd)(stack);
 
-			for (unsigned int i = index; i < m_blocks.size(); i++)
+			for (unsigned int i = blockIndex; i < m_blocks.size(); i++)
 			{
 				Block* block = new Block(m_blocks[i]->GetUnlocalizedName());
 				block->SetArgData(m_blocks[i]->GetUsedArgumentsRuntime().Args);
@@ -38,36 +42,54 @@ Stack::Stack(sf::Vector2i relitivePosition)
 			}
 
 			stack->ReloadAllBlocks();
+			stack->DragUp(Global::MousePosition);
 		}
 		else if (index == 1)
 		{
-			(*m_functionRemove)(this);
+			if (blockIndex == 0)
+				(*m_functionRemove)(this);
+			else
+			{
+				Global::SkipFrame = true;
+
+				for (unsigned int i = blockIndex; i < m_blocks.size(); i++)
+					delete m_blocks[i];
+
+				m_blocks.resize(blockIndex);
+			}
+		}
+		else if (index == 2)
+		{
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight));
+			(*m_functionAdd)(stack);
+
+			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName());
+			block->SetArgData(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args);
+			stack->AddBlock(block);
+
+			stack->ReloadAllBlocks();
+			stack->DragUp(Global::MousePosition);
+		}
+		else if (index == 3)
+		{
+			Global::SkipFrame = true;
+			delete m_blocks[blockIndex];
+			m_blocks.erase(m_blocks.begin() + blockIndex);
+			ReloadAllBlocks();
 		}
 	};
 
 	*m_functionSplit = [&](unsigned int index, sf::Vector2i mousePosition)
 	{
-		m_cutRendering = true;
-		Global::DraggingStack = (void*)this;
-		Global::DraggingStackConnected = nullptr;
-		Global::DraggingStackConnectedIndex = 0;
-		Global::DraggingPlane = m_planePtr;
-		(*m_functionRemove)(this);
-		Global::Dragging = true;
-		m_dragging = true;
-		Global::SkipFrame = true;
+		DragDown(mousePosition);
 
 		if (index == 0)
 		{
-			m_draggingMouseBegin = mousePosition;
-
-			//TODO make this delete
+			//TODO fix memory leak
 			m_planePosition = new sf::Vector2u(m_planePosition->x, m_planePosition->y);
 		}
 		else
 		{
-			m_draggingMouseBegin = mousePosition;
-
 			Stack* stayStack = new Stack(m_setPosition);
 			(*m_functionAdd)(stayStack);
 
@@ -163,7 +185,14 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 
 	if (m_dragging)
 	{
-		if (mouseDown)
+		bool wantDown;
+		
+		if (m_draggingType == DraggingType::DOWN)
+			wantDown = mouseDown;
+		else if (m_draggingType == DraggingType::UP)
+			wantDown = !mouseDown;
+
+		if (wantDown)
 		{
 			m_relitivePosition.x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x - m_planeInnerPosition->x;
 			m_relitivePosition.y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y - m_planeInnerPosition->y;
@@ -339,6 +368,38 @@ void Stack::CopyEverything(Stack* stack)
 		block->SetArgData(args);
 		delete args;
 	}
+}
+
+void Stack::DragDown(sf::Vector2i mousePosition)
+{
+	m_cutRendering = true;
+	Global::DraggingStack = (void*)this;
+	Global::DraggingStackConnected = nullptr;
+	Global::DraggingStackConnectedIndex = 0;
+	Global::DraggingPlane = m_planePtr;
+	(*m_functionRemove)(this);
+	Global::Dragging = true;
+	m_dragging = true;
+	Global::SkipFrame = true;
+	m_draggingMouseBegin = mousePosition;
+
+	m_draggingType = DraggingType::DOWN;
+}
+
+void Stack::DragUp(sf::Vector2i mousePosition)
+{
+	m_cutRendering = true;
+	Global::DraggingStack = (void*)this;
+	Global::DraggingStackConnected = nullptr;
+	Global::DraggingStackConnectedIndex = 0;
+	Global::DraggingPlane = m_planePtr;
+	(*m_functionRemove)(this);
+	Global::Dragging = true;
+	m_dragging = true;
+	Global::SkipFrame = true;
+	m_draggingMouseBegin = mousePosition;
+
+	m_draggingType = DraggingType::UP;
 }
 
 bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)

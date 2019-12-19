@@ -155,6 +155,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Global.cpp" />
+    <ClCompile Include="src\registries\ButtonRegistry.cpp" />
     <ClCompile Include="src\handlers\Logger.cpp" />
     <ClCompile Include="src\handlers\MessageHandler.cpp" />
     <ClCompile Include="src\handlers\ProjectHandler.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="src\content\ContentTransform.h" />
     <ClInclude Include="src\content\ContentVariables.h" />
     <ClInclude Include="src\Global.h" />
+    <ClInclude Include="src\registries\ButtonRegistry.h" />
     <ClInclude Include="src\handlers\Logger.h" />
     <ClInclude Include="src\handlers\MessageHandler.h" />
     <ClInclude Include="src\handlers\ProjectHandler.h" />

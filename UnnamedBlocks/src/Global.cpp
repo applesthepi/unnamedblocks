@@ -37,3 +37,7 @@ bool Global::ContextActive;
 ContextSystem Global::Context;
 
 GpuMan Global::GpuType;
+
+std::string Global::ContextData;
+
+sf::Vector2i Global::MousePosition;

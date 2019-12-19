@@ -157,7 +157,7 @@ void Plane::Render(sf::RenderWindow* window)
 	
 	shader->setUniform("planeInnerPosition", sf::Glsl::Vec2(m_innerPosition->x / 2, m_innerPosition->y / -2));
 	//TODO future settings
-	shader->setUniform("dotMod", 40.0f);
+	shader->setUniform("dotMod", 30.0f);
 	shader->setUniform("backgroundColor", sf::Glsl::Vec3(40 / 255.0f, 40 / 255.0f, 40 / 255.0f));
 	shader->setUniform("dotColor", sf::Glsl::Vec3(70 / 255.0f, 70 / 255.0f, 70 / 255.0f));
 

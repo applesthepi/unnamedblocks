@@ -2,11 +2,13 @@
 #include "Global.h"
 #include "ui/TypingSystem.h"
 #include "ui/Button.h"
+#include "registries/ButtonRegistry.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>
 void ThreadAsyncMessage(std::mutex* mutex, std::vector<Message*>* messages)
 {
+	//TODO this function is supost to be the same as the sync function
 	while (Global::ApplicationRunning)
 	{
 		mutex->lock();
@@ -77,6 +79,7 @@ void MessageHandler::Initialize()
 
 void MessageHandler::RunSyncMessages()
 {
+	//TODO this function has lots of memory leaks
 	for (unsigned int i = 0; i < m_messages->size(); i++)
 	{
 		std::function<void(int key)>* callback = new std::function<void(int key)>();
@@ -155,6 +158,10 @@ void MessageHandler::RunSyncMessages()
 
 			buttonContinue->SetButtonModeText("continue", sf::Color(140, 212, 140), 16);
 			buttonCancel->SetButtonModeText("cancel", sf::Color(140, 212, 212), 16);
+
+			ButtonRegistry::Push();
+			ButtonRegistry::AddButton(buttonContinue);
+			ButtonRegistry::AddButton(buttonCancel);
 		}
 
 		sf::RenderWindow window;
@@ -164,6 +171,8 @@ void MessageHandler::RunSyncMessages()
 			window.create(sf::VideoMode(500, 60), title, sf::Style::Titlebar);
 		else
 			window.create(sf::VideoMode(500, 24), title, sf::Style::Close | sf::Style::Titlebar);
+
+		bool wasDownLeft = false;
 
 		while (window.isOpen())
 		{
@@ -182,8 +191,27 @@ void MessageHandler::RunSyncMessages()
 			}
 
 			window.clear(sf::Color::White);
-
 			TypingSystem::Update();
+
+			Global::MousePosition = sf::Mouse::getPosition(window);
+
+			if ((*m_messages)[i]->Type == MessageType::CONFIRM)
+			{
+				ButtonRegistry::FrameUpdateUI(&window);
+
+				if (!wasDownLeft && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				{
+					wasDownLeft = true;
+					ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, true);
+				}
+				else if (wasDownLeft && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
+				{
+					wasDownLeft = false;
+					ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, false);
+				}
+
+				ButtonRegistry::RenderUI(&window);
+			}
 
 			if (finish)
 			{
@@ -203,14 +231,6 @@ void MessageHandler::RunSyncMessages()
 				marker.setPosition(textAgent.getLocalBounds().width, 20);
 
 				window.draw(marker);
-			}
-			else if ((*m_messages)[i]->Type == MessageType::CONFIRM)
-			{
-				buttonContinue->FrameUpdate(&window);
-				buttonContinue->Render(&window);
-
-				buttonCancel->FrameUpdate(&window);
-				buttonCancel->Render(&window);
 			}
 
 			window.display();
@@ -245,6 +265,10 @@ void MessageHandler::RunSyncMessages()
 				if ((*m_messages)[i]->ResultBool != nullptr)
 					*((*m_messages)[i]->ResultBool) = false;
 			}
+
+			ButtonRegistry::RemoveButton(buttonContinue);
+			ButtonRegistry::RemoveButton(buttonCancel);
+			ButtonRegistry::Pop();
 		}
 
 		delete (*m_messages)[i];
