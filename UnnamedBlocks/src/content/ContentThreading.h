@@ -2,13 +2,7 @@
 
 #include <thread>
 #include <math.h>
-#include "registries/BlockRegistry.h"
-#include "handlers/runtime/ObjectHandler.h"
-#include "handlers/runtime/VariableHandler.h"
-#include "handlers/runtime/ByteHandler.h"
-#include "handlers/runtime/ThreadHandler.h"
-#include "handlers/runtime/RuntimeHandler.h"
-#include "handlers/Logger.h"
+#include <RHR/RHR.h>
 
 void ContentLoadThreading()
 {

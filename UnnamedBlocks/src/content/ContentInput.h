@@ -1,11 +1,6 @@
 #pragma once
 
-#include "registries/BlockRegistry.h"
-#include "handlers/runtime/ObjectHandler.h"
-#include "handlers/runtime/VariableHandler.h"
-#include "handlers/runtime/RuntimeHandler.h"
-#include "handlers/runtime/ByteHandler.h"
-#include "handlers/Logger.h"
+#include <RHR/RHR.h>
 #include <math.h>
 #include <iostream>
 

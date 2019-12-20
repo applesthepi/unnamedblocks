@@ -1,25 +1,16 @@
-#include "stacking/Plane.h"
-
-#include "registries/ShaderRegistry.h"
-#include "registries/BlockRegistry.h"
-#include "registries/ButtonRegistry.h"
-#include "content/ContentLoader.h"
-
-#include "ui/Button.h"
-#include "ui/TypingSystem.h"
-
-#include "Global.h"
-
-#include "handlers/MessageHandler.h"
-#include "handlers/ProjectHandler.h"
-#include "handlers/Logger.h"
-#include "handlers/runtime/RuntimeHandler.h"
-
 #include <iostream>
 #include <cstring>
 
+#include <RHR/RHR.h>
+//#include <SFML/Graphics.hpp>
+
+//#include "content/ContentLoader.h"
 #include <GL/glew.h>
 #include <GL/GL.h>
+//#include <stdio.h> 
+//typedef int(__cdecl* MYPROC)(LPWSTR);
+
+#include "ModLoader.h"
 
 #ifdef LINUX
 #include <X11/Xlib.h>
@@ -72,6 +63,8 @@ static void ReloadCatagory(unsigned index)
 
 int main()
 {
+	run();
+	
 #ifdef LINUX
 	XInitThreads();
 	Logger::Info("Linux build");
@@ -81,7 +74,7 @@ int main()
 	ShaderRegistry::Initialize();
 
 	// Window Setup
-
+	
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(1280, 720, 32), "Unnamed Blocks", sf::Style::Default);
 
@@ -99,7 +92,7 @@ int main()
 	}
 	else
 		Logger::Warn("gpu not detected; using default shaders");
-
+	
 	ShaderRegistry::ReloadAllShaders();
 
 	// Default Settings
@@ -120,7 +113,7 @@ int main()
 
 	// Setup
 
-	ContentLoader::LoadContent();
+	//ContentLoader::LoadContent();
 
 	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
 	Plane::Planes->push_back(primaryPlane);
