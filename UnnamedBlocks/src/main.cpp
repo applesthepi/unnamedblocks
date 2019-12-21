@@ -6,7 +6,6 @@
 
 //#include "content/ContentLoader.h"
 #include <GL/glew.h>
-#include <GL/GL.h>
 //#include <stdio.h> 
 //typedef int(__cdecl* MYPROC)(LPWSTR);
 
