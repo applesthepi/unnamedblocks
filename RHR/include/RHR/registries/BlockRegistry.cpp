@@ -1,4 +1,5 @@
 #include "BlockRegistry.h"
+#include "handlers/Logger.h"
 
 void BlockRegistry::Initialize()
 {
@@ -6,14 +7,64 @@ void BlockRegistry::Initialize()
 	m_catagories = new std::vector<RegCatagory>();
 }
 
-void BlockRegistry::CreateCatagory(RegCatagory catagory)
+void BlockRegistry::RegisterCatagory(const RegCatagory* catagory)
 {
-	m_catagories->push_back(catagory);
+	m_catagories->push_back(*catagory);
 }
 
-void BlockRegistry::CreateBlock(RegBlock block)
+void BlockRegistry::RegisterBlock(const RegBlock* block)
 {
-	m_blocks->push_back(block);
+	m_blocks->push_back(*block);
+}
+
+RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<const BlockArgumentCaller>&)>* execute, const BlockArgumentInitializer blockInit[])
+{
+	std::function<bool(const std::vector<const BlockArgumentCaller>&)>* parentExecution = new std::function<bool(const std::vector<const BlockArgumentCaller>&)>();
+	*parentExecution = [execute, blockInit, unlocalizedName](const std::vector<const BlockArgumentCaller>& args)
+	{
+		for (uint16_t i = 0; i < args.size(); i++)
+		{
+			if (blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_RAW)
+			{
+				if (args[i].Mode == BlockArgumentVariableMode::VAR)
+				{
+					Logger::Error("argument #" + std::to_string(i) + " of block \"" + unlocalizedName + "\" requires a raw value");
+					return false;
+				}
+			}
+			else if (blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
+			{
+				if (args[i].Mode == BlockArgumentVariableMode::RAW)
+				{
+					Logger::Error("argument #" + std::to_string(i) + " of block \"" + unlocalizedName + "\" requires a variable");
+					return false;
+				}
+			}
+		}
+
+		return (*execute)(args);
+	};
+
+	RegBlock* block = new RegBlock();
+
+	block->UnlocalizedName = unlocalizedName;
+	block->Catagory = catagory;
+	block->Execute = parentExecution;
+
+	for (uint16_t i = 0; i < sizeof(blockInit) / sizeof(BlockArgumentInitializer); i++)
+	{
+		BlockArgument arg;
+		
+		if (blockInit[i].Type == BlockArgumentType::TEXT)
+			arg.SetupTEXT(blockInit[i].DefaultValue);
+		else if (blockInit[i].Type == BlockArgumentType::BOOL)
+		{
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
+				arg.SetupBOOL("0" + blockInit[i].DefaultValue);
+			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
+				arg.SetupBOOL("1" + blockInit[i].DefaultValue);
+		}
+	}
 }
 
 const RegBlock* BlockRegistry::GetBlock(std::string unlocalizedName)

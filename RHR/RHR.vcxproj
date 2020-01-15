@@ -222,8 +222,6 @@
     <ClInclude Include="include\RHR\ui\TypingSystem.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BlockRegistry.cpp~RF1e38886d.TMP" />
-    <None Include="BlockRegistry.h~RF1e274f11.TMP" />
     <None Include="include\RHR\registries\BlockRegistry.cpp~RF1e38886d.TMP" />
     <None Include="include\RHR\registries\BlockRegistry.h~RF1e274f11.TMP" />
   </ItemGroup>
