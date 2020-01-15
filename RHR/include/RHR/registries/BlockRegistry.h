@@ -5,7 +5,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <functional>
 
-enum BlockArgumentType
+enum class BlockArgumentType
 {
 	TEXT, REAL, BOOL, STRING
 };

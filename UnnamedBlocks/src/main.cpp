@@ -1,19 +1,20 @@
-#include <iostream>
-#include <cstring>
-
+#include "ModLoader.h"
 #include <RHR/RHR.h>
-//#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 
 //#include "content/ContentLoader.h"
 #include <GL/glew.h>
 //#include <stdio.h> 
 //typedef int(__cdecl* MYPROC)(LPWSTR);
-
-#include "ModLoader.h"
+#include <RHR/RHR.h>
 
 #ifdef LINUX
 #include <X11/Xlib.h>
 #endif
+
+#include <iostream>
+#include <cstring>
+#include <vector>
 
 std::vector<Button*> contextButtons;
 std::vector<Button*> toolbarButtons;
@@ -62,7 +63,6 @@ static void ReloadCatagory(unsigned index)
 
 int main()
 {
-	run();
 	
 #ifdef LINUX
 	XInitThreads();
@@ -104,6 +104,8 @@ int main()
 	Global::LoadDefaults();//must be first
 
 	BlockRegistry::Initialize();
+	run();
+
 	MessageHandler::Initialize();
 	TypingSystem::Initialization();
 	ButtonRegistry::Initialize();
@@ -503,6 +505,6 @@ int main()
 	}
 
 	Global::ApplicationRunning = false;
-
+	
 	return 0;
 }

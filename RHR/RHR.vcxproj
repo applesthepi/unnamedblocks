@@ -183,6 +183,7 @@
     <ClCompile Include="include\RHR\handlers\runtime\RuntimeHandler.cpp" />
     <ClCompile Include="include\RHR\handlers\runtime\ThreadHandler.cpp" />
     <ClCompile Include="include\RHR\handlers\runtime\VariableHandler.cpp" />
+    <ClCompile Include="include\RHR\modding\ModData.cpp" />
     <ClCompile Include="include\RHR\registries\BlockRegistry.cpp" />
     <ClCompile Include="include\RHR\registries\ButtonRegistry.cpp" />
     <ClCompile Include="include\RHR\registries\ShaderRegistry.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="include\RHR\handlers\runtime\RuntimeHandler.h" />
     <ClInclude Include="include\RHR\handlers\runtime\ThreadHandler.h" />
     <ClInclude Include="include\RHR\handlers\runtime\VariableHandler.h" />
+    <ClInclude Include="include\RHR\modding\ModData.h" />
     <ClInclude Include="include\RHR\registries\BlockRegistry.h" />
     <ClInclude Include="include\RHR\registries\ButtonRegistry.h" />
     <ClInclude Include="include\RHR\registries\ShaderRegistry.h" />
@@ -218,6 +220,12 @@
     <ClInclude Include="include\RHR\stacking\Stack.h" />
     <ClInclude Include="include\RHR\ui\Button.h" />
     <ClInclude Include="include\RHR\ui\TypingSystem.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BlockRegistry.cpp~RF1e38886d.TMP" />
+    <None Include="BlockRegistry.h~RF1e274f11.TMP" />
+    <None Include="include\RHR\registries\BlockRegistry.cpp~RF1e38886d.TMP" />
+    <None Include="include\RHR\registries\BlockRegistry.h~RF1e274f11.TMP" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

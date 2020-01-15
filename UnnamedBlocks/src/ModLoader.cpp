@@ -1,7 +1,10 @@
-#include <iostream>
 #include "ModLoader.h"
 
-#define LINUX
+#include <iostream>
+#include <RHR/RHR.h>
+#include <windows.h>
+
+//#define LINUX
 #ifdef LINUX
 #include <dlfcn.h>
 void run()
@@ -27,28 +30,34 @@ void run()
 }
 #else
 
-#include <windows.h>
-
 void run()
 {
-	typedef int(__stdcall* f_test)();
+	ModData* data = new ModData();
+
+	typedef void(*f_test)(ModData*);
 
 	{
 		HINSTANCE hGetProcIDDLL = LoadLibrary("mods/ModVin.dll");
 
-		if (!hGetProcIDDLL) {
-			std::cout << "could not load the dynamic library" << std::endl;
-			return;
+		if (!hGetProcIDDLL)
+		{
+			//failed to load mod
+			return;//changeme
 		}
 
 		// resolve function address here
-		f_test test = (f_test)GetProcAddress(hGetProcIDDLL, "test");
-		if (test == nullptr) {
-			std::cout << "could not locate the function" << std::endl;
-			return;
+		f_test test = (f_test)GetProcAddress(hGetProcIDDLL, "Initialization");
+		if (test == nullptr)
+		{
+			//can not locate function
+			return;//changeme
 		}
 
-		std::cout << "test() returned " << test() << std::endl;
+		test(data);
+		//result
 	}
+
+	BlockRegistry::CreateCatagory((*data->GetCatagories())[0]);
+	BlockRegistry::CreateBlock((*data->GetBlocks())[0]);
 }
 #endif

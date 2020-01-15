@@ -45,9 +45,6 @@
     <ClCompile Include="include\RHR\handlers\ProjectHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\RHR\registries\BlockRegistry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\RHR\registries\ButtonRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,6 +67,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\RHR\RHR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\RHR\modding\ModData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\RHR\registries\BlockRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -102,9 +105,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\handlers\ProjectHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\registries\BlockRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\registries\ButtonRegistry.h">
@@ -143,5 +143,17 @@
     <ClInclude Include="include\RHR\RHR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\RHR\modding\ModData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RHR\registries\BlockRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BlockRegistry.cpp~RF1e38886d.TMP" />
+    <None Include="BlockRegistry.h~RF1e274f11.TMP" />
+    <None Include="include\RHR\registries\BlockRegistry.cpp~RF1e38886d.TMP" />
+    <None Include="include\RHR\registries\BlockRegistry.h~RF1e274f11.TMP" />
   </ItemGroup>
 </Project>

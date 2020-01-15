@@ -19,4 +19,6 @@
 #include "ui/Button.h"
 #include "ui/TypingSystem.h"
 
+#include "modding/ModData.h"
+
 #include "Global.h"

@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 
-enum MessageType
+enum class MessageType
 {
 	INFO, WARNING, ERROR, INPUT, CONFIRM
 };
