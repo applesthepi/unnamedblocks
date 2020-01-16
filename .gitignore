@@ -11,7 +11,6 @@ unnamedblocks
 **.ilk
 **.pdb
 **.lo
-**.so
 **.exp
 .deps
 .dirstamp
