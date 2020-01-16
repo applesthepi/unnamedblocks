@@ -79,7 +79,7 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane)
 
 			Block* block = new Block(blockUnlocalizedName);
 			stack->AddBlock(block);
-			block->SetArgData(&args);
+			block->SetArgData(args);
 
 			i++;
 		}

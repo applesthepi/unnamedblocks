@@ -57,7 +57,7 @@ void run()
 		//result
 	}
 
-	BlockRegistry::CreateCatagory((*data->GetCatagories())[0]);
-	BlockRegistry::CreateBlock((*data->GetBlocks())[0]);
+	BlockRegistry::RegisterCatagory(&(*data->GetCatagories())[0]);
+	BlockRegistry::RegisterBlock(&(*data->GetBlocks())[0]);
 }
 #endif

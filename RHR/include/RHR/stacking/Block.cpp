@@ -143,18 +143,35 @@ void Block::FrameUpdate(sf::RenderWindow* window, bool global)
 	}
 }
 
-void Block::SetArgData(std::vector<std::string>* data)
+void Block::SetArgData(const std::vector<BlockArgumentCaller>& data)
 {
 	unsigned int dataIndex = 0;
 
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
-		if (dataIndex == data->size())
+		if (dataIndex == data.size())
 			break;
 
 		if (m_args[i]->HasData())
 		{
-			m_args[i]->SetData((*data)[dataIndex]);
+			m_args[i]->SetData(data[dataIndex].Value + (data[dataIndex].Mode == BlockArgumentVariableMode::RAW ? "0" : "1"));
+			dataIndex++;
+		}
+	}
+}
+
+void Block::SetArgData(const std::vector<std::string> data)
+{
+	unsigned int dataIndex = 0;
+
+	for (unsigned int i = 0; i < m_args.size(); i++)
+	{
+		if (dataIndex == data.size())
+			break;
+
+		if (m_args[i]->HasData())
+		{
+			m_args[i]->SetData(data[dataIndex]);
 			dataIndex++;
 		}
 	}
@@ -181,12 +198,12 @@ Argument* Block::GetArgument(unsigned int index)
 
 BlockRuntimeReturn Block::GetUsedArgumentsRuntime()
 {
-	std::vector<std::string>* dataArgs = new std::vector<std::string>();
+	std::vector<BlockArgumentCaller>* dataArgs = new std::vector<BlockArgumentCaller>();
 
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		if (m_args[i]->HasData())
-			dataArgs->push_back(m_args[i]->GetData());
+			dataArgs->push_back(BlockArgumentCaller(m_args[i]->GetData().substr(0, 1) == "0" ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR, m_args[i]->GetData().substr(1, m_args[i]->GetData().length() - 1)));
 	}
 
 	return BlockRuntimeReturn(dataArgs, dataArgs->size());

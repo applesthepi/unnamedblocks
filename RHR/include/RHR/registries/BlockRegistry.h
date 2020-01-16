@@ -57,7 +57,7 @@ public:
 class RegBlock
 {
 public:
-	std::function<bool(const std::vector<const BlockArgumentCaller>&)>* Execute;
+	std::function<bool(const std::vector<BlockArgumentCaller>&)>* Execute;
 	std::vector<BlockArgument> Args;
 	std::string UnlocalizedName;
 	std::string Catagory;
@@ -84,7 +84,7 @@ public:
 	static std::vector<RegBlock>* GetBlocks();
 	static std::vector<RegCatagory>* GetCatagories();
 
-	static RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<const BlockArgumentCaller>&)>* execute, const BlockArgumentInitializer blockInit[]);
+	static RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
 private:
 	static std::vector<RegBlock>* m_blocks;
 	static std::vector<RegCatagory>* m_catagories;

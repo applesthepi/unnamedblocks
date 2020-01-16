@@ -62,9 +62,9 @@ void RuntimeHandler::Run(Plane* planeCopy)
 			const RegBlock* regBlock = BlockRegistry::GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
 			BlockRuntimeReturn args = planeCopy->GetStack(i)->GetBlock(0)->GetUsedArgumentsRuntime();
 
-			std::string functionText = (*args.Args)[0].substr(1, (*args.Args)[0].length() - 1);
+			std::string functionText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
 
-			if ((*args.Args)[0][0] == '1')
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::VAR)
 			{
 				Logger::Error("expecting text only! got \"" + functionText + "\"");
 				return;

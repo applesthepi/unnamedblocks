@@ -41,7 +41,7 @@ Stack::Stack(sf::Vector2i relitivePosition)
 			for (unsigned int i = blockIndex; i < m_blocks.size(); i++)
 			{
 				Block* block = new Block(m_blocks[i]->GetUnlocalizedName());
-				block->SetArgData(m_blocks[i]->GetUsedArgumentsRuntime().Args);
+				block->SetArgData(*(m_blocks[i]->GetUsedArgumentsRuntime().Args));
 				stack->AddBlock(block);
 			}
 
@@ -68,7 +68,7 @@ Stack::Stack(sf::Vector2i relitivePosition)
 			(*m_functionAdd)(stack);
 
 			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName());
-			block->SetArgData(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args);
+			block->SetArgData(*(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args));
 			stack->AddBlock(block);
 
 			stack->ReloadAllBlocks();
@@ -374,7 +374,7 @@ void Stack::CopyEverything(Stack* stack)
 		AddBlock(block);
 		
 		std::vector<std::string>* args = stack->GetBlock(i)->GetUsedArgumentSetup();
-		block->SetArgData(args);
+		block->SetArgData(*args);
 		delete args;
 	}
 }

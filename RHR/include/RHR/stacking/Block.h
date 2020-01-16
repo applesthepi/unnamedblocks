@@ -9,17 +9,16 @@
 class BlockRuntimeReturn
 {
 public:
-	BlockRuntimeReturn(std::vector<std::string>* args, unsigned char length)
+	BlockRuntimeReturn(const std::vector<BlockArgumentCaller>* args, unsigned char length)
 		:Args(args), Length(length)
 	{}
 
 	~BlockRuntimeReturn()
 	{
-		if (Args != nullptr)
-			delete Args;
+		delete Args;
 	}
 
-	std::vector<std::string>* Args;
+	const std::vector<BlockArgumentCaller>* Args;
 	unsigned char Length;
 };
 
@@ -31,7 +30,8 @@ public:
 
 	void Render(sf::RenderTexture* render, sf::RenderWindow* window);
 	void FrameUpdate(sf::RenderWindow* window, bool global = false);
-	void SetArgData(std::vector<std::string>* data);
+	void SetArgData(const std::vector<BlockArgumentCaller>& data);
+	void SetArgData(const std::vector<std::string> data);
 	void SetupInStack(unsigned int index, sf::Vector2i* stackAbsolute, sf::Vector2i* stackRelitive, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionSplit, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionContext);
 	unsigned int GetWidth();
 	Argument* GetArgument(unsigned int index);
