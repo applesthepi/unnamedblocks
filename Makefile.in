@@ -168,13 +168,16 @@ am_librhr_a_OBJECTS =  \
 	RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT)
 librhr_a_OBJECTS = $(am_librhr_a_OBJECTS)
 am__DEPENDENCIES_1 =
-libVinMod_la_DEPENDENCIES = librhr.a $(am__DEPENDENCIES_1)
-am_libVinMod_la_OBJECTS = VanillaMods/libVinMod_la-Mod.lo
-libVinMod_la_OBJECTS = $(am_libVinMod_la_OBJECTS)
+ModVin_la_DEPENDENCIES = librhr.a $(am__DEPENDENCIES_1)
+am_ModVin_la_OBJECTS = VanillaMods/ModVin_la-Mod.lo
+ModVin_la_OBJECTS = $(am_ModVin_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
 am__v_lt_1 = 
+ModVin_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(ModVin_la_LDFLAGS) $(LDFLAGS) -o $@
 am_unnamedblocks_OBJECTS =  \
 	UnnamedBlocks/src/unnamedblocks-ModLoader.$(OBJEXT) \
 	UnnamedBlocks/src/unnamedblocks-main.$(OBJEXT)
@@ -219,7 +222,7 @@ am__depfiles_remade = RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po \
 	RHR/include/RHR/ui/$(DEPDIR)/librhr_a-TypingSystem.Po \
 	UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-ModLoader.Po \
 	UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-main.Po \
-	VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Plo
+	VanillaMods/$(DEPDIR)/ModVin_la-Mod.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -239,9 +242,9 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(librhr_a_SOURCES) $(libVinMod_la_SOURCES) \
+SOURCES = $(librhr_a_SOURCES) $(ModVin_la_SOURCES) \
 	$(unnamedblocks_SOURCES)
-DIST_SOURCES = $(librhr_a_SOURCES) $(libVinMod_la_SOURCES) \
+DIST_SOURCES = $(librhr_a_SOURCES) $(ModVin_la_SOURCES) \
 	$(unnamedblocks_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -424,15 +427,16 @@ EXTRA_DIST = bootstrap
 
 # Define binaries
 noinst_LIBRARIES = librhr.a
-lib_LTLIBRARIES = libVinMod.la
+lib_LTLIBRARIES = ModVin.la
 # RHR
 librhr_a_SOURCES = RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/modding/ModData.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/Global.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp 
 librhr_a_CPPFLAGS = -fPIC -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
 librhr_a_LDFLAGS = -fPIC
 # VinMod
-libVinMod_la_SOURCES = VanillaMods/Mod.cpp 
-libVinMod_la_CPPFLAGS = -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
-libVinMod_la_LIBADD = librhr.a -lpthread $(SFML_LIBS) -ldl
+ModVin_la_SOURCES = VanillaMods/Mod.cpp 
+ModVin_la_CPPFLAGS = -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
+ModVin_la_LIBADD = librhr.a -lpthread $(SFML_LIBS) -ldl
+ModVin_la_LDFLAGS = -module
 
 # UnnamedBlocks
 unnamedblocks_SOURCES = UnnamedBlocks/src/ModLoader.cpp UnnamedBlocks/src/main.cpp 
@@ -681,11 +685,11 @@ VanillaMods/$(am__dirstamp):
 VanillaMods/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) VanillaMods/$(DEPDIR)
 	@: > VanillaMods/$(DEPDIR)/$(am__dirstamp)
-VanillaMods/libVinMod_la-Mod.lo: VanillaMods/$(am__dirstamp) \
+VanillaMods/ModVin_la-Mod.lo: VanillaMods/$(am__dirstamp) \
 	VanillaMods/$(DEPDIR)/$(am__dirstamp)
 
-libVinMod.la: $(libVinMod_la_OBJECTS) $(libVinMod_la_DEPENDENCIES) $(EXTRA_libVinMod_la_DEPENDENCIES) 
-	$(AM_V_CXXLD)$(CXXLINK) -rpath $(libdir) $(libVinMod_la_OBJECTS) $(libVinMod_la_LIBADD) $(LIBS)
+ModVin.la: $(ModVin_la_OBJECTS) $(ModVin_la_DEPENDENCIES) $(EXTRA_ModVin_la_DEPENDENCIES) 
+	$(AM_V_CXXLD)$(ModVin_la_LINK) -rpath $(libdir) $(ModVin_la_OBJECTS) $(ModVin_la_LIBADD) $(LIBS)
 UnnamedBlocks/src/$(am__dirstamp):
 	@$(MKDIR_P) UnnamedBlocks/src
 	@: > UnnamedBlocks/src/$(am__dirstamp)
@@ -742,7 +746,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/ui/$(DEPDIR)/librhr_a-TypingSystem.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-ModLoader.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-main.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@VanillaMods/$(DEPDIR)/ModVin_la-Mod.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -1054,12 +1058,12 @@ RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.obj: RHR/include/RHR/han
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/ThreadHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/ThreadHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/ThreadHandler.cpp'; fi`
 
-VanillaMods/libVinMod_la-Mod.lo: VanillaMods/Mod.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libVinMod_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT VanillaMods/libVinMod_la-Mod.lo -MD -MP -MF VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Tpo -c -o VanillaMods/libVinMod_la-Mod.lo `test -f 'VanillaMods/Mod.cpp' || echo '$(srcdir)/'`VanillaMods/Mod.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Tpo VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Plo
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='VanillaMods/Mod.cpp' object='VanillaMods/libVinMod_la-Mod.lo' libtool=yes @AMDEPBACKSLASH@
+VanillaMods/ModVin_la-Mod.lo: VanillaMods/Mod.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ModVin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT VanillaMods/ModVin_la-Mod.lo -MD -MP -MF VanillaMods/$(DEPDIR)/ModVin_la-Mod.Tpo -c -o VanillaMods/ModVin_la-Mod.lo `test -f 'VanillaMods/Mod.cpp' || echo '$(srcdir)/'`VanillaMods/Mod.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) VanillaMods/$(DEPDIR)/ModVin_la-Mod.Tpo VanillaMods/$(DEPDIR)/ModVin_la-Mod.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='VanillaMods/Mod.cpp' object='VanillaMods/ModVin_la-Mod.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libVinMod_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VanillaMods/libVinMod_la-Mod.lo `test -f 'VanillaMods/Mod.cpp' || echo '$(srcdir)/'`VanillaMods/Mod.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ModVin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o VanillaMods/ModVin_la-Mod.lo `test -f 'VanillaMods/Mod.cpp' || echo '$(srcdir)/'`VanillaMods/Mod.cpp
 
 UnnamedBlocks/src/unnamedblocks-ModLoader.o: UnnamedBlocks/src/ModLoader.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(unnamedblocks_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT UnnamedBlocks/src/unnamedblocks-ModLoader.o -MD -MP -MF UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-ModLoader.Tpo -c -o UnnamedBlocks/src/unnamedblocks-ModLoader.o `test -f 'UnnamedBlocks/src/ModLoader.cpp' || echo '$(srcdir)/'`UnnamedBlocks/src/ModLoader.cpp
@@ -1412,7 +1416,7 @@ distclean: distclean-am
 	-rm -f RHR/include/RHR/ui/$(DEPDIR)/librhr_a-TypingSystem.Po
 	-rm -f UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-ModLoader.Po
 	-rm -f UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-main.Po
-	-rm -f VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Plo
+	-rm -f VanillaMods/$(DEPDIR)/ModVin_la-Mod.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
@@ -1482,7 +1486,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f RHR/include/RHR/ui/$(DEPDIR)/librhr_a-TypingSystem.Po
 	-rm -f UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-ModLoader.Po
 	-rm -f UnnamedBlocks/src/$(DEPDIR)/unnamedblocks-main.Po
-	-rm -f VanillaMods/$(DEPDIR)/libVinMod_la-Mod.Plo
+	-rm -f VanillaMods/$(DEPDIR)/ModVin_la-Mod.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
