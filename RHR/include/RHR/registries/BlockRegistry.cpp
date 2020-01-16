@@ -1,5 +1,6 @@
 #include "BlockRegistry.h"
 #include "handlers/Logger.h"
+#include "handlers/runtime/VariableHandler.h"
 
 void BlockRegistry::Initialize()
 {
@@ -43,7 +44,44 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 				}
 			}
 
-			parsedArgs.push_back(args[i].Value);
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW || blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
+				parsedArgs.push_back(args[i].Value);
+			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
+			{
+				if (blockInit[i].Type == BlockArgumentType::STRING)
+				{
+					std::string* data = VariableHandler::GetString(args[i].Value.c_str());
+					if (data == nullptr)
+					{
+						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
+						return false;
+					}
+
+					parsedArgs.push_back(*data);
+				}
+				else if (blockInit[i].Type == BlockArgumentType::BOOL)
+				{
+					bool* data = VariableHandler::GetBool(args[i].Value.c_str());
+					if (data == nullptr)
+					{
+						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
+						return false;
+					}
+
+					parsedArgs.push_back(*data ? "1" : "0");
+				}
+				else if (blockInit[i].Type == BlockArgumentType::REAL)
+				{
+					double* data = VariableHandler::GetReal(args[i].Value.c_str());
+					if (data == nullptr)
+					{
+						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
+						return false;
+					}
+
+					parsedArgs.push_back(std::to_string(*data));
+				}
+			}
 		}
 
 		return (*execute)(parsedArgs);
