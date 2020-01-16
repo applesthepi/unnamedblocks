@@ -66,6 +66,9 @@ public:
 class RegCatagory
 {
 public:
+	RegCatagory(const std::string unlocalizedName, const std::string displayName, const sf::Color color)
+		:UnlocalizedName(unlocalizedName), DisplayName(displayName), Color(color) {}
+
 	std::string UnlocalizedName;
 	std::string DisplayName;
 	sf::Color Color;
