@@ -7,6 +7,15 @@ UnnamedBlocks/.vs/
 **.o
 unnamedblocks
 **.dll
+**.lib
+**.ilk
+**.pdb
+**.lo
+**.so
+**.exp
+.deps
+.dirstamp
+
 dep
 config.status
 Makefile

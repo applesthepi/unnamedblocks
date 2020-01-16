@@ -15,9 +15,10 @@ case $host_os in
         AC_MSG_ERROR(["OS $host_os is not supported"])
 		;;
 esac
+AX_BOOST_BASE([1.71],, [AC_MSG_ERROR([killme])])
 PKG_CHECK_MODULES(GLEW, glew)
 PKG_CHECK_MODULES(SFML, sfml-all)
-
+AX_BOOST_FILESYSTEM
 LT_INIT
 AC_PROG_CC
 AC_PROG_CXX

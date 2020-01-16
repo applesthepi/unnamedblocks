@@ -155,6 +155,7 @@ am_librhr_a_OBJECTS =  \
 	RHR/include/RHR/registries/librhr_a-BlockRegistry.$(OBJEXT) \
 	RHR/include/RHR/ui/librhr_a-Button.$(OBJEXT) \
 	RHR/include/RHR/ui/librhr_a-TypingSystem.$(OBJEXT) \
+	RHR/include/RHR/modding/librhr_a-ModData.$(OBJEXT) \
 	RHR/include/RHR/librhr_a-RHR.$(OBJEXT) \
 	RHR/include/RHR/librhr_a-Global.$(OBJEXT) \
 	RHR/include/RHR/handlers/librhr_a-ProjectHandler.$(OBJEXT) \
@@ -179,6 +180,7 @@ am_unnamedblocks_OBJECTS =  \
 	UnnamedBlocks/src/unnamedblocks-main.$(OBJEXT)
 unnamedblocks_OBJECTS = $(am_unnamedblocks_OBJECTS)
 unnamedblocks_DEPENDENCIES = librhr.a $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -205,6 +207,7 @@ am__depfiles_remade = RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po \
 	RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po \
 	RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Po \
 	RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po \
+	RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po \
 	RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po \
 	RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po \
 	RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po \
@@ -293,6 +296,9 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BOOST_CPPFLAGS = @BOOST_CPPFLAGS@
+BOOST_FILESYSTEM_LIB = @BOOST_FILESYSTEM_LIB@
+BOOST_LDFLAGS = @BOOST_LDFLAGS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -414,13 +420,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -Wall
 ACLOCAL_AMFLAGS = -I m4
+EXTRA_DIST = bootstrap
 
 # Define binaries
 noinst_LIBRARIES = librhr.a
 lib_LTLIBRARIES = libVinMod.la
 # RHR
-librhr_a_SOURCES = RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/Global.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp 
-librhr_a_CPPFLAGS = -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
+librhr_a_SOURCES = RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/modding/ModData.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/Global.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp 
+librhr_a_CPPFLAGS = -fPIC -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
+librhr_a_LDFLAGS = -fPIC
 # VinMod
 libVinMod_la_SOURCES = VanillaMods/Mod.cpp 
 libVinMod_la_CPPFLAGS = -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
@@ -428,8 +436,8 @@ libVinMod_la_LIBADD = librhr.a -lpthread $(SFML_LIBS) -ldl
 
 # UnnamedBlocks
 unnamedblocks_SOURCES = UnnamedBlocks/src/ModLoader.cpp UnnamedBlocks/src/main.cpp 
-unnamedblocks_CPPFLAGS = -IUnnamedBlocks/src -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS) $(GLEW_CFLAGS)
-unnamedblocks_LDADD = librhr.a -lpthread $(SFML_LIBS) $(GLEW_LIBS) -lX11 -ldl
+unnamedblocks_CPPFLAGS = -IUnnamedBlocks/src -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS) $(GLEW_CFLAGS) $(BOOST_CPPFLAGS)
+unnamedblocks_LDADD = librhr.a $(BOOST_FILESYSTEM_LIB) -lpthread $(SFML_LIBS) $(GLEW_LIBS) $(BOOST_LDFLAGS) -lX11 -ldl
 all: all-am
 
 .SUFFIXES:
@@ -605,6 +613,15 @@ RHR/include/RHR/ui/librhr_a-Button.$(OBJEXT):  \
 RHR/include/RHR/ui/librhr_a-TypingSystem.$(OBJEXT):  \
 	RHR/include/RHR/ui/$(am__dirstamp) \
 	RHR/include/RHR/ui/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/modding/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/modding
+	@: > RHR/include/RHR/modding/$(am__dirstamp)
+RHR/include/RHR/modding/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/modding/$(DEPDIR)
+	@: > RHR/include/RHR/modding/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/modding/librhr_a-ModData.$(OBJEXT):  \
+	RHR/include/RHR/modding/$(am__dirstamp) \
+	RHR/include/RHR/modding/$(DEPDIR)/$(am__dirstamp)
 RHR/include/RHR/$(am__dirstamp):
 	@$(MKDIR_P) RHR/include/RHR
 	@: > RHR/include/RHR/$(am__dirstamp)
@@ -691,6 +708,7 @@ mostlyclean-compile:
 	-rm -f RHR/include/RHR/*.$(OBJEXT)
 	-rm -f RHR/include/RHR/handlers/*.$(OBJEXT)
 	-rm -f RHR/include/RHR/handlers/runtime/*.$(OBJEXT)
+	-rm -f RHR/include/RHR/modding/*.$(OBJEXT)
 	-rm -f RHR/include/RHR/registries/*.$(OBJEXT)
 	-rm -f RHR/include/RHR/stacking/*.$(OBJEXT)
 	-rm -f RHR/include/RHR/stacking/args/*.$(OBJEXT)
@@ -712,6 +730,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po@am__quote@ # am--include-marker
@@ -880,6 +899,20 @@ RHR/include/RHR/ui/librhr_a-TypingSystem.obj: RHR/include/RHR/ui/TypingSystem.cp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/ui/TypingSystem.cpp' object='RHR/include/RHR/ui/librhr_a-TypingSystem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/ui/librhr_a-TypingSystem.obj `if test -f 'RHR/include/RHR/ui/TypingSystem.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/ui/TypingSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/ui/TypingSystem.cpp'; fi`
+
+RHR/include/RHR/modding/librhr_a-ModData.o: RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/modding/librhr_a-ModData.o -MD -MP -MF RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo -c -o RHR/include/RHR/modding/librhr_a-ModData.o `test -f 'RHR/include/RHR/modding/ModData.cpp' || echo '$(srcdir)/'`RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/modding/ModData.cpp' object='RHR/include/RHR/modding/librhr_a-ModData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/modding/librhr_a-ModData.o `test -f 'RHR/include/RHR/modding/ModData.cpp' || echo '$(srcdir)/'`RHR/include/RHR/modding/ModData.cpp
+
+RHR/include/RHR/modding/librhr_a-ModData.obj: RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/modding/librhr_a-ModData.obj -MD -MP -MF RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo -c -o RHR/include/RHR/modding/librhr_a-ModData.obj `if test -f 'RHR/include/RHR/modding/ModData.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/modding/ModData.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/modding/ModData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/modding/ModData.cpp' object='RHR/include/RHR/modding/librhr_a-ModData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/modding/librhr_a-ModData.obj `if test -f 'RHR/include/RHR/modding/ModData.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/modding/ModData.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/modding/ModData.cpp'; fi`
 
 RHR/include/RHR/librhr_a-RHR.o: RHR/include/RHR/RHR.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-RHR.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo -c -o RHR/include/RHR/librhr_a-RHR.o `test -f 'RHR/include/RHR/RHR.cpp' || echo '$(srcdir)/'`RHR/include/RHR/RHR.cpp
@@ -1332,6 +1365,8 @@ distclean-generic:
 	-rm -f RHR/include/RHR/handlers/$(am__dirstamp)
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
 	-rm -f RHR/include/RHR/handlers/runtime/$(am__dirstamp)
+	-rm -f RHR/include/RHR/modding/$(DEPDIR)/$(am__dirstamp)
+	-rm -f RHR/include/RHR/modding/$(am__dirstamp)
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
 	-rm -f RHR/include/RHR/registries/$(am__dirstamp)
 	-rm -f RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
@@ -1365,6 +1400,7 @@ distclean: distclean-am
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Po
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po
+	-rm -f RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po
@@ -1434,6 +1470,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Po
 	-rm -f RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po
+	-rm -f RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po
 	-rm -f RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po

@@ -49,9 +49,9 @@ ModLoaderStatus run()
 	for (uint16_t i = 0; i < mods->size(); i++)
 	{
 #ifdef LINUX
-		if (!(*mods)[i].Supported_WIN)
+		if (!(*mods)[i].Supported_LINUX)
 		{
-			Logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
+			Logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
 			continue;
 		}
 
