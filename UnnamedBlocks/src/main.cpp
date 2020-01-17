@@ -69,7 +69,7 @@ int main()
 	Logger::Info("Linux build");
 #endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");
-	
+
 	ShaderRegistry::Initialize();
 
 	// Window Setup
@@ -78,6 +78,7 @@ int main()
 	window.create(sf::VideoMode(1280, 720, 32), "Unnamed Blocks", sf::Style::Default);
 
 	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
+	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");
 
 	if (strcmp(gpuVendor, "Intel Open Source Technology Center") == 0)
 	{

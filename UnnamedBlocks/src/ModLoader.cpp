@@ -25,6 +25,9 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 			return;
 		}
 	}
+	
+	if (fileType != ".dll" && fileType != ".so")
+		return;
 
 	RegMod mod(fileName);
 
@@ -69,6 +72,8 @@ ModLoaderStatus run()
 			Logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
+
+		dlclose(so);
 #else
 		if (!(*mods)[i].Supported_WIN)
 		{
