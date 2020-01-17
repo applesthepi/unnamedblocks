@@ -1,10 +1,10 @@
 #include "ObjectHandler.h"
+#include "handlers/Logger.h"
 
 void ObjectHandler::Alloc()
 {
 	m_objects = new std::vector<RuntimeObject*>();
 	m_idCount = new unsigned long long(0);
-	ObjectMutex = new std::mutex();
 }
 
 void ObjectHandler::Dealloc()
@@ -16,13 +16,12 @@ void ObjectHandler::Dealloc()
 
 	delete m_objects;
 	delete m_idCount;
-
-	delete ObjectMutex;
 }
 
 void ObjectHandler::FrameUpdate(sf::RenderWindow* window)
 {
-	ObjectHandler::ObjectMutex->lock();
+	std::shared_lock<std::shared_mutex> lock(ObjectMutex);
+
 	for (unsigned int i = 0; i < m_objects->size(); i++)
 	{
 		RuntimeObject* obj = (*m_objects)[i];
@@ -33,23 +32,24 @@ void ObjectHandler::FrameUpdate(sf::RenderWindow* window)
 			obj->Sprites[obj->ImageIndex]->setRotation(obj->Angle);
 		}
 	}
-	ObjectHandler::ObjectMutex->unlock();
 }
 
 void ObjectHandler::Render(sf::RenderWindow* window)
 {
-	ObjectHandler::ObjectMutex->lock();
+	std::shared_lock<std::shared_mutex> lock(ObjectMutex);
+
 	for (unsigned int i = 0; i < m_objects->size(); i++)
 	{
 		RuntimeObject* obj = (*m_objects)[i];
 		if (obj->ImageIndex < obj->Sprites.size())
 			window->draw(*obj->Sprites[obj->ImageIndex]);
 	}
-	ObjectHandler::ObjectMutex->unlock();
 }
 
 RuntimeObject* ObjectHandler::GetObject(unsigned long long objectId)
 {
+	std::shared_lock<std::shared_mutex> lock(ObjectMutex);
+
 	for (unsigned long long i = 0; i < m_objects->size(); i++)
 	{
 		if ((*m_objects)[i]->Id == objectId)
@@ -58,18 +58,24 @@ RuntimeObject* ObjectHandler::GetObject(unsigned long long objectId)
 		}
 	}
 
+	Logger::Error("object \"" + std::to_string(objectId) + "\" does not exist");
 	return nullptr;
 }
 
 unsigned long long ObjectHandler::CreateObject(RuntimeObject* object)
 {
+	std::unique_lock<std::shared_mutex> lock(ObjectMutex);
+
 	object->Id = ++(*m_idCount);
 	m_objects->push_back(object);
+	
 	return *m_idCount;
 }
 
 bool ObjectHandler::DestroyObject(unsigned long long objectId)
 {
+	std::unique_lock<std::shared_mutex> lock(ObjectMutex);
+
 	for (unsigned long long i = 0; i < m_objects->size(); i++)
 	{
 		if ((*m_objects)[i]->Id == objectId)
@@ -80,10 +86,11 @@ bool ObjectHandler::DestroyObject(unsigned long long objectId)
 		}
 	}
 
+	Logger::Error("object \"" + std::to_string(objectId) + "\" does not exist");
 	return false;
 }
 
-std::mutex* ObjectHandler::ObjectMutex;
+std::shared_mutex ObjectHandler::ObjectMutex;
 
 std::vector<RuntimeObject*>* ObjectHandler::m_objects;
 

@@ -3,6 +3,7 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include <mutex>
+#include <shared_mutex>
 
 class RuntimeObject
 {
@@ -33,7 +34,7 @@ public:
 	static unsigned long long CreateObject(RuntimeObject* object);
 	static bool DestroyObject(unsigned long long objectId);
 
-	static std::mutex* ObjectMutex;
+	static std::shared_mutex ObjectMutex;
 private:
 	static std::vector<RuntimeObject*>* m_objects;
 	static unsigned long long* m_idCount;

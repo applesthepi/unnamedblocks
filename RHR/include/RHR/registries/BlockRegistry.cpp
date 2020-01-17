@@ -21,8 +21,12 @@ void BlockRegistry::RegisterBlock(const RegBlock* block)
 RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)
 {
 	std::function<bool(const std::vector<BlockArgumentCaller>&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&)>();
-	*parentExecution = [execute, blockInit, unlocalizedName](const std::vector<BlockArgumentCaller>& args)
+	*parentExecution = [/*execute, blockInit, unlocalizedName*/](const std::vector<BlockArgumentCaller>& args)
 	{
+		Logger::Debug("test");//TODO remove this
+		return true;
+
+		/*
 		std::vector<std::string> parsedArgs;
 
 		for (uint16_t i = 0; i < args.size(); i++)
@@ -44,7 +48,7 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 				}
 			}
 
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW || blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW || blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP)
 				parsedArgs.push_back(args[i].Value);
 			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
 			{
@@ -85,6 +89,7 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 		}
 
 		return (*execute)(parsedArgs);
+		*/
 	};
 
 	RegBlock* block = new RegBlock();
