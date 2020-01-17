@@ -44,7 +44,7 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 				}
 			}
 
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW || blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW || blockInit[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP)
 				parsedArgs.push_back(args[i].Value);
 			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
 			{

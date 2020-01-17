@@ -382,6 +382,8 @@ bool VariableHandler::SetReal(const char* name, double value)
 	}
 
 	m_mutex.unlock();
+	Logger::Error("variable \"" + std::string(name) + "\" does not exist");
+
 	return false;
 }
 
@@ -409,6 +411,8 @@ bool VariableHandler::SetString(const char* name, std::string value)
 	}
 
 	m_mutex.unlock();
+	Logger::Error("variable \"" + std::string(name) + "\" does not exist");
+
 	return false;
 }
 
@@ -436,6 +440,8 @@ bool VariableHandler::SetBool(const char* name, bool value)
 	}
 
 	m_mutex.unlock();
+	Logger::Error("variable \"" + std::string(name) + "\" does not exist");
+
 	return false;
 }
 

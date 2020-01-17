@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <shared_mutex>
 
 class ByteHandler
 {
@@ -17,4 +18,5 @@ private:
 	static unsigned char* m_bytes;
 	static bool* m_bytesBinary;
 	static unsigned long long* m_bytesSize;
+	static std::shared_mutex m_mutex;
 };

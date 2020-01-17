@@ -23,18 +23,11 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			if (!VariableHandler::SetReal(args[0].c_str(), ObjectHandler::CreateObject(new RuntimeObject())))
-			{
-				Logger::Error("variable \"" + args[0] + "\" does not exist");
-				return false;
-			}
-
-			return true;
+			return VariableHandler::SetReal(args[0].c_str(), ObjectHandler::CreateObject(new RuntimeObject()));
 		};
-
 		RegBlock* block = BlockRegistry::CreateBlock("vin_object_new", "vin_objects", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "new object"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "obj"}
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "obj"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -42,26 +35,8 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			double* index = VariableHandler::GetReal(args[0].c_str());
-			if (index == nullptr)
-			{
-				Logger::Error("variable \"" + args[0] + "\" does not exist");
-				return false;
-			}
-
-			ObjectHandler::ObjectMutex->lock();
-			bool result = ObjectHandler::DestroyObject(*index);
-			ObjectHandler::ObjectMutex->unlock();
-
-			if (!result)
-			{
-				Logger::Error("object \"" + std::to_string(*index) + "\" does not exist");
-				return false;
-			}
-
-			return true;
+			return ObjectHandler::DestroyObject(std::stod(args[0]));
 		};
-
 		RegBlock* block = BlockRegistry::CreateBlock("vin_object_delete", "vin_objects", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "destroy object"},
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "obj"}
@@ -72,23 +47,601 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			unsigned long long address = ByteHandler::AllocateBytes(std::stoull(args[0]));
-
-			bool result = VariableHandler::SetReal(args[1].c_str(), address);
-			if (!result)
-			{
-				Logger::Error("variable \"" + args[1] + "\" does not exist");
-				return false;
-			}
-
-			return true;
+			return VariableHandler::SetReal(args[1].c_str(), ByteHandler::AllocateBytes(std::stod(args[0])));
 		};
-
 		RegBlock* block = BlockRegistry::CreateBlock("vin_byte_alloc", "vin_bytes", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "alloc"},
-			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "10"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "bytes to"},
-			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"}
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return ByteHandler::DeallocateBytes(std::stod(args[1]), std::stod(args[0]));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_byte_free", "vin_bytes", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "bytes at"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return ByteHandler::SetByte(std::stod(args[0]), std::min((uint64_t)255, (uint64_t)std::stod(args[1])));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_byte_set", "vin_bytes", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "set byte at"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "bytes to"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			unsigned char* bytes = ByteHandler::GetByte(std::stod(args[0]));
+
+			if (bytes == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[1].c_str(), *bytes);
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_byte_get", "vin_bytes", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "get byte at"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_execution_mark", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mark point"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "point"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_execution_goto", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "goto point"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "point"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_execution_if", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "goto point"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "point"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "if"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_execution_block_sync", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "enable block sync"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_execution_block_manual_render", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "enable manual rendering"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_execution_block_render_frame", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "render frame"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetBool(args[0].c_str(), sf::Mouse::isButtonPressed(sf::Mouse::Left));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_left", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse left"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetBool(args[0].c_str(), sf::Mouse::isButtonPressed(sf::Mouse::Right));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_right", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse right"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetBool(args[0].c_str(), sf::Mouse::isButtonPressed(sf::Mouse::Middle));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_middle", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse middle"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetReal(args[0].c_str(), sf::Mouse::getPosition(*RuntimeHandler::Window).x);
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_x", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse x"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetReal(args[0].c_str(), sf::Mouse::getPosition(*RuntimeHandler::Window).y);
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_y", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse y"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			int value = RuntimeHandler::GetScrolled();
+			RuntimeHandler::ResetScrolled();
+
+			return VariableHandler::SetReal(args[0].c_str(), value);
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_scroll", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pull mouse scroll"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeHandler::ResetScrolled();
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_scroll_reset", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "reset mouse scroll"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetBool(args[1].c_str(), sf::Keyboard::isKeyPressed((sf::Keyboard::Key)(uint64_t)floor(std::stod(args[0]))));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_input_mouse_key", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "key down"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), *gotValue + std::stod(args[1]));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_+=", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "+="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), *gotValue - std::stod(args[1]));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_-=", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "-="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), *gotValue * std::stod(args[1]));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_*=", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "*="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), *gotValue / std::stod(args[1]));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_/=", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "/="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), (uint64_t)floor(*gotValue) % (uint64_t)floor(std::stod(args[1])));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_%=", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "%="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetReal(args[0].c_str(), std::stod(args[1]));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_=_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetString(args[0].c_str(), args[1]);
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_=_string", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "="},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, ""}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetBool(args[0].c_str(), args[1] == "1");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_=_bool", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "="},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::SetBool(args[0].c_str(), args[1] == "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_!=_bool", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "!="},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), floor(*gotValue));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_floor", "vin_operations", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "floor"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), round(*gotValue));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_round", "vin_operations", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "round"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue = VariableHandler::GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return VariableHandler::SetReal(args[0].c_str(), ceil(*gotValue));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_ceil", "vin_operations", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "ceil"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue0 = VariableHandler::GetReal(args[0].c_str());
+			double* gotValue1 = VariableHandler::GetReal(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 == *gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_==_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "=="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			std::string* gotValue0 = VariableHandler::GetString(args[0].c_str());
+			std::string* gotValue1 = VariableHandler::GetString(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 == *gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_==_string", "vin_operations", execution, {
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "=="},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue0 = VariableHandler::GetReal(args[0].c_str());
+			double* gotValue1 = VariableHandler::GetReal(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 != *gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_!=_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "!="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			std::string* gotValue0 = VariableHandler::GetString(args[0].c_str());
+			std::string* gotValue1 = VariableHandler::GetString(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 != *gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_!=_string", "vin_operations", execution, {
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "!="},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue0 = VariableHandler::GetReal(args[0].c_str());
+			double* gotValue1 = VariableHandler::GetReal(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 > *gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_>_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, ">"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue0 = VariableHandler::GetReal(args[0].c_str());
+			double* gotValue1 = VariableHandler::GetReal(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 >= * gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_>=_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, ">="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue0 = VariableHandler::GetReal(args[0].c_str());
+			double* gotValue1 = VariableHandler::GetReal(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 < * gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_<_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "<"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			double* gotValue0 = VariableHandler::GetReal(args[0].c_str());
+			double* gotValue1 = VariableHandler::GetReal(args[1].c_str());
+
+			if (gotValue0 == nullptr || gotValue1 == nullptr)
+				return false;
+
+			return VariableHandler::SetBool(args[2].c_str(), *gotValue0 <= *gotValue1 ? "1" : "0");
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_operations_<=_real", "vin_operations", execution, {
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "<="},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
 			});
 		data->RegisterBlock(*block);
 	}
