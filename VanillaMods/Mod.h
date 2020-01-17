@@ -1,5 +1,6 @@
 #pragma once
 #include <RHR/RHR.h>
+#include <cmath>
 
 #ifdef LINUX
 #define UB_EXPORT extern "C"
