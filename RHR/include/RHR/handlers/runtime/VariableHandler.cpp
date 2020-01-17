@@ -9,6 +9,9 @@ void VariableHandler::Alloc()
 	m_stackNames = (const char**)calloc(MEM_COUNT, sizeof(const char*));
 	m_heapNames = new std::vector<const char*>();
 
+	//TODO remove this line
+	m_stackNames[0] = "testing";
+
 	m_stackReal = (double**)calloc(MEM_COUNT, sizeof(double*));
 	m_stackString = (std::string**)calloc(MEM_COUNT, sizeof(std::string*));
 	m_stackBool = (bool**)calloc(MEM_COUNT, sizeof(bool*));

@@ -808,8 +808,7 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			Logger::Error("this block is not meant to be executed");
-			return false;
+			return true;
 		};
 		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_open", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "open thread"}
@@ -1084,7 +1083,8 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			return VariableHandler::HeapReal(args[0].c_str());
+			VariableHandler::HeapReal(args[0].c_str());
+			return true;
 		};
 		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_heap_real", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "heap real"},
@@ -1096,7 +1096,8 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			return VariableHandler::HeapString(args[0].c_str());
+			VariableHandler::HeapString(args[0].c_str());
+			return true;
 		};
 		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_heap_string", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "heap string"},
@@ -1108,7 +1109,8 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			return VariableHandler::HeapBool(args[0].c_str());
+			VariableHandler::HeapBool(args[0].c_str());
+			return true;
 		};
 		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_heap_bool", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "heap bool"},
@@ -1182,7 +1184,7 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [](const std::vector<std::string>& args)
 		{
-			Logger::Info("[BOOL] " + (args[0] ? "true" : "false"));
+			Logger::Info(std::string("[BOOL] ") + (args[0] == "1" ? "true" : "false"));
 			return true;
 		};
 		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_log_bool", "vin_variables", execution, {
