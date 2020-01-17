@@ -804,4 +804,98 @@ UB_EXPORT void Initialization(ModData* data)
 			});
 		data->RegisterBlock(*block);
 	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_open", "vin_threading", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "open thread"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			std::this_thread::sleep_for(std::chrono::microseconds((uint64_t)floor(std::stod(args[0]) * 1000.0)));
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_sleep", "vin_threading", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "sleep thread"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1000"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_function_define", "vin_threading", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function define"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "function"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_function_call", "vin_threading", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function call"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "function"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			int searchResult = RuntimeHandler::PerformFunctionSearch(args[0]);
+			if (searchResult == -1)
+			{
+				Logger::Error("function \"" + args[0] + "\" does not exist");
+				return false;
+			}
+
+			double threadId = ThreadHandler::SummonThread(searchResult);
+			Logger::Debug("summoned thread " + std::to_string(threadId));
+
+			if (!VariableHandler::SetReal(args[1].c_str(), threadId))
+			{
+				Logger::Warn("undocumented thread released! this may cause undefined behavior!");
+				return false;
+			}
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_function_thread", "vin_threading", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function thread"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "function"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "thread_id"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Debug("killing thread " + args[0]);
+			return ThreadHandler::KillThread((uint64_t)floor(std::stod(args[0])));
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_thread_kill_thread", "vin_threading", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "kill thread"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "thread_id"}
+			});
+		data->RegisterBlock(*block);
+	}
 }
