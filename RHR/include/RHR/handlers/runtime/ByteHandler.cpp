@@ -24,7 +24,7 @@ void ByteHandler::Dealloc()
 
 unsigned long long ByteHandler::AllocateBytes(unsigned long long size)
 {
-	std::unique_lock<std::shared_mutex> lock(m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(m_mutex);
 
 	unsigned long long sprint = 0;
 	unsigned long long count = 0;
@@ -61,7 +61,7 @@ unsigned long long ByteHandler::AllocateBytes(unsigned long long size)
 
 bool ByteHandler::DeallocateBytes(unsigned long long address, unsigned long long size)
 {
-	std::unique_lock<std::shared_mutex> lock(m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(m_mutex);
 
 	if (address + size > * m_bytesSize)
 	{
@@ -77,7 +77,7 @@ bool ByteHandler::DeallocateBytes(unsigned long long address, unsigned long long
 
 unsigned char* ByteHandler::GetByte(unsigned long long address)
 {
-	std::shared_lock<std::shared_mutex> lock(m_mutex);
+	std::shared_lock<std::shared_timed_mutex> lock(m_mutex);
 
 	if (address >= *m_bytesSize)
 		return nullptr;
@@ -87,7 +87,7 @@ unsigned char* ByteHandler::GetByte(unsigned long long address)
 
 bool ByteHandler::SetByte(unsigned long long address, unsigned char value)
 {
-	std::unique_lock<std::shared_mutex> lock(m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(m_mutex);
 
 	if (address >= *m_bytesSize)
 	{
@@ -105,4 +105,4 @@ bool* ByteHandler::m_bytesBinary;
 
 unsigned long long* ByteHandler::m_bytesSize;
 
-std::shared_mutex ByteHandler::m_mutex;
+std::shared_timed_mutex ByteHandler::m_mutex;
