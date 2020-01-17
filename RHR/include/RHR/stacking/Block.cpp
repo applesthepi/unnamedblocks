@@ -14,11 +14,11 @@ Block::Block(std::string type)
 	m_selected = false;
 	m_wasDown = false;
 
-	const RegBlock* blockDetails = BlockRegistry::GetBlock(type);
+	const RegBlock* blockDetails = BlockRegistry::MainRegistry->GetBlock(type);
 	if (blockDetails == nullptr)
 		return;
 
-	const RegCatagory* catagoryDetails = BlockRegistry::GetCatagory(blockDetails->Catagory);
+	const RegCatagory* catagoryDetails = BlockRegistry::MainRegistry->GetCatagory(blockDetails->Catagory);
 	if (catagoryDetails == nullptr)
 		return;
 

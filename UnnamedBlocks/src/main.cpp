@@ -33,12 +33,12 @@ static void ReloadCatagory(unsigned index)
 	unsigned int idx = 0;
 	unsigned int widest = 0;
 
-	for (unsigned int a = 0; a < BlockRegistry::GetBlocks()->size(); a++)
+	for (unsigned int a = 0; a < BlockRegistry::MainRegistry->GetBlocks()->size(); a++)
 	{
-		if ((*BlockRegistry::GetBlocks())[a].Catagory == (*BlockRegistry::GetCatagories())[index].UnlocalizedName)
+		if ((*BlockRegistry::MainRegistry->GetBlocks())[a].Catagory == (*BlockRegistry::MainRegistry->GetCatagories())[index].UnlocalizedName)
 		{
 			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))));
-			Block* block = new Block((*BlockRegistry::GetBlocks())[a].UnlocalizedName);
+			Block* block = new Block((*BlockRegistry::MainRegistry->GetBlocks())[a].UnlocalizedName);
 
 			toolbarPlane->AddStack(stack);
 			stack->AddBlock(block);
@@ -104,12 +104,13 @@ int main()
 
 	Global::LoadDefaults();//must be first
 
-	BlockRegistry::Initialize();
-	run();
+	BlockRegistry::MainRegistry->Initialize();
 
 	MessageHandler::Initialize();
 	TypingSystem::Initialization();
 	ButtonRegistry::Initialize();
+
+	run();
 
 	Plane::Planes = new std::vector<Plane*>();
 
@@ -120,7 +121,7 @@ int main()
 	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
 	Plane::Planes->push_back(primaryPlane);
 
-	for (unsigned int i = 0; i < BlockRegistry::GetCatagories()->size(); i++)
+	for (unsigned int i = 0; i < BlockRegistry::MainRegistry->GetCatagories()->size(); i++)
 	{
 		std::function<void()>* callback = new std::function<void()>();
 		*callback = [i]()
@@ -132,7 +133,7 @@ int main()
 		};
 
 		Button* cat = new Button(sf::Vector2i(5, 5 + (i * (16 + 5))), sf::Vector2u(100, 16), callback);
-		cat->SetButtonModeText((*BlockRegistry::GetCatagories())[i].DisplayName, (*BlockRegistry::GetCatagories())[i].Color, 12);
+		cat->SetButtonModeText((*BlockRegistry::MainRegistry->GetCatagories())[i].DisplayName, (*BlockRegistry::MainRegistry->GetCatagories())[i].Color, 12);
 
 		catButtons.push_back(cat);
 		ButtonRegistry::AddButton(cat);
@@ -275,12 +276,12 @@ int main()
 	{
 		unsigned int idx = 0;
 
-		for (unsigned int i = 0; i < BlockRegistry::GetBlocks()->size(); i++)
+		for (unsigned int i = 0; i < BlockRegistry::MainRegistry->GetBlocks()->size(); i++)
 		{
-			if ((*BlockRegistry::GetBlocks())[i].Catagory == (*BlockRegistry::GetCatagories())[0].UnlocalizedName)
+			if ((*BlockRegistry::MainRegistry->GetBlocks())[i].Catagory == (*BlockRegistry::MainRegistry->GetCatagories())[0].UnlocalizedName)
 			{
 				Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))));
-				Block* block = new Block((*BlockRegistry::GetBlocks())[i].UnlocalizedName);
+				Block* block = new Block((*BlockRegistry::MainRegistry->GetBlocks())[i].UnlocalizedName);
 
 				toolbarPlane->AddStack(stack);
 				stack->AddBlock(block);

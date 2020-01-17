@@ -98,14 +98,14 @@ ModLoaderStatus run()
 #endif
 		initialize((*mods)[i].Data);
 
-		const std::vector<RegCatagory>* catagories = (*mods)[i].Data->GetCatagories();
-		const std::vector<RegBlock>* blocks = (*mods)[i].Data->GetBlocks();
+		std::vector<RegCatagory>* catagories = (*mods)[i].Data->GetCatagories();
+		std::vector<RegBlock>* blocks = (*mods)[i].Data->GetBlocks();
 
 		for (uint32_t i = 0; i < catagories->size(); i++)
-			BlockRegistry::RegisterCatagory(&(*catagories)[i]);
+			BlockRegistry::MainRegistry->RegisterCatagory(&(*catagories)[i]);
 
 		for (uint32_t i = 0; i < blocks->size(); i++)
-			BlockRegistry::RegisterBlock(&(*blocks)[i]);
+			BlockRegistry::MainRegistry->RegisterBlock(&(*blocks)[i]);
 	}
 
 	delete mods;

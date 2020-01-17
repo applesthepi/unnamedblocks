@@ -26,7 +26,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 
 	while (RuntimeHandler::Running && *running)
 	{
-		const RegBlock* regBlock = BlockRegistry::GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
+		const RegBlock* regBlock = BlockRegistry::MainRegistry->GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
 		BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
 
 		if (regBlock->UnlocalizedName == "vin_execution_mark")
@@ -166,7 +166,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		{
 			std::string functionText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
 
-			std::string functionName = std::string();
+			std::string functionName;
 
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
 				functionName = functionText;

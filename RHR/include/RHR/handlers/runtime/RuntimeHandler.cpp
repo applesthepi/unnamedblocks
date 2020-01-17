@@ -59,7 +59,7 @@ void RuntimeHandler::Run(Plane* planeCopy)
 		}
 		else if (planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName() == "vin_thread_function_define")
 		{
-			const RegBlock* regBlock = BlockRegistry::GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
+			const RegBlock* regBlock = BlockRegistry::MainRegistry->GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
 			BlockRuntimeReturn args = planeCopy->GetStack(i)->GetBlock(0)->GetUsedArgumentsRuntime();
 
 			std::string functionText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);

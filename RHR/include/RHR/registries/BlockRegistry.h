@@ -77,6 +77,10 @@ public:
 	std::vector<BlockArgument> Args;
 	std::string UnlocalizedName;
 	std::string Catagory;
+
+	//carry
+	std::vector<BlockArgumentInitializer>* BlockInit;
+	std::function<bool(const std::vector<std::string>&)>* BlockExecute;
 };
 
 class RegCatagory
@@ -94,17 +98,22 @@ class BlockRegistry
 {
 public:
 	static void Initialize();
-	static void RegisterCatagory(const RegCatagory* catagory);
-	static void RegisterBlock(const RegBlock* block);
+	BlockRegistry();
 
-	static const RegBlock* GetBlock(std::string unlocalizedName);
-	static const RegCatagory* GetCatagory(std::string unlocalizedName);
+	void RegisterCatagory(RegCatagory* catagory);
+	void RegisterBlock(RegBlock* block);
 
-	static std::vector<RegBlock>* GetBlocks();
-	static std::vector<RegCatagory>* GetCatagories();
+	const RegBlock* GetBlock(std::string unlocalizedName);
+	const RegCatagory* GetCatagory(std::string unlocalizedName);
 
-	static RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
+	std::vector<RegBlock>* GetBlocks();
+	std::vector<RegCatagory>* GetCatagories();
+
+	RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
+	void FinalizeBlock(RegBlock* block);
+
+	static BlockRegistry* MainRegistry;
 private:
-	static std::vector<RegBlock>* m_blocks;
-	static std::vector<RegCatagory>* m_catagories;
+	std::vector<RegBlock>* m_blocks;
+	std::vector<RegCatagory>* m_catagories;
 };

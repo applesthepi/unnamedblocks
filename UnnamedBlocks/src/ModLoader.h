@@ -12,7 +12,7 @@ class RegMod
 {
 public:
 	RegMod(const std::string fileName)
-		:Supported_WIN(false), Supported_LINUX(false), Data(new ModData()), FileName(fileName) {}
+		:Supported_WIN(false), Supported_LINUX(false), Data(new ModData(BlockRegistry::MainRegistry)), FileName(fileName) {}
 
 	void SupportWIN()
 	{
