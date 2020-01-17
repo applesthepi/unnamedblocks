@@ -898,4 +898,297 @@ UB_EXPORT void Initialization(ModData* data)
 			});
 		data->RegisterBlock(*block);
 	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject((uint64_t)floor(std::stod(args[0])));
+			
+			if (run == nullptr)
+				return false;
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Position.x = std::stod(args[1]);
+			run->Position.y = std::stod(args[2]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_transform_translate_to", "vin_transform", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "translate"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject((uint64_t)floor(std::stod(args[0])));
+			
+			if (run == nullptr)
+				return false;
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Position.x += std::stod(args[1]);
+			run->Position.y += std::stod(args[2]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_transform_translate_by", "vin_transform", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "translate"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "by"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject((uint64_t)floor(std::stod(args[0])));
+			
+			if (run == nullptr)
+				return false;
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Scale.x = std::stod(args[1]);
+			run->Scale.y = std::stod(args[2]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_transform_scale_to", "vin_transform", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "scale"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject((uint64_t)floor(std::stod(args[0])));
+
+			if (run == nullptr)
+				return false;
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Scale.x += std::stod(args[1]);
+			run->Scale.y += std::stod(args[2]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_transform_scale_by", "vin_transform", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "scale"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "by"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject((uint64_t)floor(std::stod(args[0])));
+
+			if (run == nullptr)
+				return false;
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Angle = std::stod(args[1]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_transform_rotate_to", "vin_transform", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "rotate"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject((uint64_t)floor(std::stod(args[0])));
+
+			if (run == nullptr)
+				return false;
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Angle += std::stod(args[1]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_transform_rotate_by", "vin_transform", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "rotate"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "by"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "0"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::StackReal(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_stack_real", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "stack real"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::StackString(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_stack_string", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "stack string"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::StackBool(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_stack_bool", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "stack bool"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::HeapReal(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_heap_real", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "heap real"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::HeapString(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_heap_string", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "heap string"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::HeapBool(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_heap_bool", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "heap bool"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::FreeReal(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_free_real", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free real"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::FreeString(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_free_string", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free string"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			return VariableHandler::FreeBool(args[0].c_str());
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_free_bool", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free bool"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Info("[REAL] " + args[0]);
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_log_real", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "log real"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Info("[STRING] " + args[0]);
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_log_string", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "log string"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			Logger::Info("[BOOL] " + (args[0] ? "true" : "false"));
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_varaibles_log_bool", "vin_variables", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "log bool"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
 }
