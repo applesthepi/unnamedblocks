@@ -660,7 +660,7 @@ UB_EXPORT void Initialization(ModData* data)
 			sf::Sprite* sp = new sf::Sprite();
 			sp->setTexture(*txt);
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Textures.push_back(txt);
 			run->Sprites.push_back(sp);
@@ -690,7 +690,7 @@ UB_EXPORT void Initialization(ModData* data)
 				return false;
 			}
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Textures.erase(run->Textures.begin() + (uint64_t)std::stod(args[0]));
 			run->Sprites.erase(run->Sprites.begin() + (uint64_t)std::stod(args[0]));
@@ -726,7 +726,7 @@ UB_EXPORT void Initialization(ModData* data)
 			sf::Sprite* sp = new sf::Sprite();
 			sp->setTexture(*txt);
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Textures.insert(run->Textures.begin() + (uint64_t)std::stod(args[0]), txt);
 			run->Sprites.insert(run->Sprites.begin() + (uint64_t)std::stod(args[0]), sp);
@@ -758,7 +758,7 @@ UB_EXPORT void Initialization(ModData* data)
 				return false;
 			}
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Textures[(uint64_t)std::stod(args[0])]->loadFromFile(args[2]);
 			run->Sprites[(uint64_t)std::stod(args[0])]->setTexture(*run->Textures[(uint64_t)std::stod(args[0])]);
@@ -790,7 +790,7 @@ UB_EXPORT void Initialization(ModData* data)
 				return false;
 			}
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->ImageIndex = (uint64_t)std::stod(args[0]);
 
@@ -906,7 +906,7 @@ UB_EXPORT void Initialization(ModData* data)
 			if (run == nullptr)
 				return false;
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Position.x = std::stod(args[1]);
 			run->Position.y = std::stod(args[2]);
@@ -931,7 +931,7 @@ UB_EXPORT void Initialization(ModData* data)
 			if (run == nullptr)
 				return false;
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Position.x += std::stod(args[1]);
 			run->Position.y += std::stod(args[2]);
@@ -956,7 +956,7 @@ UB_EXPORT void Initialization(ModData* data)
 			if (run == nullptr)
 				return false;
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Scale.x = std::stod(args[1]);
 			run->Scale.y = std::stod(args[2]);
@@ -981,7 +981,7 @@ UB_EXPORT void Initialization(ModData* data)
 			if (run == nullptr)
 				return false;
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Scale.x += std::stod(args[1]);
 			run->Scale.y += std::stod(args[2]);
@@ -1006,7 +1006,7 @@ UB_EXPORT void Initialization(ModData* data)
 			if (run == nullptr)
 				return false;
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Angle = std::stod(args[1]);
 
@@ -1029,7 +1029,7 @@ UB_EXPORT void Initialization(ModData* data)
 			if (run == nullptr)
 				return false;
 
-			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+			std::unique_lock<std::shared_timed_mutex> lock(ObjectHandler::ObjectMutex);
 
 			run->Angle += std::stod(args[1]);
 

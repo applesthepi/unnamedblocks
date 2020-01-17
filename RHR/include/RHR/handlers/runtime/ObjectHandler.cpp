@@ -20,7 +20,7 @@ void ObjectHandler::Dealloc()
 
 void ObjectHandler::FrameUpdate(sf::RenderWindow* window)
 {
-	std::shared_lock<std::shared_mutex> lock(ObjectMutex);
+	std::shared_lock<std::shared_timed_mutex> lock(ObjectMutex);
 
 	for (unsigned int i = 0; i < m_objects->size(); i++)
 	{
@@ -36,7 +36,7 @@ void ObjectHandler::FrameUpdate(sf::RenderWindow* window)
 
 void ObjectHandler::Render(sf::RenderWindow* window)
 {
-	std::shared_lock<std::shared_mutex> lock(ObjectMutex);
+	std::shared_lock<std::shared_timed_mutex> lock(ObjectMutex);
 
 	for (unsigned int i = 0; i < m_objects->size(); i++)
 	{
@@ -48,7 +48,7 @@ void ObjectHandler::Render(sf::RenderWindow* window)
 
 RuntimeObject* ObjectHandler::GetObject(unsigned long long objectId)
 {
-	std::shared_lock<std::shared_mutex> lock(ObjectMutex);
+	std::shared_lock<std::shared_timed_mutex> lock(ObjectMutex);
 
 	for (unsigned long long i = 0; i < m_objects->size(); i++)
 	{
@@ -64,7 +64,7 @@ RuntimeObject* ObjectHandler::GetObject(unsigned long long objectId)
 
 unsigned long long ObjectHandler::CreateObject(RuntimeObject* object)
 {
-	std::unique_lock<std::shared_mutex> lock(ObjectMutex);
+	std::unique_lock<std::shared_timed_mutex> lock(ObjectMutex);
 
 	object->Id = ++(*m_idCount);
 	m_objects->push_back(object);
@@ -74,7 +74,7 @@ unsigned long long ObjectHandler::CreateObject(RuntimeObject* object)
 
 bool ObjectHandler::DestroyObject(unsigned long long objectId)
 {
-	std::unique_lock<std::shared_mutex> lock(ObjectMutex);
+	std::unique_lock<std::shared_timed_mutex> lock(ObjectMutex);
 
 	for (unsigned long long i = 0; i < m_objects->size(); i++)
 	{
@@ -90,7 +90,7 @@ bool ObjectHandler::DestroyObject(unsigned long long objectId)
 	return false;
 }
 
-std::shared_mutex ObjectHandler::ObjectMutex;
+std::shared_timed_mutex ObjectHandler::ObjectMutex;
 
 std::vector<RuntimeObject*>* ObjectHandler::m_objects;
 
