@@ -645,4 +645,163 @@ UB_EXPORT void Initialization(ModData* data)
 			});
 		data->RegisterBlock(*block);
 	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject(std::stod(args[1]));
+
+			if (run == nullptr)
+				return false;
+
+			sf::Texture* txt = new sf::Texture();
+			txt->loadFromFile(args[0]);
+
+			sf::Sprite* sp = new sf::Sprite();
+			sp->setTexture(*txt);
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Textures.push_back(txt);
+			run->Sprites.push_back(sp);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_texture_add", "vin_textures", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "add texture"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "path"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject(std::stod(args[1]));
+
+			if (run == nullptr)
+				return false;
+
+			if ((uint64_t)std::stod(args[0]) >= run->Textures.size())
+			{
+				Logger::Error("can not remove texture \"" + args[0] + "\" of object \"" + args[1]);
+				return false;
+			}
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Textures.erase(run->Textures.begin() + (uint64_t)std::stod(args[0]));
+			run->Sprites.erase(run->Sprites.begin() + (uint64_t)std::stod(args[0]));
+			
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_texture_remove", "vin_textures", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "remove texture at"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject(std::stod(args[1]));
+
+			if (run == nullptr)
+				return false;
+
+			if ((uint64_t)std::stod(args[0]) > run->Textures.size())
+			{
+				Logger::Error("can not insert texture \"" + args[0] + "\" of object \"" + args[1]);
+				return false;
+			}
+
+			sf::Texture* txt = new sf::Texture();
+			txt->loadFromFile(args[2]);
+
+			sf::Sprite* sp = new sf::Sprite();
+			sp->setTexture(*txt);
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Textures.insert(run->Textures.begin() + (uint64_t)std::stod(args[0]), txt);
+			run->Sprites.insert(run->Sprites.begin() + (uint64_t)std::stod(args[0]), sp);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_texture_insert", "vin_textures", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "insert texture at"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "with texture"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "path"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject(std::stod(args[1]));
+
+			if (run == nullptr)
+				return false;
+
+			if ((uint64_t)std::stod(args[0]) > run->Textures.size())
+			{
+				Logger::Error("can not replace texture \"" + args[0] + "\" of object \"" + args[1]);
+				return false;
+			}
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->Textures[(uint64_t)std::stod(args[0])]->loadFromFile(args[2]);
+			run->Sprites[(uint64_t)std::stod(args[0])]->setTexture(*run->Textures[(uint64_t)std::stod(args[0])]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_texture_replace", "vin_textures", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "replace texture at"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "with texture"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "path"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [](const std::vector<std::string>& args)
+		{
+			RuntimeObject* run = ObjectHandler::GetObject(std::stod(args[1]));
+
+			if (run == nullptr)
+				return false;
+
+			if ((uint64_t)std::stod(args[0]) > run->Textures.size())
+			{
+				Logger::Error("can not switch texture to \"" + args[0] + "\" of object \"" + args[1]);
+				return false;
+			}
+
+			std::unique_lock<std::shared_mutex> lock(ObjectHandler::ObjectMutex);
+
+			run->ImageIndex = (uint64_t)std::stod(args[0]);
+
+			return true;
+		};
+		RegBlock* block = BlockRegistry::CreateBlock("vin_texture_switch", "vin_textures", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "switch texture to"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
 }
