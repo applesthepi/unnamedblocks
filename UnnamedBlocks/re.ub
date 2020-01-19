@@ -1,1 +1,0 @@
-58;56;vin_thread_open;;vin_stack_real;0var;;vin_object_new;1var;;vin_texture_add;0res/test.png;1var;;vin_transform_secale_to;1var;010;010;;vin_transform_translate_to;1var;0500;0300;;vin_execution_block_sync;01;;vin_execution_mark;0point;;vin_transform_rotate_by;1var;03;;vin_transform_scale_by;1var;00.1;00;;vin_execution_goto;0point;;;

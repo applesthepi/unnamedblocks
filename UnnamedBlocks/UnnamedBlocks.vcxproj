@@ -77,20 +77,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\..\</OutDir>
-    <IntDir>$(SolutionDir)\INT\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\INT\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\..\</OutDir>
-    <IntDir>$(SolutionDir)\INT\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\INT\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)\..\</OutDir>
-    <IntDir>$(SolutionDir)\INT\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\INT\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)\..\</OutDir>
-    <IntDir>$(SolutionDir)\INT\</IntDir>
+    <OutDir>$(SolutionDir)</OutDir>
+    <IntDir>$(ProjectDir)\INT\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -98,7 +98,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\dep\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -113,7 +113,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\dep\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -130,7 +130,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\dep\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\dep\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>

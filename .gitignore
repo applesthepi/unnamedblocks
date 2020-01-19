@@ -6,6 +6,7 @@ UnnamedBlocks/dep/RHR/
 UnnamedBlocks/.vs/
 **.o
 unnamedblocks
+UnnamedBlocks.exe
 **.dll
 **.lib
 **.ilk

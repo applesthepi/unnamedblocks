@@ -1,4 +1,0 @@
-BYTES
-	setting a bytes is not safe! this will get overriden if not allocated first. You can also set unintentinal bytes that can change other buffers you have allocated.
-	freeing bytes will remove all data from the said buffer
-	

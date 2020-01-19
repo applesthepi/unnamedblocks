@@ -31,5 +31,5 @@ public:
 	bool Supported_LINUX;
 };
 
-void registerMod(const std::string& fileName, const std::string& fileType);
+void registerMod(std::string& fileName, std::string& fileType);
 ModLoaderStatus run();

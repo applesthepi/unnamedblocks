@@ -11,7 +11,7 @@
 
 std::vector<RegMod>* mods;
 
-void registerMod(const std::string& fileName, const std::string& fileType)
+void registerMod(std::string& fileName, std::string& fileType)
 {
 	for (uint32_t i = 0; i < mods->size(); i++)
 	{
@@ -47,7 +47,11 @@ ModLoaderStatus run()
 	boost::filesystem::path pathMods("mods/");
 
 	for (auto& entry : boost::filesystem::directory_iterator(pathMods))//https://stackoverflow.com/questions/4430780/how-can-i-extract-the-file-name-and-extension-from-a-path-in-c
-		registerMod(entry.path().stem().string(), entry.path().extension().string());
+	{
+		std::string na = entry.path().stem().string();
+		std::string ex = entry.path().extension().string();
+		registerMod(na, ex);
+	}
 
 	for (uint16_t i = 0; i < mods->size(); i++)
 	{
@@ -92,7 +96,7 @@ ModLoaderStatus run()
 		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "Initialization");
 		if (initialize == nullptr)
 		{
-			Logger::Error("failed to load proper functions for mod \"" + mods.at(i).FileName + "\"");
+			Logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif
