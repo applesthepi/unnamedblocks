@@ -73,7 +73,7 @@ ModLoaderStatus run()
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
-		dlclose(so);
+		//dlclose(so);
 #else
 		if (!(*mods)[i].Supported_WIN)
 		{
@@ -92,7 +92,7 @@ ModLoaderStatus run()
 		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "Initialization");
 		if (initialize == nullptr)
 		{
-			Logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			Logger::Error("failed to load proper functions for mod \"" + mods.at(i).FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif
