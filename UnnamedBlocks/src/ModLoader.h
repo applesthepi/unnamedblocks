@@ -32,4 +32,4 @@ public:
 };
 
 void registerMod(std::string& fileName, std::string& fileType);
-ModLoaderStatus run();
+ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable);

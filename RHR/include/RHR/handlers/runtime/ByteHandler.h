@@ -7,17 +7,20 @@
 class ByteHandler
 {
 public:
-	static void Alloc();
-	static void Dealloc();
+	ByteHandler();
+	~ByteHandler();
 
-	static unsigned long long AllocateBytes(unsigned long long size);
-	static bool DeallocateBytes(unsigned long long address, unsigned long long size);
+	void Reset();
+	unsigned long long AllocateBytes(unsigned long long size);
+	bool DeallocateBytes(unsigned long long address, unsigned long long size);
 
-	static unsigned char* GetByte(unsigned long long address);
-	static bool SetByte(unsigned long long address, unsigned char value);
+	unsigned char* GetByte(unsigned long long address);
+	bool SetByte(unsigned long long address, unsigned char value);
+
+	ByteHandler& operator=(const ByteHandler& other);
 private:
-	static unsigned char* m_bytes;
-	static bool* m_bytesBinary;
-	static unsigned long long* m_bytesSize;
-	static std::shared_timed_mutex m_mutex;
+	unsigned char* m_bytes;
+	bool* m_bytesBinary;
+	unsigned long long* m_bytesSize;
+	std::shared_timed_mutex m_mutex;
 };

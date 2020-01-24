@@ -18,9 +18,9 @@ void BlockRegistry::RegisterCatagory(RegCatagory* catagory)
 	m_catagories->push_back(*catagory);
 }
 
-void BlockRegistry::RegisterBlock(RegBlock* block)
+void BlockRegistry::RegisterBlock(RegBlock* block, VariableHandler* variables)
 {
-	FinalizeBlock(block);
+	FinalizeBlock(block, variables);
 	m_blocks->push_back(*block);
 }
 
@@ -69,10 +69,18 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 	return block;
 }
 
-void BlockRegistry::FinalizeBlock(RegBlock* block)
+void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 {
+	std::vector<BlockArgumentInitializer> blockUseArgs;
+
+	for (uint32_t i = 0; i < block->BlockInit->size(); i++)
+	{
+		if (block->BlockInit->at(i).Type != BlockArgumentType::TEXT)
+			blockUseArgs.push_back(block->BlockInit->at(i));
+	}
+
 	std::function<bool(const std::vector<BlockArgumentCaller>&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&)>();
-	*parentExecution = [block](const std::vector<BlockArgumentCaller>& args)
+	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args)
 	{
 		//VariableHandler::Alloc();
 
@@ -80,7 +88,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block)
 
 		for (uint16_t i = 0; i < args.size(); i++)
 		{
-			if ((*block->BlockInit)[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_RAW)
+			if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_RAW)
 			{
 				if (args[i].Mode == BlockArgumentVariableMode::VAR)
 				{
@@ -88,7 +96,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block)
 					return false;
 				}
 			}
-			else if ((*block->BlockInit)[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
+			else if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
 			{
 				if (args[i].Mode == BlockArgumentVariableMode::RAW)
 				{
@@ -97,13 +105,13 @@ void BlockRegistry::FinalizeBlock(RegBlock* block)
 				}
 			}
 
-			if ((*block->BlockInit)[i].Mode == BlockArgumentVariableMode::RAW || (*block->BlockInit)[i].Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP)
+			if (blockUseArgs.at(i).Mode == BlockArgumentVariableMode::RAW || blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP)
 				parsedArgs.push_back(args[i].Value);
-			else if ((*block->BlockInit)[i].Mode == BlockArgumentVariableMode::VAR)
+			else if (blockUseArgs.at(i).Mode == BlockArgumentVariableMode::VAR)
 			{
-				if ((*block->BlockInit)[i].Type == BlockArgumentType::STRING)
+				if (blockUseArgs.at(i).Type == BlockArgumentType::STRING)
 				{
-					std::string* data = VariableHandler::GetString(args[i].Value.c_str());
+					std::string* data = variables->GetString(args[i].Value.c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -112,9 +120,9 @@ void BlockRegistry::FinalizeBlock(RegBlock* block)
 
 					parsedArgs.push_back(*data);
 				}
-				else if ((*block->BlockInit)[i].Type == BlockArgumentType::BOOL)
+				else if (blockUseArgs.at(i).Type == BlockArgumentType::BOOL)
 				{
-					bool* data = VariableHandler::GetBool(args[i].Value.c_str());
+					bool* data = variables->GetBool(args[i].Value.c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -123,9 +131,9 @@ void BlockRegistry::FinalizeBlock(RegBlock* block)
 
 					parsedArgs.push_back(*data ? "1" : "0");
 				}
-				else if ((*block->BlockInit)[i].Type == BlockArgumentType::REAL)
+				else if (blockUseArgs.at(i).Type == BlockArgumentType::REAL)
 				{
-					double* data = VariableHandler::GetReal(args[i].Value.c_str());
+					double* data = variables->GetReal(args[i].Value.c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");

@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <string>
 
-void ByteHandler::Alloc()
+ByteHandler::ByteHandler()
 {
 	m_bytesSize = new unsigned long long(1000);
 	m_bytes = (unsigned char*)calloc(*m_bytesSize, sizeof(unsigned char));
@@ -14,12 +14,20 @@ void ByteHandler::Alloc()
 	memset(m_bytesBinary, false, *m_bytesSize);
 }
 
-void ByteHandler::Dealloc()
+ByteHandler::~ByteHandler()
 {
 	delete m_bytesSize;
 
 	free(m_bytes);
 	free(m_bytesBinary);
+}
+
+void ByteHandler::Reset()
+{
+	*m_bytesSize = 1000;
+
+	memset(m_bytes, 0, *m_bytesSize);
+	memset(m_bytesBinary, false, *m_bytesSize);
 }
 
 unsigned long long ByteHandler::AllocateBytes(unsigned long long size)
@@ -99,10 +107,7 @@ bool ByteHandler::SetByte(unsigned long long address, unsigned char value)
 	return true;
 }
 
-unsigned char* ByteHandler::m_bytes;
-
-bool* ByteHandler::m_bytesBinary;
-
-unsigned long long* ByteHandler::m_bytesSize;
-
-std::shared_timed_mutex ByteHandler::m_mutex;
+ByteHandler& ByteHandler::operator=(const ByteHandler& other)
+{
+	return *this;
+}

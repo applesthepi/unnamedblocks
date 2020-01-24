@@ -110,7 +110,19 @@ int main()
 	TypingSystem::Initialization();
 	ButtonRegistry::Initialize();
 
-	run();
+	ByteHandler* pByte;
+	ObjectHandler* pObject;
+	ThreadHandler* pThread;
+	VariableHandler* pVariable;
+	RuntimeHandler* pRuntime;
+
+	pByte = new ByteHandler();
+	pObject = new ObjectHandler();
+	pThread = new ThreadHandler();
+	pVariable = new VariableHandler();
+	pRuntime = new RuntimeHandler(pThread, pObject, pVariable, pByte);
+	
+	run(pByte, pObject, pRuntime, pThread, pVariable);
 
 	Plane::Planes = new std::vector<Plane*>();
 
@@ -250,7 +262,7 @@ int main()
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
+		*function = [&primaryPlane, &pByte, &pObject, &pRuntime, &pThread, &pVariable]()
 		{
 			if (ProjectHandler::CurrentPath == "")
 				Logger::Info("running unsaved project");
@@ -260,7 +272,14 @@ int main()
 			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
 			planeCopy->CopyEverything(primaryPlane);
 
-			RuntimeHandler::Run(planeCopy);
+			pRuntime->Reset();
+			pByte->Reset();
+			pObject->Reset();
+			pThread->Reset();
+			pVariable->Reset();
+
+			pThread->SetPlane(planeCopy);
+			pRuntime->Run(planeCopy);
 		};
 
 		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);

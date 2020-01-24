@@ -1,1 +1,1 @@
-62;101;vin_thread_open;;vin_varaibles_stack_real;1var;;;75;193;vin_object_new;1var;;vin_texture_add;0res/test.png;1var;;;
+197;127;vin_thread_open;;vin_varaibles_stack_string;1test;;vin_operations_=_string;1test;0rEreeEEEeEEeeEE;;vin_varaibles_stack_real;1obj;;vin_object_new;1obj;;vin_texture_add;0res/test.png;1obj;;vin_execution_mark;0point;;vin_varaibles_log_string;1test;;vin_execution_goto;0point;;;

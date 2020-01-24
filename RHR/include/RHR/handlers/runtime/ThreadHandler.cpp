@@ -6,7 +6,7 @@
 #include "handlers/runtime/VariableHandler.h"
 #include <iostream>
 
-void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, bool* done)
+void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, bool* done, RuntimeHandler* runtime, VariableHandler* variables)
 {
 	std::vector<unsigned int> markLocations;
 	std::vector<std::string> markLocationNames;
@@ -24,7 +24,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	std::chrono::time_point<std::chrono::steady_clock> last = std::chrono::high_resolution_clock::now();
 #endif
 
-	while (RuntimeHandler::Running && *running)
+	while (runtime->Running && *running)
 	{
 		const RegBlock* regBlock = BlockRegistry::MainRegistry->GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
 		BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
@@ -60,15 +60,15 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				return;
 			}
 
-			RuntimeHandler::ManualRenderingEnabled = varText[0] == '1';
+			runtime->ManualRenderingEnabled = varText[0] == '1';
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_render_frame")
 		{
-			if (RuntimeHandler::ManualRenderingEnabled)
+			if (runtime->ManualRenderingEnabled)
 			{
-				RuntimeHandler::ManualRenderFrame = true;
+				runtime->ManualRenderFrame = true;
 
-				while (RuntimeHandler::ManualRenderFrame)
+				while (runtime->ManualRenderFrame)
 				{
 					std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				}
@@ -89,7 +89,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			}
 			else
 			{
-				std::string* value = VariableHandler::GetString(indexText.c_str());
+				std::string* value = variables->GetString(indexText.c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + indexText + "\" does not exist");
@@ -121,7 +121,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			}
 			else
 			{
-				bool* value = VariableHandler::GetBool(conditionText.c_str());
+				bool* value = variables->GetBool(conditionText.c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
@@ -141,7 +141,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				}
 				else
 				{
-					std::string* value = VariableHandler::GetString(indexText.c_str());
+					std::string* value = variables->GetString(indexText.c_str());
 					if (value == nullptr)
 					{
 						Logger::Error("variable \"" + indexText + "\" does not exist");
@@ -172,7 +172,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				functionName = functionText;
 			else
 			{
-				std::string* value = VariableHandler::GetString(functionText.c_str());
+				std::string* value = variables->GetString(functionText.c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + functionText + "\" does not exist");
@@ -183,7 +183,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				functionName = *value;
 			}
 
-			int searchResult = RuntimeHandler::PerformFunctionSearch(functionName);
+			int searchResult = runtime->PerformFunctionSearch(functionName);
 			if (searchResult == -1)
 			{
 				Logger::Error("function \"" + functionName + "\" does not exist");
@@ -246,7 +246,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	*done = true;
 }
 
-void ThreadHandler::Alloc(Plane* plane)
+ThreadHandler::ThreadHandler()
 {
 	m_activeThreads = new std::vector<std::thread*>();
 	m_activeThreadIds = new std::vector<unsigned long long>();
@@ -254,10 +254,10 @@ void ThreadHandler::Alloc(Plane* plane)
 	m_activeThreadDone = new std::vector<bool*>();
 	m_counter = 0;
 
-	m_plane = plane;
+	m_plane = nullptr;
 }
 
-void ThreadHandler::Dealloc()
+ThreadHandler::~ThreadHandler()
 {
 	for (unsigned int i = 0; i < m_activeThreads->size(); i++)
 		delete (*m_activeThreads)[i];
@@ -274,6 +274,29 @@ void ThreadHandler::Dealloc()
 	delete m_activeThreadDone;
 }
 
+void ThreadHandler::Reset()
+{
+	for (unsigned int i = 0; i < m_activeThreads->size(); i++)
+		delete (*m_activeThreads)[i];
+
+	for (unsigned int i = 0; i < m_activeThreadRunning->size(); i++)
+		delete (*m_activeThreadRunning)[i];
+
+	for (unsigned int i = 0; i < m_activeThreadDone->size(); i++)
+		delete (*m_activeThreadDone)[i];
+
+	delete m_activeThreads;
+	delete m_activeThreadIds;
+	delete m_activeThreadRunning;
+	delete m_activeThreadDone;
+
+	m_activeThreads = new std::vector<std::thread*>();
+	m_activeThreadIds = new std::vector<unsigned long long>();
+	m_activeThreadRunning = new std::vector<bool*>();
+	m_activeThreadDone = new std::vector<bool*>();
+	m_counter = 0;
+}
+
 void ThreadHandler::KillJoinAll()
 {
 	for (unsigned int i = 0; i < m_activeThreads->size(); i++)
@@ -286,9 +309,15 @@ void ThreadHandler::KillJoinAll()
 	}
 }
 
-unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex)
+void ThreadHandler::SetPlane(Plane* plane)
 {
-	m_activeThreadIds->push_back(++m_counter);
+	m_plane = plane;
+}
+
+unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, void* runtime, void* variables)
+{
+	m_counter++;
+	m_activeThreadIds->push_back(m_counter);
 
 	bool* running = new bool(true);
 	m_activeThreadRunning->push_back(running);
@@ -296,7 +325,7 @@ unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex)
 	bool* done = new bool(false);
 	m_activeThreadDone->push_back(done);
 
-	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done);
+	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done, (RuntimeHandler*)runtime, (VariableHandler*)variables);
 	run->detach();
 	m_activeThreads->push_back(run);
 
@@ -318,14 +347,7 @@ bool ThreadHandler::KillThread(unsigned long long threadId)
 	return false;
 }
 
-std::vector<std::thread*>* ThreadHandler::m_activeThreads;
-
-std::vector<unsigned long long>* ThreadHandler::m_activeThreadIds;
-
-std::vector<bool*>* ThreadHandler::m_activeThreadRunning;
-
-std::vector<bool*>* ThreadHandler::m_activeThreadDone;
-
-unsigned long long ThreadHandler::m_counter;
-
-Plane* ThreadHandler::m_plane;
+ThreadHandler& ThreadHandler::operator=(const ThreadHandler& other)
+{
+	return *this;
+}

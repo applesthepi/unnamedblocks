@@ -1,4 +1,5 @@
 #pragma once
+#include "handlers/runtime/VariableHandler.h"
 
 #include <vector>
 #include <string>
@@ -101,7 +102,7 @@ public:
 	BlockRegistry();
 
 	void RegisterCatagory(RegCatagory* catagory);
-	void RegisterBlock(RegBlock* block);
+	void RegisterBlock(RegBlock* block, VariableHandler* variables);
 
 	const RegBlock* GetBlock(std::string unlocalizedName);
 	const RegCatagory* GetCatagory(std::string unlocalizedName);
@@ -110,7 +111,7 @@ public:
 	std::vector<RegCatagory>* GetCatagories();
 
 	RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
-	void FinalizeBlock(RegBlock* block);
+	void FinalizeBlock(RegBlock* block, VariableHandler* variables);
 
 	static BlockRegistry* MainRegistry;
 private:

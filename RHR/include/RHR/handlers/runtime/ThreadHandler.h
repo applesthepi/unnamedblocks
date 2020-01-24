@@ -1,5 +1,4 @@
 #pragma once
-
 #include "stacking/Plane.h"
 
 #include <vector>
@@ -9,17 +8,22 @@
 class ThreadHandler
 {
 public:
-	static void Alloc(Plane* plane);
-	static void Dealloc();
-	static void KillJoinAll();
+	ThreadHandler();
+	~ThreadHandler();
 
-	static unsigned long long SummonThread(unsigned long long stackIndex);
-	static bool KillThread(unsigned long long threadId);
+	void Reset();
+	void KillJoinAll();
+	void SetPlane(Plane* plane);
+
+	unsigned long long SummonThread(unsigned long long stackIndex, void* runtime, void* variables);
+	bool KillThread(unsigned long long threadId);
+
+	ThreadHandler& operator=(const ThreadHandler& other);
 private:
-	static std::vector<std::thread*>* m_activeThreads;
-	static std::vector<unsigned long long>* m_activeThreadIds;
-	static std::vector<bool*>* m_activeThreadRunning;
-	static std::vector<bool*>* m_activeThreadDone;
-	static unsigned long long m_counter;
-	static Plane* m_plane;
+	std::vector<std::thread*>* m_activeThreads;
+	std::vector<unsigned long long>* m_activeThreadIds;
+	std::vector<bool*>* m_activeThreadRunning;
+	std::vector<bool*>* m_activeThreadDone;
+	unsigned long long m_counter;
+	Plane* m_plane;
 };

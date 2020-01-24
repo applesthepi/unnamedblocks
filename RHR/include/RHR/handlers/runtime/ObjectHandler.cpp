@@ -1,18 +1,16 @@
 #include "ObjectHandler.h"
 #include "handlers/Logger.h"
 
-void ObjectHandler::Alloc()
+ObjectHandler::ObjectHandler()
 {
 	m_objects = new std::vector<RuntimeObject*>();
 	m_idCount = new unsigned long long(0);
 }
 
-void ObjectHandler::Dealloc()
+ObjectHandler::~ObjectHandler()
 {
 	for (unsigned int i = 0; i < m_objects->size(); i++)
-	{
 		delete (*m_objects)[i];
-	}
 
 	delete m_objects;
 	delete m_idCount;
@@ -44,6 +42,16 @@ void ObjectHandler::Render(sf::RenderWindow* window)
 		if (obj->ImageIndex < obj->Sprites.size())
 			window->draw(*obj->Sprites[obj->ImageIndex]);
 	}
+}
+
+void ObjectHandler::Reset()
+{
+	*m_idCount = 0;
+
+	for (unsigned int i = 0; i < m_objects->size(); i++)
+		delete (*m_objects)[i];
+
+	m_objects->clear();
 }
 
 RuntimeObject* ObjectHandler::GetObject(unsigned long long objectId)
@@ -90,11 +98,10 @@ bool ObjectHandler::DestroyObject(unsigned long long objectId)
 	return false;
 }
 
-std::shared_timed_mutex ObjectHandler::ObjectMutex;
-
-std::vector<RuntimeObject*>* ObjectHandler::m_objects;
-
-unsigned long long* ObjectHandler::m_idCount;
+ObjectHandler& ObjectHandler::operator=(const ObjectHandler& other)
+{
+	return *this;
+}
 
 RuntimeObject::~RuntimeObject()
 {

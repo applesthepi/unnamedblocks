@@ -24,18 +24,20 @@ public:
 class ObjectHandler
 {
 public:
-	static void Alloc();
-	static void Dealloc();
+	ObjectHandler();
+	~ObjectHandler();
 
-	static void FrameUpdate(sf::RenderWindow* window);
-	static void Render(sf::RenderWindow* window);
+	void FrameUpdate(sf::RenderWindow* window);
+	void Render(sf::RenderWindow* window);
+	void Reset();
 
-	static RuntimeObject* GetObject(unsigned long long objectId);
-	static unsigned long long CreateObject(RuntimeObject* object);
-	static bool DestroyObject(unsigned long long objectId);
+	RuntimeObject* GetObject(unsigned long long objectId);
+	unsigned long long CreateObject(RuntimeObject* object);
+	bool DestroyObject(unsigned long long objectId);
 
-	static std::shared_timed_mutex ObjectMutex;
+	std::shared_timed_mutex ObjectMutex;
+	ObjectHandler& operator=(const ObjectHandler& other);
 private:
-	static std::vector<RuntimeObject*>* m_objects;
-	static unsigned long long* m_idCount;
+	std::vector<RuntimeObject*>* m_objects;
+	unsigned long long* m_idCount;
 };

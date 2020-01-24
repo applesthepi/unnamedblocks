@@ -1,4 +1,8 @@
 #pragma once
+#include "ThreadHandler.h"
+#include "ObjectHandler.h"
+#include "VariableHandler.h"
+#include "ByteHandler.h"
 
 #include "stacking/Plane.h"
 
@@ -8,24 +12,34 @@
 class RuntimeHandler
 {
 public:
-	static void Run(Plane* planeCopy);
-	static void CleanUp();
-	static void ManualRender();
-	static int GetScrolled();
-	static void AddScroll(int value);
-	static void ResetScrolled();
-	static int PerformFunctionSearch(std::string functionName);
+	RuntimeHandler(ThreadHandler* thread, ObjectHandler* object, VariableHandler* variable, ByteHandler* byte);
 
-	static bool Running;
-	static bool ManualRenderFrame;
-	static bool ManualRenderingEnabled;
-	static sf::RenderWindow* Window;
+	void Reset();
+	void Run(Plane* planeCopy);
+	void CleanUp();
+	void ManualRender();
+	int GetScrolled();
+	void AddScroll(int value);
+	void ResetScrolled();
+	int PerformFunctionSearch(std::string functionName);
+
+	bool Running;
+	bool ManualRenderFrame;
+	bool ManualRenderingEnabled;
+	sf::RenderWindow* Window;
+
+	RuntimeHandler& operator=(const RuntimeHandler& other);
 private:
-	static Plane* m_planeCopy;
-	static std::thread* m_runningThread;
-	static std::mutex m_renderMutex;
-	static std::mutex m_scrollMutex;
-	static int m_scrolled;
-	static std::vector<unsigned int> m_stackIndices;
-	static std::vector<std::string> m_stackFunctions;
+	Plane* m_planeCopy;
+	std::thread* m_runningThread;
+	std::mutex m_renderMutex;
+	std::mutex m_scrollMutex;
+	int m_scrolled;
+	std::vector<unsigned int> m_stackIndices;
+	std::vector<std::string> m_stackFunctions;
+
+	ThreadHandler* m_threadHandler;
+	ObjectHandler* m_objectHandler;
+	VariableHandler* m_variableHandler;
+	ByteHandler* m_byteHandler;
 };

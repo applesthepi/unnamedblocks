@@ -10,39 +10,53 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-void ThreadWindowManager()
+void ThreadWindowManager(RuntimeHandler* runtime)
 {
-	RuntimeHandler::Window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Unnamed Blocks Runtime");
-	RuntimeHandler::Window->setVerticalSyncEnabled(true);
+	runtime->Window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Unnamed Blocks Runtime");
+	runtime->Window->setVerticalSyncEnabled(true);
 
-	while (RuntimeHandler::Running)
+	while (runtime->Running)
 	{
 		sf::Event ev;
-		while (RuntimeHandler::Window->pollEvent(ev))
+		while (runtime->Window->pollEvent(ev))
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				RuntimeHandler::Window->close();
-				RuntimeHandler::Running = false;
+				runtime->Window->close();
+				runtime->Running = false;
 			}
 			else if (ev.type == sf::Event::MouseWheelMoved)
 			{
-				RuntimeHandler::AddScroll(ev.mouseWheel.delta);
+				runtime->AddScroll(ev.mouseWheel.delta);
 			}
 		}
 
-		if (!RuntimeHandler::ManualRenderingEnabled)
-			RuntimeHandler::ManualRender();
-		else if (RuntimeHandler::ManualRenderFrame)
+		if (!runtime->ManualRenderingEnabled)
+			runtime->ManualRender();
+		else if (runtime->ManualRenderFrame)
 		{
-			RuntimeHandler::ManualRender();
-			RuntimeHandler::ManualRenderFrame = false;
+			runtime->ManualRender();
+			runtime->ManualRenderFrame = false;
 		}
 	}
 
 	//shutdown
-	delete RuntimeHandler::Window;
-	RuntimeHandler::CleanUp();
+	delete runtime->Window;
+	runtime->CleanUp();
+}
+
+RuntimeHandler::RuntimeHandler(ThreadHandler* thread, ObjectHandler* object, VariableHandler* variable, ByteHandler* byte)
+	:m_threadHandler(thread), m_objectHandler(object), m_variableHandler(variable), m_byteHandler(byte)
+{
+}
+
+void RuntimeHandler::Reset()
+{
+	m_stackFunctions.clear();
+	m_stackIndices.clear();
+
+	Running = false;
+	ManualRenderingEnabled = false;
 }
 
 void RuntimeHandler::Run(Plane* planeCopy)
@@ -86,17 +100,12 @@ void RuntimeHandler::Run(Plane* planeCopy)
 
 	m_planeCopy = planeCopy;
 
-	ThreadHandler::Alloc(planeCopy);
-	ObjectHandler::Alloc();
-	VariableHandler::Alloc();
-	ByteHandler::Alloc();
-
 	for (unsigned int i = 0; i < locations.size(); i++)
 	{
-		ThreadHandler::SummonThread(locations[i]);
+		m_threadHandler->SummonThread(locations[i], this, m_variableHandler);
 	}
 
-	m_runningThread = new std::thread(ThreadWindowManager);
+	m_runningThread = new std::thread(ThreadWindowManager, this);
 	m_runningThread->detach();
 }
 
@@ -105,8 +114,8 @@ void RuntimeHandler::ManualRender()
 	m_renderMutex.lock();
 	Window->clear();
 
-	ObjectHandler::FrameUpdate(Window);
-	ObjectHandler::Render(Window);
+	m_objectHandler->FrameUpdate(Window);
+	m_objectHandler->Render(Window);
 
 	Window->display();
 	m_renderMutex.unlock();
@@ -146,37 +155,15 @@ int RuntimeHandler::PerformFunctionSearch(std::string functionName)
 	return -1;
 }
 
+RuntimeHandler& RuntimeHandler::operator=(const RuntimeHandler& other)
+{
+	return *this;
+}
+
 void RuntimeHandler::CleanUp()
 {
-	ThreadHandler::KillJoinAll();
-
-	ThreadHandler::Dealloc();
-	ObjectHandler::Dealloc();
-	VariableHandler::Dealloc();
-	ByteHandler::Dealloc();
+	m_threadHandler->KillJoinAll();
 
 	delete m_runningThread;
 	delete m_planeCopy;
 }
-
-bool RuntimeHandler::Running;
-
-bool RuntimeHandler::ManualRenderFrame;
-
-bool RuntimeHandler::ManualRenderingEnabled;
-
-sf::RenderWindow* RuntimeHandler::Window;
-
-Plane* RuntimeHandler::m_planeCopy;
-
-std::thread* RuntimeHandler::m_runningThread;
-
-std::mutex RuntimeHandler::m_renderMutex;
-
-std::mutex RuntimeHandler::m_scrollMutex;
-
-int RuntimeHandler::m_scrolled;
-
-std::vector<unsigned int> RuntimeHandler::m_stackIndices;
-
-std::vector<std::string> RuntimeHandler::m_stackFunctions;
