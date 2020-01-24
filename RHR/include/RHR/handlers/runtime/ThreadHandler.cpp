@@ -31,14 +31,14 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 
 		if (regBlock->UnlocalizedName == "vin_execution_mark")
 		{
-			std::string indexText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
+			std::string indexText = (*args.Args)[0].Value;
 
 			markLocationNames.push_back(indexText);
 			markLocations.push_back(selectionForBlocks[0]);
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_block_sync")
 		{
-			std::string varText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
+			std::string varText = (*args.Args)[0].Value;
 
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::VAR)
 			{
@@ -49,9 +49,9 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 
 			selectionForBlockSync[0] = varText[0] == '1';
 		}
-		else if (regBlock->UnlocalizedName == "vin_execution_manual_render")
+		else if (regBlock->UnlocalizedName == "vin_execution_block_manual_render")
 		{
-			std::string varText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
+			std::string varText = (*args.Args)[0].Value;
 
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::VAR)
 			{
@@ -62,7 +62,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 
 			runtime->ManualRenderingEnabled = varText[0] == '1';
 		}
-		else if (regBlock->UnlocalizedName == "vin_execution_render_frame")
+		else if (regBlock->UnlocalizedName == "vin_execution_block_render_frame")
 		{
 			if (runtime->ManualRenderingEnabled)
 			{
@@ -80,7 +80,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_goto")
 		{
-			std::string indexText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
+			std::string indexText = (*args.Args)[0].Value;
 
 			std::string name = std::string();
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
@@ -109,10 +109,10 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				}
 			}
 		}
-		else if (regBlock->UnlocalizedName == "vin_execution_goto_if")
+		else if (regBlock->UnlocalizedName == "vin_execution_if")
 		{
-			std::string indexText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
-			std::string conditionText = (*args.Args)[1].Value.substr(1, (*args.Args)[1].Value.length() - 1);
+			std::string indexText = (*args.Args)[0].Value;
+			std::string conditionText = (*args.Args)[1].Value;
 
 			bool condition = false;
 			if ((*args.Args)[1].Mode == BlockArgumentVariableMode::RAW)
@@ -164,7 +164,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		}
 		else if (regBlock->UnlocalizedName == "vin_thread_function_call")
 		{
-			std::string functionText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
+			std::string functionText = (*args.Args)[0].Value;
 
 			std::string functionName;
 
@@ -216,7 +216,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		{
 			while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - last).count() < 5)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			}
 			
 			last = std::chrono::high_resolution_clock::now();

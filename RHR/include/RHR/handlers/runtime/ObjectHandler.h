@@ -8,7 +8,7 @@
 class RuntimeObject
 {
 public:
-
+	RuntimeObject();
 	~RuntimeObject();
 
 	unsigned long long Id;

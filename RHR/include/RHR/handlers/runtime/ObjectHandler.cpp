@@ -103,6 +103,12 @@ ObjectHandler& ObjectHandler::operator=(const ObjectHandler& other)
 	return *this;
 }
 
+RuntimeObject::RuntimeObject()
+	:ImageIndex(0), Position(sf::Vector2f(0, 0)), Scale(sf::Vector2f(1, 1)), Angle(0.0f)
+{
+
+}
+
 RuntimeObject::~RuntimeObject()
 {
 	for (unsigned int i = 0; i < Sprites.size(); i++)

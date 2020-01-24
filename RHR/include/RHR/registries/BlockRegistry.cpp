@@ -82,8 +82,6 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 	std::function<bool(const std::vector<BlockArgumentCaller>&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&)>();
 	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args)
 	{
-		//VariableHandler::Alloc();
-
 		std::vector<std::string> parsedArgs;
 
 		for (uint16_t i = 0; i < args.size(); i++)
@@ -105,7 +103,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 				}
 			}
 
-			if (blockUseArgs.at(i).Mode == BlockArgumentVariableMode::RAW || blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP)
+			if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP || args[i].Mode == BlockArgumentVariableMode::RAW)
 				parsedArgs.push_back(args[i].Value);
 			else if (blockUseArgs.at(i).Mode == BlockArgumentVariableMode::VAR)
 			{

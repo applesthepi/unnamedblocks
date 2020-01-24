@@ -1,6 +1,4 @@
 #include "RuntimeHandler.h"
-
-
 #include "ObjectHandler.h"
 #include "ThreadHandler.h"
 #include "VariableHandler.h"
@@ -13,7 +11,8 @@
 void ThreadWindowManager(RuntimeHandler* runtime)
 {
 	runtime->Window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Unnamed Blocks Runtime");
-	runtime->Window->setVerticalSyncEnabled(true);
+	runtime->Window->setVerticalSyncEnabled(false);
+	runtime->Window->setFramerateLimit(240);
 
 	while (runtime->Running)
 	{
