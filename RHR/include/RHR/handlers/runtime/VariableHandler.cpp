@@ -17,7 +17,7 @@ VariableHandler::VariableHandler()
 	m_heapString = new std::vector<std::string*>();
 	m_heapBool = new std::vector<bool*>();
 
-	m_mutex = new std::shared_mutex();
+	m_mutex = new std::shared_timed_mutex();
 }
 
 VariableHandler::~VariableHandler()
@@ -69,12 +69,12 @@ void VariableHandler::Reset()
 	m_heapString = new std::vector<std::string*>();
 	m_heapBool = new std::vector<bool*>();
 
-	m_mutex = new std::shared_mutex();
+	m_mutex = new std::shared_timed_mutex();
 }
 
 bool VariableHandler::StackReal(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 	
 	unsigned int i = 0;
 	while (m_stackNames[i] != nullptr)
@@ -98,7 +98,7 @@ bool VariableHandler::StackReal(const char* name)
 
 bool VariableHandler::StackString(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	unsigned int i = 0;
 	while (m_stackNames[i] != nullptr)
@@ -122,7 +122,7 @@ bool VariableHandler::StackString(const char* name)
 
 bool VariableHandler::StackBool(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 	unsigned int i = 0;
 	while (m_stackNames[i] != nullptr)
 	{
@@ -145,7 +145,7 @@ bool VariableHandler::StackBool(const char* name)
 
 void VariableHandler::HeapReal(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	char* nName = (char*)calloc(strlen(name) + 1, sizeof(char));
 	strcpy(nName, name);
@@ -158,7 +158,7 @@ void VariableHandler::HeapReal(const char* name)
 
 void VariableHandler::HeapString(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	char* nName = (char*)calloc(strlen(name) + 1, sizeof(char));
 	strcpy(nName, name);
@@ -171,7 +171,7 @@ void VariableHandler::HeapString(const char* name)
 
 void VariableHandler::HeapBool(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	char* nName = (char*)calloc(strlen(name) + 1, sizeof(char));
 	strcpy(nName, name);
@@ -184,7 +184,7 @@ void VariableHandler::HeapBool(const char* name)
 
 bool VariableHandler::FreeReal(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -220,7 +220,7 @@ bool VariableHandler::FreeReal(const char* name)
 
 bool VariableHandler::FreeString(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -257,7 +257,7 @@ bool VariableHandler::FreeString(const char* name)
 
 bool VariableHandler::FreeBool(const char* name)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -294,7 +294,7 @@ bool VariableHandler::FreeBool(const char* name)
 
 double* VariableHandler::GetReal(const char* name)
 {
-	std::shared_lock<std::shared_mutex> lock(*m_mutex);
+	std::shared_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -317,7 +317,7 @@ double* VariableHandler::GetReal(const char* name)
 
 std::string* VariableHandler::GetString(const char* name)
 {
-	std::shared_lock<std::shared_mutex> lock(*m_mutex);
+	std::shared_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -340,7 +340,7 @@ std::string* VariableHandler::GetString(const char* name)
 
 bool* VariableHandler::GetBool(const char* name)
 {
-	std::shared_lock<std::shared_mutex> lock(*m_mutex);
+	std::shared_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -363,7 +363,7 @@ bool* VariableHandler::GetBool(const char* name)
 
 bool VariableHandler::SetReal(const char* name, double value)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -390,7 +390,7 @@ bool VariableHandler::SetReal(const char* name, double value)
 
 bool VariableHandler::SetString(const char* name, std::string value)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
@@ -417,7 +417,7 @@ bool VariableHandler::SetString(const char* name, std::string value)
 
 bool VariableHandler::SetBool(const char* name, bool value)
 {
-	std::unique_lock<std::shared_mutex> lock(*m_mutex);
+	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{

@@ -34,7 +34,7 @@ public:
 
 	VariableHandler& operator=(const VariableHandler& other);
 private:
-	std::shared_mutex* m_mutex;
+	std::shared_timed_mutex* m_mutex;
 	const char** m_stackNames;
 	std::vector<const char*>* m_heapNames;
 
