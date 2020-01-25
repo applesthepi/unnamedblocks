@@ -1,5 +1,6 @@
 RHR/INT
-VanillaMods
+VanillaMods/*
+!/VanillaMods/ub-ModVin
 UnnamedBlocks/dep/BOOST64/
 UnnamedBlocks/dep/SFML64/
 UnnamedBlocks/dep/RHR/
