@@ -379,7 +379,7 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 
 	if (m_dragging)
 	{
-		bool wantDown;
+		bool wantDown = false;
 		
 		if (m_draggingType == DraggingType::DOWN)
 			wantDown = mouseDown;

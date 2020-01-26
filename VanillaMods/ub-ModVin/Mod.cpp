@@ -17,7 +17,7 @@ UB_EXPORT void Initialization(ModData* data)
 
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("executed a null block!");
 			return false;
@@ -114,7 +114,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -127,7 +127,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -139,7 +139,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -151,7 +151,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -164,7 +164,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -177,7 +177,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -190,7 +190,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -205,7 +205,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -218,7 +218,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -231,7 +231,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -344,7 +344,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -357,7 +357,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -841,7 +841,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			return true;
 		};
@@ -852,7 +852,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			std::this_thread::sleep_for(std::chrono::microseconds((uint64_t)floor(std::stod(args[0]) * 1000.0)));
 			return true;
@@ -865,7 +865,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Info("thread \"" + args[0] + "\" started execution");
 			return true;
@@ -878,7 +878,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Error("this block is not meant to be executed");
 			return false;
@@ -1191,7 +1191,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Info("[REAL] " + args[0]);
 			return true;
@@ -1204,7 +1204,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Info("[STRING] " + args[0]);
 			return true;
@@ -1217,7 +1217,7 @@ UB_EXPORT void Initialization(ModData* data)
 	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
-		*execution = [data](const std::vector<std::string>& args)
+		*execution = [](const std::vector<std::string>& args)
 		{
 			Logger::Info(std::string("[BOOL] ") + (args[0] == "1" ? "true" : "false"));
 			return true;
