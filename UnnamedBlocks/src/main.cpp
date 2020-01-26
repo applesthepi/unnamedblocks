@@ -17,6 +17,8 @@
 #include <cstring>
 #include <vector>
 
+#define CONTEXT_COLOR 180, 180, 180, 200
+
 std::vector<Button*> contextButtons;
 std::vector<Button*> toolbarButtons;
 std::vector<Button*> catButtons;
@@ -519,10 +521,10 @@ int main()
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (2 * 16)), sf::Vector2u(300, 16), callback2));
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (3 * 16)), sf::Vector2u(300, 16), callback3));
 
-					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(70, 70, 70), 12);
-					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(70, 70, 70), 12);
-					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(70, 70, 70), 12);
-					contextButtons[3]->SetButtonModeText("delete block", sf::Color(70, 70, 70), 12);
+					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(CONTEXT_COLOR), 12);
+					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(CONTEXT_COLOR), 12);
+					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(CONTEXT_COLOR), 12);
+					contextButtons[3]->SetButtonModeText("delete block", sf::Color(CONTEXT_COLOR), 12);
 
 					ButtonRegistry::AddButton(contextButtons[0]);
 					ButtonRegistry::AddButton(contextButtons[1]);
