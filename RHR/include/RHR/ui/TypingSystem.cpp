@@ -76,7 +76,7 @@ std::vector<std::function<void(int)>*>* TypingSystem::PressFunctions;
 bool* TypingSystem::WasDown;
 int* TypingSystem::PressRepeatIndex;
 
-#ifdef LINUX
+#ifdef POSIX
 std::chrono::time_point<std::chrono::system_clock>* TypingSystem::PressRepeatStartTime;
 std::chrono::time_point<std::chrono::system_clock>* TypingSystem::PressRepeatIncTime;
 #else
@@ -204,13 +204,13 @@ void TypingSystem::RunStroke(unsigned int c, bool* currentPress)
 	{
 		WasDown[c] = true;
 		*PressRepeatIndex = c;
-#ifdef LINUX
+#ifdef POSIX
 		PressRepeatStartTime = new std::chrono::time_point<std::chrono::system_clock>();
 #else
 		PressRepeatStartTime = new std::chrono::time_point<std::chrono::steady_clock>();
 #endif
 		*PressRepeatStartTime = std::chrono::high_resolution_clock::now();
-#ifdef LINUX
+#ifdef POSIX
 		PressRepeatIncTime = new std::chrono::time_point<std::chrono::system_clock>();
 #else
 		PressRepeatIncTime = new std::chrono::time_point<std::chrono::steady_clock>();
@@ -242,13 +242,13 @@ void TypingSystem::RunArrowStroke(unsigned int c, bool* currentPress)
 	{
 		WasDown[c] = true;
 		*PressRepeatIndex = c;
-#ifdef LINUX
+#ifdef POSIX
 		PressRepeatStartTime = new std::chrono::time_point<std::chrono::system_clock>();
 #else
 		PressRepeatStartTime = new std::chrono::time_point<std::chrono::steady_clock>();
 #endif
 		*PressRepeatStartTime = std::chrono::high_resolution_clock::now();
-#ifdef LINUX
+#ifdef POSIX
 		PressRepeatIncTime = new std::chrono::time_point<std::chrono::system_clock>();
 #else
 		PressRepeatIncTime = new std::chrono::time_point<std::chrono::steady_clock>();

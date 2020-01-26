@@ -656,6 +656,8 @@ EGREP
 GREP
 SED
 LIBTOOL
+X11_LIBS
+X11_CFLAGS
 BOOST_FILESYSTEM_LIB
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
@@ -797,6 +799,8 @@ SFML_CFLAGS
 SFML_LIBS
 CC
 CFLAGS
+X11_CFLAGS
+X11_LIBS
 LT_SYS_LIBRARY_PATH
 CPP
 CXXCPP'
@@ -1474,6 +1478,8 @@ Some influential environment variables:
   SFML_LIBS   linker flags for SFML, overriding pkg-config
   CC          C compiler command
   CFLAGS      C compiler flags
+  X11_CFLAGS  C compiler flags for X11, overriding pkg-config
+  X11_LIBS    linker flags for X11, overriding pkg-config
   LT_SYS_LIBRARY_PATH
               User-defined run-time library search path.
   CPP         C preprocessor
@@ -2904,7 +2910,6 @@ ac_config_files="$ac_config_files Makefile"
 
 
 
-# Detect the target system
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -2976,17 +2981,6 @@ IFS=$ac_save_IFS
 case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
-case $host_os in
-    linux*)
-		$as_echo "#define LINUX 1" >>confdefs.h
-
-        ;;
-    cygwin*|mingw*)
-        ;;
-	*)
-        as_fn_error $? "\"OS $host_os is not supported\"" "$LINENO" 5
-		;;
-esac
 DEPDIR="${am__leading_dot}deps"
 
 ac_config_commands="$ac_config_commands depfiles"
@@ -5285,6 +5279,114 @@ fi
 		LIBS="$LIBS_SAVED"
 	fi
 
+# Detect the target system
+
+case $host_os in
+    linux*)
+		$as_echo "#define LINUX 1" >>confdefs.h
+
+		$as_echo "#define POSIX 1" >>confdefs.h
+
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for X11" >&5
+$as_echo_n "checking for X11... " >&6; }
+
+if test -n "$X11_CFLAGS"; then
+    pkg_cv_X11_CFLAGS="$X11_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"x11\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "x11") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_X11_CFLAGS=`$PKG_CONFIG --cflags "x11" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$X11_LIBS"; then
+    pkg_cv_X11_LIBS="$X11_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"x11\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "x11") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_X11_LIBS=`$PKG_CONFIG --libs "x11" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        X11_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "x11" 2>&1`
+        else
+	        X11_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "x11" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$X11_PKG_ERRORS" >&5
+
+	as_fn_error $? "Package requirements (x11) were not met:
+
+$X11_PKG_ERRORS
+
+Consider adjusting the PKG_CONFIG_PATH environment variable if you
+installed software in a non-standard prefix.
+
+Alternatively, you may set the environment variables X11_CFLAGS
+and X11_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details." "$LINENO" 5
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
+is in your PATH or set the PKG_CONFIG environment variable to the full
+path to pkg-config.
+
+Alternatively, you may set the environment variables X11_CFLAGS
+and X11_LIBS to avoid the need to call pkg-config.
+See the pkg-config man page for more details.
+
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
+See \`config.log' for more details" "$LINENO" 5; }
+else
+	X11_CFLAGS=$pkg_cv_X11_CFLAGS
+	X11_LIBS=$pkg_cv_X11_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+fi
+        ;;
+    cygwin*|mingw*)
+		$as_echo "#define POSIX 1" >>confdefs.h
+
+        ;;
+	*)
+        as_fn_error $? "\"OS $host_os is not supported\"" "$LINENO" 5
+		;;
+esac
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
