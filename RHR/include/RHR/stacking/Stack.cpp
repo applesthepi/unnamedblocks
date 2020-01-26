@@ -353,8 +353,6 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
 				m_highlightedShape = i;
-
-				break;
 			}
 			else
 				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
@@ -384,8 +382,6 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
 				m_highlightedShape = i;
-
-				break;
 			}
 			else
 				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
@@ -450,6 +446,19 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 		{
 			for (unsigned int i = 0; i < m_blocks.size(); i++)
 				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0));
+		}
+	}
+
+	for (uint32_t i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetNext())
+		{
+			if (i + 1 < m_blocks.size())
+				m_blocks[i + 1]->SelectFirstArgument();
+			else
+				Global::SelectedArgument = nullptr;
+
+			break;
 		}
 	}
 }

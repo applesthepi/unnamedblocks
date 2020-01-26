@@ -1,6 +1,8 @@
 #include "Button.h"
 #include "Global.h"
 
+#define HOVOR_SHADE 0.9
+
 Button::Button(sf::Vector2i position, sf::Vector2u size, std::function<void()>* functionCallback)
 {
 	m_wasDown = false;
@@ -29,6 +31,8 @@ void Button::SetButtonModeColor(sf::Color color)
 	m_modeColor = new sf::RectangleShape(sf::Vector2f(m_size.x, m_size.y));
 	m_modeColor->setFillColor(color);
 	m_modeColor->setPosition(m_position.x, m_position.y);
+
+	m_backgroundColor = color;
 }
 
 void Button::SetButtonModeText(std::string text, sf::Color backgroundColor, unsigned short charSize)
@@ -56,6 +60,8 @@ void Button::SetButtonModeText(std::string text, sf::Color backgroundColor, unsi
 	m_modeColor = new sf::RectangleShape(sf::Vector2f(m_size.x, m_size.y));
 	m_modeColor->setFillColor(backgroundColor);
 	m_modeColor->setPosition(m_position.x, m_position.y);
+
+	m_backgroundColor = backgroundColor;
 }
 
 void Button::SetButtonModeImage(std::string path)
@@ -87,6 +93,11 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 	{
 		m_modeColor->setPosition((sf::Vector2f)m_position);
 		m_modeColor->setSize((sf::Vector2f)m_size);
+
+		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < (int32_t)(m_position.x + m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < (int32_t)(m_position.y + m_size.y))
+			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a * HOVOR_SHADE));
+		else
+			m_modeColor->setFillColor(m_backgroundColor);
 	}
 	else if (m_mode == ButtonMode::Image)
 	{
@@ -99,6 +110,11 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 		m_modeColor->setSize((sf::Vector2f)m_size);
 
 		m_modeText->setPosition(m_position.x + 2, m_position.y);
+
+		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < (int32_t)(m_position.x + m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < (int32_t)(m_position.y + m_size.y))
+			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a * HOVOR_SHADE));
+		else
+			m_modeColor->setFillColor(m_backgroundColor);
 	}
 }
 

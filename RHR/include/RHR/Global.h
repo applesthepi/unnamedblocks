@@ -84,4 +84,5 @@ public:
 	static GpuMan GpuType;
 	static std::string ContextData;
 	static sf::Vector2i MousePosition;
+	static void* SelectedBlock;
 };
