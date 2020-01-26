@@ -9,13 +9,12 @@
 class ArgumentString : public Argument
 {
 public:
-	ArgumentString(sf::Vector2u relitivePosition, std::string text)
+	ArgumentString(sf::Vector2u relitivePosition)
 		:Argument(relitivePosition)
 	{
-		m_Text = text.substr(1, text.length() - 1);
-		m_variableMode = text[0] == '1';
+		m_variableMode = false;
 
-		m_TextAgent = sf::Text(text, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
+		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
 		m_selected = false;
 
 		m_TextAgent.setFillColor(sf::Color::Black);
@@ -390,9 +389,13 @@ public:
 
 	void SetData(std::string data) override
 	{
-		m_Text = data.substr(1, data.length() - 1);
+		m_Text = data;
 		m_TextAgent.setString(m_Text);
-		m_variableMode = data[0] == '1';
+	}
+
+	void SetMode(BlockArgumentVariableMode mode) override
+	{
+		m_variableMode = mode == BlockArgumentVariableMode::VAR;
 	}
 
 	std::string GetData() override
@@ -444,6 +447,11 @@ public:
 			m_textTrailedStart = 0;
 			m_textMarkerPosition = m_Text.length();
 		}
+	}
+
+	void ReInspectData() override
+	{
+		m_background.setSize(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	}
 
 private:

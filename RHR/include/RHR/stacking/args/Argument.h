@@ -1,4 +1,5 @@
 #pragma once
+#include "ArgumentEssentials.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -16,7 +17,9 @@ public:
 	virtual bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	virtual bool HasData();
 	virtual void SetData(std::string data);
+	virtual void SetMode(BlockArgumentVariableMode mode);
 	virtual void Select();
+	virtual void ReInspectData();
 	virtual std::string GetData();
 	void Update(sf::RenderWindow* window, bool global = false);
 	void SetRelitivePosition(sf::Vector2u relitivePosition);

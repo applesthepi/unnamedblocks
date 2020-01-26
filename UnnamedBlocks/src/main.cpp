@@ -27,7 +27,7 @@ static Plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
 static unsigned short toolbarStackCount = 0;
 
-static void ReloadCatagory(unsigned index, BlockRegistry* registry)
+static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 {
 	toolbarPlane->DeleteAllBlocks();
 
@@ -134,8 +134,13 @@ int main()
 	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
 	Plane::Planes->push_back(primaryPlane);
 
+	uint16_t useCount = 0;
+
 	for (unsigned int i = 0; i < pRegistry->GetCatagories()->size(); i++)
 	{
+		if (pRegistry->GetCatagories()->at(i).DisplayName == "")
+			continue;
+
 		std::function<void()>* callback = new std::function<void()>();
 		*callback = [i, &pRegistry]()
 		{
@@ -145,11 +150,13 @@ int main()
 			ReloadCatagory(i, pRegistry);
 		};
 
-		Button* cat = new Button(sf::Vector2i(5, 5 + (i * (16 + 5))), sf::Vector2u(100, 16), callback);
+		Button* cat = new Button(sf::Vector2i(5, 5 + (useCount * (16 + 5))), sf::Vector2u(100, 16), callback);
 		cat->SetButtonModeText((*pRegistry->GetCatagories())[i].DisplayName, (*pRegistry->GetCatagories())[i].Color, 12);
 
 		catButtons.push_back(cat);
 		ButtonRegistry::AddButton(cat);
+
+		useCount++;
 	}
 
 	{
@@ -294,19 +301,34 @@ int main()
 	Plane::Planes->push_back(toolbarPlane);
 
 	{
-		unsigned int idx = 0;
-
-		for (unsigned int i = 0; i < pRegistry->GetBlocks()->size(); i++)
+		int16_t useCat = 0;
+		for (uint16_t i = 0; i < pRegistry->GetCatagories()->size(); i++)
 		{
-			if ((*pRegistry->GetBlocks())[i].Catagory == (*pRegistry->GetCatagories())[0].UnlocalizedName)
+			if (pRegistry->GetCatagories()->at(i).DisplayName != "")
 			{
-				Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
-				Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry);
+				useCat = i;
+				break;
+			}
+		}
 
-				toolbarPlane->AddStack(stack);
-				stack->AddBlock(block);
+		toolbarCatagory = useCat;
 
-				idx++;
+		if (useCat != -1)
+		{
+			unsigned int idx = 0;
+
+			for (unsigned int i = 0; i < pRegistry->GetBlocks()->size(); i++)
+			{
+				if ((*pRegistry->GetBlocks())[i].Catagory == pRegistry->GetCatagories()->at(useCat).UnlocalizedName)
+				{
+					Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
+					Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry);
+
+					toolbarPlane->AddStack(stack);
+					stack->AddBlock(block);
+
+					idx++;
+				}
 			}
 		}
 	}
@@ -320,6 +342,7 @@ int main()
 	bool wasDownLeft = false;
 	bool wasDownMiddle = false;
 	bool wasDownRight = false;
+	bool wasContextOpen = false;
 	
 	//sf::View zoomedView(sf::FloatRect(0, 0, primaryPlane->GetSize().x, primaryPlane->GetSize().y));
 
@@ -448,8 +471,11 @@ int main()
 			}
 		}
 
-		if (Global::ContextActive)
+		if ((Global::ContextActive && !wasContextOpen) || Global::ContextUpdate)
 		{
+			Global::ContextUpdate = false;
+			wasContextOpen = true;
+
 			if (Global::Context.Position != sys.Position || Global::Context.Type != sys.Type)
 			{
 				sys = Global::Context;
@@ -508,6 +534,18 @@ int main()
 					Global::ContextActive = false;
 				}
 			}
+		}
+		else if (!Global::ContextActive && wasContextOpen)
+		{
+			wasContextOpen = false;
+
+			for (unsigned int i = 0; i < contextButtons.size(); i++)
+			{
+				ButtonRegistry::RemoveButton(contextButtons[i]);
+				delete contextButtons[i];
+			}
+
+			contextButtons.clear();
 		}
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)

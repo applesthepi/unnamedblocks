@@ -9,20 +9,13 @@
 class ArgumentBoolean : public Argument
 {
 public:
-	ArgumentBoolean(sf::Vector2u relitivePosition, std::string text)
+	ArgumentBoolean(sf::Vector2u relitivePosition)
 		:Argument(relitivePosition)
 	{
-		m_Text = text.substr(1, text.length() - 1);
-		m_variableMode = text[0] == '1';
-		
-		if (text.length() <= 1)
-			m_value = false;
-		else if (text[0] == '0')
-			m_value = text[1] == '1';
-		else
-			m_value = false;
+		m_value = false;
+		m_variableMode = false;
 
-		m_TextAgent = sf::Text(text, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
+		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
 		m_selected = false;
 
 		m_TextAgent.setFillColor(sf::Color::Black);
@@ -371,19 +364,23 @@ public:
 
 	void SetData(std::string data) override
 	{
-		m_variableMode = data[0] == '1';
-
-		if (data[0] == '0')
+		if (m_variableMode)
 		{
-			m_value = data[1] == '1';
-			m_Text = "";
+			m_value = false;
+			m_Text = data;
 			m_TextAgent.setString(m_Text);
 		}
 		else
 		{
-			m_Text = data.substr(1, data.length() - 1);
+			m_value = data == "1";
+			m_Text = "";
 			m_TextAgent.setString(m_Text);
 		}
+	}
+
+	void SetMode(BlockArgumentVariableMode mode) override
+	{
+		m_variableMode = mode == BlockArgumentVariableMode::VAR;
 	}
 
 	std::string GetData() override
@@ -438,6 +435,14 @@ public:
 			m_textTrailedStart = 0;
 			m_textMarkerPosition = m_Text.length();
 		}
+	}
+
+	void ReInspectData() override
+	{
+		if (m_variableMode)
+			m_background.setSize(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
+		else
+			m_background.setSize(sf::Vector2f(Global::BlockHeight - Global::BlockBorder, Global::BlockHeight - Global::BlockBorder));
 	}
 
 private:

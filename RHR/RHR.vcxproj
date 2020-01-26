@@ -197,6 +197,7 @@
     <ClCompile Include="include\RHR\ui\TypingSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\RHR\ArgumentEssentials.h" />
     <ClInclude Include="include\RHR\Global.h" />
     <ClInclude Include="include\RHR\handlers\Logger.h" />
     <ClInclude Include="include\RHR\handlers\MessageHandler.h" />

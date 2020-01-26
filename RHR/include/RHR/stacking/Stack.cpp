@@ -21,16 +21,21 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 	*m_functionContext = [&](unsigned int index, sf::Vector2i mousePosition)
 	{
-		Global::ContextActive = true;
 		Global::Context.Callback = m_functionContextCallback;
 		Global::Context.Type = ContextType::BLOCK;
 		Global::Context.Position.x = mousePosition.x + 5;
 		Global::Context.Position.y = mousePosition.y + 5;
 		Global::ContextData = std::to_string(index);
+
+		if (Global::ContextActive)
+			Global::ContextUpdate = true;
+		else
+			Global::ContextActive = true;
 	};
 
-	*m_functionContextCallback = [&](unsigned int index)
+	*m_functionContextCallback = [&, registry](unsigned int index)
 	{
+		Global::ContextActive = false;
 		Global::Context.Type = ContextType::NONE;
 		Plane* plane = (Plane*)m_planePtr;
 		if (plane->IsToolbar())
@@ -43,7 +48,140 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), registry);
 			(*m_functionAdd)(stack);
 
-			for (unsigned int i = blockIndex; i < m_blocks.size(); i++)
+			ReloadVanity();
+			std::vector<StatmentIf> statments = GetVanity();
+			std::vector<uint32_t> closestStatments;
+			std::vector<uint32_t> closestStatmentsDistance;
+
+			uint32_t useEnd = m_blocks.size();
+
+			for (uint32_t i = 0; i < statments.size(); i++)
+			{
+				if (closestStatments.size() == 0)
+				{
+					if (statments[i].Location < blockIndex)
+					{
+						closestStatments.push_back(i);
+						closestStatmentsDistance.push_back(blockIndex - statments[i].Location);
+					}
+				}
+				else
+				{
+					if (statments[i].Location < blockIndex)
+					{
+						bool found = false;
+
+						for (uint32_t a = 0; a < closestStatments.size(); a++)
+						{
+							if (blockIndex - statments[i].Location > closestStatmentsDistance[a])
+							{
+								closestStatments.insert(closestStatments.begin() + a, i);
+								closestStatmentsDistance.insert(closestStatmentsDistance.begin() + a, blockIndex - statments[i].Location);
+
+								found = true;
+								break;
+							}
+						}
+
+						if (!found)
+						{
+							closestStatments.push_back(i);
+							closestStatmentsDistance.push_back(blockIndex - statments[i].Location);
+						}
+					}
+				}
+			}
+
+			if (closestStatments.size() != 0)
+			{
+				bool redo = true;
+				uint32_t statmentSelection = closestStatments.size() - 1;
+
+				while (redo && statmentSelection >= 0)
+				{
+					if (closestStatments.size() == 0)
+						break;
+
+					redo = false;
+
+					StatmentIf& statment = statments[closestStatments.back()];
+
+					bool isInsideIfRaw = false;
+					bool isInsideIfBase = false;
+
+					if (statment.HasElseIf)
+					{
+						if (blockIndex < statment.LocationElseIf.front())
+							isInsideIfRaw = true;
+					}
+					else if (statment.HasElse)
+					{
+						if (blockIndex < statment.LocationElse)
+							isInsideIfRaw = true;
+					}
+					else
+					{
+						if (blockIndex < statment.LocationEnd)
+							isInsideIfBase = true;
+					}
+
+					if (isInsideIfBase)
+						useEnd = statment.LocationEnd;
+					else if (isInsideIfRaw)
+					{
+						if (statment.HasElseIf)
+							useEnd = statment.LocationElseIf.front();
+						else
+							useEnd = statment.LocationElse;
+					}
+					else
+					{
+						if (statment.HasElseIf)
+						{
+							bool found = false;
+
+							for (uint32_t i = 0; i < statment.LocationElseIf.size(); i++)
+							{
+								if (blockIndex >= statment.LocationElseIf[i])
+								{
+									if (i + 1 == statment.LocationElseIf.size())
+									{
+										if (statment.HasElse)
+										{
+											useEnd = statment.LocationElse;
+											found = true;
+											break;
+										}
+										else
+											break;
+									}
+									else
+									{
+										useEnd = statment.LocationElseIf[i + 1];
+										found = true;
+										break;
+									}
+								}
+							}
+
+							if (!found)
+								redo = true;
+						}
+						else
+						{
+							if (blockIndex < statment.LocationEnd)
+								useEnd = statment.LocationEnd;
+							else
+								redo = true;
+						}
+					}
+
+					statmentSelection--;
+					closestStatments.pop_back();
+				}
+			}
+
+			for (unsigned int i = blockIndex; i < useEnd; i++)
 			{
 				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), registry);
 				block->SetArgData(*(m_blocks[i]->GetUsedArgumentsRuntime().Args));
@@ -51,7 +189,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			}
 
 			stack->ReloadAllBlocks();
-			stack->DragUp(Global::MousePosition);
+			stack->DragUp(Global::MousePosition + ((stack->GetSetPosition() + (sf::Vector2i)stack->GetPlanePosition() - ((Plane*)stack->GetPlanePointer())->GetInnerPosition()) - Global::MousePosition));
 		}
 		else if (index == 1)
 		{
@@ -81,15 +219,10 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 		}
 		else if (index == 3)
 		{
-			if (blockIndex == 0)
-				(*m_functionRemove)(this);
-			else
-			{
-				Global::SkipFrame = true;
-				delete m_blocks[blockIndex];
-				m_blocks.erase(m_blocks.begin() + blockIndex);
-				ReloadAllBlocks();
-			}
+			Global::SkipFrame = true;
+			delete m_blocks[blockIndex];
+			m_blocks.erase(m_blocks.begin() + blockIndex);
+			ReloadAllBlocks();
 		}
 	};
 
@@ -590,6 +723,7 @@ void Stack::ReloadVanity()
 	m_ifShapeIdx.clear();
 
 	std::vector<StatmentIf> statments = RuntimeHandler::ProcessIfStatments(this, true);
+	m_savedVanity = statments;
 	m_validHighlighting = statments.size() > 0;
 
 	for (uint32_t i = 0; i < statments.size(); i++)
@@ -642,4 +776,9 @@ void Stack::ReloadVanity()
 			m_ifShapeHighlight.back().setOutlineThickness(1);
 		}
 	}
+}
+
+std::vector<StatmentIf> Stack::GetVanity()
+{
+	return m_savedVanity;
 }

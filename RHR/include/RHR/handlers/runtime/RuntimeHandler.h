@@ -8,6 +8,7 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 class RuntimeHandler
 {
@@ -23,9 +24,9 @@ public:
 	void ResetScrolled();
 	int PerformFunctionSearch(std::string functionName);
 
-	bool Running;
-	bool ManualRenderFrame;
-	bool ManualRenderingEnabled;
+	std::atomic<bool> Running;
+	std::atomic<bool> ManualRenderFrame;
+	std::atomic<bool> ManualRenderingEnabled;
 	sf::RenderWindow* Window;
 
 	RuntimeHandler& operator=(const RuntimeHandler& other);

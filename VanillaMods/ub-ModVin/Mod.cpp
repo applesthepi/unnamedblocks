@@ -4,6 +4,7 @@
 
 UB_EXPORT void Initialization(ModData* data)
 {
+	data->RegisterCatagory(RegCatagory("~", "", sf::Color(222, 102, 222)));
 	data->RegisterCatagory(RegCatagory("vin_objects", "objects", sf::Color(237, 231, 109)));
 	data->RegisterCatagory(RegCatagory("vin_textures", "textures", sf::Color(68, 212, 68)));
 	data->RegisterCatagory(RegCatagory("vin_transform", "transform", sf::Color(70, 200, 200)));
@@ -14,6 +15,18 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterCatagory(RegCatagory("vin_execution", "execution", sf::Color(255, 113, 74)));
 	data->RegisterCatagory(RegCatagory("vin_input", "input", sf::Color(123, 188, 199)));
 
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("executed a null block!");
+			return false;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_null", "~", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "NULL"}
+			});
+		data->RegisterBlock(*block);
+	}
 	{
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [data](const std::vector<std::string>& args)

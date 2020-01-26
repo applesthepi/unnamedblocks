@@ -1,7 +1,7 @@
 #include "Button.h"
 #include "Global.h"
 
-#define HOVOR_SHADE 0.9
+#define HOVOR_SHADE 0.8
 
 Button::Button(sf::Vector2i position, sf::Vector2u size, std::function<void()>* functionCallback)
 {
@@ -95,7 +95,7 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 		m_modeColor->setSize((sf::Vector2f)m_size);
 
 		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < (int32_t)(m_position.x + m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < (int32_t)(m_position.y + m_size.y))
-			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a * HOVOR_SHADE));
+			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a));
 		else
 			m_modeColor->setFillColor(m_backgroundColor);
 	}
@@ -112,7 +112,7 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 		m_modeText->setPosition(m_position.x + 2, m_position.y);
 
 		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < (int32_t)(m_position.x + m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < (int32_t)(m_position.y + m_size.y))
-			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a * HOVOR_SHADE));
+			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a));
 		else
 			m_modeColor->setFillColor(m_backgroundColor);
 	}

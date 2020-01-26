@@ -63,7 +63,17 @@ void Argument::SetData(std::string data)
 
 }
 
+void Argument::SetMode(BlockArgumentVariableMode mode)
+{
+
+}
+
 void Argument::Select()
+{
+
+}
+
+void Argument::ReInspectData()
 {
 
 }

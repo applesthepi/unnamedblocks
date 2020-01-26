@@ -59,6 +59,7 @@ public:
 		SkipFrame = false;
 		ContextActive = false;
 		Context = ContextSystem(ContextType::NONE, sf::Vector2i(0, 0), nullptr);
+		ContextUpdate = false;
 		ContextData = "";
 		MousePosition = sf::Vector2i(0, 0);
 	}
@@ -83,6 +84,7 @@ public:
 	static ContextSystem Context;
 	static GpuMan GpuType;
 	static std::string ContextData;
+	static bool ContextUpdate;
 	static sf::Vector2i MousePosition;
 	static void* SelectedBlock;
 };

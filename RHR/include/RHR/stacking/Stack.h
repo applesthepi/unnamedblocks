@@ -39,6 +39,7 @@ public:
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	void ReloadVanity();
+	std::vector<StatmentIf> GetVanity();
 private:
 	std::vector<Block*> m_blocks;
 	sf::Vector2i m_setPosition;
@@ -47,6 +48,7 @@ private:
 	sf::Vector2u* m_planePosition;
 	sf::Vector2i* m_planeInnerPosition;
 
+	std::vector<StatmentIf> m_savedVanity;
 	bool m_validHighlighting;
 	int32_t m_highlightedShape;
 	std::vector<uint32_t> m_ifShapeIdx;

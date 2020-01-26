@@ -3,6 +3,7 @@
 #include "args/ArgumentString.h"
 #include "args/ArgumetReal.h"
 #include "args/ArgumentBoolean.h"
+#include "handlers/Logger.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -17,7 +18,16 @@ Block::Block(std::string type, BlockRegistry* registry)
 
 	const RegBlock* blockDetails = registry->GetBlock(type);
 	if (blockDetails == nullptr)
-		return;
+	{
+		m_unlocalizedName = "vin_null";
+		blockDetails = registry->GetBlock("vin_null");
+		
+		if (blockDetails == nullptr)
+		{
+			Logger::Warn("null block does not exist!");
+			return;
+		}
+	}
 
 	const RegCatagory* catagoryDetails = registry->GetCatagory(blockDetails->Catagory);
 	if (catagoryDetails == nullptr)
@@ -32,7 +42,11 @@ Block::Block(std::string type, BlockRegistry* registry)
 	{
 		if (args[i].Type == BlockArgumentType::TEXT)
 		{
-			ArgumentText* arg = new ArgumentText(sf::Vector2u(offset, 0), args[i].Value);
+			ArgumentText* arg = new ArgumentText(sf::Vector2u(offset, 0));
+
+			arg->SetMode(BlockArgumentVariableMode::RAW);
+			arg->SetData(args[i].Value);
+
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition);
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
 
@@ -40,7 +54,12 @@ Block::Block(std::string type, BlockRegistry* registry)
 		}
 		else if (args[i].Type == BlockArgumentType::STRING)
 		{
-			ArgumentString* arg = new ArgumentString(sf::Vector2u(offset, 0), args[i].Value);
+			ArgumentString* arg = new ArgumentString(sf::Vector2u(offset, 0));
+
+			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
+			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->ReInspectData();
+
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition);
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
 
@@ -48,7 +67,12 @@ Block::Block(std::string type, BlockRegistry* registry)
 		}
 		else if (args[i].Type == BlockArgumentType::REAL)
 		{
-			ArgumentReal* arg = new ArgumentReal(sf::Vector2u(offset, 0), args[i].Value);
+			ArgumentReal* arg = new ArgumentReal(sf::Vector2u(offset, 0));
+
+			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
+			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->ReInspectData();
+
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition);
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
 
@@ -56,7 +80,12 @@ Block::Block(std::string type, BlockRegistry* registry)
 		}
 		else if (args[i].Type == BlockArgumentType::BOOL)
 		{
-			ArgumentBoolean* arg = new ArgumentBoolean(sf::Vector2u(offset, 0), args[i].Value);
+			ArgumentBoolean* arg = new ArgumentBoolean(sf::Vector2u(offset, 0));
+
+			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
+			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->ReInspectData();
+
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition);
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
 
@@ -178,7 +207,9 @@ void Block::SetArgData(const std::vector<BlockArgumentCaller>& data)
 
 		if (m_args[i]->HasData())
 		{
-			m_args[i]->SetData(data[dataIndex].Value + (data[dataIndex].Mode == BlockArgumentVariableMode::RAW ? "0" : "1"));
+			m_args[i]->SetMode(data[dataIndex].Mode);
+			m_args[i]->SetData(data[dataIndex].Value);
+
 			dataIndex++;
 		}
 	}
@@ -195,7 +226,8 @@ void Block::SetArgData(const std::vector<std::string> data)
 
 		if (m_args[i]->HasData())
 		{
-			m_args[i]->SetData(data[dataIndex]);
+			m_args[i]->SetMode(data[dataIndex].front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
+			m_args[i]->SetData(data[dataIndex].substr(1, data[dataIndex].length() - 1));
 			dataIndex++;
 		}
 	}

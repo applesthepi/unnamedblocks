@@ -9,13 +9,12 @@
 class ArgumentReal : public Argument
 {
 public:
-	ArgumentReal(sf::Vector2u relitivePosition, std::string number)
+	ArgumentReal(sf::Vector2u relitivePosition)
 		:Argument(relitivePosition)
 	{
-		m_Text = number.substr(1, number.length() - 1);
-		m_variableMode = number[0] == '1';
+		m_variableMode = false;
 
-		m_TextAgent = sf::Text(number, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
+		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
 		m_selected = false;
 
 		m_TextAgent.setFillColor(sf::Color::Black);
@@ -440,9 +439,13 @@ public:
 
 	void SetData(std::string data) override
 	{
-		m_Text = data.substr(1, data.length() - 1);
+		m_Text = data;
 		m_TextAgent.setString(m_Text);
-		m_variableMode = data[0] == '1';
+	}
+
+	void SetMode(BlockArgumentVariableMode mode) override
+	{
+		m_variableMode = mode == BlockArgumentVariableMode::VAR;
 	}
 
 	std::string GetData() override
@@ -494,6 +497,18 @@ public:
 			m_textTrailedStart = 0;
 			m_textMarkerPosition = m_Text.length();
 		}
+	}
+
+	void ReInspectData() override
+	{
+		int halfHeight = ((Global::BlockHeight - Global::BlockBorder) / 2);
+
+		m_background.setPoint(0, sf::Vector2f(0, 0));
+		m_background.setPoint(1, sf::Vector2f(m_TextAgent.getLocalBounds().width + 8, 0));
+		m_background.setPoint(2, sf::Vector2f(m_TextAgent.getLocalBounds().width + 11, halfHeight));
+		m_background.setPoint(3, sf::Vector2f(m_TextAgent.getLocalBounds().width + 8, halfHeight * 2));
+		m_background.setPoint(4, sf::Vector2f(0, halfHeight * 2));
+		m_background.setPoint(5, sf::Vector2f(-3, halfHeight));
 	}
 
 private:

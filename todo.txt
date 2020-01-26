@@ -1,0 +1,29 @@
+#plane dotted background
+#manual rendering
+#if statments
+#copy pasta things
+#tab from block to block, argument to argument
+#keyboard/mouse input
+#object rotation
+#object scale
+#dll scripts
+#functions/parameters
+#threads
+#make toolbar plane not move
+#plane scroll negitive
+#fix block execution var/raw inconsistency
+#redo number argument inputs
+#change variable mode display and consistency
+#whitelist "-" for number inputs :)
+#null block
+#context menu for blocks
+texture pixel/full manipulation
+object shaders
+object batching
+wtf am I going to do about bitwise operators
+pointers/dereferencing
+networking (post/get)
+filesystem
+plane context menu options
+function/threadFunction have own variable handler
+function/threadFunction pass in a pointer to byte handler

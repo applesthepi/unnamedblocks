@@ -6,11 +6,10 @@
 class ArgumentText : public Argument
 {
 public:
-	ArgumentText(sf::Vector2u relitivePosition, std::string text)
+	ArgumentText(sf::Vector2u relitivePosition)
 		:Argument(relitivePosition)
 	{
-		m_Text = text;
-		m_TextAgent = sf::Text(text, *Global::Font, Global::BlockHeight - 10);
+		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - 10);
 
 		m_TextAgent.setFillColor(sf::Color::Black);
 		m_TextAgent.setString(m_Text);
@@ -40,6 +39,12 @@ public:
 	unsigned int GetArgumentRawWidth() override
 	{
 		return m_TextAgent.getLocalBounds().width;
+	}
+
+	void SetData(std::string data) override
+	{
+		m_Text = data;
+		m_TextAgent.setString(m_Text);
 	}
 
 private:

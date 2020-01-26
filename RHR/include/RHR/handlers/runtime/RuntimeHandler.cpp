@@ -10,11 +10,13 @@
 #include <iostream>
 #include <stdint.h>
 
-void ThreadWindowManager(RuntimeHandler* runtime)
+void ThreadWindowManager(RuntimeHandler* runtime, std::atomic<bool>* initialized)
 {
 	runtime->Window = new sf::RenderWindow(sf::VideoMode(1280, 720), "Unnamed Blocks Runtime");
 	runtime->Window->setVerticalSyncEnabled(false);
 	runtime->Window->setFramerateLimit(240);
+
+	*initialized = true;
 
 	while (runtime->Running)
 	{
@@ -42,8 +44,9 @@ void ThreadWindowManager(RuntimeHandler* runtime)
 	}
 
 	//shutdown
-	delete runtime->Window;
 	runtime->CleanUp();
+
+	delete runtime->Window;
 }
 
 RuntimeHandler::RuntimeHandler(ThreadHandler* thread, ObjectHandler* object, VariableHandler* variable, ByteHandler* byte)
@@ -105,13 +108,16 @@ void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 
 	m_planeCopy = planeCopy;
 
-	for (unsigned int i = 0; i < locations.size(); i++)
-	{
-		m_threadHandler->SummonThread(locations[i], this, m_variableHandler, registry);
-	}
+	std::atomic<bool> initialized = false;
 
-	m_runningThread = new std::thread(ThreadWindowManager, this);
+	m_runningThread = new std::thread(ThreadWindowManager, this, &initialized);
 	m_runningThread->detach();
+
+	while (!initialized)
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+	for (unsigned int i = 0; i < locations.size(); i++)
+		m_threadHandler->SummonThread(locations[i], this, m_variableHandler, registry);
 }
 
 void RuntimeHandler::ManualRender()

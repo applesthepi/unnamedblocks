@@ -40,6 +40,8 @@ GpuMan Global::GpuType;
 
 std::string Global::ContextData;
 
+bool Global::ContextUpdate;
+
 sf::Vector2i Global::MousePosition;
 
 void* Global::SelectedBlock;
