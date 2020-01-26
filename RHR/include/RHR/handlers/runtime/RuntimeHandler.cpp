@@ -108,7 +108,7 @@ void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 
 	m_planeCopy = planeCopy;
 
-	std::atomic<bool> initialized = false;
+	std::atomic<bool> initialized(false);
 
 	m_runningThread = new std::thread(ThreadWindowManager, this, &initialized);
 	m_runningThread->detach();
