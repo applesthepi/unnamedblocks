@@ -145,27 +145,27 @@ am__v_AR_1 =
 librhr_a_AR = $(AR) $(ARFLAGS)
 librhr_a_LIBADD =
 am__dirstamp = $(am__leading_dot)dirstamp
-am_librhr_a_OBJECTS = RHR/include/RHR/librhr_a-StatmentIf.$(OBJEXT) \
-	RHR/include/RHR/stacking/librhr_a-Plane.$(OBJEXT) \
-	RHR/include/RHR/stacking/librhr_a-Stack.$(OBJEXT) \
-	RHR/include/RHR/stacking/librhr_a-Block.$(OBJEXT) \
-	RHR/include/RHR/stacking/args/librhr_a-Argument.$(OBJEXT) \
-	RHR/include/RHR/registries/librhr_a-ButtonRegistry.$(OBJEXT) \
-	RHR/include/RHR/registries/librhr_a-ShaderRegistry.$(OBJEXT) \
-	RHR/include/RHR/registries/librhr_a-BlockRegistry.$(OBJEXT) \
-	RHR/include/RHR/ui/librhr_a-Button.$(OBJEXT) \
+am_librhr_a_OBJECTS = RHR/include/RHR/librhr_a-Global.$(OBJEXT) \
 	RHR/include/RHR/ui/librhr_a-TypingSystem.$(OBJEXT) \
-	RHR/include/RHR/modding/librhr_a-ModData.$(OBJEXT) \
-	RHR/include/RHR/librhr_a-RHR.$(OBJEXT) \
-	RHR/include/RHR/librhr_a-Global.$(OBJEXT) \
-	RHR/include/RHR/handlers/librhr_a-ProjectHandler.$(OBJEXT) \
-	RHR/include/RHR/handlers/librhr_a-Logger.$(OBJEXT) \
+	RHR/include/RHR/ui/librhr_a-Button.$(OBJEXT) \
 	RHR/include/RHR/handlers/librhr_a-MessageHandler.$(OBJEXT) \
-	RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.$(OBJEXT) \
+	RHR/include/RHR/handlers/librhr_a-Logger.$(OBJEXT) \
+	RHR/include/RHR/handlers/librhr_a-ProjectHandler.$(OBJEXT) \
+	RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.$(OBJEXT) \
 	RHR/include/RHR/handlers/runtime/librhr_a-ObjectHandler.$(OBJEXT) \
 	RHR/include/RHR/handlers/runtime/librhr_a-ByteHandler.$(OBJEXT) \
-	RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.$(OBJEXT) \
-	RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT)
+	RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT) \
+	RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.$(OBJEXT) \
+	RHR/include/RHR/librhr_a-StatmentIf.$(OBJEXT) \
+	RHR/include/RHR/librhr_a-RHR.$(OBJEXT) \
+	RHR/include/RHR/modding/librhr_a-ModData.$(OBJEXT) \
+	RHR/include/RHR/registries/librhr_a-ShaderRegistry.$(OBJEXT) \
+	RHR/include/RHR/registries/librhr_a-ButtonRegistry.$(OBJEXT) \
+	RHR/include/RHR/registries/librhr_a-BlockRegistry.$(OBJEXT) \
+	RHR/include/RHR/stacking/args/librhr_a-Argument.$(OBJEXT) \
+	RHR/include/RHR/stacking/librhr_a-Block.$(OBJEXT) \
+	RHR/include/RHR/stacking/librhr_a-Plane.$(OBJEXT) \
+	RHR/include/RHR/stacking/librhr_a-Stack.$(OBJEXT)
 librhr_a_OBJECTS = $(am_librhr_a_OBJECTS)
 am__DEPENDENCIES_1 =
 ModVin_la_DEPENDENCIES = librhr.a $(am__DEPENDENCIES_1)
@@ -436,7 +436,7 @@ EXTRA_DIST = bootstrap
 noinst_LIBRARIES = librhr.a
 lib_LTLIBRARIES = ModVin.la
 # RHR
-librhr_a_SOURCES = RHR/include/RHR/StatmentIf.cpp RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/modding/ModData.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/Global.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp 
+librhr_a_SOURCES = RHR/include/RHR/Global.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/StatmentIf.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/modding/ModData.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp 
 librhr_a_CPPFLAGS = -fPIC -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
 librhr_a_LDFLAGS = -fPIC -std=c++17
 # VinMod
@@ -580,60 +580,63 @@ RHR/include/RHR/$(am__dirstamp):
 RHR/include/RHR/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) RHR/include/RHR/$(DEPDIR)
 	@: > RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/librhr_a-StatmentIf.$(OBJEXT):  \
+RHR/include/RHR/librhr_a-Global.$(OBJEXT):  \
 	RHR/include/RHR/$(am__dirstamp) \
 	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/stacking/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/stacking
-	@: > RHR/include/RHR/stacking/$(am__dirstamp)
-RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/stacking/$(DEPDIR)
-	@: > RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/stacking/librhr_a-Plane.$(OBJEXT):  \
-	RHR/include/RHR/stacking/$(am__dirstamp) \
-	RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/stacking/librhr_a-Stack.$(OBJEXT):  \
-	RHR/include/RHR/stacking/$(am__dirstamp) \
-	RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/stacking/librhr_a-Block.$(OBJEXT):  \
-	RHR/include/RHR/stacking/$(am__dirstamp) \
-	RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/stacking/args/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/stacking/args
-	@: > RHR/include/RHR/stacking/args/$(am__dirstamp)
-RHR/include/RHR/stacking/args/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/stacking/args/$(DEPDIR)
-	@: > RHR/include/RHR/stacking/args/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/stacking/args/librhr_a-Argument.$(OBJEXT):  \
-	RHR/include/RHR/stacking/args/$(am__dirstamp) \
-	RHR/include/RHR/stacking/args/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/registries/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/registries
-	@: > RHR/include/RHR/registries/$(am__dirstamp)
-RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/registries/$(DEPDIR)
-	@: > RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/registries/librhr_a-ButtonRegistry.$(OBJEXT):  \
-	RHR/include/RHR/registries/$(am__dirstamp) \
-	RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/registries/librhr_a-ShaderRegistry.$(OBJEXT):  \
-	RHR/include/RHR/registries/$(am__dirstamp) \
-	RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/registries/librhr_a-BlockRegistry.$(OBJEXT):  \
-	RHR/include/RHR/registries/$(am__dirstamp) \
-	RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
 RHR/include/RHR/ui/$(am__dirstamp):
 	@$(MKDIR_P) RHR/include/RHR/ui
 	@: > RHR/include/RHR/ui/$(am__dirstamp)
 RHR/include/RHR/ui/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) RHR/include/RHR/ui/$(DEPDIR)
 	@: > RHR/include/RHR/ui/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/ui/librhr_a-Button.$(OBJEXT):  \
-	RHR/include/RHR/ui/$(am__dirstamp) \
-	RHR/include/RHR/ui/$(DEPDIR)/$(am__dirstamp)
 RHR/include/RHR/ui/librhr_a-TypingSystem.$(OBJEXT):  \
 	RHR/include/RHR/ui/$(am__dirstamp) \
 	RHR/include/RHR/ui/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/ui/librhr_a-Button.$(OBJEXT):  \
+	RHR/include/RHR/ui/$(am__dirstamp) \
+	RHR/include/RHR/ui/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/handlers
+	@: > RHR/include/RHR/handlers/$(am__dirstamp)
+RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/handlers/$(DEPDIR)
+	@: > RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/librhr_a-MessageHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/$(am__dirstamp) \
+	RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/librhr_a-Logger.$(OBJEXT):  \
+	RHR/include/RHR/handlers/$(am__dirstamp) \
+	RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/librhr_a-ProjectHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/$(am__dirstamp) \
+	RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/handlers/runtime
+	@: > RHR/include/RHR/handlers/runtime/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/handlers/runtime/$(DEPDIR)
+	@: > RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
+	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/librhr_a-ObjectHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
+	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/librhr_a-ByteHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
+	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
+	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.$(OBJEXT):  \
+	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
+	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/librhr_a-StatmentIf.$(OBJEXT):  \
+	RHR/include/RHR/$(am__dirstamp) \
+	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/librhr_a-RHR.$(OBJEXT):  \
+	RHR/include/RHR/$(am__dirstamp) \
+	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
 RHR/include/RHR/modding/$(am__dirstamp):
 	@$(MKDIR_P) RHR/include/RHR/modding
 	@: > RHR/include/RHR/modding/$(am__dirstamp)
@@ -643,48 +646,45 @@ RHR/include/RHR/modding/$(DEPDIR)/$(am__dirstamp):
 RHR/include/RHR/modding/librhr_a-ModData.$(OBJEXT):  \
 	RHR/include/RHR/modding/$(am__dirstamp) \
 	RHR/include/RHR/modding/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/librhr_a-RHR.$(OBJEXT):  \
-	RHR/include/RHR/$(am__dirstamp) \
-	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/librhr_a-Global.$(OBJEXT):  \
-	RHR/include/RHR/$(am__dirstamp) \
-	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/handlers
-	@: > RHR/include/RHR/handlers/$(am__dirstamp)
-RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/handlers/$(DEPDIR)
-	@: > RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/librhr_a-ProjectHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/$(am__dirstamp) \
-	RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/librhr_a-Logger.$(OBJEXT):  \
-	RHR/include/RHR/handlers/$(am__dirstamp) \
-	RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/librhr_a-MessageHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/$(am__dirstamp) \
-	RHR/include/RHR/handlers/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/handlers/runtime
-	@: > RHR/include/RHR/handlers/runtime/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) RHR/include/RHR/handlers/runtime/$(DEPDIR)
-	@: > RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
-	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/librhr_a-ObjectHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
-	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/librhr_a-ByteHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
-	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
-	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
-RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT):  \
-	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
-	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/registries/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/registries
+	@: > RHR/include/RHR/registries/$(am__dirstamp)
+RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/registries/$(DEPDIR)
+	@: > RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/registries/librhr_a-ShaderRegistry.$(OBJEXT):  \
+	RHR/include/RHR/registries/$(am__dirstamp) \
+	RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/registries/librhr_a-ButtonRegistry.$(OBJEXT):  \
+	RHR/include/RHR/registries/$(am__dirstamp) \
+	RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/registries/librhr_a-BlockRegistry.$(OBJEXT):  \
+	RHR/include/RHR/registries/$(am__dirstamp) \
+	RHR/include/RHR/registries/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/stacking/args/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/stacking/args
+	@: > RHR/include/RHR/stacking/args/$(am__dirstamp)
+RHR/include/RHR/stacking/args/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/stacking/args/$(DEPDIR)
+	@: > RHR/include/RHR/stacking/args/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/stacking/args/librhr_a-Argument.$(OBJEXT):  \
+	RHR/include/RHR/stacking/args/$(am__dirstamp) \
+	RHR/include/RHR/stacking/args/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/stacking/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/stacking
+	@: > RHR/include/RHR/stacking/$(am__dirstamp)
+RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) RHR/include/RHR/stacking/$(DEPDIR)
+	@: > RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/stacking/librhr_a-Block.$(OBJEXT):  \
+	RHR/include/RHR/stacking/$(am__dirstamp) \
+	RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/stacking/librhr_a-Plane.$(OBJEXT):  \
+	RHR/include/RHR/stacking/$(am__dirstamp) \
+	RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/stacking/librhr_a-Stack.$(OBJEXT):  \
+	RHR/include/RHR/stacking/$(am__dirstamp) \
+	RHR/include/RHR/stacking/$(DEPDIR)/$(am__dirstamp)
 
 librhr.a: $(librhr_a_OBJECTS) $(librhr_a_DEPENDENCIES) $(EXTRA_librhr_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f librhr.a
@@ -791,131 +791,19 @@ am--depfiles: $(am__depfiles_remade)
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(LTCXXCOMPILE) -c -o $@ $<
 
-RHR/include/RHR/librhr_a-StatmentIf.o: RHR/include/RHR/StatmentIf.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-StatmentIf.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo -c -o RHR/include/RHR/librhr_a-StatmentIf.o `test -f 'RHR/include/RHR/StatmentIf.cpp' || echo '$(srcdir)/'`RHR/include/RHR/StatmentIf.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/StatmentIf.cpp' object='RHR/include/RHR/librhr_a-StatmentIf.o' libtool=no @AMDEPBACKSLASH@
+RHR/include/RHR/librhr_a-Global.o: RHR/include/RHR/Global.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-Global.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo -c -o RHR/include/RHR/librhr_a-Global.o `test -f 'RHR/include/RHR/Global.cpp' || echo '$(srcdir)/'`RHR/include/RHR/Global.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/Global.cpp' object='RHR/include/RHR/librhr_a-Global.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-StatmentIf.o `test -f 'RHR/include/RHR/StatmentIf.cpp' || echo '$(srcdir)/'`RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-Global.o `test -f 'RHR/include/RHR/Global.cpp' || echo '$(srcdir)/'`RHR/include/RHR/Global.cpp
 
-RHR/include/RHR/librhr_a-StatmentIf.obj: RHR/include/RHR/StatmentIf.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-StatmentIf.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo -c -o RHR/include/RHR/librhr_a-StatmentIf.obj `if test -f 'RHR/include/RHR/StatmentIf.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/StatmentIf.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/StatmentIf.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/StatmentIf.cpp' object='RHR/include/RHR/librhr_a-StatmentIf.obj' libtool=no @AMDEPBACKSLASH@
+RHR/include/RHR/librhr_a-Global.obj: RHR/include/RHR/Global.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-Global.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo -c -o RHR/include/RHR/librhr_a-Global.obj `if test -f 'RHR/include/RHR/Global.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/Global.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/Global.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/Global.cpp' object='RHR/include/RHR/librhr_a-Global.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-StatmentIf.obj `if test -f 'RHR/include/RHR/StatmentIf.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/StatmentIf.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/StatmentIf.cpp'; fi`
-
-RHR/include/RHR/stacking/librhr_a-Plane.o: RHR/include/RHR/stacking/Plane.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Plane.o -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Plane.o `test -f 'RHR/include/RHR/stacking/Plane.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Plane.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Plane.cpp' object='RHR/include/RHR/stacking/librhr_a-Plane.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Plane.o `test -f 'RHR/include/RHR/stacking/Plane.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Plane.cpp
-
-RHR/include/RHR/stacking/librhr_a-Plane.obj: RHR/include/RHR/stacking/Plane.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Plane.obj -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Plane.obj `if test -f 'RHR/include/RHR/stacking/Plane.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Plane.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Plane.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Plane.cpp' object='RHR/include/RHR/stacking/librhr_a-Plane.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Plane.obj `if test -f 'RHR/include/RHR/stacking/Plane.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Plane.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Plane.cpp'; fi`
-
-RHR/include/RHR/stacking/librhr_a-Stack.o: RHR/include/RHR/stacking/Stack.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Stack.o -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Stack.o `test -f 'RHR/include/RHR/stacking/Stack.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Stack.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Stack.cpp' object='RHR/include/RHR/stacking/librhr_a-Stack.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Stack.o `test -f 'RHR/include/RHR/stacking/Stack.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Stack.cpp
-
-RHR/include/RHR/stacking/librhr_a-Stack.obj: RHR/include/RHR/stacking/Stack.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Stack.obj -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Stack.obj `if test -f 'RHR/include/RHR/stacking/Stack.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Stack.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Stack.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Stack.cpp' object='RHR/include/RHR/stacking/librhr_a-Stack.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Stack.obj `if test -f 'RHR/include/RHR/stacking/Stack.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Stack.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Stack.cpp'; fi`
-
-RHR/include/RHR/stacking/librhr_a-Block.o: RHR/include/RHR/stacking/Block.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Block.o -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Block.o `test -f 'RHR/include/RHR/stacking/Block.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Block.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Block.cpp' object='RHR/include/RHR/stacking/librhr_a-Block.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Block.o `test -f 'RHR/include/RHR/stacking/Block.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Block.cpp
-
-RHR/include/RHR/stacking/librhr_a-Block.obj: RHR/include/RHR/stacking/Block.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Block.obj -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Block.obj `if test -f 'RHR/include/RHR/stacking/Block.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Block.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Block.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Block.cpp' object='RHR/include/RHR/stacking/librhr_a-Block.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Block.obj `if test -f 'RHR/include/RHR/stacking/Block.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Block.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Block.cpp'; fi`
-
-RHR/include/RHR/stacking/args/librhr_a-Argument.o: RHR/include/RHR/stacking/args/Argument.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/args/librhr_a-Argument.o -MD -MP -MF RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.o `test -f 'RHR/include/RHR/stacking/args/Argument.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/args/Argument.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/args/Argument.cpp' object='RHR/include/RHR/stacking/args/librhr_a-Argument.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.o `test -f 'RHR/include/RHR/stacking/args/Argument.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/args/Argument.cpp
-
-RHR/include/RHR/stacking/args/librhr_a-Argument.obj: RHR/include/RHR/stacking/args/Argument.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/args/librhr_a-Argument.obj -MD -MP -MF RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.obj `if test -f 'RHR/include/RHR/stacking/args/Argument.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/args/Argument.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/args/Argument.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/args/Argument.cpp' object='RHR/include/RHR/stacking/args/librhr_a-Argument.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.obj `if test -f 'RHR/include/RHR/stacking/args/Argument.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/args/Argument.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/args/Argument.cpp'; fi`
-
-RHR/include/RHR/registries/librhr_a-ButtonRegistry.o: RHR/include/RHR/registries/ButtonRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ButtonRegistry.o -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.o `test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ButtonRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ButtonRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ButtonRegistry.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.o `test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ButtonRegistry.cpp
-
-RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj: RHR/include/RHR/registries/ButtonRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj `if test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ButtonRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ButtonRegistry.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ButtonRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj `if test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ButtonRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ButtonRegistry.cpp'; fi`
-
-RHR/include/RHR/registries/librhr_a-ShaderRegistry.o: RHR/include/RHR/registries/ShaderRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ShaderRegistry.o -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.o `test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ShaderRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ShaderRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ShaderRegistry.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.o `test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ShaderRegistry.cpp
-
-RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj: RHR/include/RHR/registries/ShaderRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj `if test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ShaderRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ShaderRegistry.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ShaderRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj `if test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ShaderRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ShaderRegistry.cpp'; fi`
-
-RHR/include/RHR/registries/librhr_a-BlockRegistry.o: RHR/include/RHR/registries/BlockRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-BlockRegistry.o -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.o `test -f 'RHR/include/RHR/registries/BlockRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/BlockRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/BlockRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-BlockRegistry.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.o `test -f 'RHR/include/RHR/registries/BlockRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/BlockRegistry.cpp
-
-RHR/include/RHR/registries/librhr_a-BlockRegistry.obj: RHR/include/RHR/registries/BlockRegistry.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-BlockRegistry.obj -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.obj `if test -f 'RHR/include/RHR/registries/BlockRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/BlockRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/BlockRegistry.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/BlockRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-BlockRegistry.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.obj `if test -f 'RHR/include/RHR/registries/BlockRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/BlockRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/BlockRegistry.cpp'; fi`
-
-RHR/include/RHR/ui/librhr_a-Button.o: RHR/include/RHR/ui/Button.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/ui/librhr_a-Button.o -MD -MP -MF RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo -c -o RHR/include/RHR/ui/librhr_a-Button.o `test -f 'RHR/include/RHR/ui/Button.cpp' || echo '$(srcdir)/'`RHR/include/RHR/ui/Button.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/ui/Button.cpp' object='RHR/include/RHR/ui/librhr_a-Button.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/ui/librhr_a-Button.o `test -f 'RHR/include/RHR/ui/Button.cpp' || echo '$(srcdir)/'`RHR/include/RHR/ui/Button.cpp
-
-RHR/include/RHR/ui/librhr_a-Button.obj: RHR/include/RHR/ui/Button.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/ui/librhr_a-Button.obj -MD -MP -MF RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo -c -o RHR/include/RHR/ui/librhr_a-Button.obj `if test -f 'RHR/include/RHR/ui/Button.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/ui/Button.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/ui/Button.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/ui/Button.cpp' object='RHR/include/RHR/ui/librhr_a-Button.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/ui/librhr_a-Button.obj `if test -f 'RHR/include/RHR/ui/Button.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/ui/Button.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/ui/Button.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-Global.obj `if test -f 'RHR/include/RHR/Global.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/Global.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/Global.cpp'; fi`
 
 RHR/include/RHR/ui/librhr_a-TypingSystem.o: RHR/include/RHR/ui/TypingSystem.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/ui/librhr_a-TypingSystem.o -MD -MP -MF RHR/include/RHR/ui/$(DEPDIR)/librhr_a-TypingSystem.Tpo -c -o RHR/include/RHR/ui/librhr_a-TypingSystem.o `test -f 'RHR/include/RHR/ui/TypingSystem.cpp' || echo '$(srcdir)/'`RHR/include/RHR/ui/TypingSystem.cpp
@@ -931,75 +819,19 @@ RHR/include/RHR/ui/librhr_a-TypingSystem.obj: RHR/include/RHR/ui/TypingSystem.cp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/ui/librhr_a-TypingSystem.obj `if test -f 'RHR/include/RHR/ui/TypingSystem.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/ui/TypingSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/ui/TypingSystem.cpp'; fi`
 
-RHR/include/RHR/modding/librhr_a-ModData.o: RHR/include/RHR/modding/ModData.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/modding/librhr_a-ModData.o -MD -MP -MF RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo -c -o RHR/include/RHR/modding/librhr_a-ModData.o `test -f 'RHR/include/RHR/modding/ModData.cpp' || echo '$(srcdir)/'`RHR/include/RHR/modding/ModData.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/modding/ModData.cpp' object='RHR/include/RHR/modding/librhr_a-ModData.o' libtool=no @AMDEPBACKSLASH@
+RHR/include/RHR/ui/librhr_a-Button.o: RHR/include/RHR/ui/Button.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/ui/librhr_a-Button.o -MD -MP -MF RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo -c -o RHR/include/RHR/ui/librhr_a-Button.o `test -f 'RHR/include/RHR/ui/Button.cpp' || echo '$(srcdir)/'`RHR/include/RHR/ui/Button.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/ui/Button.cpp' object='RHR/include/RHR/ui/librhr_a-Button.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/modding/librhr_a-ModData.o `test -f 'RHR/include/RHR/modding/ModData.cpp' || echo '$(srcdir)/'`RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/ui/librhr_a-Button.o `test -f 'RHR/include/RHR/ui/Button.cpp' || echo '$(srcdir)/'`RHR/include/RHR/ui/Button.cpp
 
-RHR/include/RHR/modding/librhr_a-ModData.obj: RHR/include/RHR/modding/ModData.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/modding/librhr_a-ModData.obj -MD -MP -MF RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo -c -o RHR/include/RHR/modding/librhr_a-ModData.obj `if test -f 'RHR/include/RHR/modding/ModData.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/modding/ModData.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/modding/ModData.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/modding/ModData.cpp' object='RHR/include/RHR/modding/librhr_a-ModData.obj' libtool=no @AMDEPBACKSLASH@
+RHR/include/RHR/ui/librhr_a-Button.obj: RHR/include/RHR/ui/Button.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/ui/librhr_a-Button.obj -MD -MP -MF RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo -c -o RHR/include/RHR/ui/librhr_a-Button.obj `if test -f 'RHR/include/RHR/ui/Button.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/ui/Button.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/ui/Button.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Tpo RHR/include/RHR/ui/$(DEPDIR)/librhr_a-Button.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/ui/Button.cpp' object='RHR/include/RHR/ui/librhr_a-Button.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/modding/librhr_a-ModData.obj `if test -f 'RHR/include/RHR/modding/ModData.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/modding/ModData.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/modding/ModData.cpp'; fi`
-
-RHR/include/RHR/librhr_a-RHR.o: RHR/include/RHR/RHR.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-RHR.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo -c -o RHR/include/RHR/librhr_a-RHR.o `test -f 'RHR/include/RHR/RHR.cpp' || echo '$(srcdir)/'`RHR/include/RHR/RHR.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/RHR.cpp' object='RHR/include/RHR/librhr_a-RHR.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-RHR.o `test -f 'RHR/include/RHR/RHR.cpp' || echo '$(srcdir)/'`RHR/include/RHR/RHR.cpp
-
-RHR/include/RHR/librhr_a-RHR.obj: RHR/include/RHR/RHR.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-RHR.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo -c -o RHR/include/RHR/librhr_a-RHR.obj `if test -f 'RHR/include/RHR/RHR.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/RHR.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/RHR.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/RHR.cpp' object='RHR/include/RHR/librhr_a-RHR.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-RHR.obj `if test -f 'RHR/include/RHR/RHR.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/RHR.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/RHR.cpp'; fi`
-
-RHR/include/RHR/librhr_a-Global.o: RHR/include/RHR/Global.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-Global.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo -c -o RHR/include/RHR/librhr_a-Global.o `test -f 'RHR/include/RHR/Global.cpp' || echo '$(srcdir)/'`RHR/include/RHR/Global.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/Global.cpp' object='RHR/include/RHR/librhr_a-Global.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-Global.o `test -f 'RHR/include/RHR/Global.cpp' || echo '$(srcdir)/'`RHR/include/RHR/Global.cpp
-
-RHR/include/RHR/librhr_a-Global.obj: RHR/include/RHR/Global.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-Global.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo -c -o RHR/include/RHR/librhr_a-Global.obj `if test -f 'RHR/include/RHR/Global.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/Global.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/Global.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/Global.cpp' object='RHR/include/RHR/librhr_a-Global.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-Global.obj `if test -f 'RHR/include/RHR/Global.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/Global.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/Global.cpp'; fi`
-
-RHR/include/RHR/handlers/librhr_a-ProjectHandler.o: RHR/include/RHR/handlers/ProjectHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-ProjectHandler.o -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.o `test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/ProjectHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/ProjectHandler.cpp' object='RHR/include/RHR/handlers/librhr_a-ProjectHandler.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.o `test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/ProjectHandler.cpp
-
-RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj: RHR/include/RHR/handlers/ProjectHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj `if test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/ProjectHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/ProjectHandler.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/ProjectHandler.cpp' object='RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj `if test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/ProjectHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/ProjectHandler.cpp'; fi`
-
-RHR/include/RHR/handlers/librhr_a-Logger.o: RHR/include/RHR/handlers/Logger.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-Logger.o -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo -c -o RHR/include/RHR/handlers/librhr_a-Logger.o `test -f 'RHR/include/RHR/handlers/Logger.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/Logger.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/Logger.cpp' object='RHR/include/RHR/handlers/librhr_a-Logger.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-Logger.o `test -f 'RHR/include/RHR/handlers/Logger.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/Logger.cpp
-
-RHR/include/RHR/handlers/librhr_a-Logger.obj: RHR/include/RHR/handlers/Logger.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-Logger.obj -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo -c -o RHR/include/RHR/handlers/librhr_a-Logger.obj `if test -f 'RHR/include/RHR/handlers/Logger.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/Logger.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/Logger.cpp' object='RHR/include/RHR/handlers/librhr_a-Logger.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-Logger.obj `if test -f 'RHR/include/RHR/handlers/Logger.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/Logger.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/ui/librhr_a-Button.obj `if test -f 'RHR/include/RHR/ui/Button.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/ui/Button.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/ui/Button.cpp'; fi`
 
 RHR/include/RHR/handlers/librhr_a-MessageHandler.o: RHR/include/RHR/handlers/MessageHandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-MessageHandler.o -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-MessageHandler.Tpo -c -o RHR/include/RHR/handlers/librhr_a-MessageHandler.o `test -f 'RHR/include/RHR/handlers/MessageHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/MessageHandler.cpp
@@ -1015,19 +847,47 @@ RHR/include/RHR/handlers/librhr_a-MessageHandler.obj: RHR/include/RHR/handlers/M
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-MessageHandler.obj `if test -f 'RHR/include/RHR/handlers/MessageHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/MessageHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/MessageHandler.cpp'; fi`
 
-RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o: RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o `test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o' libtool=no @AMDEPBACKSLASH@
+RHR/include/RHR/handlers/librhr_a-Logger.o: RHR/include/RHR/handlers/Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-Logger.o -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo -c -o RHR/include/RHR/handlers/librhr_a-Logger.o `test -f 'RHR/include/RHR/handlers/Logger.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/Logger.cpp' object='RHR/include/RHR/handlers/librhr_a-Logger.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o `test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-Logger.o `test -f 'RHR/include/RHR/handlers/Logger.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/Logger.cpp
 
-RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj: RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj' libtool=no @AMDEPBACKSLASH@
+RHR/include/RHR/handlers/librhr_a-Logger.obj: RHR/include/RHR/handlers/Logger.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-Logger.obj -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo -c -o RHR/include/RHR/handlers/librhr_a-Logger.obj `if test -f 'RHR/include/RHR/handlers/Logger.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/Logger.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/Logger.cpp' object='RHR/include/RHR/handlers/librhr_a-Logger.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-Logger.obj `if test -f 'RHR/include/RHR/handlers/Logger.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/Logger.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/Logger.cpp'; fi`
+
+RHR/include/RHR/handlers/librhr_a-ProjectHandler.o: RHR/include/RHR/handlers/ProjectHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-ProjectHandler.o -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.o `test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/ProjectHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/ProjectHandler.cpp' object='RHR/include/RHR/handlers/librhr_a-ProjectHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.o `test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/ProjectHandler.cpp
+
+RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj: RHR/include/RHR/handlers/ProjectHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj -MD -MP -MF RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj `if test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/ProjectHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/ProjectHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Tpo RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/ProjectHandler.cpp' object='RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/librhr_a-ProjectHandler.obj `if test -f 'RHR/include/RHR/handlers/ProjectHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/ProjectHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/ProjectHandler.cpp'; fi`
+
+RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o: RHR/include/RHR/handlers/runtime/VariableHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o `test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/VariableHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/VariableHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o `test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/VariableHandler.cpp
+
+RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj: RHR/include/RHR/handlers/runtime/VariableHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/VariableHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; fi`
 
 RHR/include/RHR/handlers/runtime/librhr_a-ObjectHandler.o: RHR/include/RHR/handlers/runtime/ObjectHandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-ObjectHandler.o -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ObjectHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-ObjectHandler.o `test -f 'RHR/include/RHR/handlers/runtime/ObjectHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/ObjectHandler.cpp
@@ -1057,20 +917,6 @@ RHR/include/RHR/handlers/runtime/librhr_a-ByteHandler.obj: RHR/include/RHR/handl
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-ByteHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/ByteHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/ByteHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/ByteHandler.cpp'; fi`
 
-RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o: RHR/include/RHR/handlers/runtime/VariableHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o `test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/VariableHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/VariableHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.o `test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/VariableHandler.cpp
-
-RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj: RHR/include/RHR/handlers/runtime/VariableHandler.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-VariableHandler.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/VariableHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-VariableHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/VariableHandler.cpp'; fi`
-
 RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.o: RHR/include/RHR/handlers/runtime/ThreadHandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.o -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.o `test -f 'RHR/include/RHR/handlers/runtime/ThreadHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/ThreadHandler.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-ThreadHandler.Po
@@ -1084,6 +930,160 @@ RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.obj: RHR/include/RHR/han
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/ThreadHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/ThreadHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/ThreadHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/ThreadHandler.cpp'; fi`
+
+RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o: RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o `test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.o `test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' || echo '$(srcdir)/'`RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
+
+RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj: RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj -MD -MP -MF RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Tpo RHR/include/RHR/handlers/runtime/$(DEPDIR)/librhr_a-RuntimeHandler.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; fi`
+
+RHR/include/RHR/librhr_a-StatmentIf.o: RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-StatmentIf.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo -c -o RHR/include/RHR/librhr_a-StatmentIf.o `test -f 'RHR/include/RHR/StatmentIf.cpp' || echo '$(srcdir)/'`RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/StatmentIf.cpp' object='RHR/include/RHR/librhr_a-StatmentIf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-StatmentIf.o `test -f 'RHR/include/RHR/StatmentIf.cpp' || echo '$(srcdir)/'`RHR/include/RHR/StatmentIf.cpp
+
+RHR/include/RHR/librhr_a-StatmentIf.obj: RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-StatmentIf.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo -c -o RHR/include/RHR/librhr_a-StatmentIf.obj `if test -f 'RHR/include/RHR/StatmentIf.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/StatmentIf.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/StatmentIf.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/StatmentIf.cpp' object='RHR/include/RHR/librhr_a-StatmentIf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-StatmentIf.obj `if test -f 'RHR/include/RHR/StatmentIf.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/StatmentIf.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/StatmentIf.cpp'; fi`
+
+RHR/include/RHR/librhr_a-RHR.o: RHR/include/RHR/RHR.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-RHR.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo -c -o RHR/include/RHR/librhr_a-RHR.o `test -f 'RHR/include/RHR/RHR.cpp' || echo '$(srcdir)/'`RHR/include/RHR/RHR.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/RHR.cpp' object='RHR/include/RHR/librhr_a-RHR.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-RHR.o `test -f 'RHR/include/RHR/RHR.cpp' || echo '$(srcdir)/'`RHR/include/RHR/RHR.cpp
+
+RHR/include/RHR/librhr_a-RHR.obj: RHR/include/RHR/RHR.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-RHR.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo -c -o RHR/include/RHR/librhr_a-RHR.obj `if test -f 'RHR/include/RHR/RHR.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/RHR.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/RHR.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/RHR.cpp' object='RHR/include/RHR/librhr_a-RHR.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-RHR.obj `if test -f 'RHR/include/RHR/RHR.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/RHR.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/RHR.cpp'; fi`
+
+RHR/include/RHR/modding/librhr_a-ModData.o: RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/modding/librhr_a-ModData.o -MD -MP -MF RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo -c -o RHR/include/RHR/modding/librhr_a-ModData.o `test -f 'RHR/include/RHR/modding/ModData.cpp' || echo '$(srcdir)/'`RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/modding/ModData.cpp' object='RHR/include/RHR/modding/librhr_a-ModData.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/modding/librhr_a-ModData.o `test -f 'RHR/include/RHR/modding/ModData.cpp' || echo '$(srcdir)/'`RHR/include/RHR/modding/ModData.cpp
+
+RHR/include/RHR/modding/librhr_a-ModData.obj: RHR/include/RHR/modding/ModData.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/modding/librhr_a-ModData.obj -MD -MP -MF RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo -c -o RHR/include/RHR/modding/librhr_a-ModData.obj `if test -f 'RHR/include/RHR/modding/ModData.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/modding/ModData.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/modding/ModData.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Tpo RHR/include/RHR/modding/$(DEPDIR)/librhr_a-ModData.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/modding/ModData.cpp' object='RHR/include/RHR/modding/librhr_a-ModData.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/modding/librhr_a-ModData.obj `if test -f 'RHR/include/RHR/modding/ModData.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/modding/ModData.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/modding/ModData.cpp'; fi`
+
+RHR/include/RHR/registries/librhr_a-ShaderRegistry.o: RHR/include/RHR/registries/ShaderRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ShaderRegistry.o -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.o `test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ShaderRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ShaderRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ShaderRegistry.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.o `test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ShaderRegistry.cpp
+
+RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj: RHR/include/RHR/registries/ShaderRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj `if test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ShaderRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ShaderRegistry.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ShaderRegistry.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ShaderRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ShaderRegistry.obj `if test -f 'RHR/include/RHR/registries/ShaderRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ShaderRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ShaderRegistry.cpp'; fi`
+
+RHR/include/RHR/registries/librhr_a-ButtonRegistry.o: RHR/include/RHR/registries/ButtonRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ButtonRegistry.o -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.o `test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ButtonRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ButtonRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ButtonRegistry.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.o `test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/ButtonRegistry.cpp
+
+RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj: RHR/include/RHR/registries/ButtonRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj `if test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ButtonRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ButtonRegistry.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-ButtonRegistry.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/ButtonRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-ButtonRegistry.obj `if test -f 'RHR/include/RHR/registries/ButtonRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/ButtonRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/ButtonRegistry.cpp'; fi`
+
+RHR/include/RHR/registries/librhr_a-BlockRegistry.o: RHR/include/RHR/registries/BlockRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-BlockRegistry.o -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.o `test -f 'RHR/include/RHR/registries/BlockRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/BlockRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/BlockRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-BlockRegistry.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.o `test -f 'RHR/include/RHR/registries/BlockRegistry.cpp' || echo '$(srcdir)/'`RHR/include/RHR/registries/BlockRegistry.cpp
+
+RHR/include/RHR/registries/librhr_a-BlockRegistry.obj: RHR/include/RHR/registries/BlockRegistry.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/registries/librhr_a-BlockRegistry.obj -MD -MP -MF RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.obj `if test -f 'RHR/include/RHR/registries/BlockRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/BlockRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/BlockRegistry.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Tpo RHR/include/RHR/registries/$(DEPDIR)/librhr_a-BlockRegistry.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/registries/BlockRegistry.cpp' object='RHR/include/RHR/registries/librhr_a-BlockRegistry.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/registries/librhr_a-BlockRegistry.obj `if test -f 'RHR/include/RHR/registries/BlockRegistry.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/registries/BlockRegistry.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/registries/BlockRegistry.cpp'; fi`
+
+RHR/include/RHR/stacking/args/librhr_a-Argument.o: RHR/include/RHR/stacking/args/Argument.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/args/librhr_a-Argument.o -MD -MP -MF RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.o `test -f 'RHR/include/RHR/stacking/args/Argument.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/args/Argument.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/args/Argument.cpp' object='RHR/include/RHR/stacking/args/librhr_a-Argument.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.o `test -f 'RHR/include/RHR/stacking/args/Argument.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/args/Argument.cpp
+
+RHR/include/RHR/stacking/args/librhr_a-Argument.obj: RHR/include/RHR/stacking/args/Argument.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/args/librhr_a-Argument.obj -MD -MP -MF RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.obj `if test -f 'RHR/include/RHR/stacking/args/Argument.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/args/Argument.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/args/Argument.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Tpo RHR/include/RHR/stacking/args/$(DEPDIR)/librhr_a-Argument.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/args/Argument.cpp' object='RHR/include/RHR/stacking/args/librhr_a-Argument.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/args/librhr_a-Argument.obj `if test -f 'RHR/include/RHR/stacking/args/Argument.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/args/Argument.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/args/Argument.cpp'; fi`
+
+RHR/include/RHR/stacking/librhr_a-Block.o: RHR/include/RHR/stacking/Block.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Block.o -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Block.o `test -f 'RHR/include/RHR/stacking/Block.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Block.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Block.cpp' object='RHR/include/RHR/stacking/librhr_a-Block.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Block.o `test -f 'RHR/include/RHR/stacking/Block.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Block.cpp
+
+RHR/include/RHR/stacking/librhr_a-Block.obj: RHR/include/RHR/stacking/Block.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Block.obj -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Block.obj `if test -f 'RHR/include/RHR/stacking/Block.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Block.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Block.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Block.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Block.cpp' object='RHR/include/RHR/stacking/librhr_a-Block.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Block.obj `if test -f 'RHR/include/RHR/stacking/Block.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Block.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Block.cpp'; fi`
+
+RHR/include/RHR/stacking/librhr_a-Plane.o: RHR/include/RHR/stacking/Plane.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Plane.o -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Plane.o `test -f 'RHR/include/RHR/stacking/Plane.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Plane.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Plane.cpp' object='RHR/include/RHR/stacking/librhr_a-Plane.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Plane.o `test -f 'RHR/include/RHR/stacking/Plane.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Plane.cpp
+
+RHR/include/RHR/stacking/librhr_a-Plane.obj: RHR/include/RHR/stacking/Plane.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Plane.obj -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Plane.obj `if test -f 'RHR/include/RHR/stacking/Plane.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Plane.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Plane.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Plane.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Plane.cpp' object='RHR/include/RHR/stacking/librhr_a-Plane.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Plane.obj `if test -f 'RHR/include/RHR/stacking/Plane.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Plane.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Plane.cpp'; fi`
+
+RHR/include/RHR/stacking/librhr_a-Stack.o: RHR/include/RHR/stacking/Stack.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Stack.o -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Stack.o `test -f 'RHR/include/RHR/stacking/Stack.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Stack.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Stack.cpp' object='RHR/include/RHR/stacking/librhr_a-Stack.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Stack.o `test -f 'RHR/include/RHR/stacking/Stack.cpp' || echo '$(srcdir)/'`RHR/include/RHR/stacking/Stack.cpp
+
+RHR/include/RHR/stacking/librhr_a-Stack.obj: RHR/include/RHR/stacking/Stack.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/stacking/librhr_a-Stack.obj -MD -MP -MF RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo -c -o RHR/include/RHR/stacking/librhr_a-Stack.obj `if test -f 'RHR/include/RHR/stacking/Stack.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Stack.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Stack.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Tpo RHR/include/RHR/stacking/$(DEPDIR)/librhr_a-Stack.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/stacking/Stack.cpp' object='RHR/include/RHR/stacking/librhr_a-Stack.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/stacking/librhr_a-Stack.obj `if test -f 'RHR/include/RHR/stacking/Stack.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/stacking/Stack.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/stacking/Stack.cpp'; fi`
 
 VanillaMods/ub-ModVin/ModVin_la-Mod.lo: VanillaMods/ub-ModVin/Mod.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(LIBTOOL) $(AM_V_lt) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(ModVin_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT VanillaMods/ub-ModVin/ModVin_la-Mod.lo -MD -MP -MF VanillaMods/ub-ModVin/$(DEPDIR)/ModVin_la-Mod.Tpo -c -o VanillaMods/ub-ModVin/ModVin_la-Mod.lo `test -f 'VanillaMods/ub-ModVin/Mod.cpp' || echo '$(srcdir)/'`VanillaMods/ub-ModVin/Mod.cpp

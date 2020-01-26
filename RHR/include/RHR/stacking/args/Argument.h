@@ -16,13 +16,16 @@ public:
 	virtual bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	virtual bool HasData();
 	virtual void SetData(std::string data);
+	virtual void Select();
 	virtual std::string GetData();
 	void Update(sf::RenderWindow* window, bool global = false);
 	void SetRelitivePosition(sf::Vector2u relitivePosition);
+	bool GetNext();
 
 	sf::Vector2i GetAbsolutePosition();
 	sf::Vector2i GetRealAbsolutePosition();
 	sf::Vector2u GetRelitivePosition();
+	bool Next;
 private:
 	sf::Vector2u m_relitivePosition;
 	sf::Vector2i m_absolutePosition;

@@ -13,6 +13,7 @@ Block::Block(std::string type, BlockRegistry* registry)
 	m_relitivePosition = new sf::Vector2i();
 	m_selected = false;
 	m_wasDown = false;
+	m_next = false;
 
 	const RegBlock* blockDetails = registry->GetBlock(type);
 	if (blockDetails == nullptr)
@@ -104,10 +105,10 @@ void Block::FrameUpdate(sf::RenderWindow* window, sf::Vector2f visualOffset, boo
 {
 	//std::cout << m_stackAbsolute->x << ", " << m_stackAbsolute->y << std::endl;
 	m_absolutePosition->x = m_stackAbsolute->x + visualOffset.x;
-	m_absolutePosition->y = m_stackAbsolute->y + (m_index * Global::BlockHeight) + visualOffset.y;
+	m_absolutePosition->y = m_stackAbsolute->y + (int)(m_index * Global::BlockHeight) + visualOffset.y;
 
 	m_relitivePosition->x = m_stackRelitive->x + visualOffset.x;
-	m_relitivePosition->y = m_stackRelitive->y + (m_index * Global::BlockHeight) + visualOffset.y;
+	m_relitivePosition->y = m_stackRelitive->y + (int)(m_index * Global::BlockHeight) + visualOffset.y;
 
 	{
 		unsigned int offset = Global::BlockBorder;
@@ -139,6 +140,29 @@ void Block::FrameUpdate(sf::RenderWindow* window, sf::Vector2f visualOffset, boo
 		for (unsigned int i = 0; i < m_args.size(); i++)
 		{
 			m_args[i]->Update(window);
+		}
+	}
+
+	for (uint32_t i = 0; i < m_args.size(); i++)
+	{
+		if (m_args[i]->GetNext())
+		{
+			bool found = false;
+			for (uint32_t a = i + 1; a < m_args.size(); a++)
+			{
+				if (m_args[a]->HasData())
+				{
+					found = true;
+					m_args[a]->Select();
+
+					break;
+				}
+			}
+
+			if (!found)
+				m_next = true;
+
+			break;
 		}
 	}
 }
@@ -274,4 +298,33 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 	}
 
 	return over;
+}
+
+bool Block::GetNext()
+{
+	if (m_next)
+	{
+		m_next = false;
+		return true;
+	}
+	else
+		return false;
+}
+
+void Block::SelectFirstArgument()
+{
+	bool found = false;
+	for (uint32_t a = 0; a < m_args.size(); a++)
+	{
+		if (m_args[a]->HasData())
+		{
+			found = true;
+			m_args[a]->Select();
+
+			break;
+		}
+	}
+
+	if (!found)
+		m_next = true;
 }

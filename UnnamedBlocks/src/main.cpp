@@ -320,6 +320,10 @@ int main()
 	bool wasDownLeft = false;
 	bool wasDownMiddle = false;
 	bool wasDownRight = false;
+	
+	//sf::View zoomedView(sf::FloatRect(0, 0, primaryPlane->GetSize().x, primaryPlane->GetSize().y));
+
+	//Global::ZoomAspect = (sf::Vector2f)primaryPlane->GetSize();
 
 	while (window.isOpen())
 	{
@@ -341,6 +345,15 @@ int main()
 			{
 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
 				window.setView(sf::View(visibleArea));
+			}
+			else if (ev.type == sf::Event::MouseWheelScrolled)
+			{
+				//float aspect = (float)primaryPlane->GetSize().y / (float)primaryPlane->GetSize().x;
+
+				//Global::ZoomAspect.x += ev.mouseWheelScroll.delta * 50;
+				//Global::ZoomAspect.y += ev.mouseWheelScroll.delta * 50 * aspect;
+
+				//zoomedView.setSize(sf::Vector2f(Global::ZoomAspect.x, Global::ZoomAspect.y));
 			}
 		}
 

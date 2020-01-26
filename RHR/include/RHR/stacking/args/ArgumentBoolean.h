@@ -53,6 +53,10 @@ public:
 		{
 			if (key == 129)
 				m_shiftEnabled = !m_shiftEnabled;
+			else if (key == 9)
+			{
+				Next = true;
+			}
 			else if (key == -2)
 			{
 				if (m_shiftEnabled)
@@ -322,43 +326,7 @@ public:
 				{
 					if (m_variableMode)
 					{
-						Global::SelectedArgument = (void*)this;
-
-						if (m_selected)
-						{
-							m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
-
-							int mouseX = position.x;
-
-							unsigned int closestX = 0;
-							unsigned int closestIndex = 0;
-
-							for (unsigned int i = 0; i < m_Text.length(); i++)
-							{
-								unsigned int distance = std::abs((m_TextAgent.findCharacterPos(i).x + (GetRealAbsolutePosition().x - GetAbsolutePosition().x)) - mouseX);
-
-								if (distance < closestX || closestX == 0)
-								{
-									closestX = distance;
-									closestIndex = i;
-
-									if (distance == 0)
-										break;
-								}
-							}
-
-							m_textMarkerPosition = closestIndex;
-							m_textTrailedStart = m_textMarkerPosition;
-						}
-						else
-						{
-							TypingSystem::AddKeypressRegister(m_functionTextCallback);
-
-							m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
-							m_selected = true;
-							m_textTrailedStart = 0;
-							m_textMarkerPosition = m_Text.length();
-						}
+						Select();
 					}
 					else
 					{
@@ -429,6 +397,47 @@ public:
 	void Deallocate() override
 	{
 		delete m_functionTextCallback;
+	}
+
+	void Select() override
+	{
+		Global::SelectedArgument = (void*)this;
+
+		if (m_selected)
+		{
+			m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
+
+			int mouseX = Global::MousePosition.x;
+
+			unsigned int closestX = 0;
+			unsigned int closestIndex = 0;
+
+			for (unsigned int i = 0; i < m_Text.length(); i++)
+			{
+				unsigned int distance = std::abs((m_TextAgent.findCharacterPos(i).x + (GetRealAbsolutePosition().x - GetAbsolutePosition().x)) - mouseX);
+
+				if (distance < closestX || closestX == 0)
+				{
+					closestX = distance;
+					closestIndex = i;
+
+					if (distance == 0)
+						break;
+				}
+			}
+
+			m_textMarkerPosition = closestIndex;
+			m_textTrailedStart = m_textMarkerPosition;
+		}
+		else
+		{
+			TypingSystem::AddKeypressRegister(m_functionTextCallback);
+
+			m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
+			m_selected = true;
+			m_textTrailedStart = 0;
+			m_textMarkerPosition = m_Text.length();
+		}
 	}
 
 private:

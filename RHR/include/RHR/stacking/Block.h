@@ -40,6 +40,8 @@ public:
 	unsigned int GetArgumentCount();
 	std::string GetUnlocalizedName();
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
+	bool GetNext();
+	void SelectFirstArgument();
 private:
 	std::string m_unlocalizedName;
 	std::vector<Argument*> m_args;
@@ -55,4 +57,5 @@ private:
 	unsigned int m_width;
 	bool m_selected;
 	bool m_wasDown;
+	bool m_next;
 };
