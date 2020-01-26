@@ -6,22 +6,22 @@ StatmentIf::StatmentIf(uint32_t loc, uint32_t endLoc)
 }
 
 StatmentIf::StatmentIf(uint32_t loc, uint32_t elseLoc, uint32_t endLoc)
-	: HasElse(true), HasElseIf(false), Location(loc), LocationEnd(endLoc), LocationElse(elseLoc)
+	: Location(loc), LocationEnd(endLoc), HasElse(true), HasElseIf(false), LocationElse(elseLoc)
 {
 }
 
 StatmentIf::StatmentIf(uint32_t loc, std::vector<uint32_t> elseIfLoc, uint32_t endLoc)
-	: HasElse(false), HasElseIf(true), Location(loc), LocationEnd(endLoc), LocationElseIf(elseIfLoc)
+	: Location(loc), LocationEnd(endLoc), HasElse(false), HasElseIf(true), LocationElseIf(elseIfLoc)
 {
 }
 
 StatmentIf::StatmentIf(uint32_t loc, std::vector<uint32_t> elseIfLoc, uint32_t elseLoc, uint32_t endLoc)
-	: HasElse(true), HasElseIf(true), Location(loc), LocationEnd(endLoc), LocationElseIf(elseIfLoc), LocationElse(elseLoc)
+	: Location(loc), LocationEnd(endLoc), HasElse(true), HasElseIf(true), LocationElseIf(elseIfLoc), LocationElse(elseLoc)
 {
 }
 
 StatmentIf::StatmentIf()
-	: HasElse(false), HasElseIf(false), Location(0), LocationEnd(0)
+	: Location(0), LocationEnd(0), HasElse(false), HasElseIf(false)
 {
 
 }
