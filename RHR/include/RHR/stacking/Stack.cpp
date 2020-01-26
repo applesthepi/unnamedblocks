@@ -11,6 +11,7 @@
 
 Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 {
+	m_blockRegistry = (void*)registry;
 	m_setPosition = relitivePosition;
 	m_functionSplit = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
 	m_functionContext = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
@@ -33,7 +34,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			Global::ContextActive = true;
 	};
 
-	*m_functionContextCallback = [&, registry](unsigned int index)
+	*m_functionContextCallback = [&](unsigned int index)
 	{
 		Global::ContextActive = false;
 		Global::Context.Type = ContextType::NONE;
@@ -45,7 +46,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 		if (index == 0)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), registry);
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
 			ReloadVanity();
@@ -183,7 +184,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 			for (unsigned int i = blockIndex; i < useEnd; i++)
 			{
-				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), registry);
+				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry);
 				block->SetArgData(*(m_blocks[i]->GetUsedArgumentsRuntime().Args));
 				stack->AddBlock(block);
 			}
@@ -207,10 +208,10 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 		}
 		else if (index == 2)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), registry);
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
-			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), registry);
+			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry);
 			block->SetArgData(*(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args));
 			stack->AddBlock(block);
 
@@ -237,7 +238,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 		}
 		else
 		{
-			Stack* stayStack = new Stack(m_setPosition, registry);
+			Stack* stayStack = new Stack(m_setPosition, (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stayStack);
 
 			m_setPosition.y += index * Global::BlockHeight;

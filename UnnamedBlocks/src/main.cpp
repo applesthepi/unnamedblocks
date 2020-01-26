@@ -493,8 +493,9 @@ int main()
 				if (sys.Type == ContextType::BLOCK)
 				{
 					std::function<void()>* callback0 = new std::function<void()>();
-					*callback0 = []()
+					*callback0 = [&pRegistry]()
 					{
+						Logger::Debug(std::to_string((uint64_t)pRegistry));
 						(*Global::Context.Callback)(0);
 					};
 

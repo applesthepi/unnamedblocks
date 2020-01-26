@@ -69,4 +69,5 @@ private:
 	std::function<void(unsigned int index, sf::Vector2i mousePosition)>* m_functionSplit;
 	unsigned int m_contextBlockIndex;
 	void* m_planePtr;
+	void* m_blockRegistry;
 };
