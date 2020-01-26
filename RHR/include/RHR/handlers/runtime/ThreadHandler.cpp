@@ -27,13 +27,13 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	std::vector<uint32_t> ifElseStack;
 	std::vector<bool> ifStackAccepted;
 
-#ifdef LINUX
+#ifdef POSIX
 	std::chrono::time_point<std::chrono::system_clock> last = std::chrono::high_resolution_clock::now();
 #else
 	std::chrono::time_point<std::chrono::steady_clock> last = std::chrono::high_resolution_clock::now();
 #endif
 
-#ifdef LINUX
+#ifdef POSIX
 	std::chrono::time_point<std::chrono::system_clock> inTimer = std::chrono::high_resolution_clock::now();
 #else
 	std::chrono::time_point<std::chrono::steady_clock> inTimer = std::chrono::high_resolution_clock::now();

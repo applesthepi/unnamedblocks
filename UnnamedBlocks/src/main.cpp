@@ -333,7 +333,7 @@ int main()
 		}
 	}
 
-#ifdef LINUX
+#ifdef POSIX
 	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
 #else
 	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();

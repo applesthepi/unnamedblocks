@@ -184,7 +184,7 @@ am_unnamedblocks_OBJECTS =  \
 unnamedblocks_OBJECTS = $(am_unnamedblocks_OBJECTS)
 unnamedblocks_DEPENDENCIES = librhr.a $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 unnamedblocks_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CXX \
 	$(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CXXLD) \
 	$(AM_CXXFLAGS) $(CXXFLAGS) $(unnamedblocks_LDFLAGS) $(LDFLAGS) \
@@ -373,6 +373,8 @@ SFML_LIBS = @SFML_LIBS@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
+X11_CFLAGS = @X11_CFLAGS@
+X11_LIBS = @X11_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -445,8 +447,8 @@ ModVin_la_LDFLAGS = -module -std=c++17
 
 # UnnamedBlocks
 unnamedblocks_SOURCES = UnnamedBlocks/src/ModLoader.cpp UnnamedBlocks/src/main.cpp 
-unnamedblocks_CPPFLAGS = -IUnnamedBlocks/src -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS) $(GLEW_CFLAGS) $(BOOST_CPPFLAGS)
-unnamedblocks_LDADD = librhr.a $(BOOST_FILESYSTEM_LIB) -lpthread $(SFML_LIBS) $(GLEW_LIBS) $(BOOST_LDFLAGS) -lX11 -ldl
+unnamedblocks_CPPFLAGS = -IUnnamedBlocks/src -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS) $(GLEW_CFLAGS) $(BOOST_CPPFLAGS) $(X11_CFLAGS)
+unnamedblocks_LDADD = librhr.a $(BOOST_FILESYSTEM_LIB) -lpthread $(SFML_LIBS) $(GLEW_LIBS) $(BOOST_LDFLAGS) $(X11_LIBS) -ldl
 unnamedblocks_LDFLAGS = -std=c++17
 all: all-am
 

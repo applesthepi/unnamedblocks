@@ -18,6 +18,6 @@ ModVin_la_LDFLAGS = -module -std=c++17
 
 # UnnamedBlocks
 unnamedblocks_SOURCES = UnnamedBlocks/src/ModLoader.cpp UnnamedBlocks/src/main.cpp 
-unnamedblocks_CPPFLAGS = -IUnnamedBlocks/src -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS) $(GLEW_CFLAGS) $(BOOST_CPPFLAGS)
-unnamedblocks_LDADD = librhr.a $(BOOST_FILESYSTEM_LIB) -lpthread $(SFML_LIBS) $(GLEW_LIBS) $(BOOST_LDFLAGS) -lX11 -ldl
+unnamedblocks_CPPFLAGS = -IUnnamedBlocks/src -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS) $(GLEW_CFLAGS) $(BOOST_CPPFLAGS) $(X11_CFLAGS)
+unnamedblocks_LDADD = librhr.a $(BOOST_FILESYSTEM_LIB) -lpthread $(SFML_LIBS) $(GLEW_LIBS) $(BOOST_LDFLAGS) $(X11_LIBS) -ldl
 unnamedblocks_LDFLAGS = -std=c++17
