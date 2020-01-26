@@ -576,6 +576,41 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [data](const std::vector<std::string>& args)
 		{
+			double* gotValue = data->Variable->GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return data->Variable->SetReal(args[0].c_str(), abs(*gotValue));
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_operations_abs", "vin_operations", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "abs"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			double* gotValue = data->Variable->GetReal(args[0].c_str());
+
+			if (gotValue == nullptr)
+				return false;
+
+			return data->Variable->SetReal(args[0].c_str(), pow(*gotValue, std::stod(args[1])));
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_operations_pow", "vin_operations", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pow"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "2"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
 			return data->Variable->SetBool(args[2].c_str(), std::stod(args[0]) == std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_==_real", "vin_operations", execution, {
