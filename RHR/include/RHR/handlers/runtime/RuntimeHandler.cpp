@@ -9,6 +9,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <stdint.h>
+#include <ctime>
 
 void ThreadWindowManager(RuntimeHandler* runtime, std::atomic<bool>* initialized)
 {

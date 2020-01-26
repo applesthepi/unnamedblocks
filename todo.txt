@@ -27,3 +27,4 @@ filesystem
 plane context menu options
 function/threadFunction have own variable handler
 function/threadFunction pass in a pointer to byte handler
+copy/paste for booleans variable mode
