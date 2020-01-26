@@ -126,6 +126,8 @@ void Plane::Render(sf::RenderWindow* window)
 	rT.create(m_size.x, m_size.y);
 	rT.clear(sf::Color(0, 0, 0, 0));
 	//rT.draw(blackRect, &blackShader);
+	//if (!m_toolbar)
+	//	rT.setView(view);
 
 	for (unsigned int i = 0; i < m_stacks.size(); i++)
 	{

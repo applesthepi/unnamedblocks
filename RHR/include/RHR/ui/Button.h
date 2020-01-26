@@ -30,6 +30,7 @@ private:
 	ButtonMode m_mode;
 	bool m_wasDown;
 
+	sf::Color m_backgroundColor;
 	sf::RectangleShape* m_modeColor;
 	sf::Text* m_modeText;
 	sf::Texture* m_modeImageTexture;
