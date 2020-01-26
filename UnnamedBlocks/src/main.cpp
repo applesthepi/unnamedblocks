@@ -1,6 +1,7 @@
 #include "ModLoader.h"
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
+#include <chrono>
 
 //#include "content/ContentLoader.h"
 #include <GL/glew.h>
@@ -26,19 +27,19 @@ static Plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
 static unsigned short toolbarStackCount = 0;
 
-static void ReloadCatagory(unsigned index)
+static void ReloadCatagory(unsigned index, BlockRegistry* registry)
 {
 	toolbarPlane->DeleteAllBlocks();
 
 	unsigned int idx = 0;
 	unsigned int widest = 0;
 
-	for (unsigned int a = 0; a < BlockRegistry::MainRegistry->GetBlocks()->size(); a++)
+	for (unsigned int a = 0; a < registry->GetBlocks()->size(); a++)
 	{
-		if ((*BlockRegistry::MainRegistry->GetBlocks())[a].Catagory == (*BlockRegistry::MainRegistry->GetCatagories())[index].UnlocalizedName)
+		if ((*registry->GetBlocks())[a].Catagory == (*registry->GetCatagories())[index].UnlocalizedName)
 		{
-			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))));
-			Block* block = new Block((*BlockRegistry::MainRegistry->GetBlocks())[a].UnlocalizedName);
+			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), registry);
+			Block* block = new Block((*registry->GetBlocks())[a].UnlocalizedName, registry);
 
 			toolbarPlane->AddStack(stack);
 			stack->AddBlock(block);
@@ -104,8 +105,6 @@ int main()
 
 	Global::LoadDefaults();//must be first
 
-	BlockRegistry::MainRegistry->Initialize();
-
 	MessageHandler::Initialize();
 	TypingSystem::Initialization();
 	ButtonRegistry::Initialize();
@@ -115,14 +114,16 @@ int main()
 	ThreadHandler* pThread;
 	VariableHandler* pVariable;
 	RuntimeHandler* pRuntime;
+	BlockRegistry* pRegistry;
 
 	pByte = new ByteHandler();
 	pObject = new ObjectHandler();
 	pThread = new ThreadHandler();
 	pVariable = new VariableHandler();
 	pRuntime = new RuntimeHandler(pThread, pObject, pVariable, pByte);
+	pRegistry = new BlockRegistry();
 	
-	run(pByte, pObject, pRuntime, pThread, pVariable);
+	run(pByte, pObject, pRuntime, pThread, pVariable, pRegistry);
 
 	Plane::Planes = new std::vector<Plane*>();
 
@@ -133,19 +134,19 @@ int main()
 	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
 	Plane::Planes->push_back(primaryPlane);
 
-	for (unsigned int i = 0; i < BlockRegistry::MainRegistry->GetCatagories()->size(); i++)
+	for (unsigned int i = 0; i < pRegistry->GetCatagories()->size(); i++)
 	{
 		std::function<void()>* callback = new std::function<void()>();
-		*callback = [i]()
+		*callback = [i, &pRegistry]()
 		{
 			if (Global::Dragging)
 				return;
 
-			ReloadCatagory(i);
+			ReloadCatagory(i, pRegistry);
 		};
 
 		Button* cat = new Button(sf::Vector2i(5, 5 + (i * (16 + 5))), sf::Vector2u(100, 16), callback);
-		cat->SetButtonModeText((*BlockRegistry::MainRegistry->GetCatagories())[i].DisplayName, (*BlockRegistry::MainRegistry->GetCatagories())[i].Color, 12);
+		cat->SetButtonModeText((*pRegistry->GetCatagories())[i].DisplayName, (*pRegistry->GetCatagories())[i].Color, 12);
 
 		catButtons.push_back(cat);
 		ButtonRegistry::AddButton(cat);
@@ -173,7 +174,7 @@ int main()
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
+		*function = [primaryPlane, &pRegistry]()
 		{
 			std::string* result = new std::string();
 			
@@ -186,7 +187,7 @@ int main()
 			*result += ".ub";
 
 			Logger::Info("loading project from \"" + *result + "\"");
-			ProjectHandler::LoadProject(*result, primaryPlane);
+			ProjectHandler::LoadProject(*result, primaryPlane, pRegistry);
 			ProjectHandler::CurrentPath = *result;
 
 			delete result;
@@ -262,7 +263,7 @@ int main()
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
-		*function = [&primaryPlane, &pByte, &pObject, &pRuntime, &pThread, &pVariable]()
+		*function = [&primaryPlane, &pByte, &pObject, &pRuntime, &pThread, &pVariable, &pRegistry]()
 		{
 			if (ProjectHandler::CurrentPath == "")
 				Logger::Info("running unsaved project");
@@ -270,7 +271,7 @@ int main()
 				Logger::Info("running \"" + ProjectHandler::CurrentPath + "\"");
 
 			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
-			planeCopy->CopyEverything(primaryPlane);
+			planeCopy->CopyEverything(primaryPlane, pRegistry);
 
 			pRuntime->Reset();
 			pByte->Reset();
@@ -279,7 +280,7 @@ int main()
 			pVariable->Reset();
 
 			pThread->SetPlane(planeCopy);
-			pRuntime->Run(planeCopy);
+			pRuntime->Run(planeCopy, pRegistry);
 		};
 
 		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
@@ -295,12 +296,12 @@ int main()
 	{
 		unsigned int idx = 0;
 
-		for (unsigned int i = 0; i < BlockRegistry::MainRegistry->GetBlocks()->size(); i++)
+		for (unsigned int i = 0; i < pRegistry->GetBlocks()->size(); i++)
 		{
-			if ((*BlockRegistry::MainRegistry->GetBlocks())[i].Catagory == (*BlockRegistry::MainRegistry->GetCatagories())[0].UnlocalizedName)
+			if ((*pRegistry->GetBlocks())[i].Catagory == (*pRegistry->GetCatagories())[0].UnlocalizedName)
 			{
-				Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))));
-				Block* block = new Block((*BlockRegistry::MainRegistry->GetBlocks())[i].UnlocalizedName);
+				Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
+				Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry);
 
 				toolbarPlane->AddStack(stack);
 				stack->AddBlock(block);
@@ -309,6 +310,12 @@ int main()
 			}
 		}
 	}
+
+#ifdef LINUX
+	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
+#else
+	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
+#endif
 
 	bool wasDownLeft = false;
 	bool wasDownMiddle = false;
@@ -490,6 +497,12 @@ int main()
 			}
 		}
 
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
+		{
+			lastVanityReload = std::chrono::high_resolution_clock::now();
+			primaryPlane->ReloadVanity();
+		}
+
 		toolbarPlane->FrameUpdate(&window);
 		primaryPlane->FrameUpdate(&window);
 
@@ -497,7 +510,7 @@ int main()
 			((Stack*)Global::DraggingStack)->FrameUpdate(&window);
 		
 		if (toolbarPlane->GetStackCount() != toolbarStackCount)
-			ReloadCatagory(toolbarCatagory);
+			ReloadCatagory(toolbarCatagory, pRegistry);
 
 		//messages
 		MessageHandler::RunSyncMessages();

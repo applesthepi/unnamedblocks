@@ -7,7 +7,7 @@ void ProjectHandler::Initialize()
 	CurrentPath = std::string();
 }
 
-void ProjectHandler::LoadProject(std::string path, Plane* plane)
+void ProjectHandler::LoadProject(std::string path, Plane* plane, BlockRegistry* registry)
 {
 	plane->SetInnerPosition(sf::Vector2i(0, 0));
 	plane->DeleteAllBlocks();
@@ -37,7 +37,7 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane)
 			i++;
 		}
 
-		Stack* stack = new Stack(sf::Vector2i(std::stoi(sx), std::stoi(sy)));
+		Stack* stack = new Stack(sf::Vector2i(std::stoi(sx), std::stoi(sy)), registry);
 		plane->AddStack(stack);
 
 		i++;
@@ -77,7 +77,7 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane)
 				i++;
 			}
 
-			Block* block = new Block(blockUnlocalizedName);
+			Block* block = new Block(blockUnlocalizedName, registry);
 			stack->AddBlock(block);
 			block->SetArgData(args);
 

@@ -22,7 +22,7 @@ UB_EXPORT void Initialization(ModData* data)
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_object_new", "vin_objects", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "new object"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "obj"}
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "obj"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -34,7 +34,7 @@ UB_EXPORT void Initialization(ModData* data)
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_object_delete", "vin_objects", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "destroy object"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "obj"}
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "obj"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -106,6 +106,56 @@ UB_EXPORT void Initialization(ModData* data)
 			Logger::Error("this block is not meant to be executed");
 			return false;
 		};
+		RegBlock* block = data->Registry->CreateBlock("vin_execution_if", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "if"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "condition"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_execution_if_end", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "endif"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_execution_else", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "else"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_execution_else_if", "vin_execution", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "else if"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "condition"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
 		RegBlock* block = data->Registry->CreateBlock("vin_execution_mark", "vin_execution", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mark point"},
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "point"}
@@ -132,7 +182,7 @@ UB_EXPORT void Initialization(ModData* data)
 			Logger::Error("this block is not meant to be executed");
 			return false;
 		};
-		RegBlock* block = data->Registry->CreateBlock("vin_execution_if", "vin_execution", execution, {
+		RegBlock* block = data->Registry->CreateBlock("vin_execution_goto_if", "vin_execution", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "goto point"},
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "point"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "if"},
@@ -276,6 +326,31 @@ UB_EXPORT void Initialization(ModData* data)
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
 			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_input_timer_get", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "get timer"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			Logger::Error("this block is not meant to be executed");
+			return false;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_input_timer_reset", "vin_input", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "reset timer"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -779,12 +854,12 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
 		*execution = [data](const std::vector<std::string>& args)
 		{
-			Logger::Error("this block is not meant to be executed");
-			return false;
+			Logger::Info("thread \"" + args[0] + "\" started execution");
+			return true;
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_thread_function_define", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function define"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "function"}
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -797,7 +872,7 @@ UB_EXPORT void Initialization(ModData* data)
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_thread_function_call", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function call"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "function"}
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -812,7 +887,7 @@ UB_EXPORT void Initialization(ModData* data)
 				return false;
 			}
 
-			double threadId = data->Thread->SummonThread(searchResult, data->Runtime, data->Variable);
+			double threadId = data->Thread->SummonThread(searchResult, data->Runtime, data->Variable, data->Registry);
 			Logger::Debug("summoned thread " + std::to_string(threadId));
 
 			if (!data->Variable->SetReal(args[1].c_str(), threadId))
@@ -825,9 +900,9 @@ UB_EXPORT void Initialization(ModData* data)
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_thread_function_thread", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function thread"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "function"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
-			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "thread_id"}
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "thread_id"}
 			});
 		data->RegisterBlock(*block);
 	}

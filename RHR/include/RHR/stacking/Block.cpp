@@ -6,7 +6,7 @@
 
 #include <SFML/Graphics.hpp>
 
-Block::Block(std::string type)
+Block::Block(std::string type, BlockRegistry* registry)
 {
 	m_unlocalizedName = type;
 	m_absolutePosition = new sf::Vector2i();
@@ -14,11 +14,11 @@ Block::Block(std::string type)
 	m_selected = false;
 	m_wasDown = false;
 
-	const RegBlock* blockDetails = BlockRegistry::MainRegistry->GetBlock(type);
+	const RegBlock* blockDetails = registry->GetBlock(type);
 	if (blockDetails == nullptr)
 		return;
 
-	const RegCatagory* catagoryDetails = BlockRegistry::MainRegistry->GetCatagory(blockDetails->Catagory);
+	const RegCatagory* catagoryDetails = registry->GetCatagory(blockDetails->Catagory);
 	if (catagoryDetails == nullptr)
 		return;
 
@@ -100,14 +100,14 @@ void Block::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 	}
 }
 
-void Block::FrameUpdate(sf::RenderWindow* window, bool global)
+void Block::FrameUpdate(sf::RenderWindow* window, sf::Vector2f visualOffset, bool global)
 {
 	//std::cout << m_stackAbsolute->x << ", " << m_stackAbsolute->y << std::endl;
-	m_absolutePosition->x = m_stackAbsolute->x;
-	m_absolutePosition->y = m_stackAbsolute->y + (m_index * Global::BlockHeight);
+	m_absolutePosition->x = m_stackAbsolute->x + visualOffset.x;
+	m_absolutePosition->y = m_stackAbsolute->y + (m_index * Global::BlockHeight) + visualOffset.y;
 
-	m_relitivePosition->x = m_stackRelitive->x;
-	m_relitivePosition->y = m_stackRelitive->y + (m_index * Global::BlockHeight);
+	m_relitivePosition->x = m_stackRelitive->x + visualOffset.x;
+	m_relitivePosition->y = m_stackRelitive->y + (m_index * Global::BlockHeight) + visualOffset.y;
 
 	{
 		unsigned int offset = Global::BlockBorder;

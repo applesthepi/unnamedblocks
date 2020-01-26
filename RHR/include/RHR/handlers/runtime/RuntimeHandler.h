@@ -15,7 +15,7 @@ public:
 	RuntimeHandler(ThreadHandler* thread, ObjectHandler* object, VariableHandler* variable, ByteHandler* byte);
 
 	void Reset();
-	void Run(Plane* planeCopy);
+	void Run(Plane* planeCopy, BlockRegistry* registry);
 	void CleanUp();
 	void ManualRender();
 	int GetScrolled();
@@ -29,6 +29,9 @@ public:
 	sf::RenderWindow* Window;
 
 	RuntimeHandler& operator=(const RuntimeHandler& other);
+
+	const std::vector<StatmentIf>* GetIfStatments(uint32_t stackIdx);
+	static std::vector<StatmentIf> ProcessIfStatments(Stack* stack, bool muteErrors = false);
 private:
 	Plane* m_planeCopy;
 	std::thread* m_runningThread;
@@ -37,6 +40,7 @@ private:
 	int m_scrolled;
 	std::vector<unsigned int> m_stackIndices;
 	std::vector<std::string> m_stackFunctions;
+	std::vector<std::vector<StatmentIf>> m_stackFunctionIfStatments;
 
 	ThreadHandler* m_threadHandler;
 	ObjectHandler* m_objectHandler;

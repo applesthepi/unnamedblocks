@@ -192,6 +192,7 @@
     <ClCompile Include="include\RHR\stacking\Block.cpp" />
     <ClCompile Include="include\RHR\stacking\Plane.cpp" />
     <ClCompile Include="include\RHR\stacking\Stack.cpp" />
+    <ClCompile Include="include\RHR\StatmentIf.cpp" />
     <ClCompile Include="include\RHR\ui\Button.cpp" />
     <ClCompile Include="include\RHR\ui\TypingSystem.cpp" />
   </ItemGroup>
@@ -218,6 +219,7 @@
     <ClInclude Include="include\RHR\stacking\Block.h" />
     <ClInclude Include="include\RHR\stacking\Plane.h" />
     <ClInclude Include="include\RHR\stacking\Stack.h" />
+    <ClInclude Include="include\RHR\StatmentIf.h" />
     <ClInclude Include="include\RHR\ui\Button.h" />
     <ClInclude Include="include\RHR\ui\TypingSystem.h" />
   </ItemGroup>

@@ -98,7 +98,6 @@ public:
 class BlockRegistry
 {
 public:
-	static void Initialize();
 	BlockRegistry();
 
 	void RegisterCatagory(RegCatagory* catagory);
@@ -112,8 +111,6 @@ public:
 
 	RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
 	void FinalizeBlock(RegBlock* block, VariableHandler* variables);
-
-	static BlockRegistry* MainRegistry;
 private:
 	std::vector<RegBlock>* m_blocks;
 	std::vector<RegCatagory>* m_catagories;

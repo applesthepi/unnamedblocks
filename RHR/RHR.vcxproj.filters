@@ -75,6 +75,9 @@
     <ClCompile Include="include\RHR\registries\BlockRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="include\RHR\StatmentIf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\RHR\ui\Button.h">
@@ -147,6 +150,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\registries\BlockRegistry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RHR\StatmentIf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

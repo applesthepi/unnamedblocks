@@ -2,11 +2,6 @@
 #include "handlers/Logger.h"
 #include "handlers/runtime/VariableHandler.h"
 
-void BlockRegistry::Initialize()
-{
-	MainRegistry = new BlockRegistry();
-}
-
 BlockRegistry::BlockRegistry()
 {
 	m_blocks = new std::vector<RegBlock>();
@@ -105,7 +100,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 
 			if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP || args[i].Mode == BlockArgumentVariableMode::RAW)
 				parsedArgs.push_back(args[i].Value);
-			else if (blockUseArgs.at(i).Mode == BlockArgumentVariableMode::VAR)
+			else if (args[i].Mode == BlockArgumentVariableMode::VAR)
 			{
 				if (blockUseArgs.at(i).Type == BlockArgumentType::STRING)
 				{
@@ -148,8 +143,6 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 
 	block->Execute = parentExecution;
 }
-
-BlockRegistry* BlockRegistry::MainRegistry;
 
 const RegBlock* BlockRegistry::GetBlock(std::string unlocalizedName)
 {

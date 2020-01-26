@@ -15,7 +15,7 @@ public:
 	void KillJoinAll();
 	void SetPlane(Plane* plane);
 
-	unsigned long long SummonThread(unsigned long long stackIndex, void* runtime, void* variables);
+	unsigned long long SummonThread(unsigned long long stackIndex, void* runtime, void* variables, void* registry);
 	bool KillThread(unsigned long long threadId);
 
 	ThreadHandler& operator=(const ThreadHandler& other);

@@ -1,9 +1,10 @@
 #pragma once
-
 #include "Block.h"
+#include "StatmentIf.h"
 
 #include <vector>
 #include <functional>
+#include <SFML/Graphics.hpp>
 
 enum DraggingType
 {
@@ -13,7 +14,7 @@ enum DraggingType
 class Stack
 {
 public:
-	Stack(sf::Vector2i relitivePosition);
+	Stack(sf::Vector2i relitivePosition, BlockRegistry* registry);
 	~Stack();
 
 	void ImportBlocks(std::vector<Block*>* blocks);
@@ -32,11 +33,12 @@ public:
 	void SetRelitivePosition(sf::Vector2i position);
 	unsigned int GetBlockWidth(unsigned int index);
 	Block* GetBlock(unsigned int index);
-	void CopyEverything(Stack* stack);
+	void CopyEverything(Stack* stack, BlockRegistry* registry);
 	void DragDown(sf::Vector2i mousePosition);
 	void DragUp(sf::Vector2i mousePosition);
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
+	void ReloadVanity();
 private:
 	std::vector<Block*> m_blocks;
 	sf::Vector2i m_setPosition;
@@ -45,6 +47,13 @@ private:
 	sf::Vector2u* m_planePosition;
 	sf::Vector2i* m_planeInnerPosition;
 
+	bool m_validHighlighting;
+	int32_t m_highlightedShape;
+	std::vector<uint32_t> m_ifShapeIdx;
+	std::vector<sf::RectangleShape> m_ifShapes;
+	std::vector<sf::RectangleShape> m_ifShapeHighlight;
+	std::vector<sf::Vector2f> m_ifShapePositions;
+	std::vector<sf::Vector2f> m_ifShapePositionHighlight;
 	DraggingType m_draggingType;
 	bool m_dragging = false;
 	bool m_cutRendering;

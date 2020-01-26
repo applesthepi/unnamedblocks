@@ -276,7 +276,7 @@ void Plane::DeleteAllBlocks()
 	m_stacks.clear();
 }
 
-void Plane::CopyEverything(Plane* plane)
+void Plane::CopyEverything(Plane* plane, BlockRegistry* registry)
 {
 	*m_position = plane->GetPosition();
 	*m_innerPosition = plane->GetInnerPosition();
@@ -284,9 +284,9 @@ void Plane::CopyEverything(Plane* plane)
 	
 	for (unsigned int i = 0; i < plane->GetStackCount(); i++)
 	{
-		Stack* stack = new Stack(sf::Vector2i(0, 0));
+		Stack* stack = new Stack(sf::Vector2i(0, 0), registry);
 		AddStack(stack);
-		stack->CopyEverything(plane->GetStack(i));
+		stack->CopyEverything(plane->GetStack(i), registry);
 	}
 }
 
@@ -343,6 +343,12 @@ bool Plane::IsToolbar()
 const std::vector<Stack*>* Plane::GetAllStacks()
 {
 	return &m_stacks;
+}
+
+void Plane::ReloadVanity()
+{
+	for (uint32_t i = 0; i < m_stacks.size(); i++)
+		m_stacks[i]->ReloadVanity();
 }
 
 void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)

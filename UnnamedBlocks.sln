@@ -12,6 +12,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RHR", "RHR\RHR.vcxproj", "{46A5DDB7-582F-40F8-A919-A551E4E3F9B1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModVin", "VanillaMods\ub-ModVin\VanillaMods.vcxproj", "{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1} = {46A5DDB7-582F-40F8-A919-A551E4E3F9B1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

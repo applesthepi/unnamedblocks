@@ -12,7 +12,7 @@
 class ModData
 {
 public:
-	ModData(BlockRegistry* registry);
+	ModData();
 
 	void RegisterBlock(const RegBlock block);
 	void RegisterCatagory(const RegCatagory catatory);

@@ -53,12 +53,13 @@ void RuntimeHandler::Reset()
 {
 	m_stackFunctions.clear();
 	m_stackIndices.clear();
+	m_stackFunctionIfStatments.clear();
 
 	Running = false;
 	ManualRenderingEnabled = false;
 }
 
-void RuntimeHandler::Run(Plane* planeCopy)
+void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 {
 	if (Running)
 		return;
@@ -66,16 +67,19 @@ void RuntimeHandler::Run(Plane* planeCopy)
 	std::vector<unsigned long long> locations;
 	for (unsigned long long i = 0; i < planeCopy->GetStackCount(); i++)
 	{
-		if (planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName() == "vin_thread_open")
+		Stack* currentStack = planeCopy->GetStack(i);
+		m_stackFunctionIfStatments.push_back(ProcessIfStatments(currentStack));
+
+		if (currentStack->GetBlock(0)->GetUnlocalizedName() == "vin_thread_open")
 		{
 			locations.push_back(i);
 		}
-		else if (planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName() == "vin_thread_function_define")
+		else if (currentStack->GetBlock(0)->GetUnlocalizedName() == "vin_thread_function_define")
 		{
-			const RegBlock* regBlock = BlockRegistry::MainRegistry->GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
+			const RegBlock* regBlock = registry->GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
 			BlockRuntimeReturn args = planeCopy->GetStack(i)->GetBlock(0)->GetUsedArgumentsRuntime();
 
-			std::string functionText = (*args.Args)[0].Value.substr(1, (*args.Args)[0].Value.length() - 1);
+			std::string functionText = (*args.Args)[0].Value;
 
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::VAR)
 			{
@@ -101,7 +105,7 @@ void RuntimeHandler::Run(Plane* planeCopy)
 
 	for (unsigned int i = 0; i < locations.size(); i++)
 	{
-		m_threadHandler->SummonThread(locations[i], this, m_variableHandler);
+		m_threadHandler->SummonThread(locations[i], this, m_variableHandler, registry);
 	}
 
 	m_runningThread = new std::thread(ThreadWindowManager, this);
@@ -152,6 +156,77 @@ int RuntimeHandler::PerformFunctionSearch(std::string functionName)
 	}
 
 	return -1;
+}
+
+const std::vector<StatmentIf>* RuntimeHandler::GetIfStatments(uint32_t stackIdx)
+{
+	return &(m_stackFunctionIfStatments[stackIdx]);
+}
+
+std::vector<StatmentIf> RuntimeHandler::ProcessIfStatments(Stack* stack, bool muteErrors)
+{
+	std::vector<StatmentIf> ifStatments;
+	std::vector<StatmentIf> currentIfs;
+	std::vector<std::vector<uint32_t>> currentIfElse;
+
+	for (uint32_t a = 0; a < stack->GetBlockCount(); a++)
+	{
+		if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_if")
+		{
+			currentIfs.push_back(StatmentIf());
+			currentIfs.back().Location = a;
+
+			continue;
+		}
+
+		if (currentIfs.size() > 0)
+		{
+			if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_if_end")
+			{
+				currentIfs.back().LocationEnd = a;
+
+				if (currentIfs.back().HasElseIf)
+				{
+					currentIfs.back().LocationElseIf = currentIfElse.back();
+					currentIfElse.pop_back();
+				}
+
+				ifStatments.push_back(currentIfs.back());
+				currentIfs.pop_back();
+			}
+			else if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_else")
+			{
+				currentIfs.back().HasElse = true;
+				currentIfs.back().LocationElse = a;
+			}
+			else if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_else_if")
+			{
+				if (currentIfs.back().HasElse)
+				{
+					if (!muteErrors)
+						Logger::Error("failed to construct if statement track, you can not have an \"else if\" block after an \"else\" block in an if statement");
+
+					return std::vector<StatmentIf>();
+				}
+
+				if (!currentIfs.back().HasElseIf)
+					currentIfElse.push_back(std::vector<uint32_t>());
+
+				currentIfs.back().HasElseIf = true;
+				currentIfElse.back().push_back(a);
+			}
+		}
+	}
+
+	if (currentIfs.size() > 0)
+	{
+		if (!muteErrors)
+			Logger::Error("failed to construct if statement track, unbalanced statements");
+
+		return std::vector<StatmentIf>();
+	}
+
+	return ifStatments;
 }
 
 RuntimeHandler& RuntimeHandler::operator=(const RuntimeHandler& other)

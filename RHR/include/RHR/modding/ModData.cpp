@@ -1,7 +1,6 @@
 #include "ModData.h"
 
-ModData::ModData(BlockRegistry* registry)
-	:Registry(registry)
+ModData::ModData()
 {
 
 }

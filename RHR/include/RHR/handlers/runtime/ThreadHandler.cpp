@@ -4,9 +4,12 @@
 #include "registries/BlockRegistry.h"
 #include "handlers/Logger.h"
 #include "handlers/runtime/VariableHandler.h"
+#include "StatmentIf.h"
 #include <iostream>
 
-void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, bool* done, RuntimeHandler* runtime, VariableHandler* variables)
+#define INVALID_IF_CALLSTACK "invalid if callstack detected!"
+
+void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, bool* done, RuntimeHandler* runtime, VariableHandler* variables, BlockRegistry* registry)
 {
 	std::vector<unsigned int> markLocations;
 	std::vector<std::string> markLocationNames;
@@ -14,9 +17,15 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	std::vector<unsigned int> selectionForStacks;
 	std::vector<bool> selectionForBlockSync;
 
+	const std::vector<StatmentIf>* ifStatments = runtime->GetIfStatments(stack);
+
 	selectionForBlocks.push_back(0);
 	selectionForStacks.push_back(stack);
 	selectionForBlockSync.push_back(false);
+
+	std::vector<const StatmentIf*> ifStack;
+	std::vector<uint32_t> ifElseStack;
+	std::vector<bool> ifStackAccepted;
 
 #ifdef LINUX
 	std::chrono::time_point<std::chrono::system_clock> last = std::chrono::high_resolution_clock::now();
@@ -24,9 +33,15 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 	std::chrono::time_point<std::chrono::steady_clock> last = std::chrono::high_resolution_clock::now();
 #endif
 
+#ifdef LINUX
+	std::chrono::time_point<std::chrono::system_clock> inTimer = std::chrono::high_resolution_clock::now();
+#else
+	std::chrono::time_point<std::chrono::steady_clock> inTimer = std::chrono::high_resolution_clock::now();
+#endif
+
 	while (runtime->Running && *running)
 	{
-		const RegBlock* regBlock = BlockRegistry::MainRegistry->GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
+		const RegBlock* regBlock = registry->GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
 		BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
 
 		if (regBlock->UnlocalizedName == "vin_execution_mark")
@@ -109,7 +124,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				}
 			}
 		}
-		else if (regBlock->UnlocalizedName == "vin_execution_if")
+		else if (regBlock->UnlocalizedName == "vin_execution_goto_if")
 		{
 			std::string indexText = (*args.Args)[0].Value;
 			std::string conditionText = (*args.Args)[1].Value;
@@ -195,6 +210,161 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 
 			selectionForBlocks.insert(selectionForBlocks.begin(), 0);
 			selectionForStacks.insert(selectionForStacks.begin(), searchResult);
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_if")
+		{
+			std::string conditionText = (*args.Args)[0].Value;
+
+			bool condition = false;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				condition = conditionText == "1";
+			}
+			else
+			{
+				bool* value = variables->GetBool(conditionText.c_str());
+				if (value == nullptr)
+				{
+					Logger::Error("variable \"" + conditionText + "\" does not exist");
+					*done = true;
+					return;
+				}
+
+				condition = *value;
+			}
+
+			bool found = false;
+
+			for (uint32_t i = 0; i < ifStatments->size(); i++)
+			{
+				if (ifStatments->at(i).Location == selectionForBlocks.front())
+				{
+					ifStack.push_back(&((*ifStatments)[i]));
+					found = true;
+					break;
+				}
+			}
+
+			if (found)
+			{
+				ifElseStack.push_back(0);
+				ifStackAccepted.push_back(false);
+
+				if (!condition)
+				{
+					if (ifStack.back()->HasElseIf)
+						selectionForBlocks.front() = ifStack.back()->LocationElseIf[ifElseStack.back()] - 1;
+					else if (ifStack.back()->HasElse)
+						selectionForBlocks.front() = ifStack.back()->LocationElse - 1;
+					else
+						selectionForBlocks.front() = ifStack.back()->LocationEnd - 1;
+				}
+				else
+					ifStackAccepted.back() = true;
+			}
+			else
+			{
+				Logger::Error(INVALID_IF_CALLSTACK);
+				*done = true;
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_else_if")
+		{
+			std::string conditionText = (*args.Args)[0].Value;
+
+			bool condition = false;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				condition = conditionText == "1";
+			}
+			else
+			{
+				bool* value = variables->GetBool(conditionText.c_str());
+				if (value == nullptr)
+				{
+					Logger::Error("variable \"" + conditionText + "\" does not exist");
+					*done = true;
+					return;
+				}
+
+				condition = *value;
+			}
+
+			if (ifStack.size() > 0)
+			{
+				if (ifStackAccepted.back())
+					selectionForBlocks.front() = ifStack.back()->LocationEnd - 1;
+				else
+				{
+					if (!condition)
+					{
+						if (ifStack.back()->HasElseIf)
+						{
+							ifElseStack.back()++;
+
+							if (ifElseStack.back() >= ifStack.back()->LocationElseIf.size())
+							{
+								if (ifStack.back()->HasElse)
+									selectionForBlocks.front() = ifStack.back()->LocationElse - 1;
+								else
+									selectionForBlocks.front() = ifStack.back()->LocationEnd - 1;
+							}
+							else
+								selectionForBlocks.front() = ifStack.back()->LocationElseIf[ifElseStack.back()] - 1;
+						}
+						else if (ifStack.back()->HasElse)
+							selectionForBlocks.front() = ifStack.back()->LocationElse - 1;
+					}
+					else
+						ifStackAccepted.back() = true;
+				}
+			}
+			else
+			{
+				Logger::Error(INVALID_IF_CALLSTACK);
+				*done = true;
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_else")
+		{
+			if (ifStack.size() > 0)
+			{
+				if (ifStackAccepted.back())
+					selectionForBlocks.front() = ifStack.back()->LocationEnd - 1;
+			}
+			else
+			{
+				Logger::Error(INVALID_IF_CALLSTACK);
+				*done = true;
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_if_end")
+		{
+			if (ifStack.size() > 0)
+			{
+				ifStack.pop_back();
+				ifElseStack.pop_back();
+				ifStackAccepted.pop_back();
+			}
+			else
+			{
+				Logger::Error(INVALID_IF_CALLSTACK);
+				*done = true;
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_input_timer_get")
+		{
+			variables->SetReal((*args.Args)[0].Value.c_str(), (double)std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - inTimer).count());
+		}
+		else if (regBlock->UnlocalizedName == "vin_input_timer_reset")
+		{
+			inTimer = std::chrono::high_resolution_clock::now();
 		}
 		else if (regBlock->Execute == nullptr)
 		{
@@ -314,7 +484,7 @@ void ThreadHandler::SetPlane(Plane* plane)
 	m_plane = plane;
 }
 
-unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, void* runtime, void* variables)
+unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, void* runtime, void* variables, void* registry)
 {
 	m_counter++;
 	m_activeThreadIds->push_back(m_counter);
@@ -325,7 +495,7 @@ unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, vo
 	bool* done = new bool(false);
 	m_activeThreadDone->push_back(done);
 
-	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done, (RuntimeHandler*)runtime, (VariableHandler*)variables);
+	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done, (RuntimeHandler*)runtime, (VariableHandler*)variables, (BlockRegistry*)registry);
 	run->detach();
 	m_activeThreads->push_back(run);
 

@@ -1,10 +1,15 @@
 #include "Stack.h"
 #include "Global.h"
 #include "Plane.h"
+#include "handlers/runtime/RuntimeHandler.h"
+#include "handlers/Logger.h"
 
 #include <iostream>
 
-Stack::Stack(sf::Vector2i relitivePosition)
+#define IF_MARGIN 5
+#define IF_WIDTH 20
+
+Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 {
 	m_setPosition = relitivePosition;
 	m_functionSplit = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
@@ -35,12 +40,12 @@ Stack::Stack(sf::Vector2i relitivePosition)
 
 		if (index == 0)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight));
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), registry);
 			(*m_functionAdd)(stack);
 
 			for (unsigned int i = blockIndex; i < m_blocks.size(); i++)
 			{
-				Block* block = new Block(m_blocks[i]->GetUnlocalizedName());
+				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), registry);
 				block->SetArgData(*(m_blocks[i]->GetUsedArgumentsRuntime().Args));
 				stack->AddBlock(block);
 			}
@@ -64,10 +69,10 @@ Stack::Stack(sf::Vector2i relitivePosition)
 		}
 		else if (index == 2)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight));
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), registry);
 			(*m_functionAdd)(stack);
 
-			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName());
+			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), registry);
 			block->SetArgData(*(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args));
 			stack->AddBlock(block);
 
@@ -94,12 +99,12 @@ Stack::Stack(sf::Vector2i relitivePosition)
 
 		if (index == 0)
 		{
-			//TODO fix memory leak
+			//TODO memory leak
 			m_planePosition = new sf::Vector2u(m_planePosition->x, m_planePosition->y);
 		}
 		else
 		{
-			Stack* stayStack = new Stack(m_setPosition);
+			Stack* stayStack = new Stack(m_setPosition, registry);
 			(*m_functionAdd)(stayStack);
 
 			m_setPosition.y += index * Global::BlockHeight;
@@ -122,8 +127,13 @@ Stack::Stack(sf::Vector2i relitivePosition)
 			{
 				AddBlock(myBlocks[i]);
 			}
+
+			stayStack->ReloadVanity();
+			ReloadVanity();
 		}
 	};
+
+	m_validHighlighting = false;
 }
 
 Stack::~Stack()
@@ -173,6 +183,27 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 				break;
 			}
 		}
+
+		if (m_validHighlighting)
+		{
+			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
+			{
+				if (m_ifShapeIdx[i] != m_highlightedShape)
+					window->draw(m_ifShapes[i]);
+			}
+
+			if (m_highlightedShape != -1)
+			{
+				for (uint32_t i = 0; i < m_ifShapes.size(); i++)
+				{
+					if (m_ifShapeIdx[i] == m_highlightedShape)
+						window->draw(m_ifShapes[i]);
+				}
+			}
+
+			for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
+				window->draw(m_ifShapeHighlight[i]);
+		}
 	}
 	else
 	{
@@ -184,6 +215,27 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 				m_cutRendering = false;
 				break;
 			}
+		}
+
+		if (m_validHighlighting)
+		{
+			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
+			{
+				if (m_ifShapeIdx[i] != m_highlightedShape)
+					render->draw(m_ifShapes[i]);
+			}
+
+			if (m_highlightedShape != -1)
+			{
+				for (uint32_t i = 0; i < m_ifShapes.size(); i++)
+				{
+					if (m_ifShapeIdx[i] == m_highlightedShape)
+						render->draw(m_ifShapes[i]);
+				}
+			}
+
+			for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
+				render->draw(m_ifShapeHighlight[i]);
 		}
 	}
 }
@@ -282,24 +334,122 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 	{
 		m_relitivePosition.x = m_setPosition.x - m_planeInnerPosition->x;
 		m_relitivePosition.y = m_setPosition.y - m_planeInnerPosition->y;
-
 	}
 
 	m_absolutePosition.x = m_relitivePosition.x + m_planePosition->x;
 	m_absolutePosition.y = m_relitivePosition.y + m_planePosition->y;
 
-	if (Global::Dragging && Global::DraggingStack == this)
+	if (m_dragging)
 	{
-		for (unsigned int i = 0; i < m_blocks.size(); i++)
+		m_highlightedShape = -1;
+
+		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
+			m_ifShapeHighlight[i].setPosition(m_ifShapePositionHighlight[i] + (sf::Vector2f)m_absolutePosition);
+
+		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			m_blocks[i]->FrameUpdate(window, true);
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + m_planePosition->x + Global::BlockHeight &&
+				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + m_planePosition->y + Global::BlockHeight)
+			{
+				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
+				m_highlightedShape = i;
+
+				break;
+			}
+			else
+				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
+		}
+
+		for (uint32_t i = 0; i < m_ifShapes.size(); i++)
+		{
+			m_ifShapes[i].setPosition(m_ifShapePositions[i] + (sf::Vector2f)m_absolutePosition);
+
+			if (m_ifShapeIdx[i] == m_highlightedShape)
+				m_ifShapes[i].setFillColor(sf::Color(255, 132, 0));
+			else
+				m_ifShapes[i].setFillColor(sf::Color(70, 70, 70));
 		}
 	}
 	else
 	{
-		for (unsigned int i = 0; i < m_blocks.size(); i++)
+		m_highlightedShape = -1;
+
+		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
+			m_ifShapeHighlight[i].setPosition(m_ifShapePositionHighlight[i] + (sf::Vector2f)m_relitivePosition);
+
+		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			m_blocks[i]->FrameUpdate(window);
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + m_planePosition->x + Global::BlockHeight &&
+				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + m_planePosition->y + Global::BlockHeight)
+			{
+				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
+				m_highlightedShape = i;
+
+				break;
+			}
+			else
+				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
+		}
+
+		for (uint32_t i = 0; i < m_ifShapes.size(); i++)
+		{
+			m_ifShapes[i].setPosition(m_ifShapePositions[i] + (sf::Vector2f)m_relitivePosition);
+
+			if (m_ifShapeIdx[i] == m_highlightedShape)
+				m_ifShapes[i].setFillColor(sf::Color(255, 132, 0));
+			else
+				m_ifShapes[i].setFillColor(sf::Color(70, 70, 70));
+		}
+	}
+
+	if (Global::Dragging && Global::DraggingStack == this)
+	{
+		int16_t visualOffset = 0;
+
+		if (m_validHighlighting)
+		{
+			for (unsigned int i = 0; i < m_blocks.size(); i++)
+			{
+				std::string un = m_blocks[i]->GetUnlocalizedName();
+
+				if (un == "vin_execution_if_end" || un == "vin_execution_else" || un == "vin_execution_if_else")
+					visualOffset--;
+
+				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0), true);
+
+				if (un == "vin_execution_if" || un == "vin_execution_else" || un == "vin_execution_if_else")
+					visualOffset++;
+			}
+		}
+		else
+		{
+			for (unsigned int i = 0; i < m_blocks.size(); i++)
+				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0), true);
+		}
+	}
+	else
+	{
+		int16_t visualOffset = 0;
+
+		if (m_validHighlighting)
+		{
+			for (unsigned int i = 0; i < m_blocks.size(); i++)
+			{
+				std::string un = m_blocks[i]->GetUnlocalizedName();
+
+				if (un == "vin_execution_if_end" || un == "vin_execution_else" || un == "vin_execution_if_else")
+					visualOffset--;
+
+				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0));
+
+				if (un == "vin_execution_if" || un == "vin_execution_else" || un == "vin_execution_if_else")
+					visualOffset++;
+			}
+		}
+		else
+		{
+			for (unsigned int i = 0; i < m_blocks.size(); i++)
+				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0));
 		}
 	}
 }
@@ -363,14 +513,14 @@ Block* Stack::GetBlock(unsigned int index)
 	return m_blocks[index];
 }
 
-void Stack::CopyEverything(Stack* stack)
+void Stack::CopyEverything(Stack* stack, BlockRegistry* registry)
 {
 	m_absolutePosition = stack->GetAbsolutePosition();
 	m_relitivePosition = stack->GetRelitivePosition();
 
 	for (unsigned int i = 0; i < stack->GetBlockCount(); i++)
 	{
-		Block* block = new Block(stack->GetBlock(i)->GetUnlocalizedName());
+		Block* block = new Block(stack->GetBlock(i)->GetUnlocalizedName(), registry);
 		AddBlock(block);
 		
 		std::vector<std::string>* args = stack->GetBlock(i)->GetUsedArgumentSetup();
@@ -420,4 +570,67 @@ bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 	}
 
 	return false;
+}
+
+void Stack::ReloadVanity()
+{
+	m_ifShapes.clear();
+	m_ifShapePositions.clear();
+	m_ifShapeHighlight.clear();
+	m_ifShapePositionHighlight.clear();
+	m_ifShapeIdx.clear();
+
+	std::vector<StatmentIf> statments = RuntimeHandler::ProcessIfStatments(this, true);
+	m_validHighlighting = statments.size() > 0;
+
+	for (uint32_t i = 0; i < statments.size(); i++)
+	{
+		{
+			m_ifShapePositions.push_back(sf::Vector2f(-IF_MARGIN + -IF_WIDTH, statments[i].Location * Global::BlockHeight + (Global::BlockHeight / 2)));
+
+			m_ifShapeIdx.push_back(i);
+			m_ifShapes.push_back(sf::RectangleShape(sf::Vector2f(IF_WIDTH, 1)));
+		}
+
+		{
+			m_ifShapePositions.push_back(sf::Vector2f(-IF_MARGIN + -IF_WIDTH, statments[i].LocationEnd * Global::BlockHeight + (Global::BlockHeight / 2)));
+
+			m_ifShapeIdx.push_back(i);
+			m_ifShapes.push_back(sf::RectangleShape(sf::Vector2f(IF_WIDTH, 1)));
+		}
+
+		if (statments[i].HasElse)
+		{
+			m_ifShapePositions.push_back(sf::Vector2f(-IF_MARGIN + -IF_WIDTH, statments[i].LocationElse * Global::BlockHeight + (Global::BlockHeight / 2)));
+
+			m_ifShapeIdx.push_back(i);
+			m_ifShapes.push_back(sf::RectangleShape(sf::Vector2f(IF_WIDTH, 1)));
+		}
+		
+		if (statments[i].HasElseIf)
+		{
+			for (uint32_t a = 0; a < statments[i].LocationElseIf.size(); a++)
+			{
+				m_ifShapePositions.push_back(sf::Vector2f(-IF_MARGIN + -IF_WIDTH, statments[i].LocationElseIf[a] * Global::BlockHeight + (Global::BlockHeight / 2)));
+
+				m_ifShapeIdx.push_back(i);
+				m_ifShapes.push_back(sf::RectangleShape(sf::Vector2f(IF_WIDTH, 1)));
+			}
+		}
+
+		{
+			m_ifShapePositions.push_back(sf::Vector2f(-IF_MARGIN + -IF_WIDTH, statments[i].Location * Global::BlockHeight + (Global::BlockHeight / 2)));
+
+			m_ifShapeIdx.push_back(i);
+			m_ifShapes.push_back(sf::RectangleShape(sf::Vector2f(1, (statments[i].LocationEnd - statments[i].Location) * Global::BlockHeight)));
+		}
+
+		{
+			m_ifShapePositionHighlight.push_back(sf::Vector2f(-IF_MARGIN + -IF_WIDTH + -((int)Global::BlockHeight / 2), statments[i].Location * Global::BlockHeight + (Global::BlockHeight / 2) - (Global::BlockHeight / 2)));
+
+			m_ifShapeHighlight.push_back(sf::RectangleShape(sf::Vector2f(Global::BlockHeight, Global::BlockHeight)));
+			m_ifShapeHighlight.back().setOutlineColor(sf::Color::Black);
+			m_ifShapeHighlight.back().setOutlineThickness(1);
+		}
+	}
 }

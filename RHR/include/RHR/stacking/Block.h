@@ -25,11 +25,11 @@ public:
 class Block
 {
 public:
-	Block(std::string type);
+	Block(std::string type, BlockRegistry* registry);
 	~Block();
 
 	void Render(sf::RenderTexture* render, sf::RenderWindow* window);
-	void FrameUpdate(sf::RenderWindow* window, bool global = false);
+	void FrameUpdate(sf::RenderWindow* window, sf::Vector2f visualOffset, bool global = false);
 	void SetArgData(const std::vector<BlockArgumentCaller>& data);
 	void SetArgData(const std::vector<std::string> data);
 	void SetupInStack(unsigned int index, sf::Vector2i* stackAbsolute, sf::Vector2i* stackRelitive, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionSplit, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionContext);

@@ -16,7 +16,7 @@ public:
 	void RenderConnection(sf::RenderWindow* window);
 	void FrameUpdate(sf::RenderWindow* window);
 	void DeleteAllBlocks();
-	void CopyEverything(Plane* plane);
+	void CopyEverything(Plane* plane, BlockRegistry* registry);
 	unsigned int GetStackCount();
 	sf::Vector2u GetSize();
 	sf::Vector2u GetPosition();
@@ -28,6 +28,7 @@ public:
 	Stack* GetStack(unsigned int index);
 	bool IsToolbar();
 	const std::vector<Stack*>* GetAllStacks();
+	void ReloadVanity();
 
 	void MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 

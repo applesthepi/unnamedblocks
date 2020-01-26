@@ -39,7 +39,7 @@ void registerMod(std::string& fileName, std::string& fileType)
 	mods->push_back(mod);
 }
 
-ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable)
+ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable, BlockRegistry* registry)
 {
 	typedef void(*f_initialize)(ModData*);
 
@@ -105,6 +105,7 @@ ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* ru
 		(*mods)[i].Data->Runtime = runtime;
 		(*mods)[i].Data->Thread = thread;
 		(*mods)[i].Data->Variable = variable;
+		(*mods)[i].Data->Registry = registry;
 
 		initialize((*mods)[i].Data);
 
@@ -112,10 +113,10 @@ ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* ru
 		std::vector<RegBlock>* blocks = (*mods)[i].Data->GetBlocks();
 
 		for (uint32_t i = 0; i < catagories->size(); i++)
-			BlockRegistry::MainRegistry->RegisterCatagory(&(*catagories)[i]);
+			registry->RegisterCatagory(&(*catagories)[i]);
 
 		for (uint32_t i = 0; i < blocks->size(); i++)
-			BlockRegistry::MainRegistry->RegisterBlock(&(*blocks)[i], variable);
+			registry->RegisterBlock(&(*blocks)[i], variable);
 	}
 
 	delete mods;

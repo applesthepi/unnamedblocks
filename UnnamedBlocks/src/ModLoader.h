@@ -12,7 +12,7 @@ class RegMod
 {
 public:
 	RegMod(const std::string fileName)
-		:Supported_WIN(false), Supported_LINUX(false), Data(new ModData(BlockRegistry::MainRegistry)), FileName(fileName) {}
+		:Supported_WIN(false), Supported_LINUX(false), Data(new ModData()), FileName(fileName) {}
 
 	void SupportWIN()
 	{
@@ -32,4 +32,4 @@ public:
 };
 
 void registerMod(std::string& fileName, std::string& fileType);
-ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable);
+ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable, BlockRegistry* registry);
