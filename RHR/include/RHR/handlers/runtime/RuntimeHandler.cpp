@@ -81,7 +81,7 @@ void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 		}
 		else if (currentStack->GetBlock(0)->GetUnlocalizedName() == "vin_thread_function_define")
 		{
-			const RegBlock* regBlock = registry->GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
+			//const RegBlock* regBlock = registry->GetBlock(planeCopy->GetStack(i)->GetBlock(0)->GetUnlocalizedName());
 			BlockRuntimeReturn args = planeCopy->GetStack(i)->GetBlock(0)->GetUsedArgumentsRuntime();
 
 			std::string functionText = (*args.Args)[0].Value;

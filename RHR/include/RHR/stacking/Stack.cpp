@@ -215,7 +215,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			stack->AddBlock(block);
 
 			stack->ReloadAllBlocks();
-			stack->DragUp(Global::MousePosition);
+			stack->DragUp(Global::MousePosition + ((stack->GetSetPosition() + (sf::Vector2i)stack->GetPlanePosition() - ((Plane*)stack->GetPlanePointer())->GetInnerPosition()) - Global::MousePosition));
 		}
 		else if (index == 3)
 		{
