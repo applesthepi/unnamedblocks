@@ -156,6 +156,7 @@ am_librhr_a_OBJECTS = RHR/include/RHR/librhr_a-Global.$(OBJEXT) \
 	RHR/include/RHR/handlers/runtime/librhr_a-ByteHandler.$(OBJEXT) \
 	RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT) \
 	RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.$(OBJEXT) \
+	RHR/include/RHR/librhr_a-StatmentIf.$(OBJEXT) \
 	RHR/include/RHR/librhr_a-RHR.$(OBJEXT) \
 	RHR/include/RHR/modding/librhr_a-ModData.$(OBJEXT) \
 	RHR/include/RHR/registries/librhr_a-ShaderRegistry.$(OBJEXT) \
@@ -205,6 +206,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po \
 	RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po \
+	RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po \
 	RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po \
 	RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-MessageHandler.Po \
 	RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po \
@@ -432,7 +434,7 @@ EXTRA_DIST = bootstrap
 noinst_LIBRARIES = librhr.a
 lib_LTLIBRARIES = ModVin.la
 # RHR
-librhr_a_SOURCES = RHR/include/RHR/Global.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/modding/ModData.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp 
+librhr_a_SOURCES = RHR/include/RHR/Global.cpp RHR/include/RHR/ui/TypingSystem.cpp RHR/include/RHR/ui/Button.cpp RHR/include/RHR/handlers/MessageHandler.cpp RHR/include/RHR/handlers/Logger.cpp RHR/include/RHR/handlers/ProjectHandler.cpp RHR/include/RHR/handlers/runtime/VariableHandler.cpp RHR/include/RHR/handlers/runtime/ObjectHandler.cpp RHR/include/RHR/handlers/runtime/ByteHandler.cpp RHR/include/RHR/handlers/runtime/ThreadHandler.cpp RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp RHR/include/RHR/StatmentIf.cpp RHR/include/RHR/RHR.cpp RHR/include/RHR/modding/ModData.cpp RHR/include/RHR/registries/ShaderRegistry.cpp RHR/include/RHR/registries/ButtonRegistry.cpp RHR/include/RHR/registries/BlockRegistry.cpp RHR/include/RHR/stacking/args/Argument.cpp RHR/include/RHR/stacking/Block.cpp RHR/include/RHR/stacking/Plane.cpp RHR/include/RHR/stacking/Stack.cpp 
 librhr_a_CPPFLAGS = -fPIC -Wall -IRHR/include -IRHR/include/RHR $(SFML_CFLAGS)
 librhr_a_LDFLAGS = -fPIC -std=c++17
 # VinMod
@@ -627,6 +629,9 @@ RHR/include/RHR/handlers/runtime/librhr_a-ThreadHandler.$(OBJEXT):  \
 RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.$(OBJEXT):  \
 	RHR/include/RHR/handlers/runtime/$(am__dirstamp) \
 	RHR/include/RHR/handlers/runtime/$(DEPDIR)/$(am__dirstamp)
+RHR/include/RHR/librhr_a-StatmentIf.$(OBJEXT):  \
+	RHR/include/RHR/$(am__dirstamp) \
+	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
 RHR/include/RHR/librhr_a-RHR.$(OBJEXT):  \
 	RHR/include/RHR/$(am__dirstamp) \
 	RHR/include/RHR/$(DEPDIR)/$(am__dirstamp)
@@ -731,6 +736,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-MessageHandler.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po@am__quote@ # am--include-marker
@@ -936,6 +942,20 @@ RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj: RHR/include/RHR/ha
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp' object='RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/handlers/runtime/librhr_a-RuntimeHandler.obj `if test -f 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/handlers/runtime/RuntimeHandler.cpp'; fi`
+
+RHR/include/RHR/librhr_a-StatmentIf.o: RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-StatmentIf.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo -c -o RHR/include/RHR/librhr_a-StatmentIf.o `test -f 'RHR/include/RHR/StatmentIf.cpp' || echo '$(srcdir)/'`RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/StatmentIf.cpp' object='RHR/include/RHR/librhr_a-StatmentIf.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-StatmentIf.o `test -f 'RHR/include/RHR/StatmentIf.cpp' || echo '$(srcdir)/'`RHR/include/RHR/StatmentIf.cpp
+
+RHR/include/RHR/librhr_a-StatmentIf.obj: RHR/include/RHR/StatmentIf.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-StatmentIf.obj -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo -c -o RHR/include/RHR/librhr_a-StatmentIf.obj `if test -f 'RHR/include/RHR/StatmentIf.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/StatmentIf.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/StatmentIf.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Tpo RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='RHR/include/RHR/StatmentIf.cpp' object='RHR/include/RHR/librhr_a-StatmentIf.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o RHR/include/RHR/librhr_a-StatmentIf.obj `if test -f 'RHR/include/RHR/StatmentIf.cpp'; then $(CYGPATH_W) 'RHR/include/RHR/StatmentIf.cpp'; else $(CYGPATH_W) '$(srcdir)/RHR/include/RHR/StatmentIf.cpp'; fi`
 
 RHR/include/RHR/librhr_a-RHR.o: RHR/include/RHR/RHR.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(librhr_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT RHR/include/RHR/librhr_a-RHR.o -MD -MP -MF RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Tpo -c -o RHR/include/RHR/librhr_a-RHR.o `test -f 'RHR/include/RHR/RHR.cpp' || echo '$(srcdir)/'`RHR/include/RHR/RHR.cpp
@@ -1401,6 +1421,7 @@ distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 		-rm -f RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po
 	-rm -f RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po
+	-rm -f RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
 	-rm -f RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po
 	-rm -f RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-MessageHandler.Po
 	-rm -f RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po
@@ -1471,6 +1492,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -rf $(top_srcdir)/autom4te.cache
 		-rm -f RHR/include/RHR/$(DEPDIR)/librhr_a-Global.Po
 	-rm -f RHR/include/RHR/$(DEPDIR)/librhr_a-RHR.Po
+	-rm -f RHR/include/RHR/$(DEPDIR)/librhr_a-StatmentIf.Po
 	-rm -f RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-Logger.Po
 	-rm -f RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-MessageHandler.Po
 	-rm -f RHR/include/RHR/handlers/$(DEPDIR)/librhr_a-ProjectHandler.Po

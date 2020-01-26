@@ -4,9 +4,11 @@
 #include "VariableHandler.h"
 #include "ByteHandler.h"
 #include "handlers/Logger.h"
+#include "StatmentIf.h"
 
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <stdint.h>
 
 void ThreadWindowManager(RuntimeHandler* runtime)
 {
