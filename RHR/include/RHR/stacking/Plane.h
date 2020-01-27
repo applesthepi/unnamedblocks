@@ -17,17 +17,17 @@ public:
 	void FrameUpdate(sf::RenderWindow* window);
 	void DeleteAllBlocks();
 	void CopyEverything(Plane* plane, BlockRegistry* registry);
-	unsigned int GetStackCount();
-	sf::Vector2u GetSize();
-	sf::Vector2u GetPosition();
-	sf::Vector2i GetInnerPosition();
+	unsigned int GetStackCount() const;
+	sf::Vector2u GetSize() const;
+	sf::Vector2u GetPosition() const;
+	sf::Vector2i GetInnerPosition() const;
 	void SetInnerPosition(sf::Vector2i position);
-	sf::Vector2u GetAbsolutePosition();
+	sf::Vector2u GetAbsolutePosition() const;
 	void SetPosition(sf::Vector2u position);
 	void SetSize(sf::Vector2u size);
-	Stack* GetStack(unsigned int index);
-	bool IsToolbar();
-	const std::vector<Stack*>* GetAllStacks();
+	Stack* GetStack(unsigned int index) const;
+	bool IsToolbar() const;
+	const std::vector<Stack*>* GetAllStacks() const;
 	void ReloadVanity();
 
 	void MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);

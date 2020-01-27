@@ -919,7 +919,9 @@ UB_EXPORT void Initialization(ModData* data)
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_thread_function_define", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function define"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"}
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pass"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "pass"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -932,7 +934,9 @@ UB_EXPORT void Initialization(ModData* data)
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_thread_function_call", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function call"},
-			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"}
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pass"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"}
 			});
 		data->RegisterBlock(*block);
 	}
@@ -947,7 +951,7 @@ UB_EXPORT void Initialization(ModData* data)
 				return false;
 			}
 
-			double threadId = data->Thread->SummonThread(searchResult, data->Runtime, data->Variable, data->Registry);
+			double threadId = data->Thread->SummonThread(searchResult, data->Runtime, data->Variable, data->Registry, true, std::stod(args[1]));
 			Logger::Debug("summoned thread " + std::to_string(threadId));
 
 			if (!data->Variable->SetReal((std::to_string(idx) + "_" + args[1]).c_str(), threadId))
@@ -961,6 +965,8 @@ UB_EXPORT void Initialization(ModData* data)
 		RegBlock* block = data->Registry->CreateBlock("vin_thread_function_thread", "vin_threading", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "function thread"},
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pass"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "thread_id"}
 			});

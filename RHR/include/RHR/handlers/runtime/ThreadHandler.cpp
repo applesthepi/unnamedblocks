@@ -208,10 +208,32 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				return;
 			}
 
+			double gotValue = 0.0;
+			if ((*args.Args)[1].Mode == BlockArgumentVariableMode::VAR)
+			{
+				double* attempt = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + (*args.Args)[1].Value).c_str());
+
+				if (attempt == nullptr)
+				{
+					Logger::Error("variable \"" + (*args.Args)[1].Value + "\" does not exist");
+					*done = true;
+					return;
+				}
+
+				gotValue = *attempt;
+			}
+			else
+				gotValue = std::stod((*args.Args)[1].Value);
+
 			selectionForBlocks[0]++;
 
 			selectionForBlocks.insert(selectionForBlocks.begin(), 0);
 			selectionForStacks.insert(selectionForStacks.begin(), searchResult);
+
+			BlockRuntimeReturn funArgs = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
+
+			variables->StackReal((std::to_string(searchResult) + "_" + (*funArgs.Args)[1].Value).c_str());
+			variables->SetReal((std::to_string(searchResult) + "_" + (*funArgs.Args)[1].Value).c_str(), gotValue);
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_if")
 		{
@@ -375,8 +397,9 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		else
 		{
 			BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
+			uint64_t selStack = selectionForStacks.front();
 
-			if (!(*regBlock->Execute)(*(args.Args), stack))
+			if (!(*regBlock->Execute)(*(args.Args), selStack))
 			{
 				Logger::Error("block execution failed for block \"" + std::to_string(selectionForBlocks[0]) + "\"");
 				*done = true;
@@ -486,7 +509,7 @@ void ThreadHandler::SetPlane(Plane* plane)
 	m_plane = plane;
 }
 
-unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, void* runtime, void* variables, void* registry)
+unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, void* runtime, void* variables, void* registry, const bool& pass, const double& passValue)
 {
 	m_counter++;
 	m_activeThreadIds->push_back(m_counter);
@@ -496,6 +519,22 @@ unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, vo
 
 	bool* done = new bool(false);
 	m_activeThreadDone->push_back(done);
+
+	if (pass)
+	{
+		BlockRuntimeReturn funArgs = ((RuntimeHandler*)runtime)->GetPlane()->GetStack(stackIndex)->GetBlock(0)->GetUsedArgumentsRuntime();
+		((VariableHandler*)variables)->StackReal((std::to_string(stackIndex) + "_" + (*funArgs.Args)[1].Value).c_str());
+
+		try
+		{
+			((VariableHandler*)variables)->SetReal((std::to_string(stackIndex) + "_" + (*funArgs.Args)[1].Value).c_str(), passValue);
+		}
+		catch (std::invalid_argument&)
+		{
+			Logger::Error("failed to launch thread. Pass argument failed to parse to double");
+			return 0;
+		}
+	}
 
 	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done, (RuntimeHandler*)runtime, (VariableHandler*)variables, (BlockRegistry*)registry);
 	run->detach();

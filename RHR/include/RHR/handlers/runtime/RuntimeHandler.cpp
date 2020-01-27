@@ -118,7 +118,7 @@ void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
 	for (unsigned int i = 0; i < locations.size(); i++)
-		m_threadHandler->SummonThread(locations[i], this, m_variableHandler, registry);
+		m_threadHandler->SummonThread(locations[i], this, m_variableHandler, registry, false, 0);
 }
 
 void RuntimeHandler::ManualRender()
@@ -165,6 +165,11 @@ int RuntimeHandler::PerformFunctionSearch(std::string functionName)
 	}
 
 	return -1;
+}
+
+const Plane* RuntimeHandler::GetPlane()
+{
+	return m_planeCopy;
 }
 
 const std::vector<StatmentIf>* RuntimeHandler::GetIfStatments(uint32_t stackIdx)

@@ -292,22 +292,22 @@ void Plane::CopyEverything(Plane* plane, BlockRegistry* registry)
 	}
 }
 
-unsigned int Plane::GetStackCount()
+unsigned int Plane::GetStackCount() const
 {
 	return m_stacks.size();
 }
 
-sf::Vector2u Plane::GetSize()
+sf::Vector2u Plane::GetSize() const
 {
 	return m_size;
 }
 
-sf::Vector2u Plane::GetPosition()
+sf::Vector2u Plane::GetPosition() const
 {
 	return *m_position;
 }
 
-sf::Vector2i Plane::GetInnerPosition()
+sf::Vector2i Plane::GetInnerPosition() const
 {
 	return *m_innerPosition;
 }
@@ -317,7 +317,7 @@ void Plane::SetInnerPosition(sf::Vector2i position)
 	*m_innerPosition = position;
 }
 
-sf::Vector2u Plane::GetAbsolutePosition()
+sf::Vector2u Plane::GetAbsolutePosition() const
 {
 	return *m_absolutePosition;
 }
@@ -332,17 +332,17 @@ void Plane::SetSize(sf::Vector2u size)
 	m_size = size;
 }
 
-Stack* Plane::GetStack(unsigned int index)
+Stack* Plane::GetStack(unsigned int index) const
 {
 	return m_stacks[index];
 }
 
-bool Plane::IsToolbar()
+bool Plane::IsToolbar() const
 {
 	return m_toolbar;
 }
 
-const std::vector<Stack*>* Plane::GetAllStacks()
+const std::vector<Stack*>* Plane::GetAllStacks() const
 {
 	return &m_stacks;
 }

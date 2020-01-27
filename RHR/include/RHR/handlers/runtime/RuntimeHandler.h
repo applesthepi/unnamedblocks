@@ -23,6 +23,7 @@ public:
 	void AddScroll(int value);
 	void ResetScrolled();
 	int PerformFunctionSearch(std::string functionName);
+	const Plane* GetPlane();
 
 	std::atomic<bool> Running;
 	std::atomic<bool> ManualRenderFrame;
