@@ -477,7 +477,7 @@ UB_EXPORT void Initialization(ModData* data)
 			return data->Variable->SetString(args[0].c_str(), args[1]);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_=_string", "vin_operations", execution, {
-			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "="},
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, ""}
 			});
@@ -490,7 +490,7 @@ UB_EXPORT void Initialization(ModData* data)
 			return data->Variable->SetBool(args[0].c_str(), args[1] == "1");
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_=_bool", "vin_operations", execution, {
-			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "="},
 			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
 			});
@@ -503,7 +503,7 @@ UB_EXPORT void Initialization(ModData* data)
 			return data->Variable->SetBool(args[0].c_str(), args[1] == "0");
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_!=_bool", "vin_operations", execution, {
-			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
+			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "!="},
 			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"}
 			});
