@@ -17,6 +17,7 @@
 #whitelist "-" for number inputs :)
 #null block
 #context menu for blocks
+#function/threadFunction variables scoped
  [mod] texture pixel/full manipulation
 object shaders
 object batching
@@ -25,6 +26,5 @@ object batching
  [mod] networking (post/get)
  [mod] filesystem
 plane context menu options
-function/threadFunction have own variable handler
 function/threadFunction pass in a pointer to byte handler
 copy/paste for booleans variable mode

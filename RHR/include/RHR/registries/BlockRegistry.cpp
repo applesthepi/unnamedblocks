@@ -29,11 +29,58 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 	//carry
 	block->BlockInit = new std::vector<BlockArgumentInitializer>(blockInit);
 	block->BlockExecute = new std::function<bool(const std::vector<std::string>&)>(*execute);
+	block->BlockExecuteIdx = nullptr;
 	
 	for (uint16_t i = 0; i < blockInit.size(); i++)
 	{
 		BlockArgument arg;
 		
+		if (blockInit[i].Type == BlockArgumentType::TEXT)
+			arg.SetupTEXT(blockInit[i].DefaultValue);
+		else if (blockInit[i].Type == BlockArgumentType::BOOL)
+		{
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
+				arg.SetupBOOL("0" + blockInit[i].DefaultValue);
+			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
+				arg.SetupBOOL("1" + blockInit[i].DefaultValue);
+		}
+		else if (blockInit[i].Type == BlockArgumentType::REAL)
+		{
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
+				arg.SetupREAL("0" + blockInit[i].DefaultValue);
+			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
+				arg.SetupREAL("1" + blockInit[i].DefaultValue);
+		}
+		else if (blockInit[i].Type == BlockArgumentType::STRING)
+		{
+			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
+				arg.SetupSTRING("0" + blockInit[i].DefaultValue);
+			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
+				arg.SetupSTRING("1" + blockInit[i].DefaultValue);
+		}
+
+		block->Args.push_back(arg);
+	}
+
+	return block;
+}
+
+RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&, uint64_t&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)
+{
+	RegBlock* block = new RegBlock();
+
+	block->UnlocalizedName = unlocalizedName;
+	block->Catagory = catagory;
+
+	//carry
+	block->BlockInit = new std::vector<BlockArgumentInitializer>(blockInit);
+	block->BlockExecute = nullptr;
+	block->BlockExecuteIdx = new std::function<bool(const std::vector<std::string>&, uint64_t&)>(*execute);
+
+	for (uint16_t i = 0; i < blockInit.size(); i++)
+	{
+		BlockArgument arg;
+
 		if (blockInit[i].Type == BlockArgumentType::TEXT)
 			arg.SetupTEXT(blockInit[i].DefaultValue);
 		else if (blockInit[i].Type == BlockArgumentType::BOOL)
@@ -74,8 +121,8 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 			blockUseArgs.push_back(block->BlockInit->at(i));
 	}
 
-	std::function<bool(const std::vector<BlockArgumentCaller>&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&)>();
-	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args)
+	std::function<bool(const std::vector<BlockArgumentCaller>&, uint64_t&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&, uint64_t&)>();
+	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args, uint64_t& idx)
 	{
 		std::vector<std::string> parsedArgs;
 
@@ -97,14 +144,14 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 					return false;
 				}
 			}
-
+			
 			if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP || args[i].Mode == BlockArgumentVariableMode::RAW)
 				parsedArgs.push_back(args[i].Value);
 			else if (args[i].Mode == BlockArgumentVariableMode::VAR)
 			{
 				if (blockUseArgs.at(i).Type == BlockArgumentType::STRING)
 				{
-					std::string* data = variables->GetString(args[i].Value.c_str());
+					std::string* data = variables->GetString((std::to_string(idx) + "_" + args[i].Value).c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -115,7 +162,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 				}
 				else if (blockUseArgs.at(i).Type == BlockArgumentType::BOOL)
 				{
-					bool* data = variables->GetBool(args[i].Value.c_str());
+					bool* data = variables->GetBool((std::to_string(idx) + "_" + args[i].Value).c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -126,7 +173,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 				}
 				else if (blockUseArgs.at(i).Type == BlockArgumentType::REAL)
 				{
-					double* data = variables->GetReal(args[i].Value.c_str());
+					double* data = variables->GetReal((std::to_string(idx) + "_" + args[i].Value).c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -138,7 +185,10 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 			}
 		}
 
-		return (*block->BlockExecute)(parsedArgs);
+		if (block->BlockExecute == nullptr)
+			return (*block->BlockExecuteIdx)(parsedArgs, idx);
+		else
+			return (*block->BlockExecute)(parsedArgs);
 	};
 
 	block->Execute = parentExecution;

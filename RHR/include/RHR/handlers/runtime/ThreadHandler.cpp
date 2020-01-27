@@ -376,7 +376,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		{
 			BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
 
-			if (!(*regBlock->Execute)(*(args.Args)))
+			if (!(*regBlock->Execute)(*(args.Args), stack))
 			{
 				Logger::Error("block execution failed for block \"" + std::to_string(selectionForBlocks[0]) + "\"");
 				*done = true;
