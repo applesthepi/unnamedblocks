@@ -9,7 +9,7 @@
 
 #define INVALID_IF_CALLSTACK "invalid if callstack detected!"
 
-void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, bool* done, RuntimeHandler* runtime, VariableHandler* variables, BlockRegistry* registry)
+void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<bool>* running, std::atomic<bool>* done, RuntimeHandler* runtime, VariableHandler* variables, BlockRegistry* registry)
 {
 	srand(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
@@ -60,7 +60,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::VAR)
 			{
 				Logger::Error("expecting text only! got \"" + varText + "\"");
-				*done = true;
+				done->store(true);
 				return;
 			}
 
@@ -73,7 +73,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::VAR)
 			{
 				Logger::Error("expecting text only! got \"" + varText + "\"");
-				*done = true;
+				done->store(true);
 				return;
 			}
 
@@ -110,7 +110,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + indexText + "\" does not exist");
-					*done = true;
+					done->store(true);
 					return;
 				}
 
@@ -142,7 +142,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
-					*done = true;
+					done->store(true);
 					return;
 				}
 
@@ -162,7 +162,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 					if (value == nullptr)
 					{
 						Logger::Error("variable \"" + indexText + "\" does not exist");
-						*done = true;
+						done->store(true);
 						return;
 					}
 
@@ -193,7 +193,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + functionText + "\" does not exist");
-					*done = true;
+					done->store(true);
 					return;
 				}
 
@@ -204,7 +204,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			if (searchResult == -1)
 			{
 				Logger::Error("function \"" + functionName + "\" does not exist");
-				*done = true;
+				done->store(true);
 				return;
 			}
 
@@ -216,7 +216,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (attempt == nullptr)
 				{
 					Logger::Error("variable \"" + (*args.Args)[1].Value + "\" does not exist");
-					*done = true;
+					done->store(true);
 					return;
 				}
 
@@ -251,7 +251,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
-					*done = true;
+					done->store(true);
 					return;
 				}
 
@@ -290,7 +290,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			else
 			{
 				Logger::Error(INVALID_IF_CALLSTACK);
-				*done = true;
+				done->store(true);
 				return;
 			}
 		}
@@ -310,7 +310,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
-					*done = true;
+					done->store(true);
 					return;
 				}
 
@@ -349,7 +349,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			else
 			{
 				Logger::Error(INVALID_IF_CALLSTACK);
-				*done = true;
+				done->store(true);
 				return;
 			}
 		}
@@ -363,7 +363,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			else
 			{
 				Logger::Error(INVALID_IF_CALLSTACK);
-				*done = true;
+				done->store(true);
 				return;
 			}
 		}
@@ -378,7 +378,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			else
 			{
 				Logger::Error(INVALID_IF_CALLSTACK);
-				*done = true;
+				done->store(true);
 				return;
 			}
 		}
@@ -389,6 +389,161 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 		else if (regBlock->UnlocalizedName == "vin_input_timer_reset")
 		{
 			inTimer = std::chrono::high_resolution_clock::now();
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_mutex_create")
+		{
+			std::string indexText = (*args.Args)[0].Value;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				Logger::Error("expecting var only! got \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+
+			uint64_t mutexIdx = runtime->MutexCreate();
+
+			if (!variables->SetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str(), mutexIdx))
+			{
+				Logger::Error("failed to create mutex");
+				done->store(true);
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_mutex_free")
+		{
+			std::string indexText = (*args.Args)[0].Value;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				Logger::Error("expecting var only! got \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+
+			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+
+			if (gotIdx == nullptr)
+			{
+				Logger::Error("variable \"" + indexText + "\" does not exist");
+				done->store(true);
+				return;
+			}
+
+			if (!runtime->MutexFree(*gotIdx))
+			{
+				Logger::Error("failed to freeing mutex");
+				done->store(true);
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_mutex_shared_lock")
+		{
+			std::string indexText = (*args.Args)[0].Value;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				Logger::Error("expecting var only! got \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+
+			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+
+			if (gotIdx == nullptr)
+			{
+				Logger::Error("variable \"" + indexText + "\" does not exist");
+				done->store(true);
+				return;
+			}
+
+			if (!runtime->MutexLockShared(*gotIdx))
+			{
+				Logger::Error("failed to lock mutex \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_mutex_shared_release")
+		{
+			std::string indexText = (*args.Args)[0].Value;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				Logger::Error("expecting var only! got \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+
+			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+
+			if (gotIdx == nullptr)
+			{
+				Logger::Error("variable \"" + indexText + "\" does not exist");
+				done->store(true);
+				return;
+			}
+
+			if (!runtime->MutexReleaseShared(*gotIdx))
+			{
+				Logger::Error("failed to release mutex \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_mutex_unique_lock")
+		{
+			std::string indexText = (*args.Args)[0].Value;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				Logger::Error("expecting var only! got \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+
+			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+
+			if (gotIdx == nullptr)
+			{
+				Logger::Error("variable \"" + indexText + "\" does not exist");
+				done->store(true);
+				return;
+			}
+
+			if (!runtime->MutexLockUnique(*gotIdx))
+			{
+				Logger::Error("failed to lock mutex \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+		}
+		else if (regBlock->UnlocalizedName == "vin_execution_mutex_unique_release")
+		{
+			std::string indexText = (*args.Args)[0].Value;
+
+			if ((*args.Args)[0].Mode == BlockArgumentVariableMode::RAW)
+			{
+				Logger::Error("expecting var only! got \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
+
+			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+
+			if (gotIdx == nullptr)
+			{
+				Logger::Error("variable \"" + indexText + "\" does not exist");
+				done->store(true);
+				return;
+			}
+
+			if (!runtime->MutexReleaseUnique(*gotIdx))
+			{
+				Logger::Error("failed to release mutex \"" + indexText + "\"");
+				done->store(true);
+				return;
+			}
 		}
 		else if (regBlock->Execute == nullptr)
 		{
@@ -402,7 +557,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 			if (!(*regBlock->Execute)(*(args.Args), selStack))
 			{
 				Logger::Error("block execution failed for block \"" + std::to_string(selectionForBlocks[0]) + "\"");
-				*done = true;
+				done->store(true);
 				return;
 			}
 		}
@@ -428,25 +583,25 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, bool* running, 
 
 				if (selectionForBlocks[0] >= plane->GetStack(selectionForStacks[0])->GetBlockCount())
 				{
-					*running = false;
+					running->store(false);
 				}
 			}
 			else
 			{
-				*running = false;
+				running->store(false);
 			}
 		}
 	}
 
-	*done = true;
+	done->store(true);
 }
 
 ThreadHandler::ThreadHandler()
 {
 	m_activeThreads = new std::vector<std::thread*>();
 	m_activeThreadIds = new std::vector<unsigned long long>();
-	m_activeThreadRunning = new std::vector<bool*>();
-	m_activeThreadDone = new std::vector<bool*>();
+	m_activeThreadRunning = new std::vector<std::atomic<bool>*>();
+	m_activeThreadDone = new std::vector<std::atomic<bool>*>();
 	m_counter = 0;
 
 	m_plane = nullptr;
@@ -487,8 +642,8 @@ void ThreadHandler::Reset()
 
 	m_activeThreads = new std::vector<std::thread*>();
 	m_activeThreadIds = new std::vector<unsigned long long>();
-	m_activeThreadRunning = new std::vector<bool*>();
-	m_activeThreadDone = new std::vector<bool*>();
+	m_activeThreadRunning = new std::vector<std::atomic<bool>*>();
+	m_activeThreadDone = new std::vector<std::atomic<bool>*>();
 	m_counter = 0;
 }
 
@@ -499,9 +654,21 @@ void ThreadHandler::KillJoinAll()
 
 	for (unsigned int i = 0; i < m_activeThreadDone->size(); i++)
 	{
-		while (!*(*m_activeThreadDone)[i])
+		while (!m_activeThreadDone->at(i)->load())
 			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
+
+	for (uint32_t i = 0; i < m_activeThreads->size(); i++)
+	{
+		delete m_activeThreads->at(i);
+		delete m_activeThreadDone->at(i);
+		delete m_activeThreadRunning->at(i);
+	}
+
+	m_activeThreads->clear();
+	m_activeThreadDone->clear();
+	m_activeThreadIds->clear();
+	m_activeThreadRunning->clear();
 }
 
 void ThreadHandler::SetPlane(Plane* plane)
@@ -514,10 +681,10 @@ unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, vo
 	m_counter++;
 	m_activeThreadIds->push_back(m_counter);
 
-	bool* running = new bool(true);
+	std::atomic<bool>* running = new std::atomic<bool>(true);
 	m_activeThreadRunning->push_back(running);
 
-	bool* done = new bool(false);
+	std::atomic<bool>* done = new std::atomic<bool>(false);
 	m_activeThreadDone->push_back(done);
 
 	if (pass)

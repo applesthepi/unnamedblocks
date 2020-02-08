@@ -21,7 +21,7 @@ public:
 	void AddBlock(Block* block);
 	void ReloadAllBlocks();
 	void Render(sf::RenderTexture* render, sf::RenderWindow* window);
-	void FrameUpdate(sf::RenderWindow* window);
+	void FrameUpdate(bool updateBlocks, bool forceArgs = false);
 	void SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver);
 
 	void* GetPlanePointer();
@@ -36,17 +36,24 @@ public:
 	void CopyEverything(Stack* stack, BlockRegistry* registry);
 	void DragDown(sf::Vector2i mousePosition);
 	void DragUp(sf::Vector2i mousePosition);
+	std::function<void()>* GetFunctionUpdate();
+	bool IsBounding(const sf::Vector2f& mousePos);
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	void ReloadVanity();
 	std::vector<StatmentIf> GetVanity();
+	void ReRender();
 private:
+	void PreRender();
 	std::vector<Block*> m_blocks;
 	sf::Vector2i m_setPosition;
 	sf::Vector2i m_relitivePosition;
 	sf::Vector2i m_absolutePosition;
 	sf::Vector2u* m_planePosition;
 	sf::Vector2i* m_planeInnerPosition;
+
+	sf::RenderTexture m_preTexture;
+	sf::RectangleShape m_preShape;
 
 	std::vector<StatmentIf> m_savedVanity;
 	bool m_validHighlighting;
@@ -67,7 +74,9 @@ private:
 	std::function<void(unsigned int index, sf::Vector2i mousePosition)>* m_functionContext;
 	std::function<void(unsigned int index)>* m_functionContextCallback;
 	std::function<void(unsigned int index, sf::Vector2i mousePosition)>* m_functionSplit;
+	std::function<void()>* m_functionUpdatePreTexture;
 	unsigned int m_contextBlockIndex;
+	uint64_t m_highestWidth;
 	void* m_planePtr;
 	void* m_blockRegistry;
 };

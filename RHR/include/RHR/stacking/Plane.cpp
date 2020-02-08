@@ -1,6 +1,7 @@
 #include "registries/ShaderRegistry.h"
 #include "Plane.h"
 #include "Global.h"
+#include "handlers/Logger.h"
 
 #include <iostream>
 
@@ -112,6 +113,7 @@ void Plane::AddStack(Stack* stack)
 	}
 	
 	stack->SetupInPlane(m_position, m_innerPosition, (void*)this, m_functionAdd, m_functionRemove, m_functionMoveTop, m_functionAddOver);
+	stack->ReRender();
 	m_stacks.push_back(stack);
 }
 
@@ -264,7 +266,7 @@ void Plane::FrameUpdate(sf::RenderWindow* window)
 
 	for (int i = m_stacks.size() - 1; i >= 0; i--)
 	{
-		m_stacks[i]->FrameUpdate(window);
+		m_stacks[i]->FrameUpdate(m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition));
 	}
 }
 

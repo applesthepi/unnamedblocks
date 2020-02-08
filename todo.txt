@@ -20,6 +20,9 @@
 #function/threadFunction variables scoped
 #function/threadFunction pass in a pointer to byte handler
 #copy/paste for booleans variable mode
+stack and block saved render texture (huge performance benifate)
+comment blocks
+add thread id to the functions unique identifer
 object shaders
 object batching
 plane context menu options

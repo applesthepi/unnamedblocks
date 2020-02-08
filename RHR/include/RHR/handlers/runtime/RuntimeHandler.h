@@ -25,6 +25,13 @@ public:
 	int PerformFunctionSearch(std::string functionName);
 	const Plane* GetPlane();
 
+	uint64_t MutexCreate();
+	bool MutexFree(uint64_t idx);
+	bool MutexLockShared(uint64_t idx);
+	bool MutexReleaseShared(uint64_t idx);
+	bool MutexLockUnique(uint64_t idx);
+	bool MutexReleaseUnique(uint64_t idx);
+
 	std::atomic<bool> Running;
 	std::atomic<bool> ManualRenderFrame;
 	std::atomic<bool> ManualRenderingEnabled;
@@ -40,6 +47,9 @@ private:
 	std::mutex m_renderMutex;
 	std::mutex m_scrollMutex;
 	int m_scrolled;
+	uint64_t m_appMutexCount;
+	std::vector<std::shared_mutex*> m_appMutex;
+	std::vector<uint64_t> m_appMutexIdx;
 	std::vector<unsigned int> m_stackIndices;
 	std::vector<std::string> m_stackFunctions;
 	std::vector<std::vector<StatmentIf>> m_stackFunctionIfStatments;

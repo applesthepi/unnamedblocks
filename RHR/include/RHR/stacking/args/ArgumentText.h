@@ -12,28 +12,23 @@ public:
 		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - 10);
 
 		m_TextAgent.setFillColor(sf::Color::Black);
+
 		m_TextAgent.setString(m_Text);
 		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
 		m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
 	}
 
-	void FrameUpdate(sf::RenderWindow* window) override
+	void FrameUpdate() override
 	{
 		m_TextAgent.setString(m_Text);
 		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
-		m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
+		//m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
+		m_TextAgent.setPosition(GetRelitivePosition().x, GetRelitivePosition().y);
 	}
 
-	void Render(sf::RenderTexture* render, sf::RenderWindow* window) override
+	void Render(sf::RenderTexture* render) override
 	{
-		if (render == nullptr)
-		{
-			window->draw(m_TextAgent);
-		}
-		else
-		{
-			render->draw(m_TextAgent);
-		}
+		render->draw(m_TextAgent);
 	}
 
 	unsigned int GetArgumentRawWidth() override

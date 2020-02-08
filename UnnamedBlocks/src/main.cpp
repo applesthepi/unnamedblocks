@@ -41,7 +41,7 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 		if ((*registry->GetBlocks())[a].Catagory == (*registry->GetCatagories())[index].UnlocalizedName)
 		{
 			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), registry);
-			Block* block = new Block((*registry->GetBlocks())[a].UnlocalizedName, registry);
+			Block* block = new Block((*registry->GetBlocks())[a].UnlocalizedName, registry, stack->GetFunctionUpdate());
 
 			toolbarPlane->AddStack(stack);
 			stack->AddBlock(block);
@@ -324,7 +324,7 @@ int main()
 				if ((*pRegistry->GetBlocks())[i].Catagory == pRegistry->GetCatagories()->at(useCat).UnlocalizedName)
 				{
 					Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
-					Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry);
+					Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry, stack->GetFunctionUpdate());
 
 					toolbarPlane->AddStack(stack);
 					stack->AddBlock(block);
@@ -349,6 +349,17 @@ int main()
 	//sf::View zoomedView(sf::FloatRect(0, 0, primaryPlane->GetSize().x, primaryPlane->GetSize().y));
 
 	//Global::ZoomAspect = (sf::Vector2f)primaryPlane->GetSize();
+
+	sf::Clock cl;
+	sf::Clock clTrip;
+
+	sf::Text frameRate;
+	frameRate.setString("fps: 0");
+	frameRate.setFillColor(sf::Color(128, 128, 128, 255));
+	frameRate.setFont(*Global::Font);
+	frameRate.setCharacterSize(18);
+
+	clTrip.restart();
 
 	while (window.isOpen())
 	{
@@ -389,7 +400,7 @@ int main()
 		toolbarPlane->SetSize(sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5));
 		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, 16 + 10));
 		primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
-		
+
 		//frame update
 
 		if (window.hasFocus())
@@ -561,7 +572,7 @@ int main()
 		primaryPlane->FrameUpdate(&window);
 
 		if (Global::Dragging)
-			((Stack*)Global::DraggingStack)->FrameUpdate(&window);
+			((Stack*)Global::DraggingStack)->FrameUpdate(false);
 		
 		if (toolbarPlane->GetStackCount() != toolbarStackCount)
 			ReloadCatagory(toolbarCatagory, pRegistry);
@@ -589,6 +600,17 @@ int main()
 			continue;
 		}
 
+		sf::Time tm = cl.getElapsedTime();
+		cl.restart();
+
+		if (clTrip.getElapsedTime().asSeconds() >= 1.0f)
+		{
+			frameRate.setString("fps: " + std::to_string(floor(1.0 / (tm.asMicroseconds() * 0.000001))));
+			clTrip.restart();
+		}
+
+		frameRate.setPosition(sf::Vector2f(window.getSize().x - 200, 0));
+		window.draw(frameRate);
 		window.display();
 	}
 

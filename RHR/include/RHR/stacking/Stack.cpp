@@ -16,9 +16,16 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 	m_functionSplit = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
 	m_functionContext = new std::function<void(unsigned int index, sf::Vector2i mousePosition)>();
 	m_functionContextCallback = new std::function<void(unsigned int index)>();
+	m_functionUpdatePreTexture = new std::function<void()>();
 	m_cutRendering = false;
 	m_contextBlockIndex = 0;
+	m_highestWidth = 0;
 	m_draggingType = DraggingType::DOWN;
+
+	*m_functionUpdatePreTexture = [&]()
+	{
+		PreRender();
+	};
 
 	*m_functionContext = [&](unsigned int index, sf::Vector2i mousePosition)
 	{
@@ -184,7 +191,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 			for (unsigned int i = blockIndex; i < useEnd; i++)
 			{
-				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry);
+				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture);
 				block->SetArgData(*(m_blocks[i]->GetUsedArgumentsRuntime().Args));
 				stack->AddBlock(block);
 			}
@@ -211,7 +218,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
-			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry);
+			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture);
 			block->SetArgData(*(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args));
 			stack->AddBlock(block);
 
@@ -275,9 +282,7 @@ Stack::~Stack()
 	delete m_functionSplit;
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
-	{
 		delete m_blocks[i];
-	}
 }
 
 void Stack::ImportBlocks(std::vector<Block*>* blocks)
@@ -288,36 +293,32 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 	{
 		AddBlock((*blocks)[i]);
 	}
+
+	ReRender();
 }
 
 void Stack::AddBlock(Block* block)
 {
 	block->SetupInStack(m_blocks.size(), &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
 	m_blocks.push_back(block);
+	ReRender();
 }
 
 void Stack::ReloadAllBlocks()
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
-	{
 		m_blocks[i]->SetupInStack(i, &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
-	}
+
+	ReRender();
 }
 
 void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 {
 	if (render == nullptr)
 	{
-		for (unsigned int i = 0; i < m_blocks.size(); i++)
-		{
-			m_blocks[i]->Render(nullptr, window);
-			if (m_cutRendering)
-			{
-				m_cutRendering = false;
-				break;
-			}
-		}
-
+		m_preShape.setPosition((sf::Vector2f)GetAbsolutePosition());
+		window->draw(m_preShape);
+		
 		if (m_validHighlighting)
 		{
 			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
@@ -341,15 +342,8 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 	}
 	else
 	{
-		for (unsigned int i = 0; i < m_blocks.size(); i++)
-		{
-			m_blocks[i]->Render(render, window);
-			if (m_cutRendering)
-			{
-				m_cutRendering = false;
-				break;
-			}
-		}
+		m_preShape.setPosition((sf::Vector2f)GetRelitivePosition());
+		render->draw(m_preShape);
 
 		if (m_validHighlighting)
 		{
@@ -374,7 +368,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 	}
 }
 
-void Stack::FrameUpdate(sf::RenderWindow* window)
+void Stack::FrameUpdate(bool updateBlocks, bool forceArgs)
 {
 	bool mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
@@ -389,13 +383,13 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 
 		if (wantDown)
 		{
-			m_relitivePosition.x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x - m_planeInnerPosition->x;
-			m_relitivePosition.y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y - m_planeInnerPosition->y;
+			m_relitivePosition.x = (Global::MousePosition.x - m_draggingMouseBegin.x) + m_setPosition.x - m_planeInnerPosition->x;
+			m_relitivePosition.y = (Global::MousePosition.y - m_draggingMouseBegin.y) + m_setPosition.y - m_planeInnerPosition->y;
 		}
 		else
 		{
-			m_relitivePosition.x = (sf::Mouse::getPosition(*window).x - m_draggingMouseBegin.x) + m_setPosition.x;
-			m_relitivePosition.y = (sf::Mouse::getPosition(*window).y - m_draggingMouseBegin.y) + m_setPosition.y;
+			m_relitivePosition.x = (Global::MousePosition.x - m_draggingMouseBegin.x) + m_setPosition.x;
+			m_relitivePosition.y = (Global::MousePosition.y - m_draggingMouseBegin.y) + m_setPosition.y;
 
 			m_dragging = false;
 			Global::Dragging = false;
@@ -545,7 +539,7 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 				if (un == "vin_execution_if_end" || un == "vin_execution_else" || un == "vin_execution_if_else")
 					visualOffset--;
 
-				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0), true);
+				//m_blocks[i]->FrameUpdate(sf::Vector2f(visualOffset * 20, 0), true);
 
 				if (un == "vin_execution_if" || un == "vin_execution_else" || un == "vin_execution_if_else")
 					visualOffset++;
@@ -553,12 +547,17 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 		}
 		else
 		{
+			/*
 			for (unsigned int i = 0; i < m_blocks.size(); i++)
-				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0), true);
+				m_blocks[i]->FrameUpdate(sf::Vector2f(visualOffset * 20, 0), true);
+			*/
 		}
 	}
 	else
 	{
+		if (!updateBlocks)
+			return;
+
 		int16_t visualOffset = 0;
 
 		if (m_validHighlighting)
@@ -570,7 +569,7 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 				if (un == "vin_execution_if_end" || un == "vin_execution_else" || un == "vin_execution_if_else")
 					visualOffset--;
 
-				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0));
+				m_blocks[i]->FrameUpdate(forceArgs || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
 
 				if (un == "vin_execution_if" || un == "vin_execution_else" || un == "vin_execution_if_else")
 					visualOffset++;
@@ -579,7 +578,7 @@ void Stack::FrameUpdate(sf::RenderWindow* window)
 		else
 		{
 			for (unsigned int i = 0; i < m_blocks.size(); i++)
-				m_blocks[i]->FrameUpdate(window, sf::Vector2f(visualOffset * 20, 0));
+				m_blocks[i]->FrameUpdate(forceArgs || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
 		}
 	}
 
@@ -606,6 +605,8 @@ void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPo
 	m_functionMoveTop = functionMoveTop;
 	m_functionAddOver = functionAddOver;
 	m_planePtr = planePtr;
+
+	FrameUpdate(true, true);
 }
 
 void* Stack::GetPlanePointer()
@@ -663,7 +664,7 @@ void Stack::CopyEverything(Stack* stack, BlockRegistry* registry)
 
 	for (unsigned int i = 0; i < stack->GetBlockCount(); i++)
 	{
-		Block* block = new Block(stack->GetBlock(i)->GetUnlocalizedName(), registry);
+		Block* block = new Block(stack->GetBlock(i)->GetUnlocalizedName(), registry, m_functionUpdatePreTexture);
 		AddBlock(block);
 		
 		std::vector<std::string>* args = stack->GetBlock(i)->GetUsedArgumentSetup();
@@ -702,6 +703,16 @@ void Stack::DragUp(sf::Vector2i mousePosition)
 	m_draggingMouseBegin = mousePosition;
 
 	m_draggingType = DraggingType::UP;
+}
+
+std::function<void()>* Stack::GetFunctionUpdate()
+{
+	return m_functionUpdatePreTexture;
+}
+
+bool Stack::IsBounding(const sf::Vector2f& mousePos)
+{
+	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + m_highestWidth && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + (m_blocks.size() * Global::BlockHeight);
 }
 
 bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
@@ -782,4 +793,37 @@ void Stack::ReloadVanity()
 std::vector<StatmentIf> Stack::GetVanity()
 {
 	return m_savedVanity;
+}
+
+void Stack::ReRender()
+{
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+		m_blocks[i]->PreRender();
+
+	PreRender();
+}
+
+void Stack::PreRender()
+{
+	m_preTexture.clear(sf::Color(0, 0, 0, 0));
+
+	uint64_t widest = 0;
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetWidth() > widest)
+			widest = m_blocks[i]->GetWidth();
+	}
+
+	m_highestWidth = widest;
+
+	if (widest != m_preTexture.getSize().x || m_preTexture.getSize().y != m_blocks.size() * Global::BlockHeight)
+		m_preTexture.create(widest, m_blocks.size() * Global::BlockHeight);
+
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+		m_blocks[i]->RenderToImage(&m_preTexture, i);
+
+	m_preShape.setTexture(&m_preTexture.getTexture());
+	//m_preShape.setFillColor(sf::Color::Green);
+	m_preShape.setSize(sf::Vector2f(widest, m_blocks.size() * Global::BlockHeight));
+	m_preShape.setTextureRect(sf::IntRect(0, m_preTexture.getSize().y, m_preTexture.getSize().x, -1 * m_preTexture.getSize().y));
 }

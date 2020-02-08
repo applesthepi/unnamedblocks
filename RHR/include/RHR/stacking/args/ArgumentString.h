@@ -249,19 +249,19 @@ public:
 		};
 	}
 
-	void FrameUpdate(sf::RenderWindow* window) override
+	void FrameUpdate() override
 	{
 		m_TextAgent.setString(m_Text);
 		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
-		m_TextAgent.setPosition(GetAbsolutePosition().x + (int)Global::BlockBorder, GetAbsolutePosition().y);
+		m_TextAgent.setPosition(GetRelitivePosition().x + (int)Global::BlockBorder, GetRelitivePosition().y);
 		
 		m_background.setSize(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
-		m_background.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (int)(Global::BlockBorder / 2));
+		m_background.setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
 
 		if (m_variableMode)
 		{
-			m_varLeft.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (Global::BlockBorder / 2));
-			m_varRight.setPosition(GetAbsolutePosition().x + m_TextAgent.getLocalBounds().width + 6, GetAbsolutePosition().y + (Global::BlockBorder / 2));
+			m_varLeft.setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (Global::BlockBorder / 2));
+			m_varRight.setPosition(GetRelitivePosition().x + m_TextAgent.getLocalBounds().width + 6, GetRelitivePosition().y + (Global::BlockBorder / 2));
 
 			m_background.setFillColor(sf::Color(255, 217, 168));
 		}
@@ -287,51 +287,29 @@ public:
 			std::string segStr2 = m_Text.substr(std::min(m_textTrailedStart, m_textMarkerPosition), std::abs((int)m_textTrailedStart - (int)m_textMarkerPosition));
 			sf::Text seg2 = sf::Text(segStr2, *Global::Font, Global::BlockHeight - Global::BlockBorder);
 
-			m_textMarker.setPosition(GetAbsolutePosition().x + seg0.getLocalBounds().width + (int)Global::BlockBorder, GetAbsolutePosition().y + (Global::BlockBorder / 2));
-			m_textSelect.setPosition(GetAbsolutePosition().x + std::min(seg1.getLocalBounds().width, seg0.getLocalBounds().width) + (int)Global::BlockBorder, GetAbsolutePosition().y + (Global::BlockBorder / 2));
+			m_textMarker.setPosition(GetRelitivePosition().x + seg0.getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
+			m_textSelect.setPosition(GetRelitivePosition().x + std::min(seg1.getLocalBounds().width, seg0.getLocalBounds().width) + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
 			m_textSelect.setSize(sf::Vector2f(seg2.getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
 		}
 	}
 
-	void Render(sf::RenderTexture* render, sf::RenderWindow* window) override
+	void Render(sf::RenderTexture* render) override
 	{
-		if (render == nullptr)
+		render->draw(m_background);
+
+		if (m_selected)
 		{
-			window->draw(m_background);
-
-			if (m_selected)
-			{
-				window->draw(m_textSelect);
-				window->draw(m_TextAgent);
-				window->draw(m_textMarker);
-			}
-			else
-				window->draw(m_TextAgent);
-
-			if (m_variableMode)
-			{
-				window->draw(m_varLeft);
-				window->draw(m_varRight);
-			}
+			render->draw(m_textSelect);
+			render->draw(m_TextAgent);
+			render->draw(m_textMarker);
 		}
 		else
+			render->draw(m_TextAgent);
+
+		if (m_variableMode)
 		{
-			render->draw(m_background);
-
-			if (m_selected)
-			{
-				render->draw(m_textSelect);
-				render->draw(m_TextAgent);
-				render->draw(m_textMarker);
-			}
-			else
-				render->draw(m_TextAgent);
-
-			if (m_variableMode)
-			{
-				render->draw(m_varLeft);
-				render->draw(m_varRight);
-			}
+			render->draw(m_varLeft);
+			render->draw(m_varRight);
 		}
 	}
 

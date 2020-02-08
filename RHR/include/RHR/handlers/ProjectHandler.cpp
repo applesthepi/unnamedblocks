@@ -77,7 +77,7 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane, BlockRegistry* 
 				i++;
 			}
 
-			Block* block = new Block(blockUnlocalizedName, registry);
+			Block* block = new Block(blockUnlocalizedName, registry, stack->GetFunctionUpdate());
 			stack->AddBlock(block);
 			block->SetArgData(args);
 

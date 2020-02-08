@@ -17,9 +17,11 @@ void ThreadWindowManager(RuntimeHandler* runtime, std::atomic<bool>* initialized
 	runtime->Window->setVerticalSyncEnabled(false);
 	runtime->Window->setFramerateLimit(240);
 
+	Logger::Debug("runtime running: " + std::to_string(runtime->Running.load()));
+
 	*initialized = true;
 
-	while (runtime->Running)
+	while (runtime->Running.load())
 	{
 		sf::Event ev;
 		while (runtime->Window->pollEvent(ev))
@@ -44,6 +46,10 @@ void ThreadWindowManager(RuntimeHandler* runtime, std::atomic<bool>* initialized
 		}
 	}
 
+	Logger::Debug("runtime running: " + std::to_string(runtime->Running));
+
+	runtime->Window->close();
+
 	//shutdown
 	runtime->CleanUp();
 
@@ -61,13 +67,20 @@ void RuntimeHandler::Reset()
 	m_stackIndices.clear();
 	m_stackFunctionIfStatments.clear();
 
-	Running = false;
-	ManualRenderingEnabled = false;
+	Running.store(false);
+	ManualRenderingEnabled.store(false);
+	
+	m_appMutexCount = 0;
+
+	for (uint64_t i = 0; i < m_appMutex.size(); i++)
+		delete m_appMutex[i];
+
+	m_appMutex.clear();
 }
 
 void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 {
-	if (Running)
+	if (Running.load())
 		return;
 
 	std::vector<unsigned long long> locations;
@@ -109,13 +122,22 @@ void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 
 	m_planeCopy = planeCopy;
 
+	{
+		m_appMutexCount = 0;
+
+		for (uint64_t i = 0; i < m_appMutex.size(); i++)
+			delete m_appMutex[i];
+
+		m_appMutex.clear();
+	}
+
 	std::atomic<bool> initialized(false);
 
 	m_runningThread = new std::thread(ThreadWindowManager, this, &initialized);
 	m_runningThread->detach();
 
-	while (!initialized)
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	while (!initialized.load())
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
 	for (unsigned int i = 0; i < locations.size(); i++)
 		m_threadHandler->SummonThread(locations[i], this, m_variableHandler, registry, false, 0);
@@ -170,6 +192,122 @@ int RuntimeHandler::PerformFunctionSearch(std::string functionName)
 const Plane* RuntimeHandler::GetPlane()
 {
 	return m_planeCopy;
+}
+
+uint64_t RuntimeHandler::MutexCreate()
+{
+	m_appMutexCount++;
+
+	m_appMutex.push_back(new std::shared_mutex());
+	m_appMutexIdx.push_back(m_appMutexCount);
+
+	return m_appMutexCount;
+}
+
+bool RuntimeHandler::MutexFree(uint64_t idx)
+{
+	for (uint64_t i = 0; i < m_appMutex.size(); i++)
+	{
+		if (m_appMutexIdx[i] == idx)
+		{
+			if (m_appMutex[i]->try_lock())
+			{
+				m_appMutex[i]->unlock();
+				delete m_appMutex[i];
+
+				m_appMutexIdx.erase(m_appMutexIdx.begin() + i);
+				m_appMutex.erase(m_appMutex.begin() + i);
+
+				return true;
+			}
+			else
+			{
+				Logger::Error("tried to free mutex that was locked");
+				return false;
+			}
+		}
+	}
+
+	Logger::Error("mutex \"" + std::to_string(idx) + "\" does not exist");
+	return false;
+}
+
+bool RuntimeHandler::MutexLockShared(uint64_t idx)
+{
+	for (uint64_t i = 0; i < m_appMutex.size(); i++)
+	{
+		if (m_appMutexIdx[i] == idx)
+		{
+			try
+			{
+				m_appMutex[i]->lock_shared();
+			}
+			catch (std::system_error&)
+			{
+				Logger::Error("mutex failed to lock");
+				return false;
+			}
+
+			return true;
+		}
+	}
+
+	Logger::Error("mutex \"" + std::to_string(idx) + "\" does not exist");
+	return false;
+}
+
+bool RuntimeHandler::MutexReleaseShared(uint64_t idx)
+{
+	for (uint64_t i = 0; i < m_appMutex.size(); i++)
+	{
+		if (m_appMutexIdx[i] == idx)
+		{
+			m_appMutex[i]->unlock_shared();
+			return true;
+		}
+	}
+
+	Logger::Error("mutex \"" + std::to_string(idx) + "\" does not exist");
+	return false;
+}
+
+bool RuntimeHandler::MutexLockUnique(uint64_t idx)
+{
+	for (uint64_t i = 0; i < m_appMutex.size(); i++)
+	{
+		if (m_appMutexIdx[i] == idx)
+		{
+			try
+			{
+				m_appMutex[i]->lock();
+			}
+			catch (std::system_error&)
+			{
+				Logger::Error("mutex failed to lock");
+				return false;
+			}
+
+			return true;
+		}
+	}
+
+	Logger::Error("mutex \"" + std::to_string(idx) + "\" does not exist");
+	return false;
+}
+
+bool RuntimeHandler::MutexReleaseUnique(uint64_t idx)
+{
+	for (uint64_t i = 0; i < m_appMutex.size(); i++)
+	{
+		if (m_appMutexIdx[i] == idx)
+		{
+			m_appMutex[i]->unlock();
+			return true;
+		}
+	}
+
+	Logger::Error("mutex \"" + std::to_string(idx) + "\" does not exist");
+	return false;
 }
 
 const std::vector<StatmentIf>* RuntimeHandler::GetIfStatments(uint32_t stackIdx)

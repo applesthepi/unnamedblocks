@@ -4,6 +4,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 class ThreadHandler
 {
@@ -22,8 +23,8 @@ public:
 private:
 	std::vector<std::thread*>* m_activeThreads;
 	std::vector<unsigned long long>* m_activeThreadIds;
-	std::vector<bool*>* m_activeThreadRunning;
-	std::vector<bool*>* m_activeThreadDone;
+	std::vector<std::atomic<bool>*>* m_activeThreadRunning;
+	std::vector<std::atomic<bool>*>* m_activeThreadDone;
 	unsigned long long m_counter;
 	Plane* m_plane;
 };

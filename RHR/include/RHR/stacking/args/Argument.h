@@ -2,17 +2,18 @@
 #include "ArgumentEssentials.h"
 
 #include <SFML/Graphics.hpp>
+#include <functional>
 
 class Argument
 {
 public:
 	Argument(sf::Vector2u relitivePosition);
 	virtual ~Argument() = default;
-	void SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute);
+	void SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture);
 
 	virtual void Deallocate();
-	virtual void Render(sf::RenderTexture* render, sf::RenderWindow* window);
-	virtual void FrameUpdate(sf::RenderWindow* window);
+	virtual void Render(sf::RenderTexture* render);
+	virtual void FrameUpdate();
 	virtual unsigned int GetArgumentRawWidth();
 	virtual bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	virtual bool HasData();
@@ -21,9 +22,10 @@ public:
 	virtual void Select();
 	virtual void ReInspectData();
 	virtual std::string GetData();
-	void Update(sf::RenderWindow* window, bool global = false);
+	void Update(bool global = false);
 	void SetRelitivePosition(sf::Vector2u relitivePosition);
 	bool GetNext();
+	void UpdateTexture();
 
 	sf::Vector2i GetAbsolutePosition();
 	sf::Vector2i GetRealAbsolutePosition();
@@ -35,4 +37,6 @@ private:
 	sf::Vector2i m_realAbsolutePosition;
 	sf::Vector2i* m_blockRelitive;
 	sf::Vector2i* m_blockAbsolute;
+
+	std::function<void()>* m_functionUpdatePreTexture;
 };

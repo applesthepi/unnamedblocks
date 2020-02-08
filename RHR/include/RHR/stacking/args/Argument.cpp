@@ -7,10 +7,13 @@ Argument::Argument(sf::Vector2u relitivePosition)
 	Next = false;
 }
 
-void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute)
+void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture)
 {
 	m_blockRelitive = blockRelitive;
 	m_blockAbsolute = blockAbsolute;
+	m_functionUpdatePreTexture = functionUpdatePreTexture;
+
+	FrameUpdate();
 }
 
 void Argument::Deallocate()
@@ -18,27 +21,16 @@ void Argument::Deallocate()
 
 }
 
-void Argument::Render(sf::RenderTexture* render, sf::RenderWindow* window)
+void Argument::Render(sf::RenderTexture* render)
 {
-	if (render == nullptr)
-	{
-		sf::RectangleShape basic = sf::RectangleShape(sf::Vector2f(GetArgumentRawWidth(), Global::BlockHeight));
-		basic.setFillColor(sf::Color::Magenta);
-		basic.setPosition(m_absolutePosition.x, m_absolutePosition.y);
+	sf::RectangleShape basic = sf::RectangleShape(sf::Vector2f(GetArgumentRawWidth(), Global::BlockHeight));
+	basic.setFillColor(sf::Color::Magenta);
+	basic.setPosition(m_relitivePosition.x, m_relitivePosition.y);
 
-		window->draw(basic);
-	}
-	else
-	{
-		sf::RectangleShape basic = sf::RectangleShape(sf::Vector2f(GetArgumentRawWidth(), Global::BlockHeight));
-		basic.setFillColor(sf::Color::Magenta);
-		basic.setPosition(m_absolutePosition.x, m_absolutePosition.y);
-
-		render->draw(basic);
-	}
+	render->draw(basic);
 }
 
-void Argument::FrameUpdate(sf::RenderWindow* window)
+void Argument::FrameUpdate()
 {
 
 }
@@ -83,7 +75,7 @@ std::string Argument::GetData()
 	return std::string();
 }
 
-void Argument::Update(sf::RenderWindow* window, bool global)
+void Argument::Update(bool global)
 {
 	if (global)
 	{
@@ -99,7 +91,8 @@ void Argument::Update(sf::RenderWindow* window, bool global)
 	m_realAbsolutePosition.x = (int)m_relitivePosition.x + m_blockAbsolute->x;
 	m_realAbsolutePosition.y = (int)m_relitivePosition.y + m_blockAbsolute->y;
 
-	FrameUpdate(window);
+	FrameUpdate();
+	UpdateTexture();
 }
 
 void Argument::SetRelitivePosition(sf::Vector2u relitivePosition)
@@ -116,6 +109,11 @@ bool Argument::GetNext()
 	}
 	else
 		return false;
+}
+
+void Argument::UpdateTexture()
+{
+	(*m_functionUpdatePreTexture)();
 }
 
 sf::Vector2i Argument::GetAbsolutePosition()
