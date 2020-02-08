@@ -156,7 +156,7 @@ void Plane::Render(sf::RenderWindow* window)
 	}
 
 	sf::Shader* shader = ShaderRegistry::GetShader("dots");
-	if (Global::GpuType == GpuMan::NVIDIA)
+	//if (Global::GpuType == GpuMan::NVIDIA)
 		shader->setUniform("windowSize", sf::Vector2f(200.0f, 200.0f));
 	
 	shader->setUniform("planeInnerPosition", sf::Glsl::Vec2(m_innerPosition->x / 2, m_innerPosition->y / -2));
