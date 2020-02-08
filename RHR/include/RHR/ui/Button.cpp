@@ -8,6 +8,7 @@ Button::Button(sf::Vector2i position, sf::Vector2u size, std::function<void()>* 
 	m_wasDown = false;
 	m_position = position;
 	m_size = size;
+	m_mode = ButtonMode::Unconfigured;
 	m_functionCallback = functionCallback;
 }
 

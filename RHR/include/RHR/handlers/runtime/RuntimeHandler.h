@@ -9,6 +9,8 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <math.h>
+#include <shared_mutex>
 
 class RuntimeHandler
 {
