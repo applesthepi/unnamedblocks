@@ -191,7 +191,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 			for (unsigned int i = blockIndex; i < useEnd; i++)
 			{
-				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture);
+				Block* block = new Block(m_blocks[i]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture, m_functionSelectStack);
 				block->SetArgData(*(m_blocks[i]->GetUsedArgumentsRuntime().Args));
 				stack->AddBlock(block);
 			}
@@ -218,7 +218,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
-			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture);
+			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture, m_functionSelectStack);
 			block->SetArgData(*(m_blocks[blockIndex]->GetUsedArgumentsRuntime().Args));
 			stack->AddBlock(block);
 
@@ -272,6 +272,14 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			stayStack->ReloadVanity();
 			ReloadVanity();
 		}
+
+		ReloadAllBlocks();
+	};
+
+	m_functionSelectStack = new std::function<void()>();
+	*m_functionSelectStack = [&]()
+	{
+		Global::SelectedStack = (void*)this;
 	};
 
 	m_validHighlighting = false;
@@ -300,6 +308,8 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 void Stack::AddBlock(Block* block)
 {
 	block->SetupInStack(m_blocks.size(), &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
+	block->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
+
 	m_blocks.push_back(block);
 	ReRender();
 }
@@ -307,7 +317,10 @@ void Stack::AddBlock(Block* block)
 void Stack::ReloadAllBlocks()
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
 		m_blocks[i]->SetupInStack(i, &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
+		m_blocks[i]->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
+	}
 
 	ReRender();
 }
@@ -368,7 +381,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 	}
 }
 
-void Stack::FrameUpdate(bool updateBlocks, bool forceArgs)
+void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 {
 	bool mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
@@ -555,8 +568,8 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceArgs)
 	}
 	else
 	{
-		if (!updateBlocks)
-			return;
+		//if (!updateBlocks || Global::SelectedStack == nullptr)
+		//	return;
 
 		int16_t visualOffset = 0;
 
@@ -569,7 +582,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceArgs)
 				if (un == "vin_execution_if_end" || un == "vin_execution_else" || un == "vin_execution_if_else")
 					visualOffset--;
 
-				m_blocks[i]->FrameUpdate(forceArgs || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
+				m_blocks[i]->FrameUpdate(forceUpdate || Global::SelectedBlock == m_blocks[i] || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
 
 				if (un == "vin_execution_if" || un == "vin_execution_else" || un == "vin_execution_if_else")
 					visualOffset++;
@@ -578,7 +591,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceArgs)
 		else
 		{
 			for (unsigned int i = 0; i < m_blocks.size(); i++)
-				m_blocks[i]->FrameUpdate(forceArgs || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
+				m_blocks[i]->FrameUpdate(forceUpdate || Global::SelectedBlock == m_blocks[i] || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
 		}
 	}
 
@@ -589,7 +602,11 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceArgs)
 			if (i + 1 < m_blocks.size())
 				m_blocks[i + 1]->SelectFirstArgument();
 			else
+			{
 				Global::SelectedArgument = nullptr;
+				Global::SelectedBlock = nullptr;
+				Global::SelectedStack = nullptr;
+			}
 
 			break;
 		}
@@ -606,7 +623,7 @@ void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPo
 	m_functionAddOver = functionAddOver;
 	m_planePtr = planePtr;
 
-	FrameUpdate(true, true);
+	FrameUpdate(true);
 }
 
 void* Stack::GetPlanePointer()
@@ -664,7 +681,7 @@ void Stack::CopyEverything(Stack* stack, BlockRegistry* registry)
 
 	for (unsigned int i = 0; i < stack->GetBlockCount(); i++)
 	{
-		Block* block = new Block(stack->GetBlock(i)->GetUnlocalizedName(), registry, m_functionUpdatePreTexture);
+		Block* block = new Block(stack->GetBlock(i)->GetUnlocalizedName(), registry, m_functionUpdatePreTexture, m_functionSelectStack);
 		AddBlock(block);
 		
 		std::vector<std::string>* args = stack->GetBlock(i)->GetUsedArgumentSetup();
@@ -710,6 +727,11 @@ std::function<void()>* Stack::GetFunctionUpdate()
 	return m_functionUpdatePreTexture;
 }
 
+std::function<void()>* Stack::GetFunctionSelect()
+{
+	return m_functionSelectStack;
+}
+
 bool Stack::IsBounding(const sf::Vector2f& mousePos)
 {
 	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + m_highestWidth && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + (m_blocks.size() * Global::BlockHeight);
@@ -719,8 +741,10 @@ bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->MouseButton(down, position, button))
+		if ((m_blocks[i]->IsBounding((sf::Vector2f)position) && m_blocks[i]->MouseButton(down, position, button)))
+		{
 			return true;
+		}
 	}
 
 	return false;

@@ -41,7 +41,7 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 		if ((*registry->GetBlocks())[a].Catagory == (*registry->GetCatagories())[index].UnlocalizedName)
 		{
 			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), registry);
-			Block* block = new Block((*registry->GetBlocks())[a].UnlocalizedName, registry, stack->GetFunctionUpdate());
+			Block* block = new Block((*registry->GetBlocks())[a].UnlocalizedName, registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 
 			toolbarPlane->AddStack(stack);
 			stack->AddBlock(block);
@@ -97,20 +97,17 @@ int main()
 		Logger::Warn("gpu not detected; using default shaders");
 	
 	ShaderRegistry::ReloadAllShaders();
-
 	// Default Settings
 
 	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(150);
+	window.setFramerateLimit(250);
 
 	// Initialization
 
 	Global::LoadDefaults();//must be first
-
 	MessageHandler::Initialize();
 	TypingSystem::Initialization();
 	ButtonRegistry::Initialize();
-
 	ByteHandler* pByte;
 	ObjectHandler* pObject;
 	ThreadHandler* pThread;
@@ -126,7 +123,7 @@ int main()
 	pRegistry = new BlockRegistry();
 	
 	run(pByte, pObject, pRuntime, pThread, pVariable, pRegistry);
-
+	
 	Plane::Planes = new std::vector<Plane*>();
 
 	// Setup
@@ -135,9 +132,9 @@ int main()
 
 	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
 	Plane::Planes->push_back(primaryPlane);
-
+	
 	uint16_t useCount = 0;
-
+	
 	for (unsigned int i = 0; i < pRegistry->GetCatagories()->size(); i++)
 	{
 		if (pRegistry->GetCatagories()->at(i).DisplayName == "")
@@ -160,7 +157,6 @@ int main()
 
 		useCount++;
 	}
-
 	{
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane]()
@@ -301,7 +297,6 @@ int main()
 
 	toolbarPlane = new Plane(sf::Vector2u(5, (catButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5), true);
 	Plane::Planes->push_back(toolbarPlane);
-
 	{
 		int16_t useCat = 0;
 		for (uint16_t i = 0; i < pRegistry->GetCatagories()->size(); i++)
@@ -324,7 +319,7 @@ int main()
 				if ((*pRegistry->GetBlocks())[i].Catagory == pRegistry->GetCatagories()->at(useCat).UnlocalizedName)
 				{
 					Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
-					Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry, stack->GetFunctionUpdate());
+					Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 
 					toolbarPlane->AddStack(stack);
 					stack->AddBlock(block);
@@ -568,8 +563,8 @@ int main()
 			primaryPlane->ReloadVanity();
 		}
 
-		toolbarPlane->FrameUpdate(&window);
-		primaryPlane->FrameUpdate(&window);
+		toolbarPlane->FrameUpdate();
+		primaryPlane->FrameUpdate();
 
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->FrameUpdate(false);
@@ -605,7 +600,7 @@ int main()
 
 		if (clTrip.getElapsedTime().asSeconds() >= 1.0f)
 		{
-			frameRate.setString("fps: " + std::to_string(floor(1.0 / (tm.asMicroseconds() * 0.000001))));
+			frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / (tm.asMicroseconds() * 0.000001))));
 			clTrip.restart();
 		}
 

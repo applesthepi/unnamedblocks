@@ -77,15 +77,17 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane, BlockRegistry* 
 				i++;
 			}
 
-			Block* block = new Block(blockUnlocalizedName, registry, stack->GetFunctionUpdate());
-			stack->AddBlock(block);
+			Block* block = new Block(blockUnlocalizedName, registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 			block->SetArgData(args);
+			stack->AddBlock(block);
 
 			i++;
 		}
 
 		i++;
 	}
+
+	plane->FrameUpdate(true);
 }
 
 void ProjectHandler::SaveProject(std::string path, Plane* plane)

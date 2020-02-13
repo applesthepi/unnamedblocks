@@ -14,7 +14,7 @@ public:
 	void AddStack(Stack* stack);
 	void Render(sf::RenderWindow* window);
 	void RenderConnection(sf::RenderWindow* window);
-	void FrameUpdate(sf::RenderWindow* window);
+	void FrameUpdate(bool overrideBounding = false);
 	void DeleteAllBlocks();
 	void CopyEverything(Plane* plane, BlockRegistry* registry);
 	unsigned int GetStackCount() const;

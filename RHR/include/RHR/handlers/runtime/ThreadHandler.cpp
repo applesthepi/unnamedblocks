@@ -9,7 +9,7 @@
 
 #define INVALID_IF_CALLSTACK "invalid if callstack detected!"
 
-void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<bool>* running, std::atomic<bool>* done, RuntimeHandler* runtime, VariableHandler* variables, BlockRegistry* registry)
+void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<bool>* running, std::atomic<bool>* done, RuntimeHandler* runtime, VariableHandler* variables, BlockRegistry* registry, uint64_t threadIdx)
 {
 	srand(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
@@ -45,6 +45,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 	{
 		const RegBlock* regBlock = registry->GetBlock(plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUnlocalizedName());
 		BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
+		std::string specialIdx = std::to_string(selectionForStacks.front()) + "_" + std::to_string(threadIdx) + "_";
 
 		if (regBlock->UnlocalizedName == "vin_execution_mark")
 		{
@@ -106,7 +107,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			}
 			else
 			{
-				std::string* value = variables->GetString(indexText.c_str());
+				std::string* value = variables->GetString((specialIdx + indexText).c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + indexText + "\" does not exist");
@@ -138,7 +139,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			}
 			else
 			{
-				bool* value = variables->GetBool(conditionText.c_str());
+				bool* value = variables->GetBool((specialIdx + conditionText).c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
@@ -158,7 +159,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				}
 				else
 				{
-					std::string* value = variables->GetString(indexText.c_str());
+					std::string* value = variables->GetString((specialIdx + indexText).c_str());
 					if (value == nullptr)
 					{
 						Logger::Error("variable \"" + indexText + "\" does not exist");
@@ -189,7 +190,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				functionName = functionText;
 			else
 			{
-				std::string* value = variables->GetString(functionText.c_str());
+				std::string* value = variables->GetString((specialIdx + functionText).c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + functionText + "\" does not exist");
@@ -211,7 +212,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			double gotValue = 0.0;
 			if ((*args.Args)[1].Mode == BlockArgumentVariableMode::VAR)
 			{
-				double* attempt = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + (*args.Args)[1].Value).c_str());
+				double* attempt = variables->GetReal((specialIdx + (*args.Args)[1].Value).c_str());
 
 				if (attempt == nullptr)
 				{
@@ -232,8 +233,8 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 
 			BlockRuntimeReturn funArgs = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
 
-			variables->StackReal((std::to_string(searchResult) + "_" + (*funArgs.Args)[1].Value).c_str());
-			variables->SetReal((std::to_string(searchResult) + "_" + (*funArgs.Args)[1].Value).c_str(), gotValue);
+			variables->StackReal((specialIdx + (*funArgs.Args)[1].Value).c_str());
+			variables->SetReal((specialIdx + (*funArgs.Args)[1].Value).c_str(), gotValue);
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_if")
 		{
@@ -247,7 +248,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			}
 			else
 			{
-				bool* value = variables->GetBool(conditionText.c_str());
+				bool* value = variables->GetBool((specialIdx + conditionText).c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
@@ -306,7 +307,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			}
 			else
 			{
-				bool* value = variables->GetBool(conditionText.c_str());
+				bool* value = variables->GetBool((specialIdx + conditionText).c_str());
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
@@ -384,7 +385,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 		}
 		else if (regBlock->UnlocalizedName == "vin_input_timer_get")
 		{
-			variables->SetReal((*args.Args)[0].Value.c_str(), (double)std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - inTimer).count());
+			variables->SetReal((specialIdx + (*args.Args)[0].Value).c_str(), (double)std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - inTimer).count());
 		}
 		else if (regBlock->UnlocalizedName == "vin_input_timer_reset")
 		{
@@ -403,7 +404,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 
 			uint64_t mutexIdx = runtime->MutexCreate();
 
-			if (!variables->SetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str(), mutexIdx))
+			if (!variables->SetReal((specialIdx + args.Args->at(0).Value).c_str(), mutexIdx))
 			{
 				Logger::Error("failed to create mutex");
 				done->store(true);
@@ -421,7 +422,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				return;
 			}
 
-			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+			double* gotIdx = variables->GetReal((specialIdx + args.Args->at(0).Value).c_str());
 
 			if (gotIdx == nullptr)
 			{
@@ -448,7 +449,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				return;
 			}
 
-			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+			double* gotIdx = variables->GetReal((specialIdx + args.Args->at(0).Value).c_str());
 
 			if (gotIdx == nullptr)
 			{
@@ -475,7 +476,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				return;
 			}
 
-			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+			double* gotIdx = variables->GetReal((specialIdx + args.Args->at(0).Value).c_str());
 
 			if (gotIdx == nullptr)
 			{
@@ -502,7 +503,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				return;
 			}
 
-			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+			double* gotIdx = variables->GetReal((specialIdx + args.Args->at(0).Value).c_str());
 
 			if (gotIdx == nullptr)
 			{
@@ -529,7 +530,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 				return;
 			}
 
-			double* gotIdx = variables->GetReal((std::to_string(selectionForStacks.front()) + "_" + args.Args->at(0).Value).c_str());
+			double* gotIdx = variables->GetReal((specialIdx + args.Args->at(0).Value).c_str());
 
 			if (gotIdx == nullptr)
 			{
@@ -552,9 +553,8 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 		else
 		{
 			BlockRuntimeReturn args = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
-			uint64_t selStack = selectionForStacks.front();
 
-			if (!(*regBlock->Execute)(*(args.Args), selStack))
+			if (!(*regBlock->Execute)(*(args.Args), specialIdx))
 			{
 				Logger::Error("block execution failed for block \"" + std::to_string(selectionForBlocks[0]) + "\"");
 				done->store(true);
@@ -690,20 +690,11 @@ unsigned long long ThreadHandler::SummonThread(unsigned long long stackIndex, vo
 	if (pass)
 	{
 		BlockRuntimeReturn funArgs = ((RuntimeHandler*)runtime)->GetPlane()->GetStack(stackIndex)->GetBlock(0)->GetUsedArgumentsRuntime();
-		((VariableHandler*)variables)->StackReal((std::to_string(stackIndex) + "_" + (*funArgs.Args)[1].Value).c_str());
-
-		try
-		{
-			((VariableHandler*)variables)->SetReal((std::to_string(stackIndex) + "_" + (*funArgs.Args)[1].Value).c_str(), passValue);
-		}
-		catch (std::invalid_argument&)
-		{
-			Logger::Error("failed to launch thread. Pass argument failed to parse to double");
-			return 0;
-		}
+		((VariableHandler*)variables)->StackReal((std::to_string(stackIndex) + "_" + std::to_string(m_counter) + "_" + (*funArgs.Args)[1].Value).c_str());
+		((VariableHandler*)variables)->SetReal((std::to_string(stackIndex) + "_" + std::to_string(m_counter) + "_" + (*funArgs.Args)[1].Value).c_str(), passValue);
 	}
 
-	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done, (RuntimeHandler*)runtime, (VariableHandler*)variables, (BlockRegistry*)registry);
+	std::thread* run = new std::thread(ThreadRuntimeThread, m_plane, stackIndex, running, done, (RuntimeHandler*)runtime, (VariableHandler*)variables, (BlockRegistry*)registry, m_counter);
 	run->detach();
 	m_activeThreads->push_back(run);
 

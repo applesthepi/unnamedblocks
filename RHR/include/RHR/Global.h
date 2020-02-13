@@ -62,6 +62,8 @@ public:
 		ContextUpdate = false;
 		ContextData = "";
 		MousePosition = sf::Vector2i(0, 0);
+		SelectedBlock = nullptr;
+		SelectedStack = nullptr;
 	}
 
 	static unsigned int BlockHeight;
@@ -87,4 +89,5 @@ public:
 	static bool ContextUpdate;
 	static sf::Vector2i MousePosition;
 	static void* SelectedBlock;
+	static void* SelectedStack;
 };

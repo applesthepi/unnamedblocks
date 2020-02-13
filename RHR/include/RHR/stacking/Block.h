@@ -25,9 +25,10 @@ public:
 class Block
 {
 public:
-	Block(std::string type, BlockRegistry* registry, std::function<void()>* functionUpdatePreTexture);
+	Block(std::string type, BlockRegistry* registry, std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelectStack);
 	~Block();
 
+	void UpdateShorts(std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelectStack);
 	void Render(sf::RenderTexture* render, sf::RenderWindow* window);
 	void FrameUpdate(bool updateArgs, sf::Vector2f visualOffset, bool global = false);
 	void SetArgData(const std::vector<BlockArgumentCaller>& data);
@@ -60,6 +61,8 @@ private:
 	std::function<void(unsigned int index, sf::Vector2i mousePosition)>* m_functionContext;
 	std::function<void()>* m_functionUpdatePreTexture;
 	std::function<void()>* m_functionUpdatePreTextureArgs;
+	std::function<void()>* m_functionSelect;
+	std::function<void()>* m_functionSelectStack;
 	sf::RectangleShape m_background;
 	
 	unsigned int m_index;

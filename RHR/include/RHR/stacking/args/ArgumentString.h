@@ -5,6 +5,7 @@
 #include "ui/TypingSystem.h"
 
 #include <iostream>
+#include "handlers/Logger.h"
 
 class ArgumentString : public Argument
 {
@@ -272,6 +273,7 @@ public:
 
 		if (m_selected && (Global::SelectedArgument != this || Global::Dragging))
 		{
+			Logger::Debug("unselecting");
 			TypingSystem::RemoveKeypressRegister(m_functionTextCallback);
 			m_selected = false;
 		}
@@ -325,6 +327,8 @@ public:
 			if (position.x > (int32_t)GetRealAbsolutePosition().x&& position.x < (int32_t)(GetRealAbsolutePosition().x + GetArgumentRawWidth()) &&
 				position.y > (int32_t)GetRealAbsolutePosition().y&& position.y < (int32_t)(GetRealAbsolutePosition().y + Global::BlockHeight))
 			{
+				Logger::Debug("selecting arg");
+
 				if (button == sf::Mouse::Left)
 				{
 					Select();
@@ -333,7 +337,7 @@ public:
 				}
 				else if (button == sf::Mouse::Middle)
 				{
-					Global::SelectedArgument = (void*)this;
+					SelectGlobaly();
 					m_variableMode = !m_variableMode;
 
 					if (m_selected)
@@ -388,7 +392,7 @@ public:
 
 	void Select() override
 	{
-		Global::SelectedArgument = (void*)this;
+		SelectGlobaly();
 
 		if (m_selected)
 		{
@@ -401,8 +405,8 @@ public:
 
 			for (unsigned int i = 0; i < m_Text.length(); i++)
 			{
-				unsigned int distance = std::abs((m_TextAgent.findCharacterPos(i).x + (GetRealAbsolutePosition().x - GetAbsolutePosition().x)) - mouseX);
-
+				unsigned int distance = std::abs((m_TextAgent.findCharacterPos(i).x + (GetRealAbsolutePosition().x - GetRelitivePosition().x)) - mouseX);
+				
 				if (distance < closestX || closestX == 0)
 				{
 					closestX = distance;

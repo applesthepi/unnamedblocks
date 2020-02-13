@@ -183,12 +183,12 @@ void Plane::RenderConnection(sf::RenderWindow* window)
 		window->draw(m_draggingConnection);
 }
 
-void Plane::FrameUpdate(sf::RenderWindow* window)
+void Plane::FrameUpdate(bool overrideBounding)
 {
 	if (m_dragging)
 	{
-		m_innerPosition->x = (m_draggingMouseStart.x - sf::Mouse::getPosition(*window).x) + (int)m_draggingStart.x;
-		m_innerPosition->y = (m_draggingMouseStart.y - sf::Mouse::getPosition(*window).y) + (int)m_draggingStart.y;
+		m_innerPosition->x = (m_draggingMouseStart.x - Global::MousePosition.x) + (int)m_draggingStart.x;
+		m_innerPosition->y = (m_draggingMouseStart.y - Global::MousePosition.y) + (int)m_draggingStart.y;
 	}
 
 	m_absolutePosition->x = m_position->x + m_innerPosition->x;
@@ -265,9 +265,7 @@ void Plane::FrameUpdate(sf::RenderWindow* window)
 	}
 
 	for (int i = m_stacks.size() - 1; i >= 0; i--)
-	{
-		m_stacks[i]->FrameUpdate(m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition));
-	}
+		m_stacks[i]->FrameUpdate(overrideBounding || m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
 }
 
 void Plane::DeleteAllBlocks()
@@ -370,7 +368,7 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 
 		for (unsigned int i = 0; i < m_stacks.size(); i++)
 		{
-			if (m_stacks[i]->MouseButton(down, position, button))
+			if (m_stacks[i]->IsBounding((sf::Vector2f)position) && m_stacks[i]->MouseButton(down, position, button))
 			{
 				drag = false;
 				break;
@@ -385,6 +383,8 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 
 			Global::ContextActive = false;
 			Global::SelectedArgument = nullptr;
+			Global::SelectedBlock = nullptr;
+			Global::SelectedStack = nullptr;
 		}
 	}
 }

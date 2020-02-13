@@ -1,5 +1,6 @@
 #include "Argument.h"
 #include "Global.h"
+#include "handlers/Logger.h"
 
 Argument::Argument(sf::Vector2u relitivePosition)
 {
@@ -7,11 +8,12 @@ Argument::Argument(sf::Vector2u relitivePosition)
 	Next = false;
 }
 
-void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture)
+void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelect)
 {
 	m_blockRelitive = blockRelitive;
 	m_blockAbsolute = blockAbsolute;
 	m_functionUpdatePreTexture = functionUpdatePreTexture;
+	m_functionSelect = functionSelect;
 
 	FrameUpdate();
 }
@@ -114,6 +116,21 @@ bool Argument::GetNext()
 void Argument::UpdateTexture()
 {
 	(*m_functionUpdatePreTexture)();
+}
+
+void Argument::SelectGlobaly()
+{
+	if (Global::SelectedArgument != nullptr)
+	{
+		Argument* gArg = (Argument*)Global::SelectedArgument;
+		Global::SelectedArgument = (void*)this;
+		gArg->FrameUpdate();
+		gArg->UpdateTexture();
+	}
+	else
+		Global::SelectedArgument = (void*)this;
+
+	(*m_functionSelect)();
 }
 
 sf::Vector2i Argument::GetAbsolutePosition()

@@ -65,7 +65,7 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 	return block;
 }
 
-RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&, uint64_t&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)
+RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&, const std::string&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)
 {
 	RegBlock* block = new RegBlock();
 
@@ -75,7 +75,7 @@ RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const st
 	//carry
 	block->BlockInit = new std::vector<BlockArgumentInitializer>(blockInit);
 	block->BlockExecute = nullptr;
-	block->BlockExecuteIdx = new std::function<bool(const std::vector<std::string>&, uint64_t&)>(*execute);
+	block->BlockExecuteIdx = new std::function<bool(const std::vector<std::string>&, const std::string&)>(*execute);
 
 	for (uint16_t i = 0; i < blockInit.size(); i++)
 	{
@@ -121,8 +121,8 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 			blockUseArgs.push_back(block->BlockInit->at(i));
 	}
 
-	std::function<bool(const std::vector<BlockArgumentCaller>&, uint64_t&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&, uint64_t&)>();
-	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args, uint64_t& idx)
+	std::function<bool(const std::vector<BlockArgumentCaller>&, const std::string&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&, const std::string&)>();
+	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args, const std::string& idx)
 	{
 		std::vector<std::string> parsedArgs;
 
@@ -151,7 +151,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 			{
 				if (blockUseArgs.at(i).Type == BlockArgumentType::STRING)
 				{
-					std::string* data = variables->GetString((std::to_string(idx) + "_" + args[i].Value).c_str());
+					std::string* data = variables->GetString((idx + args[i].Value).c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -162,7 +162,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 				}
 				else if (blockUseArgs.at(i).Type == BlockArgumentType::BOOL)
 				{
-					bool* data = variables->GetBool((std::to_string(idx) + "_" + args[i].Value).c_str());
+					bool* data = variables->GetBool((idx + args[i].Value).c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
@@ -173,7 +173,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 				}
 				else if (blockUseArgs.at(i).Type == BlockArgumentType::REAL)
 				{
-					double* data = variables->GetReal((std::to_string(idx) + "_" + args[i].Value).c_str());
+					double* data = variables->GetReal((idx + args[i].Value).c_str());
 					if (data == nullptr)
 					{
 						Logger::Error("variable \"" + args[i].Value + "\" does not exist");

@@ -9,7 +9,7 @@ class Argument
 public:
 	Argument(sf::Vector2u relitivePosition);
 	virtual ~Argument() = default;
-	void SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture);
+	void SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelect);
 
 	virtual void Deallocate();
 	virtual void Render(sf::RenderTexture* render);
@@ -26,6 +26,7 @@ public:
 	void SetRelitivePosition(sf::Vector2u relitivePosition);
 	bool GetNext();
 	void UpdateTexture();
+	void SelectGlobaly();
 
 	sf::Vector2i GetAbsolutePosition();
 	sf::Vector2i GetRealAbsolutePosition();
@@ -39,4 +40,5 @@ private:
 	sf::Vector2i* m_blockAbsolute;
 
 	std::function<void()>* m_functionUpdatePreTexture;
+	std::function<void()>* m_functionSelect;
 };

@@ -46,3 +46,5 @@ sf::Vector2i Global::MousePosition;
 
 void* Global::SelectedBlock;
 
+void* Global::SelectedStack;
+

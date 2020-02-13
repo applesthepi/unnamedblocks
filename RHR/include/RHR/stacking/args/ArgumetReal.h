@@ -383,7 +383,7 @@ public:
 				}
 				else if (button == sf::Mouse::Middle)
 				{
-					Global::SelectedArgument = (void*)this;
+					SelectGlobaly();
 					m_variableMode = !m_variableMode;
 
 					if (m_selected)
@@ -438,7 +438,7 @@ public:
 
 	void Select() override
 	{
-		Global::SelectedArgument = (void*)this;
+		SelectGlobaly();
 
 		if (m_selected)
 		{

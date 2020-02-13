@@ -21,7 +21,7 @@ public:
 	void AddBlock(Block* block);
 	void ReloadAllBlocks();
 	void Render(sf::RenderTexture* render, sf::RenderWindow* window);
-	void FrameUpdate(bool updateBlocks, bool forceArgs = false);
+	void FrameUpdate(bool updateBlocks, bool forceUpdate = false);
 	void SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver);
 
 	void* GetPlanePointer();
@@ -37,6 +37,7 @@ public:
 	void DragDown(sf::Vector2i mousePosition);
 	void DragUp(sf::Vector2i mousePosition);
 	std::function<void()>* GetFunctionUpdate();
+	std::function<void()>* GetFunctionSelect();
 	bool IsBounding(const sf::Vector2f& mousePos);
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
@@ -75,6 +76,7 @@ private:
 	std::function<void(unsigned int index)>* m_functionContextCallback;
 	std::function<void(unsigned int index, sf::Vector2i mousePosition)>* m_functionSplit;
 	std::function<void()>* m_functionUpdatePreTexture;
+	std::function<void()>* m_functionSelectStack;
 	unsigned int m_contextBlockIndex;
 	uint64_t m_highestWidth;
 	void* m_planePtr;
