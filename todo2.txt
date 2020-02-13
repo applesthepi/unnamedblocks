@@ -1,0 +1,4 @@
+when you click on the plane make it unselect and frameupdate the selected arg (copy pasta)
+version in console and in window title
+make point next to goto point in ModVin
+shader intersecting lines that show the origin of the plane
