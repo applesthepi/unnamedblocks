@@ -74,7 +74,7 @@ int main()
 	Logger::Info("all unsaved progress will be lost if this window is closed");
 
 	ShaderRegistry::Initialize();
-
+	
 	// Window Setup
 	
 	sf::RenderWindow window;

@@ -642,7 +642,7 @@ UB_EXPORT void Initialization(ModData* data)
 		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
 		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
 		{
-			return data->Variable->SetReal((idx + args[0]).c_str(), ((double)(rand() % 1000)) / 1000);
+			return data->Variable->SetReal((idx + args[0]).c_str(), ((double)(rand() % 1000)) / 1000.0);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_rand", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "random for"},

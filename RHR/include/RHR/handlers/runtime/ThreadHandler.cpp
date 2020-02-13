@@ -11,7 +11,7 @@
 
 void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<bool>* running, std::atomic<bool>* done, RuntimeHandler* runtime, VariableHandler* variables, BlockRegistry* registry, uint64_t threadIdx)
 {
-	srand(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+	srand(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
 	std::vector<unsigned int> markLocations;
 	std::vector<std::string> markLocationNames;
