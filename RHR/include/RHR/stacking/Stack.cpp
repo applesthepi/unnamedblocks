@@ -489,8 +489,8 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + m_planePosition->x + Global::BlockHeight &&
-				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + m_planePosition->y + Global::BlockHeight)
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x + Global::BlockHeight &&
+				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
 				m_highlightedShape = i;
@@ -518,8 +518,8 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + m_planePosition->x + Global::BlockHeight &&
-				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + m_planePosition->y + Global::BlockHeight)
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x + Global::BlockHeight &&
+				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
 				m_highlightedShape = i;
@@ -688,6 +688,8 @@ void Stack::CopyEverything(Stack* stack, BlockRegistry* registry)
 		block->SetArgData(*args);
 		delete args;
 	}
+
+	ReloadAllBlocks();
 }
 
 void Stack::DragDown(sf::Vector2i mousePosition)
@@ -741,9 +743,10 @@ bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if ((m_blocks[i]->IsBounding((sf::Vector2f)position) && m_blocks[i]->MouseButton(down, position, button)))
+		if (m_blocks[i]->IsBounding((sf::Vector2f)position))
 		{
-			return true;
+			if (m_blocks[i]->MouseButton(down, position, button))
+				return true;
 		}
 	}
 

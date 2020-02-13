@@ -337,6 +337,7 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 			}
 			else
 			{
+				Logger::Debug("splitting stack from block with idx: " + std::to_string(m_index));
 				Global::SelectedArgument = nullptr;
 				Global::SelectedBlock = nullptr;
 				Global::SelectedStack = nullptr;
@@ -398,7 +399,9 @@ void Block::PreRender()
 
 bool Block::IsBounding(const sf::Vector2f& mousePos)
 {
-	return mousePos.x > m_absolutePosition->x&& mousePos.x < m_absolutePosition->x + m_width && mousePos.y > m_absolutePosition->y&& mousePos.y < m_absolutePosition->y + Global::BlockHeight;
+	bool bound = mousePos.x > m_absolutePosition->x&& mousePos.x < m_absolutePosition->x + m_width && mousePos.y > m_absolutePosition->y&& mousePos.y < m_absolutePosition->y + (int)Global::BlockHeight;
+	Logger::Debug("idx: " + std::to_string(m_index) + "bounding: " + std::to_string(bound));
+	return mousePos.x > m_absolutePosition->x && mousePos.x < m_absolutePosition->x + m_width && mousePos.y > m_absolutePosition->y && mousePos.y < m_absolutePosition->y + (int)Global::BlockHeight;
 }
 
 void Block::UpdateInner()
