@@ -13,6 +13,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 {
 	srand(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 
+	std::vector<unsigned int> markStacks;
 	std::vector<unsigned int> markLocations;
 	std::vector<std::string> markLocationNames;
 	std::vector<unsigned int> selectionForBlocks;
@@ -50,9 +51,23 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 		if (regBlock->UnlocalizedName == "vin_execution_mark")
 		{
 			std::string indexText = (*args.Args)[0].Value;
+			bool found = false;
 
-			markLocationNames.push_back(indexText);
-			markLocations.push_back(selectionForBlocks[0]);
+			for (uint64_t i = 0; i < markLocationNames.size(); i++)
+			{
+				if (markLocationNames[i] == indexText && markStacks[i] == selectionForStacks.front())
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				markLocationNames.push_back(indexText);
+				markLocations.push_back(selectionForBlocks[0]);
+				markStacks.push_back(selectionForStacks.front());
+			}
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_block_sync")
 		{
@@ -120,12 +135,14 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 
 			for (unsigned int i = 0; i < markLocationNames.size(); i++)
 			{
-				if (markLocationNames[i] == name)
+				if (markLocationNames[i] == name && markStacks[i] == selectionForStacks.front())
 				{
 					selectionForBlocks[0] = markLocations[i];
 					break;
 				}
 			}
+
+			continue;
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_goto_if")
 		{
@@ -172,12 +189,14 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 
 				for (unsigned int i = 0; i < markLocationNames.size(); i++)
 				{
-					if (markLocationNames[i] == name)
+					if (markLocationNames[i] == name && markStacks[i] == selectionForStacks.front())
 					{
 						selectionForBlocks[0] = markLocations[i];
 						break;
 					}
 				}
+
+				continue;
 			}
 		}
 		else if (regBlock->UnlocalizedName == "vin_thread_function_call")
@@ -232,9 +251,12 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			selectionForStacks.insert(selectionForStacks.begin(), searchResult);
 
 			BlockRuntimeReturn funArgs = plane->GetStack(selectionForStacks[0])->GetBlock(selectionForBlocks[0])->GetUsedArgumentsRuntime();
+			
+			//this is not specialIdx because it needs a different stack index
+			variables->StackReal((std::to_string(searchResult) + "_" + std::to_string(threadIdx) + "_" + (*funArgs.Args)[1].Value).c_str());
+			variables->SetReal((std::to_string(searchResult) + "_" + std::to_string(threadIdx) + "_" + (*funArgs.Args)[1].Value).c_str(), gotValue);
 
-			variables->StackReal((specialIdx + (*funArgs.Args)[1].Value).c_str());
-			variables->SetReal((specialIdx + (*funArgs.Args)[1].Value).c_str(), gotValue);
+			ifStatments = runtime->GetIfStatments(selectionForStacks.front());
 		}
 		else if (regBlock->UnlocalizedName == "vin_execution_if")
 		{
@@ -564,9 +586,9 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 
 		if (selectionForBlockSync[0])
 		{
-			while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - last).count() < 5)
+			while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - last).count() < 3)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			}
 			
 			last = std::chrono::high_resolution_clock::now();
@@ -580,6 +602,8 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			{
 				selectionForStacks.erase(selectionForStacks.begin());
 				selectionForBlocks.erase(selectionForBlocks.begin());
+
+				ifStatments = runtime->GetIfStatments(selectionForStacks.front());
 
 				if (selectionForBlocks[0] >= plane->GetStack(selectionForStacks[0])->GetBlockCount())
 				{

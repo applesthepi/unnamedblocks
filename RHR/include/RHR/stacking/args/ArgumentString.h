@@ -273,7 +273,6 @@ public:
 
 		if (m_selected && (Global::SelectedArgument != this || Global::Dragging))
 		{
-			Logger::Debug("unselecting");
 			TypingSystem::RemoveKeypressRegister(m_functionTextCallback);
 			m_selected = false;
 		}
@@ -327,8 +326,6 @@ public:
 			if (position.x > (int32_t)GetRealAbsolutePosition().x&& position.x < (int32_t)(GetRealAbsolutePosition().x + GetArgumentRawWidth()) &&
 				position.y > (int32_t)GetRealAbsolutePosition().y&& position.y < (int32_t)(GetRealAbsolutePosition().y + Global::BlockHeight))
 			{
-				Logger::Debug("selecting arg");
-
 				if (button == sf::Mouse::Left)
 				{
 					Select();

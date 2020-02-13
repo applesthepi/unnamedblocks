@@ -17,6 +17,9 @@
 #include <cstring>
 #include <vector>
 
+#define UB_VERSION "Unnamed Blocks v0.0b0"
+#define UB_BETA_BUILD true
+
 #define CONTEXT_COLOR 180, 180, 180, 200
 
 std::vector<Button*> contextButtons;
@@ -66,7 +69,10 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 
 int main()
 {
-	
+	Logger::Info(UB_VERSION);
+	if (UB_BETA_BUILD)
+		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
+
 #ifdef LINUX
 	XInitThreads();
 	Logger::Info("Linux build");
@@ -78,7 +84,7 @@ int main()
 	// Window Setup
 	
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), "Unnamed Blocks", sf::Style::Default);
+	window.create(sf::VideoMode(1280, 720, 32), UB_VERSION, sf::Style::Default);
 
 	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
 	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");
@@ -501,7 +507,6 @@ int main()
 					std::function<void()>* callback0 = new std::function<void()>();
 					*callback0 = [&pRegistry]()
 					{
-						Logger::Debug(std::to_string((uint64_t)pRegistry));
 						(*Global::Context.Callback)(0);
 					};
 

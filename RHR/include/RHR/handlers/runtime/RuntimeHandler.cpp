@@ -17,8 +17,6 @@ void ThreadWindowManager(RuntimeHandler* runtime, std::atomic<bool>* initialized
 	runtime->Window->setVerticalSyncEnabled(false);
 	runtime->Window->setFramerateLimit(240);
 
-	Logger::Debug("runtime running: " + std::to_string(runtime->Running.load()));
-
 	*initialized = true;
 
 	while (runtime->Running.load())
@@ -45,8 +43,6 @@ void ThreadWindowManager(RuntimeHandler* runtime, std::atomic<bool>* initialized
 			runtime->ManualRenderFrame = false;
 		}
 	}
-
-	Logger::Debug("runtime running: " + std::to_string(runtime->Running));
 
 	runtime->Window->close();
 
@@ -330,7 +326,7 @@ std::vector<StatmentIf> RuntimeHandler::ProcessIfStatments(Stack* stack, bool mu
 
 			continue;
 		}
-
+		
 		if (currentIfs.size() > 0)
 		{
 			if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_if_end")
