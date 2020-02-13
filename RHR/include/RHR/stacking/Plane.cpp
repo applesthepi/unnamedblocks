@@ -234,13 +234,13 @@ void Plane::FrameUpdate(bool overrideBounding)
 
 				unsigned int blockCount = (*overPlaneStacks)[i]->GetBlockCount();
 
-				if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + Global::BlockConnectDistance &&
-					draggingStack->GetAbsolutePosition().y >(*overPlaneStacks)[i]->GetAbsolutePosition().y - (Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (Global::BlockHeight / 2) + (blockCount * Global::BlockHeight))
+				if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
+					draggingStack->GetAbsolutePosition().y >(*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(blockCount * Global::BlockHeight))
 				{
 					for (unsigned int a = 0; a < blockCount + 1; a++)
 					{
-						if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + Global::BlockConnectDistance &&
-							draggingStack->GetAbsolutePosition().y >= (*overPlaneStacks)[i]->GetAbsolutePosition().y - (Global::BlockHeight / 2) + (a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (Global::BlockHeight / 2) + (a * Global::BlockHeight))
+						if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
+							draggingStack->GetAbsolutePosition().y >= (*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight))
 						{
 							unsigned int blockWidth = 0;
 							if (a == 0)
