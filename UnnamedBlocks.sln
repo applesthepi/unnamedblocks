@@ -5,16 +5,10 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnnamedBlocks", "UnnamedBlocks\UnnamedBlocks.vcxproj", "{7690567C-F024-4FE2-B90D-9EA1921F0769}"
 	ProjectSection(ProjectDependencies) = postProject
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6} = {52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}
 		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1} = {46A5DDB7-582F-40F8-A919-A551E4E3F9B1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RHR", "RHR\RHR.vcxproj", "{46A5DDB7-582F-40F8-A919-A551E4E3F9B1}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModVin", "VanillaMods\ub-ModVin\VanillaMods.vcxproj", "{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1} = {46A5DDB7-582F-40F8-A919-A551E4E3F9B1}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,14 +34,6 @@ Global
 		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1}.Release|x64.Build.0 = Release|x64
 		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1}.Release|x86.ActiveCfg = Release|Win32
 		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1}.Release|x86.Build.0 = Release|Win32
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Debug|x64.ActiveCfg = Debug|x64
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Debug|x64.Build.0 = Debug|x64
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Debug|x86.ActiveCfg = Debug|Win32
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Debug|x86.Build.0 = Debug|Win32
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Release|x64.ActiveCfg = Release|x64
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Release|x64.Build.0 = Release|x64
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Release|x86.ActiveCfg = Release|Win32
-		{52CCE632-C37A-4E49-9B50-E9ADDDA2A5C6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
