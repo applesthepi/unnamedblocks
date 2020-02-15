@@ -268,7 +268,7 @@ void Plane::FrameUpdate(bool overrideBounding)
 	}
 
 	for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
-		m_stacks[i]->FrameUpdate(overrideBounding || m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
+		m_stacks[i]->FrameUpdate(m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
 }
 
 void Plane::DeleteAllBlocks()

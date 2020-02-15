@@ -593,8 +593,19 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		}
 		else
 		{
-			for (unsigned int i = 0; i < m_blocks.size(); i++)
-				m_blocks[i]->FrameUpdate(forceUpdate || Global::SelectedBlock == m_blocks[i] || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
+			if (forceUpdate)
+			{
+				for (unsigned int i = 0; i < m_blocks.size(); i++)
+				{
+					m_blocks[i]->FrameUpdate(forceUpdate || Global::SelectedBlock == m_blocks[i] || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
+					//m_blocks[i]->PreRender();
+				}
+			}
+			else
+			{
+				for (unsigned int i = 0; i < m_blocks.size(); i++)
+					m_blocks[i]->FrameUpdate(forceUpdate || Global::SelectedBlock == m_blocks[i] || m_blocks[i]->IsBounding((sf::Vector2f)Global::MousePosition), sf::Vector2f(visualOffset * 20, 0));
+			}
 		}
 	}
 
@@ -613,6 +624,12 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 			break;
 		}
+	}
+	
+	if (forceUpdate)
+	{
+		Logger::Debug("forceupdate rerender");
+		ReRender();
 	}
 }
 
