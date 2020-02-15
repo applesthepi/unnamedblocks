@@ -140,6 +140,7 @@ void Block::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 
 void Block::FrameUpdate(bool updateArgs, sf::Vector2f visualOffset, bool global)
 {
+	m_visualOffset = visualOffset;
 	m_absolutePosition->x = m_stackAbsolute->x + visualOffset.x;
 	m_absolutePosition->y = m_stackAbsolute->y + (int)(m_index * Global::BlockHeight) + visualOffset.y;
 
@@ -243,7 +244,7 @@ void Block::SetArgData(const std::vector<std::string> data)
 
 void Block::RenderToImage(sf::RenderTexture* img, uint64_t idx)
 {
-	m_preShape.setPosition(sf::Vector2f(0, idx * Global::BlockHeight));
+	m_preShape.setPosition(sf::Vector2f(m_visualOffset.x, m_visualOffset.y + (idx * Global::BlockHeight)));
 	img->draw(m_preShape);
 }
 

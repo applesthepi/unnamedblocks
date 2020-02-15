@@ -267,7 +267,7 @@ void Plane::FrameUpdate(bool overrideBounding)
 		}
 	}
 
-	for (int i = m_stacks.size() - 1; i >= 0; i--)
+	for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
 		m_stacks[i]->FrameUpdate(overrideBounding || m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
 }
 
@@ -369,7 +369,7 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 
 		bool drag = true;
 
-		for (unsigned int i = 0; i < m_stacks.size(); i++)
+		for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
 		{
 			if (m_stacks[i]->IsBounding((sf::Vector2f)position) && m_stacks[i]->MouseButton(down, position, button))
 			{
@@ -385,9 +385,15 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 			m_draggingStart = *m_innerPosition;
 
 			Global::ContextActive = false;
-			Global::SelectedArgument = nullptr;
-			Global::SelectedBlock = nullptr;
-			Global::SelectedStack = nullptr;
+			if (Global::SelectedArgument != nullptr)
+			{
+				Argument* gArg = (Argument*)Global::SelectedArgument;
+				Global::SelectedArgument = nullptr;
+				gArg->FrameUpdate();
+				gArg->UpdateTexture();
+			}
+			else
+				Global::SelectedArgument = nullptr;
 		}
 	}
 }

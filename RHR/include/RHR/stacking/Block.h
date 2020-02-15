@@ -51,6 +51,7 @@ private:
 
 	std::string m_unlocalizedName;
 	std::vector<Argument*> m_args;
+	sf::Vector2f m_visualOffset;
 	sf::Vector2i* m_absolutePosition;
 	sf::Vector2i* m_relitivePosition;
 	sf::Vector2i* m_stackAbsolute;
