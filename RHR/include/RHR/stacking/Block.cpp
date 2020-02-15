@@ -398,7 +398,7 @@ void Block::PreRender()
 
 bool Block::IsBounding(const sf::Vector2f& mousePos)
 {
-	return mousePos.x > m_absolutePosition->x && mousePos.x < m_absolutePosition->x + m_width && mousePos.y > m_absolutePosition->y && mousePos.y < m_absolutePosition->y + (int)Global::BlockHeight;
+	return (int64_t)mousePos.x > (int64_t)m_absolutePosition->x && (int64_t)mousePos.x < (int64_t)m_absolutePosition->x + (int64_t)m_width && (int64_t)mousePos.y > (int64_t)m_absolutePosition->y && (int64_t)mousePos.y < (int64_t)m_absolutePosition->y + (int64_t)Global::BlockHeight;
 }
 
 void Block::UpdateInner()

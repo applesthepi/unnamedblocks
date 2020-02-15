@@ -307,6 +307,9 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 
 void Stack::AddBlock(Block* block)
 {
+	if (m_blocks.size() > 0 && ((Plane*)m_planePtr)->IsToolbar())
+		return;
+	
 	block->SetupInStack(m_blocks.size(), &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
 	block->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
 
@@ -489,8 +492,8 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x + Global::BlockHeight &&
-				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y + Global::BlockHeight)
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x + Global::BlockHeight &&
+				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
 				m_highlightedShape = i;
@@ -518,8 +521,8 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int)m_planePosition->x + Global::BlockHeight &&
-				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int)m_planePosition->y + Global::BlockHeight)
+			if (Global::MousePosition.x > (int64_t)m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x && Global::MousePosition.x < (int64_t)m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x + Global::BlockHeight &&
+				Global::MousePosition.y > (int64_t)m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < (int64_t)m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
 				m_highlightedShape = i;
@@ -832,8 +835,6 @@ void Stack::ReRender()
 
 void Stack::PreRender()
 {
-	m_preTexture.clear(sf::Color(0, 0, 0, 0));
-
 	uint64_t widest = 0;
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
@@ -842,13 +843,19 @@ void Stack::PreRender()
 	}
 
 	m_highestWidth = widest;
+	
+	if (widest == 0 && m_blocks.size() == 0)
+		m_preTexture.create(1, 1);
+	else
+	{
+		if (widest != m_preTexture.getSize().x || m_preTexture.getSize().y != m_blocks.size() * Global::BlockHeight)
+			m_preTexture.create(widest, m_blocks.size() * Global::BlockHeight);
+	}
 
-	if (widest != m_preTexture.getSize().x || m_preTexture.getSize().y != m_blocks.size() * Global::BlockHeight)
-		m_preTexture.create(widest, m_blocks.size() * Global::BlockHeight);
+	m_preTexture.clear(sf::Color(0, 0, 0, 0));
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 		m_blocks[i]->RenderToImage(&m_preTexture, i);
-
 	m_preShape.setTexture(&m_preTexture.getTexture());
 	//m_preShape.setFillColor(sf::Color::Green);
 	m_preShape.setSize(sf::Vector2f(widest, m_blocks.size() * Global::BlockHeight));
