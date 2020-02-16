@@ -268,12 +268,17 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			{
 				AddBlock(myBlocks[i]);
 			}
-
+			//TODO optomize this
+			stayStack->ReloadAllBlocks();
 			stayStack->ReloadVanity();
+			stayStack->ReRender();
+			stayStack->FrameUpdate(true, true);
+			
+			ReloadAllBlocks();
 			ReloadVanity();
+			ReRender();
+			FrameUpdate(true, true);
 		}
-
-		ReloadAllBlocks();
 	};
 
 	m_functionSelectStack = new std::function<void()>();
@@ -303,6 +308,7 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 	}
 
 	ReRender();
+	ReloadVanity();
 }
 
 void Stack::AddBlock(Block* block)
@@ -314,6 +320,7 @@ void Stack::AddBlock(Block* block)
 	block->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
 
 	m_blocks.push_back(block);
+	ReloadVanity();//TODO these calls need to be called by the caller at the end of adding all blocks
 	ReRender();
 }
 
@@ -578,6 +585,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		if (m_validHighlighting)
 		{
+			Logger::Debug("valid highlighting");
 			for (unsigned int i = 0; i < m_blocks.size(); i++)
 			{
 				std::string un = m_blocks[i]->GetUnlocalizedName();
@@ -593,6 +601,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		}
 		else
 		{
+			Logger::Debug("NOT valid highlighting");
 			if (forceUpdate)
 			{
 				for (unsigned int i = 0; i < m_blocks.size(); i++)

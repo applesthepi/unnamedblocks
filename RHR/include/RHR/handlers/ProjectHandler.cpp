@@ -86,7 +86,8 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane, BlockRegistry* 
 
 		i++;
 	}
-
+	
+	plane->ReloadVanity();
 	plane->FrameUpdate(true);
 }
 
