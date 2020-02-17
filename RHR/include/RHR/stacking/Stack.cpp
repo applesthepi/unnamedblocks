@@ -585,7 +585,6 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		if (m_validHighlighting)
 		{
-			Logger::Debug("valid highlighting");
 			for (unsigned int i = 0; i < m_blocks.size(); i++)
 			{
 				std::string un = m_blocks[i]->GetUnlocalizedName();
@@ -601,7 +600,6 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		}
 		else
 		{
-			Logger::Debug("NOT valid highlighting");
 			if (forceUpdate)
 			{
 				for (unsigned int i = 0; i < m_blocks.size(); i++)
@@ -636,10 +634,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 	}
 	
 	if (forceUpdate)
-	{
-		Logger::Debug("forceupdate rerender");
 		ReRender();
-	}
 }
 
 void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver)

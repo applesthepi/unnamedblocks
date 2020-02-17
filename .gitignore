@@ -7,6 +7,8 @@ UnnamedBlocks/dep/SFML64/
 UnnamedBlocks/dep/RHR/
 UnnamedBlocks/.vs/
 **.o
+UnnamedBlocks.iobj
+UnnamedBlocks.ipdb
 unnamedblocks
 UnnamedBlocks.exe
 **.dll

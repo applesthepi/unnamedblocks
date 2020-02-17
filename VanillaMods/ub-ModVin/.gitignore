@@ -2,3 +2,5 @@ INT
 *.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
+.vs/
+INT/
