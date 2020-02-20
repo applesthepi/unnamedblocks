@@ -9,9 +9,7 @@ ByteHandler::ByteHandler()
 {
 	m_bytesSize = new unsigned long long(1000);
 	m_bytes = (unsigned char*)calloc(*m_bytesSize, sizeof(unsigned char));
-	m_bytesBinary = (bool*)malloc(*m_bytesSize * sizeof(unsigned char));
-
-	memset(m_bytesBinary, false, *m_bytesSize);
+	m_bytesBinary = (bool*)calloc(*m_bytesSize, sizeof(bool));
 }
 
 ByteHandler::~ByteHandler()

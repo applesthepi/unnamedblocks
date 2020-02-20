@@ -191,7 +191,8 @@ bool VariableHandler::FreeReal(const char* name)
 		if (m_stackNames[i] != nullptr && strcmp(m_stackNames[i], name) == 0)
 		{
 			free((void*)m_stackNames[i]);
-			free((void*)m_stackReal[i]);
+			delete m_stackReal[i];
+
 			m_stackNames[i] = nullptr;
 			m_stackReal[i] = nullptr;
 
@@ -227,7 +228,7 @@ bool VariableHandler::FreeString(const char* name)
 		if (m_stackNames[i] != nullptr && strcmp(m_stackNames[i], name) == 0)
 		{
 			free((void*)m_stackNames[i]);
-			free((void*)m_stackString[i]);
+			delete m_stackString[i];
 
 			m_stackNames[i] = nullptr;
 			m_stackString[i] = nullptr;
@@ -264,7 +265,7 @@ bool VariableHandler::FreeBool(const char* name)
 		if (m_stackNames[i] != nullptr && strcmp(m_stackNames[i], name) == 0)
 		{
 			free((void*)m_stackNames[i]);
-			free((void*)m_stackBool[i]);
+			delete m_stackBool[i];
 
 			m_stackNames[i] = nullptr;
 			m_stackBool[i] = nullptr;
