@@ -87,6 +87,7 @@ bool VariableHandler::StackReal(const char* name)
 		}
 	}
 
+	Logger::Debug(std::to_string(i));
 	char* nName = (char*)calloc(strlen(name) + 1, sizeof(char));
 	strcpy(nName, name);
 
@@ -111,6 +112,7 @@ bool VariableHandler::StackString(const char* name)
 		}
 	}
 
+	Logger::Debug(std::to_string(i));
 	char* nName = (char*)calloc(strlen(name) + 1, sizeof(char));
 	strcpy(nName, name);
 
@@ -134,6 +136,7 @@ bool VariableHandler::StackBool(const char* name)
 		}
 	}
 
+	Logger::Debug(std::to_string(i));
 	char* nName = (char*)calloc(strlen(name) + 1, sizeof(char));
 	strcpy(nName, name);
 
