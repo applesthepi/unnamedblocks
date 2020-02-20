@@ -106,6 +106,7 @@ ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* ru
 		(*mods)[i].Data->Thread = thread;
 		(*mods)[i].Data->Variable = variable;
 		(*mods)[i].Data->Registry = registry;
+		(*mods)[i].Data->Font = Global::Font;
 
 		initialize((*mods)[i].Data);
 

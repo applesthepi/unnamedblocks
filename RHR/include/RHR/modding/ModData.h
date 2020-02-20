@@ -26,6 +26,7 @@ public:
 	VariableHandler* Variable;
 	ByteHandler* Byte;
 	ObjectHandler* Object;
+	sf::Font* Font;
 private:
 	std::vector<RegBlock> m_blocks;
 	std::vector<RegCatagory> m_catagories;

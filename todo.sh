@@ -44,5 +44,5 @@ dynamic if statments
 multi stack/heap
 block debugging
 lua code blocks #temperary blocks to use lua feature
-string operations
+#string operations
 topical blocks modularized with visual

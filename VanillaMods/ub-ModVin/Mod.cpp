@@ -1,6 +1,6 @@
-#include <RHR/RHR.h>
-
 #include "Mod.h"//i dont care to figure out why im getting linker errors if this is above the RHR include
+//#include <RHR/RHR.h>
+
 
 UB_EXPORT void Initialization(ModData* data)
 {
@@ -897,10 +897,10 @@ UB_EXPORT void Initialization(ModData* data)
 
 			sf::Texture* txt = new sf::Texture();
 			txt->loadFromFile(args[0]);
-
+			
 			sf::Sprite* sp = new sf::Sprite();
 			sp->setTexture(*txt);
-
+			
 			std::unique_lock<std::shared_timed_mutex> lock(data->Object->ObjectMutex);
 
 			run->Textures.push_back(txt);
@@ -1002,7 +1002,7 @@ UB_EXPORT void Initialization(ModData* data)
 			std::unique_lock<std::shared_timed_mutex> lock(data->Object->ObjectMutex);
 
 			run->Textures[(uint64_t)std::stod(args[0])]->loadFromFile(args[2]);
-			run->Sprites[(uint64_t)std::stod(args[0])]->setTexture(*run->Textures[(uint64_t)std::stod(args[0])]);
+			run->Sprites[(uint64_t)std::stod(args[0])]->setTexture(*run->Textures[(uint64_t)std::stod(args[0])], true);
 
 			return true;
 		};
@@ -1042,6 +1042,37 @@ UB_EXPORT void Initialization(ModData* data)
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"},
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"},
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "var"}
+			});
+		data->RegisterBlock(*block);
+	}
+	{
+		std::function<bool(const std::vector<std::string>&)>* execution = new std::function<bool(const std::vector<std::string>&)>();
+		*execution = [data](const std::vector<std::string>& args)
+		{
+			sf::Text txt;
+			txt.setFont(*data->Font);
+			txt.setCharacterSize(std::stoull(args[1]));
+			txt.setString(args[0]);
+			txt.setFillColor(sf::Color::White);
+			
+			sf::RenderTexture texture;
+			texture.create(txt.getGlobalBounds().width, std::stoull(args[1]));
+			texture.clear(sf::Color(0, 0, 0, 0));
+			texture.draw(txt);
+
+			sf::Image img = texture.getTexture().copyToImage();
+			img.flipVertically();
+			img.saveToFile(args[2]);
+
+			return true;
+		};
+		RegBlock* block = data->Registry->CreateBlock("vin_texture_text", "vin_textures", execution, {
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pre render text"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "text"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "size"},
+			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "18"},
+			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "at"},
+			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "path"}
 			});
 		data->RegisterBlock(*block);
 	}

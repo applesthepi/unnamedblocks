@@ -17,7 +17,7 @@
 #include <cstring>
 #include <vector>
 
-#define UB_VERSION "Unnamed Blocks v0.0b1"
+#define UB_VERSION "Unnamed Blocks v0.0b2"
 #define UB_BETA_BUILD true
 
 #define CONTEXT_COLOR 180, 180, 180, 200
