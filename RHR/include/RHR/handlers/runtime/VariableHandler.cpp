@@ -38,7 +38,7 @@ bool VariableHandler::StackReal(uint64_t layerIdx, uint64_t variableIdx)
 			return false;
 		}
 	}
-	std::cout << m_layers[lIdx] << std::endl;
+	
 	m_layers[lIdx]->StackIdx[i] = variableIdx;
 	m_layers[lIdx]->StackReal[i] = 0.0;
 
@@ -303,10 +303,10 @@ uint64_t VariableHandler::PushStack()
 
 	if (!foundSId)
 		sId++;
-	Logger::Debug("using sId for layer stack: " + std::to_string(sId));
+	
 	StackLayer* layer = new StackLayer(sId);
 	m_layers.push_back(layer);
-	std::cout << layer << std::endl;
+	
 	return sId;
 }
 
@@ -318,6 +318,7 @@ void VariableHandler::PopStack(const uint64_t& idx)
 	{
 		if (m_layers[i]->Idx == idx)
 		{
+			delete m_layers[i];
 			m_layers.erase(m_layers.begin() + i);
 			return;
 		}
@@ -332,12 +333,15 @@ uint64_t VariableHandler::FindLayerIdx(const uint64_t& idx)
 			return i;
 	}
 
-	Logger::Error("layer not found, defaulting to 0!");
+	Logger::Error("layer not found, this can result in unexpected behavior! defaulting to 0!");
 	return 0;
 }
 
 VariableHandler& VariableHandler::operator=(const VariableHandler& other)
 {
+	for (uint64_t i = 0; i < other.m_layers.size(); i++)
+		m_layers.push_back(new StackLayer(*other.m_layers[i]));
+
 	return *this;
 }
 

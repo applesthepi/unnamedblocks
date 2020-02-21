@@ -166,7 +166,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			}
 			else
 			{
-				const uint8_t* value = variables->GetBool(selectionForLayer.front(), std::stoull(indexText));
+				const uint8_t* value = variables->GetBool(selectionForLayer.front(), std::stoull(conditionText));
 				if (value == nullptr)
 				{
 					Logger::Error("variable \"" + conditionText + "\" does not exist");
@@ -241,7 +241,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			double gotValue = 0.0;
 			if ((*args.Args)[1].Mode == BlockArgumentVariableMode::VAR)
 			{
-				const double* value = variables->GetReal(selectionForLayer.front(), std::stoull(functionText));
+				const double* value = variables->GetReal(selectionForLayer.front(), std::stoull((*args.Args)[1].Value));
 
 				if (value == nullptr)
 				{
@@ -613,6 +613,7 @@ void ThreadRuntimeThread(Plane* plane, unsigned long long stack, std::atomic<boo
 			{
 				selectionForStacks.erase(selectionForStacks.begin());
 				selectionForBlocks.erase(selectionForBlocks.begin());
+				variables->PopStack(selectionForLayer.front());
 				selectionForLayer.erase(selectionForLayer.begin());
 
 				ifStatments = runtime->GetIfStatments(selectionForStacks.front());
