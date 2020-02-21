@@ -5,6 +5,7 @@
 #include "handlers/Logger.h"
 
 #include <iostream>
+#include <map>
 
 #define IF_MARGIN 5
 #define IF_WIDTH 20
@@ -852,6 +853,75 @@ void Stack::ReRender()
 		m_blocks[i]->PreRender();
 
 	PreRender();
+}
+
+//TODO SOTP IT!!! MOD IT PLEASEE!!!
+void Stack::IndexVariables()
+{
+	std::vector<std::string> varaibleIdx;
+	varaibleIdx.push_back("");//confirm that it starts at 1 and not 0
+
+	//TODO all of this is bad and needs to be in the modding software
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+	{
+		//TODO add to modding software
+		std::string un = m_blocks[i]->GetUnlocalizedName();
+		if (un == "vin_varaibles_stack_real" || un == "vin_varaibles_stack_string" || un == "vin_varaibles_stack_bool" || un == "vin_varaibles_heap_real" || un == "vin_varaibles_heap_string" || un == "vin_varaibles_heap_bool" || un == "vin_varaibles_free_real" || un == "vin_varaibles_free_string" || un == "vin_varaibles_free_bool")
+		{
+			//TODO actually really add this to modding software
+			std::string* vName = m_blocks[i]->GetArgument(1)->GetDataRaw();
+
+			bool found = false;
+
+			for (uint64_t a = 0; a < varaibleIdx.size(); a++)
+			{
+				if (varaibleIdx[a] == *vName)
+				{
+					found = true;
+					m_blocks[i]->GetArgument(1)->SetData(std::to_string(a));
+
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				varaibleIdx.push_back(*m_blocks[i]->GetArgument(1)->GetDataRaw());
+				m_blocks[i]->GetArgument(1)->SetData(std::to_string(varaibleIdx.size() - 1));
+			}
+		}
+		else
+		{
+			for (uint64_t a = 0; a < m_blocks[i]->GetArgumentCount(); a++)
+			{
+				if (*m_blocks[i]->GetArgument(a)->GetMode() == BlockArgumentVariableMode::VAR)
+				{
+					std::string* vName = m_blocks[i]->GetArgument(a)->GetDataRaw();
+
+					bool found = false;
+
+					for (uint64_t b = 0; b < varaibleIdx.size(); b++)
+					{
+						if (varaibleIdx[b] == *vName)
+						{
+							found = true;
+							m_blocks[i]->GetArgument(a)->SetData(std::to_string(b));
+
+							break;
+						}
+					}
+
+					if (!found)
+					{
+						varaibleIdx.push_back(*m_blocks[i]->GetArgument(a)->GetDataRaw());
+						m_blocks[i]->GetArgument(a)->SetData(std::to_string(varaibleIdx.size() - 1));
+
+						Logger::Warn("detected use a variable before it it declared!");
+					}
+				}
+			}
+		}
+	}
 }
 
 void Stack::PreRender()

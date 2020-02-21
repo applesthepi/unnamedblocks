@@ -83,6 +83,7 @@ void RuntimeHandler::Run(Plane* planeCopy, BlockRegistry* registry)
 	for (unsigned long long i = 0; i < planeCopy->GetStackCount(); i++)
 	{
 		Stack* currentStack = planeCopy->GetStack(i);
+		currentStack->IndexVariables();
 		m_stackFunctionIfStatments.push_back(ProcessIfStatments(currentStack));
 
 		if (currentStack->GetBlock(0)->GetUnlocalizedName() == "vin_thread_open")

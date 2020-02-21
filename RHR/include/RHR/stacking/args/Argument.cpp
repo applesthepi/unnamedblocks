@@ -72,9 +72,19 @@ void Argument::ReInspectData()
 
 }
 
-std::string Argument::GetData()
+std::string* Argument::GetData()
 {
-	return std::string();
+	return nullptr;
+}
+
+std::string* Argument::GetDataRaw()
+{
+	return nullptr;
+}
+
+BlockArgumentVariableMode* Argument::GetMode()
+{
+	return nullptr;
 }
 
 void Argument::Update(bool global)

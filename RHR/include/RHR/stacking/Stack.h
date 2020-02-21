@@ -44,6 +44,7 @@ public:
 	void ReloadVanity();
 	std::vector<StatmentIf> GetVanity();
 	void ReRender();
+	void IndexVariables();
 private:
 	void PreRender();
 	std::vector<Block*> m_blocks;

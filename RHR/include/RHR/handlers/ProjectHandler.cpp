@@ -114,17 +114,17 @@ void ProjectHandler::SaveProject(std::string path, Plane* plane)
 			{
 				if (plane->GetStack(i)->GetBlock(a)->GetArgument(b)->HasData())
 				{
-					std::string argumentData = plane->GetStack(i)->GetBlock(a)->GetArgument(b)->GetData();
+					std::string* argumentData = plane->GetStack(i)->GetBlock(a)->GetArgument(b)->GetData();
 					std::string arg = std::string();
 
-					for (unsigned int c = 0; c < argumentData.length(); c++)
+					for (unsigned int c = 0; c < argumentData->length(); c++)
 					{
-						if (argumentData[c] == '\\')
+						if (argumentData->at(c) == '\\')
 							arg += "\\\\";
-						else if (argumentData[c] == ';')
+						else if (argumentData->at(c) == ';')
 							arg += "\\;";
 						else
-							arg += argumentData[c];
+							arg += argumentData->at(c);
 					}
 
 					saveBlock += arg + ";";

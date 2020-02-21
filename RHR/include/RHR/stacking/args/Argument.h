@@ -21,7 +21,9 @@ public:
 	virtual void SetMode(BlockArgumentVariableMode mode);
 	virtual void Select();
 	virtual void ReInspectData();
-	virtual std::string GetData();
+	virtual std::string* GetData();
+	virtual std::string* GetDataRaw();
+	virtual BlockArgumentVariableMode* GetMode();
 	void Update(bool global = false);
 	void SetRelitivePosition(sf::Vector2u relitivePosition);
 	bool GetNext();

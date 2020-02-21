@@ -42,7 +42,14 @@ public:
 		m_TextAgent.setString(m_Text);
 	}
 
+	BlockArgumentVariableMode* GetMode() override
+	{
+		m_VMode = BlockArgumentVariableMode::RAW;
+		return &m_VMode;
+	}
+
 private:
 	std::string m_Text;
+	BlockArgumentVariableMode m_VMode;
 	sf::Text m_TextAgent;
 };

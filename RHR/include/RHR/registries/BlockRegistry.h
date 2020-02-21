@@ -44,7 +44,7 @@ public:
 class RegBlock
 {
 public:
-	std::function<bool(const std::vector<BlockArgumentCaller>&, const std::string&)>* Execute;
+	std::function<bool(const std::vector<BlockArgumentCaller>&, const uint64_t&)>* Execute;
 	std::vector<BlockArgument> Args;
 	std::string UnlocalizedName;
 	std::string Catagory;
@@ -52,7 +52,7 @@ public:
 	//carry
 	std::vector<BlockArgumentInitializer>* BlockInit;
 	std::function<bool(const std::vector<std::string>&)>* BlockExecute;
-	std::function<bool(const std::vector<std::string>&, const std::string&)>* BlockExecuteIdx;
+	std::function<bool(const std::vector<std::string>&, const uint64_t&)>* BlockExecuteIdx;
 };
 
 class RegCatagory
@@ -81,7 +81,7 @@ public:
 	std::vector<RegCatagory>* GetCatagories();
 
 	RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
-	RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&, const std::string&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
+	RegBlock* CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execute, const std::vector<BlockArgumentInitializer> blockInit);
 
 	void FinalizeBlock(RegBlock* block, VariableHandler* variables);
 private:

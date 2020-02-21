@@ -276,7 +276,7 @@ BlockRuntimeReturn Block::GetUsedArgumentsRuntime()
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		if (m_args[i]->HasData())
-			dataArgs->push_back(BlockArgumentCaller(m_args[i]->GetData().substr(0, 1) == "0" ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR, m_args[i]->GetData().substr(1, m_args[i]->GetData().length() - 1)));
+			dataArgs->push_back(BlockArgumentCaller(m_args[i]->GetData()->substr(0, 1) == "0" ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR, m_args[i]->GetData()->substr(1, m_args[i]->GetData()->length() - 1)));
 	}
 
 	return BlockRuntimeReturn(dataArgs, dataArgs->size());
@@ -288,7 +288,7 @@ std::vector<std::string>* Block::GetUsedArgumentSetup()
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		if (m_args[i]->HasData())
-			argData->push_back(m_args[i]->GetData());
+			argData->push_back(*m_args[i]->GetData());
 	}
 
 	return argData;

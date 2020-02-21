@@ -1,6 +1,4 @@
-#include "Mod.h"//i dont care to figure out why im getting linker errors if this is above the RHR include
-//#include <RHR/RHR.h>
-
+#include "Mod.h"
 
 UB_EXPORT void Initialization(ModData* data)
 {
@@ -28,10 +26,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[0]).c_str(), data->Object->CreateObject(new RuntimeObject()));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), data->Object->CreateObject(new RuntimeObject()));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_object_new", "vin_objects", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "new object"},
@@ -52,10 +50,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[1]).c_str(), data->Byte->AllocateBytes(std::stod(args[0])));
+			return data->Variable->SetReal(idx, std::stoull(args[1]), data->Byte->AllocateBytes(std::stod(args[0])));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_byte_alloc", "vin_bytes", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "alloc"},
@@ -94,15 +92,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
 			unsigned char* bytes = data->Byte->GetByte(std::stod(args[0]));
 
 			if (bytes == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[1]).c_str(), *bytes);
+			return data->Variable->SetReal(idx, std::stoull(args[1]), *bytes);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_byte_get", "vin_bytes", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "get byte at"},
@@ -320,10 +318,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[0]).c_str(), sf::Mouse::isButtonPressed(sf::Mouse::Left));
+			return data->Variable->SetBool(idx, std::stoull(args[0]), sf::Mouse::isButtonPressed(sf::Mouse::Left));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_left", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse left"},
@@ -332,10 +330,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[0]).c_str(), sf::Mouse::isButtonPressed(sf::Mouse::Right));
+			return data->Variable->SetBool(idx, std::stoull(args[0]), sf::Mouse::isButtonPressed(sf::Mouse::Right));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_right", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse right"},
@@ -344,10 +342,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[0]).c_str(), sf::Mouse::isButtonPressed(sf::Mouse::Middle));
+			return data->Variable->SetBool(idx, std::stoull(args[0]), sf::Mouse::isButtonPressed(sf::Mouse::Middle));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_middle", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse middle"},
@@ -356,10 +354,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[0]).c_str(), sf::Mouse::getPosition(*data->Runtime->Window).x);
+			return data->Variable->SetReal(idx, std::stoull(args[0]), sf::Mouse::getPosition(*data->Runtime->Window).x);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_x", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse x"},
@@ -368,10 +366,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[0]).c_str(), sf::Mouse::getPosition(*data->Runtime->Window).y);
+			return data->Variable->SetReal(idx, std::stoull(args[0]), sf::Mouse::getPosition(*data->Runtime->Window).y);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_y", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse y"},
@@ -380,13 +378,13 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
 			int value = data->Runtime->GetScrolled();
 			data->Runtime->ResetScrolled();
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), value);
+			return data->Variable->SetReal(idx, std::stoull(args[0]), value);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_scroll", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pull mouse scroll"},
@@ -407,10 +405,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[1]).c_str(), sf::Keyboard::isKeyPressed((sf::Keyboard::Key)(uint64_t)floor(std::stod(args[0]))));
+			return data->Variable->SetBool(idx, std::stoull(args[1]), sf::Keyboard::isKeyPressed((sf::Keyboard::Key)(uint64_t)floor(std::stod(args[0]))));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_input_mouse_key", "vin_input", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "key down"},
@@ -446,15 +444,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), *gotValue + std::stod(args[1]));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), *gotValue + std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_+=", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -464,15 +462,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), *gotValue - std::stod(args[1]));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), *gotValue - std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_-=", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -482,15 +480,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), *gotValue * std::stod(args[1]));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), *gotValue * std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_*=", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -500,15 +498,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), *gotValue / std::stod(args[1]));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), *gotValue / std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_/=", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -518,15 +516,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), (uint64_t)floor(*gotValue) % (uint64_t)floor(std::stod(args[1])));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), (uint64_t)floor(*gotValue) % (uint64_t)floor(std::stod(args[1])));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_%=", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -536,10 +534,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[0]).c_str(), std::stod(args[1]));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_=_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -549,10 +547,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetString((idx + args[0]).c_str(), args[1]);
+			return data->Variable->SetString(idx, std::stoull(args[0]), args[1]);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_=_string", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -562,10 +560,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[0]).c_str(), args[1] == "1");
+			return data->Variable->SetBool(idx, std::stoull(args[0]), args[1] == "1");
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_=_bool", "vin_operations", execution, {
 			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -575,10 +573,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[0]).c_str(), args[1] == "0");
+			return data->Variable->SetBool(idx, std::stoull(args[0]), args[1] == "0");
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_!=_bool", "vin_operations", execution, {
 			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP, BlockArgumentVariableMode::VAR, "var"},
@@ -588,15 +586,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), floor(*gotValue));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), floor(*gotValue));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_floor", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "floor"},
@@ -605,15 +603,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), round(*gotValue));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), round(*gotValue));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_round", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "round"},
@@ -622,15 +620,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), ceil(*gotValue));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), ceil(*gotValue));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_ceil", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "ceil"},
@@ -639,10 +637,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[0]).c_str(), ((double)(rand() % 1000)) / 1000.0);
+			return data->Variable->SetReal(idx, std::stoull(args[0]), ((double)(rand() % 1000)) / 1000.0);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_rand", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "random for"},
@@ -651,15 +649,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), abs(*gotValue));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), abs(*gotValue));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_abs", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "abs"},
@@ -668,15 +666,15 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			double* gotValue = data->Variable->GetReal((idx + args[0]).c_str());
+			const double* gotValue = data->Variable->GetReal(idx, std::stoull(args[0]));
 
 			if (gotValue == nullptr)
 				return false;
 
-			return data->Variable->SetReal((idx + args[0]).c_str(), pow(*gotValue, std::stod(args[1])));
+			return data->Variable->SetReal(idx, std::stoull(args[0]), pow(*gotValue, std::stod(args[1])));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_pow", "vin_operations", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "pow"},
@@ -686,10 +684,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), std::stod(args[0]) == std::stod(args[1]));
+			return data->Variable->SetBool(idx, std::stoull(args[2]), std::stod(args[0]) == std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_==_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -701,10 +699,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), args[0] == args[1]);
+			return data->Variable->SetBool(idx, std::stoull(args[2]), args[0] == args[1]);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_==_string", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -716,10 +714,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), std::stod(args[0]) != std::stod(args[1]));
+			return data->Variable->SetBool(idx, std::stoull(args[2]), std::stod(args[0]) != std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_!=_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -731,10 +729,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), args[0] != args[1]);
+			return data->Variable->SetBool(idx, std::stoull(args[2]), args[0] != args[1]);
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_!=_string", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -746,10 +744,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), std::stod(args[0]) > std::stod(args[1]));
+			return data->Variable->SetBool(idx, std::stoull(args[2]), std::stod(args[0]) > std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_>_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -761,10 +759,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), std::stod(args[0]) >= std::stod(args[1]));
+			return data->Variable->SetBool(idx, std::stoull(args[2]), std::stod(args[0]) >= std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_>=_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -776,10 +774,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), std::stod(args[0]) < std::stod(args[1]));
+			return data->Variable->SetBool(idx, std::stoull(args[2]), std::stod(args[0]) < std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_<_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -791,10 +789,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[2]).c_str(), std::stod(args[0]) <= std::stod(args[1]));
+			return data->Variable->SetBool(idx, std::stoull(args[2]), std::stod(args[0]) <= std::stod(args[1]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_<=_real", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -806,10 +804,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetString((idx + args[1]).c_str(), args[0].c_str());
+			return data->Variable->SetString(idx, std::stoull(args[1]), args[0].c_str());
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_rtos", "vin_operations", execution, {
 			{BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -819,10 +817,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetString((idx + args[1]).c_str(), args[0].c_str());
+			return data->Variable->SetString(idx, std::stoull(args[1]), args[0].c_str());
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_btos", "vin_operations", execution, {
 			{BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -832,10 +830,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[1]).c_str(), std::stod(args[0]));
+			return data->Variable->SetReal(idx, std::stoull(args[1]), std::stod(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_stor", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -845,10 +843,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetBool((idx + args[1]).c_str(), args[0] == "1");
+			return data->Variable->SetBool(idx, std::stoull(args[1]), args[0] == "1");
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_stob", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -858,10 +856,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetReal((idx + args[1]).c_str(), args[0].length());
+			return data->Variable->SetReal(idx, std::stoull(args[1]), args[0].length());
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_strlen", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -871,10 +869,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->SetString((idx + args[3]).c_str(), args[0].substr(std::stoull(args[1]), std::stoull(args[2])));
+			return data->Variable->SetString(idx, std::stoull(args[3]), args[0].substr(std::stoull(args[1]), std::stoull(args[2])));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_operations_substr", "vin_operations", execution, {
 			{BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "var"},
@@ -1131,8 +1129,8 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
 			int searchResult = data->Runtime->PerformFunctionSearch(args[0]);
 			if (searchResult == -1)
@@ -1144,7 +1142,7 @@ UB_EXPORT void Initialization(ModData* data)
 			double threadId = data->Thread->SummonThread(searchResult, data->Runtime, data->Variable, data->Registry, true, std::stod(args[1]));
 			Logger::Debug("summoned thread " + std::to_string(threadId));
 
-			if (!data->Variable->SetReal(std::string(idx + args[2]).c_str(), threadId))
+			if (!data->Variable->SetReal(idx, std::stoull(args[2]), threadId))
 			{
 				Logger::Warn("undocumented thread released! this may cause undefined behavior!");
 				return false;
@@ -1322,10 +1320,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->StackReal((idx + args[0]).c_str());
+			return data->Variable->StackReal(idx, std::stoull(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_stack_real", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "stack real"},
@@ -1334,10 +1332,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->StackString((idx + args[0]).c_str());
+			return data->Variable->StackString(idx, std::stoull(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_stack_string", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "stack string"},
@@ -1346,10 +1344,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->StackBool((idx + args[0]).c_str());
+			return data->Variable->StackBool(idx, std::stoull(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_stack_bool", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "stack bool"},
@@ -1358,10 +1356,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			data->Variable->HeapReal((idx + args[0]).c_str());
+			data->Variable->HeapVariable(idx, std::stoull(args[0]));
 			return true;
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_heap_real", "vin_variables", execution, {
@@ -1371,10 +1369,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			data->Variable->HeapString((idx + args[0]).c_str());
+			data->Variable->HeapVariable(idx, std::stoull(args[0]));
 			return true;
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_heap_string", "vin_variables", execution, {
@@ -1384,10 +1382,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			data->Variable->HeapBool((idx + args[0]).c_str());
+			data->Variable->HeapVariable(idx, std::stoull(args[0]));
 			return true;
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_heap_bool", "vin_variables", execution, {
@@ -1397,10 +1395,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->FreeReal((idx + args[0]).c_str());
+			return data->Variable->FreeVariable(idx, std::stoull(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_free_real", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free real"},
@@ -1409,10 +1407,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->FreeString((idx + args[0]).c_str());
+			return data->Variable->FreeVariable(idx, std::stoull(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_free_string", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free string"},
@@ -1421,10 +1419,10 @@ UB_EXPORT void Initialization(ModData* data)
 		data->RegisterBlock(*block);
 	}
 	{
-		std::function<bool(const std::vector<std::string>&, const std::string&)>* execution = new std::function<bool(const std::vector<std::string>&, const std::string&)>();
-		*execution = [data](const std::vector<std::string>& args, const std::string& idx)
+		std::function<bool(const std::vector<std::string>&, const uint64_t&)>* execution = new std::function<bool(const std::vector<std::string>&, const uint64_t&)>();
+		*execution = [data](const std::vector<std::string>& args, const uint64_t& idx)
 		{
-			return data->Variable->FreeBool((idx + args[0]).c_str());
+			return data->Variable->FreeVariable(idx, std::stoull(args[0]));
 		};
 		RegBlock* block = data->Registry->CreateBlock("vin_varaibles_free_bool", "vin_variables", execution, {
 			{BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "free bool"},

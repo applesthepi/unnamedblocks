@@ -426,9 +426,25 @@ public:
 		m_variableMode = mode == BlockArgumentVariableMode::VAR;
 	}
 
-	std::string GetData() override
+	std::string* GetData() override
 	{
-		return (m_variableMode ? '1' : '0') + m_Text;
+		m_VText = (m_variableMode ? '1' : '0') + m_Text;
+		return &m_VText;
+	}
+
+	std::string* GetDataRaw() override
+	{
+		return &m_Text;
+	}
+
+	BlockArgumentVariableMode* GetMode() override
+	{
+		if (m_variableMode)
+			m_VMode = BlockArgumentVariableMode::VAR;
+		else
+			m_VMode = BlockArgumentVariableMode::RAW;
+
+		return &m_VMode;
 	}
 
 	void Deallocate() override
@@ -491,6 +507,8 @@ public:
 
 private:
 	std::string m_Text;
+	std::string m_VText;
+	BlockArgumentVariableMode m_VMode;
 	sf::Text m_TextAgent;
 	sf::ConvexShape m_background;
 	sf::RectangleShape m_textSelect;
