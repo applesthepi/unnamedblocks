@@ -1,7 +1,8 @@
 #include "VariableHandler.h"
 #include "handlers/Logger.h"
 #include <cstring>
-
+//TODO remove this debugging include
+#include <iostream>
 #define MEM_COUNT 10000
 
 VariableHandler::VariableHandler()
@@ -28,7 +29,7 @@ bool VariableHandler::StackReal(uint64_t layerIdx, uint64_t variableIdx)
 	uint64_t lIdx = FindLayerIdx(layerIdx);
 	
 	unsigned int i = 0;
-	while (m_layers[lIdx].StackIdx[i] != 0)
+	while (m_layers[lIdx]->StackIdx[i] != 0)
 	{
 		i++;
 		if (i == MEM_COUNT)
@@ -37,9 +38,9 @@ bool VariableHandler::StackReal(uint64_t layerIdx, uint64_t variableIdx)
 			return false;
 		}
 	}
-
-	m_layers[lIdx].StackIdx[i] = variableIdx;
-	m_layers[lIdx].StackReal[i] = 0.0;
+	std::cout << m_layers[lIdx] << std::endl;
+	m_layers[lIdx]->StackIdx[i] = variableIdx;
+	m_layers[lIdx]->StackReal[i] = 0.0;
 
 	return true;
 }
@@ -50,7 +51,7 @@ bool VariableHandler::StackString(uint64_t layerIdx, uint64_t variableIdx)
 	uint64_t lIdx = FindLayerIdx(layerIdx);
 
 	unsigned int i = 0;
-	while (m_layers[lIdx].StackIdx[i] != 0)
+	while (m_layers[lIdx]->StackIdx[i] != 0)
 	{
 		i++;
 		if (i == MEM_COUNT)
@@ -60,8 +61,8 @@ bool VariableHandler::StackString(uint64_t layerIdx, uint64_t variableIdx)
 		}
 	}
 
-	m_layers[lIdx].StackIdx[i] = variableIdx;
-	m_layers[lIdx].StackString[i] = std::string();
+	m_layers[lIdx]->StackIdx[i] = variableIdx;
+	m_layers[lIdx]->StackString[i] = std::string();
 
 	return true;
 }
@@ -72,7 +73,7 @@ bool VariableHandler::StackBool(uint64_t layerIdx, uint64_t variableIdx)
 	uint64_t lIdx = FindLayerIdx(layerIdx);
 
 	unsigned int i = 0;
-	while (m_layers[lIdx].StackIdx[i] != 0)
+	while (m_layers[lIdx]->StackIdx[i] != 0)
 	{
 		i++;
 		if (i == MEM_COUNT)
@@ -82,8 +83,8 @@ bool VariableHandler::StackBool(uint64_t layerIdx, uint64_t variableIdx)
 		}
 	}
 
-	m_layers[lIdx].StackIdx[i] = variableIdx;
-	m_layers[lIdx].StackBool[i] = false;
+	m_layers[lIdx]->StackIdx[i] = variableIdx;
+	m_layers[lIdx]->StackBool[i] = false;
 
 	return true;
 }
@@ -93,10 +94,10 @@ void VariableHandler::HeapVariable(uint64_t layerIdx, uint64_t variableIdx)
 	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 	uint64_t lIdx = FindLayerIdx(layerIdx);
 
-	m_layers[lIdx].HeapIdx.push_back(variableIdx);
-	m_layers[lIdx].HeapReal.push_back(0.0);
-	m_layers[lIdx].HeapString.push_back("");
-	m_layers[lIdx].HeapBool.push_back(false);
+	m_layers[lIdx]->HeapIdx.push_back(variableIdx);
+	m_layers[lIdx]->HeapReal.push_back(0.0);
+	m_layers[lIdx]->HeapString.push_back("");
+	m_layers[lIdx]->HeapBool.push_back(false);
 }
 
 bool VariableHandler::FreeVariable(uint64_t layerIdx, uint64_t variableIdx)
@@ -106,21 +107,21 @@ bool VariableHandler::FreeVariable(uint64_t layerIdx, uint64_t variableIdx)
 
 	for (uint32_t i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].StackIdx[i] = 0;
+			m_layers[lIdx]->StackIdx[i] = 0;
 			return true;
 		}
 	}
 
-	for (uint64_t i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (uint64_t i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[layerIdx].HeapIdx[i] == variableIdx)
+		if (m_layers[layerIdx]->HeapIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].HeapIdx.erase(m_layers[lIdx].HeapIdx.begin() + i);
-			m_layers[lIdx].HeapReal.erase(m_layers[lIdx].HeapReal.begin() + i);
-			m_layers[lIdx].HeapString.erase(m_layers[lIdx].HeapString.begin() + i);
-			m_layers[lIdx].HeapBool.erase(m_layers[lIdx].HeapBool.begin() + i);
+			m_layers[lIdx]->HeapIdx.erase(m_layers[lIdx]->HeapIdx.begin() + i);
+			m_layers[lIdx]->HeapReal.erase(m_layers[lIdx]->HeapReal.begin() + i);
+			m_layers[lIdx]->HeapString.erase(m_layers[lIdx]->HeapString.begin() + i);
+			m_layers[lIdx]->HeapBool.erase(m_layers[lIdx]->HeapBool.begin() + i);
 
 			return true;
 		}
@@ -136,14 +137,14 @@ const double* VariableHandler::GetReal(uint64_t layerIdx, uint64_t variableIdx)
 
 	for (uint32_t i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
-			return &m_layers[lIdx].StackReal[i];
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
+			return &m_layers[lIdx]->StackReal[i];
 	}
 
-	for (uint64_t i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (uint64_t i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[lIdx].HeapIdx[i] == variableIdx)
-			return &m_layers[lIdx].HeapReal[i];
+		if (m_layers[lIdx]->HeapIdx[i] == variableIdx)
+			return &m_layers[lIdx]->HeapReal[i];
 	}
 
 	return nullptr;
@@ -156,14 +157,14 @@ const std::string* VariableHandler::GetString(uint64_t layerIdx, uint64_t variab
 
 	for (uint32_t i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
-			return &m_layers[lIdx].StackString[i];
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
+			return &m_layers[lIdx]->StackString[i];
 	}
 
-	for (uint64_t i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (uint64_t i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[lIdx].HeapIdx[i] == variableIdx)
-			return &m_layers[lIdx].HeapString[i];
+		if (m_layers[lIdx]->HeapIdx[i] == variableIdx)
+			return &m_layers[lIdx]->HeapString[i];
 	}
 
 	return nullptr;
@@ -176,14 +177,14 @@ const uint8_t* VariableHandler::GetBool(uint64_t layerIdx, uint64_t variableIdx)
 
 	for (uint32_t i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
-			return &m_layers[lIdx].StackBool[i];
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
+			return &m_layers[lIdx]->StackBool[i];
 	}
 
-	for (uint64_t i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (uint64_t i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[lIdx].HeapIdx[i] == variableIdx)
-			return &m_layers[lIdx].HeapBool[i];
+		if (m_layers[lIdx]->HeapIdx[i] == variableIdx)
+			return &m_layers[lIdx]->HeapBool[i];
 	}
 
 	return nullptr;
@@ -196,18 +197,18 @@ bool VariableHandler::SetReal(const uint64_t& layerIdx, const uint64_t& variable
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].StackReal[i] = value;
+			m_layers[lIdx]->StackReal[i] = value;
 			return true;
 		}
 	}
 
-	for (unsigned int i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (unsigned int i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[lIdx].HeapIdx[i] == variableIdx)
+		if (m_layers[lIdx]->HeapIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].HeapReal[i] = value;
+			m_layers[lIdx]->HeapReal[i] = value;
 			return true;
 		}
 	}
@@ -224,18 +225,18 @@ bool VariableHandler::SetString(const uint64_t& layerIdx, const uint64_t& variab
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].StackString[i] = value;
+			m_layers[lIdx]->StackString[i] = value;
 			return true;
 		}
 	}
 
-	for (unsigned int i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (unsigned int i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[lIdx].HeapIdx[i] == variableIdx)
+		if (m_layers[lIdx]->HeapIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].HeapString[i] = value;
+			m_layers[lIdx]->HeapString[i] = value;
 			return true;
 		}
 	}
@@ -252,18 +253,18 @@ bool VariableHandler::SetBool(const uint64_t& layerIdx, const uint64_t& variable
 
 	for (unsigned int i = 0; i < MEM_COUNT; i++)
 	{
-		if (m_layers[lIdx].StackIdx[i] == variableIdx)
+		if (m_layers[lIdx]->StackIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].StackBool[i] = value;
+			m_layers[lIdx]->StackBool[i] = value;
 			return true;
 		}
 	}
 
-	for (unsigned int i = 0; i < m_layers[lIdx].HeapIdx.size(); i++)
+	for (unsigned int i = 0; i < m_layers[lIdx]->HeapIdx.size(); i++)
 	{
-		if (m_layers[lIdx].HeapIdx[i] == variableIdx)
+		if (m_layers[lIdx]->HeapIdx[i] == variableIdx)
 		{
-			m_layers[lIdx].HeapBool[i] = value;
+			m_layers[lIdx]->HeapBool[i] = value;
 			return true;
 		}
 	}
@@ -285,7 +286,7 @@ uint64_t VariableHandler::PushStack()
 		bool found = false;
 		for (uint64_t a = 0; a < m_layers.size(); a++)
 		{
-			if (m_layers[a].Idx == sId)
+			if (m_layers[a]->Idx == sId)
 			{
 				sId++;
 				found = true;
@@ -302,8 +303,10 @@ uint64_t VariableHandler::PushStack()
 
 	if (!foundSId)
 		sId++;
-
-	m_layers.push_back(StackLayer(sId));
+	Logger::Debug("using sId for layer stack: " + std::to_string(sId));
+	StackLayer* layer = new StackLayer(sId);
+	m_layers.push_back(layer);
+	std::cout << layer << std::endl;
 	return sId;
 }
 
@@ -313,7 +316,7 @@ void VariableHandler::PopStack(const uint64_t& idx)
 
 	for (uint64_t i = 0; i < m_layers.size(); i++)
 	{
-		if (m_layers[i].Idx == idx)
+		if (m_layers[i]->Idx == idx)
 		{
 			m_layers.erase(m_layers.begin() + i);
 			return;
@@ -325,7 +328,7 @@ uint64_t VariableHandler::FindLayerIdx(const uint64_t& idx)
 {
 	for (uint64_t i = 0; i < m_layers.size(); i++)
 	{
-		if (m_layers[i].Idx == idx)
+		if (m_layers[i]->Idx == idx)
 			return i;
 	}
 

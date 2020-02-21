@@ -54,5 +54,5 @@ private:
 	uint64_t FindLayerIdx(const uint64_t& idx);
 
 	std::shared_timed_mutex* m_mutex;
-	std::vector<StackLayer> m_layers;
+	std::vector<StackLayer*> m_layers;
 };
