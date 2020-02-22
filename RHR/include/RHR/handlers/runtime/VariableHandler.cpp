@@ -17,9 +17,12 @@ VariableHandler::~VariableHandler()
 
 void VariableHandler::Reset()
 {
-	this->~VariableHandler();
+	for (uint64_t i = 0; i < m_layers.size(); i++)
+		delete m_layers[i];
 	
 	m_layers.clear();
+
+	delete m_mutex;
 	m_mutex = new std::shared_timed_mutex();
 }
 
