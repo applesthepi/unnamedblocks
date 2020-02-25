@@ -1,5 +1,7 @@
 #include "Mod.h"
 
+#include <execution>
+
 UB_EXPORT void Initialization(ModData* data)
 {
 	data->RegisterCatagory(RegCatagory("~", "", sf::Color(222, 102, 222)));
@@ -998,9 +1000,17 @@ UB_EXPORT void Initialization(ModData* data)
 			}
 
 			std::unique_lock<std::shared_timed_mutex> lock(data->Object->ObjectMutex);
-
-			run->Textures[(uint64_t)std::stod(args[0])]->loadFromFile(args[2]);
-			run->Sprites[(uint64_t)std::stod(args[0])]->setTexture(*run->Textures[(uint64_t)std::stod(args[0])], true);
+			
+			try
+			{
+				run->Textures.at((uint64_t)std::stod(args[0]))->loadFromFile(args[2]);
+				run->Sprites.at((uint64_t)std::stod(args[0]))->setTexture(*run->Textures[(uint64_t)std::stod(args[0])], true);
+			}
+			catch (const std::out_of_range& e)
+			{
+				Logger::Error("texture \"" + args[0] + "\" does not exists, the object only has \"" + std::to_string(run->Textures.size()) + "\" textures");
+				return false;
+			}
 
 			return true;
 		};

@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -Wall
+AM_CPPFLAGS = -O0 -Wall
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = bootstrap
 

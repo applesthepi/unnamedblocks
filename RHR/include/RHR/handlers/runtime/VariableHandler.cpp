@@ -52,7 +52,7 @@ bool VariableHandler::StackString(uint64_t layerIdx, uint64_t variableIdx)
 {
 	std::unique_lock<std::shared_timed_mutex> lock(*m_mutex);
 	uint64_t lIdx = FindLayerIdx(layerIdx);
-
+	printf("%u\n", lIdx);
 	unsigned int i = 0;
 	while (m_layers[lIdx]->StackIdx[i] != 0)
 	{
@@ -354,7 +354,7 @@ StackLayer::StackLayer(uint64_t idx)
 	
 	StackIdx = (uint64_t*)calloc(MEM_COUNT, sizeof(uint64_t));
 	StackReal = (double*)calloc(MEM_COUNT, sizeof(double));
-	StackString = (std::string*)calloc(MEM_COUNT, sizeof(std::string));
+	StackString = new std::string[MEM_COUNT];
 	StackBool = (uint8_t*)calloc(MEM_COUNT, sizeof(uint8_t));
 }
 
@@ -362,6 +362,6 @@ StackLayer::~StackLayer()
 {
 	free(StackIdx);
 	free(StackReal);
-	free(StackString);
+	delete[] StackString;
 	free(StackBool);
 }

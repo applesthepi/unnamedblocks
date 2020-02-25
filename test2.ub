@@ -1,1 +1,1 @@
-38;309;vin_thread_open;;vin_varaibles_stack_real;1var;;vin_varaibles_free_real;1var;;;
+38;309;vin_thread_open;;vin_varaibles_stack_real;1var;;vin_object_new;1var;;vin_texture_text;0text;018;0test.png;;vin_texture_add;0test.png;1var;;vin_texture_replace;00;1var;0test.png;;;
