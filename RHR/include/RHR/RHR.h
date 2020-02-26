@@ -1,5 +1,4 @@
 #pragma once
-
 #include "handlers/Logger.h"
 #include "handlers/MessageHandler.h"
 #include "handlers/ProjectHandler.h"
