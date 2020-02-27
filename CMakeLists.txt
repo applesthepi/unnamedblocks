@@ -27,6 +27,7 @@ endif()
 if (APPLE)
 	set(POSIX True)
 endif()
+option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
 add_executable(unnamedblocks "UnnamedBlocks/src/main.cpp" "UnnamedBlocks/src/ModLoader.cpp")
 configure_file(config.h.in config.h)
 add_subdirectory(RHR)
@@ -53,8 +54,7 @@ target_include_directories(unnamedblocks PUBLIC
 	"${OPENGL_INCLUDE_DIRS}"
 	"${EXTRA_INCLUDE_DIRS}"
 	)
-option(DISABLE_BUILD_MODS "Disable building the set of vanilla mods." OFF)
-if (NOT DISABLE_BUILD_MODS)
+if (NOT DISABLE_ALL_MOD_BUILDS)
 	add_subdirectory(VanillaMods)
 endif()
 
@@ -65,4 +65,3 @@ add_custom_command(TARGET unnamedblocks POST_BUILD COMMAND
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-
