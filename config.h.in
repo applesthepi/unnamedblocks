@@ -2,3 +2,5 @@
 #define unnamedblocks_VERSION_MINOR @unnamedblocks_VERSION_MINOR@
 #cmakedefine LINUX
 #cmakedefine POSIX
+#define RES_FOLDER_SEARCH_PATH @RES_FOLDER_SEARCH_PATH@
+#define MODS_FOLDER_SEARCH_PATH @MODS_FOLDER_SEARCH_PATH@

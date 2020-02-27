@@ -11,23 +11,22 @@ find_package(SFML REQUIRED COMPONENTS graphics system)
 find_package(GLEW REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(OpenGL REQUIRED)
-find_package(X11 REQUIRED)
 find_package(Threads REQUIRED)
 
-if (UNIX AND NOT APPLE)
+# Add X11 if using linux
+# TODO: Proper wayland support
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(LINUX True)
-	set(POSIX True)
+	message(STATUS "Compiling For Linux")
 	find_package(X11 REQUIRED)
-	message("Using linux or similar")
 	list(APPEND EXTRA_LIBRARIES ${X11_LIBRARIES})
 	list(APPEND EXTRA_INCLUDES ${X11_INCLUDE_DIRS})
 endif()
-# NOTE: Apple is not supported, this is to give apple a small chance of
-# compiling. No promises
-if (APPLE)
+# Not really posix, just a term given to every os that follows some standards (so everything besides windows)
+if(UNIX)
 	set(POSIX True)
 endif()
-option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
+
 add_executable(unnamedblocks "UnnamedBlocks/src/main.cpp" "UnnamedBlocks/src/ModLoader.cpp")
 configure_file(config.h.in config.h)
 add_subdirectory(RHR)
@@ -54,6 +53,22 @@ target_include_directories(unnamedblocks PUBLIC
 	"${OPENGL_INCLUDE_DIRS}"
 	"${EXTRA_INCLUDE_DIRS}"
 	)
+
+# Options
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	# Default search in appdata
+	set(RES_FOLDER_SEARCH_PATH {APPDATA}/unnamedblocks CACHE STRING "(currently nop) Search dir for the res folder. {VARNAME} is environment variable. Blank for working directory")
+	set(MODS_FOLDER_SEARCH_PATH {APPDATA}/unnamedblocks CACHE STRING "(currently nop) Search dir for the mods folder. {VARNAME} is environment variable. Blank for working directory")
+elseif(UNIX AND NOT APPLE)
+	# Default search in .local/share in unix like oses
+	set(RES_FOLDER_SEARCH_PATH {HOME}/.local/share/unnamedblocks CACHE STRING "(currently nop) Search dir for the res folder. {VARNAME} is environment variable. Blank for working directory")
+	set(MODS_FOLDER_SEARCH_PATH {HOME}/.local/share/unnamedblocks CACHE STRING "(currently nop) Search dir for the mods folder. {VARNAME} is environment variable. Blank for working directory")
+else()
+	# Unknown platform, dont assume anything
+	set(RES_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the res folder {VARNAME} is environment variable. Blank for working directory")
+	set(MODS_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the mods folder {VARNAME} is environment variable. Blank for working directory")
+endif()
+option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
 if (NOT DISABLE_ALL_MOD_BUILDS)
 	add_subdirectory(VanillaMods)
 endif()
