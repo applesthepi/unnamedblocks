@@ -1,0 +1,4 @@
+#define unnamedblocks_VERSION_MAJOR @unnamedblocks_VERSION_MAJOR@
+#define unnamedblocks_VERSION_MINOR @unnamedblocks_VERSION_MINOR@
+#cmakedefine LINUX
+#cmakedefine POSIX

@@ -1,0 +1,4 @@
+#define RHR_VERSION_MAJOR @RHR_VERSION_MAJOR@
+#define RHR_VERSION_MINOR @RHR_VERSION_MINOR@
+#cmakedefine LINUX
+#cmakedefine POSIX

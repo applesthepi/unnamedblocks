@@ -1,4 +1,5 @@
 #include "ModLoader.h"
+#include "config.h"
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
 #include <chrono>

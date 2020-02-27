@@ -1,6 +1,6 @@
 #pragma once
+#include "config.h"
 #include "stacking/Plane.h"
-
 #include <vector>
 #include <thread>
 #include <mutex>
