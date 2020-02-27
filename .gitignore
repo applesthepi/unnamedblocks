@@ -2,6 +2,7 @@ RHR/INT
 VanillaMods/*
 mods
 !/VanillaMods/ub-ModVin
+!/VanillaMods/CMakeLists.txt
 UnnamedBlocks/dep/BOOST64/
 UnnamedBlocks/dep/SFML64/
 UnnamedBlocks/dep/RHR/
