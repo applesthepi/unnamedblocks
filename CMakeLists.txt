@@ -19,6 +19,8 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(LINUX True)
 	message(STATUS "Compiling For Linux")
 	find_package(X11 REQUIRED)
+	# Might need to go in UNIX, ill check later
+	find_package(TBB REQUIRED)
 	list(APPEND EXTRA_LIBRARIES ${X11_LIBRARIES})
 	list(APPEND EXTRA_INCLUDES ${X11_INCLUDE_DIRS})
 endif()
