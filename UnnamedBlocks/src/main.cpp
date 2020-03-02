@@ -67,9 +67,28 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 	toolbarCatagory = index;
 	toolbarStackCount = toolbarPlane->GetStackCount();
 }
-
+#include <dlfcn.h>
 int main()
 {
+	typedef void(*f_initialize)(int*);
+	system("tcc comp.c -shared -o comp.so");
+	
+	int* re = new int();
+	*re = 5;
+
+	void* so = dlopen("./comp.so", RTLD_NOW);
+	if(so == nullptr) {
+		printf("%s\n", dlerror());
+		static_assert("killme");
+	}
+	f_initialize initialize = (f_initialize)dlsym(so, "re");
+	initialize(re);
+	
+	Logger::Debug(std::to_string(*re));
+
+	system("pause");
+
+	return 0;
 	Logger::Info(UB_VERSION);
 	if (UB_BETA_BUILD)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
