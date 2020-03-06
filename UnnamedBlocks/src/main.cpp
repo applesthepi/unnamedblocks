@@ -89,6 +89,13 @@ int main()
 	system("pause");
 
 	return 0;
+
+
+
+
+
+
+	
 	Logger::Info(UB_VERSION);
 	if (UB_BETA_BUILD)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
