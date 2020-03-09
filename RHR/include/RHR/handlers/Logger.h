@@ -2,35 +2,37 @@
 
 #include <string>
 #include <mutex>
+#include <string_view>
+#include <iostream>
 
 class Logger
 {
 public:
-	static void Info(std::string message)
+	static inline void Info(std::string_view message)
 	{
 		m_logMutex.lock();
-		printf(" [INFO] %s\n", message.c_str());
+		std::cout << " [INFO] " << message << "\n";
 		m_logMutex.unlock();
 	}
 
-	static void Warn(std::string message)
+	static inline void Warn(std::string_view message)
 	{
 		m_logMutex.lock();
-		printf(" [WARN] %s\n", message.c_str());
+		std::cout << " [WARN] " << message << "\n";
 		m_logMutex.unlock();
 	}
 
-	static void Error(std::string message)
+	static inline void Error(std::string_view message)
 	{
 		m_logMutex.lock();
-		printf(" [ERROR] %s\n", message.c_str());
+		std::cout << " [ERROR] " << message << "\n";
 		m_logMutex.unlock();
 	}
 
-	static void Debug(std::string message)
+	static inline void Debug(std::string_view message)
 	{
 		m_logMutex.lock();
-		printf(" [DEBUG] %s\n", message.c_str());
+		std::cout << " [DEBUG] " << message << "\n";
 		m_logMutex.unlock();
 	}
 private:
