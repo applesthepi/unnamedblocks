@@ -13,13 +13,13 @@ ModBlockFlagsIterator& ModBlockFlags::UseIterator()
 
 ModBlockFlags& ModBlockFlags::CheckHeap()
 {
-	m_flag |= (uint64_t)ModBlockFlagType::FLAG_CHECK_HEAP;
+	m_flag |= (uint64_t)ModBlockFlagType::FlagCheckHeap;
 	return *this;
 }
 
 ModBlockFlags& ModBlockFlags::CheckStack()
 {
-	m_flag |= (uint64_t)ModBlockFlagType::FLAG_CHECK_STACK;
+	m_flag |= (uint64_t)ModBlockFlagType::FlagCheckStack;
 	return *this;
 }
 

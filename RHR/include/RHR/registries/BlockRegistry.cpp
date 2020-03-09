@@ -1,22 +1,19 @@
 #include "BlockRegistry.h"
 #include "handlers/Logger.h"
-#include "handlers/runtime/VariableHandler.h"
 
 BlockRegistry::BlockRegistry()
 {
-	m_blocks = new std::vector<RegBlock>();
-	m_catagories = new std::vector<RegCatagory>();
+
 }
 
-void BlockRegistry::RegisterCatagory(RegCatagory* catagory)
+void BlockRegistry::RegisterCatagory(const ModCatagory& catagory)
 {
-	m_catagories->push_back(*catagory);
+	m_catagories->push_back(catagory);
 }
 
-void BlockRegistry::RegisterBlock(RegBlock* block, VariableHandler* variables)
+void BlockRegistry::RegisterBlock(const ModBlock& block)
 {
-	FinalizeBlock(block, variables);
-	m_blocks->push_back(*block);
+	m_blocks->push_back(block);
 }
 
 RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)

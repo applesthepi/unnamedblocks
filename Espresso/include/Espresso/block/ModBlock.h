@@ -1,7 +1,7 @@
 #pragma once
 #include "ModBlockFlags.h"
-#include "ModBlockActions.h"
 
+#include "ModBlockActions.h"
 #include <vector>
 #include <RHR/include/RHR/registries/BlockRegistry.h>
 
@@ -17,8 +17,11 @@ public:
 	// flags to check during debug build
 	virtual ModBlockFlags GetFlags();
 	
-	// preprocessing actions
-	virtual ModBlockActions GetActions();
+	// actions to run once per block type during runtime preinitialization
+	virtual ModBlockActions RuntimePreInit();
+	
+	// actions to run on each block preprocessed during initialization
+	virtual ModBlockActions RuntimeInit();
 	
 	// block arguments, including text
 	virtual std::vector<BlockArgumentInitializer> GetArguments();

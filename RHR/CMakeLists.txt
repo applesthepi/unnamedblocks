@@ -30,13 +30,17 @@ add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/ObjectHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.cpp"
 	)
-target_link_libraries(RHR PUBLIC ${SFML_LIBRARIES})
+target_link_libraries(RHR PUBLIC
+	Espresso
+	${SFML_LIBRARIES}
+)
 target_include_directories(RHR PUBLIC
 	"${PROJECT_BINARY_DIR}"
 	${SFML_INCLUDE_DIRS}
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR"
+	"Espresso/include"
 	)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")

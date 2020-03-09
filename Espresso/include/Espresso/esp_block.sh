@@ -1,1 +1,1 @@
-vim -p block/ModBlock.h block/ModBlock.cpp block/ModBlockFlags.h block/ModBlockFlags.cpp block/ModBlockFlagsIterator.h block/ModBlockFlagsIterator.cpp
+vim -p block/ModBlock.h block/ModBlock.cpp block/ModBlockFlags.h block/ModBlockFlags.cpp block/ModBlockActions.h block/ModBlockActions.cpp block/ModBlockFlagsIterator.h block/ModBlockFlagsIterator.cpp

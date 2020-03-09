@@ -14,3 +14,13 @@ ModBlockFlags ModBlock::GetFlags()
 {
 	return ModBlockFlags();
 }
+
+ModBlockActions ModBlock::RuntimePreInit()
+{
+	return ModBlockActions();
+};
+
+std::vector<BlockArgumentInitializer> ModBlock::GetArguments()
+{
+	return {BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "NULL")};
+};
