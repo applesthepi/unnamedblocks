@@ -9,9 +9,13 @@ find_package(SFML REQUIRED COMPONENTS graphics system)
 configure_file(config.h.in config.h)
 add_library(Espresso STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlock.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockActions.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockFlags.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockFlagsIterator.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.cpp"
 	${SFML_LIBRARIES}
 )
-target_include_directories(RHR PUBLIC
+target_include_directories(Espresso PUBLIC
 	"${PROJECT_BINARY_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"

@@ -1,4 +1,4 @@
-#include "Espresso/include/Espresso/block/ModBlockFlags.h"
+#include "ModBlockFlags.h"
 
 ModBlockFlags::ModBlockFlags()
 	:m_iterator(ModBlockFlagsIterator(&m_flag))

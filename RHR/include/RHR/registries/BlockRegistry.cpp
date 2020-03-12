@@ -191,7 +191,7 @@ void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
 	block->Execute = parentExecution;
 }
 
-const RegBlock* BlockRegistry::GetBlock(std::string unlocalizedName)
+const RegBlock& BlockRegistry::GetBlock(const std::string& unlocalizedName)
 {
 	for (unsigned int i = 0; i < m_blocks->size(); i++)
 	{
@@ -199,10 +199,17 @@ const RegBlock* BlockRegistry::GetBlock(std::string unlocalizedName)
 			return (const RegBlock*)(&(*m_blocks)[i]);
 	}
 
-	return nullptr;
+	for (unsigned int i = 0; i < m_blocks->size(); i++)
+	{
+		if ((*m_blocks)[i].UnlocalizedName == "vin_null")
+			return (const RegBlock*)(&(*m_blocks)[i]);
+	}
+
+	Logger::Error("unexpected failure to recive vin_null block. Mod loading error?");
+	return RegBlock();
 }
 
-const RegCatagory* BlockRegistry::GetCatagory(std::string unlocalizedName)
+const RegCatagory& BlockRegistry::GetCatagory(const std::string& unlocalizedName)
 {
 	for (unsigned int i = 0; i < m_catagories->size(); i++)
 	{
@@ -210,39 +217,6 @@ const RegCatagory* BlockRegistry::GetCatagory(std::string unlocalizedName)
 			return (const RegCatagory*)(&(*m_catagories)[i]);
 	}
 
-	return nullptr;
-}
-
-std::vector<RegBlock>* BlockRegistry::GetBlocks()
-{
-	return m_blocks;
-}
-
-std::vector<RegCatagory>* BlockRegistry::GetCatagories()
-{
-	return m_catagories;
-}
-
-void BlockArgument::SetupTEXT(std::string value)
-{
-	Type = BlockArgumentType::TEXT;
-	Value = value;
-}
-
-void BlockArgument::SetupREAL(std::string value)
-{
-	Type = BlockArgumentType::REAL;
-	Value = value;
-}
-
-void BlockArgument::SetupBOOL(std::string value)
-{
-	Type = BlockArgumentType::BOOL;
-	Value = value;
-}
-
-void BlockArgument::SetupSTRING(std::string value)
-{
-	Type = BlockArgumentType::STRING;
-	Value = value;
+	Logger::Error("unexpected failure to get a catagory. Mod loading error?");
+	return RegCatagory();
 }

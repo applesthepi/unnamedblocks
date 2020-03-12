@@ -1,8 +1,9 @@
 #include "Stack.h"
 #include "Global.h"
 #include "Plane.h"
-#include "handlers/runtime/RuntimeHandler.h"
 #include "handlers/Logger.h"
+#include "RHR/handlers/StatmentHandler.h"
+#include "Espresso/block/ModBlock.h"
 
 #include <iostream>
 #include <map>
@@ -786,7 +787,7 @@ void Stack::ReloadVanity()
 	m_ifShapePositionHighlight.clear();
 	m_ifShapeIdx.clear();
 
-	std::vector<StatmentIf> statments = RuntimeHandler::ProcessIfStatments(this, true);
+	std::vector<StatmentIf> statments = StatmentHandler::ProcessIfStatments(this);
 	m_savedVanity = statments;
 	m_validHighlighting = statments.size() > 0;
 

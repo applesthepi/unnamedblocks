@@ -1,24 +1,10 @@
 #pragma once
-#include "ArgumentEssentials.h"
-
 #include <vector>
 #include <string>
 #include <SFML/Graphics/Color.hpp>
 #include <functional>
-#include <Espresso/catagory/ModCatagory.h>
 #include <Espresso/block/ModBlock.h>
-
-class BlockArgumentInitializer
-{
-public:
-	BlockArgumentInitializer(const BlockArgumentType type, const BlockArgumentVariableModeRestriction restriction, const BlockArgumentVariableMode mode, const std::string defaultValue)
-		:Type(type), Restriction(restriction), Mode(mode), DefaultValue(defaultValue) {}
-
-	BlockArgumentType Type;
-	BlockArgumentVariableModeRestriction Restriction;
-	BlockArgumentVariableMode Mode;
-	std::string DefaultValue;
-};
+#include <Espresso/catagory/ModCatagory.h>
 
 class BlockArgumentCaller
 {
@@ -27,18 +13,6 @@ public:
 		:Mode(mode), Value(value) {}
 
 	BlockArgumentVariableMode Mode;
-	std::string Value;
-};
-
-class BlockArgument
-{
-public:
-	void SetupTEXT(const std::string value);
-	void SetupREAL(const std::string value);
-	void SetupBOOL(const std::string value);
-	void SetupSTRING(const std::string value);
-
-	BlockArgumentType Type;
 	std::string Value;
 };
 

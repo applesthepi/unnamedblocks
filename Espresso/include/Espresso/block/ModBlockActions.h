@@ -1,5 +1,7 @@
 #pragma once
+#include "../preprocessor/PreProcessorData.h"
 
+#include <vector>
 enum class ModBlockActionTypes
 {
 	ActionLogInfo,
@@ -18,14 +20,21 @@ enum class ModBlockActionTypes
 class ModBlockAction
 {
 public:
-	virtual void Execute();
+	ModBlockAction(ModBlockActionTypes type);
+	
+	ModBlockActionTypes GetType() const;
+	virtual void Execute(PreProcessorData& data) const;
+private:
+	ModBlockActionTypes m_type;
 };
 
 class ModBlockActions
 {
 public:
 	ModBlockActions();
-	
+
+	void AddAction(const ModBlockAction& action);
+	const std::vector<ModBlockAction>& PullActions() const;
 private:
-	std::vector<
+	std::vector<ModBlockAction> m_actions;
 };

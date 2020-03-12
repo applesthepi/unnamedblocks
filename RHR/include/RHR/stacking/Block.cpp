@@ -4,6 +4,7 @@
 #include "args/ArgumetReal.h"
 #include "args/ArgumentBoolean.h"
 #include "handlers/Logger.h"
+#include "Espresso/block/ModBlock.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -18,25 +19,11 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 	m_functionUpdatePreTexture = functionUpdatePreTexture;
 	m_functionSelectStack = functionSelectStack;
 
-	const RegBlock* blockDetails = registry->GetBlock(type);
-	if (blockDetails == nullptr)
-	{
-		m_unlocalizedName = "vin_null";
-		blockDetails = registry->GetBlock("vin_null");
-		
-		if (blockDetails == nullptr)
-		{
-			Logger::Warn("null block does not exist!");
-			return;
-		}
-	}
+	const ModBlock& blockDetails = registry->GetBlock(type);
+	const ModCatagory& catagoryDetails = registry->GetCatagory(std::string(blockDetails.UseCatagory()));
 
-	const RegCatagory* catagoryDetails = registry->GetCatagory(blockDetails->Catagory);
-	if (catagoryDetails == nullptr)
-		return;
-
-	std::vector<BlockArgument> args = blockDetails->Args;
-	m_background.setFillColor(catagoryDetails->Color);
+	std::vector<BlockArgument> args = blockDetails.Args;
+	m_background.setFillColor(catagoryDetails.Color);
 
 	unsigned int offset = Global::BlockBorder;
 

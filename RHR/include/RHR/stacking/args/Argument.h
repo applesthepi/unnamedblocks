@@ -1,8 +1,8 @@
 #pragma once
-#include "ArgumentEssentials.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <Espresso/block/ModBlock.h>
 
 class Argument
 {

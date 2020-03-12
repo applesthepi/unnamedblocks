@@ -23,11 +23,6 @@ add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/Logger.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/ThreadHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/ByteHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/VariableHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/RuntimeHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/ObjectHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.cpp"
 	)
 target_link_libraries(RHR PUBLIC
@@ -40,7 +35,7 @@ target_include_directories(RHR PUBLIC
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR"
-	"Espresso/include"
+	"${CMAKE_PROJECT_SOURCE_DIR}/Espresso/include"
 	)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")

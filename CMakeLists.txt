@@ -31,6 +31,7 @@ endif()
 
 add_executable(unnamedblocks "UnnamedBlocks/src/main.cpp" "UnnamedBlocks/src/ModLoader.cpp")
 configure_file(config.h.in config.h)
+add_subdirectory(Espresso)
 add_subdirectory(RHR)
 
 target_link_libraries(unnamedblocks PUBLIC
