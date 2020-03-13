@@ -1,7 +1,7 @@
-#include "registries/ShaderRegistry.h"
+#include "RHR/registries/ShaderRegistry.h"
 #include "Plane.h"
-#include "Global.h"
-#include "handlers/Logger.h"
+#include "RHR/Global.h"
+#include <Espresso/Logger.h>
 
 #include <iostream>
 

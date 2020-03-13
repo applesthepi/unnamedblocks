@@ -1,5 +1,5 @@
 #include "Button.h"
-#include "Global.h"
+#include "RHR/Global.h"
 
 #define HOVOR_SHADE 0.8
 

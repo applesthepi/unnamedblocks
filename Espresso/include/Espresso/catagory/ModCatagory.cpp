@@ -5,32 +5,17 @@ ModCatagory::ModCatagory()
 
 }
 
-void ModCatagory::SetColor(const sf::Color& color)
+const sf::Color ModCatagory::GetColor() const
 {
-	m_color = color;
+	return sf::Color::Magenta;
 }
 
-void ModCatagory::SetUnlocalizedName(const std::string& unlocalizedName)
+const std::string ModCatagory::GetUnlocalizedName() const
 {
-	m_unlocalizedName = unlocalizedName;
+	return "vin_null";
 }
 
-void ModCatagory::SetDisplayName(const std::string& displayName)
+const std::string ModCatagory::GetDisplayName() const
 {
-	m_displayName = displayName;
-}
-
-const sf::Color& ModCatagory::GetColor() const
-{
-	return m_color;
-}
-
-const std::string& ModCatagory::GetUnlocalizedName() const
-{
-	return m_unlocalizedName;
-}
-
-const std::string& ModCatagory::GetDisplayName() const
-{
-	return m_displayName;
+	return "NULL";
 }

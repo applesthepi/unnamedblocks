@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Argument.h"
-#include "Global.h"
-#include "ui/TypingSystem.h"
+#include "RHR/Global.h"
+#include "RHR/ui/TypingSystem.h"
 
 #include <iostream>
-#include "handlers/Logger.h"
+#include <Espresso/Logger.h>
 
 class ArgumentString : public Argument
 {

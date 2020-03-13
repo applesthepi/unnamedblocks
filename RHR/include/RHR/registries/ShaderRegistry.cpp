@@ -1,6 +1,6 @@
 #include "ShaderRegistry.h"
-#include "Global.h"
-#include "handlers/Logger.h"
+#include "RHR/Global.h"
+#include <Espresso/Logger.h>
 
 void ShaderRegistry::Initialize()
 {

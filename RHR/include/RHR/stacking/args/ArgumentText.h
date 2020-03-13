@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Argument.h"
-#include "Global.h"
+#include "RHR/Global.h"
 
 class ArgumentText : public Argument
 {

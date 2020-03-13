@@ -21,24 +21,6 @@
     <ClCompile Include="include\RHR\ui\TypingSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\RHR\handlers\runtime\ByteHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\RHR\handlers\runtime\ObjectHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\RHR\handlers\runtime\RuntimeHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\RHR\handlers\runtime\ThreadHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\RHR\handlers\runtime\VariableHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\RHR\handlers\Logger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\RHR\handlers\MessageHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,13 +51,16 @@
     <ClCompile Include="include\RHR\RHR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\RHR\modding\ModData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\RHR\registries\BlockRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\RHR\StatmentIf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\RHR\handlers\StatmentHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\RHR\handlers\runtime\Preprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,24 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\ui\TypingSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\runtime\ByteHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\runtime\ObjectHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\runtime\RuntimeHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\runtime\ThreadHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\runtime\VariableHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\Logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\handlers\MessageHandler.h">
@@ -146,9 +113,6 @@
     <ClInclude Include="include\RHR\RHR.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\RHR\modding\ModData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\RHR\registries\BlockRegistry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -156,6 +120,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\ArgumentEssentials.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RHR\config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RHR\handlers\StatmentHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RHR\handlers\runtime\Preprocessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

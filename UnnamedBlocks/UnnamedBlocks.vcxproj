@@ -98,12 +98,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dep\SFML64\lib\;$(SolutionDir)\dep\GLEW\lib\Release\x64\;$(SolutionDir)\dep\RHR\lib\;$(SolutionDir)\dep\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -113,12 +113,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dep\SFML64\lib\;$(SolutionDir)\dep\GLEW\lib\Release\x64\;$(SolutionDir)\dep\RHR\lib\;$(SolutionDir)\dep\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,14 +130,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dep\SFML64\lib\;$(SolutionDir)\dep\GLEW\lib\Release\x64\;$(SolutionDir)\dep\RHR\lib\;$(SolutionDir)\dep\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -149,14 +149,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\dep\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\dep\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\dep\BOOST64\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\dep\SFML64\lib\;$(SolutionDir)\dep\GLEW\lib\Release\x64\;$(SolutionDir)\dep\RHR\lib\;$(SolutionDir)\dep\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

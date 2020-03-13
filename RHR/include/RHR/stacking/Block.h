@@ -1,6 +1,6 @@
 #pragma once
 
-#include "registries/BlockRegistry.h"
+#include "RHR/registries/BlockRegistry.h"
 #include "args/Argument.h"
 
 #include <SFML/Graphics.hpp>

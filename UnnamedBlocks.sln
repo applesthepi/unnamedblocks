@@ -5,16 +5,22 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnnamedBlocks", "UnnamedBlocks\UnnamedBlocks.vcxproj", "{7690567C-F024-4FE2-B90D-9EA1921F0769}"
 	ProjectSection(ProjectDependencies) = postProject
+		{A9D42108-762B-44FC-92F2-F2050420115D} = {A9D42108-762B-44FC-92F2-F2050420115D}
 		{5DD7F979-F2F1-4C96-985F-F1F1276CE62F} = {5DD7F979-F2F1-4C96-985F-F1F1276CE62F}
 		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1} = {46A5DDB7-582F-40F8-A919-A551E4E3F9B1}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RHR", "RHR\RHR.vcxproj", "{46A5DDB7-582F-40F8-A919-A551E4E3F9B1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A9D42108-762B-44FC-92F2-F2050420115D} = {A9D42108-762B-44FC-92F2-F2050420115D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModVin", "VanillaMods\ub-ModVin\ModVin.vcxproj", "{5DD7F979-F2F1-4C96-985F-F1F1276CE62F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{46A5DDB7-582F-40F8-A919-A551E4E3F9B1} = {46A5DDB7-582F-40F8-A919-A551E4E3F9B1}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Espresso", "Espresso\Espresso.vcxproj", "{A9D42108-762B-44FC-92F2-F2050420115D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +54,14 @@ Global
 		{5DD7F979-F2F1-4C96-985F-F1F1276CE62F}.Release|x64.Build.0 = Release|x64
 		{5DD7F979-F2F1-4C96-985F-F1F1276CE62F}.Release|x86.ActiveCfg = Release|Win32
 		{5DD7F979-F2F1-4C96-985F-F1F1276CE62F}.Release|x86.Build.0 = Release|Win32
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Debug|x64.ActiveCfg = Debug|x64
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Debug|x64.Build.0 = Debug|x64
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Debug|x86.ActiveCfg = Debug|Win32
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Debug|x86.Build.0 = Debug|Win32
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Release|x64.ActiveCfg = Release|x64
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Release|x64.Build.0 = Release|x64
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Release|x86.ActiveCfg = Release|Win32
+		{A9D42108-762B-44FC-92F2-F2050420115D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

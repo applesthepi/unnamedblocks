@@ -1,31 +1,41 @@
 #include "ModBlock.h"
 
-const char* ModBlock::UsePath() const
+const char* ModBlock::GetUnlocalizedName() const
+{
+	return "vin_null";
+}
+
+const char* ModBlock::GetPath() const
 {
 	return "res/mods/default/block.txt";
 }
 
-const char* ModBlock::UseCatagory() const
+const char* ModBlock::GetCategory() const
 {
 	return "vin_objects";
 }
 
-bool ModBlock::IsTopical() const
+const bool ModBlock::IsTopical() const
 {
 	return false;
 }
 
-ModBlockFlags ModBlock::GetFlags() const
+const ModBlockFlags ModBlock::GetFlags() const
 {
 	return ModBlockFlags();
 }
 
-ModBlockActions ModBlock::RuntimePreInit() const
+const ModBlockActions ModBlock::RuntimePreInit() const
 {
 	return ModBlockActions();
 };
 
-std::vector<BlockArgumentInitializer> ModBlock::GetArguments() const
+const ModBlockActions ModBlock::RuntimeInit() const
+{
+	return ModBlockActions();
+};
+
+const std::vector<BlockArgumentInitializer> ModBlock::GetArguments() const
 {
 	return {BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "NULL")};
 };

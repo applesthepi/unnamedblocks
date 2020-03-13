@@ -8,16 +8,12 @@ class ModCatagory
 public:
 	ModCatagory();
 
-	void SetColor(const sf::Color& color);
-	void SetUnlocalizedName(const std::string& unlocalizedName);
-	void SetDisplayName(const std::string& displayName);
+	// the color of the category, and the background color of all of the blocks registered to this category
+	virtual const sf::Color GetColor() const;
 
-	const sf::Color& GetColor() const;
-	const std::string& GetUnlocalizedName() const;
-	const std::string& GetDisplayName() const;
-private:
-	sf::Color m_color;
-	std::string m_unlocalizedName;
-	std::string m_displayName;
+	// the name the engine uses to refer to this category as. Convention example: "mymod_some_category"
+	virtual const std::string GetUnlocalizedName() const;
+
+	// what will be displayed on the category button as text. Convention example: "Some Category"
+	virtual const std::string GetDisplayName() const;
 };
-

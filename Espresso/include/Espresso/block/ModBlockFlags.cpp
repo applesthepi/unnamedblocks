@@ -6,7 +6,7 @@ ModBlockFlags::ModBlockFlags()
 	m_flag = 0;
 }
 
-ModBlockFlagsIterator& ModBlockFlags::UseIterator()
+ModBlockFlagsIterator ModBlockFlags::UseIterator() const
 {
 	return m_iterator;
 }

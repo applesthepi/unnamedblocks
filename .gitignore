@@ -1,6 +1,8 @@
+Espresso/lib
 RHR/INT
 VanillaMods/*
 mods
+cmake
 !/VanillaMods/ub-ModVin
 !/VanillaMods/CMakeLists.txt
 UnnamedBlocks/dep/BOOST64/

@@ -1,19 +1,8 @@
 #include "ModBlockActions.h"
 
-ModBlockAction::ModBlockAction(ModBlockActionTypes type)
-	:m_type(type)
-{
-
-}
-
-ModBlockActionTypes ModBlockAction::GetType() const
-{
-	return m_type;
-}
-
 void Execute(PreProcessorData& data)
 {
-
+	Logger::Warn("empty action executed");
 }
 
 ModBlockActions::ModBlockActions()

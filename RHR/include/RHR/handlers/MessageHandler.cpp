@@ -1,8 +1,8 @@
 #include "MessageHandler.h"
-#include "Global.h"
-#include "ui/TypingSystem.h"
-#include "ui/Button.h"
-#include "registries/ButtonRegistry.h"
+#include "RHR/Global.h"
+#include "RHR/ui/TypingSystem.h"
+#include "RHR/ui/Button.h"
+#include "RHR/registries/ButtonRegistry.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>

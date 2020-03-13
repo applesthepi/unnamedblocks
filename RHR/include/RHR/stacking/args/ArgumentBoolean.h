@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Argument.h"
-#include "Global.h"
-#include "ui/TypingSystem.h"
+#include "RHR/Global.h"
+#include "RHR/ui/TypingSystem.h"
 
 #include <iostream>
 

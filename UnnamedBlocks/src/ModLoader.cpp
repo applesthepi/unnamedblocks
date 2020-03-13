@@ -1,5 +1,5 @@
 #include "ModLoader.h"
-#include "config.h"
+#include <RHR/config.h>//TODO temp
 #include <iostream>
 #include <boost/filesystem.hpp>
 

@@ -3,7 +3,7 @@
 #include "args/ArgumentString.h"
 #include "args/ArgumetReal.h"
 #include "args/ArgumentBoolean.h"
-#include "handlers/Logger.h"
+#include <Espresso/Logger.h>
 #include "Espresso/block/ModBlock.h"
 
 #include <SFML/Graphics.hpp>
@@ -20,10 +20,10 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 	m_functionSelectStack = functionSelectStack;
 
 	const ModBlock& blockDetails = registry->GetBlock(type);
-	const ModCatagory& catagoryDetails = registry->GetCatagory(std::string(blockDetails.UseCatagory()));
+	const ModCatagory& catagoryDetails = registry->GetCatagory(std::string() = blockDetails.GetCategory());
 
-	std::vector<BlockArgument> args = blockDetails.Args;
-	m_background.setFillColor(catagoryDetails.Color);
+	const std::vector<BlockArgumentInitializer> args = blockDetails.GetArguments();
+	m_background.setFillColor(catagoryDetails.GetColor());
 
 	unsigned int offset = Global::BlockBorder;
 
@@ -49,7 +49,7 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
 			arg->SetMode(BlockArgumentVariableMode::RAW);
-			arg->SetData(args[i].Value);
+			arg->SetData(args[i].DefaultValue);
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
 
@@ -60,8 +60,8 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 			ArgumentString* arg = new ArgumentString(sf::Vector2u(offset, 0));
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
-			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
@@ -73,8 +73,8 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 			ArgumentReal* arg = new ArgumentReal(sf::Vector2u(offset, 0));
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
-			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
@@ -86,8 +86,8 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 			ArgumentBoolean* arg = new ArgumentBoolean(sf::Vector2u(offset, 0));
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
-			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;

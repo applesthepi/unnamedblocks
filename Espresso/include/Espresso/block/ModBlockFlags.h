@@ -7,7 +7,7 @@ class ModBlockFlags
 {
 public:
 	ModBlockFlags();
-	ModBlockFlagsIterator& UseIterator();
+	ModBlockFlagsIterator UseIterator() const;
 	
 	ModBlockFlags& CheckHeap();
 	ModBlockFlags& CheckStack();

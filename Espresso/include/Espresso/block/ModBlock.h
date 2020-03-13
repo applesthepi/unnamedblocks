@@ -1,7 +1,7 @@
 #pragma once
 #include "ModBlockFlags.h"
-
 #include "ModBlockActions.h"
+
 #include <vector>
 #include <string>
 
@@ -51,24 +51,27 @@ public:
 class ModBlock
 {
 public:
+	// how the block will be identified as. Convention example: "mymod_some_block_name"
+	virtual const char* GetUnlocalizedName() const;
+
 	// the path to the block definition
-	virtual const char* UsePath() const;
+	virtual const char* GetPath() const;
 	
-	// catagory of the block
-	virtual const char* UseCatagory() const;
+	// category of the block
+	virtual const char* GetCategory() const;
 	
 	// does the block start a stack
-	virtual bool IsTopical() const;
+	virtual const bool IsTopical() const;
 	
 	// flags to check during debug build
-	virtual ModBlockFlags GetFlags() const;
+	virtual const ModBlockFlags GetFlags() const;
 	
 	// actions to run once per block type during runtime preinitialization
-	virtual ModBlockActions RuntimePreInit() const;
+	virtual const ModBlockActions RuntimePreInit() const;
 	
 	// actions to run on each block preprocessed during initialization
-	virtual ModBlockActions RuntimeInit() const;
+	virtual const ModBlockActions RuntimeInit() const;
 	
 	// block arguments, including text
-	virtual std::vector<BlockArgumentInitializer> GetArguments() const;
+	virtual const std::vector<BlockArgumentInitializer> GetArguments() const;
 };
