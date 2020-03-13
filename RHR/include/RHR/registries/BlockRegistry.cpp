@@ -34,7 +34,7 @@ const ModBlock& BlockRegistry::GetBlock(const std::string& unlocalizedName)
 	return ModBlock();
 }
 
-const ModCatagory& BlockRegistry::GetCatagory(const std::string& unlocalizedName)
+const ModCatagory& BlockRegistry::GetCategory(const std::string& unlocalizedName)
 {
 	for (unsigned int i = 0; i < m_catagories.size(); i++)
 	{
@@ -44,4 +44,15 @@ const ModCatagory& BlockRegistry::GetCatagory(const std::string& unlocalizedName
 
 	Logger::Error("unexpected failure to get a catagory. Mod loading error?");
 	return ModCatagory();
+}
+
+
+const std::vector<ModBlock>& BlockRegistry::GetBlocks()
+{
+	return m_blocks;
+}
+
+const std::vector<ModCatagory>& BlockRegistry::GetCategories()
+{
+	return m_catagories;
 }

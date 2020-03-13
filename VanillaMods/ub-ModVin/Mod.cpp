@@ -52,8 +52,33 @@ public:
 	const ModBlockActions RuntimePreInit() const override
 	{
 		ModBlockActions actions;
-		actions.AddAction(ModBlockActionLogInfo("some text!"));
+		actions.AddAction(ModBlockActionLogInfo("this should only run once; used for global containers"));
+
 		return actions;
+	}
+
+	const ModBlockActions RuntimeInit() const override
+	{
+		ModBlockActions actions;
+		actions.AddAction(ModBlockActionLogInfo("this should only run once for each stack; used for local containers"));
+
+		return actions;
+	}
+
+	const ModBlockActions RuntimePostInit() const override
+	{
+		ModBlockActions actions;
+		actions.AddAction(ModBlockActionLogInfo("this should run for every block that exists during post init; used for local containers"));
+
+		return actions;
+	}
+
+	const std::vector<BlockArgumentInitializer> GetArguments() const override
+	{
+		std::vector<BlockArgumentInitializer> args;
+		args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "example text"));
+
+		return args;
 	}
 };
 

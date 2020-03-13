@@ -35,6 +35,11 @@ const ModBlockActions ModBlock::RuntimeInit() const
 	return ModBlockActions();
 };
 
+const ModBlockActions ModBlock::RuntimePostInit() const
+{
+	return ModBlockActions();
+}
+
 const std::vector<BlockArgumentInitializer> ModBlock::GetArguments() const
 {
 	return {BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "NULL")};

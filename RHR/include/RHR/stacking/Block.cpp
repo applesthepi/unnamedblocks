@@ -20,7 +20,7 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 	m_functionSelectStack = functionSelectStack;
 
 	const ModBlock& blockDetails = registry->GetBlock(type);
-	const ModCatagory& catagoryDetails = registry->GetCatagory(std::string() = blockDetails.GetCategory());
+	const ModCatagory& catagoryDetails = registry->GetCategory(std::string() = blockDetails.GetCategory());
 
 	const std::vector<BlockArgumentInitializer> args = blockDetails.GetArguments();
 	m_background.setFillColor(catagoryDetails.GetColor());

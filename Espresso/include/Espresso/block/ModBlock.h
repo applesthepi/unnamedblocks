@@ -66,11 +66,14 @@ public:
 	// flags to check during debug build
 	virtual const ModBlockFlags GetFlags() const;
 	
-	// actions to run once per block type during runtime preinitialization
+	// actions to run once per block type; during runtime preInitialization
 	virtual const ModBlockActions RuntimePreInit() const;
 	
-	// actions to run on each block preprocessed during initialization
+	// actions to run once per block type on every stack; during runtime initialization
 	virtual const ModBlockActions RuntimeInit() const;
+
+	// actions to run on each block preprocessed; during postInitialization
+	virtual const ModBlockActions RuntimePostInit() const;
 	
 	// block arguments, including text
 	virtual const std::vector<BlockArgumentInitializer> GetArguments() const;

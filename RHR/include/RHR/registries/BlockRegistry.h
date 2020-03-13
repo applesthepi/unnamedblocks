@@ -25,7 +25,10 @@ public:
 	void RegisterBlock(const ModBlock& block);
 
 	const ModBlock& GetBlock(const std::string& unlocalizedName);
-	const ModCatagory& GetCatagory(const std::string& unlocalizedName);
+	const ModCatagory& GetCategory(const std::string& unlocalizedName);
+
+	const std::vector<ModBlock>& GetBlocks();
+	const std::vector<ModCatagory>& GetCategories();
 private:
 	std::vector<ModBlock> m_blocks;
 	std::vector<ModCatagory> m_catagories;
