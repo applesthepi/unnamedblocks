@@ -29,7 +29,11 @@ Makefile
 .ycm_extra_conf.py
 build/CMakeFiles/
 build/RHR/
-build/VanillaMods
+build/VanillaMods/
+build/Espresso/
 build/config.h
 build/CMakeCache.txt
+build/cmake_install.cmake
+build/tmp
+build/runtime/comp.so
 **.deps
