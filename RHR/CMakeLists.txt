@@ -15,15 +15,14 @@ add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Block.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Plane.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/modding/ModData.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/RHR.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/registries/BlockRegistry.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/registries/ShaderRegistry.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/registries/ButtonRegistry.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/Logger.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/StatmentHandler.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/Preprocessor.cpp"
 	)
 target_link_libraries(RHR PUBLIC
 	Espresso

@@ -19,8 +19,8 @@
 #include <cstring>
 #include <vector>
 
-//#include <dlfcn.h>
-#include <windows.h>
+#include <dlfcn.h>
+//#include <windows.h>
 
 #define UB_VERSION "Unnamed Blocks v0.0b2"
 #define UB_BETA_BUILD true
@@ -74,7 +74,6 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 
 int main()
 {
-	/*
 	typedef void(*f_initialize)(int*);
 	system("tcc comp.c -shared -o comp.so");
 	
@@ -94,9 +93,9 @@ int main()
 	system("pause");
 
 	return 0;
-	*/
+	
 
-
+	/*
 	typedef void(*f_initialize)(int*);
 	system("call compile.bat");
 
@@ -122,4 +121,5 @@ int main()
 
 	system("pause");
 	return 0;
+	*/
 }

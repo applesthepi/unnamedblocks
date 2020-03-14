@@ -1,3 +1,4 @@
+/*
 #pragma once
 #include <string>
 #include <vector>
@@ -33,3 +34,4 @@ public:
 
 void registerMod(std::string& fileName, std::string& fileType);
 ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable, BlockRegistry* registry);
+*/

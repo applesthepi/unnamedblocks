@@ -2,6 +2,9 @@
 #include <Espresso/Espresso.h>
 #include <cmath>
 
+//TODO config
+#define LINUX
+
 #ifdef LINUX
 #define UB_EXPORT extern "C"
 #else

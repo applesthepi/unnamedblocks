@@ -3,7 +3,6 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <chrono>
 #include <iostream>
-
 static void GetStrokes(bool* press)
 {
 	press[8] = sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace);

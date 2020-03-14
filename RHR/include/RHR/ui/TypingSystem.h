@@ -1,5 +1,13 @@
 #pragma once
+
+#define POSIX
+// TODO fix config on windows
+#ifdef POSIX
+#include "config.h"
+#else
 #include "RHR/config.h"
+#endif
+
 #include <vector>
 #include <functional>
 #include <chrono>

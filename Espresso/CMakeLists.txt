@@ -13,6 +13,9 @@ add_library(Espresso STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockFlags.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockFlagsIterator.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/preprocessor/PreProcessorData.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Logger.cpp"
 	${SFML_LIBRARIES}
 )
 target_include_directories(Espresso PUBLIC

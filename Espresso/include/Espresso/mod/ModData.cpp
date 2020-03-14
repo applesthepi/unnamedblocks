@@ -1,4 +1,5 @@
 #include "ModData.h"
+#include <string.h>
 
 ModDataBaked ModData::Bake()
 {

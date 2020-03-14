@@ -1,3 +1,4 @@
+/*
 #include "ModLoader.h"
 #include <RHR/config.h>//TODO temp
 #include <iostream>
@@ -123,3 +124,4 @@ ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* ru
 	delete mods;
 	return ModLoaderStatus::ModLoaderStatus_OK;
 }
+*/
