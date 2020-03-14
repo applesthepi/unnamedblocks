@@ -1,6 +1,6 @@
 #pragma once
 
-#define POSIX
+//#define POSIX
 // TODO fix config on windows
 #ifdef POSIX
 #include "config.h"

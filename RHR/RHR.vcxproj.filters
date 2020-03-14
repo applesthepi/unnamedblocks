@@ -48,9 +48,6 @@
     <ClCompile Include="include\RHR\Global.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\RHR\RHR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\RHR\registries\BlockRegistry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

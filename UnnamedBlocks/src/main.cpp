@@ -1,5 +1,15 @@
 //#include "ModLoader.h"
-#include <RHR/config.h>
+
+
+//#define POSIX
+// TODO fix config on windows
+#ifdef POSIX
+#include "config.h"
+#else
+#include "RHR/config.h"
+#endif
+
+
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
 #include <Espresso/Logger.h>
@@ -11,16 +21,13 @@
 //typedef int(__cdecl* MYPROC)(LPWSTR);
 #include <RHR/RHR.h>
 
-#ifdef LINUX
+#ifdef POSIX
 #include <X11/Xlib.h>
 #endif
 
 #include <iostream>
 #include <cstring>
 #include <vector>
-
-#include <dlfcn.h>
-//#include <windows.h>
 
 #define UB_VERSION "Unnamed Blocks v0.0b2"
 #define UB_BETA_BUILD true

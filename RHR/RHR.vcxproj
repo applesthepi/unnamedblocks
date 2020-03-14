@@ -186,7 +186,6 @@
     <ClCompile Include="include\RHR\registries\BlockRegistry.cpp" />
     <ClCompile Include="include\RHR\registries\ButtonRegistry.cpp" />
     <ClCompile Include="include\RHR\registries\ShaderRegistry.cpp" />
-    <ClCompile Include="include\RHR\RHR.cpp" />
     <ClCompile Include="include\RHR\stacking\args\Argument.cpp" />
     <ClCompile Include="include\RHR\stacking\Block.cpp" />
     <ClCompile Include="include\RHR\stacking\Plane.cpp" />
