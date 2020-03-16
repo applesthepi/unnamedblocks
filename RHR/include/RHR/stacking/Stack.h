@@ -24,25 +24,25 @@ public:
 	void FrameUpdate(bool updateBlocks, bool forceUpdate = false);
 	void SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPosition, void* planePtr, std::function<void(Stack* stack)>* functionAdd, std::function<void(Stack* stack)>* functionRemove, std::function<void(Stack* stack)>* functionMoveTop, std::function<void(Stack* stack)>* functionAddOver);
 
-	void* GetPlanePointer();
-	unsigned int GetBlockCount();
-	sf::Vector2i GetAbsolutePosition();
-	sf::Vector2i GetRelitivePosition();
-	sf::Vector2i GetSetPosition();
-	sf::Vector2u GetPlanePosition();
+	void* GetPlanePointer() const;
+	unsigned int GetBlockCount() const;
+	sf::Vector2i GetAbsolutePosition() const;
+	sf::Vector2i GetRelitivePosition() const;
+	sf::Vector2i GetSetPosition() const;
+	sf::Vector2u GetPlanePosition() const;
 	void SetRelitivePosition(sf::Vector2i position);
-	unsigned int GetBlockWidth(unsigned int index);
-	Block* GetBlock(unsigned int index);
+	unsigned int GetBlockWidth(unsigned int index) const;
+	Block* GetBlock(unsigned int index) const;
 	void CopyEverything(Stack* stack, BlockRegistry* registry);
 	void DragDown(sf::Vector2i mousePosition);
 	void DragUp(sf::Vector2i mousePosition);
-	std::function<void()>* GetFunctionUpdate();
-	std::function<void()>* GetFunctionSelect();
-	bool IsBounding(const sf::Vector2f& mousePos);
+	std::function<void()>* GetFunctionUpdate() const;
+	std::function<void()>* GetFunctionSelect() const;
+	bool IsBounding(const sf::Vector2f& mousePos) const;
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	void ReloadVanity();
-	std::vector<StatmentIf> GetVanity();
+	std::vector<StatmentIf> GetVanity() const;
 	void ReRender();
 	void IndexVariables();
 private:

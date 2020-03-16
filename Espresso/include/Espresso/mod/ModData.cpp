@@ -28,6 +28,8 @@ ModDataBaked ModData::Bake()
 
 	m_blocks.clear();
 	m_categories.clear();
+	
+	return baked;
 }
 
 void ModData::RegisterBlock(ModBlock* block)

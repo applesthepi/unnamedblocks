@@ -31,7 +31,7 @@ public:
 
 	const char* GetPath() const override
 	{
-		return "print.ubb";
+		return "TestMod/print.ubb";
 	}
 
 	const char* GetCategory() const override

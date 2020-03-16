@@ -286,7 +286,7 @@ unsigned int Block::GetArgumentCount()
 	return m_args.size();
 }
 
-std::string Block::GetUnlocalizedName()
+const std::string& Block::GetUnlocalizedName()
 {
 	return m_unlocalizedName;
 }

@@ -652,32 +652,32 @@ void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPo
 	FrameUpdate(true);
 }
 
-void* Stack::GetPlanePointer()
+void* Stack::GetPlanePointer() const
 {
 	return m_planePtr;
 }
 
-unsigned int Stack::GetBlockCount()
+unsigned int Stack::GetBlockCount() const
 {
 	return m_blocks.size();
 }
 
-sf::Vector2i Stack::GetAbsolutePosition()
+sf::Vector2i Stack::GetAbsolutePosition() const
 {
 	return m_absolutePosition;
 }
 
-sf::Vector2i Stack::GetRelitivePosition()
+sf::Vector2i Stack::GetRelitivePosition() const
 {
 	return m_relitivePosition;
 }
 
-sf::Vector2i Stack::GetSetPosition()
+sf::Vector2i Stack::GetSetPosition() const
 {
 	return m_setPosition;
 }
 
-sf::Vector2u Stack::GetPlanePosition()
+sf::Vector2u Stack::GetPlanePosition() const
 {
 	return *m_planePosition;
 }
@@ -687,7 +687,7 @@ void Stack::SetRelitivePosition(sf::Vector2i position)
 	m_setPosition = position;
 }
 
-unsigned int Stack::GetBlockWidth(unsigned int index)
+unsigned int Stack::GetBlockWidth(unsigned int index) const
 {
 	if (index >= m_blocks.size())
 		return 0;
@@ -695,7 +695,7 @@ unsigned int Stack::GetBlockWidth(unsigned int index)
 		return m_blocks[index]->GetWidth();
 }
 
-Block* Stack::GetBlock(unsigned int index)
+Block* Stack::GetBlock(unsigned int index) const
 {
 	return m_blocks[index];
 }
@@ -750,17 +750,17 @@ void Stack::DragUp(sf::Vector2i mousePosition)
 	m_draggingType = DraggingType::UP;
 }
 
-std::function<void()>* Stack::GetFunctionUpdate()
+std::function<void()>* Stack::GetFunctionUpdate() const
 {
 	return m_functionUpdatePreTexture;
 }
 
-std::function<void()>* Stack::GetFunctionSelect()
+std::function<void()>* Stack::GetFunctionSelect() const
 {
 	return m_functionSelectStack;
 }
 
-bool Stack::IsBounding(const sf::Vector2f& mousePos)
+bool Stack::IsBounding(const sf::Vector2f& mousePos) const
 {
 	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + m_highestWidth && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + (m_blocks.size() * Global::BlockHeight);
 }
@@ -843,7 +843,7 @@ void Stack::ReloadVanity()
 	}
 }
 
-std::vector<StatmentIf> Stack::GetVanity()
+std::vector<StatmentIf> Stack::GetVanity() const
 {
 	return m_savedVanity;
 }

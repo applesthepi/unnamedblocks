@@ -1,4 +1,3 @@
-/*
 #include "ModLoader.h"
 #include <RHR/config.h>//TODO temp
 #include <iostream>
@@ -40,7 +39,7 @@ void registerMod(std::string& fileName, std::string& fileType)
 	mods->push_back(mod);
 }
 
-ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable, BlockRegistry* registry)
+ModLoaderStatus run(BlockRegistry* registry)
 {
 	typedef void(*f_initialize)(ModData*);
 
@@ -101,27 +100,17 @@ ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* ru
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif
-		(*mods)[i].Data->Object = object;
-		(*mods)[i].Data->Byte = byte;
-		(*mods)[i].Data->Runtime = runtime;
-		(*mods)[i].Data->Thread = thread;
-		(*mods)[i].Data->Variable = variable;
-		(*mods)[i].Data->Registry = registry;
-		(*mods)[i].Data->Font = Global::Font;
-
 		initialize((*mods)[i].Data);
 
-		std::vector<RegCatagory>* catagories = (*mods)[i].Data->GetCatagories();
-		std::vector<RegBlock>* blocks = (*mods)[i].Data->GetBlocks();
+		ModDataBaked baked = (*mods)[i].Data->Bake();
 
-		for (uint32_t i = 0; i < catagories->size(); i++)
-			registry->RegisterCatagory(&(*catagories)[i]);
+		for (uint32_t i = 0; i < baked.CategoriesLength; i++)
+			registry->RegisterCatagory(baked.Categories[i]);
 
-		for (uint32_t i = 0; i < blocks->size(); i++)
-			registry->RegisterBlock(&(*blocks)[i], variable);
+		for (uint32_t i = 0; i < baked.BlocksLength; i++)
+			registry->RegisterBlock(baked.Blocks[i]);
 	}
 
 	delete mods;
 	return ModLoaderStatus::ModLoaderStatus_OK;
 }
-*/

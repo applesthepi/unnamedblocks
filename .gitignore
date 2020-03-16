@@ -35,5 +35,6 @@ build/config.h
 build/CMakeCache.txt
 build/cmake_install.cmake
 build/tmp
+build/runtime/build
 build/runtime/comp.so
 **.deps

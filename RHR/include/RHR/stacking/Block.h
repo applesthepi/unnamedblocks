@@ -40,7 +40,7 @@ public:
 	BlockRuntimeReturn GetUsedArgumentsRuntime();
 	std::vector<std::string>* GetUsedArgumentSetup();
 	unsigned int GetArgumentCount();
-	std::string GetUnlocalizedName();
+	const std::string& GetUnlocalizedName();
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	bool GetNext();
 	void SelectFirstArgument();

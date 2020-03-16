@@ -20,6 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ModLoader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\ModLoader.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -94,7 +98,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -109,7 +113,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -126,7 +130,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -145,7 +149,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\include\boost-1_69\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
