@@ -6,12 +6,12 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
 {
 	unit.SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::RUNNING);
 
-	const Stack& stack = unit.GetStack();
+	const Stack* stack = unit.GetStack();
 	BlockRegistry* blockRegistry = unit.GetBlockRegistry();
 
-	for (uint64_t i = 0; i < stack.GetBlockCount(); i++)
+	for (uint64_t i = 0; i < stack->GetBlockCount(); i++)
 	{
-		Block* block = stack.GetBlock(i);
+		Block* block = stack->GetBlock(i);
 
 		const std::string& unlocalizedName = block->GetUnlocalizedName();
 		BlockRuntimeReturn runtimeReturn = block->GetUsedArgumentsRuntime();
