@@ -19,11 +19,11 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 	m_functionUpdatePreTexture = functionUpdatePreTexture;
 	m_functionSelectStack = functionSelectStack;
 
-	const ModBlock& blockDetails = registry->GetBlock(type);
-	const ModCatagory& catagoryDetails = registry->GetCategory(std::string() = blockDetails.GetCategory());
+	const ModBlock* blockDetails = registry->GetBlock(type);
+	const ModCatagory* catagoryDetails = registry->GetCategory(std::string() = blockDetails->GetCategory());
 
-	const std::vector<BlockArgumentInitializer> args = blockDetails.GetArguments();
-	m_background.setFillColor(catagoryDetails.GetColor());
+	const std::vector<BlockArgumentInitializer> args = blockDetails->GetArguments();
+	m_background.setFillColor(catagoryDetails->GetColor());
 
 	unsigned int offset = Global::BlockBorder;
 

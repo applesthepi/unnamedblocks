@@ -17,9 +17,9 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 		const std::string& unlocalizedName = block->GetUnlocalizedName();
 		BlockRuntimeReturn runtimeReturn = block->GetUsedArgumentsRuntime();
 
-		const ModBlock& modBlock = blockRegistry->GetBlock(unlocalizedName);
+		const ModBlock* modBlock = blockRegistry->GetBlock(unlocalizedName);
 		char* blockPath = (char*)"mods/";
-		strcat(blockPath, modBlock.GetPath());
+		strcat(blockPath, modBlock->GetPath());
 
 		std::vector<std::string> lines;
 

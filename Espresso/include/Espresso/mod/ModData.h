@@ -6,10 +6,10 @@ class ModDataBaked
 {
 public:
 	uint32_t BlocksLength;
-	ModBlock* Blocks;
+	ModBlock** Blocks;
 
 	uint32_t CategoriesLength;
-	ModCatagory* Categories;
+	ModCatagory** Categories;
 };
 
 class ModData
@@ -19,7 +19,7 @@ public:
 
 	void RegisterBlock(ModBlock* block);
 	void RegisterCategory(ModCatagory* category);
-private:
+//private:
 	std::vector<ModBlock*> m_blocks;
 	std::vector<ModCatagory*> m_categories;
 };

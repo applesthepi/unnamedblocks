@@ -103,14 +103,17 @@ ModLoaderStatus run(BlockRegistry* registry)
 		initialize((*mods)[i].Data);
 
 		ModDataBaked baked = (*mods)[i].Data->Bake();
+		std::cout << baked.Categories[i]->GetDisplayName() << std::endl;
 
 		for (uint32_t i = 0; i < baked.CategoriesLength; i++)
 			registry->RegisterCatagory(baked.Categories[i]);
 
 		for (uint32_t i = 0; i < baked.BlocksLength; i++)
 			registry->RegisterBlock(baked.Blocks[i]);
+
+		Logger::Debug(registry->GetCategory("test_category")->GetDisplayName());
 	}
 
-	delete mods;
+	//delete mods;
 	return ModLoaderStatus::ModLoaderStatus_OK;
 }

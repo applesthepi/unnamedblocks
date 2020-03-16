@@ -21,15 +21,15 @@ class BlockRegistry
 public:
 	BlockRegistry();
 
-	void RegisterCatagory(const ModCatagory& catagory);
-	void RegisterBlock(const ModBlock& block);
+	void RegisterCatagory(ModCatagory* catagory);
+	void RegisterBlock(ModBlock* block);
 
-	const ModBlock& GetBlock(const std::string& unlocalizedName);
-	const ModCatagory& GetCategory(const std::string& unlocalizedName);
+	const ModBlock* GetBlock(const std::string& unlocalizedName);
+	const ModCatagory* GetCategory(const std::string& unlocalizedName);
 
-	const std::vector<ModBlock>& GetBlocks();
-	const std::vector<ModCatagory>& GetCategories();
+	const std::vector<ModBlock*>& GetBlocks();
+	const std::vector<ModCatagory*>& GetCategories();
 private:
-	std::vector<ModBlock> m_blocks;
-	std::vector<ModCatagory> m_catagories;
+	std::vector<ModBlock*> m_blocks;
+	std::vector<ModCatagory*> m_catagories;
 };

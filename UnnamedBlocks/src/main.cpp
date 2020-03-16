@@ -65,10 +65,10 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 
 	for (unsigned int a = 0; a < registry->GetBlocks().size(); a++)
 	{
-		if (registry->GetBlocks()[a].GetCategory() == registry->GetCategories()[index].GetUnlocalizedName())
+		if (registry->GetBlocks()[a]->GetCategory() == registry->GetCategories()[index]->GetUnlocalizedName())
 		{
 			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), registry);
-			Block* block = new Block(registry->GetBlocks()[a].GetUnlocalizedName(), registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
+			Block* block = new Block(registry->GetBlocks()[a]->GetUnlocalizedName(), registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 
 			toolbarPlane->AddStack(stack);
 			stack->AddBlock(block);
@@ -211,7 +211,7 @@ int main()
 
 	for (unsigned int i = 0; i < pRegistry->GetCategories().size(); i++)
 	{
-		if (pRegistry->GetCategories()[i].GetDisplayName() == "")
+		if (pRegistry->GetCategories()[i]->GetDisplayName() == "")
 			continue;
 
 		std::function<void()>* callback = new std::function<void()>();
@@ -224,7 +224,7 @@ int main()
 		};
 
 		Button* cat = new Button(sf::Vector2i(5, 5 + (useCount * (16 + 5))), sf::Vector2u(100, 16), callback);
-		cat->SetButtonModeText(pRegistry->GetCategories()[i].GetDisplayName(), pRegistry->GetCategories()[i].GetColor(), 12);
+		cat->SetButtonModeText(pRegistry->GetCategories()[i]->GetDisplayName(), pRegistry->GetCategories()[i]->GetColor(), 12);
 
 		catButtons.push_back(cat);
 		ButtonRegistry::AddButton(cat);
@@ -462,7 +462,7 @@ int main()
 		int16_t useCat = 0;
 		for (uint16_t i = 0; i < pRegistry->GetCategories().size(); i++)
 		{
-			if (pRegistry->GetCategories()[i].GetDisplayName() != "")
+			if (pRegistry->GetCategories()[i]->GetDisplayName() != "")
 			{
 				useCat = i;
 				break;
@@ -477,10 +477,10 @@ int main()
 
 			for (unsigned int i = 0; i < pRegistry->GetBlocks().size(); i++)
 			{
-				if (pRegistry->GetBlocks()[i].GetCategory() == pRegistry->GetCategories()[useCat].GetUnlocalizedName())
+				if (pRegistry->GetBlocks()[i]->GetCategory() == pRegistry->GetCategories()[useCat]->GetUnlocalizedName())
 				{
 					Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
-					Block* block = new Block(pRegistry->GetBlocks()[i].GetUnlocalizedName(), pRegistry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
+					Block* block = new Block(pRegistry->GetBlocks()[i]->GetUnlocalizedName(), pRegistry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 
 					toolbarPlane->AddStack(stack);
 					stack->AddBlock(block);
