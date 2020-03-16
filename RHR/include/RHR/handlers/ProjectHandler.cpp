@@ -83,7 +83,8 @@ void ProjectHandler::LoadProject(std::string path, Plane* plane, BlockRegistry* 
 
 			i++;
 		}
-
+		stack->ReRender();
+		stack->ReloadVanity();
 		i++;
 	}
 	

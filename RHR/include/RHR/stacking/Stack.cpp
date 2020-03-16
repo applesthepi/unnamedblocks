@@ -272,13 +272,9 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			}
 			//TODO optomize this
 			stayStack->ReloadAllBlocks();
-			stayStack->ReloadVanity();
-			stayStack->ReRender();
 			stayStack->FrameUpdate(true, true);
 			
 			ReloadAllBlocks();
-			ReloadVanity();
-			ReRender();
 			FrameUpdate(true, true);
 		}
 	};
@@ -313,6 +309,9 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 	ReloadVanity();
 }
 
+/// Add block to the stack
+/// NOTE: Its recommended to call ReloadVanity and ReRender after this or several calls of this, but not required
+/// You can also call ReloadAllBlocks in thier place, but thats more expensive.
 void Stack::AddBlock(Block* block)
 {
 	if (m_blocks.size() > 0 && ((Plane*)m_planePtr)->IsToolbar())
@@ -322,8 +321,6 @@ void Stack::AddBlock(Block* block)
 	block->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
 
 	m_blocks.push_back(block);
-	ReloadVanity();//TODO these calls need to be called by the caller at the end of adding all blocks
-	ReRender();
 }
 
 void Stack::ReloadAllBlocks()
@@ -333,7 +330,7 @@ void Stack::ReloadAllBlocks()
 		m_blocks[i]->SetupInStack(i, &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
 		m_blocks[i]->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
 	}
-
+	ReloadVanity();
 	ReRender();
 }
 

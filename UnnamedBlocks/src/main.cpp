@@ -73,6 +73,9 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 			toolbarPlane->AddStack(stack);
 			stack->AddBlock(block);
 
+			stack->ReRender();
+			stack->ReloadVanity();
+
 			if (block->GetWidth() > widest)
 			{
 				widest = block->GetWidth();
@@ -149,8 +152,8 @@ int main()
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
 
 #ifdef LINUX
+	// TODO: Proper wayland support
 	XInitThreads();
-	Logger::Info("Linux build");
 #endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");
 
@@ -481,6 +484,9 @@ int main()
 
 					toolbarPlane->AddStack(stack);
 					stack->AddBlock(block);
+
+					stack->ReloadVanity();
+					stack->ReRender();
 
 					idx++;
 				}
