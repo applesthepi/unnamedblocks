@@ -364,7 +364,7 @@ int main()
 
 			while (waiting)
 			{
-				Logger::Debug("waiting for translation units to build...");
+				Logger::Debug("...waiting for translation units to build...");
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 				for (uint64_t i = 0; i < units.size(); i++)
@@ -396,7 +396,7 @@ int main()
 
 			while (waiting)
 			{
-				Logger::Debug("waiting for final build...");
+				Logger::Debug("...waiting for final build...");
 				std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 				if (PreProcessor::GetStatus() == PreProcessorStatus::DONE)
@@ -416,37 +416,9 @@ int main()
 			if (error)
 				return;
 
-#ifdef POSIX
-			
-#else
-			typedef void(*f_run)(void*);
-
-			boost::filesystem::remove("runtime/comp.dll");
 			Logger::Debug("...completed build, compiling...");
 
-			system("call compile.bat");
-
-			if (boost::filesystem::exists("runtime/comp.dll"))
-			{
-				bool* finished = new bool();
-				*finished = false;
-
-				HINSTANCE dll = LoadLibrary("./comp.dll");
-				f_run runCall = (f_run)GetProcAddress(dll, "re");
-
-				Logger::Debug("...compiled successfully, running.");
-
-				returnFinished = false;
-				runCall(ReturnFinished);
-
-				while (!returnFinished)
-					std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-				Logger::Debug("finished execution");
-			}
-			else
-				Logger::Debug("...compilation failed.");
-#endif
+			PreProcessor::Start();
 		};
 
 		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);

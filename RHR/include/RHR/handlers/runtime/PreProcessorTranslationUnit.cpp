@@ -18,8 +18,9 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 		BlockRuntimeReturn runtimeReturn = block->GetUsedArgumentsRuntime();
 
 		const ModBlock* modBlock = blockRegistry->GetBlock(unlocalizedName);
-		char* blockPath = (char*)"mods/";
-		strcat(blockPath, modBlock->GetPath());
+
+		std::string blockPath = "mods/";
+		blockPath += modBlock->GetPath();
 
 		std::vector<std::string> lines;
 
@@ -41,7 +42,8 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 						{
 							firstHit = false;
 							std::string number;
-							editedLine += line.substr(lastCut, a - lastCut - 2);
+							editedLine += line.substr(lastCut, a - lastCut - 1);
+							a++;
 
 							while (line[a] != '$')
 							{
@@ -65,7 +67,7 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 							else
 							{
 								editedLine += runtimeReturn.Args->at(argIdx).Value;
-								lastCut = a;
+								lastCut = a + 1;
 							}
 						}
 						else
@@ -98,17 +100,24 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 	unit->SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE);
 }
 
-PreProcessorTranslationUnit::PreProcessorTranslationUnit(PreProcessorTranslationUnit&& unit)
+PreProcessorTranslationUnit::PreProcessorTranslationUnit(PreProcessorTranslationUnit&&)
 {
-	m_status = unit.GetTranslationUnitStatus();
-	m_path = unit.GetFinishedPath();
-	m_stack = unit.GetStack();
-	m_blockRegistry = unit.GetBlockRegistry();
+
 }
 
-PreProcessorTranslationUnit::PreProcessorTranslationUnit(const uint64_t& idx, const Stack* stack, BlockRegistry* blockRegistry)
-	:m_status(PreProcessorTranslationUnitStatus::NOT_READY), m_stack(stack), m_blockRegistry(blockRegistry)
+PreProcessorTranslationUnit::PreProcessorTranslationUnit()
 {
+	m_status = PreProcessorTranslationUnitStatus::NOT_READY;
+	m_stack = nullptr;
+	m_blockRegistry = nullptr;
+}
+
+void PreProcessorTranslationUnit::Start(const uint64_t& idx, const Stack* stack, BlockRegistry* blockRegistry)
+{
+	m_status = PreProcessorTranslationUnitStatus::NOT_READY;
+	m_stack = stack;
+	m_blockRegistry = blockRegistry;
+
 	m_path = "runtime/build/tu_" + std::to_string(idx) + ".ubb";
 	m_thread = std::thread(ThreadPreProcessorTranslationUnit, this);
 	m_thread.detach();
@@ -116,13 +125,13 @@ PreProcessorTranslationUnit::PreProcessorTranslationUnit(const uint64_t& idx, co
 
 void PreProcessorTranslationUnit::SetTranslationUnitStatus(PreProcessorTranslationUnitStatus status)
 {
-	std::unique_lock<std::mutex> lock(m_statusMutex);
+	std::unique_lock<std::shared_mutex> lock(m_statusMutex);
 	m_status = status;
 }
 
 PreProcessorTranslationUnitStatus PreProcessorTranslationUnit::GetTranslationUnitStatus()
 {
-	std::unique_lock<std::mutex> lock(m_statusMutex);
+	std::unique_lock<std::shared_mutex> lock(m_statusMutex);
 	return m_status;
 }
 

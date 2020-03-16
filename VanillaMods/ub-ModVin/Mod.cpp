@@ -76,7 +76,9 @@ public:
 	const std::vector<BlockArgumentInitializer> GetArguments() const override
 	{
 		std::vector<BlockArgumentInitializer> args;
+		
 		args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "example text"));
+		args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "Hello, World!"));
 
 		return args;
 	}

@@ -29,9 +29,6 @@ ModDataBaked ModData::Bake()
 	for (uint32_t i = 0; i < m_categories.size(); i++)
 		baked.Categories[i] = m_categories[i];
 
-	std::cout << baked.Categories[0]->GetDisplayName() << std::endl;
-	std::cout << m_categories[0]->GetDisplayName() << std::endl;
-
 	m_blocks.clear();
 	m_categories.clear();
 
