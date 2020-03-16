@@ -353,7 +353,7 @@ int main()
 			std::vector<uint64_t> units;
 
 			for (uint64_t i = 0; i < planeCopy->GetStackCount(); i++)
-				units.push_back(PreProcessor::InitializeTranslationUnit(*planeCopy->GetStack(i), pRegistry));
+				units.push_back(PreProcessor::InitializeTranslationUnit(planeCopy->GetStack(i), pRegistry));
 
 			bool waiting = true;
 			bool error = false;

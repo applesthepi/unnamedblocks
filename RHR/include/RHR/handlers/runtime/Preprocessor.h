@@ -20,7 +20,7 @@ class PreProcessor
 public:
 	// preprocessor translation unit building
 	static void Cleanup();
-	static const uint64_t InitializeTranslationUnit(const Stack& stack, BlockRegistry* blockRegistry);
+	static const uint64_t InitializeTranslationUnit(const Stack* stack, BlockRegistry* blockRegistry);
 	static PreProcessorTranslationUnitStatus GetTranslationUnitStatus(const uint64_t& idx);
 	
 	// building

@@ -29,7 +29,7 @@ void PreProcessor::Cleanup()
 	m_finished = false;
 }
 
-const uint64_t PreProcessor::InitializeTranslationUnit(const Stack& stack, BlockRegistry* blockRegistry)
+const uint64_t PreProcessor::InitializeTranslationUnit(const Stack* stack, BlockRegistry* blockRegistry)
 {
 	m_units.push_back(PreProcessorTranslationUnit(m_units.size(), stack, blockRegistry));
 	return m_units.size() - 1;
