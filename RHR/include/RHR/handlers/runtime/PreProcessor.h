@@ -1,4 +1,11 @@
 #pragma once
+
+#ifdef POSIX
+#include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
+
 #include "PreProcessorTranslationUnit.h"
 
 #include <mutex>
@@ -31,10 +38,16 @@ public:
 	// executing
 	static void Start();
 	static const bool IsFinished();
+	static const bool IsRunning();
 	
 	// util
 	static void SetStatus(PreProcessorStatus status);
 	static void SetFinished(const bool& finished);
+	static void SetFinishedStatus(const int& finishedStatus);
+	static void SetRunning(const bool& running);
+	static void SetDll(LPCWSTR path);
+
+	static HINSTANCE* GetDll();
 private:
 	static std::vector<PreProcessorTranslationUnit> m_units;
 
@@ -43,4 +56,7 @@ private:
 
 	static std::thread m_thread;
 	static std::atomic<bool> m_finished;
+	static std::atomic<bool> m_running;
+	static int m_finishedStatus;
+	static HINSTANCE* m_dll;
 };

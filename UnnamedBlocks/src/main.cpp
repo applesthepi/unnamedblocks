@@ -724,6 +724,21 @@ int main()
 
 		ButtonRegistry::RenderUI(&window);
 
+		// execution
+
+		if (PreProcessor::IsRunning())
+		{
+			if (PreProcessor::IsFinished())
+			{
+				PreProcessor::SetRunning(false);
+				Logger::Debug("finished execution");
+			}
+			else
+			{
+				// executing in progress
+			}
+		}
+
 		if (Global::SkipFrame)
 		{
 			Global::SkipFrame = false;

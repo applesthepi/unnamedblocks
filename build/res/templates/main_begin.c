@@ -1,2 +1,2 @@
-__declspec(dllexport) void start()
+__declspec(dllexport) void start(void(*finished)(int))
 {

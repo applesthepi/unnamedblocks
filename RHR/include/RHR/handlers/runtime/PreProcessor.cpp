@@ -3,11 +3,12 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 
-#ifdef POSIX
-#include <dlfcn.h>
-#else
-#include <windows.h>
-#endif
+void CallbackFinished(int status)
+{
+	PreProcessor::SetFinishedStatus(status);
+	PreProcessor::SetFinished(true);
+	FreeLibrary(*PreProcessor::GetDll());
+}
 
 void PullFile(std::vector<std::string>& lines, const std::string& file)
 {
@@ -47,7 +48,6 @@ void ThreadPreProcessorBuild()
 		stream.close();
 	}
 	
-
 	PreProcessor::SetStatus(PreProcessorStatus::DONE);
 }
 
@@ -58,20 +58,20 @@ void ThreadPreProcessorExecution()
 #ifdef POSIX
 
 #else
-	typedef void(*f_run)();
+	typedef void(*f_run)(void(*)(int));
 
-	boost::filesystem::remove("runtime/comp.dll");
+	boost::filesystem::remove("\\runtime\\comp.dll");
 
-	system("call \"runtime/tcc/tcc.exe\" runtime/comp.c -shared -o comp.dll");
+	system("call \"runtime/tcc/tcc.exe\" runtime/comp.c -shared -o runtime/comp.dll");
 
 	if (boost::filesystem::exists("runtime/comp.dll"))
 	{
-		HINSTANCE dll = LoadLibrary((LPCWSTR)"./comp.dll");
-		f_run runCall = (f_run)GetProcAddress(dll, "re");
+		PreProcessor::SetDll(L".\\runtime\\comp.dll");
+		f_run runCall = (f_run)GetProcAddress(*PreProcessor::GetDll(), "start");
 
 		Logger::Debug("...compiled successfully, running.");
 
-		runCall();
+		runCall(CallbackFinished);
 	}
 	else
 		Logger::Debug("...compilation failed.");
@@ -87,6 +87,7 @@ void PreProcessor::Cleanup()
 	m_units.clear();
 	m_status = PreProcessorStatus::NOT_READY;
 	m_finished = false;
+	m_running = false;
 }
 
 const uint64_t PreProcessor::InitializeTranslationUnit(const Stack* stack, BlockRegistry* blockRegistry)
@@ -115,6 +116,7 @@ PreProcessorStatus PreProcessor::GetStatus()
 
 void PreProcessor::Start()
 {
+	m_running = true;
 	m_thread = std::thread(ThreadPreProcessorExecution);
 	m_thread.detach();
 }
@@ -122,6 +124,11 @@ void PreProcessor::Start()
 const bool PreProcessor::IsFinished()
 {
 	return m_finished;
+}
+
+const bool PreProcessor::IsRunning()
+{
+	return m_running;
 }
 
 void PreProcessor::SetStatus(PreProcessorStatus status)
@@ -135,6 +142,26 @@ void PreProcessor::SetFinished(const bool& finished)
 	m_finished = finished;
 }
 
+void PreProcessor::SetFinishedStatus(const int& finishedStatus)
+{
+	m_finishedStatus = finishedStatus;
+}
+
+void PreProcessor::SetRunning(const bool& running)
+{
+	m_running = running;
+}
+
+void PreProcessor::SetDll(LPCWSTR path)
+{
+	m_dll = new HINSTANCE(LoadLibrary(path));
+}
+
+HINSTANCE* PreProcessor::GetDll()
+{
+	return m_dll;
+}
+
 std::vector<PreProcessorTranslationUnit> PreProcessor::m_units;
 
 std::mutex PreProcessor::m_statusMutex;
@@ -144,3 +171,9 @@ PreProcessorStatus PreProcessor::m_status;
 std::thread PreProcessor::m_thread;
 
 std::atomic<bool> PreProcessor::m_finished;
+
+std::atomic<bool> PreProcessor::m_running;
+
+int PreProcessor::m_finishedStatus;
+
+HINSTANCE* PreProcessor::m_dll;
