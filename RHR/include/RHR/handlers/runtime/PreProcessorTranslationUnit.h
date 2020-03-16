@@ -18,14 +18,14 @@ enum class PreProcessorTranslationUnitStatus
 class PreProcessorTranslationUnit
 {
 public:
-	PreProcessorTranslationUnit();
+	PreProcessorTranslationUnit(PreProcessorTranslationUnit&& unit);
 	PreProcessorTranslationUnit(const uint64_t& idx, const Stack* stack, BlockRegistry* blockRegistry);
 
 	void SetTranslationUnitStatus(PreProcessorTranslationUnitStatus status);
 
 	PreProcessorTranslationUnitStatus GetTranslationUnitStatus();
 	const std::string& GetFinishedPath() const;
-	const Stack& GetStack() const;
+	const Stack* GetStack() const;
 	BlockRegistry* GetBlockRegistry() const;
 private:
 	std::mutex m_statusMutex;

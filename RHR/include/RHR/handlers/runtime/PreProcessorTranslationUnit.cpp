@@ -97,10 +97,12 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
 	unit.SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE);
 }
 
-PreProcessorTranslationUnit::PreProcessorTranslationUnit()
-	:m_status(PreProcessorTranslationUnitStatus::NOT_READY)
+PreProcessorTranslationUnit::PreProcessorTranslationUnit(PreProcessorTranslationUnit&& unit)
 {
-	
+	m_status = unit.GetTranslationUnitStatus();
+	m_path = unit.GetFinishedPath();
+	m_stack = unit.GetStack();
+	m_blockRegistry = unit.GetBlockRegistry();
 }
 
 PreProcessorTranslationUnit::PreProcessorTranslationUnit(const uint64_t& idx, const Stack* stack, BlockRegistry* blockRegistry)
@@ -128,7 +130,7 @@ const std::string& PreProcessorTranslationUnit::GetFinishedPath() const
 	return m_path;
 }
 
-const Stack& PreProcessorTranslationUnit::GetStack() const
+const Stack* PreProcessorTranslationUnit::GetStack() const
 {
 	return m_stack;
 }
