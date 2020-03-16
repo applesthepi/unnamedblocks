@@ -98,12 +98,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>Espresso.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -113,12 +113,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>Espresso.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,14 +130,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>Espresso.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -149,14 +149,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\Espresso\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\Espresso\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>Espresso.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
