@@ -22,7 +22,8 @@ add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/StatmentHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/Preprocessor.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/PreProcessor.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/PreProcessorTranslationUnit.cpp"
 	)
 target_link_libraries(RHR PUBLIC
 	Espresso

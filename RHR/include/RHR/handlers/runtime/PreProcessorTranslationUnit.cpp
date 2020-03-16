@@ -1,13 +1,14 @@
 #include "PreProcessorTranslationUnit.h"
 
 #include <fstream>
+#include <string.h>
 
-void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
+void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 {
-	unit.SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::RUNNING);
+	unit->SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::RUNNING);
 
-	const Stack* stack = unit.GetStack();
-	BlockRegistry* blockRegistry = unit.GetBlockRegistry();
+	const Stack* stack = unit->GetStack();
+	BlockRegistry* blockRegistry = unit->GetBlockRegistry();
 
 	for (uint64_t i = 0; i < stack->GetBlockCount(); i++)
 	{
@@ -50,7 +51,7 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
 								if (a == line.length())
 								{
 									Logger::Error("failed to preprocess script; invalid argument syntax");
-									unit.SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE_ERROR);
+									unit->SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE_ERROR);
 									return;
 								}
 							}
@@ -83,7 +84,7 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
 		}
 
 		{
-			std::ofstream stream(unit.GetFinishedPath());
+			std::ofstream stream(unit->GetFinishedPath());
 
 			for (uint64_t a = 0; a < lines.size(); a++)
 			{
@@ -94,7 +95,7 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
 		}
 	}
 
-	unit.SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE);
+	unit->SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE);
 }
 
 PreProcessorTranslationUnit::PreProcessorTranslationUnit(PreProcessorTranslationUnit&& unit)
@@ -109,7 +110,7 @@ PreProcessorTranslationUnit::PreProcessorTranslationUnit(const uint64_t& idx, co
 	:m_status(PreProcessorTranslationUnitStatus::NOT_READY), m_stack(stack), m_blockRegistry(blockRegistry)
 {
 	m_path = "runtime/build/tu_" + std::to_string(idx) + ".ubb";
-	m_thread = std::thread(ThreadPreProcessorTranslationUnit, *this);
+	m_thread = std::thread(ThreadPreProcessorTranslationUnit, this);
 	m_thread.detach();
 }
 

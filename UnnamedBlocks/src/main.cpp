@@ -32,6 +32,7 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <math.h>
 
 #define UB_VERSION "Unnamed Blocks v0.0b2"
 #define UB_BETA_BUILD true
