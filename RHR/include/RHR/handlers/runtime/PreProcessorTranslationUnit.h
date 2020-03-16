@@ -18,7 +18,8 @@ enum class PreProcessorTranslationUnitStatus
 class PreProcessorTranslationUnit
 {
 public:
-	PreProcessorTranslationUnit(const uint64_t& idx, const Stack& stack, BlockRegistry* blockRegistry);
+	PreProcessorTranslationUnit();
+	PreProcessorTranslationUnit(const uint64_t& idx, const Stack* stack, BlockRegistry* blockRegistry);
 
 	void SetTranslationUnitStatus(PreProcessorTranslationUnitStatus status);
 
@@ -32,6 +33,6 @@ private:
 
 	std::thread m_thread;
 	std::string m_path;
-	const Stack& m_stack;
+	const Stack* m_stack;
 	BlockRegistry* m_blockRegistry;
 };

@@ -97,7 +97,13 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit& unit)
 	unit.SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE);
 }
 
-PreProcessorTranslationUnit::PreProcessorTranslationUnit(const uint64_t& idx, const Stack& stack, BlockRegistry* blockRegistry)
+PreProcessorTranslationUnit::PreProcessorTranslationUnit()
+	:m_status(PreProcessorTranslationUnitStatus::NOT_READY)
+{
+	
+}
+
+PreProcessorTranslationUnit::PreProcessorTranslationUnit(const uint64_t& idx, const Stack* stack, BlockRegistry* blockRegistry)
 	:m_status(PreProcessorTranslationUnitStatus::NOT_READY), m_stack(stack), m_blockRegistry(blockRegistry)
 {
 	m_path = "runtime/build/tu_" + std::to_string(idx) + ".ubb";
