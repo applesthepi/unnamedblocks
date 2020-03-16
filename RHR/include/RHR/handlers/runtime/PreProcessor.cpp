@@ -75,3 +75,11 @@ void PreProcessor::SetFinished(const bool& finished)
 }
 
 std::vector<PreProcessorTranslationUnit> PreProcessor::m_units;
+
+std::mutex PreProcessor::m_statusMutex;
+
+PreProcessorStatus PreProcessor::m_status;
+
+std::thread PreProcessor::m_thread;
+
+std::atomic<bool> PreProcessor::m_finished;
