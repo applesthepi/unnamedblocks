@@ -1,15 +1,5 @@
 #include "PreProcessor.h"
 
-#include <boost/filesystem.hpp>
-#include <fstream>
-
-void CallbackFinished(int status)
-{
-	PreProcessor::SetFinishedStatus(status);
-	PreProcessor::SetFinished(true);
-	FreeLibrary(*PreProcessor::GetDll());
-}
-
 void PullFile(std::vector<std::string>& lines, const std::string& file)
 {
 	std::ifstream stream(file);
@@ -26,9 +16,14 @@ void ThreadPreProcessorBuild()
 	PreProcessor::SetStatus(PreProcessorStatus::RUNNING);
 
 	std::vector<std::string> finalLines;
+#ifdef POSIX
+	std::string ty = "/linux/";
+#else
+	std::string ty = "/windows/";
+#endif
 
-	PullFile(finalLines, "res/templates/includes.c");
-	PullFile(finalLines, "res/templates/main_begin.c");
+	PullFile(finalLines, "res/templates" + ty + "includes.c");
+	PullFile(finalLines, "res/templates" + ty + "main_begin.c");
 
 	for (auto& entry : boost::filesystem::directory_iterator("runtime/build/"))//https://stackoverflow.com/questions/4430780/how-can-i-extract-the-file-name-and-extension-from-a-path-in-c
 	{
@@ -38,7 +33,7 @@ void ThreadPreProcessorBuild()
 		PullFile(finalLines, "runtime/build/" + na + ex);
 	}
 
-	PullFile(finalLines, "res/templates/main_end.c");
+	PullFile(finalLines, "res/templates" + ty + "main_end.c");
 
 	{
 		std::ofstream stream("runtime/comp.c");
@@ -58,7 +53,7 @@ void ThreadPreProcessorExecution()
 #ifdef POSIX
 
 #else
-	typedef void(*f_run)(void(*)(int));
+	typedef void(*f_run)();
 
 	boost::filesystem::remove("\\runtime\\comp.dll");
 
@@ -71,13 +66,15 @@ void ThreadPreProcessorExecution()
 
 		Logger::Debug("...compiled successfully, running.");
 
-		runCall(CallbackFinished);
+		runCall();
+
+		PreProcessor::SetFinished(true);
+		FreeLibrary(*PreProcessor::GetDll());
+		Logger::Debug("finished running.");
 	}
 	else
 		Logger::Debug("...compilation failed.");
 #endif
-
-	PreProcessor::SetFinished(true);
 }
 
 void PreProcessor::Cleanup()
@@ -87,7 +84,6 @@ void PreProcessor::Cleanup()
 	m_units.clear();
 	m_status = PreProcessorStatus::NOT_READY;
 	m_finished = false;
-	m_running = false;
 }
 
 const uint64_t PreProcessor::InitializeTranslationUnit(const Stack* stack, BlockRegistry* blockRegistry)
@@ -116,7 +112,7 @@ PreProcessorStatus PreProcessor::GetStatus()
 
 void PreProcessor::Start()
 {
-	m_running = true;
+	m_finished = false;
 	m_thread = std::thread(ThreadPreProcessorExecution);
 	m_thread.detach();
 }
@@ -124,11 +120,6 @@ void PreProcessor::Start()
 const bool PreProcessor::IsFinished()
 {
 	return m_finished;
-}
-
-const bool PreProcessor::IsRunning()
-{
-	return m_running;
 }
 
 void PreProcessor::SetStatus(PreProcessorStatus status)
@@ -140,16 +131,6 @@ void PreProcessor::SetStatus(PreProcessorStatus status)
 void PreProcessor::SetFinished(const bool& finished)
 {
 	m_finished = finished;
-}
-
-void PreProcessor::SetFinishedStatus(const int& finishedStatus)
-{
-	m_finishedStatus = finishedStatus;
-}
-
-void PreProcessor::SetRunning(const bool& running)
-{
-	m_running = running;
 }
 
 void PreProcessor::SetDll(LPCWSTR path)
@@ -171,9 +152,5 @@ PreProcessorStatus PreProcessor::m_status;
 std::thread PreProcessor::m_thread;
 
 std::atomic<bool> PreProcessor::m_finished;
-
-std::atomic<bool> PreProcessor::m_running;
-
-int PreProcessor::m_finishedStatus;
 
 HINSTANCE* PreProcessor::m_dll;

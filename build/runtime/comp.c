@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <windows.h>
-__declspec(dllexport) void start(void(*finished)(int))
+__declspec(dllexport) void start()
 {
-printf("");system("color ED");printf("");
-finished(0);
+printf("");system("color ED");Sleep(500);system("color DE");printf("");
 }
