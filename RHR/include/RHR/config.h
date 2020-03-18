@@ -1,2 +1,2 @@
-//#define POSIX
-//#define LINUX
+#define POSIX
+#define LINUX

@@ -1,1 +1,1 @@
-222;121;test_print;0")\;system("color ED")\;Sleep(500)\;system("color DE")\;printf(";;;
+222;121;test_print;0")\;system("echo HELLO THERE")\;printf(";;;

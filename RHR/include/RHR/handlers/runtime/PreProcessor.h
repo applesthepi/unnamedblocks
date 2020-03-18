@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PreProcessorTranslationUnit.h"
+#include "RHR/config.h"
 
 #include <mutex>
 #include <vector>
@@ -44,9 +45,14 @@ public:
 	// util
 	static void SetStatus(PreProcessorStatus status);
 	static void SetFinished(const bool& finished);
+	
+#ifdef POSIX
+	static void SetSo(const char* path);
+	static void* GetSo();
+#else
 	static void SetDll(LPCWSTR path);
-
 	static HINSTANCE* GetDll();
+#endif
 private:
 	static std::vector<PreProcessorTranslationUnit> m_units;
 
@@ -55,5 +61,10 @@ private:
 
 	static std::thread m_thread;
 	static std::atomic<bool> m_finished;
+
+#ifdef POSIX
+	static void* m_so;
+#else
 	static HINSTANCE* m_dll;
+#endif
 };

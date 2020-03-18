@@ -3,7 +3,7 @@
 #include <cmath>
 
 //TODO config
-//#define LINUX
+#define LINUX
 
 #ifdef LINUX
 #define UB_EXPORT extern "C"

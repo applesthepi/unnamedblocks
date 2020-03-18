@@ -51,7 +51,27 @@ void ThreadPreProcessorExecution()
 	PreProcessor::SetFinished(false);// just in case
 
 #ifdef POSIX
+	typedef void(*f_run)();
 
+	boost::filesystem::remove("\\runtime\\comp.so");
+
+	system("./runtime/tcc/tcc runtime/comp.c -shared -o runtime/comp.so");
+
+	if (boost::filesystem::exists("runtime/comp.so"))
+	{
+		PreProcessor::SetSo(".\\runtime\\comp.so");
+		f_run runCall = (f_run)dlsym(PreProcessor::GetSo(), "start");
+
+		Logger::Debug("...compiled successfully, running.");
+
+		runCall();
+
+		PreProcessor::SetFinished(true);
+		dlclose(PreProcessor::GetSo());
+		Logger::Debug("finished running.");
+	}
+	else
+		Logger::Debug("...compilation failed.");
 #else
 	typedef void(*f_run)();
 
@@ -132,7 +152,7 @@ void PreProcessor::SetFinished(const bool& finished)
 {
 	m_finished = finished;
 }
-
+#ifndef POSIX
 void PreProcessor::SetDll(LPCWSTR path)
 {
 	m_dll = new HINSTANCE(LoadLibrary(path));
@@ -142,6 +162,19 @@ HINSTANCE* PreProcessor::GetDll()
 {
 	return m_dll;
 }
+#endif
+
+#ifdef POSIX
+void PreProcessor::SetSo(const char* path)
+{
+	m_so = dlopen(path, RTLD_NOW);
+}
+
+void* PreProcessor::GetSo()
+{
+	return m_so;
+}
+#endif
 
 std::vector<PreProcessorTranslationUnit> PreProcessor::m_units;
 
@@ -153,4 +186,8 @@ std::thread PreProcessor::m_thread;
 
 std::atomic<bool> PreProcessor::m_finished;
 
+#ifdef POSIX
+void* PreProcessor::m_so;
+#else
 HINSTANCE* PreProcessor::m_dll;
+#endif
