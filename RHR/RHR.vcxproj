@@ -97,8 +97,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\cmake\tcc\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -109,9 +110,12 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;Espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -119,7 +123,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\cmake\tcc\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,9 +133,12 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -139,7 +146,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\cmake\tcc\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -149,9 +156,12 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -161,8 +171,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\BOOST64\;$(SolutionDir)\cmake\tcc\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,9 +184,12 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;Espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\RHR\Global.cpp" />

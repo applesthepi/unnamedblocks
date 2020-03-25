@@ -12,7 +12,7 @@
 #include <windows.h>
 #endif
 
-
+#include <libtcc.h>
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
 #include <Espresso/Logger.h>

@@ -1,5 +1,7 @@
 #include "PreProcessor.h"
 
+#include <libtcc.h>
+
 void PullFile(std::vector<std::string>& lines, const std::string& file)
 {
 	std::ifstream stream(file);
@@ -77,7 +79,13 @@ void ThreadPreProcessorExecution()
 
 	boost::filesystem::remove("\\runtime\\comp.dll");
 
-	system("call \"runtime/tcc/tcc.exe\" runtime/comp.c -shared -o runtime/comp.dll");
+	TCCState* state = tcc_new();
+	tcc_set_output_type(state, TCC_OUTPUT_DLL);
+	tcc_add_file(state, "runtime/comp.c");
+	tcc_run(state, 0, 0);
+	tcc_delete(state);
+
+	//system("call \"runtime/tcc/tcc.exe\" runtime/comp.c -shared -o runtime/comp.dll");
 
 	if (boost::filesystem::exists("runtime/comp.dll"))
 	{
