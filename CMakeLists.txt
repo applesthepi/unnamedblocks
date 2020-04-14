@@ -9,7 +9,6 @@ project(unnamedblocks VERSION 0.8)
 
 find_package(SFML REQUIRED COMPONENTS graphics system)
 find_package(GLEW REQUIRED)
-find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -40,7 +39,6 @@ target_link_libraries(unnamedblocks PUBLIC
 	sfml-system
 	sfml-window
 	"${GLEW_LIBRARIES}"
-	"${Boost_LIBRARIES}"
 	"${OPENGL_LIBRARIES}"
 	"${CMAKE_DL_LIBS}"
 	"${EXTRA_LIBRARIES}"
@@ -52,7 +50,6 @@ target_include_directories(unnamedblocks PUBLIC
 	"RHR"
 	"RHR/include"
 	"${GLEW_INCLUDE_DIRS}"
-	"${Boost_INCLUDE_DIRS}"
 	"${OPENGL_INCLUDE_DIRS}"
 	"${EXTRA_INCLUDE_DIRS}"
 	)
