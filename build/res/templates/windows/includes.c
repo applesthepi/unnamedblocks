@@ -1,2 +1,4 @@
 #include <stdio.h>
-#include <windows.h>
+#include <SFML/Graphics.h>
+#include <SFML/Window.h>
+#include <SFML/System.h>

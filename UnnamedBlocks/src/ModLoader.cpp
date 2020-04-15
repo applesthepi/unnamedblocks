@@ -1,5 +1,6 @@
 #include "ModLoader.h"
-#include <RHR/config.h>//TODO temp
+//TODO temp
+//#include <RHR/config.h>
 #include <iostream>
 #include <filesystem>
 #ifdef LINUX

@@ -91,6 +91,27 @@ void ThreadPreProcessorExecution()
 	}
 
 	TCCState* state = tcc_new();
+
+#ifdef LINUX
+	tcc_add_library_path(state, "csfml/lib/gcc");
+
+	tcc_add_library(state, "csfml-audio.a");
+	tcc_add_library(state, "csfml-graphics.a");
+	tcc_add_library(state, "csfml-network.a");
+	tcc_add_library(state, "csfml-system.a");
+	tcc_add_library(state, "csfml-window.a");
+#else
+	tcc_add_library_path(state, "csfml/lib/msvc");
+
+	tcc_add_library(state, "csfml-audio.lib");
+	tcc_add_library(state, "csfml-graphics.lib");
+	tcc_add_library(state, "csfml-network.lib");
+	tcc_add_library(state, "csfml-system.lib");
+	tcc_add_library(state, "csfml-window.lib");
+#endif
+
+	tcc_add_include_path(state, "csfml/include");
+
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
 	tcc_compile_string(state, compC.c_str());
 

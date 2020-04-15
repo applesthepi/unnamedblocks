@@ -8,7 +8,7 @@
 #include "config.h"
 #include <dlfcn.h>
 #else
-#include "RHR/config.h"
+//#include "RHR/config.h"
 #include <windows.h>
 #endif
 
@@ -182,7 +182,7 @@ int main()
 	// Default Settings
 
 	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(250);
+	window.setFramerateLimit(150);
 
 	// Initialization
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "config.h"
+//#include "config.h"
 #include <SFML/Graphics/Font.hpp>
 #include <string>
 #include <functional>
