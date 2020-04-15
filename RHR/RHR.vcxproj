@@ -110,8 +110,10 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;Espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;Espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -133,8 +135,10 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -156,8 +160,10 @@
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -184,8 +190,10 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\win32\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;Espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\BOOST64\stage\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;Espresso.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

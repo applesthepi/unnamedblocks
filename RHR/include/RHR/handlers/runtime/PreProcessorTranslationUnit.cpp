@@ -10,6 +10,8 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 	const Stack* stack = unit->GetStack();
 	BlockRegistry* blockRegistry = unit->GetBlockRegistry();
 
+	std::vector<std::string> lines;
+
 	for (uint64_t i = 0; i < stack->GetBlockCount(); i++)
 	{
 		Block* block = stack->GetBlock(i);
@@ -21,8 +23,6 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 
 		std::string blockPath = "mods/";
 		blockPath += modBlock->GetPath();
-
-		std::vector<std::string> lines;
 
 		{
 			std::ifstream stream(blockPath);
@@ -73,7 +73,7 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 						else
 							firstHit = false;
 					}
-					
+
 					if (line[a] == '$')
 						firstHit = true;
 				}
@@ -84,17 +84,15 @@ void ThreadPreProcessorTranslationUnit(PreProcessorTranslationUnit* unit)
 
 			stream.close();
 		}
+	}
 
-		{
-			std::ofstream stream(unit->GetFinishedPath());
+	{
+		std::ofstream stream(unit->GetFinishedPath());
 
-			for (uint64_t a = 0; a < lines.size(); a++)
-			{
-				stream << lines[a];
-			}
+		for (uint64_t a = 0; a < lines.size(); a++)
+			stream << lines[a] + "\n";
 
-			stream.close();
-		}
+		stream.close();
 	}
 
 	unit->SetTranslationUnitStatus(PreProcessorTranslationUnitStatus::DONE);

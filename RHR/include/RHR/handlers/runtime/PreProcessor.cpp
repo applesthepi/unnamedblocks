@@ -1,6 +1,6 @@
 #include "PreProcessor.h"
 
-#include <libtcc.h>
+#include <libtcc/libtcc.h>
 
 void PullFile(std::vector<std::string>& lines, const std::string& file)
 {
@@ -52,7 +52,7 @@ void ThreadPreProcessorExecution()
 {
 	PreProcessor::SetFinished(false);// just in case
 
-#ifdef POSIX
+#ifdef LINUX
 	typedef void(*f_run)();
 
 	boost::filesystem::remove("\\runtime\\comp.so");
@@ -77,31 +77,34 @@ void ThreadPreProcessorExecution()
 #else
 	typedef void(*f_run)();
 
-	boost::filesystem::remove("\\runtime\\comp.dll");
+	std::string compC;
+	
+	{
+		std::ifstream stream;
+		std::string line;
+		stream.open("runtime/comp.c");
+
+		while (std::getline(stream, line))
+			compC += line + "\n";
+
+		stream.close();
+	}
 
 	TCCState* state = tcc_new();
-	tcc_set_output_type(state, TCC_OUTPUT_DLL);
-	tcc_add_file(state, "runtime/comp.c");
-	tcc_run(state, 0, 0);
+	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
+	tcc_compile_string(state, compC.c_str());
+	
+	void* mem = malloc(tcc_relocate(state, nullptr));
+	tcc_relocate(state, mem);
+
+	typedef void(*fun_start)();
+
+	fun_start f_start = (fun_start)tcc_get_symbol(state, "start");
+
 	tcc_delete(state);
 
-	//system("call \"runtime/tcc/tcc.exe\" runtime/comp.c -shared -o runtime/comp.dll");
-
-	if (boost::filesystem::exists("runtime/comp.dll"))
-	{
-		PreProcessor::SetDll(L".\\runtime\\comp.dll");
-		f_run runCall = (f_run)GetProcAddress(*PreProcessor::GetDll(), "start");
-
-		Logger::Debug("...compiled successfully, running.");
-
-		runCall();
-
-		PreProcessor::SetFinished(true);
-		FreeLibrary(*PreProcessor::GetDll());
-		Logger::Debug("finished running.");
-	}
-	else
-		Logger::Debug("...compilation failed.");
+	f_start();
+	PreProcessor::SetFinished(true);
 #endif
 }
 
