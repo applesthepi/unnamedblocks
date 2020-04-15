@@ -16,7 +16,6 @@
 #include <SFML/Graphics.hpp>
 #include <Espresso/Logger.h>
 #include <chrono>
-#include <boost/filesystem.hpp>
 
 //#include "content/ContentLoader.h"
 #include <GL/glew.h>

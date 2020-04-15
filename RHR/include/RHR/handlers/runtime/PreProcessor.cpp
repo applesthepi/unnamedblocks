@@ -27,7 +27,7 @@ void ThreadPreProcessorBuild()
 	PullFile(finalLines, "res/templates" + ty + "includes.c");
 	PullFile(finalLines, "res/templates" + ty + "main_begin.c");
 
-	for (auto& entry : boost::filesystem::directory_iterator("runtime/build/"))//https://stackoverflow.com/questions/4430780/how-can-i-extract-the-file-name-and-extension-from-a-path-in-c
+	for (auto& entry : std::filesystem::directory_iterator("runtime/build/"))
 	{
 		std::string na = entry.path().stem().string();
 		std::string ex = entry.path().extension().string();
@@ -44,7 +44,7 @@ void ThreadPreProcessorBuild()
 
 		stream.close();
 	}
-	
+
 	PreProcessor::SetStatus(PreProcessorStatus::DONE);
 }
 
@@ -55,11 +55,11 @@ void ThreadPreProcessorExecution()
 #ifdef LINUX
 	typedef void(*f_run)();
 
-	boost::filesystem::remove("\\runtime\\comp.so");
+	std::filesystem::remove("\\runtime\\comp.so");
 
 	system("./runtime/tcc/tcc runtime/comp.c -shared -o runtime/comp.so");
 
-	if (boost::filesystem::exists("runtime/comp.so"))
+	if (std::filesystem::exists("runtime/comp.so"))
 	{
 		PreProcessor::SetSo(".\\runtime\\comp.so");
 		f_run runCall = (f_run)dlsym(PreProcessor::GetSo(), "start");
@@ -78,7 +78,7 @@ void ThreadPreProcessorExecution()
 	typedef void(*f_run)();
 
 	std::string compC;
-	
+
 	{
 		std::ifstream stream;
 		std::string line;
@@ -93,7 +93,7 @@ void ThreadPreProcessorExecution()
 	TCCState* state = tcc_new();
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
 	tcc_compile_string(state, compC.c_str());
-	
+
 	void* mem = malloc(tcc_relocate(state, nullptr));
 	tcc_relocate(state, mem);
 
@@ -110,8 +110,8 @@ void ThreadPreProcessorExecution()
 
 void PreProcessor::Cleanup()
 {
-	boost::filesystem::remove_all("runtime/build/");
-	boost::filesystem::create_directory("runtime/build/");
+	std::filesystem::remove_all("runtime/build/");
+	std::filesystem::create_directory("runtime/build/");
 	m_units.clear();
 	m_status = PreProcessorStatus::NOT_READY;
 	m_finished = false;
