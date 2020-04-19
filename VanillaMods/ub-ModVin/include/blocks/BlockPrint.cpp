@@ -1,21 +1,31 @@
 #include "BlockPrint.h"
 
-const char* SomeBlock::GetUnlocalizedName() const
+static void ExecuteRelease(ModBlockPass* pass)
 {
-	return "test_print";
+	std::string* message = (std::string*)(pass->GetData()[0]);
+	Logger::Info(*message);
 }
 
-void SomeBlock::ExecuteDebug(ModBlockPass* pass)
+static void ExecuteDebug(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
 	pass->LogInfo("printing to console: \"" + *message);
 	Logger::Info(*message);
 }
 
-void SomeBlock::ExecuteRelease(ModBlockPass* pass)
+const char* SomeBlock::GetUnlocalizedName() const
 {
-	std::string* message = (std::string*)(pass->GetData()[0]);
-	Logger::Info(*message);
+	return "test_print";
+}
+
+blockExecution SomeBlock::PullExecuteDebug()
+{
+	return ExecuteDebug;
+}
+
+blockExecution SomeBlock::PullExecuteRelease()
+{
+	return ExecuteRelease;
 }
 
 const char* SomeBlock::GetCategory() const

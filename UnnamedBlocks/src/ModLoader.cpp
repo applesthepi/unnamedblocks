@@ -108,6 +108,12 @@ ModLoaderStatus run(BlockRegistry* registry)
 
 		for (uint32_t i = 0; i < baked.BlocksLength; i++)
 			registry->RegisterBlock(baked.Blocks[i]);
+
+		for (uint32_t i = 0; i < baked.BlocksLength; i++)
+			registry->RegisterExeDebug(baked.Blocks[i]->PullExecuteDebug());
+
+		for (uint32_t i = 0; i < baked.BlocksLength; i++)
+			registry->RegisterExeRelease(baked.Blocks[i]->PullExecuteRelease());
 	}
 
 	//delete mods;

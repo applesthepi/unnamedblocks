@@ -16,6 +16,8 @@ public:
 	std::string Value;
 };
 
+typedef void(*executionFunction)(ModBlockPass*);
+
 class BlockRegistry
 {
 public:
@@ -23,13 +25,20 @@ public:
 
 	void RegisterCatagory(ModCatagory* catagory);
 	void RegisterBlock(ModBlock* block);
+	void RegisterExeDebug(void(*fun)(ModBlockPass*));
+	void RegisterExeRelease(void(*fun)(ModBlockPass*));
 
 	const ModBlock* GetBlock(const std::string& unlocalizedName);
 	const ModCatagory* GetCategory(const std::string& unlocalizedName);
+
+	executionFunction GetExeDebug(const std::string& blockUnlocalizedName);
+	executionFunction GetExeRelease(const std::string& blockUnlocalizedName);
 
 	const std::vector<ModBlock*>& GetBlocks();
 	const std::vector<ModCatagory*>& GetCategories();
 private:
 	std::vector<ModBlock*> m_blocks;
 	std::vector<ModCatagory*> m_catagories;
+	std::vector<executionFunction> m_exeDebug;
+	std::vector<executionFunction> m_exeRelease;
 };

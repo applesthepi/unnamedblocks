@@ -49,6 +49,8 @@ public:
 	std::string DefaultValue;
 };
 
+typedef void(*blockExecution)(ModBlockPass*);
+
 class ModBlock
 {
 public:
@@ -56,10 +58,10 @@ public:
 	virtual const char* GetUnlocalizedName() const;
 
 	// what will be executed in a release build
-	virtual void ExecuteRelease(ModBlockPass* pass);
+	virtual blockExecution PullExecuteRelease();
 
 	// what will be executed in a debug build
-	virtual void ExecuteDebug(ModBlockPass* pass);
+	virtual blockExecution PullExecuteDebug();
 	
 	// category of the block
 	virtual const char* GetCategory() const;

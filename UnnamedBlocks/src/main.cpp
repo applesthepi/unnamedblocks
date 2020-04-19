@@ -94,57 +94,6 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 
 int main()
 {
-	/*
-	typedef void(*f_initialize)(int*);
-	system("tcc comp.c -shared -o comp.so");
-	
-	int* re = new int();
-	*re = 5;
-
-	void* so = dlopen("./comp.so", RTLD_NOW);
-	if(so == nullptr) {
-		printf("%s\n", dlerror());
-		static_assert("killme");
-	}
-	f_initialize initialize = (f_initialize)dlsym(so, "re");
-	initialize(re);
-	
-	Logger::Debug(std::to_string(*re));
-
-	system("pause");
-
-	return 0;
-	*/
-
-	/*
-	typedef void(*f_initialize)(int*);
-	system("call compile.bat");
-
-	int* re = new int();
-	*re = 5;
-
-	HINSTANCE dll = LoadLibrary("./comp.dll");
-	if (dll == nullptr) {
-		Logger::Error("REEE 1");
-		system("pause");
-		return 0;
-	}
-	f_initialize initialize = (f_initialize)GetProcAddress(dll, "re");
-	if (initialize == nullptr) {
-		Logger::Error("REEE 2");
-		system("pause");
-		return 0;
-	}
-
-	initialize(re);
-
-	Logger::Debug(std::to_string(*re));
-
-	system("pause");
-	return 0;
-	*/
-
-
 	Logger::Info(UB_VERSION);
 	if (UB_BETA_BUILD)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
@@ -190,13 +139,12 @@ int main()
 	MessageHandler::Initialize();
 	TypingSystem::Initialization();
 	ButtonRegistry::Initialize();
-	BlockRegistry* pRegistry;
+	PreProcessor::Initialize();
 
-	pRegistry = new BlockRegistry();
+	BlockRegistry* pRegistry = new BlockRegistry();
+	Plane::Planes = new std::vector<Plane*>();
 
 	run(pRegistry);
-
-	Plane::Planes = new std::vector<Plane*>();
 
 	// Setup
 
@@ -351,7 +299,7 @@ int main()
 			planeCopy->CopyEverything(primaryPlane, pRegistry);
 
 			PreProcessor::Cleanup();
-			PreProcessor::Start();
+			PreProcessor::Start(planeCopy, pRegistry, true);
 		};
 
 		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);

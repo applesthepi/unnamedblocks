@@ -1,6 +1,10 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <Espresso/mod/ModBlockPass.h>
 
-const char* functions[];
+uint64_t functionCount;
+uint64_t* functionCallCount;
+
 void (***calls)(ModBlockPass*);
 
 int main()

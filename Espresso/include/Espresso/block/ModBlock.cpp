@@ -1,18 +1,28 @@
 #include "ModBlock.h"
 
+static void ExecuteRelease(ModBlockPass* pass)
+{
+	pass->LogInfo("blank release executed");
+}
+
+static void ExecuteDebug(ModBlockPass* pass)
+{
+	pass->LogInfo("blank release executed");
+}
+
 const char* ModBlock::GetUnlocalizedName() const
 {
 	return "vin_null";
 }
 
-void ModBlock::ExecuteRelease(ModBlockPass* pass)
+blockExecution ModBlock::PullExecuteRelease()
 {
-	pass->LogInfo("blank release executed");
+	return ExecuteRelease;
 }
 
-void ModBlock::ExecuteDebug(ModBlockPass* pass)
+blockExecution ModBlock::PullExecuteDebug()
 {
-	pass->LogInfo("blank debug executed");
+	return ExecuteDebug;
 }
 
 const char* ModBlock::GetCategory() const

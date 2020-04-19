@@ -16,6 +16,16 @@ void BlockRegistry::RegisterBlock(ModBlock* block)
 	m_blocks.push_back(block);
 }
 
+void BlockRegistry::RegisterExeDebug(void(*fun)(ModBlockPass*))
+{
+	m_exeDebug.push_back(fun);
+}
+
+void BlockRegistry::RegisterExeRelease(void(*fun)(ModBlockPass*))
+{
+	m_exeRelease.push_back(fun);
+}
+
 const ModBlock* BlockRegistry::GetBlock(const std::string& unlocalizedName)
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
@@ -46,6 +56,42 @@ const ModCatagory* BlockRegistry::GetCategory(const std::string& unlocalizedName
 	return new ModCatagory();
 }
 
+
+executionFunction BlockRegistry::GetExeDebug(const std::string& blockUnlocalizedName)
+{
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetUnlocalizedName() == blockUnlocalizedName)
+			return m_exeDebug[i];
+	}
+
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetUnlocalizedName() == "vin_null")
+			return m_exeDebug[i];
+	}
+
+	Logger::Error("FATAL! unexpected failure to receive vin_null block in attempt to receive execution function. Mod loading error?");
+	return nullptr;
+}
+
+executionFunction BlockRegistry::GetExeRelease(const std::string& blockUnlocalizedName)
+{
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetUnlocalizedName() == blockUnlocalizedName)
+			return m_exeRelease[i];
+	}
+
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetUnlocalizedName() == "vin_null")
+			return m_exeRelease[i];
+	}
+
+	Logger::Error("FATAL! unexpected failure to receive vin_null block in attempt to receive execution function. Mod loading error?");
+	return nullptr;
+}
 
 const std::vector<ModBlock*>& BlockRegistry::GetBlocks()
 {
