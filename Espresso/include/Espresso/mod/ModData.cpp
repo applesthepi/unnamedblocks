@@ -3,7 +3,7 @@
 
 ModDataBaked ModData::Bake()
 {
-	if (m_blocks.size() == 0 || m_categories.size() == 0)
+	if (Blocks.size() == 0 || Categories.size() == 0)
 	{
 		Logger::Error("must have atleast 1 category and 1 block to bake!");
 		return ModDataBaked();
@@ -11,11 +11,11 @@ ModDataBaked ModData::Bake()
 
 	ModDataBaked baked;
 
-	baked.BlocksLength = m_blocks.size();
-	baked.CategoriesLength = m_categories.size();
+	baked.BlocksLength = Blocks.size();
+	baked.CategoriesLength = Categories.size();
 
-	baked.Blocks = (ModBlock**)malloc(sizeof(ModBlock*) * m_blocks.size());
-	baked.Categories = (ModCatagory**)malloc(sizeof(ModCatagory*) * m_categories.size());
+	baked.Blocks = (ModBlock**)malloc(sizeof(ModBlock*) * Blocks.size());
+	baked.Categories = (ModCatagory**)malloc(sizeof(ModCatagory*) * Categories.size());
 
 	if (baked.Blocks == nullptr || baked.Categories == nullptr)
 	{
@@ -23,25 +23,25 @@ ModDataBaked ModData::Bake()
 		return baked;
 	}
 
-	for (uint32_t i = 0; i < m_blocks.size(); i++)
-		baked.Blocks[i] = m_blocks[i];
+	for (uint32_t i = 0; i < Blocks.size(); i++)
+		baked.Blocks[i] = Blocks[i];
 
-	for (uint32_t i = 0; i < m_categories.size(); i++)
-		baked.Categories[i] = m_categories[i];
+	for (uint32_t i = 0; i < Categories.size(); i++)
+		baked.Categories[i] = Categories[i];
 
-	m_blocks.clear();
-	m_categories.clear();
+	Blocks.clear();
+	Categories.clear();
 
 	return baked;
 }
 
 void ModData::RegisterBlock(ModBlock* block)
 {
-	m_blocks.push_back(block);
+	Blocks.push_back(block);
 }
 
 void ModData::RegisterCategory(ModCatagory* category)
 {
 	std::cout << "registering: " << category->GetDisplayName() << std::endl;
-	m_categories.push_back(category);
+	Categories.push_back(category);
 }

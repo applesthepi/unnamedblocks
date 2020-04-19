@@ -5,9 +5,17 @@ const char* SomeBlock::GetUnlocalizedName() const
 	return "test_print";
 }
 
-const char* SomeBlock::GetPath() const
+void SomeBlock::ExecuteDebug(ModBlockPass* pass)
 {
-	return "TestMod/print.ubb";
+	std::string* message = (std::string*)(pass->GetData()[0]);
+	pass->LogInfo("printing to console: \"" + *message);
+	Logger::Info(*message);
+}
+
+void SomeBlock::ExecuteRelease(ModBlockPass* pass)
+{
+	std::string* message = (std::string*)(pass->GetData()[0]);
+	Logger::Info(*message);
 }
 
 const char* SomeBlock::GetCategory() const

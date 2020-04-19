@@ -57,9 +57,6 @@
     <ClCompile Include="include\RHR\handlers\StatmentHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\RHR\handlers\runtime\PreProcessorTranslationUnit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="include\RHR\handlers\runtime\PreProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -126,9 +123,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\handlers\StatmentHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\RHR\handlers\runtime\PreProcessorTranslationUnit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\RHR\handlers\runtime\PreProcessor.h">

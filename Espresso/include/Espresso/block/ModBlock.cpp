@@ -5,9 +5,14 @@ const char* ModBlock::GetUnlocalizedName() const
 	return "vin_null";
 }
 
-const char* ModBlock::GetPath() const
+void ModBlock::ExecuteRelease(ModBlockPass* pass)
 {
-	return "res/mods/default/block.txt";
+	pass->LogInfo("blank release executed");
+}
+
+void ModBlock::ExecuteDebug(ModBlockPass* pass)
+{
+	pass->LogInfo("blank debug executed");
 }
 
 const char* ModBlock::GetCategory() const

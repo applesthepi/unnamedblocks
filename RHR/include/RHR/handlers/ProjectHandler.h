@@ -11,4 +11,5 @@ public:
 	static void SaveProject(std::string path, Plane* plane);
 
 	static std::string CurrentPath;
+	static std::vector<std::string> Mods;
 };

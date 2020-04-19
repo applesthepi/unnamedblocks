@@ -116,7 +116,7 @@
       </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -141,7 +141,7 @@
       </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -166,7 +166,7 @@
       </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -196,7 +196,7 @@
       </ModuleDefinitionFile>
     </Lib>
     <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -204,7 +204,6 @@
     <ClCompile Include="include\RHR\handlers\MessageHandler.cpp" />
     <ClCompile Include="include\RHR\handlers\ProjectHandler.cpp" />
     <ClCompile Include="include\RHR\handlers\runtime\PreProcessor.cpp" />
-    <ClCompile Include="include\RHR\handlers\runtime\PreProcessorTranslationUnit.cpp" />
     <ClCompile Include="include\RHR\handlers\StatmentHandler.cpp" />
     <ClCompile Include="include\RHR\registries\BlockRegistry.cpp" />
     <ClCompile Include="include\RHR\registries\ButtonRegistry.cpp" />
@@ -224,7 +223,6 @@
     <ClInclude Include="include\RHR\handlers\MessageHandler.h" />
     <ClInclude Include="include\RHR\handlers\ProjectHandler.h" />
     <ClInclude Include="include\RHR\handlers\runtime\PreProcessor.h" />
-    <ClInclude Include="include\RHR\handlers\runtime\PreProcessorTranslationUnit.h" />
     <ClInclude Include="include\RHR\handlers\StatmentHandler.h" />
     <ClInclude Include="include\RHR\registries\BlockRegistry.h" />
     <ClInclude Include="include\RHR\registries\ButtonRegistry.h" />

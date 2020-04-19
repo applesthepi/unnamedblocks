@@ -149,3 +149,5 @@ void ProjectHandler::SaveProject(std::string path, Plane* plane)
 }
 
 std::string ProjectHandler::CurrentPath;
+
+std::vector<std::string> ProjectHandler::Mods;

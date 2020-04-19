@@ -1,6 +1,7 @@
 #pragma once
 #include "ModBlockFlags.h"
 #include "ModBlockActions.h"
+#include "Espresso/mod/ModBlockPass.h"
 
 #include <vector>
 #include <string>
@@ -54,8 +55,11 @@ public:
 	// how the block will be identified as. Convention example: "mymod_some_block_name"
 	virtual const char* GetUnlocalizedName() const;
 
-	// the path to the block definition
-	virtual const char* GetPath() const;
+	// what will be executed in a release build
+	virtual void ExecuteRelease(ModBlockPass* pass);
+
+	// what will be executed in a debug build
+	virtual void ExecuteDebug(ModBlockPass* pass);
 	
 	// category of the block
 	virtual const char* GetCategory() const;

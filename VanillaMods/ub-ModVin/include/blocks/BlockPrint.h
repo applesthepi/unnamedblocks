@@ -7,7 +7,8 @@ class SomeBlock : public ModBlock
 {
 public:
 	const char* GetUnlocalizedName() const override;
-	const char* GetPath() const override;
+	void ExecuteDebug(ModBlockPass* pass) override;
+	void ExecuteRelease(ModBlockPass* pass) override;
 	const char* GetCategory() const override;
 	const ModBlockFlags GetFlags() const override;
 

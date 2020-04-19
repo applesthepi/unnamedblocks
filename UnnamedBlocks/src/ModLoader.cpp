@@ -41,22 +41,14 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 
 ModLoaderStatus run(BlockRegistry* registry)
 {
+	ProjectHandler::Mods.clear();
 	typedef void(*f_initialize)(ModData*);
 
 	mods = new std::vector<RegMod>();
-	//boost::filesystem::path pathMods("mods/");
 
-	//for (auto& entry : boost::filesystem::directory_iterator(pathMods))//https://stackoverflow.com/questions/4430780/how-can-i-extract-the-file-name-and-extension-from-a-path-in-c
-	//{
-	//	std::string na = entry.path().stem().string();
-	//	std::string ex = entry.path().extension().string();
-	//	registerMod(na, ex);
-	//}
 	std::filesystem::directory_iterator pathMods("mods");
 	for(auto& file : pathMods)
-	{
 		registerMod(file.path().stem().string(), file.path().extension().string());
-	}
 
 	for (uint16_t i = 0; i < mods->size(); i++)
 	{
@@ -106,6 +98,8 @@ ModLoaderStatus run(BlockRegistry* registry)
 		}
 #endif
 		initialize((*mods)[i].Data);
+		
+		ProjectHandler::Mods.push_back((*mods)[i].Data->ModFileName);
 
 		ModDataBaked baked = (*mods)[i].Data->Bake();
 

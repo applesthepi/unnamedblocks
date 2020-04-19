@@ -19,7 +19,9 @@ public:
 
 	void RegisterBlock(ModBlock* block);
 	void RegisterCategory(ModCatagory* category);
-//private:
-	std::vector<ModBlock*> m_blocks;
-	std::vector<ModCatagory*> m_categories;
+
+	std::vector<ModBlock*> Blocks;
+	std::vector<ModCatagory*> Categories;
+	std::string ModDisplayName;
+	std::string ModFileName;
 };
