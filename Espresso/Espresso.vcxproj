@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -108,8 +108,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -129,8 +129,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -142,7 +142,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -150,8 +150,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;opengl32.lib;</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -165,7 +165,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\;$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\include;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -176,8 +176,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;opengl32.lib;</AdditionalDependencies>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -190,7 +190,6 @@
     <ClCompile Include="include\Espresso\block\ModBlockFlagsIterator.cpp" />
     <ClCompile Include="include\Espresso\catagory\ModCatagory.cpp" />
     <ClCompile Include="include\Espresso\Logger.cpp" />
-    <ClCompile Include="include\Espresso\mod\ModBlockPass.cpp" />
     <ClCompile Include="include\Espresso\mod\ModData.cpp" />
     <ClCompile Include="include\Espresso\preprocessor\PreProcessorData.cpp" />
   </ItemGroup>
@@ -202,7 +201,6 @@
     <ClInclude Include="include\Espresso\catagory\ModCatagory.h" />
     <ClInclude Include="include\Espresso\Espresso.h" />
     <ClInclude Include="include\Espresso\Logger.h" />
-    <ClInclude Include="include\Espresso\mod\ModBlockPass.h" />
     <ClInclude Include="include\Espresso\mod\ModData.h" />
     <ClInclude Include="include\Espresso\preprocessor\PreProcessorData.h" />
   </ItemGroup>

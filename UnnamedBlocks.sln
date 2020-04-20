@@ -29,7 +29,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModVinDynamic", "VanillaMod
 		{5DD7F979-F2F1-4C96-985F-F1F1276CE62F} = {5DD7F979-F2F1-4C96-985F-F1F1276CE62F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cappuccino", "Cappuccino\Cappuccino.vcxproj", "{04125B4A-C188-4C32-8F4D-AE83EAAFD00E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cappuccino", "build\Cappuccino\Cappuccino.vcxproj", "{04125B4A-C188-4C32-8F4D-AE83EAAFD00E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

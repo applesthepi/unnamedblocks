@@ -98,14 +98,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcc.lib;Espresso.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;Espresso.lib;csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <AddModuleNamesToAssembly>
@@ -121,14 +121,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcc.lib;Espresso.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;Espresso.lib;csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <AddModuleNamesToAssembly>
@@ -146,7 +146,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -155,8 +155,8 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcc.lib;Espresso.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;Espresso.lib;csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <AddModuleNamesToAssembly>
@@ -174,7 +174,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\cmake\SFML64\include\;$(SolutionDir)\src\;$(SolutionDir)\cmake\GLEW\include\;$(SolutionDir)\RHR\include\;$(SolutionDir)\Espresso\include\;$(SolutionDir)\cmake\tcc\win32\;$(SolutionDir)\build\Cappuccino\include\;$(SolutionDir)\build\csfml\include\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>GLEW_STATIC;_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -183,8 +183,8 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcc.lib;Espresso.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\cmake\SFML64\lib\;$(SolutionDir)\cmake\GLEW\lib\Release\x64\;$(SolutionDir)\cmake\RHR\lib\;$(SolutionDir)\cmake\Espresso\lib\;$(SolutionDir)\cmake\tcc\;$(SolutionDir)\build\Cappuccino\lib\;$(SolutionDir)\build\csfml\lib\msvc\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcc.lib;Espresso.lib;csfml-audio.lib;csfml-graphics.lib;csfml-network.lib;csfml-system.lib;csfml-window.lib;Cappuccino.lib;sfml-graphics.lib;sfml-window.lib;sfml-system.lib;glew32s.lib;opengl32.lib;RHR.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
       <AddModuleNamesToAssembly>

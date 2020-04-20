@@ -47,9 +47,11 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		tcc_add_library(state, (ProjectHandler::Mods[i] + "-s.lib").c_str());
 	}
 
-	tcc_add_library(state, "Espresso.lib");
+	tcc_add_library_path(state, "Cappuccino/lib");
+	tcc_add_library(state, "Cappuccino.lib");
 
-	tcc_add_include_path(state, "Espresso");
+	tcc_add_include_path(state, "Cappuccino/include");
+	tcc_add_include_path(state, "csfml/include");
 
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
 	tcc_compile_string(state, line.c_str());
@@ -102,11 +104,12 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	for (uint64_t i = 0; i < functionCallCount.size(); i++)
 		functionCallCountC[i] = functionCallCount[i];
 
-	uint64_t* functionCount = (uint64_t*)malloc(sizeof(uint64_t) * functionCalls.size());
+	bool* buildType = (bool*)malloc(sizeof(bool));
+	*buildType = debugBuild;
 
 	tcc_add_symbol(state, "calls", calls);
-	tcc_add_symbol(state, "functionCount", functionCount);
 	tcc_add_symbol(state, "functionCallCount", functionCallCountC);
+	tcc_add_symbol(state, "debugBuild", buildType);
 
 	void* mem = malloc(tcc_relocate(state, nullptr));
 	tcc_relocate(state, mem);
