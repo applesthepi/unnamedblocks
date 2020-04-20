@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <Cappuccino/ModBlockPass.h>
+#include <stdbool.h>
+#include <Cappuccino/Cappuccino.h>
 
 uint64_t functionMain;
 uint64_t* functionCallCount;

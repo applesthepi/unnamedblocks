@@ -36,4 +36,5 @@ build/CMakeCache.txt
 build/cmake_install.cmake
 build/tmp
 build/runtime
+build/Cappuccino/INT
 **.deps

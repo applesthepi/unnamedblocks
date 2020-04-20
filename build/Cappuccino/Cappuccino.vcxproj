@@ -176,10 +176,10 @@
     <ClInclude Include="include\Cappuccino\Registration.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\Cappuccino\Cappuccino.cc" />
-    <ClCompile Include="include\Cappuccino\ExecutionThread.cc" />
-    <ClCompile Include="include\Cappuccino\ModBlockPass.cc" />
-    <ClCompile Include="include\Cappuccino\Registration.cc" />
+    <ClCompile Include="include\Cappuccino\Cappuccino.cpp" />
+    <ClCompile Include="include\Cappuccino\ExecutionThread.cpp" />
+    <ClCompile Include="include\Cappuccino\ModBlockPass.cpp" />
+    <ClCompile Include="include\Cappuccino\Registration.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

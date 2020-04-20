@@ -2,8 +2,11 @@
 #include "Registration.h"
 #include "ModBlockPass.h"
 
+#ifdef __cplusplus
 extern "C"
 {
+#endif
+
 	void cpSetFunctionCallCount(uint64_t* functionCallCount)
 	{
 		Registration::SetFunctionCallCount(functionCallCount);
@@ -25,8 +28,11 @@ extern "C"
 		Registration::Run();
 	}
 
-	void cpSetFunctionMain(uint64_t& functionMain)
+	void cpSetFunctionMain(uint64_t functionMain)
 	{
 		Registration::SetFunctionMain(functionMain);
 	}
+
+#ifdef __cplusplus
 }
+#endif

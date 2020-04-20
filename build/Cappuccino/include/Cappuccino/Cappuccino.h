@@ -2,6 +2,7 @@
 #define H_Cap
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -23,7 +24,7 @@ extern "C"
 	typedef void(***executionFunctionStackList)(ModBlockPass*);
 
 	// set main entry function
-	void cpSetFunctionMain(uint64_t& functionMain);
+	void cpSetFunctionMain(uint64_t functionMain);
 
 	// set the functionCallCount
 	void cpSetFunctionCallCount(uint64_t* functionCallCount);
