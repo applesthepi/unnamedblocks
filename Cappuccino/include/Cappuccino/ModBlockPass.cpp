@@ -2,7 +2,7 @@
 
 #include <time.h>
 
-ModBlockPass::ModBlockPass(sf::RenderWindow* window, void** data, bool debugMode)
+ModBlockPass::ModBlockPass(sfRenderWindow* window, void** data, bool debugMode)
 	:m_window(window), m_data(data)
 {
 	if (debugMode)
@@ -17,14 +17,9 @@ ModBlockPass::ModBlockPass(sf::RenderWindow* window, void** data, bool debugMode
 	}
 }
 
-sf::RenderWindow* ModBlockPass::GetRenderWindow()
+sfRenderWindow* ModBlockPass::GetRenderWindow()
 {
 	return (this->*(m_getRenderWindow))(this);
-}
-
-void ModBlockPass::SetData(void** data)
-{
-	m_data = data;
 }
 
 void** ModBlockPass::GetData()
@@ -50,18 +45,13 @@ void ModBlockPass::LogError(const std::string& message)
 	m_messages.push_back("[" + std::to_string(aTime->tm_hour) + ":" + std::to_string(aTime->tm_min) + ":" + std::to_string(aTime->tm_sec) + "] [error]" + message);
 }
 
-const std::vector<std::string>& ModBlockPass::GetMessages()
-{
-	return m_messages;
-}
-
-sf::RenderWindow* ModBlockPass::GetRenderWindowDebug(ModBlockPass* pass)
+sfRenderWindow* ModBlockPass::GetRenderWindowDebug(ModBlockPass* pass)
 {
 	pass->LogInfo("passing RenderWindow");
 	return m_window;
 }
 
-sf::RenderWindow* ModBlockPass::GetRenderWindowRelease(ModBlockPass* pass)
+sfRenderWindow* ModBlockPass::GetRenderWindowRelease(ModBlockPass* pass)
 {
 	return m_window;
 }

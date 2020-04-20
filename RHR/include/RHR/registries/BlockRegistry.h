@@ -5,6 +5,7 @@
 #include <functional>
 #include <Espresso/block/ModBlock.h>
 #include <Espresso/catagory/ModCatagory.h>
+#include <Cappuccino/ExecutionThread.h>
 
 class BlockArgumentCaller
 {
@@ -15,8 +16,6 @@ public:
 	BlockArgumentVariableMode Mode;
 	std::string Value;
 };
-
-typedef void(*executionFunction)(ModBlockPass*);
 
 class BlockRegistry
 {

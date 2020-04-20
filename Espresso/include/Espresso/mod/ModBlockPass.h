@@ -11,9 +11,12 @@ public:
 	void LogInfo(const std::string& message);
 	void LogError(const std::string& message);
 
+	const std::vector<std::string>& GetMessages();
+	
 	// user data
 
 	sf::RenderWindow* GetRenderWindow();
+	void SetData(void** data);
 	void** GetData();
 private:
 	// user data interactions
