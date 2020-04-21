@@ -15,7 +15,7 @@ UnnamedBlocks.ipdb
 unnamedblocks
 UnnamedBlocks.exe
 **.dll
-**.lib
+!**.lib
 **.ilk
 **.pdb
 **.lo

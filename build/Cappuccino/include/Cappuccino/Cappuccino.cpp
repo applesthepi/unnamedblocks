@@ -1,12 +1,10 @@
-#include "Cappuccino.h"
 #include "Registration.h"
 #include "ModBlockPass.h"
 
-#ifdef __cplusplus
+#include "Cappuccino.h"
+
 extern "C"
 {
-#endif
-
 	void cpSetFunctionCallCount(uint64_t* functionCallCount)
 	{
 		Registration::SetFunctionCallCount(functionCallCount);
@@ -32,7 +30,4 @@ extern "C"
 	{
 		Registration::SetFunctionMain(functionMain);
 	}
-
-#ifdef __cplusplus
 }
-#endif

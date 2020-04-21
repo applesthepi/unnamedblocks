@@ -1,7 +1,7 @@
+#include <Cappuccino/Cappuccino.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <Cappuccino/Cappuccino.h>
 
 uint64_t functionMain;
 uint64_t* functionCallCount;
@@ -10,11 +10,13 @@ bool debugBuild;
 
 int main()
 {
+	printf("running");
 	cpSetFunctionMain(functionMain);
+	/*cpSetFunctionMain(functionMain);
 	cpSetFunctionCallCount(functionCallCount);
 	cpSetCalls(calls);
 	cpSetDebugBuild(debugBuild);
-	cpRun();
-
+	cpRun();*/
+	
 	return 0;
 }

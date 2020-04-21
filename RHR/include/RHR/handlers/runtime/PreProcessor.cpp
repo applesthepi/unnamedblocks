@@ -47,8 +47,8 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		tcc_add_library(state, (ProjectHandler::Mods[i] + "-s.lib").c_str());
 	}
 
-	tcc_add_library_path(state, "Cappuccino/lib");
-	tcc_add_library(state, "Cappuccino.lib");
+	int r0 = tcc_add_library_path(state, "Cappuccino/lib");
+	int r1 = tcc_add_library(state, "Cappuccino");
 
 	tcc_add_include_path(state, "Cappuccino/include");
 	tcc_add_include_path(state, "csfml/include");

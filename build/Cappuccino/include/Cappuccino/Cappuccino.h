@@ -17,7 +17,6 @@ extern "C"
 	};*/
 
 	typedef struct ModBlockPass ModBlockPass;
-	ModBlockPass* newModBlockPass();
 
 	typedef void(*executionFunction)(ModBlockPass*);
 	typedef void(**executionFunctionStack)(ModBlockPass*);
