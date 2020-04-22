@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
-project(unnamedblocks VERSION 0.8)
+project(unnamedblocks)
 if(MSVC)
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT unnamedblocks)
 	set(CMAKE_PREFIX_PATH STRING "${CMAKE_SOURCE_DIR}/cmake")
@@ -93,6 +93,9 @@ else()
 	set(RES_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the res folder {VARNAME} is environment variable. Blank for working directory")
 	set(MODS_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the mods folder {VARNAME} is environment variable. Blank for working directory")
 endif()
+
+set(VERSION_UNNAMED_BLOCKS "0.0" CACHE STRING "Version of Unnamed Blocks")
+
 option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
 if (NOT DISABLE_ALL_MOD_BUILDS)
 	add_subdirectory(VanillaMods)

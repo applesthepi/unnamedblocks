@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ModVin VERSION 0.8)
+project(ModVin)
+set(VERSION_MOD_VIN "0.0" CACHE STRING "Version of Mod Vin")
 
 add_library(ModVin-Dynamic MODULE 
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"

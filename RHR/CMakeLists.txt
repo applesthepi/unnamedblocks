@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(RHR VERSION 0.8)
+project(RHR)
 configure_file(config.h.in config.h)
 add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.cpp"

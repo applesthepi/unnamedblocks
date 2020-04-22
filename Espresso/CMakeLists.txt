@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Espresso VERSION 0.8)
+project(Espresso)
 configure_file(config.h.in config.h)
 
 add_library(Espresso STATIC

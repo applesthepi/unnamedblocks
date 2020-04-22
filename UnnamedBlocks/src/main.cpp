@@ -1,14 +1,10 @@
 #include "ModLoader.h"
 #include "RHR/handlers/runtime/PreProcessor.h"
 
-
-//#define POSIX
-// TODO fix config on windows
 #ifdef POSIX
 #include "config.h"
 #include <dlfcn.h>
 #else
-//#include "RHR/config.h"
 #include <windows.h>
 #endif
 
@@ -17,13 +13,10 @@
 #include <Espresso/Logger.h>
 #include <chrono>
 
-//#include "content/ContentLoader.h"
 #include <GL/glew.h>
-//#include <stdio.h> 
-//typedef int(__cdecl* MYPROC)(LPWSTR);
 #include <RHR/RHR.h>
 
-#ifdef POSIX
+#ifdef LINUX
 #include <X11/Xlib.h>
 #endif
 
@@ -109,7 +102,7 @@ int main()
 	// Window Setup
 
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), UB_VERSION, sf::Style::Default);
+	window.create(sf::VideoMode(1280, 720, 32), std::to_string(unnamedblocks_VERSION_MAJOR) + "." + std::to_string(unnamedblocks_VERSION_MINOR), sf::Style::Default);
 	/*
 	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
 	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");
