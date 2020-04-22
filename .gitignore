@@ -2,7 +2,6 @@ Espresso/INT
 RHR/INT
 VanillaMods/*
 mods
-cmake
 !/VanillaMods/ub-ModVin
 !/VanillaMods/CMakeLists.txt
 UnnamedBlocks/dep/BOOST64/
@@ -10,10 +9,6 @@ UnnamedBlocks/dep/SFML64/
 UnnamedBlocks/dep/RHR/
 UnnamedBlocks/.vs/
 **.o
-UnnamedBlocks.iobj
-UnnamedBlocks.ipdb
-unnamedblocks
-UnnamedBlocks.exe
 **.dll
 **.lib
 **.a
