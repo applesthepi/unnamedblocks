@@ -1,6 +1,5 @@
 #pragma once
 #include "ModVin/ModCategories.h"
-
 #include <Espresso/Espresso.h>
 
 class SomeBlock : public ModBlock

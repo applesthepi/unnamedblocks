@@ -1,18 +1,82 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.10)
 
 project(ModVin VERSION 0.8)
 
-add_library(ModVin MODULE "${CMAKE_CURRENT_SOURCE_DIR}/Mod.cpp")
+add_library(ModVin-Dynamic MODULE 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+	)
+add_library(ModVin-Static STATIC 
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+	)
 
-target_include_directories(ModVin PUBLIC
+set_target_properties(ModVin-Dynamic PROPERTIES OUTPUT_NAME "ModVin")
+set_target_properties(ModVin-Static PROPERTIES OUTPUT_NAME "ModVin-s")
+set_target_properties(ModVin-Static PROPERTIES PREFIX "lib")
+set_target_properties(ModVin-Static PROPERTIES SUFFIX ".a")
+
+target_include_directories(ModVin-Dynamic PUBLIC
 	"RHR"
 	"RHR/include"
 	"Espresso/include"
-	)
-target_link_libraries(ModVin PUBLIC
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${csfml_include}"
+)
+target_link_libraries(ModVin-Dynamic PUBLIC
 	sfml-graphics
 	sfml-system
 	RHR
 	Espresso
-	)
+	"${csfml-audio}"
+        "${csfml-network}"
+        "${csfml-graphics}"
+        "${csfml-system}"
+        "${csfml-window}"
+)
 
+target_include_directories(ModVin-Static PUBLIC
+	"RHR"
+	"RHR/include"
+	"Espresso/include"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${csfml_include}"
+)
+target_link_libraries(ModVin-Static PUBLIC
+	sfml-graphics
+	sfml-system
+	RHR
+	Espresso
+	"${csfml-audio}"
+        "${csfml-network}"
+        "${csfml-graphics}"
+        "${csfml-system}"
+        "${csfml-window}"
+)
+
+add_custom_command(
+	TARGET ModVin-Dynamic POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy
+	$<TARGET_FILE:ModVin-Dynamic>
+	$<TARGET_FILE_DIR:unnamedblocks>/mods/)
+add_custom_command(
+	TARGET ModVin-Static POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy
+	$<TARGET_FILE:ModVin-Static>
+	$<TARGET_FILE_DIR:unnamedblocks>/mods/)
+
+#if(MSVC)
+#	set_target_properties(ModVin-Dynamic ModVin-Static PROPERTIES
+#		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_BINARY_DIR}/Debug/mods"
+#		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_BINARY_DIR}/Release/mods"
+#		)
+#else()
+#	set_target_properties(ModVin-Dynamic ModVin-Static PROPERTIES
+#		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_BINARY_DIR}/mods"
+#		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_BINARY_DIR}/mods"
+#		)
+#endif()
