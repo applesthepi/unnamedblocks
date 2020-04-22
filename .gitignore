@@ -25,7 +25,8 @@ Makefile
 .ycm_extra_conf.py
 build
 **.deps
-!csfml
-!tcc
+!csfml/**
+!tcc/**
+!cmake/**
 .clangd
 compile_commands.json
