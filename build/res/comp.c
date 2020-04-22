@@ -11,12 +11,12 @@ bool debugBuild;
 int main()
 {
 	printf("running");
+	
 	cpSetFunctionMain(functionMain);
-	/*cpSetFunctionMain(functionMain);
 	cpSetFunctionCallCount(functionCallCount);
 	cpSetCalls(calls);
 	cpSetDebugBuild(debugBuild);
-	cpRun();*/
+	cpRun();
 	
 	return 0;
 }
