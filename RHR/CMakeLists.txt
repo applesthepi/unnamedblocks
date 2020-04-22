@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-# use c++ 20
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-
 project(RHR VERSION 0.8)
 configure_file(config.h.in config.h)
 add_library(RHR STATIC
@@ -60,6 +56,3 @@ target_include_directories(RHR PUBLIC
 	${tcc_include}
 )
 
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")

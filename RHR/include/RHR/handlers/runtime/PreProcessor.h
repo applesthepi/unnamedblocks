@@ -1,6 +1,6 @@
 #pragma once
+#include "config.h"
 #include "RHR/stacking/Plane.h"
-
 #include <mutex>
 #include <vector>
 #include <map>

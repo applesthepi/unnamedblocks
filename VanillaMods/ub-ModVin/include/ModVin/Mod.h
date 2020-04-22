@@ -1,4 +1,5 @@
 #pragma once
+#include "config.h"
 #include "ModCategories.h"
 
 #include "blocks/BlockPrint.h"

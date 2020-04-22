@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # use c++ 20
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -42,7 +42,7 @@ if(UNIX)
 	set(POSIX True)
 endif()
 
-add_executable(unnamedblocks "UnnamedBlocks/src/main.cpp" "UnnamedBlocks/src/ModLoader.cpp" "UnnamedBlocks/src/Modloader.h")
+add_executable(unnamedblocks "UnnamedBlocks/src/main.cpp" "UnnamedBlocks/src/ModLoader.cpp" "UnnamedBlocks/src/ModLoader.h")
 configure_file(config.h.in config.h)
 set_property(TARGET unnamedblocks PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Debug")
 # Set unnamedblocks to the startup project
@@ -132,10 +132,3 @@ if(MSVC)
 		"${CMAKE_SOURCE_DIR}/cmake/bin/libtcc.dll"
 		$<TARGET_FILE_DIR:unnamedblocks>)
 endif()
-# Copy res to the build dir
-#add_custom_command(TARGET unnamedblocks POST_BUILD COMMAND
-#	cp -r "${CMAKE_SOURCE_DIR}/res" "${CMAKE_BINARY_DIR}")
-
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")

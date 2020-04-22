@@ -69,14 +69,3 @@ add_custom_command(
 	$<TARGET_FILE:ModVin-Static>
 	$<TARGET_FILE_DIR:unnamedblocks>/mods/)
 
-#if(MSVC)
-#	set_target_properties(ModVin-Dynamic ModVin-Static PROPERTIES
-#		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_BINARY_DIR}/Debug/mods"
-#		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_BINARY_DIR}/Release/mods"
-#		)
-#else()
-#	set_target_properties(ModVin-Dynamic ModVin-Static PROPERTIES
-#		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_BINARY_DIR}/mods"
-#		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_BINARY_DIR}/mods"
-#		)
-#endif()
