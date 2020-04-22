@@ -1,7 +1,7 @@
 #include "PreProcessor.h"
 #include "RHR/handlers/ProjectHandler.h"
 
-#include <libtcc/libtcc.h>
+#include <libtcc.h>
 
 void PullFile(std::vector<std::string>& lines, const std::string& file)
 {

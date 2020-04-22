@@ -1,4 +1,5 @@
 #include "BlockPrint.h"
+#include "ModVin/Mod.h"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
