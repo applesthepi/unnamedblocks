@@ -27,3 +27,5 @@ build
 **.deps
 !csfml
 !tcc
+.clangd
+compile_commands.json
