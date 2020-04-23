@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#define CAP_EXPORT __declspec(dllexport)
+#define CAP_EXPORT extern "C"
 
 #ifdef __cplusplus
 extern "C"
@@ -18,22 +18,19 @@ extern "C"
 	typedef void(***executionFunctionStackList)(ModBlockPass*);
 
 	// set main entry function
-	CAP_EXPORT void cpSetFunctionMain(uint64_t functionMain);
+	void cpSetFunctionMain(uint64_t functionMain);
 
 	// set the functionCallCount
-	CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
+	void cpSetFunctionCallCount(uint64_t* functionCallCount);
 
 	// set the calls
-	CAP_EXPORT void cpSetCalls(executionFunctionStackList calls);
+	void cpSetCalls(executionFunctionStackList calls);
 
 	// set the build type
-	CAP_EXPORT void cpSetDebugBuild(bool debugBuild);
+	void cpSetDebugBuild(bool debugBuild);
 
 	// run
-	CAP_EXPORT void cpRun()
-	{
-		printf("re\n");
-	}
+	void cpRun();
 #ifdef __cplusplus
 }
 #endif

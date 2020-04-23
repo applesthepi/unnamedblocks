@@ -23,10 +23,9 @@ CAP_EXPORT void cpSetDebugBuild(bool debugBuild)
 {
 	Registration::SetDebug(debugBuild);
 }
-/*
-void cpRun()
+
+CAP_EXPORT void cpRun()
 {
 	Registration::Initialize();
 	Registration::Run();
 }
-*/
