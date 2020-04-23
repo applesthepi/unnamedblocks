@@ -5,18 +5,12 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define CAP_EXPORT __declspec(dllexport)
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
-	/*
-	enum LOG_TYPE
-	{
-		LT_INFO,
-		LT_WARNING,
-		LT_ERROR
-	};*/
-
 	typedef struct ModBlockPass ModBlockPass;
 
 	typedef void(*executionFunction)(ModBlockPass*);
@@ -24,23 +18,22 @@ extern "C"
 	typedef void(***executionFunctionStackList)(ModBlockPass*);
 
 	// set main entry function
-	void cpSetFunctionMain(uint64_t functionMain);
+	CAP_EXPORT void cpSetFunctionMain(uint64_t functionMain);
 
 	// set the functionCallCount
-	void cpSetFunctionCallCount(uint64_t* functionCallCount);
+	CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
 
 	// set the calls
-	void cpSetCalls(executionFunctionStackList calls);
+	CAP_EXPORT void cpSetCalls(executionFunctionStackList calls);
 
 	// set the build type
-	void cpSetDebugBuild(bool debugBuild);
+	CAP_EXPORT void cpSetDebugBuild(bool debugBuild);
 
 	// run
-	void cpRun()
+	CAP_EXPORT void cpRun()
 	{
 		printf("re\n");
 	}
-
 #ifdef __cplusplus
 }
 #endif

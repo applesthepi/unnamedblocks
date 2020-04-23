@@ -105,7 +105,8 @@ else()
 	set(MODS_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the mods folder {VARNAME} is environment variable. Blank for working directory")
 endif()
 
-set(VERSION_UNNAMED_BLOCKS "0.0" CACHE STRING "Version of Unnamed Blocks")
+set(VERSION_UNNAMED_BLOCKS "0.0.0" CACHE STRING "Version of Unnamed Blocks")
+set(IS_BETA "1" CACHE STRING "Wether or not Unnamed Blocks will be flagged as a beta build")
 
 option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
 if (NOT DISABLE_ALL_MOD_BUILDS)

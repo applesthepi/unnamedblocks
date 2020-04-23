@@ -26,9 +26,6 @@
 #include <math.h>
 #include <string>
 
-#define UB_VERSION "Unnamed Blocks v0.0b2"
-#define UB_BETA_BUILD true
-
 #define CONTEXT_COLOR 180, 180, 180, 200
 
 std::vector<Button*> contextButtons;
@@ -88,8 +85,8 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 
 int main()
 {
-	Logger::Info(UB_VERSION);
-	if (UB_BETA_BUILD)
+	Logger::Info(UnnamedBlocksVersion);
+	if (UnnamedBlocksBeta)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
 
 #ifdef LINUX

@@ -54,9 +54,6 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	tcc_add_include_path(state, "Cappuccino/include");
 	tcc_add_include_path(state, "csfml/include");
 
-	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
-	int r2 = tcc_compile_string(state, line.c_str());
-
 	std::vector<std::string> functionReferences;
 	std::vector<uint32_t> functionIds;
 	std::vector<uint64_t> functionCallCount;
@@ -112,13 +109,17 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
 	int r9 = tcc_add_symbol(state, "debugBuild", buildType);
 
-	void* mem = malloc(tcc_relocate(state, nullptr));
-	tcc_relocate(state, mem);
+	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
+	int r2 = tcc_compile_string(state, line.c_str());
+	tcc_run(state, 0, 0);
 
-	typedef int(*fun_main)();
-	fun_main f_main = (fun_main)tcc_get_symbol(state, "main");
-
-	int rs = f_main();
+	//void* mem = malloc(tcc_relocate(state, nullptr));
+	//tcc_relocate(state, mem);
+	//
+	//typedef int(*fun_main)();
+	//fun_main f_main = (fun_main)tcc_get_symbol(state, "main");
+	//
+	//int rs = f_main();
 	tcc_delete(state);
 
 	//TODO delete memory
