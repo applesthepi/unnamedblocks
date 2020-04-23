@@ -1,4 +1,4 @@
-#define UnnamedBlocksVersion @VERSION_UNNAMED_BLOCKS@
+#define UnnamedBlocksVersion "@VERSION_UNNAMED_BLOCKS@"
 #cmakedefine LINUX
 #cmakedefine POSIX
 #define RES_FOLDER_SEARCH_PATH @RES_FOLDER_SEARCH_PATH@

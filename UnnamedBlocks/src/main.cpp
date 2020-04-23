@@ -24,6 +24,7 @@
 #include <cstring>
 #include <vector>
 #include <math.h>
+#include <string>
 
 #define UB_VERSION "Unnamed Blocks v0.0b2"
 #define UB_BETA_BUILD true
@@ -102,7 +103,7 @@ int main()
 	// Window Setup
 
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), std::to_string(UnnamedBlocksVersion), sf::Style::Default);
+	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default);
 	/*
 	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
 	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");
