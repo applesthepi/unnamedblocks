@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(Espresso)
 configure_file(config.h.in config.h)
-
-add_library(Espresso STATIC
+set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlock.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockActions.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockFlags.cpp"
@@ -22,7 +21,11 @@ add_library(Espresso STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Logger.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/preprocessor/PreProcessorData.h"
+	)
+add_library(Espresso STATIC
+	${Espresso_SRC}
 )
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso FILES ${Espresso_SRC})
 target_include_directories(Espresso PUBLIC
 	"${PROJECT_BINARY_DIR}"
 	"${CMAKE_SOURCE_DIR}/Cappuccino/include"

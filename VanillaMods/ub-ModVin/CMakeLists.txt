@@ -4,16 +4,23 @@ project(ModVin)
 configure_file(config.h.in config.h)
 set(VERSION_MOD_VIN "0.0" CACHE STRING "Version of Mod Vin")
 
-#=========================================================================================================
-#============================[ DYNAMIC ]==================================================================
-#=========================================================================================================
-
-add_library(ModVin-Dynamic MODULE 
+set(ModVin_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+)
+
+add_library(ModVin-Dynamic MODULE
+	${ModVin_SRC}
 	)
+
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
+
+add_library(ModVin-Static STATIC
+	${ModVin_SRC}
+	)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
 
 set_target_properties(ModVin-Dynamic PROPERTIES OUTPUT_NAME "ModVin")
 
@@ -48,7 +55,7 @@ add_custom_command(
 #============================[ STATIC ]===================================================================
 #=========================================================================================================
 
-add_library(ModVin-Static STATIC 
+add_library(ModVin-Static STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
@@ -85,4 +92,3 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy
 	$<TARGET_FILE:ModVin-Static>
 	$<TARGET_FILE_DIR:unnamedblocks>/mods/)
-
