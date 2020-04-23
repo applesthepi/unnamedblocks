@@ -19,5 +19,5 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new SomeBlock());
 	data->ModFileName = "ModVin";
 	data->ModDisplayName = "Vanilla Mod";
-	//data->MajorVersion = Van
+	data->Version = ModVinVersion;
 }

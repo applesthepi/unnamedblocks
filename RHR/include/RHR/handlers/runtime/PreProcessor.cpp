@@ -44,17 +44,18 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			continue;
 		}
 
-		tcc_add_library(state, (ProjectHandler::Mods[i] + "-s").c_str());
+		if (tcc_add_library(state, (ProjectHandler::Mods[i] + "-s").c_str()) == -1)
+			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
 	}
 
-	int r0 = tcc_add_library_path(state, "Cappuccino/lib");
+	int r0 = tcc_add_library_path(state, "Cappuccino/lib/");
 	int r1 = tcc_add_library(state, "Cappuccino");
 
 	tcc_add_include_path(state, "Cappuccino/include");
 	tcc_add_include_path(state, "csfml/include");
 
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
-	tcc_compile_string(state, line.c_str());
+	int r2 = tcc_compile_string(state, line.c_str());
 
 	std::vector<std::string> functionReferences;
 	std::vector<uint32_t> functionIds;
@@ -107,18 +108,18 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	bool* buildType = (bool*)malloc(sizeof(bool));
 	*buildType = debugBuild;
 
-	tcc_add_symbol(state, "calls", calls);
-	tcc_add_symbol(state, "functionCallCount", functionCallCountC);
-	tcc_add_symbol(state, "debugBuild", buildType);
+	int r7 = tcc_add_symbol(state, "calls", calls);
+	int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
+	int r9 = tcc_add_symbol(state, "debugBuild", buildType);
 
 	void* mem = malloc(tcc_relocate(state, nullptr));
 	tcc_relocate(state, mem);
 
-	typedef void(*fun_main)();
+	typedef int(*fun_main)();
 	fun_main f_main = (fun_main)tcc_get_symbol(state, "main");
 
+	int rs = f_main();
 	tcc_delete(state);
-	f_main();
 
 	//TODO delete memory
 

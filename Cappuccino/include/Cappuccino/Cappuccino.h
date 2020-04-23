@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C"
@@ -17,7 +18,6 @@ extern "C"
 	};*/
 
 	typedef struct ModBlockPass ModBlockPass;
-	ModBlockPass* newModBlockPass();
 
 	typedef void(*executionFunction)(ModBlockPass*);
 	typedef void(**executionFunctionStack)(ModBlockPass*);
@@ -36,7 +36,10 @@ extern "C"
 	void cpSetDebugBuild(bool debugBuild);
 
 	// run
-	void cpRun();
+	void cpRun()
+	{
+		printf("re\n");
+	}
 
 #ifdef __cplusplus
 }

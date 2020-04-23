@@ -102,7 +102,7 @@ int main()
 	// Window Setup
 
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), std::to_string(unnamedblocks_VERSION_MAJOR) + "." + std::to_string(unnamedblocks_VERSION_MINOR), sf::Style::Default);
+	window.create(sf::VideoMode(1280, 720, 32), std::to_string(UnnamedBlocksVersion), sf::Style::Default);
 	/*
 	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
 	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");

@@ -86,6 +86,7 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 
 	m_draggingConnection = sf::RectangleShape(sf::Vector2f(0, 4));
 	m_useDraggingConnection = false;
+	m_dragging = false;
 }
 
 Plane::~Plane()
