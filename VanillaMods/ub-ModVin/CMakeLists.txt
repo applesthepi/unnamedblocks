@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(ModVin VERSION 0.8)
+project(ModVin)
+set(VERSION_MOD_VIN "0.0" CACHE STRING "Version of Mod Vin")
+
 set(ModVin_SRC	
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
 )
+
 add_library(ModVin-Dynamic MODULE 
 	${ModVin_SRC}
 	)
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
+
 add_library(ModVin-Static STATIC 
 	${ModVin_SRC}
 	)

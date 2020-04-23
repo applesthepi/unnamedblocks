@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(RHR VERSION 0.8)
+project(RHR)
 configure_file(config.h.in config.h)
 set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.cpp"

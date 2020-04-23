@@ -24,4 +24,6 @@ public:
 	std::vector<ModCatagory*> Categories;
 	std::string ModDisplayName;
 	std::string ModFileName;
+	uint16_t MajorVersion;
+	uint16_t MinorVersion;
 };

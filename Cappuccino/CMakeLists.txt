@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(Cappuccino VERSION 0.1)
+project(Cappuccino)
 
 configure_file(config.h.in config.h)
 set(Cappuccino_SRC

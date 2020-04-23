@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(Espresso VERSION 0.8)
+project(Espresso)
 configure_file(config.h.in config.h)
 set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlock.cpp"
