@@ -16,11 +16,7 @@ add_library(ModVin-Dynamic MODULE
 	)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
-
-add_library(ModVin-Static STATIC
-	${ModVin_SRC}
-	)
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
+#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
 
 set_target_properties(ModVin-Dynamic PROPERTIES OUTPUT_NAME "ModVin")
 
@@ -56,6 +52,7 @@ add_custom_command(
 #=========================================================================================================
 
 add_library(ModVin-Static STATIC
+	${ModVin_SRC}
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"

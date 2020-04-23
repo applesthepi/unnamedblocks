@@ -3,7 +3,7 @@ project(Cappuccino)
 
 configure_file(config.h.in config.h)
 set(Cappuccino_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Cappuccino.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Cappuccino.cc"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ExecutionThread.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ModBlockPass.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Registration.cpp"
