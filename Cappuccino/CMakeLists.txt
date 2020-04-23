@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Cappuccino VERSION 0.1)
 
 configure_file(config.h.in config.h)
-add_library(Cappuccino STATIC
+set(Cappuccino_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Cappuccino.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ExecutionThread.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ModBlockPass.cpp"
@@ -12,7 +12,11 @@ add_library(Cappuccino STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ExecutionThread.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ModBlockPass.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Registration.h"
+	)
+add_library(Cappuccino STATIC
+	${Cappuccino_SRC}
 )
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino FILES ${Cappuccino_SRC})
 target_link_libraries(Cappuccino PUBLIC
 	"${csfml-audio}"
         "${csfml-network}"

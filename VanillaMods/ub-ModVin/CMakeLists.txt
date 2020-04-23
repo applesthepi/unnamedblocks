@@ -1,19 +1,20 @@
 cmake_minimum_required(VERSION 3.10)
 
 project(ModVin VERSION 0.8)
-
+set(ModVin_SRC	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+)
 add_library(ModVin-Dynamic MODULE 
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+	${ModVin_SRC}
 	)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
 add_library(ModVin-Static STATIC 
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+	${ModVin_SRC}
 	)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
 
 set_target_properties(ModVin-Dynamic PROPERTIES OUTPUT_NAME "ModVin")
 set_target_properties(ModVin-Static PROPERTIES OUTPUT_NAME "ModVin-s")

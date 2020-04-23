@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(RHR VERSION 0.8)
 configure_file(config.h.in config.h)
-add_library(RHR STATIC
+set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.cpp"
@@ -18,9 +18,9 @@ add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Button.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/TypingSystem.cpp"
-	# Headers
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.h"
+	#${CMAKE_CURRENT_SOURCE_DIR}/ Headers
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/PreProcessor.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/StatmentHandler.h"
@@ -39,6 +39,9 @@ add_library(RHR STATIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Button.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/TypingSystem.h"
+	)
+add_library(RHR STATIC
+	${RHR_SRC}
 )
 target_link_libraries(RHR PUBLIC
 	Espresso
@@ -56,3 +59,4 @@ target_include_directories(RHR PUBLIC
 	${tcc_include}
 )
 
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/RHR FILES ${RHR_SRC})

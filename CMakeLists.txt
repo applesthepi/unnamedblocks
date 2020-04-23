@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(USE_FOLDERS ON)
 
 
 project(unnamedblocks VERSION 0.8)
@@ -41,9 +42,19 @@ endif()
 if(UNIX)
 	set(POSIX True)
 endif()
+set(UnnamedBlocks_SRC
+	"${CMAKE_CURRENT_SOURCE_DIR}/UnnamedBlocks/src/main.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/UnnamedBlocks/src/ModLoader.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/UnnamedBlocks/src/ModLoader.h"
+	)
+add_executable(unnamedblocks 
+	${UnnamedBlocks_SRC}
+	)
+# Preserve folders in visual studio structure
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/UnnamedBlocks/src FILES ${UnnamedBlocks_SRC})
 
-add_executable(unnamedblocks "UnnamedBlocks/src/main.cpp" "UnnamedBlocks/src/ModLoader.cpp" "UnnamedBlocks/src/ModLoader.h")
 configure_file(config.h.in config.h)
+
 set_property(TARGET unnamedblocks PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Debug")
 # Set unnamedblocks to the startup project
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT unnamedblocks)
