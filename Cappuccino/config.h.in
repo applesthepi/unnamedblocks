@@ -1,2 +1,3 @@
+#define __CAP
 #cmakedefine LINUX
 #cmakedefine POSIX

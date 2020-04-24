@@ -16,7 +16,7 @@ if(MSVC)
 	find_file(csfml-graphics NAMES libcsfml-graphics.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
 	find_file(csfml-system NAMES libcsfml-system.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
 	find_file(csfml-window NAMES libcsfml-window.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
-	find_file(csfml_include NAMES SFML/Graphics.h PATHS "${CMAKE_SOURCE_DIR}/csfml/include")
+	find_path(csfml_include NAMES SFML/Graphics.h PATHS "${CMAKE_SOURCE_DIR}/csfml/include")
 endif()
 
 
@@ -64,15 +64,16 @@ add_subdirectory(Espresso)
 add_subdirectory(RHR)
 
 target_link_libraries(unnamedblocks PUBLIC
-	RHR 
+	RHR
+	Cappuccino
 	sfml-graphics
 	sfml-system
 	sfml-window
 	"${csfml-audio}"
-        "${csfml-network}"
-        "${csfml-graphics}"
-        "${csfml-system}"
-        "${csfml-window}"
+    "${csfml-network}"
+    "${csfml-graphics}"
+    "${csfml-system}"
+    "${csfml-window}"
 	"${GLEW_LIBRARIES}"
 	"${OPENGL_LIBRARIES}"
 	"${CMAKE_DL_LIBS}"
@@ -106,7 +107,7 @@ else()
 endif()
 
 set(VERSION_UNNAMED_BLOCKS "0.0.0" CACHE STRING "Version of Unnamed Blocks")
-set(IS_BETA "1" CACHE STRING "Wether or not Unnamed Blocks will be flagged as a beta build")
+set(IS_BETA "true" CACHE STRING "Wether or not Unnamed Blocks will be flagged as a beta build")
 
 option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
 if (NOT DISABLE_ALL_MOD_BUILDS)
@@ -140,7 +141,7 @@ add_custom_command(
 	TARGET unnamedblocks POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy
 	$<TARGET_FILE:Cappuccino>
-	$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib/libCappuccino.a)
+	$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib/libCappuccino.dll)
 # Copy dependencies on windows
 if(MSVC)
 	add_custom_command(

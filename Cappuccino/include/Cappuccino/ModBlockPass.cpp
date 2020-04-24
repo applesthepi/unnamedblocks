@@ -50,6 +50,11 @@ void ModBlockPass::LogError(const std::string& message)
 	m_messages.push_back("[" + std::to_string(aTime->tm_hour) + ":" + std::to_string(aTime->tm_min) + ":" + std::to_string(aTime->tm_sec) + "] [error]" + message);
 }
 
+const std::vector<std::string>& ModBlockPass::GetMessages()
+{
+	return m_messages;
+}
+
 sfRenderWindow* ModBlockPass::GetRenderWindowDebug(ModBlockPass* pass)
 {
 	pass->LogInfo("passing RenderWindow");

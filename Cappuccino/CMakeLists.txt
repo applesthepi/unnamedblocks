@@ -13,16 +13,16 @@ set(Cappuccino_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ModBlockPass.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Registration.h"
 	)
-add_library(Cappuccino STATIC
+add_library(Cappuccino SHARED
 	${Cappuccino_SRC}
 )
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino FILES ${Cappuccino_SRC})
 target_link_libraries(Cappuccino PUBLIC
 	"${csfml-audio}"
-        "${csfml-network}"
-        "${csfml-graphics}"
-        "${csfml-system}"
-        "${csfml-window}"
+    "${csfml-network}"
+    "${csfml-graphics}"
+    "${csfml-system}"
+    "${csfml-window}"
 )
 target_include_directories(Cappuccino PUBLIC
 	"${PROJECT_BINARY_DIR}"
@@ -33,4 +33,3 @@ target_include_directories(Cappuccino PUBLIC
 	"${CMAKE_SOURCE_DIR}/Espresso/include"
 )
 set_target_properties(Cappuccino PROPERTIES PREFIX "lib")
-set_target_properties(Cappuccino PROPERTIES SUFFIX ".a")

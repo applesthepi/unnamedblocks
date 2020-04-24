@@ -1,13 +1,13 @@
 #include "BlockPrint.h"
 #include "ModVin/Mod.h"
 
-static void ExecuteRelease(ModBlockPass* pass)
+void ExecuteRelease(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
 	Logger::Info(*message);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+void ExecuteDebug(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
 	pass->LogInfo("printing to console: \"" + *message);

@@ -1,37 +1,35 @@
-#ifndef H_Cap
-#define H_Cap
+#pragma once
+#include "config.h"
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
 
-#define CAP_EXPORT extern "C"
-
-#ifdef __cplusplus
-extern "C"
-{
+#ifdef __CAP
+#define CAP_EXPORT extern "C" __declspec(dllexport)
+#define TYPDEF_EXPORT extern "C"
+#else
+#define CAP_EXPORT __declspec(dllimport)
+#define TYPDEF_EXPORT
 #endif
-	typedef struct ModBlockPass ModBlockPass;
 
-	typedef void(*executionFunction)(ModBlockPass*);
-	typedef void(**executionFunctionStack)(ModBlockPass*);
-	typedef void(***executionFunctionStackList)(ModBlockPass*);
+TYPDEF_EXPORT typedef struct ModBlockPass ModBlockPass;
 
-	// set main entry function
-	void cpSetFunctionMain(uint64_t functionMain);
+TYPDEF_EXPORT typedef void(*executionFunction)(ModBlockPass*);
+TYPDEF_EXPORT typedef void(**executionFunctionStack)(ModBlockPass*);
+TYPDEF_EXPORT typedef void(***executionFunctionStackList)(ModBlockPass*);
 
-	// set the functionCallCount
-	void cpSetFunctionCallCount(uint64_t* functionCallCount);
+// set main entry function
+CAP_EXPORT void cpSetFunctionMain(uint64_t functionMain);
 
-	// set the calls
-	void cpSetCalls(executionFunctionStackList calls);
+// set the functionCallCount
+CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
 
-	// set the build type
-	void cpSetDebugBuild(bool debugBuild);
+// set the calls
+CAP_EXPORT void cpSetCalls(executionFunctionStackList calls);
 
-	// run
-	void cpRun();
-#ifdef __cplusplus
-}
-#endif
-#endif
+// set the build type
+CAP_EXPORT void cpSetDebugBuild(bool debugBuild);
+
+// run
+CAP_EXPORT void cpRun();

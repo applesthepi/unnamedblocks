@@ -34,25 +34,9 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	TCCState* state = tcc_new();
 
-	tcc_add_library_path(state, "mods/");
-
-	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
-	{
-		if (ProjectHandler::Mods[i] == "")
-		{
-			Logger::Warn("failed to register unknown mod into static build");
-			continue;
-		}
-
-		if (tcc_add_library(state, (ProjectHandler::Mods[i] + "-s").c_str()) == -1)
-			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
-	}
-
-	int r0 = tcc_add_library_path(state, "Cappuccino/lib/");
-	int r1 = tcc_add_library(state, "Cappuccino");
-
 	tcc_add_include_path(state, "Cappuccino/include");
 	tcc_add_include_path(state, "csfml/include");
+	tcc_add_include_path(state, "res");
 
 	std::vector<std::string> functionReferences;
 	std::vector<uint32_t> functionIds;
@@ -109,8 +93,40 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
 	int r9 = tcc_add_symbol(state, "debugBuild", buildType);
 
+	// compile
+
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
 	int r2 = tcc_compile_string(state, line.c_str());
+
+	// libs
+
+	tcc_add_library_path(state, "mods/");
+
+	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
+	{
+		if (ProjectHandler::Mods[i] == "")
+		{
+			Logger::Warn("failed to register unknown mod into static build");
+			continue;
+		}
+
+		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
+			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
+	}
+
+	tcc_add_library_path(state, "Cappuccino/lib/");
+	tcc_set_options(state, "-l Cappuccino");
+
+	tcc_add_library_path(state, "csfml/lib/msvc");
+
+	tcc_add_library(state, "csfml-audio");
+	tcc_add_library(state, "csfml-graphics");
+	tcc_add_library(state, "csfml-network");
+	tcc_add_library(state, "csfml-system");
+	tcc_add_library(state, "csfml-window");
+
+	// run
+
 	tcc_run(state, 0, 0);
 
 	//void* mem = malloc(tcc_relocate(state, nullptr));

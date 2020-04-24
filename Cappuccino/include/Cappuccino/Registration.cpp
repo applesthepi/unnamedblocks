@@ -1,5 +1,7 @@
 #include "Registration.h"
 #include <chrono>
+#include <vector>
+#include <string>
 
 void ThreadUtil()
 {
