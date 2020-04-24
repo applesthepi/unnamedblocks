@@ -5,22 +5,28 @@
 #include <shared_mutex>
 #include <vector>
 #include <string>
-
+#ifndef LINUX
+#ifdef __CAP
+#define CAP_DLL __declspec(dllexport)
+#else
+#define CAP_DLL __declspec(dllimport)
+#endif
+#endif
 class ModBlockPass
 {
 public:
-	ModBlockPass(sfRenderWindow* window, bool debugMode);
+	CAP_DLL ModBlockPass(sfRenderWindow* window, bool debugMode);
 
-	void LogInfo(const std::string& message);
-	void LogError(const std::string& message);
+	CAP_DLL void LogInfo(const std::string& message);
+	CAP_DLL void LogError(const std::string& message);
 	
-	const std::vector<std::string>& GetMessages();
+	CAP_DLL const std::vector<std::string>& GetMessages();
 
 	// user data
 
-	sfRenderWindow* GetRenderWindow();
-	void SetData(void** data);
-	void** GetData();
+	CAP_DLL sfRenderWindow* GetRenderWindow();
+	CAP_DLL void SetData(void** data);
+	CAP_DLL void** GetData();
 private:
 	// user data interactions
 	sfRenderWindow* (ModBlockPass::* m_getRenderWindow)(ModBlockPass* pass);
