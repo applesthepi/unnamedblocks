@@ -42,7 +42,7 @@ unsigned int Argument::GetArgumentRawWidth()
 	return 0;
 }
 
-bool Argument::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
+bool Argument::MouseButton(bool, sf::Vector2i, sf::Mouse::Button)
 {
 	return false;
 }
@@ -52,12 +52,12 @@ bool Argument::HasData()
 	return false;
 }
 
-void Argument::SetData(std::string data)
+void Argument::SetData(std::string)
 {
 
 }
 
-void Argument::SetMode(BlockArgumentVariableMode mode)
+void Argument::SetMode(BlockArgumentVariableMode)
 {
 
 }

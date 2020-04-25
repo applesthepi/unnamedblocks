@@ -36,7 +36,7 @@ const ModBlock* BlockRegistry::GetBlock(const std::string& unlocalizedName)
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->GetUnlocalizedName() == "vin_null")
+		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
 			return m_blocks[i];
 	}
 
@@ -67,7 +67,7 @@ executionFunction BlockRegistry::GetExeDebug(const std::string& blockUnlocalized
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->GetUnlocalizedName() == "vin_null")
+		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
 			return m_exeDebug[i];
 	}
 
@@ -85,7 +85,7 @@ executionFunction BlockRegistry::GetExeRelease(const std::string& blockUnlocaliz
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->GetUnlocalizedName() == "vin_null")
+		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
 			return m_exeRelease[i];
 	}
 

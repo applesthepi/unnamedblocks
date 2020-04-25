@@ -67,7 +67,7 @@ public:
 	virtual const char* GetCategory() const;
 	
 	// does the block start a stack
-	virtual const bool IsTopical() const;
+	virtual bool IsTopical() const;
 	
 	// flags to check during debug build
 	virtual const ModBlockFlags GetFlags() const;

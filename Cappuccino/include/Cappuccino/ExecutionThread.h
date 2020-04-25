@@ -16,7 +16,7 @@ public:
 
 	const uint64_t& GetFunctionStart();
 	const uint64_t* GetFunctionCallCount();
-	const executionFunctionStackList GetCalls();
+	const executionFunctionStackList& GetCalls();
 	const std::atomic<bool>& GetFinished();
 	ModBlockPass* GetPass();
 

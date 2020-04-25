@@ -88,7 +88,7 @@ void Button::SetButtonModeImage(std::string path)
 	m_modeImageSprite->setPosition(m_position.x, m_position.y);
 }
 
-void Button::FrameUpdate(sf::RenderWindow* window)
+void Button::FrameUpdate(sf::RenderWindow* /*window*/)
 {
 	if (m_mode == ButtonMode::Color)
 	{

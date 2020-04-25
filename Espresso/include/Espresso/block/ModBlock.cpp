@@ -30,7 +30,7 @@ const char* ModBlock::GetCategory() const
 	return "vin_objects";
 }
 
-const bool ModBlock::IsTopical() const
+bool ModBlock::IsTopical() const
 {
 	return false;
 }

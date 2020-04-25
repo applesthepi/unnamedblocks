@@ -105,7 +105,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			if (closestStatments.size() != 0)
 			{
 				bool redo = true;
-				uint32_t statmentSelection = closestStatments.size() - 1;
+				int32_t statmentSelection = closestStatments.size() - 1;
 
 				while (redo && statmentSelection >= 0)
 				{
@@ -345,7 +345,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 		{
 			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 			{
-				if (m_ifShapeIdx[i] != m_highlightedShape)
+				if (m_ifShapeIdx[i] != (uint32_t)m_highlightedShape)
 					window->draw(m_ifShapes[i]);
 			}
 
@@ -353,7 +353,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 			{
 				for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 				{
-					if (m_ifShapeIdx[i] == m_highlightedShape)
+					if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 						window->draw(m_ifShapes[i]);
 				}
 			}
@@ -371,7 +371,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 		{
 			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 			{
-				if (m_ifShapeIdx[i] != m_highlightedShape)
+				if (m_ifShapeIdx[i] != (uint32_t)m_highlightedShape)
 					render->draw(m_ifShapes[i]);
 			}
 
@@ -379,7 +379,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 			{
 				for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 				{
-					if (m_ifShapeIdx[i] == m_highlightedShape)
+					if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 						render->draw(m_ifShapes[i]);
 				}
 			}
@@ -390,7 +390,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 	}
 }
 
-void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
+void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 {
 	bool mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
@@ -512,7 +512,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		{
 			m_ifShapes[i].setPosition(m_ifShapePositions[i] + (sf::Vector2f)m_absolutePosition);
 
-			if (m_ifShapeIdx[i] == m_highlightedShape)
+			if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 				m_ifShapes[i].setFillColor(sf::Color(255, 132, 0));
 			else
 				m_ifShapes[i].setFillColor(sf::Color(70, 70, 70));
@@ -541,7 +541,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		{
 			m_ifShapes[i].setPosition(m_ifShapePositions[i] + (sf::Vector2f)m_relitivePosition);
 
-			if (m_ifShapeIdx[i] == m_highlightedShape)
+			if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 				m_ifShapes[i].setFillColor(sf::Color(255, 132, 0));
 			else
 				m_ifShapes[i].setFillColor(sf::Color(70, 70, 70));

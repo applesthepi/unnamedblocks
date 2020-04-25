@@ -5,12 +5,22 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#ifdef __CAP
-#define CAP_EXPORT extern "C" __declspec(dllexport)
-#define TYPDEF_EXPORT extern "C"
+#ifndef LINUX
+	#ifdef __CAP
+		#define CAP_EXPORT extern "C" __declspec(dllexport)
+		#define TYPDEF_EXPORT extern "C"
+	#else
+		#define CAP_EXPORT __declspec(dllimport)
+		#define TYPDEF_EXPORT
+	#endif
 #else
-#define CAP_EXPORT __declspec(dllimport)
-#define TYPDEF_EXPORT
+	#ifdef __CAP
+		#define CAP_EXPORT extern "C"
+		#define TYPDEF_EXPORT extern "C"
+	#else
+		#define CAP_EXPORT 
+		#define TYPDEF_EXPORT 
+	#endif
 #endif
 
 TYPDEF_EXPORT typedef struct ModBlockPass ModBlockPass;

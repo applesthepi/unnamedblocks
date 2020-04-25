@@ -34,7 +34,7 @@ public:
 
 	// executing
 	static void Start(Plane* planeCopy, BlockRegistry* registry, bool debugBuild);
-	static const bool IsFinished();
+	static bool IsFinished();
 	
 	// util
 	static void SetFinished(const bool& finished);

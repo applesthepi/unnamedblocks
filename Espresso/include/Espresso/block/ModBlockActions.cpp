@@ -1,6 +1,6 @@
 #include "ModBlockActions.h"
 
-void Execute(PreProcessorData& data)
+void Execute(PreProcessorData&)
 {
 	Logger::Warn("empty action executed");
 }

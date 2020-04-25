@@ -1,29 +1,26 @@
 #include "PreProcessor.h"
 #include "RHR/handlers/ProjectHandler.h"
 
+#include <fstream>
 #include <libtcc.h>
 
-void PullFile(std::vector<std::string>& lines, const std::string& file)
+void PullFileSingle(std::string& file, const char* file_path)
 {
-	std::ifstream stream(file);
-	std::string line;
-
-	while (std::getline(stream, line))
-		lines.push_back(line);
-
-	stream.close();
+	std::FILE *fp = std::fopen(file_path, "rb");
+	if (fp)
+	{
+		std::fseek(fp, 0, SEEK_END);
+		file.resize(std::ftell(fp));
+		std::rewind(fp);
+		std::fread(&file[0], 1, file.size(), fp);
+		std::fclose(fp);
+	}
+	else
+	{
+		throw(errno);
+	}
 }
-
-void PullFileSingle(std::string& line, const std::string& file)
-{
-	std::ifstream stream(file);
-	std::string pulledLine;
-
-	while (std::getline(stream, pulledLine))
-		line += pulledLine + "\n";
-
-	stream.close();
-}
+void nop(){}
 
 void ThreadPreProcessorExecution(bool debugBuild)
 {
@@ -34,10 +31,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	//return;
 
 	PreProcessor::SetFinished(false);// just in case
-
-	std::string line;
-	PullFileSingle(line, "res/comp.c");
-
+	std::string file;
 	TCCState* state = tcc_new();
 
 	tcc_add_include_path(state, "Cappuccino/include");
@@ -95,19 +89,23 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	bool* buildType = (bool*)malloc(sizeof(bool));
 	*buildType = debugBuild;
 
-	int r7 = tcc_add_symbol(state, "calls", calls);
-	int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
-	int r9 = tcc_add_symbol(state, "debugBuild", buildType);
+#ifdef LINUX
+	tcc_define_symbol(state, "LINUX", "1");
+#endif
 
 	// compile
 
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
-	int r2 = tcc_compile_string(state, line.c_str());
+	[[maybe_unused]] int r2 = tcc_compile_string(state, file.c_str());
 
+	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", (void*)nop);
+	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", calls);
+	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
+	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", buildType);
 	// libs
 
 	tcc_add_library_path(state, "mods/");
-	
+
 	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
 	{
 		if (ProjectHandler::Mods[i] == "")
@@ -119,18 +117,16 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
 			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
 	}
-	
-	//tcc_add_library_path(state, "Cappuccino/lib/");
-	//tcc_add_library(state, "Cappuccino");
-	//tcc_set_options(state, "-lCappuccino");
-	tcc_set_options(state, "-ICappuccino/include -Icsfml/include -Ires -LCappuccino/lib -Lcsfml/lib/gcc -lCappuccino -lcsfml-graphics -lcsfml-window -lcsfml-system");
-	//tcc_add_library_path(state, "csfml/lib/gcc");
 
-	//tcc_add_library(state, "csfml-audio");
-	//tcc_add_library(state, "csfml-graphics");
-	//tcc_add_library(state, "csfml-network");
-	//tcc_add_library(state, "csfml-system");
-	//tcc_add_library(state, "csfml-window");
+	tcc_add_library_path(state, "Cappuccino/lib");
+	[[maybe_unused]] int re = tcc_add_library(state, "Cappuccino");
+	tcc_add_library_path(state, "csfml/lib/gcc");
+
+	tcc_add_library(state, "csfml-audio");
+	tcc_add_library(state, "csfml-graphics");
+	tcc_add_library(state, "csfml-network");
+	tcc_add_library(state, "csfml-system");
+	tcc_add_library(state, "csfml-window");
 
 	// run
 
@@ -174,7 +170,7 @@ void PreProcessor::Start(Plane* planeCopy, BlockRegistry* registry, bool debugBu
 	m_thread.detach();
 }
 
-const bool PreProcessor::IsFinished()
+bool PreProcessor::IsFinished()
 {
 	return m_finished;
 }

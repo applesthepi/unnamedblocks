@@ -9,13 +9,13 @@
 #include <string>
 
 #ifndef LINUX
-#ifdef __CAP
-#define CAP_DLL __declspec(dllexport)
+	#ifdef __CAP
+		#define CAP_DLL __declspec(dllexport)
+	#else
+		#define CAP_DLL __declspec(dllimport)
+	#endif
 #else
-#define CAP_DLL __declspec(dllimport)
-#endif
-#else
-#define CAP_DLL
+	#define CAP_DLL
 #endif
 
 class ModBlockPass
@@ -25,7 +25,7 @@ public:
 
 	CAP_DLL void LogInfo(const std::string& message);
 	CAP_DLL void LogError(const std::string& message);
-	
+
 	CAP_DLL const std::vector<std::string>& GetMessages();
 
 	// user data
