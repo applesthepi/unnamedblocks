@@ -381,7 +381,7 @@ void Block::PreRender()
 
 	m_preShape.setTexture(&m_preTexture.getTexture());
 	m_preShape.setSize((sf::Vector2f)m_preTexture.getSize());
-	m_preShape.setTextureRect(sf::IntRect(0, m_preTexture.getSize().y, m_preTexture.getSize().x, -1 * m_preTexture.getSize().y));
+	m_preShape.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_preTexture.getSize().y), static_cast<int32_t>(m_preTexture.getSize().x), -1 * static_cast<int32_t>(m_preTexture.getSize().y)));
 }
 
 bool Block::IsBounding(const sf::Vector2f& mousePos)

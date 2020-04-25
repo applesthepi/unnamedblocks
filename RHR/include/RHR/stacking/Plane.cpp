@@ -2,7 +2,9 @@
 #include "Plane.h"
 #include "RHR/Global.h"
 #include <Espresso/Logger.h>
+#include <cassert>
 
+#include <exception>
 #include <iostream>
 
 Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
@@ -144,7 +146,7 @@ void Plane::Render(sf::RenderWindow* window)
 	}
 
 	sf::Sprite sp = sf::Sprite(rT.getTexture());
-	sp.setTextureRect(sf::IntRect(0, rT.getSize().y, rT.getSize().x, -1 * rT.getSize().y));
+	sp.setTextureRect(sf::IntRect(0, static_cast<int32_t>(rT.getSize().y), static_cast<int32_t>(rT.getSize().x), -1 * static_cast<int32_t>(rT.getSize().y)));
 	sp.setPosition(sf::Vector2f(m_position->x, m_position->y));
 	
 	if (Global::Dragging && Global::DraggingPlaneOver == this)
@@ -191,9 +193,14 @@ void Plane::FrameUpdate(bool overrideBounding)
 		m_innerPosition->x = (m_draggingMouseStart.x - Global::MousePosition.x) + (int)m_draggingStart.x;
 		m_innerPosition->y = (m_draggingMouseStart.y - Global::MousePosition.y) + (int)m_draggingStart.y;
 	}
+	int64_t x = static_cast<int32_t>(m_position->x) + m_innerPosition->x;
+	int64_t y = static_cast<int32_t>(m_position->y) + m_innerPosition->y;
 
-	m_absolutePosition->x = m_position->x + m_innerPosition->x;
-	m_absolutePosition->y = m_position->y + m_innerPosition->y;
+	UB_ASSERT(x > 0);
+	UB_ASSERT(y > 0);
+
+	m_absolutePosition->x = static_cast<uint32_t>(x);
+	m_absolutePosition->y = static_cast<uint32_t>(y);
 
 	//std::cout << m_innerPosition->x << ", " << m_innerPosition->y << std::endl;
 
@@ -216,8 +223,8 @@ void Plane::FrameUpdate(bool overrideBounding)
 
 		for (unsigned int i = 0; i < Planes->size(); i++)
 		{
-			if (draggingStack->GetAbsolutePosition().x > (int32_t)((*Planes)[i]->GetPosition().x) && draggingStack->GetAbsolutePosition().x < (int32_t)((*Planes)[i]->GetPosition().x + (*Planes)[i]->GetSize().x) &&
-				draggingStack->GetAbsolutePosition().y >(int32_t)((*Planes)[i]->GetPosition().y) && draggingStack->GetAbsolutePosition().y < (int32_t)((*Planes)[i]->GetPosition().y + (*Planes)[i]->GetSize().y))
+			if (draggingStack->GetAbsolutePosition().x > static_cast<int32_t>((*Planes)[i]->GetPosition().x) && draggingStack->GetAbsolutePosition().x < static_cast<int32_t>((*Planes)[i]->GetPosition().x + (*Planes)[i]->GetSize().x) &&
+				draggingStack->GetAbsolutePosition().y > static_cast<int32_t>((*Planes)[i]->GetPosition().y) && draggingStack->GetAbsolutePosition().y < static_cast<int32_t>((*Planes)[i]->GetPosition().y + (*Planes)[i]->GetSize().y))
 			{
 				Global::DraggingPlaneOver = (void*)((*Planes)[i]);
 				break;
@@ -253,7 +260,7 @@ void Plane::FrameUpdate(bool overrideBounding)
 	
 								m_draggingConnection.setSize(sf::Vector2f(blockWidth, Global::BlockBorder / 2));
 								m_draggingConnection.setFillColor(sf::Color(200, 200, 200));
-								m_draggingConnection.setPosition((*overPlaneStacks)[i]->GetAbsolutePosition().x, (*overPlaneStacks)[i]->GetAbsolutePosition().y + (a * Global::BlockHeight));
+								m_draggingConnection.setPosition((*overPlaneStacks)[i]->GetAbsolutePosition().x, (*overPlaneStacks)[i]->GetAbsolutePosition().y + static_cast<int64_t>(a * Global::BlockHeight));
 								m_useDraggingConnection = true;
 								
 								Global::DraggingStackConnected = (void*)(*overPlaneStacks)[i];
@@ -268,8 +275,8 @@ void Plane::FrameUpdate(bool overrideBounding)
 		}
 	}
 
-	for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
-		m_stacks[i]->FrameUpdate(m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
+	for (int64_t i = static_cast<int64_t>(m_stacks.size()) - 1; i >= 0; i--)
+		m_stacks[static_cast<uint64_t>(i)]->FrameUpdate(m_stacks[static_cast<uint64_t>(i)]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
 }
 
 void Plane::DeleteAllBlocks()
@@ -370,9 +377,9 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 
 		bool drag = true;
 
-		for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
+		for (int64_t i = static_cast<int64_t>(m_stacks.size()) - 1; i >= 0; i--)
 		{
-			if (m_stacks[i]->IsBounding((sf::Vector2f)position) && m_stacks[i]->MouseButton(down, position, button))
+			if (m_stacks[static_cast<uint64_t>(i)]->IsBounding((sf::Vector2f)position) && m_stacks[static_cast<uint64_t>(i)]->MouseButton(down, position, button))
 			{
 				drag = false;
 				break;

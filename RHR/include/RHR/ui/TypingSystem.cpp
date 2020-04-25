@@ -148,7 +148,7 @@ void TypingSystem::Update()
 
 	if (PressRepeatStartTime != nullptr)
 	{
-		unsigned long long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - *PressRepeatStartTime).count();
+		int32_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - *PressRepeatStartTime).count();
 
 		if (ms > 400)
 		{
@@ -179,7 +179,7 @@ void TypingSystem::RemoveKeypressRegister(std::function<void(int)>* fun)
 	{
 		if ((*PressFunctions)[i] == fun)
 		{
-			PressFunctions->erase(PressFunctions->begin() + i);
+			PressFunctions->erase(PressFunctions->begin() + static_cast<int32_t>(i));
 			return;
 		}
 	}
@@ -202,7 +202,7 @@ void TypingSystem::RunStroke(unsigned int c, bool* currentPress)
 	else if (!WasDown[c] && currentPress[c])
 	{
 		WasDown[c] = true;
-		*PressRepeatIndex = c;
+		*PressRepeatIndex = static_cast<int32_t>(c);
 #ifdef POSIX
 		PressRepeatStartTime = new std::chrono::time_point<std::chrono::system_clock>();
 #else
@@ -240,7 +240,7 @@ void TypingSystem::RunArrowStroke(unsigned int c, bool* currentPress)
 	else if (!WasDown[c] && currentPress[c])
 	{
 		WasDown[c] = true;
-		*PressRepeatIndex = c;
+		*PressRepeatIndex = static_cast<int32_t>(c);
 #ifdef POSIX
 		PressRepeatStartTime = new std::chrono::time_point<std::chrono::system_clock>();
 #else

@@ -55,7 +55,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 		if (index == 0)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, static_cast<int32_t>(blockIndex * Global::BlockHeight)), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
 			ReloadVanity();
@@ -217,7 +217,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 		}
 		else if (index == 2)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, static_cast<int32_t>(blockIndex * Global::BlockHeight)), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
 			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture, m_functionSelectStack);
@@ -486,8 +486,8 @@ void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 		m_relitivePosition.y = m_setPosition.y - m_planeInnerPosition->y;
 	}
 
-	m_absolutePosition.x = m_relitivePosition.x + m_planePosition->x;
-	m_absolutePosition.y = m_relitivePosition.y + m_planePosition->y;
+	m_absolutePosition.x = m_relitivePosition.x + static_cast<int32_t>(m_planePosition->x);
+	m_absolutePosition.y = m_relitivePosition.y + static_cast<int32_t>(m_planePosition->y);
 
 	if (m_dragging)
 	{
@@ -502,7 +502,7 @@ void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
-				m_highlightedShape = i;
+				m_highlightedShape = static_cast<int32_t>(i);
 			}
 			else
 				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
@@ -531,7 +531,7 @@ void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 				Global::MousePosition.y > (int64_t)m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < (int64_t)m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
-				m_highlightedShape = i;
+				m_highlightedShape = static_cast<int32_t>(i);
 			}
 			else
 				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
@@ -759,8 +759,8 @@ std::function<void()>* Stack::GetFunctionSelect() const
 
 bool Stack::IsBounding(const sf::Vector2f& mousePos) const
 {
-	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + m_highestWidth && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + (m_blocks.size() * Global::BlockHeight);
-}
+	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + static_cast<int32_t>(m_highestWidth) && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + static_cast<int32_t>(m_blocks.size() * Global::BlockHeight);
+}                                                                                                                                                                                                    
 
 bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
 {
@@ -948,5 +948,5 @@ void Stack::PreRender()
 	m_preShape.setTexture(&m_preTexture.getTexture());
 	//m_preShape.setFillColor(sf::Color::Green);
 	m_preShape.setSize(sf::Vector2f(widest, m_blocks.size() * Global::BlockHeight));
-	m_preShape.setTextureRect(sf::IntRect(0, m_preTexture.getSize().y, m_preTexture.getSize().x, -1 * m_preTexture.getSize().y));
+	m_preShape.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_preTexture.getSize().y), static_cast<int32_t>(m_preTexture.getSize().x), -1 * static_cast<int32_t>(m_preTexture.getSize().y)));
 }

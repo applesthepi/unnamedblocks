@@ -10,7 +10,7 @@ void PullFileSingle(std::string& file, const char* file_path)
 	if (fp)
 	{
 		std::fseek(fp, 0, SEEK_END);
-		file.resize(std::ftell(fp));
+		file.resize((size_t)std::ftell(fp));
 		std::rewind(fp);
 		std::fread(&file[0], 1, file.size(), fp);
 		std::fclose(fp);

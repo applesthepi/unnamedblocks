@@ -103,17 +103,17 @@ ModLoaderStatus run(BlockRegistry* registry)
 
 		ModDataBaked baked = (*mods)[i].Data->Bake();
 
-		for (uint32_t i = 0; i < baked.CategoriesLength; i++)
-			registry->RegisterCatagory(baked.Categories[i]);
+		for (uint32_t j = 0; j < baked.CategoriesLength; j++)
+			registry->RegisterCatagory(baked.Categories[j]);
 
-		for (uint32_t i = 0; i < baked.BlocksLength; i++)
-			registry->RegisterBlock(baked.Blocks[i]);
+		for (uint32_t j = 0; j < baked.BlocksLength; j++)
+			registry->RegisterBlock(baked.Blocks[j]);
 
-		for (uint32_t i = 0; i < baked.BlocksLength; i++)
-			registry->RegisterExeDebug(baked.Blocks[i]->PullExecuteDebug());
+		for (uint32_t j = 0; j < baked.BlocksLength; j++)
+			registry->RegisterExeDebug(baked.Blocks[j]->PullExecuteDebug());
 
-		for (uint32_t i = 0; i < baked.BlocksLength; i++)
-			registry->RegisterExeRelease(baked.Blocks[i]->PullExecuteRelease());
+		for (uint32_t j = 0; j < baked.BlocksLength; j++)
+			registry->RegisterExeRelease(baked.Blocks[j]->PullExecuteRelease());
 	}
 
 	//delete mods;

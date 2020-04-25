@@ -38,7 +38,7 @@ void Registration::UnRegisterPass(ModBlockPass* pass)
 	{
 		if (m_passes[i] == pass)
 		{
-			m_passes.erase(m_passes.begin() + i);
+			m_passes.erase(m_passes.begin() + (int64_t)i);
 			return;
 		}
 	}
@@ -59,7 +59,7 @@ void Registration::UnRegisterExecutionThread(ExecutionThread* thr)
 	{
 		if (m_execution[i] == thr)
 		{
-			m_execution.erase(m_execution.begin() + i);
+			m_execution.erase(m_execution.begin() + (int64_t)i);
 			return;
 		}
 	}
@@ -108,7 +108,7 @@ void Registration::RunUtilityTick()
 		const std::vector<std::string>& messages = m_passes[i]->GetMessages();
 
 		for (uint64_t a = 0; a < messages.size(); a++)
-			printf((messages[a] + "\n").c_str());
+			printf("%s\n", (messages[a]).c_str());
 	}
 }
 
