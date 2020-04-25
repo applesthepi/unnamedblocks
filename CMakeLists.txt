@@ -136,12 +136,6 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 	"${CMAKE_SOURCE_DIR}/Cappuccino/include"
 	$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/include)
-	
-add_custom_command(
-	TARGET unnamedblocks POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy
-	$<TARGET_FILE:Cappuccino>
-	$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib/libCappuccino.dll)
 # Copy dependencies on windows
 if(MSVC)
 	add_custom_command(
@@ -157,4 +151,24 @@ if(MSVC)
 		$<TARGET_FILE:sfml-graphics>
 		"${CMAKE_SOURCE_DIR}/cmake/bin/libtcc.dll"
 		$<TARGET_FILE_DIR:unnamedblocks>)
+	add_custom_command(
+		TARGET unnamedblocks POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		$<TARGET_FILE:Cappuccino>
+		$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib/libCappuccino.dll)
+	add_custom_command(
+		TARGET unnamedblocks POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		$<TARGET_FILE:Cappuccino>
+		$<TARGET_FILE_DIR:unnamedblocks>)
+	add_custom_command(
+		TARGET unnamedblocks POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_SOURCE_DIR}/csfml/bin"
+		$<TARGET_FILE_DIR:unnamedblocks>)
+	add_custom_command(
+		TARGET unnamedblocks POST_BUILD
+		COMMAND $<TARGET_FILE_DIR:unnamedblocks>/tcc.exe 
+		-impdef $<TARGET_FILE:Cappuccino> -o $<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib
+    )
 endif()

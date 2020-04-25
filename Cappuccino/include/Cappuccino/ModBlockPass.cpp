@@ -57,7 +57,7 @@ const std::vector<std::string>& ModBlockPass::GetMessages()
 
 sfRenderWindow* ModBlockPass::GetRenderWindowDebug(ModBlockPass* pass)
 {
-	pass->LogInfo("passing RenderWindow");
+	//pass->LogInfo("passing RenderWindow");
 	return m_window;
 }
 
@@ -68,7 +68,7 @@ sfRenderWindow* ModBlockPass::GetRenderWindowRelease(ModBlockPass* pass)
 
 void** ModBlockPass::GetDataDebug(ModBlockPass* pass)
 {
-	pass->LogInfo("retrieving data");
+	//pass->LogInfo("retrieving data");
 	return m_data;
 }
 

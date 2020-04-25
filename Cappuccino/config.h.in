@@ -1,3 +1,4 @@
 #define __CAP
+#define _CRT_SECURE_NO_WARNINGS
 #cmakedefine LINUX
 #cmakedefine POSIX

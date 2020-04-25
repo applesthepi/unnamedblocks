@@ -34,9 +34,9 @@ target_include_directories(Espresso PUBLIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso"
 )
 target_link_libraries(Espresso PUBLIC
+	Cappuccino
 	sfml-graphics
 	sfml-window
 	sfml-system
-	Cappuccino
 )
 

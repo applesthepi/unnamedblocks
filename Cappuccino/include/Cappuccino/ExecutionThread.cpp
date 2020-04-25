@@ -1,4 +1,5 @@
 #include "ExecutionThread.h"
+#include "Registration.h"
 
 #include <exception>
 
@@ -37,6 +38,9 @@ void ThreadExecution(ExecutionThread* thr)
 
 	if (!successful)
 		thr->GetPass()->LogInfo("thread terminated successfully");
+
+	Registration::UnRegisterPass(thr->GetPass());
+	Registration::UnRegisterExecutionThread(thr);
 }
 
 ExecutionThread::ExecutionThread(uint64_t functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)

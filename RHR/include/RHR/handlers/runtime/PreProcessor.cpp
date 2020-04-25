@@ -27,6 +27,12 @@ void PullFileSingle(std::string& line, const std::string& file)
 
 void ThreadPreProcessorExecution(bool debugBuild)
 {
+	//system("COPY %CD%\\Cappuccino\\lib\\Cappuccino.dll Cappuccino.dll");
+	//system("tcc.exe res/comp.c -I Cappuccino/include -I csfml/include -I res -LCappuccino/lib -Lcsfml/lib/gcc -lCappuccino -lcsfml-graphics -lcsfml-window -lcsfml-system");
+	//system("comp.exe");
+
+	//return;
+
 	PreProcessor::SetFinished(false);// just in case
 
 	std::string line;
@@ -101,7 +107,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	// libs
 
 	tcc_add_library_path(state, "mods/");
-
+	
 	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
 	{
 		if (ProjectHandler::Mods[i] == "")
@@ -113,21 +119,22 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
 			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
 	}
+	
+	//tcc_add_library_path(state, "Cappuccino/lib/");
+	//tcc_add_library(state, "Cappuccino");
+	//tcc_set_options(state, "-lCappuccino");
+	tcc_set_options(state, "-ICappuccino/include -Icsfml/include -Ires -LCappuccino/lib -Lcsfml/lib/gcc -lCappuccino -lcsfml-graphics -lcsfml-window -lcsfml-system");
+	//tcc_add_library_path(state, "csfml/lib/gcc");
 
-	tcc_add_library_path(state, "Cappuccino/lib/");
-	tcc_set_options(state, "-l Cappuccino");
-
-	tcc_add_library_path(state, "csfml/lib/msvc");
-
-	tcc_add_library(state, "csfml-audio");
-	tcc_add_library(state, "csfml-graphics");
-	tcc_add_library(state, "csfml-network");
-	tcc_add_library(state, "csfml-system");
-	tcc_add_library(state, "csfml-window");
+	//tcc_add_library(state, "csfml-audio");
+	//tcc_add_library(state, "csfml-graphics");
+	//tcc_add_library(state, "csfml-network");
+	//tcc_add_library(state, "csfml-system");
+	//tcc_add_library(state, "csfml-window");
 
 	// run
 
-	tcc_run(state, 0, 0);
+	//tcc_run(state, 0, 0);
 
 	//void* mem = malloc(tcc_relocate(state, nullptr));
 	//tcc_relocate(state, mem);
@@ -136,7 +143,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	//fun_main f_main = (fun_main)tcc_get_symbol(state, "main");
 	//
 	//int rs = f_main();
-	tcc_delete(state);
+	//tcc_delete(state);
 
 	//TODO delete memory
 

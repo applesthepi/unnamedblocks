@@ -1,4 +1,3 @@
-#pragma once
 #include "Cappuccino.h"
 
 #include "Registration.h"
@@ -28,4 +27,6 @@ CAP_EXPORT void cpRun()
 {
 	Registration::Initialize();
 	Registration::Run();
+
+
 }

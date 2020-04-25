@@ -7,7 +7,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	pass->LogInfo("blank release executed");
+	pass->LogInfo("blank debug executed");
 }
 
 const char* ModBlock::GetUnlocalizedName() const
