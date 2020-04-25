@@ -6,7 +6,7 @@
 class ModBlockAction
 {
 public:
-	virtual void Execute(PreProcessorData& data) {};
+	virtual void Execute(PreProcessorData& /*data*/) {};
 	void* Data;
 };
 
@@ -232,7 +232,7 @@ public:
 		delete (DataContainer*)Data;
 	}
 
-	void Execute(PreProcessorData& data) override
+	void Execute(PreProcessorData&) override
 	{
 		Logger::Info(((DataContainer*)Data)->Arg0);
 	}
@@ -258,7 +258,7 @@ public:
 		delete (DataContainer*)Data;
 	}
 
-	void Execute(PreProcessorData& data) override
+	void Execute(PreProcessorData&) override
 	{
 		Logger::Warn(((DataContainer*)Data)->Arg0);
 	}
@@ -284,7 +284,7 @@ public:
 		delete (DataContainer*)Data;
 	}
 
-	void Execute(PreProcessorData& data) override
+	void Execute(PreProcessorData&) override
 	{
 		Logger::Error(((DataContainer*)Data)->Arg0);
 	}

@@ -1,4 +1,5 @@
 #pragma once
+#include "config.h"
 #include <stdint.h>
 #include <SFML/Graphics.h>
 #include <mutex>
@@ -6,11 +7,13 @@
 #include <vector>
 #include <string>
 #ifndef LINUX
-#ifdef __CAP
-#define CAP_DLL __declspec(dllexport)
+	#ifdef __CAP
+		#define CAP_DLL __declspec(dllexport)
+	#else
+		#define CAP_DLL __declspec(dllimport)
+	#endif
 #else
-#define CAP_DLL __declspec(dllimport)
-#endif
+	#define CAP_DLL 
 #endif
 class ModBlockPass
 {

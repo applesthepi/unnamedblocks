@@ -120,7 +120,7 @@ void Block::UpdateShorts(std::function<void()>* functionUpdatePreTexture, std::f
 		m_args[i]->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
 }
 
-void Block::Render(sf::RenderTexture* render, sf::RenderWindow* window)
+void Block::Render(sf::RenderTexture*, sf::RenderWindow*)
 {
 	
 }

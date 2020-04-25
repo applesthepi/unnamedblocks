@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <Cappuccino/Cappuccino.h>
 
-uint64_t functionMain;
-uint64_t* functionCallCount;
-void (***calls)(ModBlockPass*);
-bool debugBuild;
+extern uint64_t functionMain;
+extern uint64_t* functionCallCount;
+extern void (***calls)(ModBlockPass*);
+extern bool debugBuild;
 
 int main()
 {

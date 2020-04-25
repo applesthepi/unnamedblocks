@@ -1,6 +1,10 @@
 #include "ModBlockPass.h"
 
+#include <cstddef>
+#include <cstdio>
+#include <locale>
 #include <time.h>
+#include <cstring>
 
 ModBlockPass::ModBlockPass(sfRenderWindow* window, bool debugMode)
 	:m_window(window), m_data(nullptr)
@@ -36,18 +40,38 @@ void ModBlockPass::LogInfo(const std::string& message)
 {
 	time_t theTime = time(NULL);
 	struct tm* aTime = localtime(&theTime);
+	// Should be enough
+	char prefix[100];
+	snprintf(prefix, 100, "[%d:%d:%d] [info]", aTime->tm_hour, aTime->tm_min, aTime->tm_sec);
 
-	std::unique_lock<std::mutex>(m_messagesMutex);
-	m_messages.push_back("[" + std::to_string(aTime->tm_hour) + ":" + std::to_string(aTime->tm_min) + ":" + std::to_string(aTime->tm_sec) + "] [info]" + message);
+	std::unique_lock<std::mutex> lock(this->m_messagesMutex);
+	
+	// This is how to get only 1 heap allocation, the reserve call.
+	m_messages.emplace_back();
+	size_t index = m_messages.size()-1;
+	m_messages[index].reserve(strlen(prefix) + message.length());
+
+	m_messages[index] += prefix;
+	m_messages[index] += message;
 }
 
 void ModBlockPass::LogError(const std::string& message)
 {
 	time_t theTime = time(NULL);
 	struct tm* aTime = localtime(&theTime);
+	// Should be enough
+	char prefix[100];
+	snprintf(prefix, 100, "[%d:%d:%d] [error]", aTime->tm_hour, aTime->tm_min, aTime->tm_sec);
 
-	std::unique_lock<std::mutex>(m_messagesMutex);
-	m_messages.push_back("[" + std::to_string(aTime->tm_hour) + ":" + std::to_string(aTime->tm_min) + ":" + std::to_string(aTime->tm_sec) + "] [error]" + message);
+	std::unique_lock<std::mutex> lock(this->m_messagesMutex);
+	
+	// This is how to get only 1 heap allocation, the reserve call.
+	m_messages.emplace_back();
+	size_t index = m_messages.size()-1;
+	m_messages[index].reserve(strlen(prefix) + message.length());
+
+	m_messages[index] += prefix;
+	m_messages[index] += message;
 }
 
 const std::vector<std::string>& ModBlockPass::GetMessages()
@@ -61,7 +85,7 @@ sfRenderWindow* ModBlockPass::GetRenderWindowDebug(ModBlockPass* pass)
 	return m_window;
 }
 
-sfRenderWindow* ModBlockPass::GetRenderWindowRelease(ModBlockPass* pass)
+sfRenderWindow* ModBlockPass::GetRenderWindowRelease(ModBlockPass*)
 {
 	return m_window;
 }
@@ -72,7 +96,7 @@ void** ModBlockPass::GetDataDebug(ModBlockPass* pass)
 	return m_data;
 }
 
-void** ModBlockPass::GetDataRelease(ModBlockPass* pass)
+void** ModBlockPass::GetDataRelease(ModBlockPass*)
 {
 	return m_data;
 }

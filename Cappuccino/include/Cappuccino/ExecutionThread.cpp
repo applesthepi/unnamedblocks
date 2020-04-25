@@ -55,7 +55,7 @@ const uint64_t* ExecutionThread::GetFunctionCallCount()
 	return m_functionCallCount;
 }
 
-const executionFunctionStackList ExecutionThread::GetCalls()
+const executionFunctionStackList& ExecutionThread::GetCalls()
 {
 	return m_calls;
 }

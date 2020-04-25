@@ -86,7 +86,6 @@ const PreprocessorCell& PreprocessorStack::GetValue(const std::string& container
 	{
 		Logger::Error("failed to get value \"" + name + "\" from container \"" + container + "\"");
 		abort();
-		return PreprocessorCell();
 	}
 	else
 	{
@@ -95,14 +94,12 @@ const PreprocessorCell& PreprocessorStack::GetValue(const std::string& container
 		{
 			Logger::Error("failed to get value \"" + name + "\" from container \"" + container + "\"");
 			abort();
-			return PreprocessorCell();
 		}
 		else
 			return innerSearch->second;
 	}
 
 	abort();
-	return PreprocessorCell();
 }
 
 uint64_t PreProcessorData::RegisterPreProcessorStack()
@@ -154,7 +151,6 @@ const PreprocessorCell& PreProcessorData::GetLocalValue(const uint64_t& idx, con
 	{
 		Logger::Error("getting value of stack that does not exist \"" + std::to_string(idx) + "\"");
 		abort();
-		return PreprocessorCell();
 	}
 
 	return m_stacks[idx].GetValue(container, name);

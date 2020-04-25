@@ -1,4 +1,3 @@
-#pragma once
 #include "Cappuccino.h"
 
 #include "Registration.h"

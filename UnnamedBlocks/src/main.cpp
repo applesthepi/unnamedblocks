@@ -507,7 +507,7 @@ int main()
 				if (sys.Type == ContextType::BLOCK)
 				{
 					std::function<void()>* callback0 = new std::function<void()>();
-					*callback0 = [&pRegistry]()
+					*callback0 = []()
 					{
 						(*Global::Context.Callback)(0);
 					};
