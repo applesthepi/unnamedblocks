@@ -7,13 +7,13 @@ void ThreadExecution(ExecutionThread* thr)
 {
 	const executionFunctionStackList calls = thr->GetCalls();
 	const uint64_t* functionCallCount = thr->GetFunctionCallCount();
-	executionFunctionStack localCallStack = calls[thr->GetFunctionStart()];
+	executionFunctionStack localCallStack = calls[*thr->GetFunctionStart()];
 	
 	std::vector<uint64_t> callstackBlockIdx;
 	std::vector<uint64_t> callstackStackIdx;
 
 	callstackBlockIdx.push_back(1);
-	callstackStackIdx.push_back(thr->GetFunctionStart());
+	callstackStackIdx.push_back(*thr->GetFunctionStart());
 
 	bool successful = false;
 
@@ -43,13 +43,13 @@ void ThreadExecution(ExecutionThread* thr)
 	Registration::UnRegisterExecutionThread(thr);
 }
 
-ExecutionThread::ExecutionThread(uint64_t functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
+ExecutionThread::ExecutionThread(uint64_t* functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
 	:m_finished(false), m_functionStart(functionStart), m_functionCallCount(functionCallCount), m_calls(calls), m_pass(pass)
 {
 	m_thread = std::thread(ThreadExecution, this);
 }
 
-const uint64_t& ExecutionThread::GetFunctionStart()
+const uint64_t* ExecutionThread::GetFunctionStart()
 {
 	return m_functionStart;
 }

@@ -20,7 +20,7 @@ public:
 	static void RegisterExecutionThread(ExecutionThread* thr);
 	static void UnRegisterExecutionThread(ExecutionThread* thr);
 
-	static void SetFunctionMain(uint64_t& main);
+	static void SetFunctionMain(uint64_t* main);
 	static void SetFunctionCallCount(uint64_t* functionCallCount);
 	static void SetCalls(executionFunctionStackList calls);
 	static void SetDebug(bool debugBuild);
@@ -36,7 +36,7 @@ private:
 	static std::mutex m_executionMutex;
 	static std::vector<ExecutionThread*> m_execution;
 
-	static uint64_t m_functionMain;
+	static uint64_t* m_functionMain;
 	static uint64_t* m_functionCallCount;
 	static executionFunctionStackList m_calls;
 

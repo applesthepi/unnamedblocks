@@ -20,7 +20,8 @@ void PullFileSingle(std::string& file, const char* file_path)
 		throw(errno);
 	}
 }
-void nop(){}
+
+//void nop(){}
 
 void ThreadPreProcessorExecution(bool debugBuild)
 {
@@ -43,28 +44,54 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	std::vector<uint64_t> functionCallCount;
 	std::vector<std::vector<void(*)(ModBlockPass* pass)>> functionCalls;
 
+	uint64_t* functionMain = (uint64_t*)malloc(sizeof(uint64_t));
+	bool functionMainFound = false;
+	*functionMain = 0;
+
 	const std::vector<Stack*>* stacks = PreProcessor::GetPlaneCopy()->GetAllStacks();
 
 	for (uint64_t i = 0; i < stacks->size(); i++)
 	{
-		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_function_begin")
+		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_main")
 		{
-			functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
-			functionIds.push_back(functionReferences.size());
-
-			std::vector<void(*)(ModBlockPass* pass)> transCalls;
-
-			for (uint64_t a = 1; a < stacks->at(i)->GetBlockCount(); a++)
+			if (functionMainFound)
 			{
-				if (debugBuild)
-					transCalls.push_back(PreProcessor::GetRegistry()->GetExeDebug(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
-				else
-					transCalls.push_back(PreProcessor::GetRegistry()->GetExeRelease(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
+				Logger::Error("program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
+
+				free(functionMain);
+
+				PreProcessor::SetFinished(true);
+				return;
 			}
 
-			functionCalls.push_back(transCalls);
-			functionCallCount.push_back(transCalls.size());
+			*functionMain = i;
 		}
+
+		functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
+		functionIds.push_back(functionReferences.size());
+
+		std::vector<void(*)(ModBlockPass* pass)> transCalls;
+
+		for (uint64_t a = 1; a < stacks->at(i)->GetBlockCount(); a++)
+		{
+			if (debugBuild)
+				transCalls.push_back(PreProcessor::GetRegistry()->GetExeDebug(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
+			else
+				transCalls.push_back(PreProcessor::GetRegistry()->GetExeRelease(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
+		}
+
+		functionCalls.push_back(transCalls);
+		functionCallCount.push_back(transCalls.size());
+	}
+
+	if (!functionMainFound)
+	{
+		Logger::Error("program has no entry points; can not run program without exactly 1 entry point (vin_main)");
+
+		free(functionMain);
+
+		PreProcessor::SetFinished(true);
+		return;
 	}
 
 	void (***calls)(ModBlockPass*);
@@ -98,7 +125,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
 	[[maybe_unused]] int r2 = tcc_compile_string(state, file.c_str());
 
-	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", (void*)nop);
+	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", functionMain);
 	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", calls);
 	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
 	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", buildType);

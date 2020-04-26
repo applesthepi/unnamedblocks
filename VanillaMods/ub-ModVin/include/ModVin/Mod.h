@@ -15,9 +15,15 @@
 
 UB_EXPORT void Initialization(ModData* data)
 {
-	data->RegisterCategory(new SomeCategory());
-	data->RegisterBlock(new SomeBlock());
 	data->ModFileName = "ModVin";
 	data->ModDisplayName = "Vanilla Mod";
 	data->Version = ModVinVersion;
+
+	// Categories
+
+	data->RegisterCategory(new SomeCategory());
+	
+	// Blocks
+	
+	data->RegisterBlock(new SomeBlock());
 }

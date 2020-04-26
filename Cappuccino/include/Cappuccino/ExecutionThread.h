@@ -12,9 +12,9 @@ typedef void(**executionFunctionStack)(ModBlockPass*);
 class ExecutionThread
 {
 public:
-	ExecutionThread(uint64_t functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass);
+	ExecutionThread(uint64_t* functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass);
 
-	const uint64_t& GetFunctionStart();
+	const uint64_t* GetFunctionStart();
 	const uint64_t* GetFunctionCallCount();
 	const executionFunctionStackList& GetCalls();
 	const std::atomic<bool>& GetFinished();
@@ -25,7 +25,7 @@ public:
 	void End();
 private:
 	std::atomic<bool> m_finished;
-	uint64_t m_functionStart;
+	uint64_t* m_functionStart;
 	const uint64_t* m_functionCallCount;
 	executionFunctionStackList m_calls;
 	std::thread m_thread;

@@ -16,7 +16,7 @@ void ExecuteDebug(ModBlockPass* pass)
 
 const char* SomeBlock::GetUnlocalizedName() const
 {
-	return "test_print";
+	return "vin_print";
 }
 
 blockExecution SomeBlock::PullExecuteDebug()

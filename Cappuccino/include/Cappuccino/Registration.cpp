@@ -65,7 +65,7 @@ void Registration::UnRegisterExecutionThread(ExecutionThread* thr)
 	}
 }
 
-void Registration::SetFunctionMain(uint64_t& main)
+void Registration::SetFunctionMain(uint64_t* main)
 {
 	m_functionMain = main;
 }
@@ -129,7 +129,7 @@ std::mutex Registration::m_executionMutex;
 
 std::vector<ExecutionThread*> Registration::m_execution;
 
-uint64_t Registration::m_functionMain;
+uint64_t* Registration::m_functionMain;
 
 uint64_t* Registration::m_functionCallCount;
 

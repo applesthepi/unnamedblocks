@@ -1,7 +1,7 @@
 #pragma once
 #include <Espresso/Espresso.h>
 
-#define CATEGORY_MAIN "test_category"
+#define CATEGORY_MAIN "vin_category"
 
 class SomeCategory : public ModCatagory
 {

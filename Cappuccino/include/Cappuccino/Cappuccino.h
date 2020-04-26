@@ -30,7 +30,7 @@ TYPDEF_EXPORT typedef void(**executionFunctionStack)(ModBlockPass*);
 TYPDEF_EXPORT typedef void(***executionFunctionStackList)(ModBlockPass*);
 
 // set main entry function
-CAP_EXPORT void cpSetFunctionMain(uint64_t functionMain);
+CAP_EXPORT void cpSetFunctionMain(uint64_t* functionMain);
 
 // set the functionCallCount
 CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
