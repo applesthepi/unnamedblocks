@@ -17,6 +17,8 @@ void ThreadExecution(ExecutionThread* thr)
 
 	bool successful = false;
 
+	printf("start\n");
+
 	while (!thr->GetFinished())
 	{
 		if (functionCallCount[callstackStackIdx.back()] == callstackBlockIdx.back())
@@ -32,9 +34,12 @@ void ThreadExecution(ExecutionThread* thr)
 			}
 		}
 
+		printf("executing\n");
 		localCallStack[callstackBlockIdx.back()](thr->GetPass());
 		callstackBlockIdx.back()++;
 	}
+
+	printf("end\n");
 
 	if (!successful)
 		thr->GetPass()->LogInfo("thread terminated successfully");

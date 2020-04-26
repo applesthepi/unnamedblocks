@@ -114,6 +114,8 @@ void Registration::RunUtilityTick()
 
 void Registration::Run()
 {
+	printf("run called\n");
+
 	ModBlockPass* pass = new ModBlockPass(m_window, m_debugBuild);
 	RegisterPass(pass);
 

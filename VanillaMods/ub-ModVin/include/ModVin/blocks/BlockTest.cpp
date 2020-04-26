@@ -1,45 +1,44 @@
-#include "BlockPrint.h"
-#include "ModVin/Mod.h"
+#include "BlockTest.h"
 
-void ExecuteRelease(ModBlockPass* pass)
+static void ExecuteRelease(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
 	Logger::Info(*message);
 }
 
-void ExecuteDebug(ModBlockPass* pass)
+static void ExecuteDebug(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
 	pass->LogInfo("printing to console: \"" + *message);
 	Logger::Info(*message);
 }
 
-const char* SomeBlock::GetUnlocalizedName() const
+const char* BlockTest::GetUnlocalizedName() const
 {
 	return "vin_print";
 }
 
-blockExecution SomeBlock::PullExecuteDebug()
+blockExecution BlockTest::PullExecuteDebug()
 {
 	return ExecuteDebug;
 }
 
-blockExecution SomeBlock::PullExecuteRelease()
+blockExecution BlockTest::PullExecuteRelease()
 {
 	return ExecuteRelease;
 }
 
-const char* SomeBlock::GetCategory() const
+const char* BlockTest::GetCategory() const
 {
 	return CATEGORY_MAIN;
 }
 
-const ModBlockFlags SomeBlock::GetFlags() const
+const ModBlockFlags BlockTest::GetFlags() const
 {
 	return ModBlockFlags().CheckHeap().CheckStack();
 }
 
-const ModBlockActions SomeBlock::RuntimePreInit() const
+const ModBlockActions BlockTest::RuntimePreInit() const
 {
 	ModBlockActions actions;
 	actions.AddAction(ModBlockActionLogInfo("this should only run once; used for global containers"));
@@ -47,7 +46,7 @@ const ModBlockActions SomeBlock::RuntimePreInit() const
 	return actions;
 }
 
-const ModBlockActions SomeBlock::RuntimeInit() const
+const ModBlockActions BlockTest::RuntimeInit() const
 {
 	ModBlockActions actions;
 	actions.AddAction(ModBlockActionLogInfo("this should only run once for each stack; used for local containers"));
@@ -55,7 +54,7 @@ const ModBlockActions SomeBlock::RuntimeInit() const
 	return actions;
 }
 
-const ModBlockActions SomeBlock::RuntimePostInit() const
+const ModBlockActions BlockTest::RuntimePostInit() const
 {
 	ModBlockActions actions;
 	actions.AddAction(ModBlockActionLogInfo("this should run for every block that exists during post init; used for local containers"));
@@ -63,7 +62,7 @@ const ModBlockActions SomeBlock::RuntimePostInit() const
 	return actions;
 }
 
-const std::vector<BlockArgumentInitializer> SomeBlock::GetArguments() const
+const std::vector<BlockArgumentInitializer> BlockTest::GetArguments() const
 {
 	std::vector<BlockArgumentInitializer> args;
 

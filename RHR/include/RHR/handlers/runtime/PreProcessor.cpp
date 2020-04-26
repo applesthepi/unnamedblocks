@@ -65,10 +65,11 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			}
 
 			*functionMain = i;
+			functionMainFound = true;
 		}
 
-		functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
-		functionIds.push_back(functionReferences.size());
+		//functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
+		//functionIds.push_back(functionReferences.size());
 
 		std::vector<void(*)(ModBlockPass* pass)> transCalls;
 
@@ -157,8 +158,9 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	// run
 
-	//tcc_run(state, 0, 0);
-
+	tcc_run(state, 0, 0);
+	
+	//
 	//void* mem = malloc(tcc_relocate(state, nullptr));
 	//tcc_relocate(state, mem);
 	//

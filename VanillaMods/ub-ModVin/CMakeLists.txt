@@ -5,8 +5,11 @@ configure_file(config.h.in config.h)
 set(VERSION_MOD_VIN "0.0.0" CACHE STRING "Version of Mod Vin")
 
 set(ModVin_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockPrint.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTest.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTest.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockMain.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockMain.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
 )
