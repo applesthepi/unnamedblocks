@@ -95,7 +95,7 @@ void Button::FrameUpdate(sf::RenderWindow* /*window*/)
 		m_modeColor->setPosition((sf::Vector2f)m_position);
 		m_modeColor->setSize((sf::Vector2f)m_size);
 
-		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < (int32_t)(m_position.x + m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < (int32_t)(m_position.y + m_size.y))
+		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < m_position.x + static_cast<int32_t>(m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < m_position.y + static_cast<int32_t>(m_size.y))
 			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a));
 		else
 			m_modeColor->setFillColor(m_backgroundColor);
@@ -112,7 +112,7 @@ void Button::FrameUpdate(sf::RenderWindow* /*window*/)
 
 		m_modeText->setPosition(m_position.x + 2, m_position.y);
 
-		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < (int32_t)(m_position.x + m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < (int32_t)(m_position.y + m_size.y))
+		if (Global::MousePosition.x > m_position.x&& Global::MousePosition.x < m_position.x + static_cast<int32_t>(m_size.x) && Global::MousePosition.y > m_position.y&& Global::MousePosition.y < m_position.y + static_cast<int32_t>(m_size.y))
 			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE, m_backgroundColor.g * HOVOR_SHADE, m_backgroundColor.b * HOVOR_SHADE, m_backgroundColor.a));
 		else
 			m_modeColor->setFillColor(m_backgroundColor);
@@ -150,7 +150,7 @@ bool Button::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button but
 {
 	if (button == sf::Mouse::Left)
 	{
-		bool over = position.x > m_position.x&& position.x < (int32_t)(m_position.x + m_size.x) && position.y > m_position.y&& position.y < (int32_t)(m_position.y + m_size.y);
+		bool over = position.x > m_position.x&& position.x < m_position.x + static_cast<int32_t>(m_size.x) && position.y > m_position.y&& position.y < m_position.y + static_cast<int32_t>(m_size.y);
 		if (over && down && !m_wasDown)
 		{
 			m_wasDown = true;

@@ -142,7 +142,7 @@ void ProjectHandler::SaveProject(std::string path, Plane* plane)
 
 	std::ofstream stream = std::ofstream();
 	stream.open(path);
-	stream.write(savePlane->c_str(), savePlane->length());
+	stream.write(savePlane->c_str(), static_cast<int32_t>(savePlane->length()));
 	stream.close();
 
 	delete savePlane;

@@ -51,12 +51,11 @@ static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
 
 	unsigned int idx = 0;
 	unsigned int widest = 0;
-
 	for (unsigned int a = 0; a < registry->GetBlocks().size(); a++)
 	{
 		if (registry->GetBlocks()[a]->GetCategory() == registry->GetCategories()[index]->GetUnlocalizedName())
 		{
-			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), registry);
+			Stack* stack = new Stack(sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))), registry);
 			Block* block = new Block(registry->GetBlocks()[a]->GetUnlocalizedName(), registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 
 			toolbarPlane->AddStack(stack);
@@ -182,7 +181,7 @@ int main()
 			}
 		};
 
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 0) + 10, 5), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 0) + 10, 5), sf::Vector2u(100, 16), function);
 		button->SetButtonModeText("new", sf::Color(200, 200, 200), 12);
 
 		toolbarButtons.push_back(button);
@@ -209,7 +208,7 @@ int main()
 			delete result;
 		};
 
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 1) + 10, 5), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 1) + 10, 5), sf::Vector2u(100, 16), function);
 		button->SetButtonModeText("open", sf::Color(200, 200, 200), 12);
 
 		toolbarButtons.push_back(button);
@@ -244,7 +243,7 @@ int main()
 			}
 		};
 
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 2) + 10, 5), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 2) + 10, 5), sf::Vector2u(100, 16), function);
 		button->SetButtonModeText("save", sf::Color(200, 200, 200), 12);
 
 		toolbarButtons.push_back(button);
@@ -271,7 +270,7 @@ int main()
 		delete result;
 	};
 
-	Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 3) + 10, 5), sf::Vector2u(100, 16), function);
+	Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 3) + 10, 5), sf::Vector2u(100, 16), function);
 	button->SetButtonModeText("saveas", sf::Color(200, 200, 200), 12);
 
 	toolbarButtons.push_back(button);
@@ -293,7 +292,7 @@ int main()
 			PreProcessor::Start(planeCopy, pRegistry, true);
 		};
 
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
 		button->SetButtonModeText("run", sf::Color(200, 200, 200), 12);
 
 		toolbarButtons.push_back(button);
@@ -308,7 +307,7 @@ int main()
 		{
 			if (pRegistry->GetCategories()[i]->GetDisplayName() != "")
 			{
-				useCat = i;
+				useCat = static_cast<int16_t>(i);
 				break;
 			}
 		}
@@ -321,9 +320,9 @@ int main()
 
 			for (unsigned int i = 0; i < pRegistry->GetBlocks().size(); i++)
 			{
-				if (pRegistry->GetBlocks()[i]->GetCategory() == pRegistry->GetCategories()[useCat]->GetUnlocalizedName())
+				if (pRegistry->GetBlocks()[i]->GetCategory() == pRegistry->GetCategories()[static_cast<size_t>(useCat)]->GetUnlocalizedName())
 				{
-					Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
+					Stack* stack = new Stack(sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))), pRegistry);
 					Block* block = new Block(pRegistry->GetBlocks()[i]->GetUnlocalizedName(), pRegistry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 
 					toolbarPlane->AddStack(stack);
@@ -483,7 +482,7 @@ int main()
 
 			for (unsigned int i = 0; i < toolbarButtons.size(); i++)
 			{
-				toolbarButtons[i]->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * i) + 10, 5));
+				toolbarButtons[i]->SetPosition(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth + (105 * i) + 10), 5));
 			}
 		}
 

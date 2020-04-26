@@ -91,3 +91,9 @@ public:
 	static void* SelectedBlock;
 	static void* SelectedStack;
 };
+
+#ifdef NDEBUG
+#define UB_ASSERT(expression)
+#else
+#define UB_ASSERT(expression) assert(expression)
+#endif

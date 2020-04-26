@@ -43,12 +43,12 @@ const ModBlockFlags ModBlock::GetFlags() const
 const ModBlockActions ModBlock::RuntimePreInit() const
 {
 	return ModBlockActions();
-};
+}
 
 const ModBlockActions ModBlock::RuntimeInit() const
 {
 	return ModBlockActions();
-};
+}
 
 const ModBlockActions ModBlock::RuntimePostInit() const
 {
@@ -58,4 +58,4 @@ const ModBlockActions ModBlock::RuntimePostInit() const
 const std::vector<BlockArgumentInitializer> ModBlock::GetArguments() const
 {
 	return {BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "NULL")};
-};
+}
