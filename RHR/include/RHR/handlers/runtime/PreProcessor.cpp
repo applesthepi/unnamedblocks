@@ -1,23 +1,27 @@
 #include "PreProcessor.h"
 #include "RHR/handlers/ProjectHandler.h"
 
+#include <cstring>
 #include <fstream>
 #include <libtcc.h>
 
-void PullFileSingle(std::string& file, const char* file_path)
+/// Reads file at file_path and stores its contents in ptr
+void PullFileSingle(char** ptr, const char* file_path)
 {
 	std::FILE *fp = std::fopen(file_path, "rb");
 	if (fp)
 	{
 		std::fseek(fp, 0, SEEK_END);
-		file.resize((size_t)std::ftell(fp));
+		size_t size = static_cast<size_t>(std::ftell(fp));
+		*ptr = static_cast<char*>( malloc(size+1) );
+		(*ptr)[size] = 0;
 		std::rewind(fp);
-		std::fread(&file[0], 1, file.size(), fp);
+		std::fread(*ptr, 1, size, fp);
 		std::fclose(fp);
 	}
 	else
 	{
-		throw(errno);
+		throw(std::strerror(errno));
 	}
 }
 
@@ -32,7 +36,8 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	//return;
 
 	PreProcessor::SetFinished(false);// just in case
-	std::string file;
+	char* file;
+	PullFileSingle(&file, "res/comp.c");
 	TCCState* state = tcc_new();
 
 	tcc_add_include_path(state, "Cappuccino/include");
@@ -124,7 +129,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	// compile
 
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
-	[[maybe_unused]] int r2 = tcc_compile_string(state, file.c_str());
+	[[maybe_unused]] int r2 = tcc_compile_string(state, file);
 
 	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", functionMain);
 	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", calls);
