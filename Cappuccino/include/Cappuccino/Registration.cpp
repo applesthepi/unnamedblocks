@@ -2,6 +2,7 @@
 #include <chrono>
 #include <vector>
 #include <string>
+#include <cassert>
 
 void ThreadUtil()
 {
@@ -119,6 +120,9 @@ void Registration::Run()
 	ModBlockPass* pass = new ModBlockPass(m_window, m_debugBuild);
 	RegisterPass(pass);
 
+	UB_ASSERT(m_functionMain != nullptr);
+	UB_ASSERT(reinterpret_cast<uint64_t>(m_functionCallCount) > 10);
+	UB_ASSERT(m_calls != nullptr);
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
 	RegisterExecutionThread(thr);
 }

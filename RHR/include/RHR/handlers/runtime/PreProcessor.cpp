@@ -49,7 +49,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	std::vector<uint64_t> functionCallCount;
 	std::vector<std::vector<void(*)(ModBlockPass* pass)>> functionCalls;
 
-	uint64_t* functionMain = (uint64_t*)malloc(sizeof(uint64_t));
+	uint64_t* functionMain = static_cast<uint64_t*>(malloc(sizeof(uint64_t)));
 	bool functionMainFound = false;
 	*functionMain = 0;
 
@@ -131,9 +131,10 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
 	[[maybe_unused]] int r2 = tcc_compile_string(state, file);
 
-	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", functionMain);
-	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", calls);
-	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", functionCallCountC);
+	// NOTE: Referencing the pointers is needed. The dereferenced value is what is sent over. int* -> int, int** -> int*, bool* -> bool etc
+	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", &functionMain);
+	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", &calls);
+	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", &functionCallCountC);
 	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", buildType);
 	// libs
 
