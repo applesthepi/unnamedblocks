@@ -24,6 +24,7 @@
 #endif
 
 TYPDEF_EXPORT typedef struct ModBlockPass ModBlockPass;
+TYPDEF_EXPORT typedef struct ModBlockData ModBlockData;
 
 TYPDEF_EXPORT typedef void(*executionFunction)(ModBlockPass*);
 TYPDEF_EXPORT typedef void(**executionFunctionStack)(ModBlockPass*);
@@ -37,6 +38,9 @@ CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
 
 // set the calls
 CAP_EXPORT void cpSetCalls(executionFunctionStackList calls);
+
+// set the data
+CAP_EXPORT void cpSetData(ModBlockData** data);
 
 // set the build type
 CAP_EXPORT void cpSetDebugBuild(bool debugBuild);

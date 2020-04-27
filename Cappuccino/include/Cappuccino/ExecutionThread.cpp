@@ -16,10 +16,14 @@ void ThreadExecution(ExecutionThread* thr)
 	callstackStackIdx.push_back(*thr->GetFunctionStart());
 
 	bool successful = false;
+	bool finished = thr->GetFinished();
 
-	printf("start\n");
+	ModBlockData** regData = Registration::GetData();
+	ModBlockPass* pass = thr->GetPass();
 
-	while (!thr->GetFinished())
+	printf("starting thread\n");
+
+	while (!finished)
 	{
 		if (functionCallCount[callstackStackIdx.back()] == callstackBlockIdx.back())
 		{
@@ -34,12 +38,21 @@ void ThreadExecution(ExecutionThread* thr)
 			}
 		}
 
+		printf("updating pass\n");
+
+		pass->SetData(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetCData());
+		
 		printf("executing\n");
-		localCallStack[callstackBlockIdx.back()](thr->GetPass());
+		
+		localCallStack[callstackBlockIdx.back()](pass);
 		callstackBlockIdx.back()++;
+
+		finished = thr->GetFinished();
 	}
 
-	printf("end\n");
+	thr->SetFinished(true);
+
+	printf("ending thread\n");
 
 	if (!successful)
 		thr->GetPass()->LogInfo("thread terminated successfully");

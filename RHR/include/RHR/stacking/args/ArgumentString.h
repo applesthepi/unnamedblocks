@@ -449,6 +449,11 @@ public:
 		m_background.setSize(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	}
 
+	BlockArgumentType GetType() override
+	{
+		return BlockArgumentType::STRING;
+	}
+
 private:
 	std::string m_Text;
 	std::string m_VText;

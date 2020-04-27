@@ -161,11 +161,16 @@ if(MSVC)
 		TARGET unnamedblocks POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy
 		$<TARGET_FILE:Cappuccino>
-		$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib/libCappuccino.dll)
+		$<TARGET_FILE_DIR:unnamedblocks>/libCappuccino.dll)
+	add_custom_command(
+		TARGET unnamedblocks POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_SOURCE_DIR}/csfml/bin"
+		$<TARGET_FILE_DIR:unnamedblocks>)
 else()
 	add_custom_command(
 		TARGET unnamedblocks POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy
 		$<TARGET_FILE:Cappuccino>
-		$<TARGET_FILE_DIR:unnamedblocks>/Cappuccino/lib/libCappuccino.so)
+		$<TARGET_FILE_DIR:unnamedblocks>/libCappuccino.so)
 endif()

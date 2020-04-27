@@ -505,6 +505,11 @@ public:
 		m_background.setPoint(5, sf::Vector2f(-3, halfHeight));
 	}
 
+	BlockArgumentType GetType() override
+	{
+		return BlockArgumentType::REAL;
+	}
+
 private:
 	std::string m_Text;
 	std::string m_VText;

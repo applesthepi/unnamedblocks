@@ -18,6 +18,11 @@ CAP_EXPORT void cpSetCalls(executionFunctionStackList calls)
 	Registration::SetCalls(calls);
 }
 
+CAP_EXPORT void cpSetData(ModBlockData** data)
+{
+	Registration::SetData(data);
+}
+
 CAP_EXPORT void cpSetDebugBuild(bool debugBuild)
 {
 	Registration::SetDebug(debugBuild);

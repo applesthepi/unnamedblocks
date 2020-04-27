@@ -87,6 +87,11 @@ BlockArgumentVariableMode* Argument::GetMode()
 	return nullptr;
 }
 
+BlockArgumentType Argument::GetType()
+{
+	return BlockArgumentType::TEXT;
+}
+
 void Argument::Update(bool global)
 {
 	if (global)

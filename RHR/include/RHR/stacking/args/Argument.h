@@ -24,6 +24,7 @@ public:
 	virtual std::string* GetData();
 	virtual std::string* GetDataRaw();
 	virtual BlockArgumentVariableMode* GetMode();
+	virtual BlockArgumentType GetType();
 	void Update(bool global = false);
 	void SetRelitivePosition(sf::Vector2u relitivePosition);
 	bool GetNext();

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <fstream>
 #include <libtcc.h>
+#include <Cappuccino/runtime/ModBlockData.h>
 
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)
@@ -25,16 +26,8 @@ void PullFileSingle(char** ptr, const char* file_path)
 	}
 }
 
-//void nop(){}
-
 void ThreadPreProcessorExecution(bool debugBuild)
 {
-	//system("COPY %CD%\\Cappuccino\\lib\\Cappuccino.dll Cappuccino.dll");
-	//system("tcc.exe res/comp.c -I Cappuccino/include -I csfml/include -I res -LCappuccino/lib -Lcsfml/lib/gcc -lCappuccino -lcsfml-graphics -lcsfml-window -lcsfml-system");
-	//system("comp.exe");
-
-	//return;
-
 	PreProcessor::SetFinished(false);// just in case
 	char* file;
 	PullFileSingle(&file, "res/comp.c");
@@ -55,8 +48,12 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	const std::vector<Stack*>* stacks = PreProcessor::GetPlaneCopy()->GetAllStacks();
 
+	ModBlockData** functionData = (ModBlockData**)malloc(sizeof(ModBlockData*) * stacks->size());
+
 	for (uint64_t i = 0; i < stacks->size(); i++)
 	{
+		functionData[i] = (ModBlockData*)malloc(sizeof(ModBlockData) * stacks->at(i)->GetBlockCount());
+
 		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_main")
 		{
 			if (functionMainFound)
@@ -78,12 +75,104 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 		std::vector<void(*)(ModBlockPass* pass)> transCalls;
 
-		for (uint64_t a = 1; a < stacks->at(i)->GetBlockCount(); a++)
+		for (uint64_t a = 0; a < stacks->at(i)->GetBlockCount(); a++)
 		{
 			if (debugBuild)
 				transCalls.push_back(PreProcessor::GetRegistry()->GetExeDebug(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
 			else
 				transCalls.push_back(PreProcessor::GetRegistry()->GetExeRelease(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
+
+			std::vector<void*> argData;
+			std::vector<ModBlockDataType> argTypes;
+			std::vector<ModBlockDataInterpretation> argInterpretations;
+
+			for (uint64_t b = 0; b < stacks->at(i)->GetBlock(a)->GetArgumentCount(); b++)
+			{
+				BlockArgumentType type = stacks->at(i)->GetBlock(a)->GetArgument(b)->GetType();
+
+				if (*stacks->at(i)->GetBlock(a)->GetArgument(b)->GetMode() == BlockArgumentVariableMode::VAR)
+				{
+					std::string* dt = (std::string*)malloc(sizeof(std::string));
+
+					try
+					{
+						*dt = *stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw();
+					}
+					catch (const std::invalid_argument&)
+					{
+						Logger::Error("invalid argument exception in preprocessor");
+						return;
+					}
+
+					argData.push_back((void*)dt);
+					argTypes.push_back(ModBlockDataType::VAR);
+					
+					if (type == BlockArgumentType::TEXT)
+						argInterpretations.push_back(ModBlockDataInterpretation::TEXT);
+					else if (type == BlockArgumentType::BOOL)
+						argInterpretations.push_back(ModBlockDataInterpretation::BOOL);
+					else if (type == BlockArgumentType::REAL)
+						argInterpretations.push_back(ModBlockDataInterpretation::REAL);
+					else if (type == BlockArgumentType::STRING)
+						argInterpretations.push_back(ModBlockDataInterpretation::STRING);
+				}
+				else if (type == BlockArgumentType::STRING)
+				{
+					std::string* dt = (std::string*)malloc(sizeof(std::string));
+					
+					try
+					{
+						*dt = *stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw();
+					}
+					catch (const std::invalid_argument&)
+					{
+						Logger::Error("invalid argument exception in preprocessor");
+						return;
+					}
+
+					argData.push_back((void*)dt);
+					argTypes.push_back(ModBlockDataType::RAW);
+					argInterpretations.push_back(ModBlockDataInterpretation::STRING);
+				}
+				else if (type == BlockArgumentType::BOOL)
+				{
+					bool* dt = (bool*)malloc(sizeof(bool));
+
+					try
+					{
+						*dt = *stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw() == "1";
+					}
+					catch (const std::invalid_argument&)
+					{
+						Logger::Error("invalid argument exception in preprocessor");
+						return;
+					}
+
+					argData.push_back((void*)dt);
+					argTypes.push_back(ModBlockDataType::RAW);
+					argInterpretations.push_back(ModBlockDataInterpretation::BOOL);
+				}
+				else if (type == BlockArgumentType::REAL)
+				{
+					double* dt = (double*)malloc(sizeof(double));
+					
+					try
+					{
+						*dt = std::stod(*stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw());
+					}
+					catch (const std::invalid_argument&)
+					{
+						Logger::Error("invalid argument exception in preprocessor");
+						return;
+					}
+
+					argData.push_back((void*)dt);
+					argTypes.push_back(ModBlockDataType::RAW);
+					argInterpretations.push_back(ModBlockDataInterpretation::REAL);
+				}
+			}
+
+			functionData[i][a] = ModBlockData(argData, argTypes, argInterpretations);
 		}
 
 		functionCalls.push_back(transCalls);
@@ -119,8 +208,10 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	for (uint64_t i = 0; i < functionCallCount.size(); i++)
 		functionCallCountC[i] = functionCallCount[i];
 
-	bool* buildType = (bool*)malloc(sizeof(bool));
-	*buildType = debugBuild;
+	bool buildType = debugBuild;
+
+	uint64_t* functionTotalCount = (uint64_t*)malloc(sizeof(uint64_t));
+	*functionTotalCount = stacks->size();
 
 #ifdef LINUX
 	tcc_define_symbol(state, "LINUX", "1");
@@ -135,7 +226,10 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", &functionMain);
 	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", &calls);
 	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", &functionCallCountC);
-	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", buildType);
+	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", &buildType);
+	[[maybe_unused]] int r900 = tcc_add_symbol(state, "functionData", &functionData);
+	[[maybe_unused]] int r9001 = tcc_add_symbol(state, "functionTotalCount", &functionTotalCount);
+
 	// libs
 
 	tcc_add_library_path(state, "mods/");
@@ -176,7 +270,10 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	//int rs = f_main();
 	//tcc_delete(state);
 
-	//TODO delete memory
+	
+
+
+	// TODO delete memory
 
 	PreProcessor::SetFinished(true);
 }

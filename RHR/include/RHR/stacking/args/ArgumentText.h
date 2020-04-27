@@ -48,6 +48,11 @@ public:
 		return &m_VMode;
 	}
 
+	BlockArgumentType GetType() override
+	{
+		return BlockArgumentType::TEXT;
+	}
+
 private:
 	std::string m_Text;
 	BlockArgumentVariableMode m_VMode;

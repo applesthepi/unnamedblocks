@@ -491,6 +491,11 @@ public:
 			m_background.setSize(sf::Vector2f(Global::BlockHeight - Global::BlockBorder, Global::BlockHeight - Global::BlockBorder));
 	}
 
+	BlockArgumentType GetType() override
+	{
+		return BlockArgumentType::BOOL;
+	}
+
 private:
 	bool m_value;
 	std::string m_Text;
