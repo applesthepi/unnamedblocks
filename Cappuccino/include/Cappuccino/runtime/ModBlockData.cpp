@@ -6,6 +6,11 @@ __declspec(dllexport) ModBlockData::ModBlockData(const std::vector<void*>& data,
 
 }
 
+__declspec(dllexport) ModBlockData::ModBlockData()
+{
+	
+}
+
 const std::vector<void*>& ModBlockData::GetData()
 {
 	return m_data;

@@ -48,11 +48,14 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	const std::vector<Stack*>* stacks = PreProcessor::GetPlaneCopy()->GetAllStacks();
 
-	ModBlockData** functionData = (ModBlockData**)malloc(sizeof(ModBlockData*) * stacks->size());
-
+	//ModBlockData** functionData = (ModBlockData**)malloc(sizeof(ModBlockData*) * stacks->size());
+	ModBlockData**  functionData = new ModBlockData*[stacks->size()];
+	
 	for (uint64_t i = 0; i < stacks->size(); i++)
 	{
-		functionData[i] = (ModBlockData*)malloc(sizeof(ModBlockData) * stacks->at(i)->GetBlockCount());
+		//functionData[i] = (ModBlockData*)malloc(sizeof(ModBlockData) * stacks->at(i)->GetBlockCount());
+
+		functionData[i] = new ModBlockData[stacks->at(i)->GetBlockCount()];
 
 		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_main")
 		{
@@ -92,7 +95,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 				if (*stacks->at(i)->GetBlock(a)->GetArgument(b)->GetMode() == BlockArgumentVariableMode::VAR)
 				{
-					std::string* dt = (std::string*)malloc(sizeof(std::string));
+					std::string* dt = new std::string();
 
 					try
 					{
@@ -118,7 +121,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 				}
 				else if (type == BlockArgumentType::STRING)
 				{
-					std::string* dt = (std::string*)malloc(sizeof(std::string));
+					std::string* dt = new std::string();
 					
 					try
 					{
@@ -136,7 +139,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 				}
 				else if (type == BlockArgumentType::BOOL)
 				{
-					bool* dt = (bool*)malloc(sizeof(bool));
+					bool* dt = new bool;
 
 					try
 					{
@@ -154,7 +157,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 				}
 				else if (type == BlockArgumentType::REAL)
 				{
-					double* dt = (double*)malloc(sizeof(double));
+					double* dt = new double;
 					
 					try
 					{
