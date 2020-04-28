@@ -392,7 +392,7 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 			}
 		}
 
-		if (drag && down && !m_toolbar)
+		if (drag && down && !m_toolbar && button == sf::Mouse::Left)
 		{
 			m_dragging = true;
 			m_draggingMouseStart = position;
