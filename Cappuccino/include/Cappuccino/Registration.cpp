@@ -10,17 +10,18 @@ static void ThreadUtil()
 {
 	while (!Registration::GetUtilFinished())
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		Registration::RunUtilityTick();
 	}
 
 	// for sync
-	Registration::SetUtilFinished(false);
+	Registration::SetUtilReturnFinished(true);
 }
 
 void Registration::Initialize()
 {
 	m_utilFinished = false;
+	m_utilReturnFinished = false;
 	m_debugBuild = true;
 	m_utilThread = std::thread(ThreadUtil);
 	m_utilThread.detach();
@@ -29,7 +30,9 @@ void Registration::Initialize()
 void Registration::RegisterPass(ModBlockPass* pass)
 {
 	std::unique_lock<std::mutex> lock(m_passesMutex);
+
 	m_passes.push_back(pass);
+	m_passesFlagged.push_back(false);
 }
 
 void Registration::UnRegisterPass(ModBlockPass* pass)
@@ -40,7 +43,7 @@ void Registration::UnRegisterPass(ModBlockPass* pass)
 	{
 		if (m_passes[i] == pass)
 		{
-			m_passes.erase(m_passes.begin() + (int64_t)i);
+			m_passesFlagged[i] = true;
 			return;
 		}
 	}
@@ -51,6 +54,7 @@ void Registration::RegisterExecutionThread(ExecutionThread* thr)
 	std::unique_lock<std::mutex> lock(m_executionMutex);
 
 	m_execution.push_back(thr);
+	m_executionFlagged.push_back(false);
 }
 
 void Registration::UnRegisterExecutionThread(ExecutionThread* thr)
@@ -61,13 +65,13 @@ void Registration::UnRegisterExecutionThread(ExecutionThread* thr)
 	{
 		if (m_execution[i] == thr)
 		{
-			m_execution.erase(m_execution.begin() + (int64_t)i);
+			m_executionFlagged[i] = true;
 			return;
 		}
 	}
 }
 
-void Registration::SetFunctionMain(uint64_t* main)
+void Registration::SetFunctionMain(uint64_t main)
 {
 	m_functionMain = main;
 }
@@ -77,7 +81,7 @@ void Registration::SetFunctionCallCount(uint64_t* functionCallCount)
 	m_functionCallCount = functionCallCount;
 }
 
-void Registration::SetFunctionTotalCount(uint64_t* functionTotalCount)
+void Registration::SetFunctionTotalCount(uint64_t functionTotalCount)
 {
 	m_functionTotalCount = functionTotalCount;
 }
@@ -101,7 +105,7 @@ void Registration::EndAll()
 {
 	m_utilFinished = true;
 
-	while (m_utilFinished)
+	while (!m_utilReturnFinished)
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	for (uint64_t i = 0; i < m_execution.size(); i++)
@@ -113,9 +117,9 @@ std::atomic<bool>& Registration::GetUtilFinished()
 	return m_utilFinished;
 }
 
-void Registration::SetUtilFinished(bool finished)
+void Registration::SetUtilReturnFinished(bool finished)
 {
-	m_utilFinished = finished;
+	m_utilReturnFinished = finished;
 }
 
 void Registration::RunUtilityTick()
@@ -131,11 +135,42 @@ void Registration::RunUtilityTick()
 			printf("%s\n", (messages[a]).c_str());
 	}
 
+	// cleanup passes
+
+	for (uint64_t i = 0; i < m_passes.size(); i++)
+	{
+		if (m_passesFlagged[i])
+		{
+			ModBlockPass* pass = m_passes[i];
+
+			m_passes.erase(m_passes.begin() + i);
+			m_passesFlagged.erase(m_passesFlagged.begin() + i);
+			
+			delete pass;
+		}
+	}
+
+	// cleanup threads
+
+	for (uint64_t i = 0; i < m_execution.size(); i++)
+	{
+		if (m_executionFlagged[i])
+		{
+			ExecutionThread* exe = m_execution[i];
+
+			m_execution.erase(m_execution.begin() + i);
+			m_executionFlagged.erase(m_executionFlagged.begin() + i);
+
+			exe->End();
+			delete exe;
+		}
+	}
+
 	m_allDone = IsAllDone();
 
 	if (m_allDone)
 	{
-		printf("!all done!\n");
+		printf("######### all done\n");
 		m_utilFinished = true;
 	}
 }
@@ -143,12 +178,12 @@ void Registration::RunUtilityTick()
 void Registration::Run()
 {
 	printf("started Cappuccino...\n");
-
 	printf("started parsing data...\n");
+
 	CompileData();
+	
 	printf("...finished parsing data\n");
 
-	UB_ASSERT(m_functionMain != nullptr);
 	UB_ASSERT(reinterpret_cast<uint64_t>(m_functionCallCount) > 10);
 	UB_ASSERT(m_calls != nullptr);
 
@@ -160,7 +195,6 @@ void Registration::Run()
 
 	RunContext();
 
-	m_utilFinished = true;
 	printf("...stopped Cappuccino\n");
 }
 
@@ -202,7 +236,7 @@ void Registration::CompileData()
 		return true;
 	};
 
-	for (uint64_t i = 0; i < *m_functionTotalCount; i++)
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
 		{
@@ -260,21 +294,27 @@ std::mutex Registration::m_passesMutex;
 
 std::vector<ModBlockPass*> Registration::m_passes;
 
+std::vector<bool> Registration::m_passesFlagged;
+
 std::mutex Registration::m_executionMutex;
 
 std::vector<ExecutionThread*> Registration::m_execution;
 
-uint64_t* Registration::m_functionMain;
+std::vector<bool> Registration::m_executionFlagged;
+
+uint64_t Registration::m_functionMain;
 
 uint64_t* Registration::m_functionCallCount;
 
-uint64_t* Registration::m_functionTotalCount;
+uint64_t Registration::m_functionTotalCount;
 
 executionFunctionStackList Registration::m_calls;
 
 ModBlockData** Registration::m_data;
 
 std::atomic<bool> Registration::m_utilFinished;
+
+std::atomic<bool> Registration::m_utilReturnFinished;
 
 std::atomic<bool> Registration::m_allDone;
 

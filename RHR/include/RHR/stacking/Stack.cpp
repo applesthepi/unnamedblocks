@@ -290,10 +290,13 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 Stack::~Stack()
 {
-	delete m_functionSplit;
-
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 		delete m_blocks[i];
+
+	delete m_functionSplit;
+	//delete m_functionContext;
+	//delete m_functionContextCallback;
+	//delete m_functionUpdatePreTexture;
 }
 
 void Stack::ImportBlocks(std::vector<Block*>* blocks)

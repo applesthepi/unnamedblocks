@@ -101,14 +101,17 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 
 Block::~Block()
 {
-	delete m_absolutePosition;
-	delete m_relitivePosition;
-
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		m_args[i]->Deallocate();
 		delete m_args[i];
 	}
+
+	delete m_absolutePosition;
+	delete m_relitivePosition;
+
+	//delete m_functionUpdatePreTextureArgs;
+	//delete m_functionSelect;
 }
 
 void Block::UpdateShorts(std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelectStack)

@@ -5,6 +5,9 @@
 #include <locale>
 #include <time.h>
 #include <cstring>
+#include <chrono>
+
+typedef std::chrono::system_clock Clock;
 
 ModBlockPass::ModBlockPass(void* window, bool debugMode)
 	:m_window(window), m_data(nullptr)
@@ -38,11 +41,19 @@ void** ModBlockPass::GetData()
 
 void ModBlockPass::LogInfo(const std::string& message)
 {
-	time_t theTime = time(NULL);
-	struct tm* aTime = localtime(&theTime);
+	auto now = Clock::now();
+	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+	auto fraction = now - seconds;
+	time_t cnow = Clock::to_time_t(now);
+
+	auto hr = std::chrono::duration_cast<std::chrono::hours>(fraction);
+	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
+	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
+	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%d:%d:%d] [info]", aTime->tm_hour, aTime->tm_min, aTime->tm_sec);
+	snprintf(prefix, 100, "[%02d:%02d:%02d:%03d] [INFO] ", hr.count(), min.count(), sec.count(), milliseconds.count());
 
 	std::unique_lock<std::mutex> lock(this->m_messagesMutex);
 	
@@ -57,11 +68,19 @@ void ModBlockPass::LogInfo(const std::string& message)
 
 void ModBlockPass::LogError(const std::string& message)
 {
-	time_t theTime = time(NULL);
-	struct tm* aTime = localtime(&theTime);
+	auto now = Clock::now();
+	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+	auto fraction = now - seconds;
+	time_t cnow = Clock::to_time_t(now);
+
+	auto hr = std::chrono::duration_cast<std::chrono::hours>(fraction);
+	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
+	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
+	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%d:%d:%d] [error]", aTime->tm_hour, aTime->tm_min, aTime->tm_sec);
+	snprintf(prefix, 100, "[%02d:%02d:%02d:%03d] [ERROR] ", hr.count(), min.count(), sec.count(), milliseconds.count());
 
 	std::unique_lock<std::mutex> lock(this->m_messagesMutex);
 	

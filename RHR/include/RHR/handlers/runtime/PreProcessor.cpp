@@ -14,7 +14,7 @@ void PullFileSingle(char** ptr, const char* file_path)
 	{
 		std::fseek(fp, 0, SEEK_END);
 		size_t size = static_cast<size_t>(std::ftell(fp));
-		*ptr = static_cast<char*>( malloc(size+1) );
+		*ptr = static_cast<char*>( malloc(size+1) );//
 		(*ptr)[size] = 0;
 		std::rewind(fp);
 		std::fread(*ptr, 1, size, fp);
@@ -42,19 +42,14 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	std::vector<uint64_t> functionCallCount;
 	std::vector<std::vector<void(*)(ModBlockPass* pass)>> functionCalls;
 
-	uint64_t* functionMain = static_cast<uint64_t*>(malloc(sizeof(uint64_t)));
+	uint64_t functionMain = 0;
 	bool functionMainFound = false;
-	*functionMain = 0;
 
 	const std::vector<Stack*>* stacks = PreProcessor::GetPlaneCopy()->GetAllStacks();
-
-	//ModBlockData** functionData = (ModBlockData**)malloc(sizeof(ModBlockData*) * stacks->size());
-	ModBlockData**  functionData = new ModBlockData*[stacks->size()];
+	ModBlockData** functionData = new ModBlockData*[stacks->size()];
 	
 	for (uint64_t i = 0; i < stacks->size(); i++)
 	{
-		//functionData[i] = (ModBlockData*)malloc(sizeof(ModBlockData) * stacks->at(i)->GetBlockCount());
-
 		functionData[i] = new ModBlockData[stacks->at(i)->GetBlockCount()];
 
 		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_main")
@@ -62,16 +57,16 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			if (functionMainFound)
 			{
 				Logger::Error("program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
-
-				free(functionMain);
-
 				PreProcessor::SetFinished(true);
+
 				return;
 			}
 
-			*functionMain = i;
+			functionMain = i;
 			functionMainFound = true;
 		}
+
+		// TODO function references to indices (use lambda code in Cappuccino/Registration.cpp)
 
 		//functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
 		//functionIds.push_back(functionReferences.size());
@@ -185,10 +180,8 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	if (!functionMainFound)
 	{
 		Logger::Error("program has no entry points; can not run program without exactly 1 entry point (vin_main)");
-
-		free(functionMain);
-
 		PreProcessor::SetFinished(true);
+
 		return;
 	}
 
@@ -206,15 +199,14 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		calls[i] = callsInside;
 	}
 
-	uint64_t* functionCallCountC = (uint64_t*)malloc(sizeof(uint64_t) * functionCalls.size());
+	uint64_t* functionCallCountC = new uint64_t[functionCalls.size()];
 
 	for (uint64_t i = 0; i < functionCallCount.size(); i++)
 		functionCallCountC[i] = functionCallCount[i];
 
 	bool buildType = debugBuild;
 
-	uint64_t* functionTotalCount = (uint64_t*)malloc(sizeof(uint64_t));
-	*functionTotalCount = stacks->size();
+	uint64_t functionTotalCount = stacks->size();
 
 #ifdef LINUX
 	tcc_define_symbol(state, "LINUX", "1");
@@ -259,24 +251,19 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	tcc_add_library(state, "csfml-system");
 	tcc_add_library(state, "csfml-window");
 
-	// run
-
 	tcc_run(state, 0, 0);
 	
-	//
-	//void* mem = malloc(tcc_relocate(state, nullptr));
-	//tcc_relocate(state, mem);
-	//
-	//typedef int(*fun_main)();
-	//fun_main f_main = (fun_main)tcc_get_symbol(state, "main");
-	//
-	//int rs = f_main();
-	//tcc_delete(state);
+	for (uint64_t i = 0; i < functionTotalCount; i++)
+		free(calls[i]);
+	free(calls);
 
-	
+	delete[] functionCallCountC;
 
+	for (uint64_t i = 0; i < functionTotalCount; i++)
+		delete[] functionData[i];
+	delete[] functionData;
 
-	// TODO delete memory
+	free(file);
 
 	PreProcessor::SetFinished(true);
 }

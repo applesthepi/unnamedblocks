@@ -25,6 +25,7 @@ class ModBlockData
 {
 public:
 	MODBLOCK_EXPORT ModBlockData();
+	MODBLOCK_EXPORT ~ModBlockData();
 	MODBLOCK_EXPORT ModBlockData(const std::vector<void*>& data, const std::vector<ModBlockDataType>& types, const std::vector<ModBlockDataInterpretation>& interpretations);
 
 	const std::vector<void*>& GetData();
@@ -35,8 +36,10 @@ public:
 	void HaulData(const std::vector<int64_t>& data);
 	void SetTypes(const std::vector<ModBlockDataType>& types);
 	void SetInterpretations(const std::vector<ModBlockDataInterpretation>& interpretations);
+	MODBLOCK_EXPORT ModBlockData& operator=(ModBlockData& data);
 private:
 	std::vector<void*> m_data;
 	std::vector<ModBlockDataType> m_types;
 	std::vector<ModBlockDataInterpretation> m_interpretations;
+	bool m_setup;
 };
