@@ -5,7 +5,7 @@
 #include "RHR/ui/TypingSystem.h"
 
 #include <iostream>
-#include <Espresso/Logger.h>
+#include <Cappuccino/Logger.h>
 
 class ArgumentString : public Argument
 {

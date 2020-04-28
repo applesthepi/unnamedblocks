@@ -1,5 +1,5 @@
 #include "BlockRegistry.h"
-#include <Espresso/Logger.h>
+#include <Cappuccino/Logger.h>
 
 BlockRegistry::BlockRegistry()
 {

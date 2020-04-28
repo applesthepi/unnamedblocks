@@ -6,6 +6,13 @@
 #include <vector>
 #include <string>
 
+/*
+Important Modding Information
+
+- Do NOT use the "Logger" class! Use the logger methods inside of the ModBlockPass.
+
+*/
+
 enum class BlockArgumentType
 {
 	/*

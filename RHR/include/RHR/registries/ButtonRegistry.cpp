@@ -1,6 +1,6 @@
 #include "ButtonRegistry.h"
 #include "RHR/Global.h"
-#include <Espresso/Logger.h>
+#include <Cappuccino/Logger.h>
 
 void ButtonRegistry::Initialize()
 {

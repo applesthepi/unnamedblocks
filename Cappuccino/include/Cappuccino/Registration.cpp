@@ -15,6 +15,7 @@ static void ThreadUtil()
 	}
 
 	// for sync
+	Registration::RunUtilityTick();
 	Registration::SetUtilReturnFinished(true);
 }
 
@@ -129,10 +130,12 @@ void Registration::RunUtilityTick()
 
 	for (uint64_t i = 0; i < m_passes.size(); i++)
 	{
-		const std::vector<std::string>& messages = m_passes[i]->GetMessages();
+		const std::vector<std::string>& messages = m_passes[i]->PullMessages();
 
 		for (uint64_t a = 0; a < messages.size(); a++)
 			printf("%s\n", (messages[a]).c_str());
+
+		m_passes[i]->ReturnMessages();
 	}
 
 	// cleanup passes

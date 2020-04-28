@@ -10,7 +10,7 @@
 
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
-#include <Espresso/Logger.h>
+#include <Cappuccino/Logger.h>
 #include <chrono>
 
 #include <GL/glew.h>
@@ -289,7 +289,7 @@ int main()
 			planeCopy->CopyEverything(primaryPlane, pRegistry);
 
 			PreProcessor::Cleanup();
-			PreProcessor::Start(planeCopy, pRegistry, true);
+			PreProcessor::Start(planeCopy, pRegistry, false);
 		};
 
 		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);

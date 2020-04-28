@@ -25,7 +25,8 @@ public:
 	CAP_DLL void LogInfo(const std::string& message);
 	CAP_DLL void LogError(const std::string& message);
 
-	CAP_DLL const std::vector<std::string>& GetMessages();
+	CAP_DLL const std::vector<std::string>& PullMessages();
+	CAP_DLL void ReturnMessages();
 
 	// user data
 

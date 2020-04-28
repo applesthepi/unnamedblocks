@@ -1,4 +1,4 @@
-#include "ModBlockPass.h"
+﻿#include "ModBlockPass.h"
 
 #include <cstddef>
 #include <cstdio>
@@ -50,16 +50,18 @@ void ModBlockPass::LogInfo(const std::string& message)
 	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
 	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
 	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+	auto micro = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
+	auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(fraction);
 
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%02d:%02d:%02d:%03d] [INFO] ", hr.count(), min.count(), sec.count(), milliseconds.count());
-
-	std::unique_lock<std::mutex> lock(this->m_messagesMutex);
+	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [INFO] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
 	
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
 	// This is how to get only 1 heap allocation, the reserve call.
 	m_messages.emplace_back();
-	size_t index = m_messages.size()-1;
+	size_t index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
 
 	m_messages[index] += prefix;
@@ -77,13 +79,15 @@ void ModBlockPass::LogError(const std::string& message)
 	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
 	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
 	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+	auto micro = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
+	auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(fraction);
 
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%02d:%02d:%02d:%03d] [ERROR] ", hr.count(), min.count(), sec.count(), milliseconds.count());
-
-	std::unique_lock<std::mutex> lock(this->m_messagesMutex);
+	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
 	
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
 	// This is how to get only 1 heap allocation, the reserve call.
 	m_messages.emplace_back();
 	size_t index = m_messages.size()-1;
@@ -93,14 +97,19 @@ void ModBlockPass::LogError(const std::string& message)
 	m_messages[index] += message;
 }
 
-const std::vector<std::string>& ModBlockPass::GetMessages()
+CAP_DLL const std::vector<std::string>& ModBlockPass::PullMessages()
 {
+	m_messagesMutex.lock();
 	return m_messages;
+}
+
+CAP_DLL void ModBlockPass::ReturnMessages()
+{
+	m_messagesMutex.unlock();
 }
 
 void* ModBlockPass::GetRenderWindowDebug(ModBlockPass* /*pass*/)
 {
-	//pass->LogInfo("passing RenderWindow");
 	return m_window;
 }
 
@@ -111,7 +120,6 @@ void* ModBlockPass::GetRenderWindowRelease(ModBlockPass*)
 
 void** ModBlockPass::GetDataDebug(ModBlockPass* /*pass*/)
 {
-	//pass->LogInfo("retrieving data");
 	return m_data;
 }
 

@@ -1,10 +1,10 @@
 #include "Stack.h"
 #include "RHR/Global.h"
 #include "Plane.h"
-#include <Espresso/Logger.h>
 #include "RHR/handlers/StatmentHandler.h"
 #include "Espresso/block/ModBlock.h"
 
+#include <Cappuccino/Logger.h>
 #include <iostream>
 #include <map>
 
@@ -501,7 +501,8 @@ void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 
 		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x + Global::BlockHeight &&
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + 
+				m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x + Global::BlockHeight &&
 				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));

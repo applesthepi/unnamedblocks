@@ -3,14 +3,14 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
-	Logger::Info(*message);
+	pass->LogInfo(*message);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
 	std::string* message = (std::string*)(pass->GetData()[0]);
-	pass->LogInfo("printing to console: \"" + *message);
-	Logger::Info(*message);
+	pass->LogInfo("printing to console: \"" + *message + "\"");
+	pass->LogInfo(*message);
 }
 
 const char* BlockTest::GetUnlocalizedName() const

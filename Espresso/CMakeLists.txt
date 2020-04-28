@@ -10,7 +10,6 @@ set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/preprocessor/PreProcessorData.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Logger.cpp"
 	# Headers
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlock.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockActions.h"
@@ -18,7 +17,6 @@ set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/block/ModBlockFlagsIterator.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Espresso.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Logger.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/preprocessor/PreProcessorData.h"
 	)
