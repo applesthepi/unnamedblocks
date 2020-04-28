@@ -39,6 +39,7 @@ public:
 	std::function<void()>* GetFunctionUpdate() const;
 	std::function<void()>* GetFunctionSelect() const;
 	bool IsBounding(const sf::Vector2f& mousePos) const;
+	void AddPosition(const sf::Vector2i& change);
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	void ReloadVanity();

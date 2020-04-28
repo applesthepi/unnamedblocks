@@ -365,6 +365,11 @@ void Plane::ReloadVanity()
 		m_stacks[i]->ReloadVanity();
 }
 
+void Plane::AddInnerPosition(const sf::Vector2i& change)
+{
+	*m_innerPosition += change;
+}
+
 void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
 {
 	if (position.x > (int32_t)m_position->x&& position.x < (int32_t)(m_position->x + m_size.x) &&

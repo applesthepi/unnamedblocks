@@ -29,6 +29,7 @@ public:
 	bool IsToolbar() const;
 	const std::vector<Stack*>* GetAllStacks() const;
 	void ReloadVanity();
+	void AddInnerPosition(const sf::Vector2i& change);
 
 	void MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 

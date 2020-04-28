@@ -386,12 +386,22 @@ int main()
 			}
 			else if (ev.type == sf::Event::MouseWheelScrolled)
 			{
-				//float aspect = (float)primaryPlane->GetSize().y / (float)primaryPlane->GetSize().x;
+				int32_t delta = ev.mouseWheelScroll.delta * -200;
 
-				//Global::ZoomAspect.x += ev.mouseWheelScroll.delta * 50;
-				//Global::ZoomAspect.y += ev.mouseWheelScroll.delta * 50 * aspect;
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+				{
+					primaryPlane->AddInnerPosition(sf::Vector2i(delta, 0));
 
-				//zoomedView.setSize(sf::Vector2f(Global::ZoomAspect.x, Global::ZoomAspect.y));
+					if (Global::Dragging)
+						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(delta, 0));
+				}
+				else
+				{
+					primaryPlane->AddInnerPosition(sf::Vector2i(0, delta));
+
+					if (Global::Dragging)
+						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(0, delta));
+				}
 			}
 		}
 

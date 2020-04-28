@@ -227,6 +227,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	// libs
 
+	/*
 	tcc_add_library_path(state, "mods/");
 
 	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
@@ -240,6 +241,8 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
 			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
 	}
+
+	*/
 
 	tcc_add_library_path(state, "Cappuccino/lib");
 	[[maybe_unused]] int re = tcc_add_library(state, "Cappuccino");

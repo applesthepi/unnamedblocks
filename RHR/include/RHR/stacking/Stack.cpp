@@ -765,6 +765,11 @@ bool Stack::IsBounding(const sf::Vector2f& mousePos) const
 	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + static_cast<int32_t>(m_highestWidth) && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + static_cast<int32_t>(m_blocks.size() * Global::BlockHeight);
 }                                                                                                                                                                                                    
 
+void Stack::AddPosition(const sf::Vector2i& change)
+{
+	m_relitivePosition += change;
+}
+
 bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
