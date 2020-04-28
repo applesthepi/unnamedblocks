@@ -767,7 +767,7 @@ bool Stack::IsBounding(const sf::Vector2f& mousePos) const
 
 void Stack::AddPosition(const sf::Vector2i& change)
 {
-	m_relitivePosition += change;
+	m_setPosition += change;
 }
 
 bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)

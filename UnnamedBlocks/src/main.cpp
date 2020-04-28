@@ -391,14 +391,14 @@ int main()
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 				{
 					primaryPlane->AddInnerPosition(sf::Vector2i(delta, 0));
-
+					std::cout << Global::Dragging << std::endl;
 					if (Global::Dragging)
 						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(delta, 0));
 				}
 				else
 				{
 					primaryPlane->AddInnerPosition(sf::Vector2i(0, delta));
-
+					std::cout << Global::Dragging << std::endl;
 					if (Global::Dragging)
 						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(0, delta));
 				}
