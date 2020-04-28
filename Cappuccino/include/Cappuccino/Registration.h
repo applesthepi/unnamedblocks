@@ -8,7 +8,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
-#include <SFML/Graphics.h>
+#include <SFML/Graphics.hpp>
 
 class Registration
 {
@@ -30,6 +30,7 @@ public:
 
 	static void EndAll();
 	static std::atomic<bool>& GetUtilFinished();
+	static void SetUtilFinished(bool finished);
 	static void RunUtilityTick();
 	static void Run();
 	static bool IsAllDone();
@@ -37,6 +38,7 @@ public:
 	static ModBlockData** GetData();
 private:
 	static void CompileData();
+	static void RunContext();
 
 	static std::mutex m_passesMutex;
 	static std::vector<ModBlockPass*> m_passes;
@@ -54,5 +56,5 @@ private:
 	static std::atomic<bool> m_allDone;
 	static std::thread m_utilThread;
 	static bool m_debugBuild;
-	static sfRenderWindow* m_window;
+	static sf::RenderWindow* m_window;
 };

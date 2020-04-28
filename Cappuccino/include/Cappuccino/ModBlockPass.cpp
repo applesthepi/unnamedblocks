@@ -6,7 +6,7 @@
 #include <time.h>
 #include <cstring>
 
-ModBlockPass::ModBlockPass(sfRenderWindow* window, bool debugMode)
+ModBlockPass::ModBlockPass(void* window, bool debugMode)
 	:m_window(window), m_data(nullptr)
 {
 	if (debugMode)
@@ -21,7 +21,7 @@ ModBlockPass::ModBlockPass(sfRenderWindow* window, bool debugMode)
 	}
 }
 
-sfRenderWindow* ModBlockPass::GetRenderWindow()
+void* ModBlockPass::GetRenderWindow()
 {
 	return (this->*(m_getRenderWindow))(this);
 }
@@ -79,13 +79,13 @@ const std::vector<std::string>& ModBlockPass::GetMessages()
 	return m_messages;
 }
 
-sfRenderWindow* ModBlockPass::GetRenderWindowDebug(ModBlockPass* /*pass*/)
+void* ModBlockPass::GetRenderWindowDebug(ModBlockPass* /*pass*/)
 {
 	//pass->LogInfo("passing RenderWindow");
 	return m_window;
 }
 
-sfRenderWindow* ModBlockPass::GetRenderWindowRelease(ModBlockPass*)
+void* ModBlockPass::GetRenderWindowRelease(ModBlockPass*)
 {
 	return m_window;
 }

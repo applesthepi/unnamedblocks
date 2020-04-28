@@ -6,13 +6,16 @@
 #include <cassert>
 #include <functional>
 
-void ThreadUtil()
+static void ThreadUtil()
 {
-	while (Registration::GetUtilFinished())
+	while (!Registration::GetUtilFinished())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		Registration::RunUtilityTick();
 	}
+
+	// for sync
+	Registration::SetUtilFinished(false);
 }
 
 void Registration::Initialize()
@@ -20,6 +23,7 @@ void Registration::Initialize()
 	m_utilFinished = false;
 	m_debugBuild = true;
 	m_utilThread = std::thread(ThreadUtil);
+	m_utilThread.detach();
 }
 
 void Registration::RegisterPass(ModBlockPass* pass)
@@ -96,7 +100,9 @@ void Registration::SetDebug(bool debugBuild)
 void Registration::EndAll()
 {
 	m_utilFinished = true;
-	m_utilThread.join();
+
+	while (m_utilFinished)
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
 	for (uint64_t i = 0; i < m_execution.size(); i++)
 		m_execution[i]->End();
@@ -105,6 +111,11 @@ void Registration::EndAll()
 std::atomic<bool>& Registration::GetUtilFinished()
 {
 	return m_utilFinished;
+}
+
+void Registration::SetUtilFinished(bool finished)
+{
+	m_utilFinished = finished;
 }
 
 void Registration::RunUtilityTick()
@@ -121,6 +132,12 @@ void Registration::RunUtilityTick()
 	}
 
 	m_allDone = IsAllDone();
+
+	if (m_allDone)
+	{
+		printf("!all done!\n");
+		m_utilFinished = true;
+	}
 }
 
 void Registration::Run()
@@ -131,51 +148,24 @@ void Registration::Run()
 	CompileData();
 	printf("...finished parsing data\n");
 
-	sfVideoMode mode = { 1920, 1080, 32 };
-	m_window = sfRenderWindow_create(mode, "Unnamed Blocks Runtime", sfClose, NULL);
-
-	ModBlockPass* pass = new ModBlockPass(m_window, m_debugBuild);
-	RegisterPass(pass);
-
 	UB_ASSERT(m_functionMain != nullptr);
 	UB_ASSERT(reinterpret_cast<uint64_t>(m_functionCallCount) > 10);
 	UB_ASSERT(m_calls != nullptr);
+
+	ModBlockPass* pass = new ModBlockPass((void*)m_window, m_debugBuild);
+	RegisterPass(pass);
+
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
 	RegisterExecutionThread(thr);
 
-	sfEvent ev;
+	RunContext();
 
-	while (true)
-	{
-		while (sfRenderWindow_pollEvent(m_window, &ev))
-		{
-			if (ev.type == sfEvtClosed)
-				sfRenderWindow_close(m_window);
-		}
-
-		sfRenderWindow_clear(m_window, { 50, 50, 50, 255 });
-		sfRenderWindow_display(m_window);
-
-		if (!sfRenderWindow_isOpen(m_window))
-		{
-			EndAll();
-			break;
-		}
-
-		if (m_allDone)
-		{
-			sfRenderWindow_close(m_window);
-			break;
-		}
-	}
-
+	m_utilFinished = true;
 	printf("...stopped Cappuccino\n");
 }
 
 bool Registration::IsAllDone()
 {
-	std::unique_lock<std::mutex> lock(m_executionMutex);
-
 	for (uint64_t i = 0; i < m_execution.size(); i++)
 	{
 		if (!m_execution[i]->GetFinished())
@@ -238,6 +228,34 @@ void Registration::CompileData()
 	}
 }
 
+void Registration::RunContext()
+{
+	m_window = new sf::RenderWindow();
+	m_window->create(sf::VideoMode(1920, 1080), "Unnamed Blocks Runtime", sf::Style::Close);
+	m_window->setFramerateLimit(200);
+	m_window->setVerticalSyncEnabled(false);
+
+	sf::Event ev;
+
+	while (m_window->isOpen())
+	{
+		while (m_window->pollEvent(ev))
+		{
+			if (ev.type == sf::Event::Closed)
+				m_window->close();
+		}
+
+		m_window->clear(sf::Color(50, 50, 50, 255));
+		m_window->display();
+		
+		if (m_allDone)
+			m_window->close();
+	}
+
+	delete m_window;
+	EndAll();
+}
+
 std::mutex Registration::m_passesMutex;
 
 std::vector<ModBlockPass*> Registration::m_passes;
@@ -264,4 +282,4 @@ std::thread Registration::m_utilThread;
 
 bool Registration::m_debugBuild;
 
-sfRenderWindow* Registration::m_window;
+sf::RenderWindow* Registration::m_window;

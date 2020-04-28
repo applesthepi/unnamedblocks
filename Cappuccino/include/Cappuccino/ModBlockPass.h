@@ -2,7 +2,6 @@
 #include "config.h"
 
 #include <stdint.h>
-#include <SFML/Graphics.h>
 #include <mutex>
 #include <shared_mutex>
 #include <vector>
@@ -21,7 +20,7 @@
 class ModBlockPass
 {
 public:
-	CAP_DLL ModBlockPass(sfRenderWindow* window, bool debugMode);
+	CAP_DLL ModBlockPass(void* window, bool debugMode);
 
 	CAP_DLL void LogInfo(const std::string& message);
 	CAP_DLL void LogError(const std::string& message);
@@ -30,14 +29,14 @@ public:
 
 	// user data
 
-	CAP_DLL sfRenderWindow* GetRenderWindow();
+	CAP_DLL void* GetRenderWindow();
 	CAP_DLL void SetData(void** data);
 	CAP_DLL void** GetData();
 private:
 	// user data interactions
-	sfRenderWindow* (ModBlockPass::* m_getRenderWindow)(ModBlockPass* pass);
-	sfRenderWindow* GetRenderWindowDebug(ModBlockPass* pass);
-	sfRenderWindow* GetRenderWindowRelease(ModBlockPass* pass);
+	void* (ModBlockPass::* m_getRenderWindow)(ModBlockPass* pass);
+	void* GetRenderWindowDebug(ModBlockPass* pass);
+	void* GetRenderWindowRelease(ModBlockPass* pass);
 
 	void** (ModBlockPass::* m_getData)(ModBlockPass* pass);
 	void** GetDataDebug(ModBlockPass* pass);
@@ -48,6 +47,6 @@ private:
 
 	// user data
 
-	sfRenderWindow* m_window;
+	void* m_window;
 	void** m_data;
 };

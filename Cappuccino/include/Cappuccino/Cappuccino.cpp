@@ -13,6 +13,12 @@ CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount)
 	Registration::SetFunctionCallCount(functionCallCount);
 }
 
+CAP_EXPORT void cpSetFunctionTotalCount(uint64_t* functionTotalCount)
+{
+	Registration::SetFunctionTotalCount(functionTotalCount);
+
+}
+
 CAP_EXPORT void cpSetCalls(executionFunctionStackList calls)
 {
 	Registration::SetCalls(calls);

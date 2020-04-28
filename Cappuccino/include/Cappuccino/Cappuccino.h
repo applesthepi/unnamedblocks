@@ -36,6 +36,9 @@ CAP_EXPORT void cpSetFunctionMain(uint64_t* functionMain);
 // set the functionCallCount
 CAP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
 
+// set the total count of all stacks
+CAP_EXPORT void cpSetFunctionTotalCount(uint64_t* functionTotalCount);
+
 // set the calls
 CAP_EXPORT void cpSetCalls(executionFunctionStackList calls);
 

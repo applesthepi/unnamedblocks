@@ -18,6 +18,7 @@ int main()
 {
 	cpSetFunctionMain(functionMain);
 	cpSetFunctionCallCount(functionCallCount);
+	cpSetFunctionTotalCount(functionTotalCount);
 	cpSetCalls(calls);
 	cpSetData(functionData);
 	cpSetDebugBuild(debugBuild);

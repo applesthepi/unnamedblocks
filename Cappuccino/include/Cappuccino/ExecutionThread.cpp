@@ -16,7 +16,7 @@ void ThreadExecution(ExecutionThread* thr)
 	callstackStackIdx.push_back(*thr->GetFunctionStart());
 
 	bool successful = false;
-	bool finished = thr->GetFinished();
+	const std::atomic<bool>& finished = thr->GetFinished();
 
 	ModBlockData** regData = Registration::GetData();
 	ModBlockPass* pass = thr->GetPass();
@@ -34,7 +34,7 @@ void ThreadExecution(ExecutionThread* thr)
 			{
 				thr->SetFinished(true);
 				successful = true;
-				continue;
+				break;
 			}
 		}
 
@@ -46,8 +46,6 @@ void ThreadExecution(ExecutionThread* thr)
 		
 		localCallStack[callstackBlockIdx.back()](pass);
 		callstackBlockIdx.back()++;
-
-		finished = thr->GetFinished();
 	}
 
 	thr->SetFinished(true);
