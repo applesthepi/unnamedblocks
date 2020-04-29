@@ -172,10 +172,7 @@ void Registration::RunUtilityTick()
 	m_allDone = IsAllDone();
 
 	if (m_allDone)
-	{
-		printf("######### all done\n");
 		m_utilFinished = true;
-	}
 }
 
 void Registration::Run()
@@ -267,6 +264,7 @@ void Registration::CompileData()
 
 void Registration::RunContext()
 {
+	/*
 	m_window = new sf::RenderWindow();
 	m_window->create(sf::VideoMode(1920, 1080), "Unnamed Blocks Runtime", sf::Style::Close);
 	m_window->setFramerateLimit(200);
@@ -289,8 +287,44 @@ void Registration::RunContext()
 			m_window->close();
 	}
 
+	printf("######### all done\n");
 	delete m_window;
 	EndAll();
+	*/
+
+	sfVideoMode mode = { 800, 600, 32 };
+	sfRenderWindow* window;
+	sfEvent event;
+
+	/* Create the main window */
+	window = sfRenderWindow_create(mode, "SFML window", sfResize | sfClose, NULL);
+	if (!window)
+		return;
+
+	/* Start the game loop */
+	while (sfRenderWindow_isOpen(window))
+	{
+		/* Process events */
+		while (sfRenderWindow_pollEvent(window, &event))
+		{
+			/* Close window : exit */
+			if (event.type == sfEvtClosed)
+			{
+				
+				sfRenderWindow_setActive(window, false);
+				return;
+			}
+		}
+
+		/* Clear the screen */
+		sfRenderWindow_clear(window, sfBlack);
+
+		/* Update the window */
+		sfRenderWindow_display(window);
+	}
+
+	/* Cleanup resources */
+	sfRenderWindow_destroy(window);
 }
 
 std::mutex Registration::m_passesMutex;
@@ -325,4 +359,4 @@ std::thread Registration::m_utilThread;
 
 bool Registration::m_debugBuild;
 
-sf::RenderWindow* Registration::m_window;
+sfRenderWindow* Registration::m_window;

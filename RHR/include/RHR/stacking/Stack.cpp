@@ -333,8 +333,9 @@ void Stack::ReloadAllBlocks()
 		m_blocks[i]->SetupInStack(i, &m_absolutePosition, &m_relitivePosition, m_functionSplit, m_functionContext);
 		m_blocks[i]->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
 	}
-	ReloadVanity();
+
 	ReRender();
+	ReloadVanity();
 }
 
 void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
