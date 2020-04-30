@@ -8,7 +8,7 @@
 #include <vector>
 #include <thread>
 #include <atomic>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.h>
 
 class Registration
 {
@@ -59,5 +59,5 @@ private:
 	static std::atomic<bool> m_allDone;
 	static std::thread m_utilThread;
 	static bool m_debugBuild;
-	static sf::RenderWindow* m_window;
+	static sfRenderWindow* m_window;
 };

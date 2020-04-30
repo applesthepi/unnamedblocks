@@ -38,10 +38,10 @@ target_link_libraries(ModVin PUBLIC
 	RHR
 	Espresso
 	"${csfml-audio}"
-        "${csfml-network}"
-        "${csfml-graphics}"
-        "${csfml-system}"
-        "${csfml-window}"
+    "${csfml-network}"
+    "${csfml-graphics}"
+    "${csfml-system}"
+    "${csfml-window}"
 )
 
 add_custom_command(

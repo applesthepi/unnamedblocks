@@ -26,16 +26,22 @@ add_library(Cappuccino SHARED
 )
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino FILES ${Cappuccino_SRC})
 target_link_libraries(Cappuccino PUBLIC
-	sfml-graphics
-	sfml-system
-	sfml-window
+	"${csfml-audio}"
+    "${csfml-network}"
+    "${csfml-graphics}"
+    "${csfml-system}"
+    "${csfml-window}"
 )
 target_include_directories(Cappuccino PUBLIC
 	"${PROJECT_BINARY_DIR}"
 	"${csfml_include}"
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${CMAKE_SOURCE_DIR}/Espresso/include"
 )
 set_target_properties(Cappuccino PROPERTIES PREFIX "lib")
+
+add_custom_command(
+	TARGET Cappuccino POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E touch
+	"${CMAKE_SOURCE_DIR}/UnnamedBlocks/src/main.cpp"
+)
