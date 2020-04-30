@@ -1,7 +1,7 @@
 #include "Block.h"
 #include "args/ArgumentText.h"
 #include "args/ArgumentString.h"
-#include "args/ArgumetReal.h"
+#include "args/ArgumentReal.h"
 #include "args/ArgumentBoolean.h"
 #include <Cappuccino/Logger.h>
 #include "Espresso/block/ModBlock.h"
