@@ -12,7 +12,7 @@ MODBLOCK_EXPORT ModBlockData::~ModBlockData()
 	{
 		for (uint64_t i = 0; i < m_data.size(); i++)
 		{
-			if (m_types[i] == ModBlockDataType::VAR)
+			if (/*m_types[i] == ModBlockDataType::VAR*/false)
 				delete (std::string*)(m_data[i]);
 			else
 			{
@@ -42,7 +42,10 @@ const std::vector<void*>& ModBlockData::GetData()
 
 void** ModBlockData::GetCData()
 {
-	return &m_data[0];
+	if (m_data.size() == 0)
+		return nullptr;
+	else
+		return &m_data[0];
 }
 
 const std::vector<ModBlockDataType>& ModBlockData::GetTypes()

@@ -4,6 +4,9 @@
 
 #include "blocks/BlockTest.h"
 #include "blocks/BlockMain.h"
+#include "blocks/BlockTestRender.h"
+#include "blocks/BlockTestEvent.h"
+#include "blocks/BlockYes.h"
 
 #include <Espresso/Espresso.h>
 #include <cmath>

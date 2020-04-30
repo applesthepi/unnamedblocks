@@ -28,8 +28,11 @@ public:
 	static void SetData(ModBlockData** data);
 	static void SetDebug(bool debugBuild);
 
-	static void EndAll();
+	static void EndAll(ModBlockPass* whitelist = nullptr);
+	static void Stop();
+
 	static std::atomic<bool>& GetUtilFinished();
+	static std::atomic<bool>& GetStop();
 	static void SetUtilReturnFinished(bool finished);
 	static void RunUtilityTick();
 	static void Run();
@@ -37,7 +40,8 @@ public:
 
 	static ModBlockData** GetData();
 private:
-	static void CompileData();
+	static void CompileDataDebug();
+	static void CompileDataRelease();
 	static void RunContext();
 
 	static std::mutex m_passesMutex;
@@ -54,10 +58,19 @@ private:
 	static executionFunctionStackList m_calls;
 	static ModBlockData** m_data;
 
+	static double* m_variablesReal;
+	static bool* m_variablesBool;
+	static std::string* m_variablesString;
+
+	static std::mutex m_customRegisterMutex;
+	static std::vector<void*> m_customRegister;
+
 	static std::atomic<bool> m_utilFinished;
 	static std::atomic<bool> m_utilReturnFinished;
 	static std::atomic<bool> m_allDone;
+	static std::atomic<bool> m_stop;
 	static std::thread m_utilThread;
 	static bool m_debugBuild;
-	static sfRenderWindow* m_window;
+
+	static std::vector<std::string> m_variableRegistry; // debug only
 };

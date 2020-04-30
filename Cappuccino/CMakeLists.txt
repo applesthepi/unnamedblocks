@@ -26,11 +26,16 @@ add_library(Cappuccino SHARED
 )
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino FILES ${Cappuccino_SRC})
 target_link_libraries(Cappuccino PUBLIC
-	"${csfml-audio}"
-    "${csfml-network}"
-    "${csfml-graphics}"
-    "${csfml-system}"
-    "${csfml-window}"
+	optimized "${csfml-audio}"
+    optimized "${csfml-network}"
+    optimized "${csfml-graphics}"
+    optimized "${csfml-system}"
+    optimized "${csfml-window}"
+	debug "${csfml-audio-d}"
+    debug "${csfml-network-d}"
+    debug "${csfml-graphics-d}"
+    debug "${csfml-system-d}"
+    debug "${csfml-window-d}"
 )
 target_include_directories(Cappuccino PUBLIC
 	"${PROJECT_BINARY_DIR}"

@@ -9,24 +9,34 @@
 
 typedef std::chrono::system_clock Clock;
 
-ModBlockPass::ModBlockPass(void* window, bool debugMode)
-	:m_window(window), m_data(nullptr)
+ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 {
-	if (debugMode)
+	printf("REEEEEEEEEEEEE %d\n", init.DebugMode ? 1 : 0);
+
+	if (init.DebugMode)
 	{
-		m_getRenderWindow = &ModBlockPass::GetRenderWindowDebug;
 		m_getData = &ModBlockPass::GetDataDebug;
+		m_getVaraibleReal = &ModBlockPass::GetVariableRealDebug;
+		m_getVariableBool = &ModBlockPass::GetVariableBoolDebug;
+		m_getVariableString = &ModBlockPass::GetVariableStringDebug;
 	}
 	else
 	{
-		m_getRenderWindow = &ModBlockPass::GetRenderWindowRelease;
 		m_getData = &ModBlockPass::GetDataRelease;
+		m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
+		m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
+		m_getVariableString = &ModBlockPass::GetVariableStringRelease;
 	}
-}
 
-void* ModBlockPass::GetRenderWindow()
-{
-	return (this->*(m_getRenderWindow))(this);
+	m_dataSize = init.DataSize;
+	m_data = init.Data;
+	m_variablesReal = init.VariablesReal;
+	m_variablesBool = init.VariablesBool;
+	m_variablesString = init.VariablesString;
+	m_customRegistrerMutex = init.CustomRegisterMutex;
+	m_customRegister = init.CustomRegister;
+	m_stop = init.Stop;
+	m_variableRegistry = init.VariableRegistry;
 }
 
 void ModBlockPass::SetData(void** data)
@@ -34,9 +44,85 @@ void ModBlockPass::SetData(void** data)
 	m_data = data;
 }
 
-void** ModBlockPass::GetData()
+void** ModBlockPass::GetData(const uint64_t& idx)
 {
-	return (this->*(m_getData))(this);
+	return (this->*(m_getData))(idx);
+}
+
+CAP_DLL double& ModBlockPass::GetVariableReal(const uint64_t& idx)
+{
+	return (this->*(m_getVaraibleReal))(idx);
+}
+
+CAP_DLL bool& ModBlockPass::GetVariableBool(const uint64_t& idx)
+{
+	return (this->*(m_getVariableBool))(idx);
+}
+
+CAP_DLL std::string& ModBlockPass::GetVariableString(const uint64_t& idx)
+{
+	return (this->*(m_getVariableString))(idx);
+}
+
+CAP_DLL void ModBlockPass::Stop()
+{
+	m_stop();
+}
+
+CAP_DLL const uint64_t ModBlockPass::CustomPut(void* mem)
+{
+	// TODO change to shared
+	std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
+
+	uint64_t customIdx = m_customRegister->size();
+	m_customRegister->push_back(mem);
+
+	return customIdx;
+}
+
+CAP_DLL void* ModBlockPass::CustomGet(const uint64_t& idx)
+{
+	// TODO change to shared
+	std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
+
+	return m_customRegister->at(idx);
+}
+
+CAP_DLL void ModBlockPass::CustomFree(const uint64_t& idx)
+{
+	std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
+
+	delete m_customRegister->at(idx);
+	m_customRegister->at(idx) = nullptr;
+}
+
+CAP_DLL void ModBlockPass::LogDebug(const std::string& message)
+{
+	auto now = Clock::now();
+	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+	auto fraction = now - seconds;
+	time_t cnow = Clock::to_time_t(now);
+
+	auto hr = std::chrono::duration_cast<std::chrono::hours>(fraction);
+	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
+	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
+	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
+	auto micro = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
+	auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(fraction);
+
+	// Should be enough
+	char prefix[100];
+	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [DEBUG] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
+
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
+	// This is how to get only 1 heap allocation, the reserve call.
+	m_messages.emplace_back();
+	size_t index = m_messages.size() - 1;
+	m_messages[index].reserve(strlen(prefix) + message.length());
+
+	m_messages[index] += prefix;
+	m_messages[index] += message;
 }
 
 void ModBlockPass::LogInfo(const std::string& message)
@@ -68,7 +154,7 @@ void ModBlockPass::LogInfo(const std::string& message)
 	m_messages[index] += message;
 }
 
-void ModBlockPass::LogError(const std::string& message)
+CAP_DLL void ModBlockPass::LogWarning(const std::string& message)
 {
 	auto now = Clock::now();
 	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
@@ -84,8 +170,55 @@ void ModBlockPass::LogError(const std::string& message)
 
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
+	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [WARN] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
+
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
+	// This is how to get only 1 heap allocation, the reserve call.
+	m_messages.emplace_back();
+	size_t index = m_messages.size() - 1;
+	m_messages[index].reserve(strlen(prefix) + message.length());
+
+	m_messages[index] += prefix;
+	m_messages[index] += message;
+}
+
+void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fatality)
+{
+	auto now = Clock::now();
+	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
+	auto fraction = now - seconds;
+
+	// Should be enough
+	char prefix[100];
+
+	if (fatality == LoggerFatality::OK)
+		snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR-OK] ",
+			std::chrono::duration_cast<std::chrono::hours>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::minutes>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::seconds>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::milliseconds>(fraction).count(),
+			std::modf(std::chrono::duration_cast<std::chrono::microseconds>(fraction).count() / 1000.0, nullptr) * 1000.0,
+			std::modf(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count() / 1000.0, nullptr) * 1000.0);
+	else if (fatality == LoggerFatality::BREAK)
+		snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR-BREAK] ",
+			std::chrono::duration_cast<std::chrono::hours>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::minutes>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::seconds>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::milliseconds>(fraction).count(),
+			std::modf(std::chrono::duration_cast<std::chrono::microseconds>(fraction).count() / 1000.0, nullptr) * 1000.0,
+			std::modf(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count() / 1000.0, nullptr) * 1000.0);
+	else if (fatality == LoggerFatality::ABORT)
+		snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR-ABORT] ",
+			std::chrono::duration_cast<std::chrono::hours>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::minutes>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::seconds>(fraction).count(),
+			std::chrono::duration_cast<std::chrono::milliseconds>(fraction).count(),
+			std::modf(std::chrono::duration_cast<std::chrono::microseconds>(fraction).count() / 1000.0, nullptr) * 1000.0,
+			std::modf(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count() / 1000.0, nullptr) * 1000.0);
 	
+	// TODO abort
+
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	// This is how to get only 1 heap allocation, the reserve call.
@@ -105,25 +238,109 @@ CAP_DLL const std::vector<std::string>& ModBlockPass::PullMessages()
 
 CAP_DLL void ModBlockPass::ReturnMessages()
 {
+	m_messages.clear();
 	m_messagesMutex.unlock();
 }
 
-void* ModBlockPass::GetRenderWindowDebug(ModBlockPass* /*pass*/)
+CAP_DLL void ModBlockPass::SetDataSize(const uint64_t& size)
 {
-	return m_window;
+	m_dataSize = size;
 }
 
-void* ModBlockPass::GetRenderWindowRelease(ModBlockPass*)
+void** ModBlockPass::GetDataDebug(const uint64_t& idx)
 {
-	return m_window;
+	if (m_data == nullptr)
+		LogWarning("pulling invalid data!");
+	else if (m_dataSize == 0)
+		LogWarning("pulling empty data!");
+	else if (idx >= m_dataSize)
+	{
+		LogError("attempted to get data from index out of range", LoggerFatality::ABORT);
+		return nullptr;
+	}
+
+	return m_data;
 }
 
-void** ModBlockPass::GetDataDebug(ModBlockPass* /*pass*/)
+void** ModBlockPass::GetDataRelease(const uint64_t& idx)
 {
 	return m_data;
 }
 
-void** ModBlockPass::GetDataRelease(ModBlockPass*)
+double& ModBlockPass::GetVariableRealDebug(const uint64_t& idx)
 {
-	return m_data;
+	if (idx >= m_variableRegistry->size())
+	{
+		LogError("attempted to get variable out of range", LoggerFatality::ABORT);
+		double dud = 0.0;
+		return dud;
+	}
+	else
+	{
+		LogDebug("getting variable \"" + m_variableRegistry->at(idx) + "\" with *real* value \"" + std::to_string(m_variablesReal[idx]) + "\"");
+		return m_variablesReal[idx];
+	}
+}
+
+double& ModBlockPass::GetVariableRealRelease(const uint64_t& idx)
+{
+	return m_variablesReal[idx];
+}
+
+bool& ModBlockPass::GetVariableBoolDebug(const uint64_t& idx)
+{
+	if (idx >= m_variableRegistry->size())
+	{
+		LogError("attempted to get variable out of range", LoggerFatality::ABORT);
+		bool dud = false;
+		return dud;
+	}
+	else
+	{
+		LogDebug("getting variable \"" + m_variableRegistry->at(idx) + "\" with *bool* value \"" + std::string(m_variablesBool[idx] ? "true" : "false") + "\"");
+		return m_variablesBool[idx];
+	}
+}
+
+bool& ModBlockPass::GetVariableBoolRelease(const uint64_t& idx)
+{
+	return m_variablesBool[idx];
+}
+
+std::string& ModBlockPass::GetVariableStringDebug(const uint64_t& idx)
+{
+	if (idx >= m_variableRegistry->size())
+	{
+		LogError("attempted to get variable out of range", LoggerFatality::ABORT);
+		std::string dud;
+		return dud;
+	}
+	else
+	{
+		LogDebug("getting variable \"" + m_variableRegistry->at(idx) + "\" with *string* value \"" + m_variablesString[idx] + "\"");
+		return m_variablesString[idx];
+	}
+}
+
+std::string& ModBlockPass::GetVariableStringRelease(const uint64_t& idx)
+{
+	return m_variablesString[idx];
+}
+
+ModBlockPassInitializer::ModBlockPassInitializer()
+{
+	DebugMode = true;
+
+	Data = nullptr;
+	VariablesReal = nullptr;
+	VariablesBool = nullptr;
+	VariablesString = nullptr;
+
+	CustomRegisterMutex = nullptr;
+	CustomRegister = nullptr;
+	Stop = nullptr;
+
+	// debug only
+	DataSize = 0;
+	VariableRegistry = nullptr;
 }

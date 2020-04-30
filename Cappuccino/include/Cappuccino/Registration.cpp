@@ -23,9 +23,20 @@ void Registration::Initialize()
 {
 	m_utilFinished = false;
 	m_utilReturnFinished = false;
+	m_allDone = false;
+	m_stop = false;
 	m_debugBuild = true;
+
 	m_utilThread = std::thread(ThreadUtil);
 	m_utilThread.detach();
+
+	m_passes.clear();
+	m_passesFlagged.clear();
+	m_execution.clear();
+	m_executionFlagged.clear();
+
+	m_customRegister.clear();
+	m_variableRegistry.clear();
 }
 
 void Registration::RegisterPass(ModBlockPass* pass)
@@ -102,20 +113,36 @@ void Registration::SetDebug(bool debugBuild)
 	m_debugBuild = debugBuild;
 }
 
-void Registration::EndAll()
+void Registration::EndAll(ModBlockPass* whitelist)
 {
-	m_utilFinished = true;
+	if (whitelist == nullptr)
+	{
+		for (uint64_t i = 0; i < m_execution.size(); i++)
+			m_execution[i]->End();
+	}
+	else
+	{
+		for (uint64_t i = 0; i < m_execution.size(); i++)
+		{
+			if (m_passes[i] != whitelist)
+				m_execution[i]->End();
+		}
+	}
+}
 
-	while (!m_utilReturnFinished)
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-	for (uint64_t i = 0; i < m_execution.size(); i++)
-		m_execution[i]->End();
+void Registration::Stop()
+{
+	m_stop = true;
 }
 
 std::atomic<bool>& Registration::GetUtilFinished()
 {
 	return m_utilFinished;
+}
+
+std::atomic<bool>& Registration::GetStop()
+{
+	return m_stop;
 }
 
 void Registration::SetUtilReturnFinished(bool finished)
@@ -169,6 +196,9 @@ void Registration::RunUtilityTick()
 		}
 	}
 
+	if (Registration::GetStop())
+		Registration::EndAll();
+
 	m_allDone = IsAllDone();
 
 	if (m_allDone)
@@ -177,17 +207,31 @@ void Registration::RunUtilityTick()
 
 void Registration::Run()
 {
-	printf("started Cappuccino...\n");
-	printf("started parsing data...\n");
+	printf("#########[ Started Cappuccino\n");
+	printf("compiling data...\n");
 
-	CompileData();
+	if (m_debugBuild)
+		CompileDataDebug();
+	else
+		CompileDataRelease();
+
+	printf("...compilation succeeded\n");
 	
-	printf("...finished parsing data\n");
+	m_customRegister.reserve(10000);
 
-	UB_ASSERT(reinterpret_cast<uint64_t>(m_functionCallCount) > 10);
-	UB_ASSERT(m_calls != nullptr);
+	ModBlockPassInitializer init;
 
-	ModBlockPass* pass = new ModBlockPass((void*)m_window, m_debugBuild);
+	init.DataSize = 0;
+	init.Data = nullptr;
+	init.VariablesReal = m_variablesReal;
+	init.VariablesBool = m_variablesBool;
+	init.VariablesString = m_variablesString;
+	init.CustomRegisterMutex = &m_customRegisterMutex;
+	init.CustomRegister = &m_customRegister;
+	init.Stop = &Registration::Stop;
+	init.VariableRegistry = &m_variableRegistry;
+
+	ModBlockPass* pass = new ModBlockPass(init);
 	RegisterPass(pass);
 
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
@@ -195,7 +239,23 @@ void Registration::Run()
 
 	RunContext();
 
-	printf("...stopped Cappuccino\n");
+	{
+		m_utilFinished = true;
+
+		while (!m_utilReturnFinished)
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+
+	printf("finished execution; deallocating...\n");
+
+	for (uint64_t i = 0; i < m_customRegister.size(); i++)
+	{
+		if (m_customRegister[i] != nullptr)
+			delete m_customRegister[i];
+	}
+
+	printf("...finished deallocation\n");
+	printf("#########[ Stopped Cappuccino\n");
 }
 
 bool Registration::IsAllDone()
@@ -214,24 +274,23 @@ ModBlockData** Registration::GetData()
 	return m_data;
 }
 
-void Registration::CompileData()
+void Registration::CompileDataDebug()
 {
-	std::vector<std::string> variableRegistry;
 	uint64_t variableIdx = 0;
 
 	auto addToRegistry = [&](std::string name)
 	{
-		for (uint64_t i = 0; i < variableRegistry.size(); i++)
+		for (uint64_t i = 0; i < m_variableRegistry.size(); i++)
 		{
-			if (variableRegistry[i] == name)
+			if (m_variableRegistry[i] == name)
 			{
 				variableIdx = i;
 				return false;
 			}
 		}
 
-		variableIdx = variableRegistry.size();
-		variableRegistry.push_back(name);
+		variableIdx = m_variableRegistry.size();
+		m_variableRegistry.push_back(name);
 
 		return true;
 	};
@@ -260,71 +319,113 @@ void Registration::CompileData()
 			m_data[i][a].HaulData(hauledVariables);
 		}
 	}
+
+	m_variablesReal = new double[m_variableRegistry.size()];
+	m_variablesBool = new bool[m_variableRegistry.size()];
+	m_variablesString = new std::string[m_variableRegistry.size()];
+
+	memset(m_variablesReal, 0, m_variableRegistry.size());
+	memset(m_variablesBool, 0, m_variableRegistry.size());
+}
+
+void Registration::CompileDataRelease()
+{
+	std::vector<std::string> variableRegistryReal;
+	std::vector<std::string> variableRegistryBool;
+	std::vector<std::string> variableRegistryString;
+	uint64_t variableIdx = 0;
+
+	auto addToRegistryReal = [&](std::string name)
+	{
+		for (uint64_t i = 0; i < variableRegistryReal.size(); i++)
+		{
+			if (variableRegistryReal[i] == name)
+			{
+				variableIdx = i;
+				return false;
+			}
+		}
+
+		variableIdx = variableRegistryReal.size();
+		variableRegistryReal.push_back(name);
+
+		return true;
+	};
+
+	auto addToRegistryBool = [&](std::string name)
+	{
+		for (uint64_t i = 0; i < variableRegistryBool.size(); i++)
+		{
+			if (variableRegistryBool[i] == name)
+			{
+				variableIdx = i;
+				return false;
+			}
+		}
+
+		variableIdx = variableRegistryBool.size();
+		variableRegistryBool.push_back(name);
+
+		return true;
+	};
+
+	auto addToRegistryString = [&](std::string name)
+	{
+		for (uint64_t i = 0; i < variableRegistryString.size(); i++)
+		{
+			if (variableRegistryString[i] == name)
+			{
+				variableIdx = i;
+				return false;
+			}
+		}
+
+		variableIdx = variableRegistryString.size();
+		variableRegistryString.push_back(name);
+
+		return true;
+	};
+
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			const std::vector<void*>& data = m_data[i][a].GetData();
+			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
+			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
+
+			std::vector<int64_t> hauledVariables;
+
+			for (uint64_t b = 0; b < data.size(); b++)
+			{
+				if (types[b] == ModBlockDataType::VAR)
+				{
+					if (interpretations[b] == ModBlockDataInterpretation::REAL)
+						addToRegistryReal(*(std::string*)data[b]);
+					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
+						addToRegistryBool(*(std::string*)data[b]);
+					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
+						addToRegistryString(*(std::string*)data[b]);
+
+					hauledVariables.push_back(variableIdx);
+				}
+				else
+					hauledVariables.push_back(-1);
+			}
+
+			m_data[i][a].HaulData(hauledVariables);
+		}
+	}
+
+	m_variablesReal = new double[variableRegistryReal.size()];
+	m_variablesBool = new bool[variableRegistryBool.size()];
+	m_variablesString = new std::string[variableRegistryString.size()];
 }
 
 void Registration::RunContext()
 {
-	/*
-	m_window = new sf::RenderWindow();
-	m_window->create(sf::VideoMode(1920, 1080), "Unnamed Blocks Runtime", sf::Style::Close);
-	m_window->setFramerateLimit(200);
-	m_window->setVerticalSyncEnabled(false);
-
-	sf::Event ev;
-
-	while (m_window->isOpen())
-	{
-		while (m_window->pollEvent(ev))
-		{
-			if (ev.type == sf::Event::Closed)
-				m_window->close();
-		}
-
-		m_window->clear(sf::Color(50, 50, 50, 255));
-		m_window->display();
-		
-		if (m_allDone)
-			m_window->close();
-	}
-
-	printf("######### all done\n");
-	delete m_window;
-	EndAll();
-	*/
-
-	sfVideoMode mode = { 800, 600, 32 };
-	sfRenderWindow* window;
-	sfEvent event;
-
-	/* Create the main window */
-	window = sfRenderWindow_create(mode, "SFML window", sfResize | sfClose, NULL);
-	if (!window)
-		return;
-
-	/* Start the game loop */
-	while (sfRenderWindow_isOpen(window))
-	{
-		/* Process events */
-		while (sfRenderWindow_pollEvent(window, &event))
-		{
-			/* Close window : exit */
-			if (event.type == sfEvtClosed)
-			{
-				
-				sfRenderWindow_setActive(window, false);
-				return;
-			}
-		}
-
-		/* Clear the screen */
-		sfRenderWindow_clear(window, sfBlack);
-
-		/* Update the window */
-		sfRenderWindow_display(window);
-	}
-
-	/* Cleanup resources */
-	sfRenderWindow_destroy(window);
+	while (!m_allDone)
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 std::mutex Registration::m_passesMutex;
@@ -349,14 +450,26 @@ executionFunctionStackList Registration::m_calls;
 
 ModBlockData** Registration::m_data;
 
+double* Registration::m_variablesReal;
+
+bool* Registration::m_variablesBool;
+
+std::string* Registration::m_variablesString;
+
+std::mutex Registration::m_customRegisterMutex;
+
+std::vector<void*> Registration::m_customRegister;
+
 std::atomic<bool> Registration::m_utilFinished;
 
 std::atomic<bool> Registration::m_utilReturnFinished;
 
 std::atomic<bool> Registration::m_allDone;
 
+std::atomic<bool> Registration::m_stop;
+
 std::thread Registration::m_utilThread;
 
 bool Registration::m_debugBuild;
 
-sfRenderWindow* Registration::m_window;
+std::vector<std::string> Registration::m_variableRegistry;

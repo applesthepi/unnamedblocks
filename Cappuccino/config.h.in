@@ -1,3 +1,5 @@
+#define UnnamedBlocksVersion "@VERSION_UNNAMED_BLOCKS@"
+#define UnnamedBlocksBeta @IS_BETA@
 #define __CAP
 #define _CRT_SECURE_NO_WARNINGS
 #cmakedefine LINUX

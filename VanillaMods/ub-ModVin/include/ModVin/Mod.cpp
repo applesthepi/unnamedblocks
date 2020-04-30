@@ -1,3 +1,4 @@
+
 #include "Mod.h"
 
 UB_EXPORT void Initialization(ModData* data)
@@ -14,4 +15,7 @@ UB_EXPORT void Initialization(ModData* data)
 
 	data->RegisterBlock(new BlockTest());
 	data->RegisterBlock(new BlockMain());
+	data->RegisterBlock(new BlockTestRender());
+	data->RegisterBlock(new BlockTestEvent());
+	data->RegisterBlock(new BlockYes());
 }

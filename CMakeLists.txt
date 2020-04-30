@@ -16,6 +16,13 @@ if(MSVC)
 	find_file(csfml-graphics NAMES libcsfml-graphics.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
 	find_file(csfml-system NAMES libcsfml-system.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
 	find_file(csfml-window NAMES libcsfml-window.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
+	
+	find_file(csfml-audio-d NAMES libcsfml-audio-d.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
+	find_file(csfml-network-d NAMES libcsfml-network-d.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
+	find_file(csfml-graphics-d NAMES libcsfml-graphics-d.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
+	find_file(csfml-system-d NAMES libcsfml-system-d.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
+	find_file(csfml-window-d NAMES libcsfml-window-d.a PATHS "${CMAKE_SOURCE_DIR}/cmake/lib" "${CMAKE_SOURCE_DIR}/csfml/lib/msvc")
+	
 	find_path(csfml_include NAMES SFML/Graphics.h PATHS "${CMAKE_SOURCE_DIR}/csfml/include")
 else()
 	find_library(csfml-audio NAMES csfml-audio)
