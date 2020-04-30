@@ -1,5 +1,7 @@
 #include "ModLoader.h"
 #include "RHR/handlers/runtime/PreProcessor.h"
+#include "handlers/InputHandler.h"
+#include <SFML/Window/Event.hpp>
 
 #ifdef POSIX
 #include "config.h"
@@ -127,7 +129,7 @@ int main()
 
 	Global::LoadDefaults();//must be first
 	MessageHandler::Initialize();
-	TypingSystem::Initialization();
+	InputHandler::Initialization();
 	ButtonRegistry::Initialize();
 	PreProcessor::Initialize();
 
@@ -403,6 +405,12 @@ int main()
 						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(0, delta));
 				}
 			}
+			else if (ev.type == sf::Event::EventType::KeyPressed) {
+				InputHandler::FireKeyEvent(ev.key);
+			}
+			else if (ev.type == sf::Event::EventType::TextEntered) {
+				InputHandler::FireTextEvent(ev.text);
+			}
 		}
 
 		window.clear();
@@ -419,7 +427,6 @@ int main()
 		{
 			Global::MousePosition = sf::Mouse::getPosition(window);
 
-			TypingSystem::Update();
 			ButtonRegistry::FrameUpdateUI(&window);
 
 			for (unsigned int i = 0; i < catButtons.size(); i++)

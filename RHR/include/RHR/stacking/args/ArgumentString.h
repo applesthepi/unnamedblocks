@@ -2,8 +2,11 @@
 
 #include "Argument.h"
 #include "RHR/Global.h"
-#include "RHR/ui/TypingSystem.h"
+#include "RHR/handlers/InputHandler.h"
 
+#include <SFML/Window/Clipboard.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <Cappuccino/Logger.h>
 
@@ -41,18 +44,17 @@ public:
 		m_textSelect = sf::RectangleShape(sf::Vector2f(0, Global::BlockHeight));
 		m_textSelect.setFillColor(sf::Color(35, 60, 117, 80));
 
-		m_functionTextCallback = new std::function<void(int)>();
-		*m_functionTextCallback = [&](int key)
+		m_functionTextCallback = new std::function<void(const sf::Event::TextEvent& event)>();
+		m_functionKeyCallback = new std::function<void(const sf::Event::KeyEvent& event)>();
+		*m_functionKeyCallback = [&](const sf::Event::KeyEvent& event)
 		{
-			if (key == 129)
-				m_shiftEnabled = !m_shiftEnabled;
-			else if (key == 9)
+			if (event.code == sf::Keyboard::Key::Tab)
 			{
 				Next = true;
 			}
-			else if (key == -2)
+			else if (event.code == sf::Keyboard::Left)
 			{
-				if (m_shiftEnabled)
+				if (event.shift)
 				{
 					if (m_textMarkerPosition > 0)
 						m_textMarkerPosition--;
@@ -74,9 +76,9 @@ public:
 					}
 				}
 			}
-			else if (key == -4)
+			else if (event.code == sf::Keyboard::Right)
 			{
-				if (m_shiftEnabled)
+				if (event.shift)
 				{
 					if (m_textMarkerPosition < m_Text.length())
 						m_textMarkerPosition++;
@@ -98,85 +100,57 @@ public:
 					}
 				}
 			}
-			else if (key == 8)
+			else if (event.code == sf::Keyboard::BackSpace)
 			{
 				if (m_textMarkerPosition == m_textTrailedStart)
 				{
 					if (m_textMarkerPosition > 0)
 					{
-						std::string newText = std::string();
-
-						for (unsigned int i = 0; i < m_textMarkerPosition - 1; i++)
-							newText += m_Text[i];
-
-						for (unsigned int i = m_textMarkerPosition; i < m_Text.length(); i++)
-							newText += m_Text[i];
-
-						m_Text = newText;
+						m_Text.erase(--m_textMarkerPosition, 1);
 						m_TextAgent.setString(m_Text);
-
-						m_textMarkerPosition--;
 						m_textTrailedStart--;
 					}
 				}
 				else
 				{
-					std::string newText = std::string();
+					size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
+					size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
 
-					for (unsigned int i = 0; i < std::min(m_textMarkerPosition, m_textTrailedStart); i++)
-						newText += m_Text[i];
-
-					for (unsigned int i = std::max(m_textMarkerPosition, m_textTrailedStart); i < m_Text.length(); i++)
-						newText += m_Text[i];
-
-					m_Text = newText;
+					m_Text.erase(start, end-start);
 					m_TextAgent.setString(m_Text);
 
 					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart);
 					m_textTrailedStart = m_textMarkerPosition;
 				}
 			}
-			else if (key == 127)
+			else if (event.code == sf::Keyboard::Delete)
 			{
 				if (m_textMarkerPosition == m_textTrailedStart)
 				{
 					if (m_textMarkerPosition + 1 < m_Text.length())
 					{
-						std::string newText = std::string();
-
-						for (unsigned int i = 0; i < m_textMarkerPosition; i++)
-							newText += m_Text[i];
-
-						for (unsigned int i = m_textMarkerPosition + 1; i < m_Text.length(); i++)
-							newText += m_Text[i];
-
-						m_Text = newText;
+						m_Text.erase(m_textMarkerPosition, 1);
 						m_TextAgent.setString(m_Text);
 					}
 				}
 				else
 				{
-					std::string newText = std::string();
+					size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
+					size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
 
-					for (unsigned int i = 0; i < std::min(m_textMarkerPosition, m_textTrailedStart); i++)
-						newText += m_Text[i];
-
-					for (unsigned int i = std::max(m_textMarkerPosition, m_textTrailedStart); i < m_Text.length(); i++)
-						newText += m_Text[i];
-
-					m_Text = newText;
+					m_Text.erase(start, end-start);
 					m_TextAgent.setString(m_Text);
 
 					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart);
 					m_textTrailedStart = m_textMarkerPosition;
 				}
 			}
-			else if (key == 130)
+			else if (event.code == sf::Keyboard::A && event.control)
 			{
 				m_textTrailedStart = 0;
 				m_textMarkerPosition = m_Text.length();
 			}
-			else if (key == 131)
+			else if (event.code == sf::Keyboard::C && event.control)
 			{
 				if (m_textMarkerPosition != m_textTrailedStart)
 				{
@@ -188,7 +162,7 @@ public:
 					sf::Clipboard::setString(cpy);
 				}
 			}
-			else if (key == 132)
+			else if (event.code == sf::Keyboard::V && event.control)
 			{
 				if (m_textMarkerPosition == m_textTrailedStart)
 				{
@@ -201,51 +175,46 @@ public:
 				}
 				else
 				{
-					std::string newText;
-					for (unsigned int i = 0; i < std::min(m_textMarkerPosition, m_textTrailedStart); i++)
-						newText += m_Text[i];
+					size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
+					size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
+
+					m_Text.erase(start, end-start);
 
 					std::string clip = sf::Clipboard::getString();
-
-					newText += clip;
-
-					for (unsigned int i = std::max(m_textMarkerPosition, m_textTrailedStart); i < m_Text.length(); i++)
-						newText += m_Text[i];
-
-					m_Text = newText;
-					m_TextAgent.setString(m_Text);
-
 					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart) + clip.length();
 					m_textTrailedStart = m_textMarkerPosition;
+
+					m_Text.insert(m_textMarkerPosition, clip);
+					m_TextAgent.setString(m_Text);
+
 				}
+			}
+		};
+		*m_functionTextCallback = [&](const sf::Event::TextEvent& text)
+		{
+			// If the character is not printable return
+			if(!isprint(static_cast<int32_t>(text.unicode))) return;
+
+			if (m_textMarkerPosition == m_textTrailedStart)
+			{
+				m_Text.insert(m_Text.begin() + m_textMarkerPosition, (char)text.unicode);
+				m_TextAgent.setString(m_Text);
+
+				m_textMarkerPosition++;
+				m_textTrailedStart++;
 			}
 			else
 			{
-				if (m_textMarkerPosition == m_textTrailedStart)
-				{
-					m_Text.insert(m_Text.begin() + m_textMarkerPosition, (char)key);
-					m_TextAgent.setString(m_Text);
+				size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
+				size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
 
-					m_textMarkerPosition++;
-					m_textTrailedStart++;
-				}
-				else
-				{
-					std::string newText = std::string();
-					for (unsigned int i = 0; i < std::min(m_textMarkerPosition, m_textTrailedStart); i++)
-						newText += m_Text[i];
+				m_Text.erase(start, end-start);
 
-					newText += (char)key;
-					
-					for (unsigned int i = std::max(m_textMarkerPosition, m_textTrailedStart); i < m_Text.length(); i++)
-						newText += m_Text[i];
+				m_Text.insert(m_Text.begin()+m_textMarkerPosition, (char)text.unicode);
+				m_TextAgent.setString(m_Text);
 
-					m_Text = newText;
-					m_TextAgent.setString(m_Text);
-
-					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart) + 1;
-					m_textTrailedStart = m_textMarkerPosition;
-				}
+				m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart) + 1;
+				m_textTrailedStart = m_textMarkerPosition;
 			}
 		};
 	}
@@ -273,7 +242,8 @@ public:
 
 		if (m_selected && (Global::SelectedArgument != this || Global::Dragging))
 		{
-			TypingSystem::RemoveKeypressRegister(m_functionTextCallback);
+			InputHandler::UnregisterTextCallback(m_functionTextCallback);
+			InputHandler::UnregisterKeyCallback(m_functionKeyCallback);
 			m_selected = false;
 		}
 
@@ -339,16 +309,14 @@ public:
 
 					if (m_selected)
 					{
-						m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
-
 						m_textTrailedStart = 0;
 						m_textMarkerPosition = m_Text.length();
 					}
 					else
 					{
-						TypingSystem::AddKeypressRegister(m_functionTextCallback);
+						InputHandler::RegisterTextCallback(m_functionTextCallback);
+						InputHandler::RegisterKeyCallback(m_functionKeyCallback);
 
-						m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
 						m_selected = true;
 						m_textTrailedStart = 0;
 						m_textMarkerPosition = m_Text.length();
@@ -409,8 +377,6 @@ public:
 
 		if (m_selected)
 		{
-			m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
-
 			int mouseX = Global::MousePosition.x;
 
 			unsigned int closestX = 0;
@@ -435,9 +401,9 @@ public:
 		}
 		else
 		{
-			TypingSystem::AddKeypressRegister(m_functionTextCallback);
+			InputHandler::RegisterTextCallback(m_functionTextCallback);
+			InputHandler::RegisterKeyCallback(m_functionKeyCallback);
 
-			m_shiftEnabled = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
 			m_selected = true;
 			m_textTrailedStart = 0;
 			m_textMarkerPosition = m_Text.length();
@@ -468,7 +434,7 @@ private:
 	unsigned int m_textTrailedStart;
 	bool m_selected;
 	bool m_variableMode;
-	bool m_shiftEnabled;
 
-	std::function<void(int)>* m_functionTextCallback;
+	std::function<void(const sf::Event::TextEvent&)>* m_functionTextCallback;
+	std::function<void(const sf::Event::KeyEvent&)>* m_functionKeyCallback;
 };

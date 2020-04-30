@@ -169,8 +169,8 @@ void ThreadPreProcessorExecution(bool debugBuild)
 					argInterpretations.push_back(ModBlockDataInterpretation::REAL);
 				}
 			}
-
-			functionData[i][a] = ModBlockData(argData, argTypes, argInterpretations);
+			ModBlockData blockdata = ModBlockData(argData, argTypes, argInterpretations);
+			functionData[i][a] = blockdata;
 		}
 
 		functionCalls.push_back(transCalls);

@@ -1,10 +1,11 @@
 #include "MessageHandler.h"
 #include "RHR/Global.h"
-#include "RHR/ui/TypingSystem.h"
+#include "InputHandler.h"
 #include "RHR/ui/Button.h"
 #include "RHR/registries/ButtonRegistry.h"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <functional>
 void ThreadAsyncMessage(std::mutex* mutex, std::vector<Message*>* messages)
 {
@@ -82,7 +83,8 @@ void MessageHandler::RunSyncMessages()
 	//TODO this function has lots of memory leaks
 	for (unsigned int i = 0; i < m_messages->size(); i++)
 	{
-		std::function<void(int key)>* callback = new std::function<void(int key)>();
+		std::function<void(const sf::Event::TextEvent& event)>* text_callback = new std::function<void(const sf::Event::TextEvent& event)>();
+		std::function<void(const sf::Event::KeyEvent& event)>* key_callback = new std::function<void(const sf::Event::KeyEvent& event)>();
 		std::function<void()>* callbackButtonContinue = new std::function<void()>();
 		std::function<void()>* callbackButtonCancel = new std::function<void()>();
 		Button* buttonContinue = new Button(sf::Vector2i(10, 30), sf::Vector2u(100, 24), callbackButtonContinue);
@@ -112,33 +114,41 @@ void MessageHandler::RunSyncMessages()
 		{
 			title = "Input";
 
-			*callback = [&answer, &textAgent, &finish](int key)
+			*key_callback = [&answer, &textAgent, &finish](const sf::Event::KeyEvent& event)
 			{
-				if (key == 8)
+				const bool whitespace_is_barrier = true;
+				if (event.code == sf::Keyboard::BackSpace)
 				{
-					if (answer.length() > 0)
+					if (event.control)
 					{
-						std::string newText = std::string();
-
-						for (unsigned int i = 0; i < answer.length() - 1; i++)
-							newText += answer[i];
-
-						answer = newText;
+						for (auto iter = answer.end(); iter != answer.begin(); --iter)
+						{
+							if ( whitespace_is_barrier && isspace(*iter) ) {
+								answer.erase(iter, answer.end());
+							}
+						}
+						
 					}
+					else
+					{
+						if (answer.length() > 0) answer.erase(answer.end());
+					}
+					textAgent.setString(answer);
 				}
-				else if (key == 13)
+				else if (event.code == sf::Keyboard::Key::Enter)
 				{
 					finish = true;
 				}
-				else if (key != 129 && key != 130 && key != 127 && key != -2 && key != -4 && key != 10)
-				{
-					answer += (char)key;
-				}
-
+				
+			};
+			*text_callback = [&answer, &textAgent](const sf::Event::TextEvent& event)
+			{
+				answer += static_cast<char>(event.unicode);
 				textAgent.setString(answer);
 			};
 
-			TypingSystem::AddKeypressRegister(callback);
+			InputHandler::RegisterTextCallback(text_callback);
+			InputHandler::RegisterKeyCallback(key_callback);
 		}
 		else if ((*m_messages)[i]->Type == MessageType::CONFIRM)
 		{
@@ -191,7 +201,6 @@ void MessageHandler::RunSyncMessages()
 			}
 
 			window.clear(sf::Color::White);
-			TypingSystem::Update();
 
 			Global::MousePosition = sf::Mouse::getPosition(window);
 
@@ -251,7 +260,8 @@ void MessageHandler::RunSyncMessages()
 					*((*m_messages)[i]->Result) = "";
 			}
 
-			TypingSystem::RemoveKeypressRegister(callback);
+			InputHandler::UnregisterTextCallback(text_callback);
+			InputHandler::UnregisterKeyCallback(key_callback);
 		}
 		else if ((*m_messages)[i]->Type == MessageType::CONFIRM)
 		{
