@@ -1,6 +1,5 @@
 #include "Registration.h"
 
-#include <chrono>
 #include <vector>
 #include <string>
 #include <cassert>
@@ -27,9 +26,6 @@ void Registration::Initialize()
 	m_stop = false;
 	m_debugBuild = true;
 
-	m_utilThread = std::thread(ThreadUtil);
-	m_utilThread.detach();
-
 	m_passes.clear();
 	m_passesFlagged.clear();
 	m_execution.clear();
@@ -37,6 +33,8 @@ void Registration::Initialize()
 
 	m_customRegister.clear();
 	m_variableRegistry.clear();
+
+	m_timeBegin = std::chrono::steady_clock::now();
 }
 
 void Registration::RegisterPass(ModBlockPass* pass)
@@ -208,6 +206,10 @@ void Registration::RunUtilityTick()
 void Registration::Run()
 {
 	printf("#########[ Started Cappuccino\n");
+
+	m_utilThread = std::thread(ThreadUtil);
+	m_utilThread.detach();
+
 	printf("compiling data...\n");
 
 	if (m_debugBuild)
@@ -230,6 +232,8 @@ void Registration::Run()
 	init.CustomRegister = &m_customRegister;
 	init.Stop = &Registration::Stop;
 	init.VariableRegistry = &m_variableRegistry;
+	init.DebugMode = m_debugBuild;
+	init.BeginTime = &m_timeBegin;
 
 	ModBlockPass* pass = new ModBlockPass(init);
 	RegisterPass(pass);
@@ -324,8 +328,8 @@ void Registration::CompileDataDebug()
 	m_variablesBool = new bool[m_variableRegistry.size()];
 	m_variablesString = new std::string[m_variableRegistry.size()];
 
-	memset(m_variablesReal, 0, m_variableRegistry.size());
-	memset(m_variablesBool, 0, m_variableRegistry.size());
+	std::fill(m_variablesReal, m_variablesReal + m_variableRegistry.size(), 0.0);
+	std::fill(m_variablesBool, m_variablesBool + m_variableRegistry.size(), false);
 }
 
 void Registration::CompileDataRelease()
@@ -471,5 +475,7 @@ std::atomic<bool> Registration::m_stop;
 std::thread Registration::m_utilThread;
 
 bool Registration::m_debugBuild;
+
+std::chrono::steady_clock::time_point Registration::m_timeBegin;
 
 std::vector<std::string> Registration::m_variableRegistry;

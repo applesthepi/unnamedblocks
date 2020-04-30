@@ -16,12 +16,15 @@ COMP_EXPORT bool debugBuild;
 
 int main()
 {
+	cpInit();
+
 	cpSetFunctionMain(functionMain);
 	cpSetFunctionCallCount(functionCallCount);
 	cpSetFunctionTotalCount(functionTotalCount);
 	cpSetCalls(calls);
 	cpSetData(functionData);
 	cpSetDebugBuild(debugBuild);
+
 	cpRun();
 
 	return 0;

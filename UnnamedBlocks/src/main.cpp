@@ -291,7 +291,7 @@ int main()
 			planeCopy->CopyEverything(primaryPlane, pRegistry);
 
 			PreProcessor::Cleanup();
-			PreProcessor::Start(planeCopy, pRegistry, false);
+			PreProcessor::Start(planeCopy, pRegistry, true);
 		};
 
 		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);

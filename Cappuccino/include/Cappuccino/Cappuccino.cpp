@@ -3,6 +3,11 @@
 #include "Registration.h"
 #include "ModBlockPass.h"
 
+CAP_EXPORT void cpInit()
+{
+	Registration::Initialize();
+}
+
 CAP_EXPORT void cpSetFunctionMain(uint64_t functionMain)
 {
 	Registration::SetFunctionMain(functionMain);
@@ -35,6 +40,5 @@ CAP_EXPORT void cpSetDebugBuild(bool debugBuild)
 
 CAP_EXPORT void cpRun()
 {
-	Registration::Initialize();
 	Registration::Run();
 }

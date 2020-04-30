@@ -7,6 +7,7 @@
 #include <string>
 #include <SFML/Graphics/RenderWindow.h>
 #include <SFML/System/Mutex.h>
+#include <chrono>
 
 #ifndef LINUX
 	#ifdef __CAP
@@ -35,6 +36,7 @@ public:
 	std::mutex* CustomRegisterMutex;
 	std::vector<void*>* CustomRegister;
 	void(*Stop)();
+	std::chrono::steady_clock::time_point* BeginTime;
 
 	// debug only
 
@@ -122,6 +124,7 @@ private:
 	std::mutex m_messagesMutex;
 	std::vector<std::string> m_messages;
 	void(*m_stop)();
+	std::chrono::steady_clock::time_point* m_beginTime;
 
 	// debug only
 	uint64_t m_dataSize;

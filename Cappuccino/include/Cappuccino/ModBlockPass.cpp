@@ -7,12 +7,8 @@
 #include <cstring>
 #include <chrono>
 
-typedef std::chrono::system_clock Clock;
-
 ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 {
-	printf("REEEEEEEEEEEEE %d\n", init.DebugMode ? 1 : 0);
-
 	if (init.DebugMode)
 	{
 		m_getData = &ModBlockPass::GetDataDebug;
@@ -37,6 +33,7 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 	m_customRegister = init.CustomRegister;
 	m_stop = init.Stop;
 	m_variableRegistry = init.VariableRegistry;
+	m_beginTime = init.BeginTime;
 }
 
 void ModBlockPass::SetData(void** data)
@@ -98,25 +95,20 @@ CAP_DLL void ModBlockPass::CustomFree(const uint64_t& idx)
 
 CAP_DLL void ModBlockPass::LogDebug(const std::string& message)
 {
-	auto now = Clock::now();
-	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
-	auto fraction = now - seconds;
-	time_t cnow = Clock::to_time_t(now);
-
-	auto hr = std::chrono::duration_cast<std::chrono::hours>(fraction);
-	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
-	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
-	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
-	auto micro = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
-	auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(fraction);
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [DEBUG] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
+
+	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [DEBUG] ",
+		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
+		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
+		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
+		((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
+		((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	// This is how to get only 1 heap allocation, the reserve call.
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
@@ -127,25 +119,20 @@ CAP_DLL void ModBlockPass::LogDebug(const std::string& message)
 
 void ModBlockPass::LogInfo(const std::string& message)
 {
-	auto now = Clock::now();
-	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
-	auto fraction = now - seconds;
-	time_t cnow = Clock::to_time_t(now);
-
-	auto hr = std::chrono::duration_cast<std::chrono::hours>(fraction);
-	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
-	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
-	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
-	auto micro = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
-	auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(fraction);
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [INFO] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
-	
+
+	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [INFO] ",
+		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
+		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
+		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
+		((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
+		((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
+
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	// This is how to get only 1 heap allocation, the reserve call.
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
@@ -156,25 +143,20 @@ void ModBlockPass::LogInfo(const std::string& message)
 
 CAP_DLL void ModBlockPass::LogWarning(const std::string& message)
 {
-	auto now = Clock::now();
-	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
-	auto fraction = now - seconds;
-	time_t cnow = Clock::to_time_t(now);
-
-	auto hr = std::chrono::duration_cast<std::chrono::hours>(fraction);
-	auto min = std::chrono::duration_cast<std::chrono::minutes>(fraction);
-	auto sec = std::chrono::duration_cast<std::chrono::seconds>(fraction);
-	auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(fraction);
-	auto micro = std::chrono::duration_cast<std::chrono::microseconds>(fraction);
-	auto nano = std::chrono::duration_cast<std::chrono::nanoseconds>(fraction);
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
 	// Should be enough
 	char prefix[100];
-	snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [WARN] ", hr.count(), min.count(), sec.count(), milliseconds.count(), micro.count(), nano.count());
+
+	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [WARN] ",
+		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
+		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
+		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
+		((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
+		((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	// This is how to get only 1 heap allocation, the reserve call.
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
@@ -185,45 +167,39 @@ CAP_DLL void ModBlockPass::LogWarning(const std::string& message)
 
 void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fatality)
 {
-	auto now = Clock::now();
-	auto seconds = std::chrono::time_point_cast<std::chrono::seconds>(now);
-	auto fraction = now - seconds;
-
+	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+	
 	// Should be enough
 	char prefix[100];
 
 	if (fatality == LoggerFatality::OK)
-		snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR-OK] ",
-			std::chrono::duration_cast<std::chrono::hours>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::minutes>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::seconds>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::milliseconds>(fraction).count(),
-			std::modf(std::chrono::duration_cast<std::chrono::microseconds>(fraction).count() / 1000.0, nullptr) * 1000.0,
-			std::modf(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count() / 1000.0, nullptr) * 1000.0);
+		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-OK] ",
+			((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
+			((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
+			((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
+			((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
+			((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 	else if (fatality == LoggerFatality::BREAK)
-		snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR-BREAK] ",
-			std::chrono::duration_cast<std::chrono::hours>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::minutes>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::seconds>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::milliseconds>(fraction).count(),
-			std::modf(std::chrono::duration_cast<std::chrono::microseconds>(fraction).count() / 1000.0, nullptr) * 1000.0,
-			std::modf(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count() / 1000.0, nullptr) * 1000.0);
+		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-BREAK] ",
+			((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
+			((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
+			((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
+			((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
+			((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 	else if (fatality == LoggerFatality::ABORT)
-		snprintf(prefix, 100, "[%02u:%02u:%02u] [%03u:%03u:%03u] [ERROR-ABORT] ",
-			std::chrono::duration_cast<std::chrono::hours>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::minutes>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::seconds>(fraction).count(),
-			std::chrono::duration_cast<std::chrono::milliseconds>(fraction).count(),
-			std::modf(std::chrono::duration_cast<std::chrono::microseconds>(fraction).count() / 1000.0, nullptr) * 1000.0,
-			std::modf(std::chrono::duration_cast<std::chrono::nanoseconds>(fraction).count() / 1000.0, nullptr) * 1000.0);
+		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-ABORT] ",
+			((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
+			((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
+			((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
+			((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
+			((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 	
 	// TODO abort
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	// This is how to get only 1 heap allocation, the reserve call.
 	m_messages.emplace_back();
-	size_t index = m_messages.size()-1;
+	size_t index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
 
 	m_messages[index] += prefix;
@@ -343,4 +319,5 @@ ModBlockPassInitializer::ModBlockPassInitializer()
 	// debug only
 	DataSize = 0;
 	VariableRegistry = nullptr;
+	BeginTime = nullptr;
 }

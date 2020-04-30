@@ -9,6 +9,7 @@
 #include <thread>
 #include <atomic>
 #include <SFML/Graphics.h>
+#include <chrono>
 
 class Registration
 {
@@ -71,6 +72,7 @@ private:
 	static std::atomic<bool> m_stop;
 	static std::thread m_utilThread;
 	static bool m_debugBuild;
+	static std::chrono::steady_clock::time_point m_timeBegin;
 
 	static std::vector<std::string> m_variableRegistry; // debug only
 };

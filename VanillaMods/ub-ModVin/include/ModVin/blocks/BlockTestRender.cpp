@@ -14,6 +14,16 @@ static void ExecuteRelease(ModBlockPass* pass)
 	window->display();
 
 	pass->GetVariableReal(0) = pass->CustomPut(window);
+
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
+	pass->LogError("testing error!", LoggerFatality::OK);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
