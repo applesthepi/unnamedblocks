@@ -18,6 +18,7 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Button.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/InputHandler.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.cpp"
 	#${CMAKE_CURRENT_SOURCE_DIR}/ Headers
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/Global.h"
@@ -39,6 +40,7 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Button.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/InputHandler.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.h"
 	)
 add_library(RHR STATIC
 	${RHR_SRC}

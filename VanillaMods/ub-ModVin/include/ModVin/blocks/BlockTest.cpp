@@ -29,7 +29,7 @@ blockExecution BlockTest::PullExecuteRelease()
 
 const char* BlockTest::GetCategory() const
 {
-	return CATEGORY_MAIN;
+	return CATEGORY_OTHER;
 }
 
 const ModBlockFlags BlockTest::GetFlags() const

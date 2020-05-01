@@ -99,7 +99,7 @@ ModLoaderStatus run(BlockRegistry* registry)
 #endif
 		initialize((*mods)[i].Data);
 		
-		ProjectHandler::Mods.push_back((*mods)[i].Data->ModFileName);
+		ProjectHandler::Mods.push_back((*mods)[i].Data->ModUnlocalizedName);
 
 		ModDataBaked baked = (*mods)[i].Data->Bake();
 

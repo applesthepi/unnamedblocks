@@ -30,7 +30,7 @@ blockExecution BlockYes::PullExecuteRelease()
 
 const char* BlockYes::GetCategory() const
 {
-	return CATEGORY_MAIN;
+	return CATEGORY_OTHER;
 }
 
 const ModBlockFlags BlockYes::GetFlags() const

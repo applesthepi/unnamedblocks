@@ -23,6 +23,6 @@ public:
 	std::vector<ModBlock*> Blocks;
 	std::vector<ModCatagory*> Categories;
 	std::string ModDisplayName;
-	std::string ModFileName;
+	std::string ModUnlocalizedName;
 	std::string Version;
 };

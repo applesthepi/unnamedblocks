@@ -166,8 +166,8 @@ void MessageHandler::RunSyncMessages()
 				finish = true;
 			};
 
-			buttonContinue->SetButtonModeText("continue", sf::Color(140, 212, 140), 16);
-			buttonCancel->SetButtonModeText("cancel", sf::Color(140, 212, 212), 16);
+			buttonContinue->SetButtonModeText("continue", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+			buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 
 			ButtonRegistry::Push();
 			ButtonRegistry::AddButton(buttonContinue);

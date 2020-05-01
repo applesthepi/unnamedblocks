@@ -1,15 +1,21 @@
-
 #include "Mod.h"
+
+#include "blocks/BlockTest.h"
+#include "blocks/BlockMain.h"
+#include "blocks/BlockTestRender.h"
+#include "blocks/BlockTestEvent.h"
+#include "blocks/BlockYes.h"
 
 UB_EXPORT void Initialization(ModData* data)
 {
-	data->ModFileName = "ModVin";
+	data->ModUnlocalizedName = "ModVin";
 	data->ModDisplayName = "Vanilla Mod";
 	data->Version = ModVinVersion;
 
 	// Categories
 
-	data->RegisterCategory(new SomeCategory());
+	data->RegisterCategory(new SomeCategory(data->ModUnlocalizedName, data->ModDisplayName));
+	data->RegisterCategory(new SomeOtherCategory(data->ModUnlocalizedName, data->ModDisplayName));
 
 	// Blocks
 

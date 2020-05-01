@@ -53,7 +53,7 @@ const ModCatagory* BlockRegistry::GetCategory(const std::string& unlocalizedName
 	}
 
 	Logger::Error("unexpected failure to get a catagory. Mod loading error?");
-	return new ModCatagory();
+	return new ModCatagory("", "");
 }
 
 

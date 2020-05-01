@@ -1,8 +1,19 @@
 #include "ModCatagory.h"
 
-ModCatagory::ModCatagory()
+ModCatagory::ModCatagory(const std::string& modUnlocalizedName, const std::string& modDisplayName)
+	:m_modUnlocalizedName(modUnlocalizedName), m_modDisplayName(modDisplayName)
 {
 
+}
+
+const std::string ModCatagory::GetModUnlocalizedName()
+{
+	return m_modUnlocalizedName;
+}
+
+const std::string ModCatagory::GetModDisplayName()
+{
+	return m_modDisplayName;
 }
 
 const sf::Color ModCatagory::GetColor() const

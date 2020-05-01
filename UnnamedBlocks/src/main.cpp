@@ -1,6 +1,7 @@
 #include "ModLoader.h"
 #include "RHR/handlers/runtime/PreProcessor.h"
 #include "handlers/InputHandler.h"
+#include "handlers/CategoryHandler.h"
 #include <SFML/Window/Event.hpp>
 
 #ifdef POSIX
@@ -31,8 +32,6 @@
 #define CONTEXT_COLOR 180, 180, 180, 200
 
 std::vector<Button*> contextButtons;
-std::vector<Button*> toolbarButtons;
-std::vector<Button*> catButtons;
 
 ContextSystem sys;
 
@@ -45,43 +44,6 @@ static std::atomic<bool> returnFinished;
 void ReturnFinished()
 {
 	returnFinished = true;
-}
-
-static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
-{
-	toolbarPlane->DeleteAllBlocks();
-
-	unsigned int idx = 0;
-	unsigned int widest = 0;
-	for (unsigned int a = 0; a < registry->GetBlocks().size(); a++)
-	{
-		if (registry->GetBlocks()[a]->GetCategory() == registry->GetCategories()[index]->GetUnlocalizedName())
-		{
-			Stack* stack = new Stack(sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))), registry);
-			Block* block = new Block(registry->GetBlocks()[a]->GetUnlocalizedName(), registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
-
-			toolbarPlane->AddStack(stack);
-			stack->AddBlock(block);
-
-			stack->ReRender();
-			stack->ReloadVanity();
-
-			if (block->GetWidth() > widest)
-			{
-				widest = block->GetWidth();
-			}
-
-			idx++;
-		}
-	}
-
-	if (widest == 0)
-		Global::ToolbarWidth = 100;
-	else
-		Global::ToolbarWidth = widest + 10;
-
-	toolbarCatagory = index;
-	toolbarStackCount = toolbarPlane->GetStackCount();
 }
 
 int main()
@@ -97,33 +59,14 @@ int main()
 	Logger::Info("all unsaved progress will be lost if this window is closed");
 
 	ShaderRegistry::Initialize();
+	ShaderRegistry::ReloadAllShaders();
 
 	// Window Setup
 
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default);
-	/*
-	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
-	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");
-
-	if (strcmp(gpuVendor, "Intel Open Source Technology Center") == 0)
-	{
-		Logger::Info("loading intel shaders");
-		Global::GpuType = GpuMan::INTEL;
-	}
-	else if (strcmp(gpuVendor, "NVIDIA Corporation") == 0)
-	{
-		Logger::Info("loading nvidia shaders");
-		Global::GpuType = GpuMan::NVIDIA;
-	}
-	else
-		Logger::Warn("gpu not detected; using default shaders");
-	*/
-	ShaderRegistry::ReloadAllShaders();
-	// Default Settings
-
 	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(150);
+	window.setFramerateLimit(200);
 
 	// Initialization
 
@@ -134,210 +77,20 @@ int main()
 	PreProcessor::Initialize();
 
 	BlockRegistry* pRegistry = new BlockRegistry();
-	Plane::Planes = new std::vector<Plane*>();
-
 	run(pRegistry);
 
 	// Setup
 
-	//ContentLoader::LoadContent();
+	Plane::Planes = new std::vector<Plane*>();
 
-	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
+	Plane* primaryPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100));
 	Plane::Planes->push_back(primaryPlane);
 
-	uint16_t useCount = 0;
-
-	for (unsigned int i = 0; i < pRegistry->GetCategories().size(); i++)
-	{
-		if (pRegistry->GetCategories()[i]->GetDisplayName() == "")
-			continue;
-
-		std::function<void()>* callback = new std::function<void()>();
-		*callback = [i, &pRegistry]()
-		{
-			if (Global::Dragging)
-				return;
-
-			ReloadCatagory(i, pRegistry);
-		};
-
-		Button* cat = new Button(sf::Vector2i(5, 5 + (useCount * (16 + 5))), sf::Vector2u(100, 16), callback);
-		cat->SetButtonModeText(pRegistry->GetCategories()[i]->GetDisplayName(), pRegistry->GetCategories()[i]->GetColor(), 12);
-
-		catButtons.push_back(cat);
-		ButtonRegistry::AddButton(cat);
-
-		useCount++;
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
-		{
-			bool* result = new bool(false);
-
-			MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", result));
-
-			if (*result)
-			{
-				primaryPlane->DeleteAllBlocks();
-			}
-		};
-
-		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 0) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("new", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane, &pRegistry]()
-		{
-			std::string* result = new std::string();
-
-			MessageHandler::RegisterMessageSync(new Message("load file path:", result));
-			if (*result == "")
-			{
-				delete result;
-				return;
-			}
-			*result += ".ub";
-
-			Logger::Info("loading project from \"" + *result + "\"");
-			ProjectHandler::LoadProject(*result, primaryPlane, pRegistry);
-			ProjectHandler::CurrentPath = *result;
-
-			delete result;
-		};
-
-		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 1) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("open", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
-		{
-			if (ProjectHandler::CurrentPath == "")
-			{
-				std::string* result = new std::string();
-
-				MessageHandler::RegisterMessageSync(new Message("save file path:", result));
-				if (*result == "")
-				{
-					delete result;
-					return;
-				}
-				*result += ".ub";
-
-				Logger::Info("saveas to \"" + *result + "\"");
-				ProjectHandler::SaveProject(*result, primaryPlane);
-				ProjectHandler::CurrentPath = *result;
-
-				delete result;
-			}
-			else
-			{
-				ProjectHandler::SaveProject(ProjectHandler::CurrentPath, primaryPlane);
-				Logger::Info("save to \"" + ProjectHandler::CurrentPath + "\"");
-			}
-		};
-
-		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 2) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("save", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-	std::function<void()>* function = new std::function<void()>();
-	*function = [primaryPlane]()
-	{
-		std::string* result = new std::string();
-
-		MessageHandler::RegisterMessageSync(new Message("save file path:", result));
-		if (*result == "")
-		{
-			delete result;
-			return;
-		}
-		*result += ".ub";
-
-		Logger::Info("saveas to \"" + *result + "\"");
-		ProjectHandler::SaveProject(*result, primaryPlane);
-		ProjectHandler::CurrentPath = *result;
-
-		delete result;
-	};
-
-	Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 3) + 10, 5), sf::Vector2u(100, 16), function);
-	button->SetButtonModeText("saveas", sf::Color(200, 200, 200), 12);
-
-	toolbarButtons.push_back(button);
-	ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [&primaryPlane, &pRegistry]()
-		{
-			if (ProjectHandler::CurrentPath == "")
-				Logger::Info("running unsaved project");
-			else
-				Logger::Info("running \"" + ProjectHandler::CurrentPath + "\"");
-
-			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
-			planeCopy->CopyEverything(primaryPlane, pRegistry);
-
-			PreProcessor::Cleanup();
-			PreProcessor::Start(planeCopy, pRegistry, true);
-		};
-
-		Button* button = new Button(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth) + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("run", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-
-	toolbarPlane = new Plane(sf::Vector2u(5, (catButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5), true);
+	toolbarPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100), true);
 	Plane::Planes->push_back(toolbarPlane);
-	{
-		int16_t useCat = 0;
-		for (uint16_t i = 0; i < pRegistry->GetCategories().size(); i++)
-		{
-			if (pRegistry->GetCategories()[i]->GetDisplayName() != "")
-			{
-				useCat = static_cast<int16_t>(i);
-				break;
-			}
-		}
 
-		toolbarCatagory = useCat;
-
-		if (useCat != -1)
-		{
-			unsigned int idx = 0;
-
-			for (unsigned int i = 0; i < pRegistry->GetBlocks().size(); i++)
-			{
-				if (pRegistry->GetBlocks()[i]->GetCategory() == pRegistry->GetCategories()[static_cast<size_t>(useCat)]->GetUnlocalizedName())
-				{
-					Stack* stack = new Stack(sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))), pRegistry);
-					Block* block = new Block(pRegistry->GetBlocks()[i]->GetUnlocalizedName(), pRegistry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
-
-					toolbarPlane->AddStack(stack);
-					stack->AddBlock(block);
-
-					stack->ReloadVanity();
-					stack->ReRender();
-
-					idx++;
-				}
-			}
-		}
-	}
+	CategoryHandler::Initialize(pRegistry, toolbarPlane);
+	CategoryHandler::RegisterHeader(pRegistry, primaryPlane);
 
 #ifdef POSIX
 	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
@@ -350,18 +103,14 @@ int main()
 	bool wasDownRight = false;
 	bool wasContextOpen = false;
 
-	//sf::View zoomedView(sf::FloatRect(0, 0, primaryPlane->GetSize().x, primaryPlane->GetSize().y));
-
-	//Global::ZoomAspect = (sf::Vector2f)primaryPlane->GetSize();
-
 	sf::Clock cl;
 	sf::Clock clTrip;
 
 	sf::Text frameRate;
 	frameRate.setString("fps: 0");
-	frameRate.setFillColor(sf::Color(128, 128, 128, 255));
+	frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
 	frameRate.setFont(*Global::Font);
-	frameRate.setCharacterSize(18);
+	frameRate.setCharacterSize(12);
 
 	clTrip.restart();
 
@@ -413,12 +162,12 @@ int main()
 			}
 		}
 
-		window.clear();
+		window.clear(MOD_BACKGROUND_HIGH);
+		CategoryHandler::Render(&window, toolbarPlane);
 
 		//engine frame update
 
-		toolbarPlane->SetSize(sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5));
-		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, 16 + 10));
+		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
 		primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
 
 		//frame update
@@ -428,11 +177,6 @@ int main()
 			Global::MousePosition = sf::Mouse::getPosition(window);
 
 			ButtonRegistry::FrameUpdateUI(&window);
-
-			for (unsigned int i = 0; i < catButtons.size(); i++)
-			{
-				catButtons[i]->SetSize(sf::Vector2u(Global::ToolbarWidth, 16));
-			}
 
 			if (!wasDownLeft && sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
@@ -496,11 +240,6 @@ int main()
 					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
 				}
 			}
-
-			for (unsigned int i = 0; i < toolbarButtons.size(); i++)
-			{
-				toolbarButtons[i]->SetPosition(sf::Vector2i(static_cast<int32_t>(Global::ToolbarWidth + (105 * i) + 10), 5));
-			}
 		}
 
 		if ((Global::ContextActive && !wasContextOpen) || Global::ContextUpdate)
@@ -551,10 +290,10 @@ int main()
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (2 * 16)), sf::Vector2u(300, 16), callback2));
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (3 * 16)), sf::Vector2u(300, 16), callback3));
 
-					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(CONTEXT_COLOR), 12);
-					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(CONTEXT_COLOR), 12);
-					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(CONTEXT_COLOR), 12);
-					contextButtons[3]->SetButtonModeText("delete block", sf::Color(CONTEXT_COLOR), 12);
+					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
+					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
+					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
+					contextButtons[3]->SetButtonModeText("delete block", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
 
 					ButtonRegistry::AddButton(contextButtons[0]);
 					ButtonRegistry::AddButton(contextButtons[1]);
@@ -592,8 +331,7 @@ int main()
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->FrameUpdate(false);
 
-		if (toolbarPlane->GetStackCount() != toolbarStackCount)
-			ReloadCatagory(toolbarCatagory, pRegistry);
+		CategoryHandler::FrameUpdate(pRegistry, toolbarPlane);
 
 		//messages
 		MessageHandler::RunSyncMessages();
@@ -629,7 +367,10 @@ int main()
 			clTrip.restart();
 		}
 
-		frameRate.setPosition(sf::Vector2f(window.getSize().x - 200, 0));
+		frameRate.setPosition(sf::Vector2f(window.getSize().x - 70, 0));
+
+		CategoryHandler::RenderPost(&window);
+
 		window.draw(frameRate);
 		window.display();
 	}
