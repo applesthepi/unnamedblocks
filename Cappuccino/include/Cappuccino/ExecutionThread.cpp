@@ -39,6 +39,7 @@ void ThreadExecution(ExecutionThread* thr)
 		}
 
 		pass->SetData(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetCData());
+		pass->SetDataSize(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetDataSize());
 		
 		localCallStack[callstackBlockIdx.back()](pass);
 		callstackBlockIdx.back()++;

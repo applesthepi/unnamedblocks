@@ -48,6 +48,11 @@ void** ModBlockData::GetCData()
 		return &m_data[0];
 }
 
+const uint64_t ModBlockData::GetDataSize()
+{
+	return m_data.size();
+}
+
 const std::vector<ModBlockDataType>& ModBlockData::GetTypes()
 {
 	return m_types;

@@ -206,10 +206,6 @@ void Registration::RunUtilityTick()
 void Registration::Run()
 {
 	printf("#########[ Started Cappuccino\n");
-
-	m_utilThread = std::thread(ThreadUtil);
-	m_utilThread.detach();
-
 	printf("compiling data...\n");
 
 	if (m_debugBuild)
@@ -240,6 +236,9 @@ void Registration::Run()
 
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
 	RegisterExecutionThread(thr);
+
+	m_utilThread = std::thread(ThreadUtil);
+	m_utilThread.detach();
 
 	RunContext();
 

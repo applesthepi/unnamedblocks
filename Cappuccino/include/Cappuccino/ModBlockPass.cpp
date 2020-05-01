@@ -41,7 +41,7 @@ void ModBlockPass::SetData(void** data)
 	m_data = data;
 }
 
-void** ModBlockPass::GetData(const uint64_t& idx)
+void* ModBlockPass::GetData(const uint64_t& idx)
 {
 	return (this->*(m_getData))(idx);
 }
@@ -223,7 +223,7 @@ CAP_DLL void ModBlockPass::SetDataSize(const uint64_t& size)
 	m_dataSize = size;
 }
 
-void** ModBlockPass::GetDataDebug(const uint64_t& idx)
+void* ModBlockPass::GetDataDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data!");
@@ -235,12 +235,12 @@ void** ModBlockPass::GetDataDebug(const uint64_t& idx)
 		return nullptr;
 	}
 
-	return m_data;
+	return m_data[idx];
 }
 
-void** ModBlockPass::GetDataRelease(const uint64_t& idx)
+void* ModBlockPass::GetDataRelease(const uint64_t& idx)
 {
-	return m_data;
+	return m_data[idx];
 }
 
 double& ModBlockPass::GetVariableRealDebug(const uint64_t& idx)

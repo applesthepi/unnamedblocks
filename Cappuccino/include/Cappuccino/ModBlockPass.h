@@ -83,7 +83,7 @@ public:
 	CAP_DLL void LogWarning(const std::string& message);
 	CAP_DLL void LogError(const std::string& message, const LoggerFatality& fatality);
 
-	CAP_DLL void** GetData(const uint64_t& idx);
+	CAP_DLL void* GetData(const uint64_t& idx);
 
 	CAP_DLL double& GetVariableReal(const uint64_t& idx);
 	CAP_DLL bool& GetVariableBool(const uint64_t& idx);
@@ -105,9 +105,9 @@ public:
 private:
 	// user data interactions
 
-	void** (ModBlockPass::* m_getData)(const uint64_t& idx);
-	void** GetDataDebug(const uint64_t& idx);
-	void** GetDataRelease(const uint64_t& idx);
+	void* (ModBlockPass::* m_getData)(const uint64_t& idx);
+	void* GetDataDebug(const uint64_t& idx);
+	void* GetDataRelease(const uint64_t& idx);
 
 	double& (ModBlockPass::* m_getVaraibleReal)(const uint64_t& idx);
 	double& GetVariableRealDebug(const uint64_t& idx);

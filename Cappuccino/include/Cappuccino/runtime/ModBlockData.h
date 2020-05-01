@@ -30,6 +30,7 @@ public:
 
 	const std::vector<void*>& GetData();
 	void** GetCData();
+	const uint64_t GetDataSize();
 	const std::vector<ModBlockDataType>& GetTypes();
 	const std::vector<ModBlockDataInterpretation>& GetInterpretations();
 
