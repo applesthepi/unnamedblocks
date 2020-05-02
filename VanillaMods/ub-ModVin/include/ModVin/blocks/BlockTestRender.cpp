@@ -10,20 +10,10 @@ static void ExecuteRelease(ModBlockPass* pass)
 	window->setFramerateLimit(200);
 	window->setVerticalSyncEnabled(false);
 
-	window->clear(sf::Color(50, 50, 50));
+	window->clear(sf::Color(30, 30, 40));
 	window->display();
 
 	pass->GetVariableReal(0) = pass->CustomPut(window);
-
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
-	pass->LogError("testing error!", LoggerFatality::OK);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -36,12 +26,12 @@ const char* BlockTestRender::GetUnlocalizedName() const
 	return "vin_render";
 }
 
-blockExecution BlockTestRender::PullExecuteDebug()
+blockExecution BlockTestRender::PullExecuteDebug() const
 {
 	return ExecuteDebug;
 }
 
-blockExecution BlockTestRender::PullExecuteRelease()
+blockExecution BlockTestRender::PullExecuteRelease() const
 {
 	return ExecuteRelease;
 }
@@ -54,30 +44,6 @@ const char* BlockTestRender::GetCategory() const
 const ModBlockFlags BlockTestRender::GetFlags() const
 {
 	return ModBlockFlags().CheckHeap().CheckStack();
-}
-
-const ModBlockActions BlockTestRender::RuntimePreInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should only run once; used for global containers"));
-
-	return actions;
-}
-
-const ModBlockActions BlockTestRender::RuntimeInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should only run once for each stack; used for local containers"));
-
-	return actions;
-}
-
-const ModBlockActions BlockTestRender::RuntimePostInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should run for every block that exists during post init; used for local containers"));
-
-	return actions;
 }
 
 const std::vector<BlockArgumentInitializer> BlockTestRender::GetArguments() const

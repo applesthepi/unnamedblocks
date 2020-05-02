@@ -11,14 +11,18 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 {
 	if (init.DebugMode)
 	{
-		m_getData = &ModBlockPass::GetDataDebug;
+		m_getReal = &ModBlockPass::GetRealDebug;
+		m_getBool = &ModBlockPass::GetBoolDebug;
+		m_getString = &ModBlockPass::GetStringDebug;
 		m_getVaraibleReal = &ModBlockPass::GetVariableRealDebug;
 		m_getVariableBool = &ModBlockPass::GetVariableBoolDebug;
 		m_getVariableString = &ModBlockPass::GetVariableStringDebug;
 	}
 	else
 	{
-		m_getData = &ModBlockPass::GetDataRelease;
+		m_getReal = &ModBlockPass::GetRealRelease;
+		m_getBool = &ModBlockPass::GetBoolRelease;
+		m_getString = &ModBlockPass::GetStringRelease;
 		m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
 		m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
 		m_getVariableString = &ModBlockPass::GetVariableStringRelease;
@@ -41,9 +45,14 @@ void ModBlockPass::SetData(void** data)
 	m_data = data;
 }
 
-void* ModBlockPass::GetData(const uint64_t& idx)
+CAP_DLL void ModBlockPass::SetCallstackStack(std::vector<uint64_t>* callstack)
 {
-	return (this->*(m_getData))(idx);
+	m_callstackStackIdx = callstack;
+}
+
+CAP_DLL void ModBlockPass::SetCallstackBlock(std::vector<uint64_t>* callstack)
+{
+	m_callstackBlockIdx = callstack;
 }
 
 CAP_DLL double& ModBlockPass::GetVariableReal(const uint64_t& idx)
@@ -64,6 +73,16 @@ CAP_DLL std::string& ModBlockPass::GetVariableString(const uint64_t& idx)
 CAP_DLL void ModBlockPass::Stop()
 {
 	m_stop();
+}
+
+CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackStack()
+{
+	return *m_callstackStackIdx;
+}
+
+CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackBlock()
+{
+	return *m_callstackBlockIdx;
 }
 
 CAP_DLL const uint64_t ModBlockPass::CustomPut(void* mem)
@@ -206,6 +225,21 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 	m_messages[index] += message;
 }
 
+CAP_DLL uint64_t* ModBlockPass::GetReal(const uint64_t& idx)
+{
+	return (this->*(m_getReal))(idx);
+}
+
+CAP_DLL bool* ModBlockPass::GetBool(const uint64_t& idx)
+{
+	return (this->*(m_getBool))(idx);
+}
+
+CAP_DLL std::string* ModBlockPass::GetString(const uint64_t& idx)
+{
+	return (this->*(m_getString))(idx);
+}
+
 CAP_DLL const std::vector<std::string>& ModBlockPass::PullMessages()
 {
 	m_messagesMutex.lock();
@@ -223,24 +257,64 @@ CAP_DLL void ModBlockPass::SetDataSize(const uint64_t& size)
 	m_dataSize = size;
 }
 
-void* ModBlockPass::GetDataDebug(const uint64_t& idx)
+uint64_t* ModBlockPass::GetRealDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
-		LogWarning("pulling invalid data!");
+		LogWarning("pulling invalid data! attempted to get real from index \"" + std::to_string(idx) + "\"");
 	else if (m_dataSize == 0)
-		LogWarning("pulling empty data!");
+		LogWarning("pulling empty data! attempted to get real from index \"" + std::to_string(idx) + "\"");
 	else if (idx >= m_dataSize)
 	{
-		LogError("attempted to get data from index out of range", LoggerFatality::ABORT);
+		LogError("attempted to get real from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
 		return nullptr;
 	}
 
-	return m_data[idx];
+	return (uint64_t*)m_data[idx];
 }
 
-void* ModBlockPass::GetDataRelease(const uint64_t& idx)
+uint64_t* ModBlockPass::GetRealRelease(const uint64_t& idx)
 {
-	return m_data[idx];
+	return (uint64_t*)m_data[idx];
+}
+
+bool* ModBlockPass::GetBoolDebug(const uint64_t& idx)
+{
+	if (m_data == nullptr)
+		LogWarning("pulling invalid data! attempted to get bool from index \"" + std::to_string(idx) + "\"");
+	else if (m_dataSize == 0)
+		LogWarning("pulling empty data! attempted to get bool from index \"" + std::to_string(idx) + "\"");
+	else if (idx >= m_dataSize)
+	{
+		LogError("attempted to get bool from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
+		return nullptr;
+	}
+
+	return (bool*)m_data[idx];
+}
+
+bool* ModBlockPass::GetBoolRelease(const uint64_t& idx)
+{
+	return (bool*)m_data[idx];
+}
+
+std::string* ModBlockPass::GetStringDebug(const uint64_t& idx)
+{
+	if (m_data == nullptr)
+		LogWarning("pulling invalid data! attempted to get string from index \"" + std::to_string(idx) + "\"");
+	else if (m_dataSize == 0)
+		LogWarning("pulling empty data! attempted to get string from index \"" + std::to_string(idx) + "\"");
+	else if (idx >= m_dataSize)
+	{
+		LogError("attempted to get string from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
+		return nullptr;
+	}
+
+	return (std::string*)m_data[idx];
+}
+
+std::string* ModBlockPass::GetStringRelease(const uint64_t& idx)
+{
+	return (std::string*)m_data[idx];
 }
 
 double& ModBlockPass::GetVariableRealDebug(const uint64_t& idx)

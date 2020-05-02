@@ -23,7 +23,7 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 	m_background.setSize((sf::Vector2f)size);
 
 	m_innerPositionText = sf::Text("0, 0", *Global::Font, 12);
-	m_innerPositionText.setFillColor(sf::Color::White);
+	m_innerPositionText.setFillColor(MOD_BUTTON_TEXT_FG);
 
 	m_functionAdd = new std::function<void(Stack* stack)>();
 	*m_functionAdd = [&](Stack* stack)
@@ -153,7 +153,7 @@ void Plane::Render(sf::RenderWindow* window)
 	{
 		sf::RectangleShape shape = sf::RectangleShape(sf::Vector2f(m_background.getSize().x + 2, m_background.getSize().y + 2));
 		shape.setPosition(m_position->x - 1, m_position->y - 1);
-		shape.setFillColor(sf::Color::Green);
+		shape.setFillColor(MOD_BUTTON_TEXT_FG);
 
 		window->draw(shape);
 	}
@@ -210,7 +210,7 @@ void Plane::FrameUpdate(bool overrideBounding)
 	m_background.setPosition(m_position->x, m_position->y);
 	m_background.setSize((sf::Vector2f)m_size);
 
-	m_innerPositionText.setPosition(m_position->x, m_position->y);
+	m_innerPositionText.setPosition(m_position->x + 5, m_position->y + m_size.y - 18);
 	m_innerPositionText.setString(std::to_string(m_innerPosition->x) + ", " + std::to_string(m_innerPosition->y));
 
 	m_useDraggingConnection = false;

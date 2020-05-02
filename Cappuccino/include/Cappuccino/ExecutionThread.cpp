@@ -21,7 +21,8 @@ void ThreadExecution(ExecutionThread* thr)
 	ModBlockData** regData = Registration::GetData();
 	ModBlockPass* pass = thr->GetPass();
 
-	printf("starting thread\n");
+	pass->SetCallstackStack(&callstackStackIdx);
+	pass->SetCallstackBlock(&callstackBlockIdx);
 
 	while (!finished)
 	{
@@ -46,8 +47,6 @@ void ThreadExecution(ExecutionThread* thr)
 	}
 
 	thr->SetFinished(true);
-
-	printf("ending thread\n");
 
 	if (!successful)
 		thr->GetPass()->LogInfo("thread terminated successfully");

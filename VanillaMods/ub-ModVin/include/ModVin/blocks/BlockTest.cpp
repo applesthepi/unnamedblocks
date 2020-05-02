@@ -2,8 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	std::string* message = (std::string*)(pass->GetData(0));
-	pass->LogInfo(*message);
+	pass->LogInfo(*pass->GetString(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -17,12 +16,12 @@ const char* BlockTest::GetUnlocalizedName() const
 	return "vin_print";
 }
 
-blockExecution BlockTest::PullExecuteDebug()
+blockExecution BlockTest::PullExecuteDebug() const
 {
 	return ExecuteDebug;
 }
 
-blockExecution BlockTest::PullExecuteRelease()
+blockExecution BlockTest::PullExecuteRelease() const
 {
 	return ExecuteRelease;
 }
@@ -35,30 +34,6 @@ const char* BlockTest::GetCategory() const
 const ModBlockFlags BlockTest::GetFlags() const
 {
 	return ModBlockFlags().CheckHeap().CheckStack();
-}
-
-const ModBlockActions BlockTest::RuntimePreInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should only run once; used for global containers"));
-
-	return actions;
-}
-
-const ModBlockActions BlockTest::RuntimeInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should only run once for each stack; used for local containers"));
-
-	return actions;
-}
-
-const ModBlockActions BlockTest::RuntimePostInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should run for every block that exists during post init; used for local containers"));
-
-	return actions;
 }
 
 const std::vector<BlockArgumentInitializer> BlockTest::GetArguments() const

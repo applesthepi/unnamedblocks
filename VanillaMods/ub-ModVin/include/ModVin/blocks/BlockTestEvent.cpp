@@ -5,7 +5,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	sf::RenderWindow* window = (sf::RenderWindow*)pass->CustomGet(pass->GetVariableReal(0));
+	sf::RenderWindow* window = (sf::RenderWindow*)pass->CustomGet(pass->GetVariableReal(*pass->GetReal(0)));
 	sf::Event ev;
 
 	while (true)
@@ -34,12 +34,12 @@ const char* BlockTestEvent::GetUnlocalizedName() const
 	return "vin_event";
 }
 
-blockExecution BlockTestEvent::PullExecuteDebug()
+blockExecution BlockTestEvent::PullExecuteDebug() const
 {
 	return ExecuteDebug;
 }
 
-blockExecution BlockTestEvent::PullExecuteRelease()
+blockExecution BlockTestEvent::PullExecuteRelease() const
 {
 	return ExecuteRelease;
 }
@@ -52,30 +52,6 @@ const char* BlockTestEvent::GetCategory() const
 const ModBlockFlags BlockTestEvent::GetFlags() const
 {
 	return ModBlockFlags().CheckHeap().CheckStack();
-}
-
-const ModBlockActions BlockTestEvent::RuntimePreInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should only run once; used for global containers"));
-
-	return actions;
-}
-
-const ModBlockActions BlockTestEvent::RuntimeInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should only run once for each stack; used for local containers"));
-
-	return actions;
-}
-
-const ModBlockActions BlockTestEvent::RuntimePostInit() const
-{
-	ModBlockActions actions;
-	actions.AddAction(ModBlockActionLogInfo("this should run for every block that exists during post init; used for local containers"));
-
-	return actions;
 }
 
 const std::vector<BlockArgumentInitializer> BlockTestEvent::GetArguments() const
