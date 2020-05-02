@@ -1,5 +1,6 @@
 #pragma once
 #include "config.h"
+#include "runtime/ModBlockData.h"
 
 #include <stdint.h>
 #include <shared_mutex>
@@ -68,7 +69,7 @@ public:
 
 	CAP_DLL const std::vector<std::string>& PullMessages();
 	CAP_DLL void ReturnMessages();
-	CAP_DLL void SetData(void** data);
+	CAP_DLL void SetData(ModBlockData** data);
 	CAP_DLL void SetCallstackStack(std::vector<uint64_t>* callstack);
 	CAP_DLL void SetCallstackBlock(std::vector<uint64_t>* callstack);
 
@@ -148,7 +149,7 @@ private:
 
 	// user data
 
-	void** m_data;
+	ModBlockData** m_data;
 	
 	double* m_variablesReal;
 	bool* m_variablesBool;

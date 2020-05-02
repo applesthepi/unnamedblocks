@@ -28,8 +28,6 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		m_getVariableString = &ModBlockPass::GetVariableStringRelease;
 	}
 
-	m_dataSize = init.DataSize;
-	m_data = init.Data;
 	m_variablesReal = init.VariablesReal;
 	m_variablesBool = init.VariablesBool;
 	m_variablesString = init.VariablesString;
@@ -40,7 +38,7 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 	m_beginTime = init.BeginTime;
 }
 
-void ModBlockPass::SetData(void** data)
+void ModBlockPass::SetData(ModBlockData** data)
 {
 	m_data = data;
 }
@@ -269,12 +267,12 @@ uint64_t* ModBlockPass::GetRealDebug(const uint64_t& idx)
 		return nullptr;
 	}
 
-	return (uint64_t*)m_data[idx];
+	return (uint64_t*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 uint64_t* ModBlockPass::GetRealRelease(const uint64_t& idx)
 {
-	return (uint64_t*)m_data[idx];
+	return (uint64_t*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 bool* ModBlockPass::GetBoolDebug(const uint64_t& idx)
@@ -289,12 +287,12 @@ bool* ModBlockPass::GetBoolDebug(const uint64_t& idx)
 		return nullptr;
 	}
 
-	return (bool*)m_data[idx];
+	return (bool*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 bool* ModBlockPass::GetBoolRelease(const uint64_t& idx)
 {
-	return (bool*)m_data[idx];
+	return (bool*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 std::string* ModBlockPass::GetStringDebug(const uint64_t& idx)
@@ -309,12 +307,12 @@ std::string* ModBlockPass::GetStringDebug(const uint64_t& idx)
 		return nullptr;
 	}
 
-	return (std::string*)m_data[idx];
+	return (std::string*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 std::string* ModBlockPass::GetStringRelease(const uint64_t& idx)
 {
-	return (std::string*)m_data[idx];
+	return (std::string*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 double& ModBlockPass::GetVariableRealDebug(const uint64_t& idx)

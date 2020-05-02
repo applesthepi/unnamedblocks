@@ -23,6 +23,7 @@ void ThreadExecution(ExecutionThread* thr)
 
 	pass->SetCallstackStack(&callstackStackIdx);
 	pass->SetCallstackBlock(&callstackBlockIdx);
+	pass->SetData(regData);
 
 	while (!finished)
 	{
@@ -39,9 +40,9 @@ void ThreadExecution(ExecutionThread* thr)
 			}
 		}
 
-		pass->SetData(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetCData());
-		pass->SetDataSize(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetDataSize());
-		
+		//pass->SetData(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetCData());
+		//pass->SetDataSize(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetDataSize());
+
 		localCallStack[callstackBlockIdx.back()](pass);
 		callstackBlockIdx.back()++;
 	}
