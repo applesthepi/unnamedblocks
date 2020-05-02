@@ -47,6 +47,7 @@ add_library(RHR STATIC
 )
 target_link_libraries(RHR PUBLIC
 	Espresso
+	Cappuccino
 	sfml-graphics
 	sfml-system
 	sfml-window

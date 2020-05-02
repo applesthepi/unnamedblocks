@@ -33,6 +33,11 @@ CAP_EXPORT void cpSetData(ModBlockData** data)
 	Registration::SetData(data);
 }
 
+CAP_EXPORT void cpSetBlocks(ModBlock*** blocks)
+{
+	Registration::SetBlocks(blocks);
+}
+
 CAP_EXPORT void cpSetDebugBuild(bool debugBuild)
 {
 	Registration::SetDebug(debugBuild);

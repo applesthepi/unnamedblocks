@@ -3,13 +3,24 @@
 #include "ModBlockActions.h"
 
 #include <Cappuccino/ModBlockPass.h>
+#include <Cappuccino/runtime/ModBlockData.h>
 #include <vector>
 #include <string>
+
+#ifndef LINUX
+#ifdef __CAP
+#define CAP_DLL __declspec(dllexport)
+#else
+#define CAP_DLL __declspec(dllimport)
+#endif
+#else
+#define CAP_DLL
+#endif
 
 /*
 Important Modding Information
 
-- Do NOT use the "Logger" class! Use the logger methods inside of the ModBlockPass.
+- Do NOT use the "Logger" class during runtime! Use the logger methods inside of the ModBlockPass.
 
 */
 
@@ -57,37 +68,45 @@ public:
 };
 
 typedef void(*blockExecution)(ModBlockPass*);
+typedef bool(*blockInitialization)(PreProcessorData&);
+typedef bool(*blockDataInitialization)(PreProcessorData&, ModBlockData&);
 
 class ModBlock
 {
 public:
 	// how the block will be identified as. Convention example: "mymod_some_block_name"
-	virtual const char* GetUnlocalizedName() const;
+	CAP_DLL virtual const char* GetUnlocalizedName() const;
 
 	// what will be executed in a release build
-	virtual blockExecution PullExecuteRelease();
+	CAP_DLL virtual blockExecution PullExecuteRelease() const;
 
 	// what will be executed in a debug build
-	virtual blockExecution PullExecuteDebug();
+	CAP_DLL virtual blockExecution PullExecuteDebug() const;
 	
 	// category of the block
-	virtual const char* GetCategory() const;
+	CAP_DLL virtual const char* GetCategory() const;
 	
 	// does the block start a stack
-	virtual bool IsTopical() const;
+	CAP_DLL virtual bool IsTopical() const;
 	
 	// flags to check during debug build
-	virtual const ModBlockFlags GetFlags() const;
+	CAP_DLL virtual const ModBlockFlags GetFlags() const;
 	
-	// actions to run once per block type; during runtime preInitialization
-	virtual const ModBlockActions RuntimePreInit() const;
-	
-	// actions to run once per block type on every stack; during runtime initialization
-	virtual const ModBlockActions RuntimeInit() const;
+	// actions to run once per block type; during runtime before Initialization
+	CAP_DLL virtual blockInitialization GetRuntimeGlobalPreInit() const;
 
-	// actions to run on each block preprocessed; during postInitialization
-	virtual const ModBlockActions RuntimePostInit() const;
+	// actions to run once per block type; during runtime after Initialization
+	CAP_DLL virtual blockInitialization GetRuntimeGlobalPostInit() const;
+	
+	// actions to run once per block type; during runtime before Initialization
+	CAP_DLL virtual blockInitialization GetRuntimeLocalPreInit() const;
+
+	// actions to run once per block type; during runtime after Initialization
+	CAP_DLL virtual blockInitialization GetRuntimeLocalPostInit() const;
+
+	// actions to run on each block preprocessed; during Initialization
+	CAP_DLL virtual blockDataInitialization GetRuntimeInit() const;
 	
 	// block arguments, including text
-	virtual const std::vector<BlockArgumentInitializer> GetArguments() const;
+	CAP_DLL virtual const std::vector<BlockArgumentInitializer> GetArguments() const;
 };

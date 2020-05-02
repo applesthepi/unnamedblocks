@@ -15,6 +15,8 @@ set(ModVin_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTestEvent.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYes.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYes.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYesTo.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYesTo.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
@@ -43,6 +45,7 @@ target_link_libraries(ModVin PUBLIC
 	sfml-system
 	RHR
 	Espresso
+	Cappuccino
 	"${csfml-audio}"
     "${csfml-network}"
     "${csfml-graphics}"

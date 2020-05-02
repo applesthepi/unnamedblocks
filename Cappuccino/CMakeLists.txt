@@ -3,6 +3,10 @@ project(Cappuccino)
 
 configure_file(config.h.in config.h)
 set(Cappuccino_SRC
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockActions.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlags.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlagsIterator.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlock.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Cappuccino.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ExecutionThread.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ModBlockPass.cpp"
@@ -11,8 +15,14 @@ set(Cappuccino_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataRegistry.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Logger.cpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.cpp"
 	# Headers
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockActions.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlags.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlagsIterator.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlock.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Cappuccino.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/CappuccinoMod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ExecutionThread.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/ModBlockPass.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Registration.h"
@@ -20,6 +30,7 @@ set(Cappuccino_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataRegistry.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Logger.h"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.h"
 	)
 add_library(Cappuccino SHARED
 	${Cappuccino_SRC}

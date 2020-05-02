@@ -5,6 +5,7 @@
 #include "blocks/BlockTestRender.h"
 #include "blocks/BlockTestEvent.h"
 #include "blocks/BlockYes.h"
+#include "blocks/BlockYesTo.h"
 
 UB_EXPORT void Initialization(ModData* data)
 {
@@ -24,4 +25,5 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockTestRender());
 	data->RegisterBlock(new BlockTestEvent());
 	data->RegisterBlock(new BlockYes());
+	data->RegisterBlock(new BlockYesTo());
 }

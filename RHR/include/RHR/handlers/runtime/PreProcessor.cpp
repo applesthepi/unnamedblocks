@@ -26,7 +26,7 @@ void PullFileSingle(char** ptr, const char* file_path)
 	}
 }
 
-void ThreadPreProcessorExecution(bool debugBuild)
+void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 {
 	PreProcessor::SetFinished(false);// just in case
 	char* file;
@@ -47,10 +47,12 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	const std::vector<Stack*>* stacks = PreProcessor::GetPlaneCopy()->GetAllStacks();
 	ModBlockData** functionData = new ModBlockData*[stacks->size()];
+	ModBlock*** modBlocks = new ModBlock**[stacks->size()];
 	
 	for (uint64_t i = 0; i < stacks->size(); i++)
 	{
 		functionData[i] = new ModBlockData[stacks->at(i)->GetBlockCount()];
+		modBlocks[i] = new ModBlock*[stacks->at(i)->GetBlockCount()];
 
 		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_main")
 		{
@@ -65,7 +67,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			functionMain = i;
 			functionMainFound = true;
 		}
-
+		
 		// TODO function references to indices (use lambda code in Cappuccino/Registration.cpp)
 
 		//functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
@@ -76,9 +78,11 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		for (uint64_t a = 0; a < stacks->at(i)->GetBlockCount(); a++)
 		{
 			if (debugBuild)
-				transCalls.push_back(PreProcessor::GetRegistry()->GetExeDebug(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
+				transCalls.push_back(PreProcessor::GetRegistry()->GetBlock(stacks->at(i)->GetBlock(a)->GetUnlocalizedName())->PullExecuteDebug());
 			else
-				transCalls.push_back(PreProcessor::GetRegistry()->GetExeRelease(stacks->at(i)->GetBlock(a)->GetUnlocalizedName()));
+				transCalls.push_back(PreProcessor::GetRegistry()->GetBlock(stacks->at(i)->GetBlock(a)->GetUnlocalizedName())->PullExecuteRelease());
+
+			modBlocks[i][a] = (ModBlock*)blockRegistry->GetBlock(stacks->at(i)->GetBlock(a)->GetUnlocalizedName());
 
 			std::vector<void*> argData;
 			std::vector<ModBlockDataType> argTypes;
@@ -223,6 +227,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", &functionCallCountC);
 	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", &buildType);
 	[[maybe_unused]] int r900 = tcc_add_symbol(state, "functionData", &functionData);
+	[[maybe_unused]] int r9002 = tcc_add_symbol(state, "modBlocks", &modBlocks);
 	[[maybe_unused]] int r9001 = tcc_add_symbol(state, "functionTotalCount", &functionTotalCount);
 
 	// libs
@@ -291,7 +296,7 @@ void PreProcessor::Start(Plane* planeCopy, BlockRegistry* registry, bool debugBu
 	m_planeCopy = planeCopy;
 	m_registry = registry;
 	m_finished = false;
-	m_thread = std::thread(ThreadPreProcessorExecution, debugBuild);
+	m_thread = std::thread(ThreadPreProcessorExecution, debugBuild, registry);
 	m_thread.detach();
 }
 

@@ -1,4 +1,5 @@
 #include "Registration.h"
+#include "PreProcessorData.h"
 
 #include <vector>
 #include <string>
@@ -106,6 +107,11 @@ void Registration::SetData(ModBlockData** data)
 	m_data = data;
 }
 
+void Registration::SetBlocks(ModBlock*** blocks)
+{
+	m_blocks = blocks;
+}
+
 void Registration::SetDebug(bool debugBuild)
 {
 	m_debugBuild = debugBuild;
@@ -206,7 +212,6 @@ void Registration::RunUtilityTick()
 void Registration::Run()
 {
 	printf("#########[ Started Cappuccino\n");
-	printf("compiling data...\n");
 
 	if (m_debugBuild)
 		CompileDataDebug();
@@ -216,6 +221,23 @@ void Registration::Run()
 	printf("...compilation succeeded\n");
 	
 	m_customRegister.reserve(10000);
+
+	PreProcessorData data(m_variablesReal, m_variablesBool, m_variablesString);
+
+	if (!GlobalPre(data) || !LocalPre(data))
+		return;
+
+	printf("...preinitialization succeeded\n");
+
+	if (!Init(data, m_data))
+		return;
+
+	printf("...initialization succeeded\n");
+
+	if (!GlobalPost(data) || !LocalPost(data))
+		return;
+
+	printf("...postinitialization succeeded\n");
 
 	ModBlockPassInitializer init;
 
@@ -257,7 +279,6 @@ void Registration::Run()
 			delete m_customRegister[i];
 	}
 
-	printf("...finished deallocation\n");
 	printf("#########[ Stopped Cappuccino\n");
 }
 
@@ -275,6 +296,170 @@ bool Registration::IsAllDone()
 ModBlockData** Registration::GetData()
 {
 	return m_data;
+}
+
+bool Registration::GlobalPre(PreProcessorData& data)
+{
+	std::vector<ModBlock*> singleBlocks;
+
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			bool found = false;
+
+			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			{
+				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				singleBlocks.push_back(m_blocks[i][a]);
+		}
+	}
+
+	for (uint64_t i = 0; i < singleBlocks.size(); i++)
+	{
+		if (!singleBlocks[i]->GetRuntimeGlobalPreInit()(data))
+		{
+			Logger::Error("failed on globalPreInit");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Registration::GlobalPost(PreProcessorData& data)
+{
+	std::vector<ModBlock*> singleBlocks;
+
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			bool found = false;
+
+			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			{
+				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				singleBlocks.push_back(m_blocks[i][a]);
+		}
+	}
+
+	for (uint64_t i = 0; i < singleBlocks.size(); i++)
+	{
+		if (!singleBlocks[i]->GetRuntimeGlobalPostInit()(data))
+		{
+			Logger::Error("failed on globalPostInit");
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool Registration::LocalPre(PreProcessorData& data)
+{
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		std::vector<ModBlock*> singleBlocks;
+
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			bool found = false;
+
+			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			{
+				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				singleBlocks.push_back(m_blocks[i][a]);
+		}
+
+		for (uint64_t i = 0; i < singleBlocks.size(); i++)
+		{
+			if (!singleBlocks[i]->GetRuntimeLocalPreInit()(data))
+			{
+				Logger::Error("failed on localPreInit");
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Registration::LocalPost(PreProcessorData& data)
+{
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		std::vector<ModBlock*> singleBlocks;
+
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			bool found = false;
+
+			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			{
+				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
+				{
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+				singleBlocks.push_back(m_blocks[i][a]);
+		}
+
+		for (uint64_t i = 0; i < singleBlocks.size(); i++)
+		{
+			if (!singleBlocks[i]->GetRuntimeLocalPostInit()(data))
+			{
+				Logger::Error("failed on localPostInit");
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
+{
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			preData.StackIdx = i;
+			preData.BlockIdx = a;
+
+			if (!m_blocks[i][a]->GetRuntimeInit()(preData, blockData[i][a]))
+			{
+				Logger::Error("failed on init");
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 void Registration::CompileDataDebug()
@@ -452,6 +637,8 @@ uint64_t Registration::m_functionTotalCount;
 executionFunctionStackList Registration::m_calls;
 
 ModBlockData** Registration::m_data;
+
+ModBlock*** Registration::m_blocks;
 
 double* Registration::m_variablesReal;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "block/ModBlock.h"
 #include "ModBlockPass.h"
 #include "ExecutionThread.h"
 #include "runtime/ModBlockData.h"
@@ -27,6 +28,7 @@ public:
 	static void SetFunctionTotalCount(uint64_t functionTotalCount);
 	static void SetCalls(executionFunctionStackList calls);
 	static void SetData(ModBlockData** data);
+	static void SetBlocks(ModBlock*** blocks);
 	static void SetDebug(bool debugBuild);
 
 	static void EndAll(ModBlockPass* whitelist = nullptr);
@@ -41,6 +43,12 @@ public:
 
 	static ModBlockData** GetData();
 private:
+	static bool GlobalPre(PreProcessorData& data);
+	static bool GlobalPost(PreProcessorData& data);
+	static bool LocalPre(PreProcessorData& data);
+	static bool LocalPost(PreProcessorData& data);
+	static bool Init(PreProcessorData& preData, ModBlockData** blockData);
+
 	static void CompileDataDebug();
 	static void CompileDataRelease();
 	static void RunContext();
@@ -58,6 +66,7 @@ private:
 	static uint64_t m_functionTotalCount;
 	static executionFunctionStackList m_calls;
 	static ModBlockData** m_data;
+	static ModBlock*** m_blocks;
 
 	static double* m_variablesReal;
 	static bool* m_variablesBool;

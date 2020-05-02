@@ -12,6 +12,7 @@ COMP_EXPORT uint64_t* functionCallCount;
 COMP_EXPORT uint64_t functionTotalCount;
 COMP_EXPORT void (***calls)(ModBlockPass*);
 COMP_EXPORT ModBlockData** functionData;
+COMP_EXPORT ModBlock*** modBlocks;
 COMP_EXPORT bool debugBuild;
 
 int main()
@@ -23,6 +24,7 @@ int main()
 	cpSetFunctionTotalCount(functionTotalCount);
 	cpSetCalls(calls);
 	cpSetData(functionData);
+	cpSetBlocks(modBlocks);
 	cpSetDebugBuild(debugBuild);
 
 	cpRun();
