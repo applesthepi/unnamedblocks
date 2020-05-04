@@ -390,7 +390,15 @@ public:
 
 	std::string* GetDataRaw() override
 	{
-		return &m_Text;
+		if (m_variableMode)
+		{
+			return &m_Text;
+		}
+		else
+		{
+			m_VText = m_value ? "1" : "0";
+			return &m_VText;
+		}
 	}
 
 	BlockArgumentVariableMode* GetMode() override

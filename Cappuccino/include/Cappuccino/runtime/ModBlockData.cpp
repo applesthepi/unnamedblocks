@@ -63,15 +63,20 @@ const std::vector<ModBlockDataInterpretation>& ModBlockData::GetInterpretations(
 	return m_interpretations;
 }
 
-void ModBlockData::HaulData(const std::vector<int64_t>& data)
+void ModBlockData::HaulData(const std::vector<int64_t>& data, double* vReal, bool* vBool, std::string* vString)
 {
 	for (uint64_t i = 0; i < m_data.size(); i++)
 	{
 		if (data[i] != -1)
 		{
-			free(m_data[i]);
-			m_data[i] = (void*)malloc(sizeof(uint64_t));
-			*((uint64_t*)m_data[i]) = data[i];
+			delete m_data[i];
+
+			if (m_interpretations[i] == ModBlockDataInterpretation::REAL)
+				m_data[i] = &(vReal[data[i]]);
+			else if (m_interpretations[i] == ModBlockDataInterpretation::BOOL)
+				m_data[i] = &(vBool[data[i]]);
+			else if (m_interpretations[i] == ModBlockDataInterpretation::STRING)
+				m_data[i] = &(vString[data[i]]);
 		}
 	}
 }

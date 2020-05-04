@@ -163,7 +163,14 @@ void Registration::RunUtilityTick()
 	{
 		const std::vector<std::string>& messages = m_passes[i]->PullMessages();
 
-		for (uint64_t a = 0; a < messages.size(); a++)
+		uint64_t amount = messages.size();
+		if (amount > 20)
+		{
+			amount = 20;
+			printf("restricting to 20 messages per tick...\n");
+		}
+
+		for (uint64_t a = 0; a < amount; a++)
 			printf("%s\n", (messages[a]).c_str());
 
 		m_passes[i]->ReturnMessages();
@@ -393,9 +400,9 @@ bool Registration::LocalPre(PreProcessorData& data)
 				singleBlocks.push_back(m_blocks[i][a]);
 		}
 
-		for (uint64_t i = 0; i < singleBlocks.size(); i++)
+		for (uint64_t a = 0; a < singleBlocks.size(); a++)
 		{
-			if (!singleBlocks[i]->GetRuntimeLocalPreInit()(data))
+			if (!singleBlocks[a]->GetRuntimeLocalPreInit()(data))
 			{
 				Logger::Error("failed on localPreInit");
 				return false;
@@ -429,9 +436,9 @@ bool Registration::LocalPost(PreProcessorData& data)
 				singleBlocks.push_back(m_blocks[i][a]);
 		}
 
-		for (uint64_t i = 0; i < singleBlocks.size(); i++)
+		for (uint64_t a = 0; a < singleBlocks.size(); a++)
 		{
-			if (!singleBlocks[i]->GetRuntimeLocalPostInit()(data))
+			if (!singleBlocks[a]->GetRuntimeLocalPostInit()(data))
 			{
 				Logger::Error("failed on localPostInit");
 				return false;
@@ -483,29 +490,34 @@ void Registration::CompileDataDebug()
 		return true;
 	};
 
+	std::vector<std::vector<std::vector<int64_t>*>*> hauledVariablesPlane;
+
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
+		std::vector<std::vector<int64_t>*>* hauledVariablesStack = new std::vector<std::vector<int64_t>*>();
+
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
 		{
 			const std::vector<void*>& data = m_data[i][a].GetData();
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			std::vector<int64_t> hauledVariables;
+			std::vector<int64_t>* hauledVariablesBlock = new std::vector<int64_t>();
 
 			for (uint64_t b = 0; b < data.size(); b++)
 			{
 				if (types[b] == ModBlockDataType::VAR)
 				{
 					addToRegistry(*(std::string*)data[b]);
-					hauledVariables.push_back(variableIdx);
+					hauledVariablesBlock->push_back(variableIdx);
 				}
 				else
-					hauledVariables.push_back(-1);
+					hauledVariablesBlock->push_back(-1);
 			}
 
-			m_data[i][a].HaulData(hauledVariables);
+			hauledVariablesStack->push_back(hauledVariablesBlock);
 		}
+		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
 	m_variablesReal = new double[m_variableRegistry.size()];
@@ -514,6 +526,10 @@ void Registration::CompileDataDebug()
 
 	std::fill(m_variablesReal, m_variablesReal + m_variableRegistry.size(), 0.0);
 	std::fill(m_variablesBool, m_variablesBool + m_variableRegistry.size(), false);
+
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+			m_data[i][a].HaulData(*hauledVariablesPlane[i]->at(a), m_variablesReal, m_variablesBool, m_variablesString);
 }
 
 void Registration::CompileDataRelease()
@@ -574,15 +590,19 @@ void Registration::CompileDataRelease()
 		return true;
 	};
 
+	std::vector<std::vector<std::vector<int64_t>*>*> hauledVariablesPlane;
+
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
+		std::vector<std::vector<int64_t>*>* hauledVariablesStack = new std::vector<std::vector<int64_t>*>();
+
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
 		{
 			const std::vector<void*>& data = m_data[i][a].GetData();
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			std::vector<int64_t> hauledVariables;
+			std::vector<int64_t>* hauledVariablesBlock = new std::vector<int64_t>();
 
 			for (uint64_t b = 0; b < data.size(); b++)
 			{
@@ -595,19 +615,25 @@ void Registration::CompileDataRelease()
 					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
 						addToRegistryString(*(std::string*)data[b]);
 
-					hauledVariables.push_back(variableIdx);
+					hauledVariablesBlock->push_back(variableIdx);
 				}
 				else
-					hauledVariables.push_back(-1);
+					hauledVariablesBlock->push_back(-1);
 			}
 
-			m_data[i][a].HaulData(hauledVariables);
+			hauledVariablesStack->push_back(hauledVariablesBlock);
 		}
+
+		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
 	m_variablesReal = new double[variableRegistryReal.size()];
 	m_variablesBool = new bool[variableRegistryBool.size()];
 	m_variablesString = new std::string[variableRegistryString.size()];
+
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+			m_data[i][a].HaulData(*hauledVariablesPlane[i]->at(a), m_variablesReal, m_variablesBool, m_variablesString);
 }
 
 void Registration::RunContext()

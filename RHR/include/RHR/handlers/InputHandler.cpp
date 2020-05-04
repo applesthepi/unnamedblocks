@@ -51,7 +51,7 @@ void InputHandler::UnregisterTextCallback(std::function<void(const sf::Event::Te
 
 void InputHandler::UnregisterKeyCallback(std::function<void(const sf::Event::KeyEvent&)>* fun)
 {
-	for (uint64_t i = 0; i < text_callbacks->size(); i++)
+	for (uint64_t i = 0; i < key_callbacks->size(); i++)
 	{
 		if ((*key_callbacks)[i] == fun)
 		{

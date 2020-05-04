@@ -5,7 +5,10 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetCallstackBlock().back() = pass->GetVariableReal(*pass->GetReal(1));
+	//bool* con = pass->GetBool(2);
+
+	//if (*con)
+		pass->GetCallstackBlock().back() = *(double*)pass->GetReal(1);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -33,7 +36,7 @@ static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 	if (idx == -1)
 		return false;
 
-	preData.GetReal(*(uint64_t*)blockData.GetCData()[1]) = (double)idx;
+	*(double*)blockData.GetCData()[1] = idx;
 
 	return true;
 }
@@ -96,6 +99,7 @@ const std::vector<BlockArgumentInitializer> BlockYesTo::GetArguments() const
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "goto"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "yes"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "yes_loc"));
+	//args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "condition"));
 
 	return args;
 }

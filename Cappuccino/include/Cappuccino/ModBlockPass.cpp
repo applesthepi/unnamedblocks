@@ -223,7 +223,7 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 	m_messages[index] += message;
 }
 
-CAP_DLL uint64_t* ModBlockPass::GetReal(const uint64_t& idx)
+CAP_DLL double* ModBlockPass::GetReal(const uint64_t& idx)
 {
 	return (this->*(m_getReal))(idx);
 }
@@ -255,32 +255,28 @@ CAP_DLL void ModBlockPass::SetDataSize(const uint64_t& size)
 	m_dataSize = size;
 }
 
-uint64_t* ModBlockPass::GetRealDebug(const uint64_t& idx)
+double* ModBlockPass::GetRealDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data! attempted to get real from index \"" + std::to_string(idx) + "\"");
-	else if (m_dataSize == 0)
-		LogWarning("pulling empty data! attempted to get real from index \"" + std::to_string(idx) + "\"");
 	else if (idx >= m_dataSize)
 	{
 		LogError("attempted to get real from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
 		return nullptr;
 	}
 
-	return (uint64_t*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
+	return (double*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
-uint64_t* ModBlockPass::GetRealRelease(const uint64_t& idx)
+double* ModBlockPass::GetRealRelease(const uint64_t& idx)
 {
-	return (uint64_t*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
+	return (double*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
 
 bool* ModBlockPass::GetBoolDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data! attempted to get bool from index \"" + std::to_string(idx) + "\"");
-	else if (m_dataSize == 0)
-		LogWarning("pulling empty data! attempted to get bool from index \"" + std::to_string(idx) + "\"");
 	else if (idx >= m_dataSize)
 	{
 		LogError("attempted to get bool from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
@@ -299,8 +295,6 @@ std::string* ModBlockPass::GetStringDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data! attempted to get string from index \"" + std::to_string(idx) + "\"");
-	else if (m_dataSize == 0)
-		LogWarning("pulling empty data! attempted to get string from index \"" + std::to_string(idx) + "\"");
 	else if (idx >= m_dataSize)
 	{
 		LogError("attempted to get string from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);

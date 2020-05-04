@@ -13,7 +13,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 	window->clear(sf::Color(30, 30, 40));
 	window->display();
 
-	pass->GetVariableReal(0) = pass->CustomPut(window);
+	*pass->GetReal(0) = pass->CustomPut(window);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

@@ -34,7 +34,7 @@ public:
 	MODBLOCK_EXPORT const std::vector<ModBlockDataType>& GetTypes();
 	MODBLOCK_EXPORT const std::vector<ModBlockDataInterpretation>& GetInterpretations();
 
-	MODBLOCK_EXPORT void HaulData(const std::vector<int64_t>& data);
+	MODBLOCK_EXPORT void HaulData(const std::vector<int64_t>& data, double* vReal, bool* vBool, std::string* vString);
 	MODBLOCK_EXPORT void SetTypes(const std::vector<ModBlockDataType>& types);
 	MODBLOCK_EXPORT void SetInterpretations(const std::vector<ModBlockDataInterpretation>& interpretations);
 	MODBLOCK_EXPORT ModBlockData& operator=(ModBlockData& data);
