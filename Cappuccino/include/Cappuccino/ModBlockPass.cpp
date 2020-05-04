@@ -117,14 +117,14 @@ CAP_DLL void ModBlockPass::LogDebug(const std::string& message)
 	// Should be enough
 	char prefix[100];
 
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
 	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [DEBUG] ",
 		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
 		((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
 		((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
-
-	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;
@@ -141,14 +141,14 @@ void ModBlockPass::LogInfo(const std::string& message)
 	// Should be enough
 	char prefix[100];
 
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
 	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [INFO] ",
 		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
 		((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
 		((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
-
-	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;
@@ -165,14 +165,14 @@ CAP_DLL void ModBlockPass::LogWarning(const std::string& message)
 	// Should be enough
 	char prefix[100];
 
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
+
 	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [WARN] ",
 		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
 		((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
 		((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
-
-	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;
@@ -188,6 +188,8 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 	
 	// Should be enough
 	char prefix[100];
+
+	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	if (fatality == LoggerFatality::OK)
 		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-OK] ",
@@ -212,8 +214,6 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 			((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 	
 	// TODO abort
-
-	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	m_messages.emplace_back();
 	size_t index = m_messages.size() - 1;

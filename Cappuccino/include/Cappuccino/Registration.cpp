@@ -10,7 +10,7 @@ static void ThreadUtil()
 {
 	while (!Registration::GetUtilFinished())
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 		Registration::RunUtilityTick();
 	}
 
@@ -164,10 +164,10 @@ void Registration::RunUtilityTick()
 		const std::vector<std::string>& messages = m_passes[i]->PullMessages();
 
 		uint64_t amount = messages.size();
-		if (amount > 20)
+		if (amount > 256)
 		{
-			amount = 20;
-			printf("restricting to 20 messages per tick...\n");
+			amount = 256;
+			printf("restricting to 256 messages per tick...\n");
 		}
 
 		for (uint64_t a = 0; a < amount; a++)
