@@ -25,10 +25,21 @@ enum class PreProcessorStatus
 	DONE_ERROR
 };
 
+/*
+
+super
+
+0 - nop
+1 - stop all
+2 - pause all
+
+*/
+
 class PreProcessor
 {
 public:
 	static void Initialize();
+
 	// building
 	static void Cleanup();
 
@@ -40,9 +51,16 @@ public:
 	static void SetFinished(const bool& finished);
 	static Plane* GetPlaneCopy();
 	static BlockRegistry* GetRegistry();
+	static void SetSuper(const uint8_t& super);
+	static const uint8_t GetSuper();
+
+	static uint8_t* MakeSuper();
+	static std::mutex* GetMadeMutex();
 private:
 	static std::thread m_thread;
 	static std::atomic<bool> m_finished;
 	static Plane* m_planeCopy;
 	static BlockRegistry* m_registry;
+	static uint8_t* m_super;
+	static std::mutex* m_superMutex;
 };

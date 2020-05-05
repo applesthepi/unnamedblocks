@@ -55,6 +55,9 @@ CAP_EXPORT void cpSetBlocks(ModBlock*** blocks);
 // set the build type
 CAP_EXPORT void cpSetDebugBuild(bool debugBuild);
 
+// set the super instruction; used for debugging instructions from UB exe
+CAP_EXPORT void cpSetSuper(uint8_t* super, void* superMutex);
+
 // run
 CAP_EXPORT void cpRun();
 

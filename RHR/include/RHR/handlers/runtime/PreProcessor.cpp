@@ -5,6 +5,7 @@
 #include <fstream>
 #include <libtcc.h>
 #include <Cappuccino/runtime/ModBlockData.h>
+#include <shared_mutex>
 
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)
@@ -212,6 +213,9 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 
 	uint64_t functionTotalCount = stacks->size();
 
+	uint8_t* super = PreProcessor::MakeSuper();
+	std::mutex* superMutex = PreProcessor::GetMadeMutex();
+
 #ifdef LINUX
 	tcc_define_symbol(state, "LINUX", "1");
 #endif
@@ -229,6 +233,8 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 	[[maybe_unused]] int r900 = tcc_add_symbol(state, "functionData", &functionData);
 	[[maybe_unused]] int r9002 = tcc_add_symbol(state, "modBlocks", &modBlocks);
 	[[maybe_unused]] int r9001 = tcc_add_symbol(state, "functionTotalCount", &functionTotalCount);
+	[[maybe_unused]] int r9003 = tcc_add_symbol(state, "superInstruction", &super);
+	[[maybe_unused]] int r9004 = tcc_add_symbol(state, "superMutex", (void**)&superMutex);
 
 	// libs
 
@@ -279,6 +285,8 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 void PreProcessor::Initialize()
 {
 	m_planeCopy = nullptr;
+	m_super = nullptr;
+	m_finished = true;
 }
 
 void PreProcessor::Cleanup()
@@ -320,6 +328,39 @@ BlockRegistry* PreProcessor::GetRegistry()
 	return m_registry;
 }
 
+void PreProcessor::SetSuper(const uint8_t& super)
+{
+	std::unique_lock<std::mutex> lock(*m_superMutex);
+	*m_super = super;
+}
+
+const uint8_t PreProcessor::GetSuper()
+{
+	std::unique_lock<std::mutex> lock(*m_superMutex);
+	return *m_super;
+}
+
+uint8_t* PreProcessor::MakeSuper()
+{
+	if (m_super != nullptr)
+	{
+		delete m_super;
+		delete m_superMutex;
+	}
+
+	m_super = new uint8_t;
+	*m_super = 0;
+
+	m_superMutex = new std::mutex();
+
+	return m_super;
+}
+
+std::mutex* PreProcessor::GetMadeMutex()
+{
+	return m_superMutex;
+}
+
 std::thread PreProcessor::m_thread;
 
 std::atomic<bool> PreProcessor::m_finished;
@@ -327,3 +368,7 @@ std::atomic<bool> PreProcessor::m_finished;
 Plane* PreProcessor::m_planeCopy;
 
 BlockRegistry* PreProcessor::m_registry;
+
+uint8_t* PreProcessor::m_super;
+
+std::mutex* PreProcessor::m_superMutex;

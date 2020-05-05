@@ -7,6 +7,8 @@
 
 void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPlane)
 {
+	m_running = false;
+
 	m_selectedCategory = 0;
 	m_toolbarStackCount = 0;
 
@@ -76,7 +78,7 @@ void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPla
 
 void CategoryHandler::Render(sf::RenderWindow* window, Plane* toolbarPlane)
 {
-	m_backgroundOptions.setSize(sf::Vector2f(window->getSize().x, 16));
+	m_backgroundOptions.setSize(sf::Vector2f(window->getSize().x, HEADER_HEIGHT));
 	toolbarPlane->SetSize(sf::Vector2u(Global::ToolbarWidth, window->getSize().y - (toolbarPlane->GetPosition().y + 5)));
 
 	window->draw(m_backgroundOptions);
@@ -93,6 +95,31 @@ void CategoryHandler::FrameUpdate(BlockRegistry* blockRegistry, Plane* toolbarPl
 {
 	if (toolbarPlane->GetStackCount() != m_toolbarStackCount)
 		UpdateBlocks(blockRegistry, toolbarPlane, m_selectedCategory);
+
+	if (PreProcessor::IsFinished() && m_running)
+	{
+		// finish
+		
+		m_running = false;
+
+		ButtonRegistry::RemoveButton(m_buttonStop);
+		ButtonRegistry::RemoveButton(m_buttonPause);
+
+		ButtonRegistry::AddButton(m_buttonRunRelease);
+		ButtonRegistry::AddButton(m_buttonRunDebug);
+	}
+	else if (!PreProcessor::IsFinished() && !m_running)
+	{
+		// start
+
+		m_running = true;
+
+		ButtonRegistry::AddButton(m_buttonStop);
+		ButtonRegistry::AddButton(m_buttonPause);
+
+		ButtonRegistry::RemoveButton(m_buttonRunRelease);
+		ButtonRegistry::RemoveButton(m_buttonRunDebug);
+	}
 }
 
 void CategoryHandler::ToggleMod(const uint16_t& modIdx, BlockRegistry* blockRegistry, Plane* toolbarPlane, const uint64_t& catIdx)
@@ -182,6 +209,13 @@ void CategoryHandler::UpdateBlocks(BlockRegistry* blockRegistry, Plane* toolbarP
 
 void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primaryPlane)
 {
+	// ================================================================================================================================================
+	// ================================================================================================================================================
+	// Primary Tools
+	// ================================================================================================================================================
+	// ================================================================================================================================================
+
+
 	{
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane]()
@@ -196,7 +230,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			}
 		};
 
-		Button* button = new Button(sf::Vector2i(105 * 0, 0), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(70 * 0, 0), sf::Vector2u(70, 16), function);
 		button->SetButtonModeText("new", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
 
 		ButtonRegistry::AddButton(button);
@@ -222,7 +256,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			delete result;
 		};
 
-		Button* button = new Button(sf::Vector2i(105 * 1, 0), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(70 * 1, 0), sf::Vector2u(70, 16), function);
 		button->SetButtonModeText("open", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
 
 		ButtonRegistry::AddButton(button);
@@ -256,7 +290,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			}
 		};
 
-		Button* button = new Button(sf::Vector2i(105 * 2, 0), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(70 * 2, 0), sf::Vector2u(70, 16), function);
 		button->SetButtonModeText("save", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
 
 		ButtonRegistry::AddButton(button);
@@ -282,40 +316,28 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			delete result;
 		};
 
-		Button* button = new Button(sf::Vector2i(105 * 3, 0), sf::Vector2u(100, 16), function);
+		Button* button = new Button(sf::Vector2i(70 * 3, 0), sf::Vector2u(70, 16), function);
 		button->SetButtonModeText("saveas", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
 
 		ButtonRegistry::AddButton(button);
 	}
+
+
+	// ================================================================================================================================================
+	// ================================================================================================================================================
+	// Debugging Tools
+	// ================================================================================================================================================
+	// ================================================================================================================================================
+
+
 	{
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane, blockRegistry]()
 		{
 			if (ProjectHandler::CurrentPath == "")
-				Logger::Info("running unsaved project");
+				Logger::Warn("running unsaved project");
 			else
-				Logger::Info("running \"" + ProjectHandler::CurrentPath + "\"");
-
-			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
-			planeCopy->CopyEverything(primaryPlane, blockRegistry);
-
-			PreProcessor::Cleanup();
-			PreProcessor::Start(planeCopy, blockRegistry, true);
-		};
-
-		Button* button = new Button(sf::Vector2i(105 * 4, 0), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("debug", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
-
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane, blockRegistry]()
-		{
-			if (ProjectHandler::CurrentPath == "")
-				Logger::Info("running unsaved project");
-			else
-				Logger::Info("running \"" + ProjectHandler::CurrentPath + "\"");
+				Logger::Debug("running \"" + ProjectHandler::CurrentPath + "\"");
 
 			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
 			planeCopy->CopyEverything(primaryPlane, blockRegistry);
@@ -324,10 +346,58 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			PreProcessor::Start(planeCopy, blockRegistry, false);
 		};
 
-		Button* button = new Button(sf::Vector2i(105 * 5, 0), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("release", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
+		Button* button = new Button(sf::Vector2i((16 + 5) * 0 + 5, 16 + 6), sf::Vector2u(16, 16), function);
+		button->SetButtonModeImage("res/deb_run_release.png");
 
 		ButtonRegistry::AddButton(button);
+		m_buttonRunRelease = button;
+	}
+	{
+		std::function<void()>* function = new std::function<void()>();
+		*function = [primaryPlane, blockRegistry]()
+		{
+			if (ProjectHandler::CurrentPath == "")
+				Logger::Warn("running unsaved project");
+			else
+				Logger::Debug("running \"" + ProjectHandler::CurrentPath + "\"");
+
+			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
+			planeCopy->CopyEverything(primaryPlane, blockRegistry);
+
+			PreProcessor::Cleanup();
+			PreProcessor::Start(planeCopy, blockRegistry, true);
+		};
+
+		Button* button = new Button(sf::Vector2i((16 + 5) * 1 + 5, 16 + 6), sf::Vector2u(16, 16), function);
+		button->SetButtonModeImage("res/deb_run_debug.png");
+
+		ButtonRegistry::AddButton(button);
+		m_buttonRunDebug = button;
+	}
+	{
+		std::function<void()>* function = new std::function<void()>();
+		*function = [primaryPlane, blockRegistry]()
+		{
+			Logger::Debug("stopping all");
+			PreProcessor::SetSuper(1);
+		};
+
+		Button* button = new Button(sf::Vector2i((16 + 5) * 0 + 5, 16 + 6), sf::Vector2u(16, 16), function);
+		button->SetButtonModeImage("res/deb_stop.png");
+
+		m_buttonStop = button;
+	}
+	{
+		std::function<void()>* function = new std::function<void()>();
+		*function = [primaryPlane, blockRegistry]()
+		{
+			Logger::Debug("pausing all - does not work yet");
+		};
+
+		Button* button = new Button(sf::Vector2i((16 + 5) * 1 + 5, 16 + 6), sf::Vector2u(16, 16), function);
+		button->SetButtonModeImage("res/deb_pause.png");
+
+		m_buttonPause = button;
 	}
 }
 
@@ -354,4 +424,14 @@ sf::RectangleShape CategoryHandler::m_backgroundOptions;
 uint64_t CategoryHandler::m_toolbarStackCount;
 
 uint64_t CategoryHandler::m_selectedCategory;
+
+bool CategoryHandler::m_running;
+
+Button* CategoryHandler::m_buttonRunRelease;
+
+Button* CategoryHandler::m_buttonRunDebug;
+
+Button* CategoryHandler::m_buttonStop;
+
+Button* CategoryHandler::m_buttonPause;
 

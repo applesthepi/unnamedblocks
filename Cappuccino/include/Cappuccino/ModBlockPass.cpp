@@ -53,6 +53,16 @@ CAP_DLL void ModBlockPass::SetCallstackBlock(std::vector<uint64_t>* callstack)
 	m_callstackBlockIdx = callstack;
 }
 
+CAP_DLL void ModBlockPass::SetSuccessful(bool* successful)
+{
+	m_successful = successful;
+}
+
+CAP_DLL void ModBlockPass::SetFinished(std::atomic<bool>* finished)
+{
+	m_finished = finished;
+}
+
 CAP_DLL double& ModBlockPass::GetVariableReal(const uint64_t& idx)
 {
 	return (this->*(m_getVaraibleReal))(idx);
@@ -70,7 +80,11 @@ CAP_DLL std::string& ModBlockPass::GetVariableString(const uint64_t& idx)
 
 CAP_DLL void ModBlockPass::Stop()
 {
+	//*m_successful = true;
 	m_stop();
+
+	while (!*m_finished)
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackStack()
@@ -250,20 +264,10 @@ CAP_DLL void ModBlockPass::ReturnMessages()
 	m_messagesMutex.unlock();
 }
 
-CAP_DLL void ModBlockPass::SetDataSize(const uint64_t& size)
-{
-	m_dataSize = size;
-}
-
 double* ModBlockPass::GetRealDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data! attempted to get real from index \"" + std::to_string(idx) + "\"");
-	else if (idx >= m_dataSize)
-	{
-		LogError("attempted to get real from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
-		return nullptr;
-	}
 
 	return (double*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
@@ -277,11 +281,6 @@ bool* ModBlockPass::GetBoolDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data! attempted to get bool from index \"" + std::to_string(idx) + "\"");
-	else if (idx >= m_dataSize)
-	{
-		LogError("attempted to get bool from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
-		return nullptr;
-	}
 
 	return (bool*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }
@@ -295,11 +294,6 @@ std::string* ModBlockPass::GetStringDebug(const uint64_t& idx)
 {
 	if (m_data == nullptr)
 		LogWarning("pulling invalid data! attempted to get string from index \"" + std::to_string(idx) + "\"");
-	else if (idx >= m_dataSize)
-	{
-		LogError("attempted to get string from index \"" + std::to_string(idx) + "\"; index out of range", LoggerFatality::ABORT);
-		return nullptr;
-	}
 
 	return (std::string*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
 }

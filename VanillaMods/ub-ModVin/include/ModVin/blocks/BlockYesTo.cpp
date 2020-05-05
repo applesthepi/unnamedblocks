@@ -5,9 +5,9 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	//bool* con = pass->GetBool(2);
+	bool* con = pass->GetBool(2);
 
-	//if (*con)
+	if (*con)
 		pass->GetCallstackBlock().back() = *(double*)pass->GetReal(1);
 }
 
@@ -99,7 +99,7 @@ const std::vector<BlockArgumentInitializer> BlockYesTo::GetArguments() const
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "goto"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "yes"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "yes_loc"));
-	//args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "condition"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "condition"));
 
 	return args;
 }

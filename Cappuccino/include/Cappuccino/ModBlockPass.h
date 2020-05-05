@@ -9,6 +9,7 @@
 #include <SFML/Graphics/RenderWindow.h>
 #include <SFML/System/Mutex.h>
 #include <chrono>
+#include <atomic>
 
 #ifndef LINUX
 	#ifdef __CAP
@@ -72,9 +73,8 @@ public:
 	CAP_DLL void SetData(ModBlockData** data);
 	CAP_DLL void SetCallstackStack(std::vector<uint64_t>* callstack);
 	CAP_DLL void SetCallstackBlock(std::vector<uint64_t>* callstack);
-
-	// debug only
-	CAP_DLL void SetDataSize(const uint64_t& size);
+	CAP_DLL void SetSuccessful(bool* successful);
+	CAP_DLL void SetFinished(std::atomic<bool>* finished);
 
 	// ====================================================
 	// user calls
@@ -143,8 +143,6 @@ private:
 	std::chrono::steady_clock::time_point* m_beginTime;
 
 	// debug only
-	uint64_t m_dataSize;
-	// debug only
 	std::vector<std::string>* m_variableRegistry;
 
 	// user data
@@ -159,4 +157,7 @@ private:
 
 	std::vector<uint64_t>* m_callstackStackIdx;
 	std::vector<uint64_t>* m_callstackBlockIdx;
+
+	bool* m_successful;
+	std::atomic<bool>* m_finished;
 };

@@ -21,7 +21,7 @@ public:
 	static void UnRegisterPass(ModBlockPass* pass);
 
 	static void RegisterExecutionThread(ExecutionThread* thr);
-	static void UnRegisterExecutionThread(ExecutionThread* thr);
+	static void UnRegisterExecutionThread(ExecutionThread* thr, bool join);
 
 	static void SetFunctionMain(uint64_t main);
 	static void SetFunctionCallCount(uint64_t* functionCallCount);
@@ -30,6 +30,7 @@ public:
 	static void SetData(ModBlockData** data);
 	static void SetBlocks(ModBlock*** blocks);
 	static void SetDebug(bool debugBuild);
+	static void SetSuper(uint8_t* super, void* superMutex);
 
 	static void EndAll(ModBlockPass* whitelist = nullptr);
 	static void Stop();
@@ -49,6 +50,9 @@ private:
 	static bool LocalPost(PreProcessorData& data);
 	static bool Init(PreProcessorData& preData, ModBlockData** blockData);
 
+	static bool TestSuperBase();
+	static bool TestSuperDebug();
+
 	static void CompileDataDebug();
 	static void CompileDataRelease();
 	static void RunContext();
@@ -60,6 +64,7 @@ private:
 	static std::mutex m_executionMutex;
 	static std::vector<ExecutionThread*> m_execution;
 	static std::vector<bool> m_executionFlagged;
+	static std::vector<bool> m_executionJoin;
 
 	static uint64_t m_functionMain;
 	static uint64_t* m_functionCallCount;
@@ -81,6 +86,8 @@ private:
 	static std::atomic<bool> m_stop;
 	static std::thread m_utilThread;
 	static bool m_debugBuild;
+	static uint8_t* m_super;
+	static std::mutex* m_superMutex;
 	static std::chrono::steady_clock::time_point m_timeBegin;
 
 	static std::vector<std::string> m_variableRegistry; // debug only

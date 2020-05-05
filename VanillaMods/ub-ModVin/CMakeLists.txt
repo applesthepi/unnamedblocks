@@ -17,6 +17,8 @@ set(ModVin_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYes.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYesTo.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYesTo.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockBool.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockBool.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"

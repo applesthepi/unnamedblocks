@@ -26,11 +26,13 @@ void Registration::Initialize()
 	m_allDone = false;
 	m_stop = false;
 	m_debugBuild = true;
+	m_super = nullptr;
 
 	m_passes.clear();
 	m_passesFlagged.clear();
 	m_execution.clear();
 	m_executionFlagged.clear();
+	m_executionJoin.clear();
 
 	m_customRegister.clear();
 	m_variableRegistry.clear();
@@ -66,9 +68,10 @@ void Registration::RegisterExecutionThread(ExecutionThread* thr)
 
 	m_execution.push_back(thr);
 	m_executionFlagged.push_back(false);
+	m_executionJoin.push_back(false);
 }
 
-void Registration::UnRegisterExecutionThread(ExecutionThread* thr)
+void Registration::UnRegisterExecutionThread(ExecutionThread* thr, bool join)
 {
 	std::unique_lock<std::mutex> lock(m_executionMutex);
 
@@ -77,6 +80,7 @@ void Registration::UnRegisterExecutionThread(ExecutionThread* thr)
 		if (m_execution[i] == thr)
 		{
 			m_executionFlagged[i] = true;
+			m_executionJoin[i] = join;
 			return;
 		}
 	}
@@ -115,6 +119,12 @@ void Registration::SetBlocks(ModBlock*** blocks)
 void Registration::SetDebug(bool debugBuild)
 {
 	m_debugBuild = debugBuild;
+}
+
+void Registration::SetSuper(uint8_t* super, void* superMutex)
+{
+	m_super = super;
+	m_superMutex = (std::mutex*)superMutex;
 }
 
 void Registration::EndAll(ModBlockPass* whitelist)
@@ -199,10 +209,13 @@ void Registration::RunUtilityTick()
 		{
 			ExecutionThread* exe = m_execution[i];
 
+			if (m_executionJoin[i])
+				exe->End();
+
 			m_execution.erase(m_execution.begin() + i);
 			m_executionFlagged.erase(m_executionFlagged.begin() + i);
-
-			exe->End();
+			m_executionJoin.erase(m_executionJoin.begin() + i);
+			
 			delete exe;
 		}
 	}
@@ -469,6 +482,27 @@ bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
 	return true;
 }
 
+bool Registration::TestSuperBase()
+{
+	std::unique_lock<std::mutex> lock(*m_superMutex);
+
+	if (*m_super == 1)
+	{
+		*m_super = 0;
+		
+		printf("stopping execution...\n");
+		EndAll();
+		return true;
+	}
+
+	return false;
+}
+
+bool Registration::TestSuperDebug()
+{
+	return false;
+}
+
 void Registration::CompileDataDebug()
 {
 	uint64_t variableIdx = 0;
@@ -638,8 +672,36 @@ void Registration::CompileDataRelease()
 
 void Registration::RunContext()
 {
-	while (!m_allDone)
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	if (m_debugBuild)
+	{
+		bool flaggedStop = false;
+
+		while (!m_allDone)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+			if (TestSuperBase() || TestSuperDebug())
+				flaggedStop = true;
+		}
+
+		if (flaggedStop)
+			printf("...stopped execution\n");
+	}
+	else
+	{
+		bool flaggedStop = false;
+
+		while (!m_allDone)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+			if (TestSuperBase())
+				flaggedStop = true;
+		}
+
+		if (flaggedStop)
+			printf("...stopped execution\n");
+	}
 }
 
 std::mutex Registration::m_passesMutex;
@@ -653,6 +715,8 @@ std::mutex Registration::m_executionMutex;
 std::vector<ExecutionThread*> Registration::m_execution;
 
 std::vector<bool> Registration::m_executionFlagged;
+
+std::vector<bool> Registration::m_executionJoin;
 
 uint64_t Registration::m_functionMain;
 
@@ -687,6 +751,10 @@ std::atomic<bool> Registration::m_stop;
 std::thread Registration::m_utilThread;
 
 bool Registration::m_debugBuild;
+
+uint8_t* Registration::m_super;
+
+std::mutex* Registration::m_superMutex;
 
 std::chrono::steady_clock::time_point Registration::m_timeBegin;
 

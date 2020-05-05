@@ -8,20 +8,17 @@ static void ExecuteRelease(ModBlockPass* pass)
 	sf::RenderWindow* window = (sf::RenderWindow*)pass->CustomGet(*pass->GetReal(0));
 	sf::Event ev;
 
-	while (true)
+	while (window->pollEvent(ev))
 	{
-		while (window->pollEvent(ev))
+		if (ev.type == sf::Event::Closed)
 		{
-			if (ev.type == sf::Event::Closed)
-			{
-				window->close();
-				pass->Stop();
-				return;
-			}
+			window->close();
+			pass->Stop();
+			return;
 		}
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

@@ -24,6 +24,8 @@ void ThreadExecution(ExecutionThread* thr)
 	pass->SetCallstackStack(&callstackStackIdx);
 	pass->SetCallstackBlock(&callstackBlockIdx);
 	pass->SetData(regData);
+	pass->SetSuccessful(&successful);
+	pass->SetFinished((std::atomic<bool>*)&finished);
 
 	while (!finished)
 	{
@@ -40,20 +42,15 @@ void ThreadExecution(ExecutionThread* thr)
 			}
 		}
 
-		//pass->SetData(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetCData());
-		//pass->SetDataSize(regData[callstackStackIdx.back()][callstackBlockIdx.back()].GetDataSize());
-
 		localCallStack[callstackBlockIdx.back()](pass);
 		callstackBlockIdx.back()++;
 	}
 
-	thr->SetFinished(true);
-
-	if (!successful)
-		thr->GetPass()->LogInfo("thread terminated successfully");
-
-	Registration::UnRegisterPass(thr->GetPass());
-	Registration::UnRegisterExecutionThread(thr);
+	if (successful)
+	{
+		Registration::UnRegisterPass(thr->GetPass());
+		Registration::UnRegisterExecutionThread(thr, successful);
+	}
 }
 
 ExecutionThread::ExecutionThread(const uint64_t& functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)

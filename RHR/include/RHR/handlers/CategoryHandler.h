@@ -36,4 +36,12 @@ private:
 	static sf::RectangleShape m_backgroundOptions;
 	static uint64_t m_toolbarStackCount;
 	static uint64_t m_selectedCategory;
+
+	static bool m_running;
+
+	static Button* m_buttonRunRelease;
+	static Button* m_buttonRunDebug;
+
+	static Button* m_buttonStop;
+	static Button* m_buttonPause;
 };

@@ -12,13 +12,9 @@ MODBLOCK_EXPORT ModBlockData::~ModBlockData()
 	{
 		for (uint64_t i = 0; i < m_data.size(); i++)
 		{
-			if (/*m_types[i] == ModBlockDataType::VAR*/false)
-				delete (std::string*)(m_data[i]);
-			else
+			if (m_types[i] == ModBlockDataType::RAW)
 			{
-				if (m_interpretations[i] == ModBlockDataInterpretation::TEXT)
-					delete (std::string*)(m_data[i]);
-				else if (m_interpretations[i] == ModBlockDataInterpretation::STRING)
+				if (m_interpretations[i] == ModBlockDataInterpretation::STRING)
 					delete (std::string*)(m_data[i]);
 				else if (m_interpretations[i] == ModBlockDataInterpretation::REAL)
 					delete (double*)(m_data[i]);

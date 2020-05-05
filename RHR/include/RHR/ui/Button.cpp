@@ -27,6 +27,7 @@ void Button::SetButtonModeColor(sf::Color color)
 		{
 			delete m_modeImageTexture;
 			delete m_modeImageSprite;
+			delete m_modeColor;
 		}
 	}
 
@@ -48,6 +49,7 @@ void Button::SetButtonModeText(std::string text, const sf::Color& background, co
 		{
 			delete m_modeImageTexture;
 			delete m_modeImageSprite;
+			delete m_modeColor;
 		}
 	}
 
@@ -77,6 +79,7 @@ void Button::SetButtonModeImage(std::string path)
 		{
 			delete m_modeText;
 			delete m_modeColor;
+			delete m_modeColor;
 		}
 	}
 
@@ -84,10 +87,13 @@ void Button::SetButtonModeImage(std::string path)
 	m_modeImageTexture = new sf::Texture();
 	m_modeImageSprite = new sf::Sprite();
 	
-	m_modeImageTexture->loadFromFile("res/" + path);
+	m_modeImageTexture->loadFromFile(path);
 
 	m_modeImageSprite->setTexture(*m_modeImageTexture);
 	m_modeImageSprite->setPosition(m_position.x, m_position.y);
+
+	m_modeColor = new sf::RectangleShape(sf::Vector2f(m_size.x, m_size.y));
+	m_modeColor->setPosition(m_position.x, m_position.y);
 }
 
 void Button::FrameUpdate(sf::RenderWindow* /*window*/)
@@ -115,7 +121,21 @@ void Button::FrameUpdate(sf::RenderWindow* /*window*/)
 	else if (m_mode == ButtonMode::Image)
 	{
 		m_modeImageSprite->setPosition((sf::Vector2f)m_position);
-		m_modeImageSprite->setScale((sf::Vector2f)m_size);
+
+		m_modeColor->setPosition((sf::Vector2f)m_position);
+		m_modeColor->setSize((sf::Vector2f)m_size);
+
+		if (Global::MousePosition.x > m_position.x && Global::MousePosition.x < m_position.x + static_cast<int32_t>(m_size.x) && Global::MousePosition.y > m_position.y && Global::MousePosition.y < m_position.y + static_cast<int32_t>(m_size.y))
+		{
+			m_modeColor->setFillColor(sf::Color(0, 0, 0, (1 - HOVOR_SHADE_LIGHT) * 255));
+			m_modeColor->setOutlineColor(sf::Color(0, 0, 0, (1 - HOVOR_SHADE_HARD) * 255));
+			m_modeColor->setOutlineThickness(1.0f);
+		}
+		else
+		{
+			m_modeColor->setFillColor(sf::Color(0, 0, 0, 0));
+			m_modeColor->setOutlineThickness(0.0f);
+		}
 	}
 	else if (m_mode == ButtonMode::Text)
 	{
@@ -149,6 +169,7 @@ void Button::Render(sf::RenderWindow* window)
 	}
 	else if (m_mode == ButtonMode::Image)
 	{
+		window->draw(*m_modeColor);
 		window->draw(*m_modeImageSprite);
 	}
 	else if (m_mode == ButtonMode::Text)

@@ -43,6 +43,11 @@ CAP_EXPORT void cpSetDebugBuild(bool debugBuild)
 	Registration::SetDebug(debugBuild);
 }
 
+CAP_EXPORT void cpSetSuper(uint8_t* super, void* superMutex)
+{
+	Registration::SetSuper(super, superMutex);
+}
+
 CAP_EXPORT void cpRun()
 {
 	Registration::Run();
