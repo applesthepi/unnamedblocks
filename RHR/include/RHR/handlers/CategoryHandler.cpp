@@ -8,6 +8,7 @@
 void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPlane)
 {
 	m_running = false;
+	m_fullBreak = false;
 
 	m_selectedCategory = 0;
 	m_toolbarStackCount = 0;
@@ -102,11 +103,11 @@ void CategoryHandler::FrameUpdate(BlockRegistry* blockRegistry, Plane* toolbarPl
 		
 		m_running = false;
 
-		ButtonRegistry::RemoveButton(m_buttonStop);
-		ButtonRegistry::RemoveButton(m_buttonPause);
+		for (uint16_t i = 0; i < m_runtimeButtons.size(); i++)
+			ButtonRegistry::RemoveButton(m_runtimeButtons[i]);
 
-		ButtonRegistry::AddButton(m_buttonRunRelease);
-		ButtonRegistry::AddButton(m_buttonRunDebug);
+		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
+			ButtonRegistry::AddButton(m_editorButtons[i]);
 	}
 	else if (!PreProcessor::IsFinished() && !m_running)
 	{
@@ -114,11 +115,11 @@ void CategoryHandler::FrameUpdate(BlockRegistry* blockRegistry, Plane* toolbarPl
 
 		m_running = true;
 
-		ButtonRegistry::AddButton(m_buttonStop);
-		ButtonRegistry::AddButton(m_buttonPause);
+		for (uint16_t i = 0; i < m_runtimeButtons.size(); i++)
+			ButtonRegistry::AddButton(m_runtimeButtons[i]);
 
-		ButtonRegistry::RemoveButton(m_buttonRunRelease);
-		ButtonRegistry::RemoveButton(m_buttonRunDebug);
+		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
+			ButtonRegistry::RemoveButton(m_editorButtons[i]);
 	}
 }
 
@@ -350,7 +351,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		button->SetButtonModeImage("res/deb_run_release.png");
 
 		ButtonRegistry::AddButton(button);
-		m_buttonRunRelease = button;
+		m_editorButtons.push_back(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
@@ -372,32 +373,49 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		button->SetButtonModeImage("res/deb_run_debug.png");
 
 		ButtonRegistry::AddButton(button);
-		m_buttonRunDebug = button;
+		m_editorButtons.push_back(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane, blockRegistry]()
 		{
 			Logger::Debug("stopping all");
-			PreProcessor::SetSuper(1);
+			PreProcessor::SetSuper(1, 0);
 		};
 
 		Button* button = new Button(sf::Vector2i((16 + 5) * 0 + 5, 16 + 6), sf::Vector2u(16, 16), function);
 		button->SetButtonModeImage("res/deb_stop.png");
 
-		m_buttonStop = button;
+		m_runtimeButtons.push_back(button);
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane, blockRegistry]()
 		{
-			Logger::Debug("pausing all - does not work yet");
+			if (!m_fullBreak)
+			{
+				m_fullBreak = true;
+
+				Logger::Debug("breaking all");
+				PreProcessor::SetSuper(2, 0);
+
+				m_runtimeButtons[1]->SetImage("res/deb_resume.png");
+			}
+			else
+			{
+				m_fullBreak = false;
+
+				Logger::Debug("resuming all");
+				PreProcessor::SetSuper(3, 0);
+
+				m_runtimeButtons[1]->SetImage("res/deb_pause.png");
+			}
 		};
 
 		Button* button = new Button(sf::Vector2i((16 + 5) * 1 + 5, 16 + 6), sf::Vector2u(16, 16), function);
 		button->SetButtonModeImage("res/deb_pause.png");
 
-		m_buttonPause = button;
+		m_runtimeButtons.push_back(button);
 	}
 }
 
@@ -427,11 +445,8 @@ uint64_t CategoryHandler::m_selectedCategory;
 
 bool CategoryHandler::m_running;
 
-Button* CategoryHandler::m_buttonRunRelease;
+bool CategoryHandler::m_fullBreak;
 
-Button* CategoryHandler::m_buttonRunDebug;
+std::vector<Button*> CategoryHandler::m_editorButtons;
 
-Button* CategoryHandler::m_buttonStop;
-
-Button* CategoryHandler::m_buttonPause;
-
+std::vector<Button*> CategoryHandler::m_runtimeButtons;

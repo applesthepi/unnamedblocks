@@ -30,7 +30,7 @@ public:
 	static void SetData(ModBlockData** data);
 	static void SetBlocks(ModBlock*** blocks);
 	static void SetDebug(bool debugBuild);
-	static void SetSuper(uint8_t* super, void* superMutex);
+	static void SetSuper(uint8_t* super, int64_t* superData, void* superMutex);
 
 	static void EndAll(ModBlockPass* whitelist = nullptr);
 	static void Stop();
@@ -49,6 +49,17 @@ private:
 	static bool LocalPre(PreProcessorData& data);
 	static bool LocalPost(PreProcessorData& data);
 	static bool Init(PreProcessorData& preData, ModBlockData** blockData);
+
+	/*
+		1 - [ R/D ] stop; kill all
+
+		2 - [ R/D ] break all
+		3 - [ R/D ] resume all
+
+		4 - [ __D ] break single thread (idx)
+		5 - [ __D ] step single thread
+		6 - [ __D ] resume single thread
+	*/
 
 	static bool TestSuperBase();
 	static bool TestSuperDebug();
@@ -87,8 +98,16 @@ private:
 	static std::thread m_utilThread;
 	static bool m_debugBuild;
 	static uint8_t* m_super;
+	static int64_t* m_superData;
 	static std::mutex* m_superMutex;
 	static std::chrono::steady_clock::time_point m_timeBegin;
+
+	static bool m_breakFull;
+	static bool m_breakSingle;
+	static int64_t m_breakSingleData;
+
+	static std::atomic<bool> m_breakFullResume;
+	static std::atomic<bool> m_breakSingleResume;
 
 	static std::vector<std::string> m_variableRegistry; // debug only
 };

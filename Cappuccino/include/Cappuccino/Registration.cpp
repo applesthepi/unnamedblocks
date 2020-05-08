@@ -6,11 +6,24 @@
 #include <cassert>
 #include <functional>
 
-static void ThreadUtil()
+static void ThreadUtilRelease()
 {
 	while (!Registration::GetUtilFinished())
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		Registration::RunUtilityTick();
+	}
+
+	// for sync
+	Registration::RunUtilityTick();
+	Registration::SetUtilReturnFinished(true);
+}
+
+static void ThreadUtilDebug()
+{
+	while (!Registration::GetUtilFinished())
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		Registration::RunUtilityTick();
 	}
 
@@ -27,6 +40,13 @@ void Registration::Initialize()
 	m_stop = false;
 	m_debugBuild = true;
 	m_super = nullptr;
+
+	m_breakFull = false;
+	m_breakSingle = false;
+	m_breakSingleData = 0;
+
+	m_breakFullResume = false;
+	m_breakSingleResume = false;
 
 	m_passes.clear();
 	m_passesFlagged.clear();
@@ -121,14 +141,17 @@ void Registration::SetDebug(bool debugBuild)
 	m_debugBuild = debugBuild;
 }
 
-void Registration::SetSuper(uint8_t* super, void* superMutex)
+void Registration::SetSuper(uint8_t* super, int64_t* superData, void* superMutex)
 {
 	m_super = super;
+	m_superData = superData;
 	m_superMutex = (std::mutex*)superMutex;
 }
 
 void Registration::EndAll(ModBlockPass* whitelist)
 {
+	// dont lock execution mutex because it is already locked
+
 	if (whitelist == nullptr)
 	{
 		for (uint64_t i = 0; i < m_execution.size(); i++)
@@ -279,7 +302,11 @@ void Registration::Run()
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
 	RegisterExecutionThread(thr);
 
-	m_utilThread = std::thread(ThreadUtil);
+	if (m_debugBuild)
+		m_utilThread = std::thread(ThreadUtilDebug);
+	else
+		m_utilThread = std::thread(ThreadUtilRelease);
+
 	m_utilThread.detach();
 
 	RunContext();
@@ -304,6 +331,8 @@ void Registration::Run()
 
 bool Registration::IsAllDone()
 {
+	// dont lock execution mutex because it is already locked
+
 	for (uint64_t i = 0; i < m_execution.size(); i++)
 	{
 		if (!m_execution[i]->GetFinished())
@@ -489,9 +518,48 @@ bool Registration::TestSuperBase()
 	if (*m_super == 1)
 	{
 		*m_super = 0;
-		
 		printf("stopping execution...\n");
+
 		EndAll();
+		return true;
+	}
+	else if (*m_super == 2)
+	{
+		*m_super = 0;
+		
+		if (m_breakSingle)
+		{
+			printf("can not break full while in break single mode\n");
+			return true;
+		}
+		
+		printf("breaking all execution...\n");
+		
+		m_breakFull = true;
+		m_breakFullResume = false;
+
+		std::unique_lock<std::mutex> lock(m_executionMutex);
+
+		for (uint64_t i = 0; i < m_execution.size(); i++)
+			m_execution[i]->Break(&m_breakFullResume);
+
+		return true;
+	}
+	else if (*m_super == 3)
+	{
+		*m_super = 0;
+
+		if (!m_breakFull)
+		{
+			printf("can not resume all if not in not in break all mode\n");
+			return true;
+		}
+
+		printf("resuming all execution...\n");
+
+		m_breakFull = false;
+		m_breakFullResume = true;
+
 		return true;
 	}
 
@@ -500,6 +568,61 @@ bool Registration::TestSuperBase()
 
 bool Registration::TestSuperDebug()
 {
+	if (*m_super == 4)
+	{
+		*m_super = 0;
+
+		if (m_breakFull)
+		{
+			printf("can not break single while in break all mode\n");
+			return true;
+		}
+
+		printf("breaking single execution...\n");
+
+		m_breakSingle = true;
+		m_breakSingleResume = false;
+
+		std::unique_lock<std::mutex> lock(m_executionMutex);
+		m_execution[(uint32_t)m_superData]->Break(&m_breakSingleResume);
+		
+		return true;
+	}
+	else if (*m_super == 6)
+	{
+		*m_super = 0;
+
+		if (!m_breakSingle)
+		{
+			printf("can not resume single if not in not in break single mode\n");
+			return true;
+		}
+
+		printf("resuming single execution...\n");
+
+		m_breakSingle = false;
+		m_breakSingleResume = true;
+
+		return true;
+	}
+	else if (*m_super == 5)
+	{
+		*m_super = 0;
+
+		if (!m_breakSingle)
+		{
+			printf("can not step single if not in not in break single mode\n");
+			return true;
+		}
+
+		printf("stepping single execution...\n");
+
+		std::unique_lock<std::mutex> lock(m_executionMutex);
+		m_execution[(uint32_t)m_superData]->Step();
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -754,8 +877,20 @@ bool Registration::m_debugBuild;
 
 uint8_t* Registration::m_super;
 
+int64_t* Registration::m_superData;
+
 std::mutex* Registration::m_superMutex;
 
 std::chrono::steady_clock::time_point Registration::m_timeBegin;
+
+bool Registration::m_breakFull;
+
+bool Registration::m_breakSingle;
+
+int64_t Registration::m_breakSingleData;
+
+std::atomic<bool> Registration::m_breakFullResume;
+
+std::atomic<bool> Registration::m_breakSingleResume;
 
 std::vector<std::string> Registration::m_variableRegistry;

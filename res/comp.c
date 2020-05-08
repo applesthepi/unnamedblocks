@@ -15,6 +15,7 @@ COMP_EXPORT ModBlockData** functionData;
 COMP_EXPORT ModBlock*** modBlocks;
 COMP_EXPORT bool debugBuild;
 COMP_EXPORT uint8_t* superInstruction;
+COMP_EXPORT int64_t* superData;
 COMP_EXPORT void* superMutex;
 
 int main()
@@ -28,7 +29,7 @@ int main()
 	cpSetData(functionData);
 	cpSetBlocks(modBlocks);
 	cpSetDebugBuild(debugBuild);
-	cpSetSuper(superInstruction, superMutex);
+	cpSetSuper(superInstruction, superData, superMutex);
 
 	cpRun();
 

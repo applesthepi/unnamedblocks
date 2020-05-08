@@ -214,6 +214,7 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 	uint64_t functionTotalCount = stacks->size();
 
 	uint8_t* super = PreProcessor::MakeSuper();
+	int64_t* superData = PreProcessor::GetMadeData();
 	std::mutex* superMutex = PreProcessor::GetMadeMutex();
 
 #ifdef LINUX
@@ -234,6 +235,7 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 	[[maybe_unused]] int r9002 = tcc_add_symbol(state, "modBlocks", &modBlocks);
 	[[maybe_unused]] int r9001 = tcc_add_symbol(state, "functionTotalCount", &functionTotalCount);
 	[[maybe_unused]] int r9003 = tcc_add_symbol(state, "superInstruction", &super);
+	[[maybe_unused]] int r9005 = tcc_add_symbol(state, "superData", &superData);
 	[[maybe_unused]] int r9004 = tcc_add_symbol(state, "superMutex", (void**)&superMutex);
 
 	// libs
@@ -328,16 +330,26 @@ BlockRegistry* PreProcessor::GetRegistry()
 	return m_registry;
 }
 
-void PreProcessor::SetSuper(const uint8_t& super)
+void PreProcessor::SetSuper(const uint8_t& super, const int64_t& superData)
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
+
 	*m_super = super;
+	*m_superData = superData;
 }
 
 const uint8_t PreProcessor::GetSuper()
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
+
 	return *m_super;
+}
+
+const int64_t PreProcessor::GetSuperData()
+{
+	std::unique_lock<std::mutex> lock(*m_superMutex);
+
+	return *m_superData;
 }
 
 uint8_t* PreProcessor::MakeSuper()
@@ -351,9 +363,17 @@ uint8_t* PreProcessor::MakeSuper()
 	m_super = new uint8_t;
 	*m_super = 0;
 
+	m_superData = new int64_t;
+	*m_superData = 0;
+
 	m_superMutex = new std::mutex();
 
 	return m_super;
+}
+
+int64_t* PreProcessor::GetMadeData()
+{
+	return m_superData;
 }
 
 std::mutex* PreProcessor::GetMadeMutex()
@@ -370,5 +390,7 @@ Plane* PreProcessor::m_planeCopy;
 BlockRegistry* PreProcessor::m_registry;
 
 uint8_t* PreProcessor::m_super;
+
+int64_t* PreProcessor::m_superData;
 
 std::mutex* PreProcessor::m_superMutex;

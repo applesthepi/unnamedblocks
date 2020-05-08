@@ -24,6 +24,9 @@ public:
 	void SetPosition(sf::Vector2i position);
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	void SetEnabled(const bool& enabled);
+
+
+	void SetImage(const std::string& path);
 private:
 	sf::Vector2i m_position;
 	sf::Vector2u m_size;

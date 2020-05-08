@@ -223,3 +223,9 @@ void Button::SetEnabled(const bool& enabled)
 	m_enabled = enabled;
 }
 
+void Button::SetImage(const std::string& path)
+{
+	m_modeImageTexture->loadFromFile(path);
+	m_modeImageSprite->setTexture(*m_modeImageTexture);
+}
+

@@ -38,10 +38,8 @@ private:
 	static uint64_t m_selectedCategory;
 
 	static bool m_running;
+	static bool m_fullBreak;
 
-	static Button* m_buttonRunRelease;
-	static Button* m_buttonRunDebug;
-
-	static Button* m_buttonStop;
-	static Button* m_buttonPause;
+	static std::vector<Button*> m_editorButtons;
+	static std::vector<Button*> m_runtimeButtons;
 };
