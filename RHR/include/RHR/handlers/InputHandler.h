@@ -22,6 +22,13 @@ public:
 	static void FireTextEvent(sf::Event::TextEvent event);
 	// Fire a key press event
 	static void FireKeyEvent(sf::Event::KeyEvent event);
+
+	//
+	// abstracted inputs
+	//
+
+	static void RunTextProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev);
+	static void RunNumberProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev);
 private:
 	static std::vector<std::function<void(const sf::Event::TextEvent&)>*>* text_callbacks;
 	static std::vector<std::function<void(const sf::Event::KeyEvent&)>*>* key_callbacks;

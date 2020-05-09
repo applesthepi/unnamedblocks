@@ -96,17 +96,19 @@ void Button::SetButtonModeImage(std::string path)
 	m_modeColor->setPosition(m_position.x, m_position.y);
 }
 
-void Button::FrameUpdate(sf::RenderWindow* /*window*/)
+void Button::FrameUpdate(sf::RenderWindow* window)
 {
 	if (!m_enabled)
 		return;
+
+	sf::Vector2i pos = sf::Mouse::getPosition(*window);
 
 	if (m_mode == ButtonMode::Color)
 	{
 		m_modeColor->setPosition((sf::Vector2f)m_position);
 		m_modeColor->setSize((sf::Vector2f)m_size);
 
-		if (Global::MousePosition.x > m_position.x && Global::MousePosition.x < m_position.x + static_cast<int32_t>(m_size.x) && Global::MousePosition.y > m_position.y && Global::MousePosition.y < m_position.y + static_cast<int32_t>(m_size.y))
+		if (pos.x > m_position.x && pos.x < m_position.x + static_cast<int32_t>(m_size.x) && pos.y > m_position.y && pos.y < m_position.y + static_cast<int32_t>(m_size.y))
 		{
 			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE_LIGHT, m_backgroundColor.g * HOVOR_SHADE_LIGHT, m_backgroundColor.b * HOVOR_SHADE_LIGHT));
 			m_modeColor->setOutlineColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE_HARD, m_backgroundColor.g * HOVOR_SHADE_HARD, m_backgroundColor.b * HOVOR_SHADE_HARD));
@@ -125,7 +127,7 @@ void Button::FrameUpdate(sf::RenderWindow* /*window*/)
 		m_modeColor->setPosition((sf::Vector2f)m_position);
 		m_modeColor->setSize((sf::Vector2f)m_size);
 
-		if (Global::MousePosition.x > m_position.x && Global::MousePosition.x < m_position.x + static_cast<int32_t>(m_size.x) && Global::MousePosition.y > m_position.y && Global::MousePosition.y < m_position.y + static_cast<int32_t>(m_size.y))
+		if (pos.x > m_position.x && pos.x < m_position.x + static_cast<int32_t>(m_size.x) && pos.y > m_position.y && pos.y < m_position.y + static_cast<int32_t>(m_size.y))
 		{
 			m_modeColor->setFillColor(sf::Color(0, 0, 0, (1 - HOVOR_SHADE_LIGHT) * 255));
 			m_modeColor->setOutlineColor(sf::Color(0, 0, 0, (1 - HOVOR_SHADE_HARD) * 255));
@@ -144,7 +146,7 @@ void Button::FrameUpdate(sf::RenderWindow* /*window*/)
 
 		m_modeText->setPosition(m_position.x + 2, m_position.y);
 
-		if (Global::MousePosition.x > m_position.x && Global::MousePosition.x < m_position.x + static_cast<int32_t>(m_size.x) && Global::MousePosition.y > m_position.y && Global::MousePosition.y < m_position.y + static_cast<int32_t>(m_size.y))
+		if (pos.x > m_position.x && pos.x < m_position.x + static_cast<int32_t>(m_size.x) && pos.y > m_position.y && pos.y < m_position.y + static_cast<int32_t>(m_size.y))
 		{
 			m_modeColor->setFillColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE_LIGHT, m_backgroundColor.g * HOVOR_SHADE_LIGHT, m_backgroundColor.b * HOVOR_SHADE_LIGHT));
 			m_modeColor->setOutlineColor(sf::Color(m_backgroundColor.r * HOVOR_SHADE_HARD, m_backgroundColor.g * HOVOR_SHADE_HARD, m_backgroundColor.b * HOVOR_SHADE_HARD));

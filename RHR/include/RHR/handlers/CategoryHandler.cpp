@@ -223,7 +223,8 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		{
 			bool* result = new bool(false);
 
-			MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", result));
+			// TODO MESSAGE
+			//MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", result));
 
 			if (*result)
 			{
@@ -242,7 +243,8 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		{
 			std::string* result = new std::string();
 
-			MessageHandler::RegisterMessageSync(new Message("load file path:", result));
+			// TODO MESSAGE
+			//MessageHandler::RegisterMessageSync(new Message("load file path:", result));
 			if (*result == "")
 			{
 				delete result;
@@ -269,8 +271,8 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			if (ProjectHandler::CurrentPath == "")
 			{
 				std::string* result = new std::string();
-
-				MessageHandler::RegisterMessageSync(new Message("save file path:", result));
+				// TODO MESSAGE
+				//MessageHandler::RegisterMessageSync(new Message("save file path:", result));
 				if (*result == "")
 				{
 					delete result;
@@ -301,8 +303,8 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		*function = [primaryPlane]()
 		{
 			std::string* result = new std::string();
-
-			MessageHandler::RegisterMessageSync(new Message("save file path:", result));
+			// TODO MESSAGE
+			//MessageHandler::RegisterMessageSync(new Message("save file path:", result));
 			if (*result == "")
 			{
 				delete result;

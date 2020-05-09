@@ -1,333 +1,454 @@
 #include "MessageHandler.h"
 #include "RHR/Global.h"
 #include "InputHandler.h"
-#include "RHR/ui/Button.h"
 #include "RHR/registries/ButtonRegistry.h"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <functional>
-void ThreadAsyncMessage(std::mutex* mutex, std::vector<Message*>* messages)
+void ThreadMessage()
 {
-	//TODO this function is supost to be the same as the sync function
-	while (Global::ApplicationRunning)
+	std::vector<Message*>& messages = MessageHandler::GetMessages();
+	std::mutex& messageMutex = MessageHandler::GetMessageMutex();
+	std::atomic<bool>& finish = MessageHandler::GetFinished();
+
+	while (true)
 	{
-		mutex->lock();
-		while (messages->size() == 0)
+		messageMutex.lock();
+
+		while (messages.size() == 0)
 		{
-			mutex->unlock();
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-			mutex->lock();
+			messageMutex.unlock();
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+			if (finish)
+				return;
+
+			messageMutex.lock();
 		}
-		
-		for (unsigned int i = 0; i < messages->size(); i++)
+
+	skipMutex:
+
+		sf::RenderWindow window;
+		window.create(sf::VideoMode(800, 100), "", sf::Style::Titlebar);
+		window.setVerticalSyncEnabled(false);
+		window.setFramerateLimit(60);
+
+		std::function<void()> ubShutdown = []()
 		{
-			std::string title;
-			if ((*messages)[i]->Type == MessageType::INFO)
-				title = "Info";
-			else if ((*messages)[i]->Type == MessageType::WARNING)
-				title = "Warning";
-			else if ((*messages)[i]->Type == MessageType::ERROR)
-				title = "Error";
+			abort();
+		};
 
-			sf::RenderWindow window;
-			window.create(sf::VideoMode(500, 24), title, sf::Style::Close | sf::Style::Titlebar);
+		std::function<void()> windowClose = [&window]()
+		{
+			window.close();
+		};
 
-			while (window.isOpen())
+		Button* button = new Button(sf::Vector2i(10, 10), sf::Vector2u(100, 20), &ubShutdown);
+		button->SetButtonModeText("abort", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+
+		messages.back()->SetClose(&windowClose);
+
+		while (window.isOpen())
+		{
+			sf::Event ev;
+
+			while (window.pollEvent(ev))
 			{
-				sf::Event ev;
-				while (window.pollEvent(ev))
+				if (ev.type == sf::Event::MouseButtonPressed)
 				{
-					if (ev.type == sf::Event::Closed)
-					{
-						window.close();
-					}
-					else if (ev.type == sf::Event::LostFocus)
-					{
-						window.requestFocus();
-					}
+					button->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
+					messages.back()->MouseUpdate(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
 				}
-
-				window.clear(sf::Color::White);
-
-				sf::Text txt = sf::Text((*messages)[i]->String, *Global::Font, 18);
-				txt.setFillColor(sf::Color::Black);
-				window.draw(txt);
-
-				window.display();
-
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				else if (ev.type == sf::Event::MouseButtonReleased)
+				{
+					button->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
+					messages.back()->MouseUpdate(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
+				}
+				else if (ev.type == sf::Event::EventType::KeyPressed) {
+					InputHandler::FireKeyEvent(ev.key);
+				}
+				else if (ev.type == sf::Event::EventType::TextEntered) {
+					InputHandler::FireTextEvent(ev.text);
+				}
 			}
 
-			delete (*messages)[i];
+			if (window.hasFocus())
+			{
+				window.clear(MOD_BACKGROUND_LOW);
+
+				messages.back()->FrameUpdate(window);
+				messages.back()->Render(window);
+
+				button->FrameUpdate(&window);
+				button->Render(&window);
+
+				window.display();
+			}
+
+			if (finish)
+			{
+				messageMutex.unlock();
+				return;
+			}
 		}
 
-		messages->clear();
+		delete button;
+		delete messages.back();
+		
+		messages.pop_back();
 
-		mutex->unlock();
+		if (messages.size() > 0)
+			goto skipMutex;
+
+		messageMutex.unlock();
 	}
 }
 
 void MessageHandler::Initialize()
 {
-	m_asyncMessages = new std::vector<Message*>();
-	m_messages = new std::vector<Message*>();
-	m_asyncMessagesMutex = new std::mutex();
-
-	m_asyncThread = new std::thread(ThreadAsyncMessage, m_asyncMessagesMutex, m_asyncMessages);
-	m_asyncThread->detach();
+	m_messageThread = std::thread(ThreadMessage);
 }
 
-void MessageHandler::RunSyncMessages()
+void MessageHandler::Finish()
 {
-	//TODO this function has lots of memory leaks
-	for (unsigned int i = 0; i < m_messages->size(); i++)
+	m_finish = true;
+	m_messageThread.join();
+}
+
+void MessageHandler::RegisterMessage(Message* message, const bool& sync)
+{
+	if (sync)
 	{
-		std::function<void(const sf::Event::TextEvent& event)>* text_callback = new std::function<void(const sf::Event::TextEvent& event)>();
-		std::function<void(const sf::Event::KeyEvent& event)>* key_callback = new std::function<void(const sf::Event::KeyEvent& event)>();
-		std::function<void()>* callbackButtonContinue = new std::function<void()>();
-		std::function<void()>* callbackButtonCancel = new std::function<void()>();
-		Button* buttonContinue = new Button(sf::Vector2i(10, 30), sf::Vector2u(100, 24), callbackButtonContinue);
-		Button* buttonCancel = new Button(sf::Vector2i(390, 30), sf::Vector2u(100, 24), callbackButtonCancel);
-		std::string title;
-		std::string answer = std::string();
-		bool finish = false;
-		bool answerBool = false;
-		
-		sf::Text textAgent = sf::Text("", *Global::Font, 16);
-		sf::RectangleShape rect = sf::RectangleShape(sf::Vector2f(500, 20));
-		sf::RectangleShape marker = sf::RectangleShape(sf::Vector2f(2, 20));
-		marker.setFillColor(sf::Color::Black);
-		rect.setPosition(0, 20);
-		rect.setFillColor(sf::Color(220, 220, 220, 255));
+		m_messageMutex.lock();
+		m_messages.push_back(message);
 
-		textAgent.setFillColor(sf::Color::Black);
-		textAgent.setPosition(0, 20);
-
-		if ((*m_messages)[i]->Type == MessageType::INFO)
-			title = "Info";
-		else if ((*m_messages)[i]->Type == MessageType::WARNING)
-			title = "Warning";
-		else if ((*m_messages)[i]->Type == MessageType::ERROR)
-			title = "Error";
-		else if ((*m_messages)[i]->Type == MessageType::INPUT)
+		while (m_messages.size() > 0)
 		{
-			title = "Input";
-
-			*key_callback = [&answer, &textAgent, &finish](const sf::Event::KeyEvent& event)
-			{
-				const bool whitespace_is_barrier = true;
-				if (event.code == sf::Keyboard::BackSpace)
-				{
-					if (event.control)
-					{
-						for (auto iter = answer.end(); iter != answer.begin(); --iter)
-						{
-							if ( whitespace_is_barrier && isspace(*iter) ) {
-								answer.erase(iter, answer.end());
-							}
-						}
-						
-					}
-					else
-					{
-						if (answer.length() > 0) answer.erase(answer.end());
-					}
-					textAgent.setString(answer);
-				}
-				else if (event.code == sf::Keyboard::Key::Enter)
-				{
-					finish = true;
-				}
-				
-			};
-			*text_callback = [&answer, &textAgent](const sf::Event::TextEvent& event)
-			{
-				answer += static_cast<char>(event.unicode);
-				textAgent.setString(answer);
-			};
-
-			InputHandler::RegisterTextCallback(text_callback);
-			InputHandler::RegisterKeyCallback(key_callback);
-		}
-		else if ((*m_messages)[i]->Type == MessageType::CONFIRM)
-		{
-			title = "Confirm";
-
-			*callbackButtonContinue = [&answerBool, &finish]()
-			{
-				answerBool = true;
-				finish = true;
-			};
-
-			*callbackButtonCancel = [&answerBool, &finish]()
-			{
-				answerBool = false;
-				finish = true;
-			};
-
-			buttonContinue->SetButtonModeText("continue", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
-			buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
-
-			ButtonRegistry::Push();
-			ButtonRegistry::AddButton(buttonContinue);
-			ButtonRegistry::AddButton(buttonCancel);
+			m_messageMutex.unlock();
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			m_messageMutex.lock();
 		}
 
-		sf::RenderWindow window;
-		if ((*m_messages)[i]->Type == MessageType::INPUT)
-			window.create(sf::VideoMode(500, 50), title, sf::Style::Close | sf::Style::Titlebar);
-		else if ((*m_messages)[i]->Type == MessageType::CONFIRM)
-			window.create(sf::VideoMode(500, 60), title, sf::Style::Titlebar);
-		else
-			window.create(sf::VideoMode(500, 24), title, sf::Style::Close | sf::Style::Titlebar);
-
-		bool wasDownLeft = false;
-
-		while (window.isOpen())
-		{
-			sf::Event ev;
-			while (window.pollEvent(ev))
-			{
-				if (ev.type == sf::Event::Closed)
-				{
-					finish = false;
-					window.close();
-				}
-				else if (ev.type == sf::Event::LostFocus)
-				{
-					window.requestFocus();
-				}
-			}
-
-			window.clear(sf::Color::White);
-
-			Global::MousePosition = sf::Mouse::getPosition(window);
-
-			if ((*m_messages)[i]->Type == MessageType::CONFIRM)
-			{
-				ButtonRegistry::FrameUpdateUI(&window);
-
-				if (!wasDownLeft && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-				{
-					wasDownLeft = true;
-					ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, true);
-				}
-				else if (wasDownLeft && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
-				{
-					wasDownLeft = false;
-					ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, false);
-				}
-
-				ButtonRegistry::RenderUI(&window);
-			}
-
-			if (finish)
-			{
-				window.close();
-				continue;
-			}
-
-			sf::Text txt = sf::Text((*m_messages)[i]->String, *Global::Font, 16);
-			txt.setFillColor(sf::Color::Black);
-			window.draw(txt);
-
-			if ((*m_messages)[i]->Type == MessageType::INPUT)
-			{
-				window.draw(rect);
-				window.draw(textAgent);
-
-				marker.setPosition(textAgent.getLocalBounds().width, 20);
-
-				window.draw(marker);
-			}
-
-			window.display();
-
-			std::this_thread::sleep_for(std::chrono::milliseconds(5));
-		}
-
-		if ((*m_messages)[i]->Type == MessageType::INPUT)
-		{
-			if (finish)
-			{
-				if ((*m_messages)[i]->Result != nullptr)
-					*((*m_messages)[i]->Result) = answer;
-			}
-			else
-			{
-				if ((*m_messages)[i]->Result != nullptr)
-					*((*m_messages)[i]->Result) = "";
-			}
-
-			InputHandler::UnregisterTextCallback(text_callback);
-			InputHandler::UnregisterKeyCallback(key_callback);
-		}
-		else if ((*m_messages)[i]->Type == MessageType::CONFIRM)
-		{
-			if (finish)
-			{
-				if ((*m_messages)[i]->ResultBool != nullptr)
-					*((*m_messages)[i]->ResultBool) = answerBool;
-			}
-			else
-			{
-				if ((*m_messages)[i]->ResultBool != nullptr)
-					*((*m_messages)[i]->ResultBool) = false;
-			}
-
-			ButtonRegistry::RemoveButton(buttonContinue);
-			ButtonRegistry::RemoveButton(buttonCancel);
-			ButtonRegistry::Pop();
-		}
-
-		delete (*m_messages)[i];
+		m_messageMutex.unlock();
 	}
-
-	m_messages->clear();
+	else
+	{
+		std::unique_lock<std::mutex> lock(m_messageMutex);
+		m_messages.push_back(message);
+	}
 }
 
-void MessageHandler::RegisterMessageSync(Message* message)
+std::mutex& MessageHandler::GetMessageMutex()
 {
-	m_messages->push_back(message);
-	RunSyncMessages();
+	return m_messageMutex;
 }
 
-void MessageHandler::RegisterMessageAsync(Message* message)
+std::vector<Message*>& MessageHandler::GetMessages()
 {
-	m_asyncMessagesMutex->lock();
-	m_asyncMessages->push_back(message);
-	m_asyncMessagesMutex->unlock();
+	return m_messages;
 }
 
-std::thread* MessageHandler::m_asyncThread;
-
-std::mutex* MessageHandler::m_asyncMessagesMutex;
-
-std::vector<Message*>* MessageHandler::m_asyncMessages;
-
-std::vector<Message*>* MessageHandler::m_messages;
-
-Message::Message(MessageType type, std::string string)
+std::atomic<bool>& MessageHandler::GetFinished()
 {
-	Type = type;
-	String = string;
-	Result = nullptr;
-	ResultBool = nullptr;
+	return m_finish;
 }
 
-Message::Message(std::string question, std::string* result)
+std::atomic<bool> MessageHandler::m_finish;
+
+std::mutex MessageHandler::m_messageMutex;
+
+std::vector<Message*> MessageHandler::m_messages;
+
+std::thread MessageHandler::m_messageThread;
+
+Message::Message()
 {
-	Type = MessageType::INPUT;
-	String = question;
-	Result = result;
-	ResultBool = nullptr;
+	Stop = new std::function<void()>();
 }
 
-Message::Message(std::string question, bool* result)
+Message::~Message()
 {
-	Type = MessageType::CONFIRM;
-	String = question;
-	Result = nullptr;
-	ResultBool = result;
+	delete Stop;
+}
+
+void Message::SetClose(std::function<void()>* stop)
+{
+	*Stop = *stop;
+}
+
+void Message::FrameUpdate(sf::RenderWindow& window)
+{
+	
+}
+
+void Message::Render(sf::RenderWindow& window)
+{
+
+}
+
+void Message::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
+{
+
+}
+
+MessageInfo::MessageInfo(const std::string& message, std::function<void()>* cb)
+	:Message()
+{
+	m_message = sf::Text("[Info] " + message, *Global::Font, 16);
+	m_message.setPosition(sf::Vector2f(10, 35));
+	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	Callback = cb;
+
+	m_buttonCallback = [this]()
+	{
+		(*Callback)();
+		(*Stop)();
+	};
+
+	m_buttonOk = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallback);
+	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+}
+
+MessageInfo::~MessageInfo()
+{
+	delete m_buttonOk;
+}
+
+void MessageInfo::FrameUpdate(sf::RenderWindow& window)
+{
+	m_buttonOk->FrameUpdate(&window);
+	window.setTitle("Info");
+}
+
+void MessageInfo::Render(sf::RenderWindow& window)
+{
+	window.draw(m_message);
+	m_buttonOk->Render(&window);
+}
+
+void MessageInfo::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
+{
+	m_buttonOk->MouseButton(down, pos, button);
+}
+
+MessageWarning::MessageWarning(const std::string& message, std::function<void()>* cb)
+	:Message()
+{
+	m_message = sf::Text("[Warn] " + message, *Global::Font, 16);
+	m_message.setPosition(sf::Vector2f(10, 35));
+	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	Callback = cb;
+
+	m_buttonCallback = [this]()
+	{
+		(*Callback)();
+		(*Stop)();
+	};
+
+	m_buttonOk = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallback);
+	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+}
+
+MessageWarning::~MessageWarning()
+{
+	delete m_buttonOk;
+}
+
+void MessageWarning::FrameUpdate(sf::RenderWindow& window)
+{
+	m_buttonOk->FrameUpdate(&window);
+	window.setTitle("Warning");
+}
+
+void MessageWarning::Render(sf::RenderWindow& window)
+{
+	window.draw(m_message);
+	m_buttonOk->Render(&window);
+}
+
+void MessageWarning::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
+{
+	m_buttonOk->MouseButton(down, pos, button);
+}
+
+MessageError::MessageError(const std::string& message, std::function<void()>* cb)
+	:Message()
+{
+	m_message = sf::Text("[ERROR] " + message, *Global::Font, 16);
+	m_message.setPosition(sf::Vector2f(10, 35));
+	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	Callback = cb;
+
+	m_buttonCallback = [this]()
+	{
+		(*Callback)();
+		(*Stop)();
+	};
+
+	m_buttonOk = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallback);
+	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+}
+
+MessageError::~MessageError()
+{
+	delete m_buttonOk;
+}
+
+void MessageError::FrameUpdate(sf::RenderWindow& window)
+{
+	m_buttonOk->FrameUpdate(&window);
+	window.setTitle("ERROR");
+}
+
+void MessageError::Render(sf::RenderWindow& window)
+{
+	window.draw(m_message);
+	m_buttonOk->Render(&window);
+}
+
+void MessageError::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
+{
+	m_buttonOk->MouseButton(down, pos, button);
+}
+
+MessageConfirm::MessageConfirm(const std::string& message, std::function<void(const bool&)>* cb)
+	:Message()
+{
+	m_message = sf::Text(message, *Global::Font, 16);
+	m_message.setPosition(sf::Vector2f(10, 35));
+	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	Callback = cb;
+
+	m_buttonCallbackContinue = [this]()
+	{
+		(*Callback)(true);
+		(*Stop)();
+	};
+
+	m_buttonCallbackCancel = [this]()
+	{
+		(*Callback)(false);
+		(*Stop)();
+	};
+
+	m_buttonContinue = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallbackContinue);
+	m_buttonContinue->SetButtonModeText("continue", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+
+	m_buttonCancel = new Button(sf::Vector2i(230, 10), sf::Vector2u(100, 20), &m_buttonCallbackCancel);
+	m_buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+}
+
+MessageConfirm::~MessageConfirm()
+{
+	delete m_buttonContinue;
+	delete m_buttonCancel;
+}
+
+void MessageConfirm::FrameUpdate(sf::RenderWindow& window)
+{
+	m_buttonContinue->FrameUpdate(&window);
+	m_buttonCancel->FrameUpdate(&window);
+}
+
+void MessageConfirm::Render(sf::RenderWindow& window)
+{
+	window.draw(m_message);
+	m_buttonContinue->Render(&window);
+	m_buttonCancel->Render(&window);
+}
+
+void MessageConfirm::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
+{
+	m_buttonContinue->MouseButton(down, pos, button);
+	m_buttonCancel->MouseButton(down, pos, button);
+}
+
+MessageInput::MessageInput(const std::string& message, std::function<void(const std::string&)>* cb)
+	:Message()
+{
+	m_message = sf::Text(message, *Global::Font, 16);
+	m_message.setPosition(sf::Vector2f(10, 35));
+	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	Callback = cb;
+	m_textLoc = 0;
+	m_textLocHigh = 0;
+
+	m_buttonCallbackEnter = [this]()
+	{
+		(*Callback)(m_text);
+		(*Stop)();
+	};
+
+	m_inputEscape = [this]()
+	{
+		m_text = "";
+		m_buttonCallbackEnter();
+	};
+
+	m_textCallback = [this](const sf::Event::KeyEvent& ev)
+	{
+		InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, &m_buttonCallbackEnter, &m_inputEscape, ev);
+	};
+
+	m_buttonEnter = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallbackEnter);
+	m_buttonEnter->SetButtonModeText("enter", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+
+	m_buttonCancel = new Button(sf::Vector2i(230, 10), sf::Vector2u(100, 20), &m_inputEscape);
+	m_buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+
+	m_inputBackground = sf::RectangleShape(sf::Vector2f(780, 24));
+	m_inputBackground.setPosition(sf::Vector2f(10, 58));
+	m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG);
+
+	m_inputLoc = sf::RectangleShape(sf::Vector2f(1, 16));
+	m_inputLoc.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	m_inputLocHigh = sf::RectangleShape(sf::Vector2f(0, 16));
+	m_inputLocHigh.setFillColor(MOD_HIGHLIGHT_COLOR);
+
+	m_input = sf::Text("", *Global::Font, 16);
+	m_input.setPosition(10, 61);
+	m_input.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	InputHandler::RegisterKeyCallback(&m_textCallback);
+}
+
+MessageInput::~MessageInput()
+{
+	delete m_buttonEnter;
+	InputHandler::UnregisterKeyCallback(&m_textCallback);
+}
+
+void MessageInput::FrameUpdate(sf::RenderWindow& window)
+{
+	m_buttonEnter->FrameUpdate(&window);
+	m_buttonCancel->FrameUpdate(&window);
+
+	m_input.setString(m_text);
+
+	m_inputLoc.setPosition(sf::Text(m_text.substr(0, m_textLoc), *Global::Font, 16).getLocalBounds().width + m_input.getPosition().x, m_input.getPosition().y + 2);
+
+	m_inputLocHigh.setPosition(sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, 16).getLocalBounds().width + m_input.getPosition().x, m_input.getPosition().y + 2);
+	m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, 16).getLocalBounds().width, 16));
+}
+
+void MessageInput::Render(sf::RenderWindow& window)
+{
+	window.draw(m_message);
+	window.draw(m_inputBackground);
+	window.draw(m_input);
+	window.draw(m_inputLocHigh);
+	window.draw(m_inputLoc);
+
+	m_buttonEnter->Render(&window);
+	m_buttonCancel->Render(&window);
+}
+
+void MessageInput::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
+{
+	m_buttonEnter->MouseButton(down, pos, button);
+	m_buttonCancel->MouseButton(down, pos, button);
 }

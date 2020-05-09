@@ -114,6 +114,13 @@ int main()
 
 	clTrip.restart();
 
+	std::function<void(const std::string&)> someCallback = [](const std::string& result)
+	{
+		std::cout << "RESULT: " << result << std::endl;
+	};
+
+	MessageHandler::RegisterMessage(new MessageInput("chose wisely", &someCallback), false);
+
 	while (window.isOpen())
 	{
 		sf::Event ev;
@@ -123,7 +130,8 @@ int main()
 			{
 				bool result = false;
 
-				MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", &result));
+				// TODO MESSAGE
+				//MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", &result));
 
 				if (result)
 				{
@@ -333,9 +341,6 @@ int main()
 
 		CategoryHandler::FrameUpdate(pRegistry, toolbarPlane);
 
-		//messages
-		MessageHandler::RunSyncMessages();
-
 		//render
 
 		toolbarPlane->Render(&window);
@@ -376,6 +381,7 @@ int main()
 	}
 
 	Global::ApplicationRunning = false;
+	MessageHandler::Finish();
 
 	return 0;
 }
