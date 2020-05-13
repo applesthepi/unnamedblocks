@@ -35,9 +35,9 @@ set_target_properties(ModVin PROPERTIES OUTPUT_NAME "ModVin")
 
 target_include_directories(ModVin PUBLIC
 	"${PROJECT_BINARY_DIR}"
-	"RHR"
-	"RHR/include"
-	"Espresso/include"
+	"${CMAKE_SOURCE_DIR}/RHR"
+	"${CMAKE_SOURCE_DIR}RHR/include"
+	"${CMAKE_SOURCE_DIR}Espresso/include"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 	"${csfml_include}"
 )
@@ -48,11 +48,16 @@ target_link_libraries(ModVin PUBLIC
 	RHR
 	Espresso
 	Cappuccino
-	"${csfml-audio}"
-    "${csfml-network}"
-    "${csfml-graphics}"
-    "${csfml-system}"
-    "${csfml-window}"
+	optimized "${csfml-audio}"
+    optimized "${csfml-network}"
+    optimized "${csfml-graphics}"
+    optimized "${csfml-system}"
+    optimized "${csfml-window}"
+	debug "${csfml-audio-d}"
+    debug "${csfml-network-d}"
+    debug "${csfml-graphics-d}"
+    debug "${csfml-system-d}"
+    debug "${csfml-window-d}"
 )
 
 add_custom_command(
