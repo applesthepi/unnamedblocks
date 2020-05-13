@@ -1,10 +1,13 @@
 #include "InputHandler.h"
+#include "RHR/Global.h"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Clipboard.hpp>
 #include <chrono>
 #include <iostream>
 #include <GL/glew.h>
+#include <Cappuccino/Logger.h>
 
 void InputHandler::Initialization()
 {
@@ -44,10 +47,71 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 		*locHigh = *loc;
 	};
 
+	std::function<void(const std::string& ch)> insertString = [&](const std::string& ch)
+	{
+		std::string nt;
+
+		for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+			nt += text->at(i);
+
+		nt += ch;
+
+		for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+			nt += text->at(i);
+
+		*text = nt;
+
+		*loc = std::min(*locHigh, *loc) + ch.length();
+		*locHigh = *loc;
+	};
+
 	if (ev.code == sf::Keyboard::Key::Left)
 	{
 		if (*loc > 0)
-			(*loc)--;
+		{
+			if (ev.control)
+			{
+				if (text->at(*loc - 1) == ' ')
+				{
+					for (int64_t i = *loc - 1; i >= 0; i--)
+					{
+						if (text->at(i) != ' ')
+							break;
+
+						(*loc)--;
+					}
+				}
+				else if (text->at(*loc - 1) == '	')
+				{
+					for (int64_t i = *loc - 1; i >= 0; i--)
+					{
+						if (text->at(i) != '	')
+							break;
+
+						(*loc)--;
+					}
+				}
+				else
+				{
+					uint64_t oLoc = *loc;
+					for (int64_t i = *loc - 1; i >= 0; i--)
+					{
+						char re = text->at(i);
+						if (i != oLoc - 1 && (
+							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
+							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
+							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
+							text->at(i) == '|' || text->at(i) == ';' || text->at(i) == ':' || text->at(i) == '\'' || text->at(i) == '"' || text->at(i) == ',' || text->at(i) == '.' ||
+							text->at(i) == '<' || text->at(i) == '>' || text->at(i) == '/' || text->at(i) == '?' || text->at(i) == '	'))
+							break;
+
+						(*loc)--;
+					}
+				}
+			}
+			else
+				(*loc)--;
+		}
 
 		if (!ev.shift)
 			*locHigh = *loc;
@@ -55,7 +119,49 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 	else if (ev.code == sf::Keyboard::Key::Right)
 	{
 		if (*loc < text->size())
-			(*loc)++;
+		{
+			if (ev.control)
+			{
+				if (text->at(*loc) == ' ')
+				{
+					for (uint64_t i = *loc; i < text->size(); i++)
+					{
+						if (text->at(i) != ' ')
+							break;
+
+						(*loc)++;
+					}
+				}
+				else if (text->at(*loc) == '	')
+				{
+					for (uint64_t i = *loc; i < text->size(); i++)
+					{
+						if (text->at(i) != '	')
+							break;
+
+						(*loc)++;
+					}
+				}
+				else
+				{
+					uint64_t oLoc = *loc;
+					for (uint64_t i = *loc; i < text->size(); i++)
+					{
+						if (i != oLoc && (
+							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
+							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
+							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
+							text->at(i) == '|' || text->at(i) == ';' || text->at(i) == ':' || text->at(i) == '\'' || text->at(i) == '"' || text->at(i) == ',' || text->at(i) == '.' ||
+							text->at(i) == '<' || text->at(i) == '>' || text->at(i) == '/' || text->at(i) == '?' || text->at(i) == '	'))
+							break;
+
+						(*loc)++;
+					}
+				}
+			}
+			else
+				(*loc)++;
+		}
 
 		if (!ev.shift)
 			*locHigh = *loc;
@@ -67,6 +173,10 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 			*locHigh = 0;
 			*loc = text->size();
 		}
+		else if (ev.control && ev.code == sf::Keyboard::Key::C)
+			sf::Clipboard::setString(text->substr(std::min(*locHigh, *loc), std::max(*locHigh, *loc) - std::min(*locHigh, *loc)));
+		else if (ev.control && ev.code == sf::Keyboard::Key::V)
+			insertString(sf::Clipboard::getString());
 		else
 		{
 			if (ev.shift)
@@ -139,9 +249,15 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 		}
 	}
 	else if (ev.code == sf::Keyboard::Key::Escape)
-		(*escape)();
+	{
+		if (escape != nullptr)
+			(*escape)();
+	}
 	else if (ev.code == sf::Keyboard::Key::Enter)
-		(*enter)();
+	{
+		if (enter != nullptr)
+			(*enter)();
+	}
 	else if (ev.code >= 26 && ev.code <= 35)
 	{
 		if (ev.shift)
@@ -175,60 +291,82 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 	else if (ev.code == sf::Keyboard::Key::Tab)
 		insertChar('	');
 	else if (ev.code == sf::Keyboard::Key::Tilde)
+	{
 		if (ev.shift)
 			insertChar('~');
 		else
 			insertChar('`');
+	}
 	else if (ev.code == sf::Keyboard::Key::Hyphen)
+	{
 		if (ev.shift)
 			insertChar('_');
 		else
 			insertChar('-');
+	}
 	else if (ev.code == sf::Keyboard::Key::Equal)
+	{
 		if (ev.shift)
 			insertChar('+');
 		else
 			insertChar('=');
+	}
 	else if (ev.code == sf::Keyboard::Key::LBracket)
+	{
 		if (ev.shift)
 			insertChar('{');
 		else
 			insertChar('[');
+	}
 	else if (ev.code == sf::Keyboard::Key::RBracket)
+	{
 		if (ev.shift)
 			insertChar(']');
 		else
 			insertChar('}');
+	}
 	else if (ev.code == sf::Keyboard::Key::BackSlash)
+	{
 		if (ev.shift)
 			insertChar('|');
 		else
 			insertChar('\\');
+	}
 	else if (ev.code == sf::Keyboard::Key::SemiColon)
+	{
 		if (ev.shift)
 			insertChar(':');
 		else
 			insertChar(';');
+	}
 	else if (ev.code == sf::Keyboard::Key::Quote)
+	{
 		if (ev.shift)
 			insertChar('"');
 		else
 			insertChar('\'');
+	}
 	else if (ev.code == sf::Keyboard::Key::Comma)
+	{
 		if (ev.shift)
 			insertChar('<');
 		else
 			insertChar(',');
+	}
 	else if (ev.code == sf::Keyboard::Key::Period)
+	{
 		if (ev.shift)
 			insertChar('>');
 		else
 			insertChar('.');
+	}
 	else if (ev.code == sf::Keyboard::Key::Slash)
+	{
 		if (ev.shift)
 			insertChar('?');
 		else
 			insertChar('/');
+	}
 	else if (ev.code >= 75 && ev.code <= 84)
 		insertChar(ev.code - 27);
 	else if (ev.code == 67)
@@ -239,6 +377,12 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 		insertChar('*');
 	else if (ev.code == 70)
 		insertChar('/');
+	else
+	{
+		Logger::Warn("unknown sfml char code: \"" + std::to_string(ev.code) + "\"");
+	}
+
+	Logger::Debug(*text);
 }
 
 void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
@@ -261,10 +405,91 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 		*locHigh = *loc;
 	};
 
+	std::function<void(const std::string& ch)> insertString = [&](const std::string& ch)
+	{
+		// whitelist chars
+
+		std::string nCh;
+		nCh.reserve(ch.length());
+		bool hasDecimal = false;
+
+		for (uint64_t i = 0; i < ch.length(); i++)
+		{
+			if (ch[i] >= 48 && ch[i] <= 57)
+				nCh += ch[i];
+			else if (ch[i] == '.')
+			{
+				if (hasDecimal)
+					continue;
+				
+				hasDecimal = true;
+				nCh += ch[i];
+			}
+		}
+
+		std::string nt;
+
+		for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+			nt += text->at(i);
+
+		nt += ch;
+
+		for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+			nt += text->at(i);
+
+		*text = nt;
+
+		*loc = std::min(*locHigh, *loc) + ch.length();
+		*locHigh = *loc;
+	};
+
 	if (ev.code == sf::Keyboard::Key::Left)
 	{
 		if (*loc > 0)
-			(*loc)--;
+		{
+			if (ev.control)
+			{
+				if (text->at(*loc - 1) == ' ')
+				{
+					for (int64_t i = *loc - 1; i >= 0; i--)
+					{
+						if (text->at(i) != ' ')
+							break;
+
+						(*loc)--;
+					}
+				}
+				else if (text->at(*loc - 1) == '	')
+				{
+					for (int64_t i = *loc - 1; i >= 0; i--)
+					{
+						if (text->at(i) != '	')
+							break;
+
+						(*loc)--;
+					}
+				}
+				else
+				{
+					uint64_t oLoc = *loc;
+					for (int64_t i = *loc - 1; i >= 0; i--)
+					{
+						char re = text->at(i);
+						if (i != oLoc - 1 && (
+							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
+							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
+							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
+							text->at(i) == '|' || text->at(i) == ';' || text->at(i) == ':' || text->at(i) == '\'' || text->at(i) == '"' || text->at(i) == ',' || text->at(i) == '.' ||
+							text->at(i) == '<' || text->at(i) == '>' || text->at(i) == '/' || text->at(i) == '?' || text->at(i) == '	'))
+							break;
+
+						(*loc)--;
+					}
+				}
+			}
+			else
+				(*loc)--;
+		}
 
 		if (!ev.shift)
 			*locHigh = *loc;
@@ -272,7 +497,49 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 	else if (ev.code == sf::Keyboard::Key::Right)
 	{
 		if (*loc < text->size())
-			(*loc)++;
+		{
+			if (ev.control)
+			{
+				if (text->at(*loc) == ' ')
+				{
+					for (uint64_t i = *loc; i < text->size(); i++)
+					{
+						if (text->at(i) != ' ')
+							break;
+
+						(*loc)++;
+					}
+				}
+				else if (text->at(*loc) == '	')
+				{
+					for (uint64_t i = *loc; i < text->size(); i++)
+					{
+						if (text->at(i) != '	')
+							break;
+
+						(*loc)++;
+					}
+				}
+				else
+				{
+					uint64_t oLoc = *loc;
+					for (uint64_t i = *loc; i < text->size(); i++)
+					{
+						if (i != oLoc && (
+							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
+							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
+							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
+							text->at(i) == '|' || text->at(i) == ';' || text->at(i) == ':' || text->at(i) == '\'' || text->at(i) == '"' || text->at(i) == ',' || text->at(i) == '.' ||
+							text->at(i) == '<' || text->at(i) == '>' || text->at(i) == '/' || text->at(i) == '?' || text->at(i) == '	'))
+							break;
+
+						(*loc)++;
+					}
+				}
+			}
+			else
+				(*loc)++;
+		}
 
 		if (!ev.shift)
 			*locHigh = *loc;
@@ -346,9 +613,15 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 		}
 	}
 	else if (ev.code == sf::Keyboard::Key::Escape)
-		(*escape)();
+	{
+		if (escape != nullptr)
+			(*escape)();
+	}
 	else if (ev.code == sf::Keyboard::Key::Enter)
-		(*enter)();
+	{
+		if (enter != nullptr)
+			(*enter)();
+	}
 	else if (ev.code >= 26 && ev.code <= 35 && !ev.shift)
 		insertChar(ev.code + 22);
 	else if (ev.code == sf::Keyboard::Key::Period && !ev.shift)
@@ -369,28 +642,170 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 	}
 	else if (ev.code >= 75 && ev.code <= 84)
 		insertChar(ev.code - 27);
+	else if (ev.control && ev.code == sf::Keyboard::Key::C)
+		sf::Clipboard::setString(text->substr(std::min(*locHigh, *loc), std::max(*locHigh, *loc) - std::min(*locHigh, *loc)));
+	else if (ev.control && ev.code == sf::Keyboard::Key::V)
+		insertString(sf::Clipboard::getString());
 }
 
-void InputHandler::RegisterTextCallback(std::function<void(const sf::Event::TextEvent&)>* fun)
+bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t* loc, bool* isDown, const bool& down, const sf::Vector2i& pos, const uint64_t& yOverride)
 {
-	text_callbacks->push_back(fun);
+	uint64_t yHeight = yOverride;
+
+	if (yHeight == 0)
+		yHeight = text->getLocalBounds().height;
+
+	if (pos.x >= text->getPosition().x && pos.x <= text->getPosition().x + text->getLocalBounds().width)
+	{
+		if (down && pos.y >= text->getPosition().y && pos.y <= text->getPosition().y + yHeight)
+		{
+			*isDown = true;
+
+			for (uint64_t i = 0; i < text->getString().getSize() + 1; i++)
+			{
+				uint64_t ix = text->getPosition().x;
+
+				if (i == text->getString().getSize())
+				{
+					*loc = i;
+					*locHigh = i;
+					break;
+				}
+				else
+				{
+					ix += sf::Text(text->getString().substring(0, i), *Global::Font, 16).getLocalBounds().width;
+					ix += sf::Text(text->getString().substring(i, 1), *Global::Font, 16).getLocalBounds().width / 2.0;
+				}
+
+				if (pos.x <= ix)
+				{
+					*loc = i;
+					*locHigh = i;
+					break;
+				}
+			}
+		}
+		else
+			*isDown = false;
+
+		return pos.y >= text->getPosition().y && pos.y <= text->getPosition().y + yHeight;
+	}
+
+	return false;
+}
+
+bool InputHandler::RunMouseProccess(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* locHigh, uint64_t* loc, bool* isDown, const bool& down, const sf::Vector2i& pos, const uint16_t& fontSize)
+{
+	if (pos.x >= tPos.x && pos.x <= tPos.x + tSize.x)
+	{
+		if (!down)
+			*isDown = false;
+
+		if (down && pos.y >= tPos.y && pos.y <= tPos.y + tSize.y)
+		{
+			*isDown = true;
+
+			for (uint64_t i = 0; i < text->length() + 1; i++)
+			{
+				uint64_t ix = tPos.x;
+
+				if (i == text->length())
+				{
+					*loc = i;
+					*locHigh = i;
+					break;
+				}
+				else
+				{
+					ix += sf::Text(text->substr(0, i), *Global::Font, fontSize).getLocalBounds().width;
+					ix += sf::Text(text->substr(i, 1), *Global::Font, fontSize).getLocalBounds().width / 2.0;
+				}
+
+				if (pos.x <= ix)
+				{
+					*loc = i;
+					*locHigh = i;
+					break;
+				}
+			}
+		}
+
+		return pos.y >= tPos.y && pos.y <= tPos.y + tSize.y;
+	}
+
+	return false;
+}
+
+void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, const uint64_t& yOverride)
+{
+	if (*isDown)
+	{
+		uint64_t yHeight = yOverride;
+
+		if (yHeight == 0)
+			yHeight = text->getLocalBounds().height;
+
+		if (pos.x >= text->getPosition().x && pos.x <= text->getPosition().x + text->getLocalBounds().width)
+		{
+			for (uint64_t i = 0; i < text->getString().getSize() + 1; i++)
+			{
+				uint64_t ix = text->getPosition().x;
+
+				if (i == text->getString().getSize())
+				{
+					*loc = i;
+					break;
+				}
+				else
+				{
+					ix += sf::Text(text->getString().substring(0, i), *Global::Font, 16).getLocalBounds().width;
+					ix += sf::Text(text->getString().substring(i, 1), *Global::Font, 16).getLocalBounds().width / 2.0;
+				}
+
+				if (pos.x <= ix)
+				{
+					*loc = i;
+					break;
+				}
+			}
+		}
+	}
+}
+
+void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, const uint16_t& fontSize)
+{
+	if (*isDown)
+	{
+		if (pos.x >= tPos.x && pos.x <= tPos.x + tSize.x)
+		{
+			for (uint64_t i = 0; i < text->length() + 1; i++)
+			{
+				uint64_t ix = tPos.x;
+
+				if (i == text->length())
+				{
+					*loc = i;
+					break;
+				}
+				else
+				{
+					ix += sf::Text(text->substr(0, i), *Global::Font, fontSize).getLocalBounds().width;
+					ix += sf::Text(text->substr(i, 1), *Global::Font, fontSize).getLocalBounds().width / 2.0;
+				}
+
+				if (pos.x <= ix)
+				{
+					*loc = i;
+					break;
+				}
+			}
+		}
+	}
 }
 
 void InputHandler::RegisterKeyCallback(std::function<void(const sf::Event::KeyEvent&)>* fun)
 {
 	key_callbacks->push_back(fun);
-}
-
-void InputHandler::UnregisterTextCallback(std::function<void(const sf::Event::TextEvent&)>* fun)
-{
-	for (uint64_t i = 0; i < text_callbacks->size(); i++)
-	{
-		if ((*text_callbacks)[i] == fun)
-		{
-			text_callbacks->erase(text_callbacks->begin() + static_cast<int32_t>(i));
-			return;
-		}
-	}
 }
 
 void InputHandler::UnregisterKeyCallback(std::function<void(const sf::Event::KeyEvent&)>* fun)

@@ -85,10 +85,14 @@ public:
 	CAP_DLL void LogWarning(const std::string& message);
 	CAP_DLL void LogError(const std::string& message, const LoggerFatality& fatality);
 
+	// get the value at the argument the user typed in.
+	// if its a variable, it will be auto converted
 	CAP_DLL double* GetReal(const uint64_t& idx);
 	CAP_DLL bool* GetBool(const uint64_t& idx);
 	CAP_DLL std::string* GetString(const uint64_t& idx);
 
+	// only use these if your directly changing the variable registry.
+	// if your trying to get the value in the block argument from the user, use Get<T> above.
 	CAP_DLL double& GetVariableReal(const uint64_t& idx);
 	CAP_DLL bool& GetVariableBool(const uint64_t& idx);
 	CAP_DLL std::string& GetVariableString(const uint64_t& idx);

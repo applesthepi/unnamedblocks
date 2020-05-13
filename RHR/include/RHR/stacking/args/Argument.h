@@ -35,7 +35,7 @@ public:
 	sf::Vector2i GetRealAbsolutePosition();
 	sf::Vector2u GetRelitivePosition();
 	bool Next;
-private:
+protected:
 	sf::Vector2u m_relitivePosition;
 	sf::Vector2i m_absolutePosition;
 	sf::Vector2i m_realAbsolutePosition;

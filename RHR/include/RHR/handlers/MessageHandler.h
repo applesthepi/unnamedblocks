@@ -20,6 +20,7 @@ public:
 	virtual void FrameUpdate(sf::RenderWindow& window);
 	virtual void Render(sf::RenderWindow& window);
 	virtual void MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button);
+	virtual void Shutdown();
 
 	std::function<void()>* Stop;
 };
@@ -28,11 +29,11 @@ class MessageInfo : public Message
 {
 public:
 	MessageInfo(const std::string& message, std::function<void()>* cb);
-	~MessageInfo();
 
 	void FrameUpdate(sf::RenderWindow& window) override;
 	void Render(sf::RenderWindow& window) override;
 	void MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button) override;
+	void Shutdown() override;
 
 	std::function<void()>* Callback;
 private:
@@ -45,11 +46,11 @@ class MessageWarning : public Message
 {
 public:
 	MessageWarning(const std::string& message, std::function<void()>* cb);
-	~MessageWarning();
 
 	void FrameUpdate(sf::RenderWindow& window) override;
 	void Render(sf::RenderWindow& window) override;
 	void MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button) override;
+	void Shutdown() override;
 
 	std::function<void()>* Callback;
 private:
@@ -62,11 +63,11 @@ class MessageError : public Message
 {
 public:
 	MessageError(const std::string& message, std::function<void()>* cb);
-	~MessageError();
 
 	void FrameUpdate(sf::RenderWindow& window) override;
 	void Render(sf::RenderWindow& window) override;
 	void MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button) override;
+	void Shutdown() override;
 
 	std::function<void()>* Callback;
 private:
@@ -79,11 +80,11 @@ class MessageConfirm : public Message
 {
 public:
 	MessageConfirm(const std::string& message, std::function<void(const bool&)>* cb);
-	~MessageConfirm();
 
 	void FrameUpdate(sf::RenderWindow& window) override;
 	void Render(sf::RenderWindow& window) override;
 	void MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button) override;
+	void Shutdown() override;
 
 	std::function<void(const bool&)>* Callback;
 private:
@@ -99,21 +100,22 @@ class MessageInput : public Message
 {
 public:
 	MessageInput(const std::string& message, std::function<void(const std::string&)>* cb);
-	~MessageInput();
 
 	void FrameUpdate(sf::RenderWindow& window) override;
 	void Render(sf::RenderWindow& window) override;
 	void MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button) override;
+	void Shutdown() override;
 
 	std::function<void(const std::string&)>* Callback;
 private:
 	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
-	std::function<void()> m_inputEscape;
-	std::function<void()> m_buttonCallbackEnter;
+	std::function<void()> m_escape;
+	std::function<void()> m_enter;
 	Button* m_buttonEnter;
 	Button* m_buttonCancel;
 
 	sf::Text m_message;
+	bool m_isDown;
 
 	uint64_t m_textLocHigh;
 	uint64_t m_textLoc;

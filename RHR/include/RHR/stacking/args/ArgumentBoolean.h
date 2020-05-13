@@ -4,8 +4,11 @@
 #include "RHR/Global.h"
 #include "RHR/handlers/InputHandler.h"
 
+#include <SFML/Window/Clipboard.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
+#include <Cappuccino/Logger.h>
 
 class ArgumentBoolean : public Argument
 {
@@ -13,338 +16,219 @@ public:
 	ArgumentBoolean(sf::Vector2u relitivePosition)
 		:Argument(relitivePosition)
 	{
-		m_value = false;
+		m_isDown = false;
 		m_variableMode = false;
-
-		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - (Global::BlockBorder * 2));
 		m_selected = false;
+		m_fullSelect = false;
 
-		m_TextAgent.setFillColor(sf::Color::Black);
-		m_TextAgent.setString(m_Text);
-		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
-		m_TextAgent.setPosition(GetAbsolutePosition().x + (int)Global::BlockBorder, GetAbsolutePosition().y);
+		m_textLoc = 0;
+		m_textLocHigh = 0;
+		m_text = "0";
 
-		m_background = sf::RectangleShape(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
-		m_background.setFillColor(sf::Color::White);
-		m_background.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (int)(Global::BlockBorder / 2));
-		m_background.setOutlineColor(sf::Color::Black);
-		m_background.setOutlineThickness(1.0f);
+		m_input = sf::Text(m_text, *Global::Font, Global::BlockHeight - Global::BlockBorder);
+		m_input.setFillColor(MOD_BUTTON_TEXT_FG);
+		m_input.setPosition(GetAbsolutePosition().x + (int)Global::BlockBorder, GetAbsolutePosition().y);
 
-		m_varLeft = sf::RectangleShape(sf::Vector2f(2, Global::BlockHeight - Global::BlockBorder));
-		m_varLeft.setFillColor(sf::Color(115, 140, 172));
+		m_inputBackground = sf::RectangleShape(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
+		m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG);
+		m_inputBackground.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (int)(Global::BlockBorder / 2));
+		//m_inputBackground.setOutlineColor(MOD_BUTTON_TEXT_FG);
+		//m_inputBackground.setOutlineThickness(1.0f);
 
-		m_varRight = sf::RectangleShape(sf::Vector2f(2, Global::BlockHeight - Global::BlockBorder));
-		m_varRight.setFillColor(sf::Color(115, 140, 172));
+		m_inputLoc = sf::RectangleShape(sf::Vector2f(1, Global::BlockHeight - Global::BlockBorder));
+		m_inputLoc.setFillColor(MOD_BUTTON_TEXT_FG);
 
-		m_textMarker = sf::RectangleShape(sf::Vector2f(2, Global::BlockHeight - Global::BlockBorder));
-		m_textMarker.setFillColor(sf::Color::Black);
+		m_inputLocHigh = sf::RectangleShape(sf::Vector2f(0, Global::BlockHeight));
+		m_inputLocHigh.setFillColor(MOD_HIGHLIGHT_COLOR);
 
-		m_textSelect = sf::RectangleShape(sf::Vector2f(0, Global::BlockHeight));
-		m_textSelect.setFillColor(sf::Color(35, 60, 117, 80));
-
-		m_functionTextCallback = new std::function<void(const sf::Event::TextEvent&)>();
-		m_functionKeyCallback = new std::function<void(const sf::Event::KeyEvent&)>();
-		*m_functionKeyCallback = [&](const sf::Event::KeyEvent& event)
+		m_textCallback = [&](const sf::Event::KeyEvent& ev)
 		{
-			if (event.code == sf::Keyboard::Key::Tab)
-			{
+			if (ev.code == sf::Keyboard::Key::Tab)
 				Next = true;
-			}
-			else if (event.code == sf::Keyboard::Left)
-			{
-				if (event.shift)
-				{
-					if (m_textMarkerPosition > 0)
-						m_textMarkerPosition--;
-				}
-				else
-				{
-					if (m_textMarkerPosition == m_textTrailedStart)
-					{
-						if (m_textMarkerPosition > 0)
-						{
-							m_textMarkerPosition--;
-							m_textTrailedStart--;
-						}
-					}
-					else
-					{
-						m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart);
-						m_textTrailedStart = m_textMarkerPosition;
-					}
-				}
-			}
-			else if (event.code == sf::Keyboard::Right)
-			{
-				if (event.shift)
-				{
-					if (m_textMarkerPosition < m_Text.length())
-						m_textMarkerPosition++;
-				}
-				else
-				{
-					if (m_textMarkerPosition == m_textTrailedStart)
-					{
-						if (m_textMarkerPosition < m_Text.length())
-						{
-							m_textMarkerPosition++;
-							m_textTrailedStart++;
-						}
-					}
-					else
-					{
-						m_textMarkerPosition = std::max(m_textMarkerPosition, m_textTrailedStart);
-						m_textTrailedStart = m_textMarkerPosition;
-					}
-				}
-			}
-			else if (event.code == sf::Keyboard::BackSpace)
-			{
-				if (m_textMarkerPosition == m_textTrailedStart)
-				{
-					if (m_textMarkerPosition > 0)
-					{
-						m_Text.erase(--m_textMarkerPosition, 1);
-						m_TextAgent.setString(m_Text);
-						m_textTrailedStart--;
-					}
-				}
-				else
-				{
-					size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
-					size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
-
-					m_Text.erase(start, end-start);
-					m_TextAgent.setString(m_Text);
-
-					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart);
-					m_textTrailedStart = m_textMarkerPosition;
-				}
-			}
-			else if (event.code == sf::Keyboard::Delete)
-			{
-				if (m_textMarkerPosition == m_textTrailedStart)
-				{
-					if (m_textMarkerPosition + 1 < m_Text.length())
-					{
-						m_Text.erase(m_textMarkerPosition, 1);
-						m_TextAgent.setString(m_Text);
-					}
-				}
-				else
-				{
-					size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
-					size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
-
-					m_Text.erase(start, end-start);
-					m_TextAgent.setString(m_Text);
-
-					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart);
-					m_textTrailedStart = m_textMarkerPosition;
-				}
-			}
-			else if (event.code == sf::Keyboard::A && event.control)
-			{
-				m_textTrailedStart = 0;
-				m_textMarkerPosition = m_Text.length();
-			}
-			else if (event.code == sf::Keyboard::C && event.control)
-			{
-				if (m_textMarkerPosition != m_textTrailedStart)
-				{
-					std::string cpy;
-
-					for (unsigned int i = std::min(m_textMarkerPosition, m_textTrailedStart); i < std::max(m_textMarkerPosition, m_textTrailedStart); i++)
-						cpy += m_Text[i];
-
-					sf::Clipboard::setString(cpy);
-				}
-			}
-			else if (event.code == sf::Keyboard::V && event.control)
-			{
-				if (m_textMarkerPosition == m_textTrailedStart)
-				{
-					std::string clip = sf::Clipboard::getString();
-					m_Text.insert(m_textMarkerPosition, clip);
-					m_TextAgent.setString(m_Text);
-
-					m_textMarkerPosition += clip.length();
-					m_textTrailedStart += clip.length();
-				}
-				else
-				{
-					size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
-					size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
-
-					m_Text.erase(start, end-start);
-
-					std::string clip = sf::Clipboard::getString();
-					m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart) + clip.length();
-					m_textTrailedStart = m_textMarkerPosition;
-
-					m_Text.insert(m_textMarkerPosition, clip);
-					m_TextAgent.setString(m_Text);
-
-				}
-			}
-		};
-		*m_functionTextCallback = [&](const sf::Event::TextEvent& text)
-		{
-			// If the character is not printable return
-			if(!isprint(static_cast<int32_t>(text.unicode))) return;
-
-			if (m_textMarkerPosition == m_textTrailedStart)
-			{
-				m_Text.insert(m_Text.begin() + m_textMarkerPosition, (char)text.unicode);
-				m_TextAgent.setString(m_Text);
-
-				m_textMarkerPosition++;
-				m_textTrailedStart++;
-			}
 			else
 			{
-				size_t start = std::min(m_textMarkerPosition, m_textTrailedStart);
-				size_t end = std::max(m_textMarkerPosition, m_textTrailedStart);
-
-				m_Text.erase(start, end-start);
-
-				m_Text.insert(m_Text.begin()+m_textMarkerPosition, (char)text.unicode);
-				m_TextAgent.setString(m_Text);
-
-				m_textMarkerPosition = std::min(m_textMarkerPosition, m_textTrailedStart) + 1;
-				m_textTrailedStart = m_textMarkerPosition;
+				if (m_variableMode)
+					InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
+				else
+					InputHandler::RunNumberProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
 			}
 		};
+
+		m_left = new sf::CircleShape((Global::BlockHeight - Global::BlockBorder) / 2, 10);
+		m_right = new sf::CircleShape((Global::BlockHeight - Global::BlockBorder) / 2, 10);
 	}
 
 	void FrameUpdate() override
 	{
-		m_TextAgent.setString(m_Text);
-		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
-		m_TextAgent.setPosition(GetRelitivePosition().x + (int)Global::BlockBorder, GetRelitivePosition().y);
-
-		if (m_variableMode)
-			m_background.setSize(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
-		else
-			m_background.setSize(sf::Vector2f(Global::BlockHeight - Global::BlockBorder, Global::BlockHeight - Global::BlockBorder));
-
-		m_background.setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
+		if (m_selected && !m_fullSelect)
+			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(((Global::BlockHeight - Global::BlockBorder) / 2) + GetRealAbsolutePosition().x + (int)Global::BlockBorder, GetRealAbsolutePosition().y + (Global::BlockBorder / 2)), (sf::Vector2u)m_inputBackground.getSize(), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder);
 
 		if (m_variableMode)
 		{
-			m_varLeft.setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (Global::BlockBorder / 2));
-			m_varRight.setPosition(GetRelitivePosition().x + m_TextAgent.getLocalBounds().width + 6, GetRelitivePosition().y + (Global::BlockBorder / 2));
+			m_input.setString(m_text);
+			m_input.setPosition(GetRelitivePosition().x + (float)Global::BlockBorder + ((Global::BlockHeight - Global::BlockBorder) / 2), GetRelitivePosition().y);
 
-			m_background.setFillColor(sf::Color(255, 217, 168));
+			m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
+
+			m_inputBackground.setFillColor(MOD_VAR);
+			m_left->setFillColor(MOD_VAR);
+			m_right->setFillColor(MOD_VAR);
+
+			m_input.setFillColor(sf::Color::Black);
+
+			if (m_selected)
+			{
+				m_inputLoc.setPosition(((Global::BlockHeight - Global::BlockBorder) / 2) + GetRelitivePosition().x + sf::Text(m_text.substr(0, m_textLoc), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
+				m_inputLocHigh.setPosition(((Global::BlockHeight - Global::BlockBorder) / 2) + GetRelitivePosition().x + sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
+				m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
+			}
 		}
 		else
 		{
-			m_background.setFillColor(sf::Color::White);
+			if (m_text == "1")
+			{
+				m_inputBackground.setFillColor(sf::Color::Green);
+				m_left->setFillColor(sf::Color::Green);
+				m_right->setFillColor(sf::Color::Green);
+			}
+			else if (m_text == "0")
+			{
+				m_inputBackground.setFillColor(sf::Color(250, 50, 40));
+				m_left->setFillColor(sf::Color(250, 50, 40));
+				m_right->setFillColor(sf::Color(250, 50, 40));
+			}
+			else
+				Logger::Warn("invalid boolean value \"" + m_text + "\"");
 		}
+
+		m_inputBackground.setPosition(GetRelitivePosition().x + ((Global::BlockHeight - Global::BlockBorder) / 2), GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
 
 		if (m_selected && (Global::SelectedArgument != this || Global::Dragging))
 		{
-			InputHandler::UnregisterTextCallback(m_functionTextCallback);
-			InputHandler::UnregisterKeyCallback(m_functionKeyCallback);
+			InputHandler::UnregisterKeyCallback(&m_textCallback);
 			m_selected = false;
 		}
 
-		if (m_selected)
-		{
-			std::string segStr0 = m_Text.substr(0, m_textMarkerPosition);
-			sf::Text seg0 = sf::Text(segStr0, *Global::Font, Global::BlockHeight - Global::BlockBorder);
-
-			std::string segStr1 = m_Text.substr(0, m_textTrailedStart);
-			sf::Text seg1 = sf::Text(segStr1, *Global::Font, Global::BlockHeight - Global::BlockBorder);
-
-			std::string segStr2 = m_Text.substr(std::min(m_textTrailedStart, m_textMarkerPosition), std::abs((int)m_textTrailedStart - (int)m_textMarkerPosition));
-			sf::Text seg2 = sf::Text(segStr2, *Global::Font, Global::BlockHeight - Global::BlockBorder);
-
-			m_textMarker.setPosition(GetRelitivePosition().x + seg0.getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
-			m_textSelect.setPosition(GetRelitivePosition().x + std::min(seg1.getLocalBounds().width, seg0.getLocalBounds().width) + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
-			m_textSelect.setSize(sf::Vector2f(seg2.getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
-		}
-
-		if (!m_variableMode)
-		{
-			if (m_value)
-			{
-				m_background.setFillColor(sf::Color::Green);
-			}
-			else
-			{
-				m_background.setFillColor(sf::Color::Red);
-			}
-		}
+		m_left->setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
+		m_right->setPosition(GetRelitivePosition().x + GetArgumentRawWidth() - (Global::BlockHeight - Global::BlockBorder), GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
 	}
 
 	void Render(sf::RenderTexture* render) override
 	{
-		render->draw(m_background);
+		render->draw(*m_left);
+		render->draw(*m_right);
+
+		render->draw(m_inputBackground);
 
 		if (m_variableMode)
 		{
 			if (m_selected)
 			{
-				render->draw(m_textSelect);
-				render->draw(m_TextAgent);
-				render->draw(m_textMarker);
+				render->draw(m_input);
+				render->draw(m_inputLocHigh);
+				render->draw(m_inputLoc);
 			}
 			else
-				render->draw(m_TextAgent);
+				render->draw(m_input);
 		}
 	}
 
 	unsigned int GetArgumentRawWidth() override
 	{
-		return m_background.getSize().x;
+		return m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 	}
 
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button) override
 	{
-		if (down)
+		if (!down && m_fullSelect)
 		{
-			if (position.x > (int32_t)GetRealAbsolutePosition().x&& position.x < (int32_t)(GetRealAbsolutePosition().x + GetArgumentRawWidth()) &&
-				position.y > GetRealAbsolutePosition().y&& position.y < (int32_t)(GetRealAbsolutePosition().y + Global::BlockHeight))
+			m_fullSelect = false;
+			m_textLocHigh = 0;
+			m_textLoc = m_text.length();
+			m_isDown = false;
+
+			return true;
+		}
+
+		uint64_t superWidthBounds;
+
+		if (m_variableMode)
+			superWidthBounds = m_inputBackground.getSize().x;
+		else
+			superWidthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
+
+		if (button == sf::Mouse::Middle && down &&
+			position.x >= m_realAbsolutePosition.x && position.x <= m_realAbsolutePosition.x + superWidthBounds &&
+			position.y >= m_realAbsolutePosition.y && position.y <= m_realAbsolutePosition.y + m_inputBackground.getSize().y)
+		{
+			SelectGlobaly();
+			m_variableMode = !m_variableMode;
+
+			if (m_variableMode)
+				m_text = m_lastVar;
+			else
 			{
-				if (button == sf::Mouse::Left)
-				{
-					if (m_variableMode)
-					{
-						Select();
-					}
-					else
-					{
-						m_value = !m_value;
-					}
+				m_lastVar = m_text;
+				m_text = "0";
 
-					return true;
-				}
-				else if (button == sf::Mouse::Middle)
-				{
-					SelectGlobaly();
-					
-					m_variableMode = !m_variableMode;
+				m_inputBackground.setSize(sf::Vector2f(Global::BlockHeight - Global::BlockBorder, Global::BlockHeight - Global::BlockBorder));
+			}
 
-					if (m_selected)
-					{
-						m_textTrailedStart = 0;
-						m_textMarkerPosition = m_Text.length();
-					}
-					else
-					{
-						InputHandler::UnregisterTextCallback(m_functionTextCallback);
-						InputHandler::UnregisterKeyCallback(m_functionKeyCallback);
+			if (m_selected)
+			{
+				m_textLocHigh = 0;
+				m_textLoc = m_text.length();
+			}
+			else
+			{
+				InputHandler::RegisterKeyCallback(&m_textCallback);
 
-						m_selected = true;
-						m_textTrailedStart = 0;
-						m_textMarkerPosition = m_Text.length();
-					}
-
-					return true;
-				}
+				m_selected = true;
+				m_textLocHigh = 0;
+				m_textLoc = m_text.length();
 			}
 		}
+		else if (button == sf::Mouse::Left)
+		{
+			uint64_t widthBounds;
+			int64_t posBounds;
+
+			if (m_variableMode)
+				widthBounds = m_input.getLocalBounds().width;
+			else
+				widthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
+
+			if (m_variableMode)
+				posBounds = ((Global::BlockHeight - Global::BlockBorder) / 2);
+			else
+				posBounds = 0;
+
+			if (InputHandler::RunMouseProccess(&m_text, sf::Vector2i(posBounds + GetRealAbsolutePosition().x + (int)Global::BlockBorder, GetRealAbsolutePosition().y + (Global::BlockBorder / 2)), sf::Vector2u(widthBounds, m_inputBackground.getSize().y), &m_textLocHigh, &m_textLoc, &m_isDown, down, position, Global::BlockHeight - Global::BlockBorder))
+			{
+				if (down)
+					Select();
+
+				return true;
+			}
+			else
+			{
+				if (Global::SelectedArgument == this)
+				{
+					m_selected = false;
+					Global::SelectedStack = nullptr;
+					Global::SelectedBlock = nullptr;
+					Global::SelectedArgument = nullptr;
+					Global::Dragging = false;
+
+					InputHandler::UnregisterKeyCallback(&m_textCallback);
+
+					(*m_functionUpdatePreTexture)();
+				}
+
+				return false;
+			}
+		}
+
 		return false;
 	}
 
@@ -355,18 +239,8 @@ public:
 
 	void SetData(std::string data) override
 	{
-		if (m_variableMode)
-		{
-			m_value = false;
-			m_Text = data;
-			m_TextAgent.setString(m_Text);
-		}
-		else
-		{
-			m_value = data == "1";
-			m_Text = "";
-			m_TextAgent.setString(m_Text);
-		}
+		m_text = data;
+		m_input.setString(m_text);
 	}
 
 	void SetMode(BlockArgumentVariableMode mode) override
@@ -376,114 +250,86 @@ public:
 
 	std::string* GetData() override
 	{
-		if (m_variableMode)
-		{
-			m_VText = "1" + m_Text;
-			return &m_VText;
-		}
-		else
-		{
-			m_VText = m_value ? "01" : "00";
-			return &m_VText;
-		}
+		m_vText = (m_variableMode ? '1' : '0') + m_text;
+		return &m_vText;
 	}
 
 	std::string* GetDataRaw() override
 	{
-		if (m_variableMode)
-		{
-			return &m_Text;
-		}
-		else
-		{
-			m_VText = m_value ? "1" : "0";
-			return &m_VText;
-		}
+		return &m_text;
 	}
 
 	BlockArgumentVariableMode* GetMode() override
 	{
 		if (m_variableMode)
-			m_VMode = BlockArgumentVariableMode::VAR;
+			m_vMode = BlockArgumentVariableMode::VAR;
 		else
-			m_VMode = BlockArgumentVariableMode::RAW;
+			m_vMode = BlockArgumentVariableMode::RAW;
 
-		return &m_VMode;
+		return &m_vMode;
 	}
 
 	void Deallocate() override
 	{
-		delete m_functionTextCallback;
+		if (m_selected)
+			InputHandler::UnregisterKeyCallback(&m_textCallback);
 	}
 
 	void Select() override
 	{
+		if (!m_variableMode)
+		{
+			if (m_text == "1")
+				m_text = "0";
+			else if (m_text == "0")
+				m_text = "1";
+			else
+				Logger::Warn("invalid boolean value \"" + m_text + "\"");
+		}
+
 		SelectGlobaly();
 
 		if (m_selected)
-		{
-			int mouseX = Global::MousePosition.x;
-
-			unsigned int closestX = 0;
-			unsigned int closestIndex = 0;
-
-			for (unsigned int i = 0; i < m_Text.length(); i++)
-			{
-				unsigned int distance = std::abs((m_TextAgent.findCharacterPos(i).x + (GetRealAbsolutePosition().x - GetAbsolutePosition().x)) - mouseX);
-
-				if (distance < closestX || closestX == 0)
-				{
-					closestX = distance;
-					closestIndex = i;
-
-					if (distance == 0)
-						break;
-				}
-			}
-
-			m_textMarkerPosition = closestIndex;
-			m_textTrailedStart = m_textMarkerPosition;
-		}
+			InputHandler::RunMouseProccess(&m_input, &m_textLocHigh, &m_textLoc, &m_isDown, true, Global::MousePosition, Global::BlockHeight - Global::BlockBorder);
 		else
 		{
-			InputHandler::RegisterTextCallback(m_functionTextCallback);
-			InputHandler::RegisterKeyCallback(m_functionKeyCallback);
+			InputHandler::RegisterKeyCallback(&m_textCallback);
 
 			m_selected = true;
-			m_textTrailedStart = 0;
-			m_textMarkerPosition = m_Text.length();
+			m_textLocHigh = 0;
+			m_textLoc = 0;
+			m_fullSelect = true;
 		}
 	}
 
 	void ReInspectData() override
 	{
-		if (m_variableMode)
-			m_background.setSize(sf::Vector2f(m_TextAgent.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
-		else
-			m_background.setSize(sf::Vector2f(Global::BlockHeight - Global::BlockBorder, Global::BlockHeight - Global::BlockBorder));
+		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	}
 
 	BlockArgumentType GetType() override
 	{
-		return BlockArgumentType::BOOL;
+		return BlockArgumentType::STRING;
 	}
-
 private:
-	bool m_value;
-	std::string m_Text;
-	std::string m_VText;
-	BlockArgumentVariableMode m_VMode;
-	sf::Text m_TextAgent;
-	sf::RectangleShape m_background;
-	sf::RectangleShape m_textSelect;
-	sf::RectangleShape m_textMarker;
-	sf::RectangleShape m_varLeft;
-	sf::RectangleShape m_varRight;
-	unsigned int m_textMarkerPosition;
-	unsigned int m_textTrailedStart;
+	std::string m_lastVar;
+	std::string m_text;
+	std::string m_vText;
+	BlockArgumentVariableMode m_vMode;
+	sf::Text m_input;
+	sf::RectangleShape m_inputBackground;
+	sf::RectangleShape m_inputLocHigh;
+	sf::RectangleShape m_inputLoc;
+	uint64_t m_textLoc;
+	uint64_t m_textLocHigh;
+
+	sf::CircleShape* m_left;
+	sf::CircleShape* m_right;
+
+	bool m_isDown;
 	bool m_selected;
 	bool m_variableMode;
+	bool m_fullSelect;
 
-	std::function<void(const sf::Event::TextEvent&)>* m_functionTextCallback;
-	std::function<void(const sf::Event::KeyEvent&)>* m_functionKeyCallback;
+	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
 };

@@ -143,7 +143,9 @@ void Argument::SelectGlobaly()
 		gArg->UpdateTexture();
 	}
 	else
+	{
 		Global::SelectedArgument = (void*)this;
+	}
 
 	(*m_functionSelect)();
 }

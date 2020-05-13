@@ -14,7 +14,9 @@
 #define MOD_BUTTON_TEXT_BG_C 40
 #define MOD_BUTTON_TEXT_BG sf::Color(MOD_BUTTON_TEXT_BG_C, MOD_BUTTON_TEXT_BG_C, MOD_BUTTON_TEXT_BG_C, 255)
 
-#define MOD_HIGHLIGHT_COLOR sf::Color(0, 0, 120, 80)
+#define MOD_VAR sf::Color(200, 80, 60, 255)
+
+#define MOD_HIGHLIGHT_COLOR sf::Color(0, 120, 200, 80)
 
 #define HEADER_HEIGHT (32 + 10)
 
@@ -55,7 +57,7 @@ public:
 	static void LoadDefaults()
 	{
 		BlockHeight = 18;
-		BlockBorder = 4;
+		BlockBorder = 4;//divisible by 2
 		Font = new sf::Font();
 		Font->loadFromFile("res/AnonymousPro-Regular.ttf");
 		Dragging = false;

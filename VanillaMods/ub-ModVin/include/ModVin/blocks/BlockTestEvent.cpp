@@ -6,6 +6,11 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
+	bool* condition = pass->GetBool(2);
+
+	if (!condition)
+		return;
+
 	sf::RenderWindow* window = (sf::RenderWindow*)pass->CustomGet(*pass->GetReal(0));
 	sf::Event ev;
 

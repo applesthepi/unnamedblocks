@@ -129,13 +129,20 @@ void ProjectHandler::SaveProject(std::string& path, Plane* plane) {
 	file.close();
 }
 
-void ProjectHandler::LoadProject(std::string &path, Plane *plane, BlockRegistry *registry) {
+void ProjectHandler::LoadProject(std::string& path, Plane* plane, BlockRegistry* registry)
+{
+	char buffer[257];
+	std::ifstream file(path, std::ifstream::in | std::ifstream::binary);
+
+	if (!file.is_open())
+	{
+		Logger::Error("unable to open file \"" + path + "\"");
+		return;
+	}
+
 	plane->SetInnerPosition(sf::Vector2i(0, 0));
 	plane->DeleteAllBlocks();
 
-	char buffer[257];
-
-	std::ifstream file(path, std::ifstream::in | std::ifstream::binary);
 	file.read(buffer, sizeof(uint32_t));
 
 	uint32_t name_count = *(uint32_t*)buffer;

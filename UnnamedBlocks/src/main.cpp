@@ -114,13 +114,6 @@ int main()
 
 	clTrip.restart();
 
-	std::function<void(const std::string&)> someCallback = [](const std::string& result)
-	{
-		std::cout << "RESULT: " << result << std::endl;
-	};
-
-	MessageHandler::RegisterMessage(new MessageInput("chose wisely", &someCallback), false);
-
 	while (window.isOpen())
 	{
 		sf::Event ev;
@@ -128,15 +121,13 @@ int main()
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				bool result = false;
-
-				// TODO MESSAGE
-				//MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", &result));
-
-				if (result)
+				std::function<void(const bool&)> cb = [&](const bool& result)
 				{
-					window.close();
-				}
+					if (result)
+						window.close();
+				};
+
+				MessageHandler::RegisterMessage(new MessageConfirm("unsaved progress will be lost", &cb), true);
 			}
 			else if (ev.type == sf::Event::Resized)
 			{
@@ -162,11 +153,21 @@ int main()
 						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(0, delta));
 				}
 			}
-			else if (ev.type == sf::Event::EventType::KeyPressed) {
+			else if (ev.type == sf::Event::EventType::KeyPressed)
 				InputHandler::FireKeyEvent(ev.key);
-			}
-			else if (ev.type == sf::Event::EventType::TextEntered) {
+			else if (ev.type == sf::Event::EventType::TextEntered)
 				InputHandler::FireTextEvent(ev.text);
+			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
+			{
+				primaryPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+				toolbarPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+				ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, true);
+			}
+			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
+			{
+				primaryPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+				toolbarPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+				ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, false);
 			}
 		}
 
@@ -183,71 +184,7 @@ int main()
 		if (window.hasFocus())
 		{
 			Global::MousePosition = sf::Mouse::getPosition(window);
-
 			ButtonRegistry::FrameUpdateUI(&window);
-
-			if (!wasDownLeft && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				wasDownLeft = true;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, true))
-				{
-					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Left);
-					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Left);
-				}
-			}
-			else if (wasDownLeft && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				wasDownLeft = false;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, false))
-				{
-					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Left);
-					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Left);
-				}
-			}
-
-			if (!wasDownMiddle && sf::Mouse::isButtonPressed(sf::Mouse::Middle))
-			{
-				wasDownMiddle = true;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Middle, true))
-				{
-					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Middle);
-					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Middle);
-				}
-			}
-			else if (wasDownMiddle && !sf::Mouse::isButtonPressed(sf::Mouse::Middle))
-			{
-				wasDownMiddle = false;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Middle, false))
-				{
-					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Middle);
-					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Middle);
-				}
-			}
-
-			if (!wasDownRight && sf::Mouse::isButtonPressed(sf::Mouse::Right))
-			{
-				wasDownRight = true;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Right, true))
-				{
-					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Right);
-					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Right);
-				}
-			}
-			else if (wasDownRight && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
-			{
-				wasDownRight = false;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Right, false))
-				{
-					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
-					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
-				}
-			}
 		}
 
 		if ((Global::ContextActive && !wasContextOpen) || Global::ContextUpdate)

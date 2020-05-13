@@ -426,18 +426,7 @@ void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 
 				Stack* connectedStack = (Stack*)Global::DraggingStackConnected;
 				unsigned int connectedBlockIndex = Global::DraggingStackConnectedIndex;
-				/*
-				std::cout << "connecting stuff" << std::endl;
-
-				if (((Plane*)connectedStack->GetPlanePointer())->IsToolbar())
-				{
-					Global::CutRenderingPlane = true;
-					(*m_functionRemove)(this);
-					(*m_functionAddOver)(this);
-					std::cout << "canceling, is toolbar" << std::endl;
-					return;
-				}
-				*/
+				
 				for (unsigned int i = 0; i < connectedBlockIndex; i++)
 				{
 					blocks.push_back(connectedStack->GetBlock(i));
@@ -776,7 +765,7 @@ bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->IsBounding((sf::Vector2f)position))
+		if (m_blocks[i]->IsBounding((sf::Vector2f)position) || m_blocks[i] == Global::SelectedBlock)
 		{
 			if (m_blocks[i]->MouseButton(down, position, button))
 				return true;

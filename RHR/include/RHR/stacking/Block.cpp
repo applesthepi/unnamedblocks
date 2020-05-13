@@ -300,12 +300,11 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 	{
 		if (m_wasDown)
 			m_wasDown = false;
-		return true;
 	}
 
 	bool bounding = IsBounding((sf::Vector2f)position);
 
-	if (bounding && !Global::Dragging && !m_wasDown)
+	if (!Global::Dragging && !m_wasDown)
 	{
 		bool attempt = true;
 
@@ -319,7 +318,7 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 			}
 		}
 
-		if (attempt)
+		if (attempt && down && bounding)
 		{
 			if (button == sf::Mouse::Right)
 			{

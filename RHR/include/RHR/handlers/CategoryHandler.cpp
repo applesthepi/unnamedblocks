@@ -5,6 +5,8 @@
 #include "MessageHandler.h"
 #include "runtime/PreProcessor.h"
 
+#include <SFML/Graphics.hpp>
+
 void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPlane)
 {
 	m_running = false;
@@ -221,15 +223,13 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane]()
 		{
-			bool* result = new bool(false);
-
-			// TODO MESSAGE
-			//MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", result));
-
-			if (*result)
+			std::function<void(const bool&)> cb = [&](const bool& result)
 			{
-				primaryPlane->DeleteAllBlocks();
-			}
+				if (result)
+					primaryPlane->DeleteAllBlocks();
+			};
+
+			MessageHandler::RegisterMessage(new MessageConfirm("unsaved progress will be lost", &cb), true);
 		};
 
 		Button* button = new Button(sf::Vector2i(70 * 0, 0), sf::Vector2u(70, 16), function);
@@ -239,24 +239,23 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 	}
 	{
 		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane, &blockRegistry]()
+		*function = [primaryPlane, blockRegistry]()
 		{
-			std::string* result = new std::string();
-
-			// TODO MESSAGE
-			//MessageHandler::RegisterMessageSync(new Message("load file path:", result));
-			if (*result == "")
+			std::function<void(const std::string&)> cb = [&](const std::string& result)
 			{
-				delete result;
-				return;
-			}
-			*result += ".ub";
+				if (result == "")
+					return;
 
-			Logger::Info("loading project from \"" + *result + "\"");
-			ProjectHandler::LoadProject(*result, primaryPlane, blockRegistry);
-			ProjectHandler::CurrentPath = *result;
+				std::string rc = result;
 
-			delete result;
+				rc += ".ub";
+
+				Logger::Info("loading project \"" + rc + "\"");
+				ProjectHandler::LoadProject(rc, primaryPlane, blockRegistry);
+				ProjectHandler::CurrentPath = rc;
+			};
+
+			MessageHandler::RegisterMessage(new MessageInput("load path", &cb), true);
 		};
 
 		Button* button = new Button(sf::Vector2i(70 * 1, 0), sf::Vector2u(70, 16), function);
@@ -270,26 +269,26 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		{
 			if (ProjectHandler::CurrentPath == "")
 			{
-				std::string* result = new std::string();
-				// TODO MESSAGE
-				//MessageHandler::RegisterMessageSync(new Message("save file path:", result));
-				if (*result == "")
+				std::function<void(const std::string&)> cb = [&](const std::string& result)
 				{
-					delete result;
-					return;
-				}
-				*result += ".ub";
+					if (result == "")
+						return;
 
-				Logger::Info("saveas to \"" + *result + "\"");
-				ProjectHandler::SaveProject(*result, primaryPlane);
-				ProjectHandler::CurrentPath = *result;
+					std::string rc = result;
 
-				delete result;
+					rc += ".ub";
+
+					Logger::Info("saving project as \"" + rc + "\"");
+					ProjectHandler::SaveProject(rc, primaryPlane);
+					ProjectHandler::CurrentPath = rc;
+				};
+
+				MessageHandler::RegisterMessage(new MessageInput("save path", &cb), true);
 			}
 			else
 			{
 				ProjectHandler::SaveProject(ProjectHandler::CurrentPath, primaryPlane);
-				Logger::Info("save to \"" + ProjectHandler::CurrentPath + "\"");
+				Logger::Info("saving project \"" + ProjectHandler::CurrentPath + "\"");
 			}
 		};
 
@@ -302,21 +301,21 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		std::function<void()>* function = new std::function<void()>();
 		*function = [primaryPlane]()
 		{
-			std::string* result = new std::string();
-			// TODO MESSAGE
-			//MessageHandler::RegisterMessageSync(new Message("save file path:", result));
-			if (*result == "")
+			std::function<void(const std::string&)> cb = [&](const std::string& result)
 			{
-				delete result;
-				return;
-			}
-			*result += ".ub";
+				if (result == "")
+					return;
 
-			Logger::Info("saveas to \"" + *result + "\"");
-			ProjectHandler::SaveProject(*result, primaryPlane);
-			ProjectHandler::CurrentPath = *result;
+				std::string rc = result;
 
-			delete result;
+				rc += ".ub";
+
+				Logger::Info("saving project as \"" + rc + "\"");
+				ProjectHandler::SaveProject(rc, primaryPlane);
+				ProjectHandler::CurrentPath = rc;
+			};
+
+			MessageHandler::RegisterMessage(new MessageInput("save path", &cb), true);
 		};
 
 		Button* button = new Button(sf::Vector2i(70 * 3, 0), sf::Vector2u(70, 16), function);

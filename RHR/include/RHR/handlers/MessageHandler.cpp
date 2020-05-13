@@ -30,6 +30,8 @@ void ThreadMessage()
 		window.create(sf::VideoMode(800, 100), "", sf::Style::Titlebar);
 		window.setVerticalSyncEnabled(false);
 		window.setFramerateLimit(60);
+		window.clear(MOD_BACKGROUND_LOW);
+		window.display();
 
 		std::function<void()> ubShutdown = []()
 		{
@@ -42,7 +44,7 @@ void ThreadMessage()
 		};
 
 		Button* button = new Button(sf::Vector2i(10, 10), sf::Vector2u(100, 20), &ubShutdown);
-		button->SetButtonModeText("abort", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+		button->SetButtonModeText("abort", MOD_VAR, sf::Color::Black, 16);
 
 		messages.back()->SetClose(&windowClose);
 
@@ -91,8 +93,9 @@ void ThreadMessage()
 		}
 
 		delete button;
+
+		messages.back()->Shutdown();
 		delete messages.back();
-		
 		messages.pop_back();
 
 		if (messages.size() > 0)
@@ -189,6 +192,11 @@ void Message::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::M
 
 }
 
+void Message::Shutdown()
+{
+
+}
+
 MessageInfo::MessageInfo(const std::string& message, std::function<void()>* cb)
 	:Message()
 {
@@ -208,11 +216,6 @@ MessageInfo::MessageInfo(const std::string& message, std::function<void()>* cb)
 	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 }
 
-MessageInfo::~MessageInfo()
-{
-	delete m_buttonOk;
-}
-
 void MessageInfo::FrameUpdate(sf::RenderWindow& window)
 {
 	m_buttonOk->FrameUpdate(&window);
@@ -228,6 +231,11 @@ void MessageInfo::Render(sf::RenderWindow& window)
 void MessageInfo::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
 {
 	m_buttonOk->MouseButton(down, pos, button);
+}
+
+void MessageInfo::Shutdown()
+{
+	delete m_buttonOk;
 }
 
 MessageWarning::MessageWarning(const std::string& message, std::function<void()>* cb)
@@ -249,11 +257,6 @@ MessageWarning::MessageWarning(const std::string& message, std::function<void()>
 	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 }
 
-MessageWarning::~MessageWarning()
-{
-	delete m_buttonOk;
-}
-
 void MessageWarning::FrameUpdate(sf::RenderWindow& window)
 {
 	m_buttonOk->FrameUpdate(&window);
@@ -269,6 +272,11 @@ void MessageWarning::Render(sf::RenderWindow& window)
 void MessageWarning::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
 {
 	m_buttonOk->MouseButton(down, pos, button);
+}
+
+void MessageWarning::Shutdown()
+{
+	delete m_buttonOk;
 }
 
 MessageError::MessageError(const std::string& message, std::function<void()>* cb)
@@ -290,11 +298,6 @@ MessageError::MessageError(const std::string& message, std::function<void()>* cb
 	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 }
 
-MessageError::~MessageError()
-{
-	delete m_buttonOk;
-}
-
 void MessageError::FrameUpdate(sf::RenderWindow& window)
 {
 	m_buttonOk->FrameUpdate(&window);
@@ -310,6 +313,11 @@ void MessageError::Render(sf::RenderWindow& window)
 void MessageError::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
 {
 	m_buttonOk->MouseButton(down, pos, button);
+}
+
+void MessageError::Shutdown()
+{
+	delete m_buttonOk;
 }
 
 MessageConfirm::MessageConfirm(const std::string& message, std::function<void(const bool&)>* cb)
@@ -340,12 +348,6 @@ MessageConfirm::MessageConfirm(const std::string& message, std::function<void(co
 	m_buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 }
 
-MessageConfirm::~MessageConfirm()
-{
-	delete m_buttonContinue;
-	delete m_buttonCancel;
-}
-
 void MessageConfirm::FrameUpdate(sf::RenderWindow& window)
 {
 	m_buttonContinue->FrameUpdate(&window);
@@ -365,6 +367,12 @@ void MessageConfirm::MouseUpdate(const bool& down, const sf::Vector2i& pos, cons
 	m_buttonCancel->MouseButton(down, pos, button);
 }
 
+void MessageConfirm::Shutdown()
+{
+	delete m_buttonContinue;
+	delete m_buttonCancel;
+}
+
 MessageInput::MessageInput(const std::string& message, std::function<void(const std::string&)>* cb)
 	:Message()
 {
@@ -375,28 +383,29 @@ MessageInput::MessageInput(const std::string& message, std::function<void(const 
 	Callback = cb;
 	m_textLoc = 0;
 	m_textLocHigh = 0;
+	m_isDown = false;
 
-	m_buttonCallbackEnter = [this]()
+	m_enter = [this]()
 	{
 		(*Callback)(m_text);
 		(*Stop)();
 	};
 
-	m_inputEscape = [this]()
+	m_escape = [this]()
 	{
 		m_text = "";
-		m_buttonCallbackEnter();
+		m_enter();
 	};
 
 	m_textCallback = [this](const sf::Event::KeyEvent& ev)
 	{
-		InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, &m_buttonCallbackEnter, &m_inputEscape, ev);
+		InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, &m_enter, &m_escape, ev);
 	};
 
-	m_buttonEnter = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallbackEnter);
+	m_buttonEnter = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_enter);
 	m_buttonEnter->SetButtonModeText("enter", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 
-	m_buttonCancel = new Button(sf::Vector2i(230, 10), sf::Vector2u(100, 20), &m_inputEscape);
+	m_buttonCancel = new Button(sf::Vector2i(230, 10), sf::Vector2u(100, 20), &m_escape);
 	m_buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
 
 	m_inputBackground = sf::RectangleShape(sf::Vector2f(780, 24));
@@ -416,19 +425,14 @@ MessageInput::MessageInput(const std::string& message, std::function<void(const 
 	InputHandler::RegisterKeyCallback(&m_textCallback);
 }
 
-MessageInput::~MessageInput()
-{
-	delete m_buttonEnter;
-	InputHandler::UnregisterKeyCallback(&m_textCallback);
-}
-
 void MessageInput::FrameUpdate(sf::RenderWindow& window)
 {
 	m_buttonEnter->FrameUpdate(&window);
 	m_buttonCancel->FrameUpdate(&window);
 
-	m_input.setString(m_text);
+	InputHandler::RunMouseProccessFrame(&m_input, &m_textLoc, &m_isDown, sf::Mouse::getPosition(window), 24);
 
+	m_input.setString(m_text);
 	m_inputLoc.setPosition(sf::Text(m_text.substr(0, m_textLoc), *Global::Font, 16).getLocalBounds().width + m_input.getPosition().x, m_input.getPosition().y + 2);
 
 	m_inputLocHigh.setPosition(sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, 16).getLocalBounds().width + m_input.getPosition().x, m_input.getPosition().y + 2);
@@ -451,4 +455,14 @@ void MessageInput::MouseUpdate(const bool& down, const sf::Vector2i& pos, const 
 {
 	m_buttonEnter->MouseButton(down, pos, button);
 	m_buttonCancel->MouseButton(down, pos, button);
+
+	InputHandler::RunMouseProccess(&m_input, &m_textLocHigh, &m_textLoc, &m_isDown, down, pos, 24);
+}
+
+void MessageInput::Shutdown()
+{
+	delete m_buttonEnter;
+	delete m_buttonCancel;
+
+	InputHandler::UnregisterKeyCallback(&m_textCallback);
 }

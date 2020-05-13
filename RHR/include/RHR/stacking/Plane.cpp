@@ -203,10 +203,6 @@ void Plane::FrameUpdate(bool overrideBounding)
 	m_absolutePosition->x = static_cast<uint32_t>(x);
 	m_absolutePosition->y = static_cast<uint32_t>(y);
 
-	//std::cout << m_innerPosition->x << ", " << m_innerPosition->y << std::endl;
-
-	//std::cout << m_dragging << std::endl;
-
 	m_background.setPosition(m_position->x, m_position->y);
 	m_background.setSize((sf::Vector2f)m_size);
 
@@ -385,7 +381,7 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 
 		for (int64_t i = static_cast<int64_t>(m_stacks.size()) - 1; i >= 0; i--)
 		{
-			if (m_stacks[static_cast<uint64_t>(i)]->IsBounding((sf::Vector2f)position) && m_stacks[static_cast<uint64_t>(i)]->MouseButton(down, position, button))
+			if ((m_stacks[static_cast<uint64_t>(i)]->IsBounding((sf::Vector2f)position) || m_stacks[i] == Global::SelectedStack) && m_stacks[static_cast<uint64_t>(i)]->MouseButton(down, position, button))
 			{
 				drag = false;
 				break;
