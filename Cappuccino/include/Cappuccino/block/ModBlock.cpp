@@ -25,16 +25,6 @@ const char* ModBlock::GetUnlocalizedName() const
 	return "vin_null";
 }
 
-blockExecution ModBlock::PullExecuteRelease() const
-{
-	return ExecuteRelease;
-}
-
-blockExecution ModBlock::PullExecuteDebug() const
-{
-	return ExecuteDebug;
-}
-
 const char* ModBlock::GetCategory() const
 {
 	return "vin_null";
@@ -45,9 +35,14 @@ bool ModBlock::IsTopical() const
 	return false;
 }
 
-const ModBlockFlags ModBlock::GetFlags() const
+blockExecution ModBlock::PullExecuteRelease() const
 {
-	return ModBlockFlags();
+	return ExecuteRelease;
+}
+
+blockExecution ModBlock::PullExecuteDebug() const
+{
+	return ExecuteDebug;
 }
 
 blockInitialization ModBlock::GetRuntimeGlobalPreInit() const

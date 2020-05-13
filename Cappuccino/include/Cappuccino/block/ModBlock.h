@@ -40,10 +40,8 @@ enum class BlockArgumentVariableModeRestriction
 	NONE          - excepts either raw or var, raw will be raw, var will be the value
 	ONLY_RAW      - excepts only raw         , raw will be raw
 	ONLY_VAR      - excepts only var         , var will be the value
-	ONLY_VAR_KEEP - excepts only var         , var will be the variable name (inputed) - this is for if you want to "show"
-																						 to the user that you expect a variable.
 	*/
-	NONE, ONLY_RAW, ONLY_VAR, ONLY_VAR_KEEP
+	NONE, ONLY_RAW, ONLY_VAR
 };
 
 enum class BlockArgumentVariableMode
@@ -77,20 +75,20 @@ public:
 	// how the block will be identified as. Convention example: "mymod_some_block_name"
 	CAP_DLL virtual const char* GetUnlocalizedName() const;
 
+	// category of the block
+	CAP_DLL virtual const char* GetCategory() const;
+
+	// does the block start a stack
+	CAP_DLL virtual bool IsTopical() const;
+
 	// what will be executed in a release build
 	CAP_DLL virtual blockExecution PullExecuteRelease() const;
 
 	// what will be executed in a debug build
 	CAP_DLL virtual blockExecution PullExecuteDebug() const;
 	
-	// category of the block
-	CAP_DLL virtual const char* GetCategory() const;
-	
-	// does the block start a stack
-	CAP_DLL virtual bool IsTopical() const;
-	
 	// flags to check during debug build
-	CAP_DLL virtual const ModBlockFlags GetFlags() const;
+	//CAP_DLL virtual const ModBlockFlags GetFlags() const;
 	
 	// actions to run once per block type; during runtime before Initialization
 	CAP_DLL virtual blockInitialization GetRuntimeGlobalPreInit() const;

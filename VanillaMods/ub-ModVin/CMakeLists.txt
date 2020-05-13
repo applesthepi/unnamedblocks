@@ -5,23 +5,63 @@ configure_file(config.h.in config.h)
 set(VERSION_MOD_VIN "0.0.0" CACHE STRING "Version of Mod Vin")
 
 set(ModVin_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTest.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTest.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockMain.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockMain.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTestRender.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTestRender.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTestEvent.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockTestEvent.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYes.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYes.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYesTo.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockYesTo.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockBool.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/BlockBool.h"
+
+	#======================================================================================================================
+	#=========== Mod
+	#======================================================================================================================
+	
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
+	
+	#======================================================================================================================
+	#=========== System
+	#======================================================================================================================
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemMain.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemMain.cpp"
+	
+	#======================================================================================================================
+	#=========== Objects
+	#======================================================================================================================
+	
+	#======================================================================================================================
+	#=========== Booleans
+	#======================================================================================================================
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanForce.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanForce.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanLog.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanLog.cpp"
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanSet.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanSet.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanFlip.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanFlip.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanAnd.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanAnd.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanOr.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanOr.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanNot.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/booleans/BlockBooleanNot.cpp"
+	
+	#======================================================================================================================
+	#=========== Reals
+	#======================================================================================================================
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/reals/BlockRealForce.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/reals/BlockRealForce.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/reals/BlockRealLog.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/reals/BlockRealLog.cpp"
+	
+	#======================================================================================================================
+	#=========== Strings
+	#======================================================================================================================
+
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringForce.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringForce.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringLog.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringLog.cpp"
 )
 
 add_library(ModVin MODULE
