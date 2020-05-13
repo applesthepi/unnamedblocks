@@ -381,8 +381,6 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 	{
 		Logger::Warn("unknown sfml char code: \"" + std::to_string(ev.code) + "\"");
 	}
-
-	Logger::Debug(*text);
 }
 
 void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
