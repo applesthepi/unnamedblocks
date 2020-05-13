@@ -82,11 +82,16 @@ target_link_libraries(unnamedblocks PUBLIC
 	sfml-graphics
 	sfml-system
 	sfml-window
-	"${csfml-audio}"
-    "${csfml-network}"
-    "${csfml-graphics}"
-    "${csfml-system}"
-    "${csfml-window}"
+	optimized "${csfml-audio}"
+    optimized "${csfml-network}"
+    optimized "${csfml-graphics}"
+    optimized "${csfml-system}"
+    optimized "${csfml-window}"
+	debug "${csfml-audio-d}"
+    debug "${csfml-network-d}"
+    debug "${csfml-graphics-d}"
+    debug "${csfml-system-d}"
+    debug "${csfml-window-d}"
 	"${GLEW_LIBRARIES}"
 	"${OPENGL_LIBRARIES}"
 	"${CMAKE_DL_LIBS}"

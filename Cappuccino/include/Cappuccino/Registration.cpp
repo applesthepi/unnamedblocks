@@ -584,7 +584,7 @@ bool Registration::TestSuperDebug()
 		m_breakSingleResume = false;
 
 		std::unique_lock<std::mutex> lock(m_executionMutex);
-		m_execution[(uint32_t)m_superData]->Break(&m_breakSingleResume);
+		m_execution[reinterpret_cast<uint64_t>(m_superData)]->Break(&m_breakSingleResume);
 		
 		return true;
 	}
@@ -618,7 +618,7 @@ bool Registration::TestSuperDebug()
 		printf("stepping single execution...\n");
 
 		std::unique_lock<std::mutex> lock(m_executionMutex);
-		m_execution[(uint32_t)m_superData]->Step();
+		m_execution[reinterpret_cast<uint64_t>(m_superData)]->Step();
 
 		return true;
 	}

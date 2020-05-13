@@ -2,6 +2,7 @@
 #include "ModBlockFlagsIterator.h"
 
 #include <stdint.h>
+#include "config.h"
 
 #ifndef LINUX
 #ifdef __CAP

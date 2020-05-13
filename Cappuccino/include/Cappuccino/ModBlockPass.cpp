@@ -1,5 +1,6 @@
 ﻿#include "ModBlockPass.h"
 
+#include <thread>
 #include <cstddef>
 #include <cstdio>
 #include <locale>
