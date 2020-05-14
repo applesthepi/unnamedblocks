@@ -2,7 +2,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	bool* db = pass->GetBool(1);
+	bool* db = pass->GetBool(0);
+	bool* db2 = pass->GetBool(1);
 	*pass->GetBool(0) = *pass->GetBool(1);
 }
 

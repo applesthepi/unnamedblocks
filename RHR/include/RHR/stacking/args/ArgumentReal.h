@@ -301,7 +301,7 @@ public:
 
 	BlockArgumentType GetType() override
 	{
-		return BlockArgumentType::STRING;
+		return BlockArgumentType::REAL;
 	}
 private:
 	std::string m_lastVar;

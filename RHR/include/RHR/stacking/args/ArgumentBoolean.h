@@ -153,7 +153,7 @@ public:
 		uint64_t superWidthBounds;
 
 		if (m_variableMode)
-			superWidthBounds = m_inputBackground.getSize().x;
+			superWidthBounds = m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 		else
 			superWidthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
 
@@ -191,19 +191,13 @@ public:
 		else if (button == sf::Mouse::Left)
 		{
 			uint64_t widthBounds;
-			int64_t posBounds;
 
 			if (m_variableMode)
-				widthBounds = m_input.getLocalBounds().width;
+				widthBounds = m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 			else
 				widthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
 
-			if (m_variableMode)
-				posBounds = ((Global::BlockHeight - Global::BlockBorder) / 2);
-			else
-				posBounds = 0;
-
-			if (InputHandler::RunMouseProccess(&m_text, sf::Vector2i(posBounds + GetRealAbsolutePosition().x + (int)Global::BlockBorder, GetRealAbsolutePosition().y + (Global::BlockBorder / 2)), sf::Vector2u(widthBounds, m_inputBackground.getSize().y), &m_textLocHigh, &m_textLoc, &m_isDown, down, position, Global::BlockHeight - Global::BlockBorder))
+			if (InputHandler::RunMouseProccess(&m_text, sf::Vector2i(GetRealAbsolutePosition().x, GetRealAbsolutePosition().y + (Global::BlockBorder / 2)), sf::Vector2u(widthBounds, m_inputBackground.getSize().y), &m_textLocHigh, &m_textLoc, &m_isDown, down, position, Global::BlockHeight - Global::BlockBorder))
 			{
 				if (down)
 					Select();
@@ -309,7 +303,7 @@ public:
 
 	BlockArgumentType GetType() override
 	{
-		return BlockArgumentType::STRING;
+		return BlockArgumentType::BOOL;
 	}
 private:
 	std::string m_lastVar;

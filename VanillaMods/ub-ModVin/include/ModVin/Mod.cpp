@@ -21,6 +21,31 @@
 
 #include "blocks/reals/BlockRealForce.h"
 #include "blocks/reals/BlockRealLog.h"
+#include "blocks/reals/BlockRealSet.h"
+#include "blocks/reals/BlockRealPlus.h"
+#include "blocks/reals/BlockRealMinus.h"
+#include "blocks/reals/BlockRealDivide.h"
+#include "blocks/reals/BlockRealMultiply.h"
+#include "blocks/reals/BlockRealMod.h"
+#include "blocks/reals/BlockRealFloor.h"
+#include "blocks/reals/BlockRealCeil.h"
+#include "blocks/reals/BlockRealRound.h"
+#include "blocks/reals/BlockRealFromBool.h"
+#include "blocks/reals/BlockRealFromString.h"
+#include "blocks/reals/BlockRealPi.h"
+#include "blocks/reals/BlockRealEulers.h"
+#include "blocks/reals/BlockRealRandom.h"
+#include "blocks/reals/BlockRealAbs.h"
+#include "blocks/reals/BlockRealPow.h"
+#include "blocks/reals/BlockRealLog.h"
+#include "blocks/reals/BlockRealSin.h"
+#include "blocks/reals/BlockRealCos.h"
+#include "blocks/reals/BlockRealTan.h"
+#include "blocks/reals/BlockRealCompEq.h"
+#include "blocks/reals/BlockRealCompGr.h"
+#include "blocks/reals/BlockRealCompLs.h"
+#include "blocks/reals/BlockRealCompGrEq.h"
+#include "blocks/reals/BlockRealCompLsEq.h"
 
 // strings
 
@@ -72,6 +97,31 @@ UB_EXPORT void Initialization(ModData* data)
 
 	data->RegisterBlock(new BlockRealForce());
 	data->RegisterBlock(new BlockRealLog());
+	data->RegisterBlock(new BlockRealSet());
+	data->RegisterBlock(new BlockRealFromBool());
+	data->RegisterBlock(new BlockRealFromString());
+	data->RegisterBlock(new BlockRealPi());
+	data->RegisterBlock(new BlockRealEulers());
+	data->RegisterBlock(new BlockRealPlus());
+	data->RegisterBlock(new BlockRealMinus());
+	data->RegisterBlock(new BlockRealDivide());
+	data->RegisterBlock(new BlockRealMultiply());
+	data->RegisterBlock(new BlockRealMod());
+	data->RegisterBlock(new BlockRealFloor());
+	data->RegisterBlock(new BlockRealCeil());
+	data->RegisterBlock(new BlockRealRound());
+	data->RegisterBlock(new BlockRealRandom());
+	data->RegisterBlock(new BlockRealAbs());
+	data->RegisterBlock(new BlockRealPow());
+	data->RegisterBlock(new BlockRealLog());
+	data->RegisterBlock(new BlockRealSin());
+	data->RegisterBlock(new BlockRealCos());
+	data->RegisterBlock(new BlockRealTan());
+	data->RegisterBlock(new BlockRealCompEq());
+	data->RegisterBlock(new BlockRealCompGr());
+	data->RegisterBlock(new BlockRealCompLs());
+	data->RegisterBlock(new BlockRealCompGrEq());
+	data->RegisterBlock(new BlockRealCompLsEq());
 
 	// strings
 

@@ -2,7 +2,7 @@
 #include "ModVin/ModCategories.h"
 #include <Espresso/Espresso.h>
 
-class BlockRealLog : public ModBlock
+class BlockRealRandom : public ModBlock
 {
 public:
 	const char* GetUnlocalizedName() const override;
@@ -10,6 +10,8 @@ public:
 
 	blockExecution PullExecuteRelease() const override;
 	blockExecution PullExecuteDebug() const override;
+
+	blockInitialization GetRuntimeGlobalPreInit() const override;
 
 	const std::vector<BlockArgumentInitializer> GetArguments() const override;
 };

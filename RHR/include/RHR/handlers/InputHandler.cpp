@@ -377,10 +377,6 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 		insertChar('*');
 	else if (ev.code == 70)
 		insertChar('/');
-	else
-	{
-		Logger::Warn("unknown sfml char code: \"" + std::to_string(ev.code) + "\"");
-	}
 }
 
 void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
