@@ -35,6 +35,7 @@
 #include "blocks/reals/BlockRealPi.h"
 #include "blocks/reals/BlockRealEulers.h"
 #include "blocks/reals/BlockRealRandom.h"
+#include "blocks/reals/BlockRealLogarithmic.h"
 #include "blocks/reals/BlockRealAbs.h"
 #include "blocks/reals/BlockRealPow.h"
 #include "blocks/reals/BlockRealLog.h"
@@ -51,6 +52,15 @@
 
 #include "blocks/strings/BlockStringForce.h"
 #include "blocks/strings/BlockStringLog.h"
+#include "blocks/strings/BlockStringSubString.h"
+#include "blocks/strings/BlockStringCharAt.h"
+#include "blocks/strings/BlockStringCompEq.h"
+#include "blocks/strings/BlockStringLength.h"
+#include "blocks/strings/BlockStringSet.h"
+#include "blocks/strings/BlockStringFromReal.h"
+#include "blocks/strings/BlockStringFromRealInt.h"
+#include "blocks/strings/BlockStringFromBool.h"
+#include "blocks/strings/BlockStringFind.h"
 
 UB_EXPORT void Initialization(ModData* data)
 {
@@ -67,10 +77,11 @@ UB_EXPORT void Initialization(ModData* data)
 	// ============================================
 
 	data->RegisterCategory(new CategorySystem(data->ModUnlocalizedName, data->ModDisplayName));
+	data->RegisterCategory(new CategoryUtility(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryObjects(data->ModUnlocalizedName, data->ModDisplayName));
-	data->RegisterCategory(new CategoryBooleans(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryReals(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryStrings(data->ModUnlocalizedName, data->ModDisplayName));
+	data->RegisterCategory(new CategoryBooleans(data->ModUnlocalizedName, data->ModDisplayName));
 
 	// ============================================
 	// ==== Blocks
@@ -79,6 +90,8 @@ UB_EXPORT void Initialization(ModData* data)
 	// system
 
 	data->RegisterBlock(new BlockSystemMain());
+
+	// utility
 
 	// objects
 
@@ -107,12 +120,13 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockRealDivide());
 	data->RegisterBlock(new BlockRealMultiply());
 	data->RegisterBlock(new BlockRealMod());
+	data->RegisterBlock(new BlockRealRandom());
+	data->RegisterBlock(new BlockRealPow());
+	data->RegisterBlock(new BlockRealLogarithmic());
 	data->RegisterBlock(new BlockRealFloor());
 	data->RegisterBlock(new BlockRealCeil());
 	data->RegisterBlock(new BlockRealRound());
-	data->RegisterBlock(new BlockRealRandom());
 	data->RegisterBlock(new BlockRealAbs());
-	data->RegisterBlock(new BlockRealPow());
 	data->RegisterBlock(new BlockRealLog());
 	data->RegisterBlock(new BlockRealSin());
 	data->RegisterBlock(new BlockRealCos());
@@ -127,4 +141,13 @@ UB_EXPORT void Initialization(ModData* data)
 
 	data->RegisterBlock(new BlockStringForce());
 	data->RegisterBlock(new BlockStringLog());
+	data->RegisterBlock(new BlockStringSet());
+	data->RegisterBlock(new BlockStringFromReal());
+	data->RegisterBlock(new BlockStringFromRealInt());
+	data->RegisterBlock(new BlockStringFromBool());
+	data->RegisterBlock(new BlockStringLength());
+	data->RegisterBlock(new BlockStringCharAt());
+	data->RegisterBlock(new BlockStringSubString());
+	data->RegisterBlock(new BlockStringFind());
+	data->RegisterBlock(new BlockStringCompEq());
 }

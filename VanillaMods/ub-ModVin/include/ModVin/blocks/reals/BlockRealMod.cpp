@@ -2,12 +2,12 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-
+	*pass->GetReal(0) = (int64_t)*pass->GetReal(0) % (int64_t)*pass->GetReal(1);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-
+	ExecuteRelease(pass);
 }
 
 const char* BlockRealMod::GetUnlocalizedName() const

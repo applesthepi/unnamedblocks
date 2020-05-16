@@ -2,7 +2,7 @@
 #include "ModVin/ModCategories.h"
 #include <Espresso/Espresso.h>
 
-class BlockRealRandom : public ModBlock
+class BlockStringCharAt : public ModBlock
 {
 public:
 	const char* GetUnlocalizedName() const override;

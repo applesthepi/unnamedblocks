@@ -1,16 +1,10 @@
 #include "BlockRealRandom.h"
 #include <cmath>
-#include <time.h>
-
-static bool RuntimeGlobalPreInit(PreProcessorData& data)
-{
-	srand(time(NULL));
-	return true;
-}
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = (double)((double)std::rand() / RAND_MAX);
+	std::uniform_real_distribution<double> draw(0.0, 1.0);
+	*pass->GetReal(0) = draw(pass->GetRandomGenerator());
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -36,11 +30,6 @@ blockExecution BlockRealRandom::PullExecuteRelease() const
 blockExecution BlockRealRandom::PullExecuteDebug() const
 {
 	return ExecuteDebug;
-}
-
-blockInitialization BlockRealRandom::GetRuntimeGlobalPreInit() const
-{
-	return RuntimeGlobalPreInit;
 }
 
 const std::vector<BlockArgumentInitializer> BlockRealRandom::GetArguments() const

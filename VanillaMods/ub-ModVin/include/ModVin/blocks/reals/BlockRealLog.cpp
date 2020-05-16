@@ -1,13 +1,14 @@
 #include "BlockRealLog.h"
+#include <string>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-
+	pass->LogInfo(std::to_string(*pass->GetReal(0)));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-
+	ExecuteRelease(pass);
 }
 
 const char* BlockRealLog::GetUnlocalizedName() const

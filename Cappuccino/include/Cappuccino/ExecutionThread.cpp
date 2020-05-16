@@ -2,6 +2,7 @@
 #include "Registration.h"
 
 #include <exception>
+#include <ctime>
 
 void ThreadExecution(ExecutionThread* thr)
 {

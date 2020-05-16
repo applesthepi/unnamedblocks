@@ -10,6 +10,7 @@
 #include <SFML/System/Mutex.h>
 #include <chrono>
 #include <atomic>
+#include <random>
 
 #ifndef LINUX
 	#ifdef __CAP
@@ -102,6 +103,8 @@ public:
 	CAP_DLL std::vector<uint64_t>& GetCallstackStack();
 	CAP_DLL std::vector<uint64_t>& GetCallstackBlock();
 
+	CAP_DLL std::mt19937_64& GetRandomGenerator();
+
 	// ====================================================
 	// custom allocations
 	// ====================================================
@@ -145,6 +148,7 @@ private:
 	std::vector<std::string> m_messages;
 	void(*m_stop)();
 	std::chrono::steady_clock::time_point* m_beginTime;
+	std::mt19937_64 m_random;
 
 	// debug only
 	std::vector<std::string>* m_variableRegistry;

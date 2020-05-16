@@ -409,7 +409,9 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 
 		for (uint64_t i = 0; i < ch.length(); i++)
 		{
-			if (ch[i] >= 48 && ch[i] <= 57)
+			if (i == 0 && ch[i] == '-')
+				nCh += ch[i];
+			else if (ch[i] >= 48 && ch[i] <= 57)
 				nCh += ch[i];
 			else if (ch[i] == '.')
 			{
@@ -633,6 +635,11 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 		
 		if (!found)
 			insertChar('.');
+	}
+	else if (ev.code == sf::Keyboard::Key::Hyphen && !ev.shift && (*loc == 0 || *locHigh == 0))
+	{
+		if (text->at(0) != '-')
+			insertChar('-');
 	}
 	else if (ev.code >= 75 && ev.code <= 84)
 		insertChar(ev.code - 27);

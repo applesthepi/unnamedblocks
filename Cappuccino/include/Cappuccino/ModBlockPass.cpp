@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <locale>
-#include <time.h>
+#include <ctime>
 #include <cstring>
 #include <chrono>
 
@@ -37,6 +37,7 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 	m_stop = init.Stop;
 	m_variableRegistry = init.VariableRegistry;
 	m_beginTime = init.BeginTime;
+	m_random.seed(std::time(0));
 }
 
 void ModBlockPass::SetData(ModBlockData** data)
@@ -96,6 +97,11 @@ CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackStack()
 CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackBlock()
 {
 	return *m_callstackBlockIdx;
+}
+
+CAP_DLL std::mt19937_64& ModBlockPass::GetRandomGenerator()
+{
+	return m_random;
 }
 
 CAP_DLL const uint64_t ModBlockPass::CustomPut(void* mem)

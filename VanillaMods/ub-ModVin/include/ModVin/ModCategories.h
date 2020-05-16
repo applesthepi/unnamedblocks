@@ -2,6 +2,7 @@
 #include <Espresso/Espresso.h>
 
 #define CATEGORY_SYSTEM "vin_system"
+#define CATEGORY_UTILITY "vin_utility"
 #define CATEGORY_OBJECTS "vin_objects"
 #define CATEGORY_BOOLEANS "vin_booleans"
 #define CATEGORY_REALS "vin_reals"
@@ -26,6 +27,28 @@ public:
 	const std::string GetDisplayName() const override
 	{
 		return "System";
+	}
+};
+
+class CategoryUtility : public ModCatagory
+{
+public:
+	CategoryUtility(const std::string& modUnlocalizedName, const std::string& modDisplayName)
+		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+
+	const sf::Color GetColor() const override
+	{
+		return sf::Color(150, 150, 150);
+	}
+
+	const std::string GetUnlocalizedName() const override
+	{
+		return CATEGORY_UTILITY;
+	}
+
+	const std::string GetDisplayName() const override
+	{
+		return "Utiltiy";
 	}
 };
 
