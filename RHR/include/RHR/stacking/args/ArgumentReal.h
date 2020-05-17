@@ -1,9 +1,8 @@
 #pragma once
-
 #include "Argument.h"
-#include "RHR/Global.h"
-#include "RHR/handlers/InputHandler.h"
 
+#include <Espresso/Global.h>
+#include <Espresso/InputHandler.h>
 #include <SFML/Window/Clipboard.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -88,7 +87,7 @@ public:
 	void FrameUpdate() override
 	{
 		if (m_selected && !m_fullSelect)
-			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(ARGUMENT_DECOR_REACH + GetRealAbsolutePosition().x + (int)Global::BlockBorder, GetRealAbsolutePosition().y + (Global::BlockBorder / 2)), (sf::Vector2u)m_inputBackground.getSize(), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder);
+			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(m_inputBackground.getSize().x + (ARGUMENT_DECOR_REACH * 2), m_inputBackground.getSize().y), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder, ARGUMENT_DECOR_REACH);
 
 		m_input.setString(m_text);
 		m_input.setPosition(GetRelitivePosition().x + (float)Global::BlockBorder + ARGUMENT_DECOR_REACH, GetRelitivePosition().y);
@@ -175,7 +174,7 @@ public:
 		}
 
 		if (button == sf::Mouse::Middle && down &&
-			position.x >= ARGUMENT_DECOR_REACH + m_realAbsolutePosition.x && position.x <= ARGUMENT_DECOR_REACH + m_realAbsolutePosition.x + m_inputBackground.getSize().x &&
+			position.x >= m_realAbsolutePosition.x && position.x <= (ARGUMENT_DECOR_REACH * 2) + m_realAbsolutePosition.x + m_inputBackground.getSize().x &&
 			position.y >= m_realAbsolutePosition.y && position.y <= m_realAbsolutePosition.y + m_inputBackground.getSize().y)
 		{
 			SelectGlobaly();
@@ -205,7 +204,9 @@ public:
 		}
 		else if (button == sf::Mouse::Left)
 		{
-			if (InputHandler::RunMouseProccess(&m_text, sf::Vector2i(ARGUMENT_DECOR_REACH + GetRealAbsolutePosition().x + (int)Global::BlockBorder, GetRealAbsolutePosition().y + (Global::BlockBorder / 2)), sf::Vector2u(m_input.getLocalBounds().width, m_inputBackground.getSize().y), &m_textLocHigh, &m_textLoc, &m_isDown, down, position, Global::BlockHeight - Global::BlockBorder))
+			TextSystem tSys(&m_text, &m_textLocHigh, &m_textLoc, &m_isDown);
+
+			if (InputHandler::RunMouseProccess(tSys, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(m_inputBackground.getSize().x + (ARGUMENT_DECOR_REACH * 2), m_inputBackground.getSize().y), down, position, Global::BlockHeight - Global::BlockBorder, ARGUMENT_DECOR_REACH))
 			{
 				if (down)
 					Select();

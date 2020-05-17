@@ -1,7 +1,8 @@
 #include "MessageHandler.h"
-#include "RHR/Global.h"
 #include "InputHandler.h"
 #include "RHR/registries/ButtonRegistry.h"
+
+#include <Espresso/Global.h>
 
 void ThreadMessage()
 {

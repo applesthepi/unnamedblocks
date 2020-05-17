@@ -1,9 +1,9 @@
 #include "RHR/registries/ShaderRegistry.h"
 #include "Plane.h"
-#include "RHR/Global.h"
+
+#include <Espresso/Global.h>
 #include <Cappuccino/Logger.h>
 #include <cassert>
-
 #include <exception>
 #include <iostream>
 

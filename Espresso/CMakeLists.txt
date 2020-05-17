@@ -5,10 +5,15 @@ configure_file(config.h.in config.h)
 set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Global.cpp"
 	# Headers
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Espresso.h"
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Global.h"
 	)
 add_library(Espresso STATIC
 	${Espresso_SRC}

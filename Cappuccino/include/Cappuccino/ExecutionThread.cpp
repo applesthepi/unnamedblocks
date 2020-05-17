@@ -76,6 +76,8 @@ loop:
 		goto loop;
 	}
 
+	pass->PerformDeallocationCallbacks();
+
 	if (successful)
 	{
 		Registration::UnRegisterPass(thr->GetPass());

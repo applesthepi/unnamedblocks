@@ -3,7 +3,7 @@
 
 #define CATEGORY_SYSTEM "vin_system"
 #define CATEGORY_UTILITY "vin_utility"
-#define CATEGORY_OBJECTS "vin_objects"
+#define CATEGORY_GRAPHICS "vin_graphics"
 #define CATEGORY_BOOLEANS "vin_booleans"
 #define CATEGORY_REALS "vin_reals"
 #define CATEGORY_STRINGS "vin_strings"
@@ -48,14 +48,14 @@ public:
 
 	const std::string GetDisplayName() const override
 	{
-		return "Utiltiy";
+		return "Utility";
 	}
 };
 
-class CategoryObjects : public ModCatagory
+class CategoryGraphics : public ModCatagory
 {
 public:
-	CategoryObjects(const std::string& modUnlocalizedName, const std::string& modDisplayName)
+	CategoryGraphics(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
 	const sf::Color GetColor() const override
@@ -65,12 +65,12 @@ public:
 
 	const std::string GetUnlocalizedName() const override
 	{
-		return CATEGORY_OBJECTS;
+		return CATEGORY_GRAPHICS;
 	}
 
 	const std::string GetDisplayName() const override
 	{
-		return "Objects";
+		return "Graphics";
 	}
 };
 

@@ -1,5 +1,5 @@
 #include "InputHandler.h"
-#include "RHR/Global.h"
+#include "Global.h"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
@@ -11,18 +11,18 @@
 
 void InputHandler::Initialization()
 {
-	text_callbacks = new std::vector<std::function<void(const sf::Event::TextEvent&)>*>();
-	key_callbacks = new std::vector<std::function<void(const sf::Event::KeyEvent&)>*>();
+	m_textCallbacks = new std::vector<std::function<void(const sf::Event::TextEvent&)>*>();
+	m_keyCallbacks = new std::vector<std::function<void(const sf::Event::KeyEvent&)>*>();
 }
 
 void InputHandler::FireTextEvent(sf::Event::TextEvent ev) {
-	for(std::function<void(const sf::Event::TextEvent&)>* i : *InputHandler::text_callbacks) {
+	for(std::function<void(const sf::Event::TextEvent&)>* i : *InputHandler::m_textCallbacks) {
 		(*i)(ev);
 	}
 }
 
 void InputHandler::FireKeyEvent(sf::Event::KeyEvent ev) {
-	for(std::function<void(const sf::Event::KeyEvent&)>* i : *InputHandler::key_callbacks) {
+	for(std::function<void(const sf::Event::KeyEvent&)>* i : *InputHandler::m_keyCallbacks) {
 		(*i)(ev);
 	}
 }
@@ -695,37 +695,37 @@ bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t*
 	return false;
 }
 
-bool InputHandler::RunMouseProccess(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* locHigh, uint64_t* loc, bool* isDown, const bool& down, const sf::Vector2i& pos, const uint16_t& fontSize)
+bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, const bool& down, const sf::Vector2i& pos, const uint16_t& fontSize, const int64_t& vanityOffset)
 {
 	if (pos.x >= tPos.x && pos.x <= tPos.x + tSize.x)
 	{
 		if (!down)
-			*isDown = false;
+			*system.IsDown = false;
 
 		if (down && pos.y >= tPos.y && pos.y <= tPos.y + tSize.y)
 		{
-			*isDown = true;
+			*system.IsDown = true;
 
-			for (uint64_t i = 0; i < text->length() + 1; i++)
+			for (uint64_t i = 0; i < system.Text->length() + 1; i++)
 			{
-				uint64_t ix = tPos.x;
+				uint64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
 
-				if (i == text->length())
+				if (i == system.Text->length())
 				{
-					*loc = i;
-					*locHigh = i;
+					*system.Loc = i;
+					*system.LocHigh = i;
 					break;
 				}
 				else
 				{
-					ix += sf::Text(text->substr(0, i), *Global::Font, fontSize).getLocalBounds().width;
-					ix += sf::Text(text->substr(i, 1), *Global::Font, fontSize).getLocalBounds().width / 2.0;
+					ix += sf::Text(system.Text->substr(0, i), *Global::Font, fontSize).getLocalBounds().width;
+					ix += sf::Text(system.Text->substr(i, 1), *Global::Font, fontSize).getLocalBounds().width / 2.0;
 				}
 
 				if (pos.x <= ix)
 				{
-					*loc = i;
-					*locHigh = i;
+					*system.Loc = i;
+					*system.LocHigh = i;
 					break;
 				}
 			}
@@ -773,7 +773,7 @@ void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* is
 	}
 }
 
-void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, const uint16_t& fontSize)
+void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, const uint16_t& fontSize, const int64_t& vanityOffset)
 {
 	if (*isDown)
 	{
@@ -781,7 +781,7 @@ void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& 
 		{
 			for (uint64_t i = 0; i < text->length() + 1; i++)
 			{
-				uint64_t ix = tPos.x;
+				uint64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
 
 				if (i == text->length())
 				{
@@ -806,21 +806,42 @@ void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& 
 
 void InputHandler::RegisterKeyCallback(std::function<void(const sf::Event::KeyEvent&)>* fun)
 {
-	key_callbacks->push_back(fun);
+	m_keyCallbacks->push_back(fun);
 }
 
 void InputHandler::UnregisterKeyCallback(std::function<void(const sf::Event::KeyEvent&)>* fun)
 {
-	for (uint64_t i = 0; i < key_callbacks->size(); i++)
+	for (uint64_t i = 0; i < m_keyCallbacks->size(); i++)
 	{
-		if ((*key_callbacks)[i] == fun)
+		if ((*m_keyCallbacks)[i] == fun)
 		{
-			key_callbacks->erase(key_callbacks->begin() + static_cast<int32_t>(i));
+			m_keyCallbacks->erase(m_keyCallbacks->begin() + static_cast<int32_t>(i));
 			return;
 		}
 	}
+
+	Logger::Error("failed to unregister key callback");
 }
 
-std::vector<std::function<void(const sf::Event::TextEvent&)>*>* InputHandler::text_callbacks;
+void InputHandler::RegisterTextCallback(std::function<void(const sf::Event::TextEvent&)>* fun)
+{
+	m_textCallbacks->push_back(fun);
+}
 
-std::vector<std::function<void(const sf::Event::KeyEvent&)>*>* InputHandler::key_callbacks;
+void InputHandler::UnregisterTextCallback(std::function<void(const sf::Event::TextEvent&)>* fun)
+{
+	for (uint64_t i = 0; i < m_textCallbacks->size(); i++)
+	{
+		if ((*m_textCallbacks)[i] == fun)
+		{
+			m_textCallbacks->erase(m_textCallbacks->begin() + static_cast<int32_t>(i));
+			return;
+		}
+	}
+
+	Logger::Error("failed to unregister text callback");
+}
+
+std::vector<std::function<void(const sf::Event::TextEvent&)>*>* InputHandler::m_textCallbacks;
+
+std::vector<std::function<void(const sf::Event::KeyEvent&)>*>* InputHandler::m_keyCallbacks;

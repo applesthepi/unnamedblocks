@@ -1,7 +1,8 @@
 #include "ModLoader.h"
 #include "RHR/handlers/runtime/PreProcessor.h"
-#include "handlers/InputHandler.h"
 #include "handlers/CategoryHandler.h"
+
+#include <Espresso/InputHandler.h>
 #include <SFML/Window/Event.hpp>
 
 #ifdef POSIX

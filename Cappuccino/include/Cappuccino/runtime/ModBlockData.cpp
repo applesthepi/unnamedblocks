@@ -36,6 +36,11 @@ const std::vector<void*>& ModBlockData::GetData()
 	return m_data;
 }
 
+MODBLOCK_EXPORT std::vector<void*>& ModBlockData::GetPreData()
+{
+	return m_preData;
+}
+
 void** ModBlockData::GetCData()
 {
 	if (m_data.size() == 0)
@@ -44,9 +49,19 @@ void** ModBlockData::GetCData()
 		return &m_data[0];
 }
 
+MODBLOCK_EXPORT void** ModBlockData::GetCPreData()
+{
+	return &m_preData[0];
+}
+
 const uint64_t ModBlockData::GetDataSize()
 {
 	return m_data.size();
+}
+
+MODBLOCK_EXPORT const uint64_t ModBlockData::GetPreDataSize()
+{
+	return m_preData.size();
 }
 
 const std::vector<ModBlockDataType>& ModBlockData::GetTypes()

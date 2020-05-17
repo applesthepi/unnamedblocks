@@ -4,7 +4,6 @@
 
 #include "handlers/MessageHandler.h"
 #include "handlers/ProjectHandler.h"
-#include "handlers/InputHandler.h"
 
 // runtime
 

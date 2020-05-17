@@ -3,8 +3,33 @@
 // system
 
 #include "blocks/system/BlockSystemMain.h"
+#include "blocks/system/BlockSystemPullEvents.h"
+#include "blocks/system/BlockSystemCreateWindow.h"
+#include "blocks/system/BlockSystemWindowMouseX.h"
+#include "blocks/system/BlockSystemWindowMouseY.h"
+#include "blocks/system/BlockSystemWindowMouseLeft.h"
+#include "blocks/system/BlockSystemWindowMouseMiddle.h"
+#include "blocks/system/BlockSystemWindowMouseRight.h"
+#include "blocks/system/BlockSystemWindowPullScroll.h"
+#include "blocks/system/BlockSystemSleep.h"
+#include "blocks/system/BlockSystemWindowVsync.h"
+#include "blocks/system/BlockSystemWindowFps.h"
+#include "blocks/system/BlockSystemWindowRender.h"
 
-// objects
+// utility
+
+#include "blocks/utility/BlockUtilityMarkPoint.h"
+#include "blocks/utility/BlockUtilityGotoPoint.h"
+#include "blocks/utility/BlockUtilityGotoPointIf.h"
+
+// graphics
+
+#include "blocks/graphics/BlockGraphicsTextureLoad.h"
+#include "blocks/graphics/BlockGraphicsSpriteCreate.h"
+#include "blocks/graphics/BlockGraphicsSpriteDestroy.h"
+#include "blocks/graphics/BlockGraphicsSpriteTextureSet.h"
+#include "blocks/graphics/BlockGraphicsSpriteEnable.h"
+#include "blocks/graphics/BlockGraphicsSpriteDisable.h"
 
 // booleans
 
@@ -61,6 +86,7 @@
 #include "blocks/strings/BlockStringFromRealInt.h"
 #include "blocks/strings/BlockStringFromBool.h"
 #include "blocks/strings/BlockStringFind.h"
+#include "blocks/strings/BlockStringCatFrom.h"
 
 UB_EXPORT void Initialization(ModData* data)
 {
@@ -78,7 +104,7 @@ UB_EXPORT void Initialization(ModData* data)
 
 	data->RegisterCategory(new CategorySystem(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryUtility(data->ModUnlocalizedName, data->ModDisplayName));
-	data->RegisterCategory(new CategoryObjects(data->ModUnlocalizedName, data->ModDisplayName));
+	data->RegisterCategory(new CategoryGraphics(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryReals(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryStrings(data->ModUnlocalizedName, data->ModDisplayName));
 	data->RegisterCategory(new CategoryBooleans(data->ModUnlocalizedName, data->ModDisplayName));
@@ -90,10 +116,33 @@ UB_EXPORT void Initialization(ModData* data)
 	// system
 
 	data->RegisterBlock(new BlockSystemMain());
+	data->RegisterBlock(new BlockSystemSleep());
+	data->RegisterBlock(new BlockSystemCreateWindow());
+	data->RegisterBlock(new BlockSystemPullEvents());
+	data->RegisterBlock(new BlockSystemWindowRender());
+	data->RegisterBlock(new BlockSystemWindowVsync());
+	data->RegisterBlock(new BlockSystemWindowFps());
+	data->RegisterBlock(new BlockSystemWindowMouseX());
+	data->RegisterBlock(new BlockSystemWindowMouseY());
+	data->RegisterBlock(new BlockSystemWindowMouseLeft());
+	data->RegisterBlock(new BlockSystemWindowMouseMiddle());
+	data->RegisterBlock(new BlockSystemWindowMouseRight());
+	data->RegisterBlock(new BlockSystemWindowPullScroll());
 
 	// utility
 
-	// objects
+	data->RegisterBlock(new BlockUtilityMarkPoint());
+	data->RegisterBlock(new BlockUtilityGotoPoint());
+	data->RegisterBlock(new BlockUtilityGotoPointIf());
+
+	// graphics
+
+	data->RegisterBlock(new BlockGraphicsTextureLoad());
+	data->RegisterBlock(new BlockGraphicsSpriteCreate());
+	data->RegisterBlock(new BlockGraphicsSpriteDestroy());
+	data->RegisterBlock(new BlockGraphicsSpriteTextureSet());
+	data->RegisterBlock(new BlockGraphicsSpriteEnable());
+	data->RegisterBlock(new BlockGraphicsSpriteDisable());
 
 	// booleans
 
@@ -142,6 +191,7 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockStringForce());
 	data->RegisterBlock(new BlockStringLog());
 	data->RegisterBlock(new BlockStringSet());
+	data->RegisterBlock(new BlockStringCatFrom());
 	data->RegisterBlock(new BlockStringFromReal());
 	data->RegisterBlock(new BlockStringFromRealInt());
 	data->RegisterBlock(new BlockStringFromBool());

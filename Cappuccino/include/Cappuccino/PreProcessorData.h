@@ -24,8 +24,9 @@ public:
 	CAP_DLL void AddStructure(const std::string& name, void* structure);
 	CAP_DLL void* GetStructure(const std::string& name);
 
-	// these are NOT a block's arguments! These are the variable storages' inside Cappuccino.
+	// these are NOT a blocks' arguments! These are the variables' storage inside Cappuccino.
 	// only use these if your know what your doing!
+	// if your trying to use the  blocks' arguments during the initializations, then use the ModBlockData, not this.
 	CAP_DLL double& GetReal(const uint64_t& idx);
 	CAP_DLL bool& GetBool(const uint64_t& idx);
 	CAP_DLL std::string& GetString(const uint64_t& idx);

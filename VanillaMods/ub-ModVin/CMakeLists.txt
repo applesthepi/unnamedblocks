@@ -20,10 +20,58 @@ set(ModVin_SRC
 	
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemMain.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemMain.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemPullEvents.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemPullEvents.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemCreateWindow.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemCreateWindow.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseX.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseX.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseY.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseY.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseLeft.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseLeft.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseMiddle.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseMiddle.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseRight.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowMouseRight.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowPullScroll.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowPullScroll.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemSleep.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemSleep.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowVsync.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowVsync.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowFps.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowFps.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowRender.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/system/BlockSystemWindowRender.cpp"
 	
 	#======================================================================================================================
-	#=========== Objects
+	#=========== Utility
 	#======================================================================================================================
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityMarkPoint.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityMarkPoint.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGotoPoint.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGotoPoint.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGotoPointIf.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGotoPointIf.cpp"
+	
+	#======================================================================================================================
+	#=========== Graphics
+	#======================================================================================================================
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsTextureLoad.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsTextureLoad.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteCreate.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteCreate.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteDestroy.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteDestroy.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteTextureSet.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteTextureSet.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteEnable.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteEnable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteDisable.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/graphics/BlockGraphicsSpriteDisable.cpp"
 	
 	#======================================================================================================================
 	#=========== Booleans
@@ -130,6 +178,8 @@ set(ModVin_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringFromBool.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringFind.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringFind.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringCatFrom.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringCatFrom.cpp"
 )
 
 add_library(ModVin MODULE
