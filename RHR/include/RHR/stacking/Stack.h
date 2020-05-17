@@ -48,6 +48,10 @@ public:
 	void IndexVariables();
 private:
 	void PreRender();
+	void ResetTopicalGeometry();
+	void TopicalGeometry();
+	void GenerateTopicalGeometry();
+
 	std::vector<Block*> m_blocks;
 	sf::Vector2i m_setPosition;
 	sf::Vector2i m_relitivePosition;
@@ -83,4 +87,8 @@ private:
 	uint64_t m_highestWidth;
 	void* m_planePtr;
 	void* m_blockRegistry;
+
+	sf::Sprite m_topicalRenderSprite;
+	sf::RenderTexture m_topicalRenderTexture;
+	bool m_isTopical;
 };

@@ -20,6 +20,11 @@ const char* BlockSystemMain::GetCategory() const
 	return CATEGORY_SYSTEM;
 }
 
+bool BlockSystemMain::IsTopical() const
+{
+	return true;
+}
+
 blockExecution BlockSystemMain::PullExecuteRelease() const
 {
 	return ExecuteRelease;

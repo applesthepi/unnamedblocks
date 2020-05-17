@@ -186,7 +186,7 @@ void Plane::RenderConnection(sf::RenderWindow* window)
 		window->draw(m_draggingConnection);
 }
 
-void Plane::FrameUpdate(bool overrideBounding)
+void Plane::FrameUpdate(BlockRegistry* blockRegistry, bool overrideBounding)
 {
 	if (m_dragging)
 	{
@@ -228,47 +228,53 @@ void Plane::FrameUpdate(bool overrideBounding)
 			}
 		}
 
-		if (Global::DraggingPlaneOver != nullptr)
+		if (!blockRegistry->GetBlock(draggingStack->GetBlock(0)->GetUnlocalizedName())->IsTopical())
 		{
-			if (!((Plane*)Global::DraggingPlaneOver)->IsToolbar())
+			if (Global::DraggingPlaneOver != nullptr)
 			{
-				const std::vector<Stack*>* overPlaneStacks = ((Plane*)Global::DraggingPlaneOver)->GetAllStacks();
-
-				for (unsigned int i = 0; i < overPlaneStacks->size(); i++)
+				if (!((Plane*)Global::DraggingPlaneOver)->IsToolbar())
 				{
-					if ((*overPlaneStacks)[i] == draggingStack)
-						continue;
-	
-					unsigned int blockCount = (*overPlaneStacks)[i]->GetBlockCount();
-	
-					if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
-						draggingStack->GetAbsolutePosition().y >(*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(blockCount * Global::BlockHeight))
+					const std::vector<Stack*>* overPlaneStacks = ((Plane*)Global::DraggingPlaneOver)->GetAllStacks();
+
+					for (unsigned int i = 0; i < overPlaneStacks->size(); i++)
 					{
-						for (unsigned int a = 0; a < blockCount + 1; a++)
+						if ((*overPlaneStacks)[i] == draggingStack)
+							continue;
+
+						unsigned int blockCount = (*overPlaneStacks)[i]->GetBlockCount();
+
+						if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
+							draggingStack->GetAbsolutePosition().y >(*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(blockCount * Global::BlockHeight))
 						{
-							if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
-								draggingStack->GetAbsolutePosition().y >= (*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight))
+							for (unsigned int a = 0; a < blockCount + 1; a++)
 							{
-								unsigned int blockWidth = 0;
-								if (a == 0)
-									blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(0);
-								else
-									blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(a - 1);
-	
-								m_draggingConnection.setSize(sf::Vector2f(blockWidth, Global::BlockBorder / 2));
-								m_draggingConnection.setFillColor(sf::Color(200, 200, 200));
-								m_draggingConnection.setPosition((*overPlaneStacks)[i]->GetAbsolutePosition().x, (*overPlaneStacks)[i]->GetAbsolutePosition().y + static_cast<int64_t>(a * Global::BlockHeight));
-								m_useDraggingConnection = true;
-								
-								Global::DraggingStackConnected = (void*)(*overPlaneStacks)[i];
-								Global::DraggingStackConnectedIndex = a;
-	
-								return;
+								if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
+									draggingStack->GetAbsolutePosition().y >= (*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight))
+								{
+									if (a < blockCount && blockRegistry->GetBlock(overPlaneStacks->at(i)->GetBlock(a)->GetUnlocalizedName())->IsTopical())
+										continue;
+
+									unsigned int blockWidth = 0;
+									if (a == 0)
+										blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(0);
+									else
+										blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(a - 1);
+
+									m_draggingConnection.setSize(sf::Vector2f(blockWidth, Global::BlockBorder / 2));
+									m_draggingConnection.setFillColor(sf::Color(200, 200, 200));
+									m_draggingConnection.setPosition((*overPlaneStacks)[i]->GetAbsolutePosition().x, (*overPlaneStacks)[i]->GetAbsolutePosition().y + static_cast<int64_t>(a * Global::BlockHeight));
+									m_useDraggingConnection = true;
+
+									Global::DraggingStackConnected = (void*)(*overPlaneStacks)[i];
+									Global::DraggingStackConnectedIndex = a;
+
+									return;
+								}
 							}
 						}
 					}
 				}
-			}		
+			}
 		}
 	}
 

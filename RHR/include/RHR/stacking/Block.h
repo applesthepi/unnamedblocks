@@ -33,7 +33,7 @@ public:
 	void FrameUpdate(bool updateArgs, sf::Vector2f visualOffset, bool global = false);
 	void SetArgData(const std::vector<BlockArgumentCaller>& data);
 	void SetArgData(const std::vector<std::string> data);
-	void RenderToImage(sf::RenderTexture* img, uint64_t idx);
+	void RenderToImage(sf::RenderTexture* img, uint64_t idx, const sf::Vector2f& offset);
 	void SetupInStack(unsigned int index, sf::Vector2i* stackAbsolute, sf::Vector2i* stackRelitive, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionSplit, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionContext);
 	unsigned int GetWidth();
 	Argument* GetArgument(unsigned int index);

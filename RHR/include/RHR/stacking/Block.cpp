@@ -232,9 +232,9 @@ void Block::SetArgData(const std::vector<std::string> data)
 	}
 }
 
-void Block::RenderToImage(sf::RenderTexture* img, uint64_t idx)
+void Block::RenderToImage(sf::RenderTexture* img, uint64_t idx, const sf::Vector2f& offset)
 {
-	m_preShape.setPosition(sf::Vector2f(m_visualOffset.x, m_visualOffset.y + (idx * Global::BlockHeight)));
+	m_preShape.setPosition(sf::Vector2f(m_visualOffset.x + offset.x, m_visualOffset.y + (idx * Global::BlockHeight) + offset.y));
 	img->draw(m_preShape);
 }
 

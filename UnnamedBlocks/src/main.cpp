@@ -271,8 +271,8 @@ int main()
 			primaryPlane->ReloadVanity();
 		}
 
-		toolbarPlane->FrameUpdate();
-		primaryPlane->FrameUpdate();
+		toolbarPlane->FrameUpdate(pRegistry);
+		primaryPlane->FrameUpdate(pRegistry);
 
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->FrameUpdate(false);

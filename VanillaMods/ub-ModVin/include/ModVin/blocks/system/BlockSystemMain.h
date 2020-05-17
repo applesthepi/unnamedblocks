@@ -8,6 +8,8 @@ public:
 	const char* GetUnlocalizedName() const override;
 	const char* GetCategory() const override;
 
+	bool IsTopical() const override;
+
 	blockExecution PullExecuteRelease() const override;
 	blockExecution PullExecuteDebug() const override;
 

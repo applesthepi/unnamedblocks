@@ -87,9 +87,6 @@ public:
 	// what will be executed in a debug build
 	CAP_DLL virtual blockExecution PullExecuteDebug() const;
 	
-	// flags to check during debug build
-	//CAP_DLL virtual const ModBlockFlags GetFlags() const;
-	
 	// actions to run once per block type; during runtime before Initialization
 	CAP_DLL virtual blockInitialization GetRuntimeGlobalPreInit() const;
 

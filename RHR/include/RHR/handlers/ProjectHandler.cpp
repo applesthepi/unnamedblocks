@@ -189,7 +189,7 @@ void ProjectHandler::LoadProject(std::string& path, Plane* plane, BlockRegistry*
 		}
 	}
 	plane->ReloadVanity();
-	plane->FrameUpdate(true);
+	plane->FrameUpdate(registry, true);
 }
 
 std::string ProjectHandler::CurrentPath;
