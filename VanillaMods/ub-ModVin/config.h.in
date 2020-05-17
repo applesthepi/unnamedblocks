@@ -1,0 +1,3 @@
+#define ModVinVersion "@VERSION_MOD_VIN@"
+#cmakedefine LINUX
+#cmakedefine POSIX

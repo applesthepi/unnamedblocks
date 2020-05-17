@@ -1,8 +1,8 @@
 #pragma once
-#include "ArgumentEssentials.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <Cappuccino/block/ModBlock.h>
 
 class Argument
 {
@@ -21,7 +21,10 @@ public:
 	virtual void SetMode(BlockArgumentVariableMode mode);
 	virtual void Select();
 	virtual void ReInspectData();
-	virtual std::string GetData();
+	virtual std::string* GetData();
+	virtual std::string* GetDataRaw();
+	virtual BlockArgumentVariableMode* GetMode();
+	virtual BlockArgumentType GetType();
 	void Update(bool global = false);
 	void SetRelitivePosition(sf::Vector2u relitivePosition);
 	bool GetNext();
@@ -32,7 +35,7 @@ public:
 	sf::Vector2i GetRealAbsolutePosition();
 	sf::Vector2u GetRelitivePosition();
 	bool Next;
-private:
+protected:
 	sf::Vector2u m_relitivePosition;
 	sf::Vector2i m_absolutePosition;
 	sf::Vector2i m_realAbsolutePosition;

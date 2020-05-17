@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <RHR/RHR.h>
+#include <Espresso/mod/ModData.h>
 
 enum class ModLoaderStatus
 {
@@ -12,7 +13,7 @@ class RegMod
 {
 public:
 	RegMod(const std::string fileName)
-		:Supported_WIN(false), Supported_LINUX(false), Data(new ModData()), FileName(fileName) {}
+		: FileName(fileName), Data(new ModData()), Supported_WIN(false), Supported_LINUX(false) {}
 
 	void SupportWIN()
 	{
@@ -32,4 +33,4 @@ public:
 };
 
 void registerMod(std::string& fileName, std::string& fileType);
-ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable, BlockRegistry* registry);
+ModLoaderStatus run(BlockRegistry* registry);

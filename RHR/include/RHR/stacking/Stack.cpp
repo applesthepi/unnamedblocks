@@ -1,13 +1,23 @@
 #include "Stack.h"
-#include "Global.h"
 #include "Plane.h"
-#include "handlers/runtime/RuntimeHandler.h"
-#include "handlers/Logger.h"
+#include "RHR/handlers/StatmentHandler.h"
 
+#include <Espresso/Global.h>
+#include <Cappuccino/block/ModBlock.h>
+#include <Cappuccino/Logger.h>
 #include <iostream>
+#include <map>
+#include <cmath>
 
 #define IF_MARGIN 5
 #define IF_WIDTH 20
+
+#define TOPICAL_GEOMETRY_INNER_VERTEX_COUNT 10
+#define TOPICAL_WIDTH 5
+#define TOPICAL_HEIGHT 15
+#define TOPICAL_HEIGHT_BORDER 3
+#define TOPICAL_COLOR_DIFF 0.6
+#define TOPICAL_COLOR_DIFF_BORDER 0.3
 
 Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 {
@@ -21,7 +31,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 	m_contextBlockIndex = 0;
 	m_highestWidth = 0;
 	m_draggingType = DraggingType::DOWN;
-
+	
 	*m_functionUpdatePreTexture = [&]()
 	{
 		PreRender();
@@ -53,7 +63,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 
 		if (index == 0)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, static_cast<int32_t>(blockIndex * Global::BlockHeight)), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
 			ReloadVanity();
@@ -103,7 +113,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			if (closestStatments.size() != 0)
 			{
 				bool redo = true;
-				uint32_t statmentSelection = closestStatments.size() - 1;
+				int32_t statmentSelection = closestStatments.size() - 1;
 
 				while (redo && statmentSelection >= 0)
 				{
@@ -215,7 +225,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 		}
 		else if (index == 2)
 		{
-			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, blockIndex * Global::BlockHeight), (BlockRegistry*)m_blockRegistry);
+			Stack* stack = new Stack(m_setPosition + sf::Vector2i(0, static_cast<int32_t>(blockIndex * Global::BlockHeight)), (BlockRegistry*)m_blockRegistry);
 			(*m_functionAdd)(stack);
 
 			Block* block = new Block(m_blocks[blockIndex]->GetUnlocalizedName(), (BlockRegistry*)m_blockRegistry, m_functionUpdatePreTexture, m_functionSelectStack);
@@ -270,13 +280,9 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			}
 			//TODO optomize this
 			stayStack->ReloadAllBlocks();
-			stayStack->ReloadVanity();
-			stayStack->ReRender();
 			stayStack->FrameUpdate(true, true);
 			
 			ReloadAllBlocks();
-			ReloadVanity();
-			ReRender();
 			FrameUpdate(true, true);
 		}
 	};
@@ -288,14 +294,19 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 	};
 
 	m_validHighlighting = false;
+
+	ResetTopicalGeometry();
 }
 
 Stack::~Stack()
 {
-	delete m_functionSplit;
-
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 		delete m_blocks[i];
+
+	delete m_functionSplit;
+	//delete m_functionContext;
+	//delete m_functionContextCallback;
+	//delete m_functionUpdatePreTexture;
 }
 
 void Stack::ImportBlocks(std::vector<Block*>* blocks)
@@ -309,8 +320,12 @@ void Stack::ImportBlocks(std::vector<Block*>* blocks)
 
 	ReRender();
 	ReloadVanity();
+	TopicalGeometry();
 }
 
+/// Add block to the stack
+/// NOTE: Its recommended to call ReloadVanity and ReRender after this or several calls of this, but not required
+/// You can also call ReloadAllBlocks in their place, but thats more expensive.
 void Stack::AddBlock(Block* block)
 {
 	if (m_blocks.size() > 0 && ((Plane*)m_planePtr)->IsToolbar())
@@ -320,8 +335,9 @@ void Stack::AddBlock(Block* block)
 	block->UpdateShorts(m_functionUpdatePreTexture, m_functionSelectStack);
 
 	m_blocks.push_back(block);
-	ReloadVanity();//TODO these calls need to be called by the caller at the end of adding all blocks
-	ReRender();
+
+	if (m_blocks.size() == 1)
+		TopicalGeometry();
 }
 
 void Stack::ReloadAllBlocks()
@@ -333,20 +349,22 @@ void Stack::ReloadAllBlocks()
 	}
 
 	ReRender();
+	ReloadVanity();
+	TopicalGeometry();
 }
 
 void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 {
 	if (render == nullptr)
 	{
-		m_preShape.setPosition((sf::Vector2f)GetAbsolutePosition());
+		m_preShape.setPosition(sf::Vector2f(GetAbsolutePosition().x - TOPICAL_WIDTH, GetAbsolutePosition().y - (TOPICAL_HEIGHT * 2)));
 		window->draw(m_preShape);
 		
 		if (m_validHighlighting)
 		{
 			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 			{
-				if (m_ifShapeIdx[i] != m_highlightedShape)
+				if (m_ifShapeIdx[i] != (uint32_t)m_highlightedShape)
 					window->draw(m_ifShapes[i]);
 			}
 
@@ -354,7 +372,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 			{
 				for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 				{
-					if (m_ifShapeIdx[i] == m_highlightedShape)
+					if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 						window->draw(m_ifShapes[i]);
 				}
 			}
@@ -362,17 +380,20 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 			for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 				window->draw(m_ifShapeHighlight[i]);
 		}
+
+		if (m_isTopical)
+			window->draw(m_topicalRenderSprite);
 	}
 	else
 	{
-		m_preShape.setPosition((sf::Vector2f)GetRelitivePosition());
+		m_preShape.setPosition(sf::Vector2f(GetRelitivePosition().x - TOPICAL_WIDTH, GetRelitivePosition().y - (TOPICAL_HEIGHT * 2)));
 		render->draw(m_preShape);
 
 		if (m_validHighlighting)
 		{
 			for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 			{
-				if (m_ifShapeIdx[i] != m_highlightedShape)
+				if (m_ifShapeIdx[i] != (uint32_t)m_highlightedShape)
 					render->draw(m_ifShapes[i]);
 			}
 
@@ -380,7 +401,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 			{
 				for (uint32_t i = 0; i < m_ifShapes.size(); i++)
 				{
-					if (m_ifShapeIdx[i] == m_highlightedShape)
+					if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 						render->draw(m_ifShapes[i]);
 				}
 			}
@@ -388,10 +409,13 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 			for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 				render->draw(m_ifShapeHighlight[i]);
 		}
+
+		if (m_isTopical)
+			render->draw(m_topicalRenderSprite);
 	}
 }
 
-void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
+void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 {
 	bool mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
@@ -423,18 +447,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 				Stack* connectedStack = (Stack*)Global::DraggingStackConnected;
 				unsigned int connectedBlockIndex = Global::DraggingStackConnectedIndex;
-				/*
-				std::cout << "connecting stuff" << std::endl;
-
-				if (((Plane*)connectedStack->GetPlanePointer())->IsToolbar())
-				{
-					Global::CutRenderingPlane = true;
-					(*m_functionRemove)(this);
-					(*m_functionAddOver)(this);
-					std::cout << "canceling, is toolbar" << std::endl;
-					return;
-				}
-				*/
+				
 				for (unsigned int i = 0; i < connectedBlockIndex; i++)
 				{
 					blocks.push_back(connectedStack->GetBlock(i));
@@ -487,8 +500,8 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		m_relitivePosition.y = m_setPosition.y - m_planeInnerPosition->y;
 	}
 
-	m_absolutePosition.x = m_relitivePosition.x + m_planePosition->x;
-	m_absolutePosition.y = m_relitivePosition.y + m_planePosition->y;
+	m_absolutePosition.x = m_relitivePosition.x + static_cast<int32_t>(m_planePosition->x);
+	m_absolutePosition.y = m_relitivePosition.y + static_cast<int32_t>(m_planePosition->y);
 
 	if (m_dragging)
 	{
@@ -499,11 +512,12 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 
 		for (uint32_t i = 0; i < m_ifShapeHighlight.size(); i++)
 		{
-			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x + Global::BlockHeight &&
+			if (Global::MousePosition.x > m_ifShapeHighlight[i].getPosition().x + 
+				m_planePosition->x && Global::MousePosition.x < m_ifShapeHighlight[i].getPosition().x + (int64_t)m_planePosition->x + Global::BlockHeight &&
 				Global::MousePosition.y > m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
-				m_highlightedShape = i;
+				m_highlightedShape = static_cast<int32_t>(i);
 			}
 			else
 				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
@@ -513,11 +527,14 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		{
 			m_ifShapes[i].setPosition(m_ifShapePositions[i] + (sf::Vector2f)m_absolutePosition);
 
-			if (m_ifShapeIdx[i] == m_highlightedShape)
+			if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 				m_ifShapes[i].setFillColor(sf::Color(255, 132, 0));
 			else
 				m_ifShapes[i].setFillColor(sf::Color(70, 70, 70));
 		}
+
+		if (m_isTopical)
+			m_topicalRenderSprite.setPosition(m_absolutePosition.x - TOPICAL_WIDTH, m_absolutePosition.y - (TOPICAL_HEIGHT * 2));
 	}
 	else
 	{
@@ -532,7 +549,7 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 				Global::MousePosition.y > (int64_t)m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y && Global::MousePosition.y < (int64_t)m_ifShapeHighlight[i].getPosition().y + (int64_t)m_planePosition->y + Global::BlockHeight)
 			{
 				m_ifShapeHighlight[i].setFillColor(sf::Color(60, 60, 60));
-				m_highlightedShape = i;
+				m_highlightedShape = static_cast<int32_t>(i);
 			}
 			else
 				m_ifShapeHighlight[i].setFillColor(sf::Color(100, 100, 100));
@@ -542,11 +559,14 @@ void Stack::FrameUpdate(bool updateBlocks, bool forceUpdate)
 		{
 			m_ifShapes[i].setPosition(m_ifShapePositions[i] + (sf::Vector2f)m_relitivePosition);
 
-			if (m_ifShapeIdx[i] == m_highlightedShape)
+			if (m_ifShapeIdx[i] == (uint32_t)m_highlightedShape)
 				m_ifShapes[i].setFillColor(sf::Color(255, 132, 0));
 			else
 				m_ifShapes[i].setFillColor(sf::Color(70, 70, 70));
 		}
+
+		if (m_isTopical)
+			m_topicalRenderSprite.setPosition(m_relitivePosition.x - TOPICAL_WIDTH, m_relitivePosition.y - (TOPICAL_HEIGHT * 2));
 	}
 
 	if (Global::Dragging && Global::DraggingStack == this)
@@ -650,32 +670,32 @@ void Stack::SetupInPlane(sf::Vector2u* planePosition, sf::Vector2i* planeInnerPo
 	FrameUpdate(true);
 }
 
-void* Stack::GetPlanePointer()
+void* Stack::GetPlanePointer() const
 {
 	return m_planePtr;
 }
 
-unsigned int Stack::GetBlockCount()
+unsigned int Stack::GetBlockCount() const
 {
 	return m_blocks.size();
 }
 
-sf::Vector2i Stack::GetAbsolutePosition()
+sf::Vector2i Stack::GetAbsolutePosition() const
 {
 	return m_absolutePosition;
 }
 
-sf::Vector2i Stack::GetRelitivePosition()
+sf::Vector2i Stack::GetRelitivePosition() const
 {
 	return m_relitivePosition;
 }
 
-sf::Vector2i Stack::GetSetPosition()
+sf::Vector2i Stack::GetSetPosition() const
 {
 	return m_setPosition;
 }
 
-sf::Vector2u Stack::GetPlanePosition()
+sf::Vector2u Stack::GetPlanePosition() const
 {
 	return *m_planePosition;
 }
@@ -685,7 +705,7 @@ void Stack::SetRelitivePosition(sf::Vector2i position)
 	m_setPosition = position;
 }
 
-unsigned int Stack::GetBlockWidth(unsigned int index)
+unsigned int Stack::GetBlockWidth(unsigned int index) const
 {
 	if (index >= m_blocks.size())
 		return 0;
@@ -693,7 +713,7 @@ unsigned int Stack::GetBlockWidth(unsigned int index)
 		return m_blocks[index]->GetWidth();
 }
 
-Block* Stack::GetBlock(unsigned int index)
+Block* Stack::GetBlock(unsigned int index) const
 {
 	return m_blocks[index];
 }
@@ -748,26 +768,31 @@ void Stack::DragUp(sf::Vector2i mousePosition)
 	m_draggingType = DraggingType::UP;
 }
 
-std::function<void()>* Stack::GetFunctionUpdate()
+std::function<void()>* Stack::GetFunctionUpdate() const
 {
 	return m_functionUpdatePreTexture;
 }
 
-std::function<void()>* Stack::GetFunctionSelect()
+std::function<void()>* Stack::GetFunctionSelect() const
 {
 	return m_functionSelectStack;
 }
 
-bool Stack::IsBounding(const sf::Vector2f& mousePos)
+bool Stack::IsBounding(const sf::Vector2f& mousePos) const
 {
-	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + m_highestWidth && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + (m_blocks.size() * Global::BlockHeight);
+	return mousePos.x > m_absolutePosition.x && mousePos.x < m_absolutePosition.x + static_cast<int32_t>(m_highestWidth) && mousePos.y > m_absolutePosition.y && mousePos.y < m_absolutePosition.y + static_cast<int32_t>(m_blocks.size() * Global::BlockHeight);
+}                                                                                                                                                                                                    
+
+void Stack::AddPosition(const sf::Vector2i& change)
+{
+	m_setPosition += change;
 }
 
 bool Stack::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
 {
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->IsBounding((sf::Vector2f)position))
+		if (m_blocks[i]->IsBounding((sf::Vector2f)position) || m_blocks[i] == Global::SelectedBlock)
 		{
 			if (m_blocks[i]->MouseButton(down, position, button))
 				return true;
@@ -785,7 +810,7 @@ void Stack::ReloadVanity()
 	m_ifShapePositionHighlight.clear();
 	m_ifShapeIdx.clear();
 
-	std::vector<StatmentIf> statments = RuntimeHandler::ProcessIfStatments(this, true);
+	std::vector<StatmentIf> statments = StatmentHandler::ProcessIfStatments(this);
 	m_savedVanity = statments;
 	m_validHighlighting = statments.size() > 0;
 
@@ -841,7 +866,7 @@ void Stack::ReloadVanity()
 	}
 }
 
-std::vector<StatmentIf> Stack::GetVanity()
+std::vector<StatmentIf> Stack::GetVanity() const
 {
 	return m_savedVanity;
 }
@@ -852,6 +877,75 @@ void Stack::ReRender()
 		m_blocks[i]->PreRender();
 
 	PreRender();
+}
+
+//TODO SOTP IT!!! MOD IT PLEASEE!!!
+void Stack::IndexVariables()
+{
+	std::vector<std::string> varaibleIdx;
+	varaibleIdx.push_back("");//confirm that it starts at 1 and not 0
+
+	//TODO all of this is bad and needs to be in the modding software
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+	{
+		//TODO add to modding software
+		std::string un = m_blocks[i]->GetUnlocalizedName();
+		if (un == "vin_varaibles_stack_real" || un == "vin_varaibles_stack_string" || un == "vin_varaibles_stack_bool" || un == "vin_varaibles_heap_real" || un == "vin_varaibles_heap_string" || un == "vin_varaibles_heap_bool" || un == "vin_varaibles_free_real" || un == "vin_varaibles_free_string" || un == "vin_varaibles_free_bool")
+		{
+			//TODO actually really add this to modding software
+			std::string* vName = m_blocks[i]->GetArgument(1)->GetDataRaw();
+
+			bool found = false;
+
+			for (uint64_t a = 0; a < varaibleIdx.size(); a++)
+			{
+				if (varaibleIdx[a] == *vName)
+				{
+					found = true;
+					m_blocks[i]->GetArgument(1)->SetData(std::to_string(a));
+
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				varaibleIdx.push_back(*m_blocks[i]->GetArgument(1)->GetDataRaw());
+				m_blocks[i]->GetArgument(1)->SetData(std::to_string(varaibleIdx.size() - 1));
+			}
+		}
+		else
+		{
+			for (uint64_t a = 0; a < m_blocks[i]->GetArgumentCount(); a++)
+			{
+				if (*m_blocks[i]->GetArgument(a)->GetMode() == BlockArgumentVariableMode::VAR)
+				{
+					std::string* vName = m_blocks[i]->GetArgument(a)->GetDataRaw();
+
+					bool found = false;
+
+					for (uint64_t b = 0; b < varaibleIdx.size(); b++)
+					{
+						if (varaibleIdx[b] == *vName)
+						{
+							found = true;
+							m_blocks[i]->GetArgument(a)->SetData(std::to_string(b));
+
+							break;
+						}
+					}
+
+					if (!found)
+					{
+						varaibleIdx.push_back(*m_blocks[i]->GetArgument(a)->GetDataRaw());
+						m_blocks[i]->GetArgument(a)->SetData(std::to_string(varaibleIdx.size() - 1));
+
+						Logger::Warn("detected use a variable before it it declared!");
+					}
+				}
+			}
+		}
+	}
 }
 
 void Stack::PreRender()
@@ -870,15 +964,199 @@ void Stack::PreRender()
 	else
 	{
 		if (widest != m_preTexture.getSize().x || m_preTexture.getSize().y != m_blocks.size() * Global::BlockHeight)
-			m_preTexture.create(widest, m_blocks.size() * Global::BlockHeight);
+			m_preTexture.create(widest + (TOPICAL_WIDTH * 2), (m_blocks.size() * Global::BlockHeight) + (TOPICAL_HEIGHT * 2));
 	}
 
 	m_preTexture.clear(sf::Color(0, 0, 0, 0));
 
 	for (unsigned int i = 0; i < m_blocks.size(); i++)
-		m_blocks[i]->RenderToImage(&m_preTexture, i);
+		m_blocks[i]->RenderToImage(&m_preTexture, i, sf::Vector2f(TOPICAL_WIDTH, (TOPICAL_HEIGHT * 2)));
+
 	m_preShape.setTexture(&m_preTexture.getTexture());
-	//m_preShape.setFillColor(sf::Color::Green);
-	m_preShape.setSize(sf::Vector2f(widest, m_blocks.size() * Global::BlockHeight));
-	m_preShape.setTextureRect(sf::IntRect(0, m_preTexture.getSize().y, m_preTexture.getSize().x, -1 * m_preTexture.getSize().y));
+	m_preShape.setSize(sf::Vector2f(widest + (TOPICAL_WIDTH * 2), (m_blocks.size() * Global::BlockHeight) + (TOPICAL_HEIGHT * 2)));
+	m_preShape.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_preTexture.getSize().y), static_cast<int32_t>(m_preTexture.getSize().x), -1 * static_cast<int32_t>(m_preTexture.getSize().y)));
+}
+
+void Stack::ResetTopicalGeometry()
+{
+	m_isTopical = false;
+}
+
+void Stack::TopicalGeometry()
+{
+	ResetTopicalGeometry();
+
+	if (((Plane*)m_planePtr)->IsToolbar())
+		return;
+
+	if (((BlockRegistry*)m_blockRegistry)->GetBlock(m_blocks[0]->GetUnlocalizedName())->IsTopical())
+	{
+		GenerateTopicalGeometry();
+		m_isTopical = true;
+	}
+}
+
+void Stack::GenerateTopicalGeometry()
+{
+	std::string cat = ((BlockRegistry*)m_blockRegistry)->GetBlock(m_blocks.front()->GetUnlocalizedName())->GetCategory();
+	sf::Color catColor = ((BlockRegistry*)m_blockRegistry)->GetCategory(cat)->GetColor();
+
+	uint64_t blockWidth = m_blocks.front()->GetWidth();
+	bool isExtended = false;
+	uint64_t extentionWidth = 0;
+
+	if (blockWidth < 200)
+	{
+		isExtended = true;
+		extentionWidth = 200 - blockWidth;
+	}
+
+	std::vector<sf::ConvexShape> geometry;
+	std::vector<sf::Vector2f> positions;
+
+	positions.reserve(TOPICAL_GEOMETRY_INNER_VERTEX_COUNT + 2);
+
+	for (uint8_t i = 0; i < TOPICAL_GEOMETRY_INNER_VERTEX_COUNT + 2; i++)
+	{
+		double t = (double)i / ((double)TOPICAL_GEOMETRY_INNER_VERTEX_COUNT + 1.0);
+
+		sf::Vector2f p1 = sf::Vector2f(0.0, TOPICAL_HEIGHT);
+		sf::Vector2f p3;
+		
+		if (isExtended)
+			p3 = sf::Vector2f(((double)(blockWidth + extentionWidth) / 2.0) + TOPICAL_WIDTH, 0.0);
+		else
+			p3 = sf::Vector2f(((double)(blockWidth + extentionWidth) / 2.0) + TOPICAL_WIDTH, 0.0);
+
+		sf::Vector2f p2 = sf::Vector2f(((p1.x * 1.5) + (p3.x * 0.5)) / 2.0, 0.0);
+
+		sf::Vector2f vertexPosition;
+		vertexPosition.x = (std::pow(1.0 - t, 2.0) * p1.x) + (2 * (1.0 - t) * t * p2.x) + (std::pow(t, 2.0) * p3.x);
+		vertexPosition.y = (std::pow(1.0 - t, 2.0) * p1.y) + (2 * (1.0 - t) * t * p2.y) + (std::pow(t, 2.0) * p3.y);
+
+		positions.push_back(vertexPosition);
+	}
+
+	for (uint8_t i = 0; i < positions.size() - 1; i++)
+	{
+		//
+		// Top Border Geometry
+		//
+
+		geometry.push_back(sf::ConvexShape(3));
+		geometry.back().setFillColor(sf::Color(catColor.r * TOPICAL_COLOR_DIFF_BORDER, catColor.g * TOPICAL_COLOR_DIFF_BORDER, catColor.b * TOPICAL_COLOR_DIFF_BORDER));
+		geometry.back().setPoint(0, sf::Vector2f(positions[i].x, positions[i].y));
+		geometry.back().setPoint(1, sf::Vector2f(positions[i].x, positions[i].y + TOPICAL_HEIGHT_BORDER));
+		geometry.back().setPoint(2, sf::Vector2f(positions[i + 1].x, positions[i + 1].y));
+
+		geometry.push_back(sf::ConvexShape(3));
+		geometry.back().setFillColor(sf::Color(catColor.r * TOPICAL_COLOR_DIFF_BORDER, catColor.g * TOPICAL_COLOR_DIFF_BORDER, catColor.b * TOPICAL_COLOR_DIFF_BORDER));
+		geometry.back().setPoint(0, sf::Vector2f(positions[i].x, positions[i].y + TOPICAL_HEIGHT_BORDER));
+		geometry.back().setPoint(1, sf::Vector2f(positions[i + 1].x, positions[i + 1].y + TOPICAL_HEIGHT_BORDER));
+		geometry.back().setPoint(2, sf::Vector2f(positions[i + 1].x, positions[i + 1].y));
+
+		//
+		// Primary Geometry
+		//
+
+		geometry.push_back(sf::ConvexShape(3));
+		geometry.back().setPosition(0, TOPICAL_HEIGHT_BORDER);
+		geometry.back().setFillColor(sf::Color(catColor.r * TOPICAL_COLOR_DIFF, catColor.g * TOPICAL_COLOR_DIFF, catColor.b * TOPICAL_COLOR_DIFF));
+		geometry.back().setPoint(0, sf::Vector2f(positions[i].x, positions[i].y));
+		geometry.back().setPoint(1, sf::Vector2f(positions[i].x, positions[i].y + (TOPICAL_HEIGHT - (TOPICAL_HEIGHT_BORDER * 2))));
+		geometry.back().setPoint(2, sf::Vector2f(positions[i + 1].x, positions[i + 1].y));
+
+		geometry.push_back(sf::ConvexShape(3));
+		geometry.back().setPosition(0, TOPICAL_HEIGHT_BORDER);
+		geometry.back().setFillColor(sf::Color(catColor.r * TOPICAL_COLOR_DIFF, catColor.g * TOPICAL_COLOR_DIFF, catColor.b * TOPICAL_COLOR_DIFF));
+		geometry.back().setPoint(0, sf::Vector2f(positions[i].x, positions[i].y + (TOPICAL_HEIGHT - (TOPICAL_HEIGHT_BORDER * 2))));
+		geometry.back().setPoint(1, sf::Vector2f(positions[i + 1].x, positions[i + 1].y + (TOPICAL_HEIGHT - (TOPICAL_HEIGHT_BORDER * 2))));
+		geometry.back().setPoint(2, sf::Vector2f(positions[i + 1].x, positions[i + 1].y));
+
+		//
+		// Bottom Border Geometry
+		//
+
+		geometry.push_back(sf::ConvexShape(3));
+		geometry.back().setPosition(0, TOPICAL_HEIGHT - TOPICAL_HEIGHT_BORDER);
+		geometry.back().setFillColor(sf::Color(catColor.r * TOPICAL_COLOR_DIFF_BORDER, catColor.g * TOPICAL_COLOR_DIFF_BORDER, catColor.b * TOPICAL_COLOR_DIFF_BORDER));
+		geometry.back().setPoint(0, sf::Vector2f(positions[i].x, positions[i].y));
+		geometry.back().setPoint(1, sf::Vector2f(positions[i].x, positions[i].y + TOPICAL_HEIGHT_BORDER));
+		geometry.back().setPoint(2, sf::Vector2f(positions[i + 1].x, positions[i + 1].y));
+
+		geometry.push_back(sf::ConvexShape(3));
+		geometry.back().setPosition(0, TOPICAL_HEIGHT - TOPICAL_HEIGHT_BORDER);
+		geometry.back().setFillColor(sf::Color(catColor.r * TOPICAL_COLOR_DIFF_BORDER, catColor.g * TOPICAL_COLOR_DIFF_BORDER, catColor.b * TOPICAL_COLOR_DIFF_BORDER));
+		geometry.back().setPoint(0, sf::Vector2f(positions[i].x, positions[i].y + TOPICAL_HEIGHT_BORDER));
+		geometry.back().setPoint(1, sf::Vector2f(positions[i + 1].x, positions[i + 1].y + TOPICAL_HEIGHT_BORDER));
+		geometry.back().setPoint(2, sf::Vector2f(positions[i + 1].x, positions[i + 1].y));
+	}
+
+	uint16_t yaw = positions.back().x - positions.front().x;
+	uint16_t pitch = positions.front().y - positions.back().y;
+
+	m_topicalRenderTexture.create(yaw * 2, (TOPICAL_HEIGHT * 2) + Global::BlockHeight);
+	m_topicalRenderTexture.clear(sf::Color(0, 0, 0, 0));
+
+	sf::RenderTexture halfRender;
+	halfRender.create(yaw, (TOPICAL_HEIGHT * 2) + Global::BlockHeight, sf::ContextSettings(0, 0, 16));
+
+	sf::ConvexShape extendedBackgroundSide;
+	sf::ConvexShape extendedBackgroundTop;
+
+	if (isExtended)
+	{
+		sf::RectangleShape extendedBackground(sf::Vector2f(extentionWidth, Global::BlockHeight));
+
+		extendedBackground.setPosition(TOPICAL_WIDTH + blockWidth, TOPICAL_HEIGHT * 2);
+		extendedBackground.setFillColor(catColor);
+
+		m_topicalRenderTexture.draw(extendedBackground);
+	}
+
+	extendedBackgroundTop.setPointCount(positions.size() + 1);
+
+	if (isExtended)
+		extendedBackgroundTop.setPoint(0, sf::Vector2f(positions.front().x + TOPICAL_WIDTH + ((blockWidth + extentionWidth) / 2), TOPICAL_HEIGHT * 2));
+	else
+		extendedBackgroundTop.setPoint(0, sf::Vector2f(positions.front().x + TOPICAL_WIDTH + (blockWidth / 2), TOPICAL_HEIGHT * 2));
+
+	for (uint64_t i = 0; i < positions.size(); i++)
+		extendedBackgroundTop.setPoint(i + 1, sf::Vector2f(positions[i].x, positions[i].y + TOPICAL_HEIGHT));
+
+	extendedBackgroundTop.setFillColor(catColor);
+
+	extendedBackgroundSide.setPointCount(3);
+	extendedBackgroundSide.setPoint(0, sf::Vector2f(0, TOPICAL_HEIGHT * 2));
+	extendedBackgroundSide.setPoint(1, sf::Vector2f(TOPICAL_WIDTH, TOPICAL_HEIGHT * 2));
+	extendedBackgroundSide.setPoint(2, sf::Vector2f(TOPICAL_WIDTH, (TOPICAL_HEIGHT * 2) + Global::BlockHeight));
+	extendedBackgroundSide.setFillColor(catColor);
+
+	m_topicalRenderTexture.draw(extendedBackgroundTop);
+
+	halfRender.draw(extendedBackgroundSide);
+	halfRender.draw(extendedBackgroundTop);
+
+	for (uint8_t i = 0; i < geometry.size(); i++)
+		halfRender.draw(geometry[i]);
+
+	halfRender.display();
+
+	sf::Sprite halfSprite;
+	halfSprite.setTexture(halfRender.getTexture());
+
+	m_topicalRenderTexture.draw(halfSprite);
+
+	sf::Image halfImage = halfRender.getTexture().copyToImage();
+	halfImage.flipHorizontally();
+
+	sf::Texture halfTexture;
+	halfTexture.loadFromImage(halfImage);
+
+	halfSprite.setTexture(halfTexture);
+	halfSprite.setPosition(yaw, 0);
+	m_topicalRenderTexture.draw(halfSprite);
+
+	m_topicalRenderTexture.display();
+	m_topicalRenderSprite.setTexture(m_topicalRenderTexture.getTexture());
 }

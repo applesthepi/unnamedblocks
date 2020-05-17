@@ -1,251 +1,104 @@
 #include "BlockRegistry.h"
-#include "handlers/Logger.h"
-#include "handlers/runtime/VariableHandler.h"
+#include <Cappuccino/Logger.h>
 
 BlockRegistry::BlockRegistry()
 {
-	m_blocks = new std::vector<RegBlock>();
-	m_catagories = new std::vector<RegCatagory>();
+
 }
 
-void BlockRegistry::RegisterCatagory(RegCatagory* catagory)
+void BlockRegistry::RegisterCatagory(ModCatagory* catagory)
 {
-	m_catagories->push_back(*catagory);
+	m_catagories.push_back(catagory);
 }
 
-void BlockRegistry::RegisterBlock(RegBlock* block, VariableHandler* variables)
+void BlockRegistry::RegisterBlock(ModBlock* block)
 {
-	FinalizeBlock(block, variables);
-	m_blocks->push_back(*block);
+	m_blocks.push_back(block);
+}
+/*
+void BlockRegistry::RegisterExeDebug(void(*fun)(ModBlockPass*))
+{
+	m_exeDebug.push_back(fun);
 }
 
-RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)
+void BlockRegistry::RegisterExeRelease(void(*fun)(ModBlockPass*))
 {
-	RegBlock* block = new RegBlock();
-
-	block->UnlocalizedName = unlocalizedName;
-	block->Catagory = catagory;
-
-	//carry
-	block->BlockInit = new std::vector<BlockArgumentInitializer>(blockInit);
-	block->BlockExecute = new std::function<bool(const std::vector<std::string>&)>(*execute);
-	block->BlockExecuteIdx = nullptr;
-	
-	for (uint16_t i = 0; i < blockInit.size(); i++)
+	m_exeRelease.push_back(fun);
+}
+*/
+const ModBlock* BlockRegistry::GetBlock(const std::string& unlocalizedName)
+{
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		BlockArgument arg;
-		
-		if (blockInit[i].Type == BlockArgumentType::TEXT)
-			arg.SetupTEXT(blockInit[i].DefaultValue);
-		else if (blockInit[i].Type == BlockArgumentType::BOOL)
-		{
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
-				arg.SetupBOOL("0" + blockInit[i].DefaultValue);
-			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
-				arg.SetupBOOL("1" + blockInit[i].DefaultValue);
-		}
-		else if (blockInit[i].Type == BlockArgumentType::REAL)
-		{
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
-				arg.SetupREAL("0" + blockInit[i].DefaultValue);
-			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
-				arg.SetupREAL("1" + blockInit[i].DefaultValue);
-		}
-		else if (blockInit[i].Type == BlockArgumentType::STRING)
-		{
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
-				arg.SetupSTRING("0" + blockInit[i].DefaultValue);
-			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
-				arg.SetupSTRING("1" + blockInit[i].DefaultValue);
-		}
-
-		block->Args.push_back(arg);
+		if (m_blocks[i]->GetUnlocalizedName() == unlocalizedName)
+			return m_blocks[i];
 	}
 
-	return block;
-}
-
-RegBlock* BlockRegistry::CreateBlock(const std::string unlocalizedName, const std::string catagory, std::function<bool(const std::vector<std::string>&, const std::string&)>* execute, const std::vector<BlockArgumentInitializer> blockInit)
-{
-	RegBlock* block = new RegBlock();
-
-	block->UnlocalizedName = unlocalizedName;
-	block->Catagory = catagory;
-
-	//carry
-	block->BlockInit = new std::vector<BlockArgumentInitializer>(blockInit);
-	block->BlockExecute = nullptr;
-	block->BlockExecuteIdx = new std::function<bool(const std::vector<std::string>&, const std::string&)>(*execute);
-
-	for (uint16_t i = 0; i < blockInit.size(); i++)
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		BlockArgument arg;
-
-		if (blockInit[i].Type == BlockArgumentType::TEXT)
-			arg.SetupTEXT(blockInit[i].DefaultValue);
-		else if (blockInit[i].Type == BlockArgumentType::BOOL)
-		{
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
-				arg.SetupBOOL("0" + blockInit[i].DefaultValue);
-			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
-				arg.SetupBOOL("1" + blockInit[i].DefaultValue);
-		}
-		else if (blockInit[i].Type == BlockArgumentType::REAL)
-		{
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
-				arg.SetupREAL("0" + blockInit[i].DefaultValue);
-			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
-				arg.SetupREAL("1" + blockInit[i].DefaultValue);
-		}
-		else if (blockInit[i].Type == BlockArgumentType::STRING)
-		{
-			if (blockInit[i].Mode == BlockArgumentVariableMode::RAW)
-				arg.SetupSTRING("0" + blockInit[i].DefaultValue);
-			else if (blockInit[i].Mode == BlockArgumentVariableMode::VAR)
-				arg.SetupSTRING("1" + blockInit[i].DefaultValue);
-		}
-
-		block->Args.push_back(arg);
+		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
+			return m_blocks[i];
 	}
 
-	return block;
+	Logger::Error("unexpected failure to receive vin_null block. Mod loading error?");
+	return new ModBlock();
 }
 
-void BlockRegistry::FinalizeBlock(RegBlock* block, VariableHandler* variables)
+const ModCatagory* BlockRegistry::GetCategory(const std::string& unlocalizedName)
 {
-	std::vector<BlockArgumentInitializer> blockUseArgs;
-
-	for (uint32_t i = 0; i < block->BlockInit->size(); i++)
+	for (unsigned int i = 0; i < m_catagories.size(); i++)
 	{
-		if (block->BlockInit->at(i).Type != BlockArgumentType::TEXT)
-			blockUseArgs.push_back(block->BlockInit->at(i));
+		if (m_catagories[i]->GetUnlocalizedName() == unlocalizedName)
+			return m_catagories[i];
 	}
 
-	std::function<bool(const std::vector<BlockArgumentCaller>&, const std::string&)>* parentExecution = new std::function<bool(const std::vector<BlockArgumentCaller>&, const std::string&)>();
-	*parentExecution = [block, variables, blockUseArgs](const std::vector<BlockArgumentCaller>& args, const std::string& idx)
-	{
-		std::vector<std::string> parsedArgs;
-
-		for (uint16_t i = 0; i < args.size(); i++)
-		{
-			if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_RAW)
-			{
-				if (args[i].Mode == BlockArgumentVariableMode::VAR)
-				{
-					Logger::Error("argument #" + std::to_string(i) + " of block \"" + block->UnlocalizedName + "\" requires a raw value");
-					return false;
-				}
-			}
-			else if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR)
-			{
-				if (args[i].Mode == BlockArgumentVariableMode::RAW)
-				{
-					Logger::Error("argument #" + std::to_string(i) + " of block \"" + block->UnlocalizedName + "\" requires a variable");
-					return false;
-				}
-			}
-			
-			if (blockUseArgs.at(i).Restriction == BlockArgumentVariableModeRestriction::ONLY_VAR_KEEP || args[i].Mode == BlockArgumentVariableMode::RAW)
-				parsedArgs.push_back(args[i].Value);
-			else if (args[i].Mode == BlockArgumentVariableMode::VAR)
-			{
-				if (blockUseArgs.at(i).Type == BlockArgumentType::STRING)
-				{
-					std::string* data = variables->GetString((idx + args[i].Value).c_str());
-					if (data == nullptr)
-					{
-						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
-						return false;
-					}
-
-					parsedArgs.push_back(*data);
-				}
-				else if (blockUseArgs.at(i).Type == BlockArgumentType::BOOL)
-				{
-					bool* data = variables->GetBool((idx + args[i].Value).c_str());
-					if (data == nullptr)
-					{
-						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
-						return false;
-					}
-
-					parsedArgs.push_back(*data ? "1" : "0");
-				}
-				else if (blockUseArgs.at(i).Type == BlockArgumentType::REAL)
-				{
-					double* data = variables->GetReal((idx + args[i].Value).c_str());
-					if (data == nullptr)
-					{
-						Logger::Error("variable \"" + args[i].Value + "\" does not exist");
-						return false;
-					}
-
-					parsedArgs.push_back(std::to_string(*data));
-				}
-			}
-		}
-
-		if (block->BlockExecute == nullptr)
-			return (*block->BlockExecuteIdx)(parsedArgs, idx);
-		else
-			return (*block->BlockExecute)(parsedArgs);
-	};
-
-	block->Execute = parentExecution;
+	Logger::Error("unexpected failure to get a catagory. Mod loading error?");
+	return new ModCatagory("", "");
 }
 
-const RegBlock* BlockRegistry::GetBlock(std::string unlocalizedName)
+/*
+executionFunction BlockRegistry::GetExeDebug(const std::string& blockUnlocalizedName)
 {
-	for (unsigned int i = 0; i < m_blocks->size(); i++)
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if ((*m_blocks)[i].UnlocalizedName == unlocalizedName)
-			return (const RegBlock*)(&(*m_blocks)[i]);
+		if (m_blocks[i]->GetUnlocalizedName() == blockUnlocalizedName)
+			return m_exeDebug[i];
 	}
 
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
+			return m_exeDebug[i];
+	}
+
+	Logger::Error("FATAL! unexpected failure to receive vin_null block in attempt to receive execution function. Mod loading error?");
 	return nullptr;
 }
 
-const RegCatagory* BlockRegistry::GetCatagory(std::string unlocalizedName)
+executionFunction BlockRegistry::GetExeRelease(const std::string& blockUnlocalizedName)
 {
-	for (unsigned int i = 0; i < m_catagories->size(); i++)
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
 	{
-		if ((*m_catagories)[i].UnlocalizedName == unlocalizedName)
-			return (const RegCatagory*)(&(*m_catagories)[i]);
+		if (m_blocks[i]->GetUnlocalizedName() == blockUnlocalizedName)
+			return m_exeRelease[i];
 	}
 
+	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
+			return m_exeRelease[i];
+	}
+
+	Logger::Error("FATAL! unexpected failure to receive vin_null block in attempt to receive execution function. Mod loading error?");
 	return nullptr;
 }
-
-std::vector<RegBlock>* BlockRegistry::GetBlocks()
+*/
+const std::vector<ModBlock*>& BlockRegistry::GetBlocks()
 {
 	return m_blocks;
 }
 
-std::vector<RegCatagory>* BlockRegistry::GetCatagories()
+const std::vector<ModCatagory*>& BlockRegistry::GetCategories()
 {
 	return m_catagories;
-}
-
-void BlockArgument::SetupTEXT(std::string value)
-{
-	Type = BlockArgumentType::TEXT;
-	Value = value;
-}
-
-void BlockArgument::SetupREAL(std::string value)
-{
-	Type = BlockArgumentType::REAL;
-	Value = value;
-}
-
-void BlockArgument::SetupBOOL(std::string value)
-{
-	Type = BlockArgumentType::BOOL;
-	Value = value;
-}
-
-void BlockArgument::SetupSTRING(std::string value)
-{
-	Type = BlockArgumentType::STRING;
-	Value = value;
 }

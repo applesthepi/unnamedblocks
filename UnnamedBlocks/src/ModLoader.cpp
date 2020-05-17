@@ -1,8 +1,8 @@
 #include "ModLoader.h"
-#include "config.h"
+//TODO temp
+//#include <RHR/config.h>
 #include <iostream>
-#include <boost/filesystem.hpp>
-
+#include <filesystem>
 #ifdef LINUX
 #include <dlfcn.h>
 #else
@@ -11,7 +11,7 @@
 
 std::vector<RegMod>* mods;
 
-void registerMod(std::string& fileName, std::string& fileType)
+void registerMod(const std::string& fileName, const std::string& fileType)
 {
 	for (uint32_t i = 0; i < mods->size(); i++)
 	{
@@ -39,19 +39,16 @@ void registerMod(std::string& fileName, std::string& fileType)
 	mods->push_back(mod);
 }
 
-ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* runtime, ThreadHandler* thread, VariableHandler* variable, BlockRegistry* registry)
+ModLoaderStatus run(BlockRegistry* registry)
 {
+	ProjectHandler::Mods.clear();
 	typedef void(*f_initialize)(ModData*);
 
 	mods = new std::vector<RegMod>();
-	boost::filesystem::path pathMods("mods/");
 
-	for (auto& entry : boost::filesystem::directory_iterator(pathMods))//https://stackoverflow.com/questions/4430780/how-can-i-extract-the-file-name-and-extension-from-a-path-in-c
-	{
-		std::string na = entry.path().stem().string();
-		std::string ex = entry.path().extension().string();
-		registerMod(na, ex);
-	}
+	std::filesystem::directory_iterator pathMods("mods");
+	for(auto& file : pathMods)
+		registerMod(file.path().stem().string(), file.path().extension().string());
 
 	for (uint16_t i = 0; i < mods->size(); i++)
 	{
@@ -100,25 +97,25 @@ ModLoaderStatus run(ByteHandler* byte, ObjectHandler* object, RuntimeHandler* ru
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif
-		(*mods)[i].Data->Object = object;
-		(*mods)[i].Data->Byte = byte;
-		(*mods)[i].Data->Runtime = runtime;
-		(*mods)[i].Data->Thread = thread;
-		(*mods)[i].Data->Variable = variable;
-		(*mods)[i].Data->Registry = registry;
-
 		initialize((*mods)[i].Data);
+		
+		ProjectHandler::Mods.push_back((*mods)[i].Data->ModUnlocalizedName);
 
-		std::vector<RegCatagory>* catagories = (*mods)[i].Data->GetCatagories();
-		std::vector<RegBlock>* blocks = (*mods)[i].Data->GetBlocks();
+		ModDataBaked baked = (*mods)[i].Data->Bake();
 
-		for (uint32_t i = 0; i < catagories->size(); i++)
-			registry->RegisterCatagory(&(*catagories)[i]);
+		for (uint32_t j = 0; j < baked.CategoriesLength; j++)
+			registry->RegisterCatagory(baked.Categories[j]);
 
-		for (uint32_t i = 0; i < blocks->size(); i++)
-			registry->RegisterBlock(&(*blocks)[i], variable);
+		for (uint32_t j = 0; j < baked.BlocksLength; j++)
+			registry->RegisterBlock(baked.Blocks[j]);
+
+		//for (uint32_t j = 0; j < baked.BlocksLength; j++)
+		//	registry->RegisterExeDebug(baked.Blocks[j]->PullExecuteDebug());
+		//
+		//for (uint32_t j = 0; j < baked.BlocksLength; j++)
+		//	registry->RegisterExeRelease(baked.Blocks[j]->PullExecuteRelease());
 	}
 
-	delete mods;
+	//delete mods;
 	return ModLoaderStatus::ModLoaderStatus_OK;
 }

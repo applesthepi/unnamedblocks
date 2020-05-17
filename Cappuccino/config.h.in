@@ -1,0 +1,11 @@
+#define UnnamedBlocksVersion "@VERSION_UNNAMED_BLOCKS@"
+#define UnnamedBlocksBeta @IS_BETA@
+#define __CAP
+#define _CRT_SECURE_NO_WARNINGS
+#cmakedefine LINUX
+#cmakedefine POSIX
+#ifdef NDEBUG
+#define UB_ASSERT(expression)
+#else
+#define UB_ASSERT(expression) assert(expression)
+#endif

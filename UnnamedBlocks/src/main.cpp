@@ -1,13 +1,23 @@
 #include "ModLoader.h"
+#include "RHR/handlers/runtime/PreProcessor.h"
+#include "handlers/CategoryHandler.h"
+
+#include <Espresso/InputHandler.h>
+#include <SFML/Window/Event.hpp>
+
+#ifdef POSIX
 #include "config.h"
+#include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
+
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
+#include <Cappuccino/Logger.h>
 #include <chrono>
 
-//#include "content/ContentLoader.h"
 #include <GL/glew.h>
-//#include <stdio.h> 
-//typedef int(__cdecl* MYPROC)(LPWSTR);
 #include <RHR/RHR.h>
 
 #ifdef LINUX
@@ -17,15 +27,12 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
-
-#define UB_VERSION "Unnamed Blocks v0.0b1"
-#define UB_BETA_BUILD true
+#include <math.h>
+#include <string>
 
 #define CONTEXT_COLOR 180, 180, 180, 200
 
 std::vector<Button*> contextButtons;
-std::vector<Button*> toolbarButtons;
-std::vector<Button*> catButtons;
 
 ContextSystem sys;
 
@@ -33,309 +40,58 @@ static Plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
 static unsigned short toolbarStackCount = 0;
 
-static void ReloadCatagory(uint16_t index, BlockRegistry* registry)
+static std::atomic<bool> returnFinished;
+
+void ReturnFinished()
 {
-	toolbarPlane->DeleteAllBlocks();
-
-	unsigned int idx = 0;
-	unsigned int widest = 0;
-
-	for (unsigned int a = 0; a < registry->GetBlocks()->size(); a++)
-	{
-		if ((*registry->GetBlocks())[a].Catagory == (*registry->GetCatagories())[index].UnlocalizedName)
-		{
-			Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), registry);
-			Block* block = new Block((*registry->GetBlocks())[a].UnlocalizedName, registry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
-
-			toolbarPlane->AddStack(stack);
-			stack->AddBlock(block);
-
-			if (block->GetWidth() > widest)
-			{
-				widest = block->GetWidth();
-			}
-
-			idx++;
-		}
-	}
-
-	if (widest == 0)
-		Global::ToolbarWidth = 100;
-	else
-		Global::ToolbarWidth = widest + 10;
-
-	toolbarCatagory = index;
-	toolbarStackCount = toolbarPlane->GetStackCount();
+	returnFinished = true;
 }
 
 int main()
 {
-	Logger::Info(UB_VERSION);
-	if (UB_BETA_BUILD)
+	Logger::Info(UnnamedBlocksVersion);
+	if (UnnamedBlocksBeta)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
 
 #ifdef LINUX
+	// TODO: Proper wayland support
 	XInitThreads();
-	Logger::Info("Linux build");
 #endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");
 
 	ShaderRegistry::Initialize();
-	
-	// Window Setup
-	
-	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), UB_VERSION, sf::Style::Default);
-
-	const char* gpuVendor = (const char*)glGetString(GL_VENDOR);
-	Logger::Debug("gpu vendor \"" + std::string(gpuVendor) + "\"");
-
-	if (strcmp(gpuVendor, "Intel Open Source Technology Center") == 0)
-	{
-		Logger::Info("loading intel shaders");
-		Global::GpuType = GpuMan::INTEL;
-	}
-	else if (strcmp(gpuVendor, "NVIDIA Corporation") == 0)
-	{
-		Logger::Info("loading nvidia shaders");
-		Global::GpuType = GpuMan::NVIDIA;
-	}
-	else
-		Logger::Warn("gpu not detected; using default shaders");
-	
 	ShaderRegistry::ReloadAllShaders();
-	// Default Settings
 
+	// Window Setup
+
+	sf::RenderWindow window;
+	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default);
 	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(250);
+	window.setFramerateLimit(200);
 
 	// Initialization
 
 	Global::LoadDefaults();//must be first
 	MessageHandler::Initialize();
-	TypingSystem::Initialization();
+	InputHandler::Initialization();
 	ButtonRegistry::Initialize();
-	ByteHandler* pByte;
-	ObjectHandler* pObject;
-	ThreadHandler* pThread;
-	VariableHandler* pVariable;
-	RuntimeHandler* pRuntime;
-	BlockRegistry* pRegistry;
+	PreProcessor::Initialize();
 
-	pByte = new ByteHandler();
-	pObject = new ObjectHandler();
-	pThread = new ThreadHandler();
-	pVariable = new VariableHandler();
-	pRuntime = new RuntimeHandler(pThread, pObject, pVariable, pByte);
-	pRegistry = new BlockRegistry();
-	
-	run(pByte, pObject, pRuntime, pThread, pVariable, pRegistry);
-	
-	Plane::Planes = new std::vector<Plane*>();
+	BlockRegistry* pRegistry = new BlockRegistry();
+	run(pRegistry);
 
 	// Setup
 
-	//ContentLoader::LoadContent();
+	Plane::Planes = new std::vector<Plane*>();
 
-	Plane* primaryPlane = new Plane(sf::Vector2u(110, 16 + 10), sf::Vector2u(800, 500));
+	Plane* primaryPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100));
 	Plane::Planes->push_back(primaryPlane);
-	
-	uint16_t useCount = 0;
-	
-	for (unsigned int i = 0; i < pRegistry->GetCatagories()->size(); i++)
-	{
-		if (pRegistry->GetCatagories()->at(i).DisplayName == "")
-			continue;
 
-		std::function<void()>* callback = new std::function<void()>();
-		*callback = [i, &pRegistry]()
-		{
-			if (Global::Dragging)
-				return;
-
-			ReloadCatagory(i, pRegistry);
-		};
-
-		Button* cat = new Button(sf::Vector2i(5, 5 + (useCount * (16 + 5))), sf::Vector2u(100, 16), callback);
-		cat->SetButtonModeText((*pRegistry->GetCatagories())[i].DisplayName, (*pRegistry->GetCatagories())[i].Color, 12);
-
-		catButtons.push_back(cat);
-		ButtonRegistry::AddButton(cat);
-
-		useCount++;
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
-		{
-			bool* result = new bool(false);
-
-			MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", result));
-
-			if (*result)
-			{
-				primaryPlane->DeleteAllBlocks();
-			}
-		};
-
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 0) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("new", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane, &pRegistry]()
-		{
-			std::string* result = new std::string();
-			
-			MessageHandler::RegisterMessageSync(new Message("load file path:", result));
-			if (*result == "")
-			{
-				delete result;
-				return;
-			}
-			*result += ".ub";
-
-			Logger::Info("loading project from \"" + *result + "\"");
-			ProjectHandler::LoadProject(*result, primaryPlane, pRegistry);
-			ProjectHandler::CurrentPath = *result;
-
-			delete result;
-		};
-
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 1) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("open", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
-		{
-			if (ProjectHandler::CurrentPath == "")
-			{
-				std::string* result = new std::string();
-
-				MessageHandler::RegisterMessageSync(new Message("save file path:", result));
-				if (*result == "")
-				{
-					delete result;
-					return;
-				}
-				*result += ".ub";
-
-				Logger::Info("saveas to \"" + *result + "\"");
-				ProjectHandler::SaveProject(*result, primaryPlane);
-				ProjectHandler::CurrentPath = *result;
-
-				delete result;
-			}
-			else
-			{
-				ProjectHandler::SaveProject(ProjectHandler::CurrentPath, primaryPlane);
-				Logger::Info("save to \"" + ProjectHandler::CurrentPath + "\"");
-			}
-		};
-
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 2) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("save", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [primaryPlane]()
-		{
-			std::string* result = new std::string();
-
-			MessageHandler::RegisterMessageSync(new Message("save file path:", result));
-			if (*result == "")
-			{
-				delete result;
-				return;
-			}
-			*result += ".ub";
-
-			Logger::Info("saveas to \"" + *result + "\"");
-			ProjectHandler::SaveProject(*result, primaryPlane);
-			ProjectHandler::CurrentPath = *result;
-
-			delete result;
-		};
-
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 3) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("saveas", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-	{
-		std::function<void()>* function = new std::function<void()>();
-		*function = [&primaryPlane, &pByte, &pObject, &pRuntime, &pThread, &pVariable, &pRegistry]()
-		{
-			if (ProjectHandler::CurrentPath == "")
-				Logger::Info("running unsaved project");
-			else
-				Logger::Info("running \"" + ProjectHandler::CurrentPath + "\"");
-
-			Plane* planeCopy = new Plane(sf::Vector2u(0, 0), sf::Vector2u(0, 0));
-			planeCopy->CopyEverything(primaryPlane, pRegistry);
-
-			pRuntime->Reset();
-			pByte->Reset();
-			pObject->Reset();
-			pThread->Reset();
-			pVariable->Reset();
-
-			pThread->SetPlane(planeCopy);
-			pRuntime->Run(planeCopy, pRegistry);
-		};
-
-		Button* button = new Button(sf::Vector2i(Global::ToolbarWidth + (105 * 4) + 10, 5), sf::Vector2u(100, 16), function);
-		button->SetButtonModeText("run", sf::Color(200, 200, 200), 12);
-
-		toolbarButtons.push_back(button);
-		ButtonRegistry::AddButton(button);
-	}
-
-	toolbarPlane = new Plane(sf::Vector2u(5, (catButtons.size() * (16 + 5)) + 5), sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5), true);
+	toolbarPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100), true);
 	Plane::Planes->push_back(toolbarPlane);
-	{
-		int16_t useCat = 0;
-		for (uint16_t i = 0; i < pRegistry->GetCatagories()->size(); i++)
-		{
-			if (pRegistry->GetCatagories()->at(i).DisplayName != "")
-			{
-				useCat = i;
-				break;
-			}
-		}
 
-		toolbarCatagory = useCat;
-
-		if (useCat != -1)
-		{
-			unsigned int idx = 0;
-
-			for (unsigned int i = 0; i < pRegistry->GetBlocks()->size(); i++)
-			{
-				if ((*pRegistry->GetBlocks())[i].Catagory == pRegistry->GetCatagories()->at(useCat).UnlocalizedName)
-				{
-					Stack* stack = new Stack(sf::Vector2i(5, 5 + (idx * (Global::BlockHeight + 5))), pRegistry);
-					Block* block = new Block((*pRegistry->GetBlocks())[i].UnlocalizedName, pRegistry, stack->GetFunctionUpdate(), stack->GetFunctionSelect());
-
-					toolbarPlane->AddStack(stack);
-					stack->AddBlock(block);
-
-					idx++;
-				}
-			}
-		}
-	}
+	CategoryHandler::Initialize(pRegistry, toolbarPlane);
+	CategoryHandler::RegisterHeader(pRegistry, primaryPlane);
 
 #ifdef POSIX
 	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
@@ -347,19 +103,15 @@ int main()
 	bool wasDownMiddle = false;
 	bool wasDownRight = false;
 	bool wasContextOpen = false;
-	
-	//sf::View zoomedView(sf::FloatRect(0, 0, primaryPlane->GetSize().x, primaryPlane->GetSize().y));
-
-	//Global::ZoomAspect = (sf::Vector2f)primaryPlane->GetSize();
 
 	sf::Clock cl;
 	sf::Clock clTrip;
 
 	sf::Text frameRate;
 	frameRate.setString("fps: 0");
-	frameRate.setFillColor(sf::Color(128, 128, 128, 255));
+	frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
 	frameRate.setFont(*Global::Font);
-	frameRate.setCharacterSize(18);
+	frameRate.setCharacterSize(12);
 
 	clTrip.restart();
 
@@ -370,14 +122,13 @@ int main()
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				bool result = false;
-
-				MessageHandler::RegisterMessageSync(new Message("all unsaved progress will be lost if you continue", &result));
-
-				if (result)
+				std::function<void(const bool&)> cb = [&](const bool& result)
 				{
-					window.close();
-				}
+					if (result)
+						window.close();
+				};
+
+				MessageHandler::RegisterMessage(new MessageConfirm("unsaved progress will be lost", &cb), true);
 			}
 			else if (ev.type == sf::Event::Resized)
 			{
@@ -386,21 +137,47 @@ int main()
 			}
 			else if (ev.type == sf::Event::MouseWheelScrolled)
 			{
-				//float aspect = (float)primaryPlane->GetSize().y / (float)primaryPlane->GetSize().x;
+				int32_t delta = ev.mouseWheelScroll.delta * -200;
 
-				//Global::ZoomAspect.x += ev.mouseWheelScroll.delta * 50;
-				//Global::ZoomAspect.y += ev.mouseWheelScroll.delta * 50 * aspect;
-
-				//zoomedView.setSize(sf::Vector2f(Global::ZoomAspect.x, Global::ZoomAspect.y));
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+				{
+					primaryPlane->AddInnerPosition(sf::Vector2i(delta, 0));
+					
+					if (Global::Dragging)
+						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(delta, 0));
+				}
+				else
+				{
+					primaryPlane->AddInnerPosition(sf::Vector2i(0, delta));
+					
+					if (Global::Dragging)
+						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(0, delta));
+				}
+			}
+			else if (ev.type == sf::Event::EventType::KeyPressed)
+				InputHandler::FireKeyEvent(ev.key);
+			else if (ev.type == sf::Event::EventType::TextEntered)
+				InputHandler::FireTextEvent(ev.text);
+			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
+			{
+				primaryPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+				toolbarPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+				ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, true);
+			}
+			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
+			{
+				primaryPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+				toolbarPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+				ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, false);
 			}
 		}
 
-		window.clear();
-		
+		window.clear(MOD_BACKGROUND_HIGH);
+		CategoryHandler::Render(&window, toolbarPlane);
+
 		//engine frame update
-	
-		toolbarPlane->SetSize(sf::Vector2u(Global::ToolbarWidth, (window.getSize().y - ((catButtons.size() * (16 + 5)) + 5)) - 5));
-		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, 16 + 10));
+
+		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
 		primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
 
 		//frame update
@@ -408,82 +185,7 @@ int main()
 		if (window.hasFocus())
 		{
 			Global::MousePosition = sf::Mouse::getPosition(window);
-
-			TypingSystem::Update();
 			ButtonRegistry::FrameUpdateUI(&window);
-
-			for (unsigned int i = 0; i < catButtons.size(); i++)
-			{
-				catButtons[i]->SetSize(sf::Vector2u(Global::ToolbarWidth, 16));
-			}
-
-			if (!wasDownLeft && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				wasDownLeft = true;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, true))
-				{
-					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Left);
-					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Left);
-				}
-			}
-			else if (wasDownLeft && !sf::Mouse::isButtonPressed(sf::Mouse::Left))
-			{
-				wasDownLeft = false;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Left, false))
-				{
-					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Left);
-					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Left);
-				}
-			}
-
-			if (!wasDownMiddle && sf::Mouse::isButtonPressed(sf::Mouse::Middle))
-			{
-				wasDownMiddle = true;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Middle, true))
-				{
-					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Middle);
-					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Middle);
-				}
-			}
-			else if (wasDownMiddle && !sf::Mouse::isButtonPressed(sf::Mouse::Middle))
-			{
-				wasDownMiddle = false;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Middle, false))
-				{
-					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Middle);
-					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Middle);
-				}
-			}
-
-			if (!wasDownRight && sf::Mouse::isButtonPressed(sf::Mouse::Right))
-			{
-				wasDownRight = true;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Right, true))
-				{
-					primaryPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Right);
-					toolbarPlane->MouseButton(true, Global::MousePosition, sf::Mouse::Right);
-				}
-			}
-			else if (wasDownRight && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
-			{
-				wasDownRight = false;
-
-				if (!ButtonRegistry::MouseUpdateButtons(sf::Mouse::Right, false))
-				{
-					primaryPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
-					toolbarPlane->MouseButton(false, Global::MousePosition, sf::Mouse::Right);
-				}
-			}
-
-			for (unsigned int i = 0; i < toolbarButtons.size(); i++)
-			{
-				toolbarButtons[i]->SetPosition(sf::Vector2i(Global::ToolbarWidth + (105 * i) + 10, 5));
-			}
 		}
 
 		if ((Global::ContextActive && !wasContextOpen) || Global::ContextUpdate)
@@ -506,7 +208,7 @@ int main()
 				if (sys.Type == ContextType::BLOCK)
 				{
 					std::function<void()>* callback0 = new std::function<void()>();
-					*callback0 = [&pRegistry]()
+					*callback0 = []()
 					{
 						(*Global::Context.Callback)(0);
 					};
@@ -534,10 +236,10 @@ int main()
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (2 * 16)), sf::Vector2u(300, 16), callback2));
 					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (3 * 16)), sf::Vector2u(300, 16), callback3));
 
-					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(CONTEXT_COLOR), 12);
-					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(CONTEXT_COLOR), 12);
-					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(CONTEXT_COLOR), 12);
-					contextButtons[3]->SetButtonModeText("delete block", sf::Color(CONTEXT_COLOR), 12);
+					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
+					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
+					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
+					contextButtons[3]->SetButtonModeText("delete block", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
 
 					ButtonRegistry::AddButton(contextButtons[0]);
 					ButtonRegistry::AddButton(contextButtons[1]);
@@ -569,17 +271,13 @@ int main()
 			primaryPlane->ReloadVanity();
 		}
 
-		toolbarPlane->FrameUpdate();
-		primaryPlane->FrameUpdate();
+		toolbarPlane->FrameUpdate(pRegistry);
+		primaryPlane->FrameUpdate(pRegistry);
 
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->FrameUpdate(false);
-		
-		if (toolbarPlane->GetStackCount() != toolbarStackCount)
-			ReloadCatagory(toolbarCatagory, pRegistry);
 
-		//messages
-		MessageHandler::RunSyncMessages();
+		CategoryHandler::FrameUpdate(pRegistry, toolbarPlane);
 
 		//render
 
@@ -594,7 +292,9 @@ int main()
 			((Stack*)Global::DraggingStack)->Render(nullptr, &window);
 
 		ButtonRegistry::RenderUI(&window);
-		
+
+		// execution
+
 		if (Global::SkipFrame)
 		{
 			Global::SkipFrame = false;
@@ -610,12 +310,16 @@ int main()
 			clTrip.restart();
 		}
 
-		frameRate.setPosition(sf::Vector2f(window.getSize().x - 200, 0));
+		frameRate.setPosition(sf::Vector2f(window.getSize().x - 70, 0));
+
+		CategoryHandler::RenderPost(&window);
+
 		window.draw(frameRate);
 		window.display();
 	}
 
 	Global::ApplicationRunning = false;
-	
+	MessageHandler::Finish();
+
 	return 0;
 }

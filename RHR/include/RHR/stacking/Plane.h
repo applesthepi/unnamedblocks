@@ -14,7 +14,7 @@ public:
 	void AddStack(Stack* stack);
 	void Render(sf::RenderWindow* window);
 	void RenderConnection(sf::RenderWindow* window);
-	void FrameUpdate(bool overrideBounding = false);
+	void FrameUpdate(BlockRegistry* blockRegistry, bool overrideBounding = false);
 	void DeleteAllBlocks();
 	void CopyEverything(Plane* plane, BlockRegistry* registry);
 	unsigned int GetStackCount() const;
@@ -29,6 +29,7 @@ public:
 	bool IsToolbar() const;
 	const std::vector<Stack*>* GetAllStacks() const;
 	void ReloadVanity();
+	void AddInnerPosition(const sf::Vector2i& change);
 
 	void MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 

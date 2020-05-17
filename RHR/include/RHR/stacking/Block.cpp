@@ -1,9 +1,10 @@
 #include "Block.h"
 #include "args/ArgumentText.h"
 #include "args/ArgumentString.h"
-#include "args/ArgumetReal.h"
+#include "args/ArgumentReal.h"
 #include "args/ArgumentBoolean.h"
-#include "handlers/Logger.h"
+#include <Cappuccino/Logger.h>
+#include <Cappuccino/block/ModBlock.h>
 
 #include <SFML/Graphics.hpp>
 
@@ -18,25 +19,11 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 	m_functionUpdatePreTexture = functionUpdatePreTexture;
 	m_functionSelectStack = functionSelectStack;
 
-	const RegBlock* blockDetails = registry->GetBlock(type);
-	if (blockDetails == nullptr)
-	{
-		m_unlocalizedName = "vin_null";
-		blockDetails = registry->GetBlock("vin_null");
-		
-		if (blockDetails == nullptr)
-		{
-			Logger::Warn("null block does not exist!");
-			return;
-		}
-	}
+	const ModBlock* blockDetails = registry->GetBlock(type);
+	const ModCatagory* catagoryDetails = registry->GetCategory(std::string() = blockDetails->GetCategory());
 
-	const RegCatagory* catagoryDetails = registry->GetCatagory(blockDetails->Catagory);
-	if (catagoryDetails == nullptr)
-		return;
-
-	std::vector<BlockArgument> args = blockDetails->Args;
-	m_background.setFillColor(catagoryDetails->Color);
+	const std::vector<BlockArgumentInitializer> args = blockDetails->GetArguments();
+	m_background.setFillColor(catagoryDetails->GetColor());
 
 	unsigned int offset = Global::BlockBorder;
 
@@ -62,7 +49,7 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
 			arg->SetMode(BlockArgumentVariableMode::RAW);
-			arg->SetData(args[i].Value);
+			arg->SetData(args[i].DefaultValue);
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
 
@@ -73,8 +60,8 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 			ArgumentString* arg = new ArgumentString(sf::Vector2u(offset, 0));
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
-			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
@@ -86,8 +73,8 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 			ArgumentReal* arg = new ArgumentReal(sf::Vector2u(offset, 0));
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
-			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
@@ -99,8 +86,8 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 			ArgumentBoolean* arg = new ArgumentBoolean(sf::Vector2u(offset, 0));
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
-			arg->SetMode(args[i].Value.front() == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-			arg->SetData(args[i].Value.substr(1, args[i].Value.length() - 1));
+			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
 			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
@@ -114,14 +101,17 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 
 Block::~Block()
 {
-	delete m_absolutePosition;
-	delete m_relitivePosition;
-
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		m_args[i]->Deallocate();
 		delete m_args[i];
 	}
+
+	delete m_absolutePosition;
+	delete m_relitivePosition;
+
+	//delete m_functionUpdatePreTextureArgs;
+	//delete m_functionSelect;
 }
 
 void Block::UpdateShorts(std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelectStack)
@@ -133,7 +123,7 @@ void Block::UpdateShorts(std::function<void()>* functionUpdatePreTexture, std::f
 		m_args[i]->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
 }
 
-void Block::Render(sf::RenderTexture* render, sf::RenderWindow* window)
+void Block::Render(sf::RenderTexture*, sf::RenderWindow*)
 {
 	
 }
@@ -242,9 +232,9 @@ void Block::SetArgData(const std::vector<std::string> data)
 	}
 }
 
-void Block::RenderToImage(sf::RenderTexture* img, uint64_t idx)
+void Block::RenderToImage(sf::RenderTexture* img, uint64_t idx, const sf::Vector2f& offset)
 {
-	m_preShape.setPosition(sf::Vector2f(m_visualOffset.x, m_visualOffset.y + (idx * Global::BlockHeight)));
+	m_preShape.setPosition(sf::Vector2f(m_visualOffset.x + offset.x, m_visualOffset.y + (idx * Global::BlockHeight) + offset.y));
 	img->draw(m_preShape);
 }
 
@@ -276,7 +266,7 @@ BlockRuntimeReturn Block::GetUsedArgumentsRuntime()
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		if (m_args[i]->HasData())
-			dataArgs->push_back(BlockArgumentCaller(m_args[i]->GetData().substr(0, 1) == "0" ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR, m_args[i]->GetData().substr(1, m_args[i]->GetData().length() - 1)));
+			dataArgs->push_back(BlockArgumentCaller(*m_args[i]->GetMode(), *m_args[i]->GetDataRaw()));
 	}
 
 	return BlockRuntimeReturn(dataArgs, dataArgs->size());
@@ -288,7 +278,7 @@ std::vector<std::string>* Block::GetUsedArgumentSetup()
 	for (unsigned int i = 0; i < m_args.size(); i++)
 	{
 		if (m_args[i]->HasData())
-			argData->push_back(m_args[i]->GetData());
+			argData->push_back(*m_args[i]->GetData());
 	}
 
 	return argData;
@@ -299,7 +289,7 @@ unsigned int Block::GetArgumentCount()
 	return m_args.size();
 }
 
-std::string Block::GetUnlocalizedName()
+const std::string& Block::GetUnlocalizedName()
 {
 	return m_unlocalizedName;
 }
@@ -310,12 +300,11 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 	{
 		if (m_wasDown)
 			m_wasDown = false;
-		return true;
 	}
 
 	bool bounding = IsBounding((sf::Vector2f)position);
 
-	if (bounding && !Global::Dragging && !m_wasDown)
+	if (!Global::Dragging && !m_wasDown)
 	{
 		bool attempt = true;
 
@@ -329,7 +318,7 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 			}
 		}
 
-		if (attempt)
+		if (attempt && down && bounding)
 		{
 			if (button == sf::Mouse::Right)
 			{
@@ -394,7 +383,7 @@ void Block::PreRender()
 
 	m_preShape.setTexture(&m_preTexture.getTexture());
 	m_preShape.setSize((sf::Vector2f)m_preTexture.getSize());
-	m_preShape.setTextureRect(sf::IntRect(0, m_preTexture.getSize().y, m_preTexture.getSize().x, -1 * m_preTexture.getSize().y));
+	m_preShape.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_preTexture.getSize().y), static_cast<int32_t>(m_preTexture.getSize().x), -1 * static_cast<int32_t>(m_preTexture.getSize().y)));
 }
 
 bool Block::IsBounding(const sf::Vector2f& mousePos)

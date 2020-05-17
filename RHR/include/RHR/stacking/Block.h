@@ -1,6 +1,6 @@
 #pragma once
 
-#include "registries/BlockRegistry.h"
+#include "RHR/registries/BlockRegistry.h"
 #include "args/Argument.h"
 
 #include <SFML/Graphics.hpp>
@@ -33,14 +33,14 @@ public:
 	void FrameUpdate(bool updateArgs, sf::Vector2f visualOffset, bool global = false);
 	void SetArgData(const std::vector<BlockArgumentCaller>& data);
 	void SetArgData(const std::vector<std::string> data);
-	void RenderToImage(sf::RenderTexture* img, uint64_t idx);
+	void RenderToImage(sf::RenderTexture* img, uint64_t idx, const sf::Vector2f& offset);
 	void SetupInStack(unsigned int index, sf::Vector2i* stackAbsolute, sf::Vector2i* stackRelitive, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionSplit, std::function<void(unsigned int index, sf::Vector2i mousePosition)>* functionContext);
 	unsigned int GetWidth();
 	Argument* GetArgument(unsigned int index);
 	BlockRuntimeReturn GetUsedArgumentsRuntime();
 	std::vector<std::string>* GetUsedArgumentSetup();
 	unsigned int GetArgumentCount();
-	std::string GetUnlocalizedName();
+	const std::string& GetUnlocalizedName();
 	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 	bool GetNext();
 	void SelectFirstArgument();

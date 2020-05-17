@@ -1,8 +1,10 @@
-#include "registries/ShaderRegistry.h"
+#include "RHR/registries/ShaderRegistry.h"
 #include "Plane.h"
-#include "Global.h"
-#include "handlers/Logger.h"
 
+#include <Espresso/Global.h>
+#include <Cappuccino/Logger.h>
+#include <cassert>
+#include <exception>
 #include <iostream>
 
 Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
@@ -21,7 +23,7 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 	m_background.setSize((sf::Vector2f)size);
 
 	m_innerPositionText = sf::Text("0, 0", *Global::Font, 12);
-	m_innerPositionText.setFillColor(sf::Color::White);
+	m_innerPositionText.setFillColor(MOD_BUTTON_TEXT_FG);
 
 	m_functionAdd = new std::function<void(Stack* stack)>();
 	*m_functionAdd = [&](Stack* stack)
@@ -86,6 +88,7 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 
 	m_draggingConnection = sf::RectangleShape(sf::Vector2f(0, 4));
 	m_useDraggingConnection = false;
+	m_dragging = false;
 }
 
 Plane::~Plane()
@@ -143,14 +146,14 @@ void Plane::Render(sf::RenderWindow* window)
 	}
 
 	sf::Sprite sp = sf::Sprite(rT.getTexture());
-	sp.setTextureRect(sf::IntRect(0, rT.getSize().y, rT.getSize().x, -1 * rT.getSize().y));
+	sp.setTextureRect(sf::IntRect(0, static_cast<int32_t>(rT.getSize().y), static_cast<int32_t>(rT.getSize().x), -1 * static_cast<int32_t>(rT.getSize().y)));
 	sp.setPosition(sf::Vector2f(m_position->x, m_position->y));
 	
 	if (Global::Dragging && Global::DraggingPlaneOver == this)
 	{
 		sf::RectangleShape shape = sf::RectangleShape(sf::Vector2f(m_background.getSize().x + 2, m_background.getSize().y + 2));
 		shape.setPosition(m_position->x - 1, m_position->y - 1);
-		shape.setFillColor(sf::Color::Green);
+		shape.setFillColor(MOD_BUTTON_TEXT_FG);
 
 		window->draw(shape);
 	}
@@ -162,8 +165,8 @@ void Plane::Render(sf::RenderWindow* window)
 	shader->setUniform("planeInnerPosition", sf::Glsl::Vec2(m_innerPosition->x / 2, m_innerPosition->y / -2));
 	//TODO future settings
 	shader->setUniform("dotMod", 30.0f);
-	shader->setUniform("backgroundColor", sf::Glsl::Vec3(40 / 255.0f, 40 / 255.0f, 40 / 255.0f));
-	shader->setUniform("dotColor", sf::Glsl::Vec3(70 / 255.0f, 70 / 255.0f, 70 / 255.0f));
+	shader->setUniform("backgroundColor", sf::Glsl::Vec3(MOD_BACKGROUND_LOW_C / 255.0f, MOD_BACKGROUND_LOW_C / 255.0f, MOD_BACKGROUND_LOW_C / 255.0f));
+	shader->setUniform("dotColor", sf::Glsl::Vec3(MOD_BACKGROUND_HIGH_C / 255.0f, MOD_BACKGROUND_HIGH_C / 255.0f, MOD_BACKGROUND_HIGH_C / 255.0f));
 
 	window->draw(m_background, shader);
 	window->draw(sp);//all blocks inside the stack
@@ -183,25 +186,27 @@ void Plane::RenderConnection(sf::RenderWindow* window)
 		window->draw(m_draggingConnection);
 }
 
-void Plane::FrameUpdate(bool overrideBounding)
+void Plane::FrameUpdate(BlockRegistry* blockRegistry, bool overrideBounding)
 {
 	if (m_dragging)
 	{
 		m_innerPosition->x = (m_draggingMouseStart.x - Global::MousePosition.x) + (int)m_draggingStart.x;
 		m_innerPosition->y = (m_draggingMouseStart.y - Global::MousePosition.y) + (int)m_draggingStart.y;
 	}
+	int64_t x = static_cast<int32_t>(m_position->x) + m_innerPosition->x;
+	int64_t y = static_cast<int32_t>(m_position->y) + m_innerPosition->y;
+	
+	// FIXME: These trigger
+	//UB_ASSERT(x > 0);
+	//UB_ASSERT(y > 0);
 
-	m_absolutePosition->x = m_position->x + m_innerPosition->x;
-	m_absolutePosition->y = m_position->y + m_innerPosition->y;
-
-	//std::cout << m_innerPosition->x << ", " << m_innerPosition->y << std::endl;
-
-	//std::cout << m_dragging << std::endl;
+	m_absolutePosition->x = static_cast<uint32_t>(x);
+	m_absolutePosition->y = static_cast<uint32_t>(y);
 
 	m_background.setPosition(m_position->x, m_position->y);
 	m_background.setSize((sf::Vector2f)m_size);
 
-	m_innerPositionText.setPosition(m_position->x, m_position->y);
+	m_innerPositionText.setPosition(m_position->x + 5, m_position->y + m_size.y - 18);
 	m_innerPositionText.setString(std::to_string(m_innerPosition->x) + ", " + std::to_string(m_innerPosition->y));
 
 	m_useDraggingConnection = false;
@@ -215,60 +220,66 @@ void Plane::FrameUpdate(bool overrideBounding)
 
 		for (unsigned int i = 0; i < Planes->size(); i++)
 		{
-			if (draggingStack->GetAbsolutePosition().x > (int32_t)((*Planes)[i]->GetPosition().x) && draggingStack->GetAbsolutePosition().x < (int32_t)((*Planes)[i]->GetPosition().x + (*Planes)[i]->GetSize().x) &&
-				draggingStack->GetAbsolutePosition().y >(int32_t)((*Planes)[i]->GetPosition().y) && draggingStack->GetAbsolutePosition().y < (int32_t)((*Planes)[i]->GetPosition().y + (*Planes)[i]->GetSize().y))
+			if (draggingStack->GetAbsolutePosition().x > static_cast<int32_t>((*Planes)[i]->GetPosition().x) && draggingStack->GetAbsolutePosition().x < static_cast<int32_t>((*Planes)[i]->GetPosition().x + (*Planes)[i]->GetSize().x) &&
+				draggingStack->GetAbsolutePosition().y > static_cast<int32_t>((*Planes)[i]->GetPosition().y) && draggingStack->GetAbsolutePosition().y < static_cast<int32_t>((*Planes)[i]->GetPosition().y + (*Planes)[i]->GetSize().y))
 			{
 				Global::DraggingPlaneOver = (void*)((*Planes)[i]);
 				break;
 			}
 		}
 
-		if (Global::DraggingPlaneOver != nullptr)
+		if (!blockRegistry->GetBlock(draggingStack->GetBlock(0)->GetUnlocalizedName())->IsTopical())
 		{
-			if (!((Plane*)Global::DraggingPlaneOver)->IsToolbar())
+			if (Global::DraggingPlaneOver != nullptr)
 			{
-				const std::vector<Stack*>* overPlaneStacks = ((Plane*)Global::DraggingPlaneOver)->GetAllStacks();
-
-				for (unsigned int i = 0; i < overPlaneStacks->size(); i++)
+				if (!((Plane*)Global::DraggingPlaneOver)->IsToolbar())
 				{
-					if ((*overPlaneStacks)[i] == draggingStack)
-						continue;
-	
-					unsigned int blockCount = (*overPlaneStacks)[i]->GetBlockCount();
-	
-					if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
-						draggingStack->GetAbsolutePosition().y >(*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(blockCount * Global::BlockHeight))
+					const std::vector<Stack*>* overPlaneStacks = ((Plane*)Global::DraggingPlaneOver)->GetAllStacks();
+
+					for (unsigned int i = 0; i < overPlaneStacks->size(); i++)
 					{
-						for (unsigned int a = 0; a < blockCount + 1; a++)
+						if ((*overPlaneStacks)[i] == draggingStack)
+							continue;
+
+						unsigned int blockCount = (*overPlaneStacks)[i]->GetBlockCount();
+
+						if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
+							draggingStack->GetAbsolutePosition().y >(*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(blockCount * Global::BlockHeight))
 						{
-							if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
-								draggingStack->GetAbsolutePosition().y >= (*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight))
+							for (unsigned int a = 0; a < blockCount + 1; a++)
 							{
-								unsigned int blockWidth = 0;
-								if (a == 0)
-									blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(0);
-								else
-									blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(a - 1);
-	
-								m_draggingConnection.setSize(sf::Vector2f(blockWidth, Global::BlockBorder / 2));
-								m_draggingConnection.setFillColor(sf::Color(200, 200, 200));
-								m_draggingConnection.setPosition((*overPlaneStacks)[i]->GetAbsolutePosition().x, (*overPlaneStacks)[i]->GetAbsolutePosition().y + (a * Global::BlockHeight));
-								m_useDraggingConnection = true;
-								
-								Global::DraggingStackConnected = (void*)(*overPlaneStacks)[i];
-								Global::DraggingStackConnectedIndex = a;
-	
-								return;
+								if (draggingStack->GetAbsolutePosition().x > (*overPlaneStacks)[i]->GetAbsolutePosition().x - (int)Global::BlockConnectDistance && draggingStack->GetAbsolutePosition().x < (*overPlaneStacks)[i]->GetAbsolutePosition().x + (int)Global::BlockConnectDistance &&
+									draggingStack->GetAbsolutePosition().y >= (*overPlaneStacks)[i]->GetAbsolutePosition().y - (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight) && draggingStack->GetAbsolutePosition().y < (*overPlaneStacks)[i]->GetAbsolutePosition().y + (int)(Global::BlockHeight / 2) + (int)(a * Global::BlockHeight))
+								{
+									if (a < blockCount && blockRegistry->GetBlock(overPlaneStacks->at(i)->GetBlock(a)->GetUnlocalizedName())->IsTopical())
+										continue;
+
+									unsigned int blockWidth = 0;
+									if (a == 0)
+										blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(0);
+									else
+										blockWidth = (*overPlaneStacks)[i]->GetBlockWidth(a - 1);
+
+									m_draggingConnection.setSize(sf::Vector2f(blockWidth, Global::BlockBorder / 2));
+									m_draggingConnection.setFillColor(sf::Color(200, 200, 200));
+									m_draggingConnection.setPosition((*overPlaneStacks)[i]->GetAbsolutePosition().x, (*overPlaneStacks)[i]->GetAbsolutePosition().y + static_cast<int64_t>(a * Global::BlockHeight));
+									m_useDraggingConnection = true;
+
+									Global::DraggingStackConnected = (void*)(*overPlaneStacks)[i];
+									Global::DraggingStackConnectedIndex = a;
+
+									return;
+								}
 							}
 						}
 					}
 				}
-			}		
+			}
 		}
 	}
 
-	for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
-		m_stacks[i]->FrameUpdate(m_stacks[i]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
+	for (int64_t i = static_cast<int64_t>(m_stacks.size()) - 1; i >= 0; i--)
+		m_stacks[static_cast<uint64_t>(i)]->FrameUpdate(m_stacks[static_cast<uint64_t>(i)]->IsBounding((sf::Vector2f)Global::MousePosition), overrideBounding);
 }
 
 void Plane::DeleteAllBlocks()
@@ -356,6 +367,11 @@ void Plane::ReloadVanity()
 		m_stacks[i]->ReloadVanity();
 }
 
+void Plane::AddInnerPosition(const sf::Vector2i& change)
+{
+	*m_innerPosition += change;
+}
+
 void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
 {
 	if (position.x > (int32_t)m_position->x&& position.x < (int32_t)(m_position->x + m_size.x) &&
@@ -369,16 +385,16 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 
 		bool drag = true;
 
-		for (int64_t i = m_stacks.size() - 1; i >= 0; i--)
+		for (int64_t i = static_cast<int64_t>(m_stacks.size()) - 1; i >= 0; i--)
 		{
-			if (m_stacks[i]->IsBounding((sf::Vector2f)position) && m_stacks[i]->MouseButton(down, position, button))
+			if ((m_stacks[static_cast<uint64_t>(i)]->IsBounding((sf::Vector2f)position) || m_stacks[i] == Global::SelectedStack) && m_stacks[static_cast<uint64_t>(i)]->MouseButton(down, position, button))
 			{
 				drag = false;
 				break;
 			}
 		}
 
-		if (drag && down && !m_toolbar)
+		if (drag && down && !m_toolbar && button == sf::Mouse::Left)
 		{
 			m_dragging = true;
 			m_draggingMouseStart = position;

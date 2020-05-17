@@ -1,6 +1,7 @@
 #include "Argument.h"
-#include "Global.h"
-#include "handlers/Logger.h"
+
+#include <Espresso/Global.h>
+#include <Cappuccino/Logger.h>
 
 Argument::Argument(sf::Vector2u relitivePosition)
 {
@@ -42,7 +43,7 @@ unsigned int Argument::GetArgumentRawWidth()
 	return 0;
 }
 
-bool Argument::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button)
+bool Argument::MouseButton(bool, sf::Vector2i, sf::Mouse::Button)
 {
 	return false;
 }
@@ -52,12 +53,12 @@ bool Argument::HasData()
 	return false;
 }
 
-void Argument::SetData(std::string data)
+void Argument::SetData(std::string)
 {
 
 }
 
-void Argument::SetMode(BlockArgumentVariableMode mode)
+void Argument::SetMode(BlockArgumentVariableMode)
 {
 
 }
@@ -72,9 +73,24 @@ void Argument::ReInspectData()
 
 }
 
-std::string Argument::GetData()
+std::string* Argument::GetData()
 {
-	return std::string();
+	return nullptr;
+}
+
+std::string* Argument::GetDataRaw()
+{
+	return nullptr;
+}
+
+BlockArgumentVariableMode* Argument::GetMode()
+{
+	return nullptr;
+}
+
+BlockArgumentType Argument::GetType()
+{
+	return BlockArgumentType::TEXT;
 }
 
 void Argument::Update(bool global)
@@ -128,7 +144,9 @@ void Argument::SelectGlobaly()
 		gArg->UpdateTexture();
 	}
 	else
+	{
 		Global::SelectedArgument = (void*)this;
+	}
 
 	(*m_functionSelect)();
 }
