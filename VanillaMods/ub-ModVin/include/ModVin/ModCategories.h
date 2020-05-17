@@ -14,20 +14,9 @@ public:
 	CategorySystem(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	const sf::Color GetColor() const override
-	{
-		return sf::Color(150, 150, 150);
-	}
-
-	const std::string GetUnlocalizedName() const override
-	{
-		return CATEGORY_SYSTEM;
-	}
-
-	const std::string GetDisplayName() const override
-	{
-		return "System";
-	}
+	const sf::Color GetColor() const override;
+	const std::string GetUnlocalizedName() const override;
+	const std::string GetDisplayName() const override;
 };
 
 class CategoryUtility : public ModCatagory
@@ -36,20 +25,9 @@ public:
 	CategoryUtility(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	const sf::Color GetColor() const override
-	{
-		return sf::Color(150, 150, 150);
-	}
-
-	const std::string GetUnlocalizedName() const override
-	{
-		return CATEGORY_UTILITY;
-	}
-
-	const std::string GetDisplayName() const override
-	{
-		return "Utility";
-	}
+	const sf::Color GetColor() const override;
+	const std::string GetUnlocalizedName() const override;
+	const std::string GetDisplayName() const override;
 };
 
 class CategoryGraphics : public ModCatagory
@@ -58,20 +36,9 @@ public:
 	CategoryGraphics(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	const sf::Color GetColor() const override
-	{
-		return sf::Color(150, 150, 150);
-	}
-
-	const std::string GetUnlocalizedName() const override
-	{
-		return CATEGORY_GRAPHICS;
-	}
-
-	const std::string GetDisplayName() const override
-	{
-		return "Graphics";
-	}
+	const sf::Color GetColor() const override;
+	const std::string GetUnlocalizedName() const override;
+	const std::string GetDisplayName() const override;
 };
 
 class CategoryBooleans : public ModCatagory
@@ -80,20 +47,9 @@ public:
 	CategoryBooleans(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	const sf::Color GetColor() const override
-	{
-		return sf::Color(150, 150, 150);
-	}
-
-	const std::string GetUnlocalizedName() const override
-	{
-		return CATEGORY_BOOLEANS;
-	}
-
-	const std::string GetDisplayName() const override
-	{
-		return "Booleans";
-	}
+	const sf::Color GetColor() const override;
+	const std::string GetUnlocalizedName() const override;
+	const std::string GetDisplayName() const override;
 };
 
 class CategoryReals : public ModCatagory
@@ -102,20 +58,9 @@ public:
 	CategoryReals(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	const sf::Color GetColor() const override
-	{
-		return sf::Color(150, 150, 150);
-	}
-
-	const std::string GetUnlocalizedName() const override
-	{
-		return CATEGORY_REALS;
-	}
-
-	const std::string GetDisplayName() const override
-	{
-		return "Reals";
-	}
+	const sf::Color GetColor() const override;
+	const std::string GetUnlocalizedName() const override;
+	const std::string GetDisplayName() const override;
 };
 
 class CategoryStrings : public ModCatagory
@@ -124,18 +69,7 @@ public:
 	CategoryStrings(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	const sf::Color GetColor() const override
-	{
-		return sf::Color(150, 150, 150);
-	}
-
-	const std::string GetUnlocalizedName() const override
-	{
-		return CATEGORY_STRINGS;
-	}
-
-	const std::string GetDisplayName() const override
-	{
-		return "Strings";
-	}
+	const sf::Color GetColor() const override;
+	const std::string GetUnlocalizedName() const override;
+	const std::string GetDisplayName() const override;
 };

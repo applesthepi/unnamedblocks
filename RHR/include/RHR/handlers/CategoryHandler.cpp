@@ -176,7 +176,7 @@ void CategoryHandler::UpdateBlocks(BlockRegistry* blockRegistry, Plane* toolbarP
 {
 	const uint32_t offset = UpdateButtons();
 	toolbarPlane->DeleteAllBlocks();
-
+	
 	uint32_t idx = 0;
 	uint32_t widest = 0;
 	for (unsigned int a = 0; a < blockRegistry->GetBlocks().size(); a++)
@@ -208,6 +208,7 @@ void CategoryHandler::UpdateBlocks(BlockRegistry* blockRegistry, Plane* toolbarP
 		Global::ToolbarWidth = widest + 10;
 
 	toolbarPlane->SetPosition(sf::Vector2u(5, offset + 5));
+	UpdateButtons();
 }
 
 void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primaryPlane)

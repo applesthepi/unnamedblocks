@@ -12,6 +12,7 @@ set(ModVin_SRC
 	
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/Mod.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/ModCategories.h"
 	
 	#======================================================================================================================

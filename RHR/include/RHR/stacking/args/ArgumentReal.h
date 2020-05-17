@@ -102,14 +102,14 @@ public:
 
 		if (m_variableMode)
 		{
-			m_inputBackground.setFillColor(MOD_VAR);
+			m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
 
-			m_leftTop->setFillColor(MOD_VAR);
-			m_leftBottom->setFillColor(MOD_VAR);
-			m_rightTop->setFillColor(MOD_VAR);
-			m_rightBottom->setFillColor(MOD_VAR);
+			m_leftTop->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
+			m_leftBottom->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
+			m_rightTop->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
+			m_rightBottom->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
 
-			m_input.setFillColor(sf::Color::Black);
+			m_input.setFillColor(MOD_BUTTON_TEXT_FG);
 		}
 		else
 		{

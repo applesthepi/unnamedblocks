@@ -30,8 +30,6 @@ public:
 		m_inputBackground = sf::RectangleShape(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 		m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG);
 		m_inputBackground.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (int)(Global::BlockBorder / 2));
-		m_inputBackground.setOutlineColor(MOD_BUTTON_TEXT_FG);
-		m_inputBackground.setOutlineThickness(1.0f);
 
 		m_inputLoc = sf::RectangleShape(sf::Vector2f(1, Global::BlockHeight - Global::BlockBorder));
 		m_inputLoc.setFillColor(MOD_BUTTON_TEXT_FG);
@@ -61,8 +59,8 @@ public:
 
 		if (m_variableMode)
 		{
-			m_inputBackground.setFillColor(MOD_VAR);
-			m_input.setFillColor(sf::Color::Black);
+			m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
+			m_input.setFillColor(MOD_BUTTON_TEXT_FG);
 		}
 		else
 		{

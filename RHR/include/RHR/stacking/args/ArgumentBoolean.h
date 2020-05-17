@@ -9,6 +9,9 @@
 #include <iostream>
 #include <Cappuccino/Logger.h>
 
+#define RED_COLOR sf::Color(177, 37, 33)
+#define GREEN_COLOR sf::Color(99, 195, 77)
+
 class ArgumentBoolean : public Argument
 {
 public:
@@ -31,8 +34,6 @@ public:
 		m_inputBackground = sf::RectangleShape(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 		m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG);
 		m_inputBackground.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (int)(Global::BlockBorder / 2));
-		//m_inputBackground.setOutlineColor(MOD_BUTTON_TEXT_FG);
-		//m_inputBackground.setOutlineThickness(1.0f);
 
 		m_inputLoc = sf::RectangleShape(sf::Vector2f(1, Global::BlockHeight - Global::BlockBorder));
 		m_inputLoc.setFillColor(MOD_BUTTON_TEXT_FG);
@@ -69,11 +70,11 @@ public:
 
 			m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 
-			m_inputBackground.setFillColor(MOD_VAR);
-			m_left->setFillColor(MOD_VAR);
-			m_right->setFillColor(MOD_VAR);
+			m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
+			m_left->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
+			m_right->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
 
-			m_input.setFillColor(sf::Color::Black);
+			m_input.setFillColor(MOD_BUTTON_TEXT_FG);
 
 			if (m_selected)
 			{
@@ -86,15 +87,15 @@ public:
 		{
 			if (m_text == "1")
 			{
-				m_inputBackground.setFillColor(sf::Color::Green);
-				m_left->setFillColor(sf::Color::Green);
-				m_right->setFillColor(sf::Color::Green);
+				m_inputBackground.setFillColor(GREEN_COLOR);
+				m_left->setFillColor(GREEN_COLOR);
+				m_right->setFillColor(GREEN_COLOR);
 			}
 			else if (m_text == "0")
 			{
-				m_inputBackground.setFillColor(sf::Color(250, 50, 40));
-				m_left->setFillColor(sf::Color(250, 50, 40));
-				m_right->setFillColor(sf::Color(250, 50, 40));
+				m_inputBackground.setFillColor(RED_COLOR);
+				m_left->setFillColor(RED_COLOR);
+				m_right->setFillColor(RED_COLOR);
 			}
 			else
 				Logger::Warn("invalid boolean value \"" + m_text + "\"");
