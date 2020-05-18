@@ -43,7 +43,7 @@ public:
 
 	blockInitialization GetRuntimeLocalPreInit() const override;
 	blockInitialization GetRuntimeLocalPostInit() const override;
-	blockDataInitialization GetRuntimeInit() const override;
+	std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const override;
 
 	const std::vector<BlockArgumentInitializer> GetArguments() const override;
 };

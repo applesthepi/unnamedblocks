@@ -15,19 +15,19 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 static bool RuntimeLocalPreInit(PreProcessorData& data)
 {
-	data.AddStructure(POINT_FINDER_NAME, new PointFinder());
+	data.AddStructure(POINT_FINDER_NAME + std::to_string(data.StackIdx), new PointFinder());
 	return true;
 }
 
 static bool RuntimeLocalPostInit(PreProcessorData& data)
 {
-	delete data.GetStructure(POINT_FINDER_NAME);
+	delete data.GetStructure(POINT_FINDER_NAME + std::to_string(data.StackIdx));
 	return true;
 }
 
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
-	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME);
+	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
 	std::string* name = (std::string*)blockData.GetCData()[0];
 	finder->AddPoint(preData.BlockIdx, *name);
 
@@ -64,9 +64,11 @@ blockInitialization BlockUtilityMarkPoint::GetRuntimeLocalPostInit() const
 	return RuntimeLocalPostInit;
 }
 
-blockDataInitialization BlockUtilityMarkPoint::GetRuntimeInit() const
+std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityMarkPoint::GetRuntimeStages() const
 {
-	return RuntimeInit;
+	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	stages.push_back(std::make_pair(RuntimeInit, 0));
+	return stages;
 }
 
 const std::vector<BlockArgumentInitializer> BlockUtilityMarkPoint::GetArguments() const

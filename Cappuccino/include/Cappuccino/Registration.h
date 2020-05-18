@@ -12,16 +12,26 @@
 #include <SFML/Graphics.h>
 #include <chrono>
 
+#ifndef LINUX
+#ifdef __CAP
+#define CAP_DLL __declspec(dllexport)
+#else
+#define CAP_DLL __declspec(dllimport)
+#endif
+#else
+#define CAP_DLL
+#endif
+
 class Registration
 {
 public:
 	static void Initialize();
 
-	static void RegisterPass(ModBlockPass* pass);
-	static void UnRegisterPass(ModBlockPass* pass);
+	static CAP_DLL void RegisterPass(ModBlockPass* pass);
+	static CAP_DLL void UnRegisterPass(ModBlockPass* pass);
 
-	static void RegisterExecutionThread(ExecutionThread* thr);
-	static void UnRegisterExecutionThread(ExecutionThread* thr, bool join);
+	static CAP_DLL void RegisterExecutionThread(ExecutionThread* thr);
+	static CAP_DLL void UnRegisterExecutionThread(ExecutionThread* thr, bool join);
 
 	static void SetFunctionMain(uint64_t main);
 	static void SetFunctionCallCount(uint64_t* functionCallCount);
@@ -33,10 +43,12 @@ public:
 	static void SetSuper(uint8_t* super, int64_t* superData, void* superMutex);
 
 	static void EndAll(ModBlockPass* whitelist = nullptr);
-	static void Stop();
+	static CAP_DLL void Stop();
 
 	static std::atomic<bool>& GetUtilFinished();
 	static std::atomic<bool>& GetStop();
+	static CAP_DLL uint64_t* GetFunctionCallCount();
+	static CAP_DLL executionFunctionStackList GetCalls();
 	static void SetUtilReturnFinished(bool finished);
 	static void RunUtilityTick();
 	static void Run();

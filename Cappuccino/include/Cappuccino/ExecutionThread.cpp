@@ -9,7 +9,7 @@ void ThreadExecution(ExecutionThread* thr)
 	const executionFunctionStackList calls = thr->GetCalls();
 	const uint64_t* functionCallCount = thr->GetFunctionCallCount();
 	executionFunctionStack localCallStack = calls[thr->GetFunctionStart()];
-	
+	Registration::RegisterExecutionThread(thr);
 	std::vector<uint64_t> callstackBlockIdx;
 	std::vector<uint64_t> callstackStackIdx;
 
@@ -42,6 +42,8 @@ loop:
 				successful = true;
 				break;
 			}
+
+			callstackBlockIdx.back()++;
 		}
 
 		localCallStack[callstackBlockIdx.back()](pass);

@@ -94,6 +94,41 @@ CAP_DLL std::string& ModBlockPass::GetVariableString(const uint64_t& idx)
 	return (this->*(m_getVariableString))(idx);
 }
 
+CAP_DLL double* ModBlockPass::GetVariableRegistryReal()
+{
+	return m_variablesReal;
+}
+
+CAP_DLL bool* ModBlockPass::GetVariableRegistryBool()
+{
+	return m_variablesBool;
+}
+
+CAP_DLL std::string* ModBlockPass::GetVariableRegistryString()
+{
+	return m_variablesString;
+}
+
+CAP_DLL std::mutex* ModBlockPass::GetCustomRegisterMutex()
+{
+	return m_customRegistrerMutex;
+}
+
+CAP_DLL std::vector<void*>* ModBlockPass::GetCustomRegister()
+{
+	return m_customRegister;
+}
+
+CAP_DLL std::vector<std::string>* ModBlockPass::GetVariableRegistry()
+{
+	return m_variableRegistry;
+}
+
+CAP_DLL std::chrono::steady_clock::time_point* ModBlockPass::GetBeginTime()
+{
+	return m_beginTime;
+}
+
 CAP_DLL void ModBlockPass::Stop()
 {
 	//*m_successful = true;

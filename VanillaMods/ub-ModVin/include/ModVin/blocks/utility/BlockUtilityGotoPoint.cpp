@@ -16,7 +16,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
-	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME);
+	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
 	int64_t idx = finder->FindPoint(*(std::string*)blockData.GetCData()[0]);
 
 	if (idx == -1)
@@ -52,9 +52,11 @@ blockExecution BlockUtilityGotoPoint::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
-blockDataInitialization BlockUtilityGotoPoint::GetRuntimeInit() const
+std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityGotoPoint::GetRuntimeStages() const
 {
-	return RuntimeInit;
+	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	stages.push_back(std::make_pair(RuntimeInit, 0));
+	return stages;
 }
 
 const std::vector<BlockArgumentInitializer> BlockUtilityGotoPoint::GetArguments() const

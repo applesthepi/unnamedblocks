@@ -65,9 +65,9 @@ blockInitialization ModBlock::GetRuntimeLocalPostInit() const
 	return RuntimeInitialization;
 }
 
-blockDataInitialization ModBlock::GetRuntimeInit() const
+CAP_DLL std::vector<std::pair<blockDataInitialization, uint16_t>> ModBlock::GetRuntimeStages() const
 {
-	return RuntimeDataInitialization;
+	return std::vector<std::pair<blockDataInitialization, uint16_t>>();
 }
 
 const std::vector<BlockArgumentInitializer> ModBlock::GetArguments() const

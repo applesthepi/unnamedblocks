@@ -1,12 +1,13 @@
 #pragma once
 #include "ModVin/ModCategories.h"
-#include <Cappuccino/CappuccinoMod.h>
 
-class BlockUtilityGotoPointIf : public ModBlock
+class BlockUtilityFunctionDefine : public ModBlock
 {
 public:
 	const char* GetUnlocalizedName() const override;
 	const char* GetCategory() const override;
+
+	bool IsTopical() const override;
 
 	blockExecution PullExecuteDebug() const override;
 	blockExecution PullExecuteRelease() const override;

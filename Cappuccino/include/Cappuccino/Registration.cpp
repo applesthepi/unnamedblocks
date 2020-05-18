@@ -182,6 +182,16 @@ std::atomic<bool>& Registration::GetStop()
 	return m_stop;
 }
 
+uint64_t* Registration::GetFunctionCallCount()
+{
+	return m_functionCallCount;
+}
+
+executionFunctionStackList Registration::GetCalls()
+{
+	return m_calls;
+}
+
 void Registration::SetUtilReturnFinished(bool finished)
 {
 	m_utilReturnFinished = finished;
@@ -267,7 +277,10 @@ void Registration::Run()
 
 	PreProcessorData data(m_variablesReal, m_variablesBool, m_variablesString);
 
-	if (!GlobalPre(data) || !LocalPre(data))
+	if (!GlobalPre(data))
+		return;
+
+	if (!LocalPre(data))
 		return;
 
 	printf("...preinitialization succeeded\n");
@@ -277,7 +290,10 @@ void Registration::Run()
 
 	printf("...initialization succeeded\n");
 
-	if (!GlobalPost(data) || !LocalPost(data))
+	if (!LocalPost(data))
+		return;
+
+	if (!GlobalPost(data))
 		return;
 
 	printf("...postinitialization succeeded\n");
@@ -300,7 +316,7 @@ void Registration::Run()
 	RegisterPass(pass);
 
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
-	RegisterExecutionThread(thr);
+	//RegisterExecutionThread(thr);
 
 	if (m_debugBuild)
 		m_utilThread = std::thread(ThreadUtilDebug);
@@ -442,6 +458,8 @@ bool Registration::LocalPre(PreProcessorData& data)
 				singleBlocks.push_back(m_blocks[i][a]);
 		}
 
+		data.StackIdx = i;
+
 		for (uint64_t a = 0; a < singleBlocks.size(); a++)
 		{
 			if (!singleBlocks[a]->GetRuntimeLocalPreInit()(data))
@@ -478,6 +496,8 @@ bool Registration::LocalPost(PreProcessorData& data)
 				singleBlocks.push_back(m_blocks[i][a]);
 		}
 
+		data.StackIdx = i;
+
 		for (uint64_t a = 0; a < singleBlocks.size(); a++)
 		{
 			if (!singleBlocks[a]->GetRuntimeLocalPostInit()(data))
@@ -493,16 +513,47 @@ bool Registration::LocalPost(PreProcessorData& data)
 
 bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
 {
+	std::vector<std::vector<blockDataInitialization>> stages;
+	std::vector<std::vector<uint64_t>> stageStackIdx;
+	std::vector<std::vector<uint64_t>> stageBlockIdx;
+
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
 		{
-			preData.StackIdx = i;
-			preData.BlockIdx = a;
+			std::vector<std::pair<blockDataInitialization, uint16_t>> initStages = m_blocks[i][a]->GetRuntimeStages();
 
-			if (!m_blocks[i][a]->GetRuntimeInit()(preData, blockData[i][a]))
+			for (uint64_t b = 0; b < initStages.size(); b++)
 			{
-				Logger::Error("failed on init");
+				if (initStages[b].second >= stages.size())
+				{
+					uint64_t stagesSize = stages.size();
+
+					for (uint64_t c = 0; c < (stagesSize - initStages[b].second) + 1; c++)
+					{
+						stages.push_back(std::vector<blockDataInitialization>());
+						stageStackIdx.push_back(std::vector<uint64_t>());
+						stageBlockIdx.push_back(std::vector<uint64_t>());
+					}
+				}
+
+				stages[initStages[b].second].push_back(initStages[b].first);
+				stageStackIdx[initStages[b].second].push_back(i);
+				stageBlockIdx[initStages[b].second].push_back(a);
+			}
+		}
+	}
+
+	for (uint64_t i = 0; i < stages.size(); i++)
+	{
+		for (uint64_t a = 0; a < stages[i].size(); a++)
+		{
+			preData.StackIdx = stageStackIdx[i][a];
+			preData.BlockIdx = stageBlockIdx[i][a];
+
+			if (!stages[i][a](preData, blockData[stageStackIdx[i][a]][stageBlockIdx[i][a]]))
+			{
+				Logger::Error("failed on initialization of stage \"" + std::to_string(i) + "\"");
 				return false;
 			}
 		}

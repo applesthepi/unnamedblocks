@@ -26,7 +26,7 @@
 class ModBlockPassInitializer
 {
 public:
-	ModBlockPassInitializer();
+	CAP_DLL ModBlockPassInitializer();
 
 	bool DebugMode;
 
@@ -105,6 +105,16 @@ public:
 	CAP_DLL double& GetVariableReal(const uint64_t& idx);
 	CAP_DLL bool& GetVariableBool(const uint64_t& idx);
 	CAP_DLL std::string& GetVariableString(const uint64_t& idx);
+
+	// only use these if your instancing a new ModBlockPass
+
+	CAP_DLL double* GetVariableRegistryReal();
+	CAP_DLL bool* GetVariableRegistryBool();
+	CAP_DLL std::string* GetVariableRegistryString();
+	CAP_DLL std::mutex* GetCustomRegisterMutex();
+	CAP_DLL std::vector<void*>* GetCustomRegister();
+	CAP_DLL std::vector<std::string>* GetVariableRegistry();
+	CAP_DLL std::chrono::steady_clock::time_point* GetBeginTime();
 
 	CAP_DLL void Stop();
 

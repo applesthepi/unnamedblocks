@@ -93,14 +93,14 @@ public:
 	// actions to run once per block type; during runtime after Initialization
 	CAP_DLL virtual blockInitialization GetRuntimeGlobalPostInit() const;
 	
-	// actions to run once per block type; during runtime before Initialization
+	// actions to run once per block type per stack; during runtime before Initialization
 	CAP_DLL virtual blockInitialization GetRuntimeLocalPreInit() const;
 
-	// actions to run once per block type; during runtime after Initialization
+	// actions to run once per block type per stack; during runtime after Initialization
 	CAP_DLL virtual blockInitialization GetRuntimeLocalPostInit() const;
 
 	// actions to run on each block preprocessed; during Initialization
-	CAP_DLL virtual blockDataInitialization GetRuntimeInit() const;
+	CAP_DLL virtual std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const;
 	
 	// block arguments, including text
 	CAP_DLL virtual const std::vector<BlockArgumentInitializer> GetArguments() const;

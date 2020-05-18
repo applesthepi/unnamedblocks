@@ -12,7 +12,7 @@ typedef void(**executionFunctionStack)(ModBlockPass*);
 class ExecutionThread
 {
 public:
-	ExecutionThread(const uint64_t& functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass);
+	CAP_DLL ExecutionThread(const uint64_t& functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass);
 
 	const uint64_t& GetFunctionStart();
 	const uint64_t* GetFunctionCallCount();

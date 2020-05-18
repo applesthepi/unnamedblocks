@@ -21,6 +21,10 @@
 #include "blocks/utility/BlockUtilityMarkPoint.h"
 #include "blocks/utility/BlockUtilityGotoPoint.h"
 #include "blocks/utility/BlockUtilityGotoPointIf.h"
+#include "blocks/utility/BlockUtilityFunctionDefine.h"
+#include "blocks/utility/BlockUtilityFunctionCall.h"
+#include "blocks/utility/BlockUtilityThreadSummon.h"
+#include "blocks/utility/BlockUtilityThreadKill.h"
 
 // graphics
 
@@ -30,6 +34,12 @@
 #include "blocks/graphics/BlockGraphicsSpriteTextureSet.h"
 #include "blocks/graphics/BlockGraphicsSpriteEnable.h"
 #include "blocks/graphics/BlockGraphicsSpriteDisable.h"
+#include "blocks/graphics/BlockGraphicsSpriteSetPosition.h"
+#include "blocks/graphics/BlockGraphicsSpriteSetRotation.h"
+#include "blocks/graphics/BlockGraphicsSpriteSetScale.h"
+#include "blocks/graphics/BlockGraphicsSpriteChangePosition.h"
+#include "blocks/graphics/BlockGraphicsSpriteChangeRotation.h"
+#include "blocks/graphics/BlockGraphicsSpriteChangeScale.h"
 
 // booleans
 
@@ -134,6 +144,10 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockUtilityMarkPoint());
 	data->RegisterBlock(new BlockUtilityGotoPoint());
 	data->RegisterBlock(new BlockUtilityGotoPointIf());
+	data->RegisterBlock(new BlockUtilityFunctionDefine());
+	data->RegisterBlock(new BlockUtilityFunctionCall());
+	data->RegisterBlock(new BlockUtilityThreadSummon());
+	data->RegisterBlock(new BlockUtilityThreadKill());
 
 	// graphics
 
@@ -143,6 +157,12 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockGraphicsSpriteTextureSet());
 	data->RegisterBlock(new BlockGraphicsSpriteEnable());
 	data->RegisterBlock(new BlockGraphicsSpriteDisable());
+	data->RegisterBlock(new BlockGraphicsSpriteSetPosition());
+	data->RegisterBlock(new BlockGraphicsSpriteSetRotation());
+	data->RegisterBlock(new BlockGraphicsSpriteSetScale());
+	data->RegisterBlock(new BlockGraphicsSpriteChangePosition());
+	data->RegisterBlock(new BlockGraphicsSpriteChangeRotation());
+	data->RegisterBlock(new BlockGraphicsSpriteChangeScale());
 
 	// booleans
 
