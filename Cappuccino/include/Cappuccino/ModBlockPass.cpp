@@ -155,12 +155,20 @@ CAP_DLL std::mt19937_64& ModBlockPass::GetRandomGenerator()
 
 CAP_DLL void ModBlockPass::AddDeallocation(std::function<void(ModBlockPass*)>* dealloc)
 {
-
+	m_deallocationCalls.push_back(dealloc);
 }
 
 CAP_DLL void ModBlockPass::RemoveDeallocation(std::function<void(ModBlockPass*)>* dealloc)
 {
-
+	for (uint64_t i = 0; i < m_deallocationCalls.size(); i++)
+	{
+		if (m_deallocationCalls[i] == dealloc)
+		{
+			m_deallocationCalls.erase(m_deallocationCalls.begin() + i);
+			delete dealloc;
+			return;
+		}
+	}
 }
 
 CAP_DLL const uint64_t ModBlockPass::CustomPut(void* mem)

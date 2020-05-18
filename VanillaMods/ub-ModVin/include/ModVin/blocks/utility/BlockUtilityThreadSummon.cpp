@@ -24,7 +24,16 @@ static void ExecuteRelease(ModBlockPass* pass)
 	ExecutionThread* thr = new ExecutionThread((uint64_t)*pass->GetReal(1), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
-	*pass->GetReal(0) = pass->CustomPut(thr);
+	uint64_t putIdx = pass->CustomPut(thr);
+	*pass->GetReal(0) = putIdx;
+
+	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
+	*dealloc = [putIdx](ModBlockPass* pass)
+	{
+		pass->CustomFree(putIdx, false);
+	};
+
+	pass->AddDeallocation(dealloc);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -47,8 +56,18 @@ static void ExecuteDebug(ModBlockPass* pass)
 	Registration::RegisterPass(np);
 
 	ExecutionThread* thr = new ExecutionThread(*pass->GetReal(1), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
+	Registration::RegisterExecutionThread(thr);
 
-	*pass->GetReal(0) = pass->CustomPut(thr);
+	uint64_t putIdx = pass->CustomPut(thr);
+	*pass->GetReal(0) = putIdx;
+
+	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
+	*dealloc = [putIdx](ModBlockPass* pass)
+	{
+		pass->CustomFree(putIdx, false);
+	};
+
+	pass->AddDeallocation(dealloc);
 }
 
 const char* BlockUtilityThreadSummon::GetUnlocalizedName() const

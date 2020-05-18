@@ -137,6 +137,11 @@ public:
 	// do NOT allocate an array; you MUST allocate a single object.
 	// minimize the number of custom allocations you do.
 	// calling "CustomFree" deletes the object, but its index persists!
+	
+	// after "CustomPut", it must be either persist forever, or you must
+	//		call "CustomFree", to deallocate it. If The object is freed externally before
+	//		Cappuccino ends, then you must call "CustomFree" with the parameter "deallocate" set to false.
+	//		This will ensure it does not get freed at the end.
 
 	CAP_DLL const uint64_t CustomPut(void* mem);
 	CAP_DLL void* CustomGet(const uint64_t& idx);

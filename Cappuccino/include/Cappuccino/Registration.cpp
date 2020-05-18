@@ -155,15 +155,27 @@ void Registration::EndAll(ModBlockPass* whitelist)
 	if (whitelist == nullptr)
 	{
 		for (uint64_t i = 0; i < m_execution.size(); i++)
+		{
 			m_execution[i]->End();
+			m_executionFlagged[i] = true;
+		}
+
+		for (uint64_t i = 0; i < m_passes.size(); i++)
+			m_passesFlagged[i] = true;
 	}
 	else
 	{
 		for (uint64_t i = 0; i < m_execution.size(); i++)
 		{
 			if (m_passes[i] != whitelist)
+			{
 				m_execution[i]->End();
+				m_executionFlagged[i] = true;
+			}
 		}
+
+		for (uint64_t i = 0; i < m_passes.size(); i++)
+			m_passesFlagged[i] = true;
 	}
 }
 
@@ -316,7 +328,7 @@ void Registration::Run()
 	RegisterPass(pass);
 
 	ExecutionThread* thr = new ExecutionThread(m_functionMain, m_functionCallCount, m_calls, pass);
-	//RegisterExecutionThread(thr);
+	RegisterExecutionThread(thr);
 
 	if (m_debugBuild)
 		m_utilThread = std::thread(ThreadUtilDebug);
@@ -348,7 +360,8 @@ void Registration::Run()
 bool Registration::IsAllDone()
 {
 	// dont lock execution mutex because it is already locked
-
+	return m_execution.size() == 0;
+	/*
 	for (uint64_t i = 0; i < m_execution.size(); i++)
 	{
 		if (!m_execution[i]->GetFinished())
@@ -356,6 +369,7 @@ bool Registration::IsAllDone()
 	}
 
 	return true;
+	*/
 }
 
 ModBlockData** Registration::GetData()
@@ -570,6 +584,9 @@ bool Registration::TestSuperBase()
 	{
 		*m_super = 0;
 		printf("stopping execution...\n");
+
+		std::unique_lock<std::mutex> lock1(m_passesMutex);
+		std::unique_lock<std::mutex> lock2(m_executionMutex);
 
 		EndAll();
 		return true;

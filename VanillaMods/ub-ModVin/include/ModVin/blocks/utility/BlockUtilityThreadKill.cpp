@@ -5,7 +5,12 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	ExecutionThread* thr = (ExecutionThread*)pass->CustomGet(*pass->GetReal(0));
-	Registration::UnRegisterExecutionThread(thr, true);
+	thr->End();
+	
+	Registration::UnRegisterPass(thr->GetPass());
+	Registration::UnRegisterExecutionThread(thr, false);
+
+	pass->CustomFree(*pass->GetReal(0), false);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

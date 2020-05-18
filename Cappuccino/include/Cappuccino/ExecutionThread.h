@@ -23,13 +23,13 @@ public:
 	const std::atomic<bool>* GetResume();
 	const std::atomic<bool>& GetStep();
 
-	ModBlockPass* GetPass();
+	CAP_DLL ModBlockPass* GetPass();
 
 	void SetFinished(bool finished);
 	void SetStep(bool step);
 	void SetBreak(bool breaked);
 
-	void End();
+	CAP_DLL void End();
 	void Break(std::atomic<bool>* resume);
 	void Step();
 private:
@@ -41,7 +41,7 @@ private:
 	std::atomic<bool>* m_resume;
 	std::atomic<bool> m_step;
 
-	const uint64_t& m_functionStart;
+	const uint64_t m_functionStart;
 	const uint64_t* m_functionCallCount;
 	executionFunctionStackList m_calls;
 	std::thread m_thread;

@@ -4,12 +4,13 @@
 #include <exception>
 #include <ctime>
 
-void ThreadExecution(ExecutionThread* thr)
+static void ThreadExecution(ExecutionThread* thr)
 {
 	const executionFunctionStackList calls = thr->GetCalls();
 	const uint64_t* functionCallCount = thr->GetFunctionCallCount();
-	executionFunctionStack localCallStack = calls[thr->GetFunctionStart()];
-	Registration::RegisterExecutionThread(thr);
+	uint64_t start = thr->GetFunctionStart();
+	executionFunctionStack localCallStack = calls[start];
+	
 	std::vector<uint64_t> callstackBlockIdx;
 	std::vector<uint64_t> callstackStackIdx;
 
@@ -82,7 +83,7 @@ loop:
 
 	if (successful)
 	{
-		Registration::UnRegisterPass(thr->GetPass());
+		Registration::UnRegisterPass(pass);
 		Registration::UnRegisterExecutionThread(thr, successful);
 	}
 }
