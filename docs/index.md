@@ -1,2 +1,5 @@
-# Hello?
-this is text?
+---
+layout: default
+title: Home
+---
+_more info_
