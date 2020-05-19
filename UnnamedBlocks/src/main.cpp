@@ -160,15 +160,19 @@ int main()
 				InputHandler::FireTextEvent(ev.text);
 			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
 			{
-				primaryPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
-				toolbarPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
-				ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, true);
+				if (!ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, true))
+				{
+					primaryPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+					toolbarPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+				}
 			}
 			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
 			{
-				primaryPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
-				toolbarPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
-				ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, false);
+				if (!ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, false))
+				{
+					primaryPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+					toolbarPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+				}
 			}
 		}
 
