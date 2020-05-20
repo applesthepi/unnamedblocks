@@ -18,7 +18,7 @@
 class PreProcessorData
 {
 public:
-	PreProcessorData(double* vReal, bool* vBool, std::string* vString);
+	PreProcessorData(double* vReal, bool* vBool, std::string* vString, std::vector<void*>& vCustom);
 
 	// these should be destroyed after use!
 	CAP_DLL void AddStructure(const std::string& name, void* structure);
@@ -31,6 +31,8 @@ public:
 	CAP_DLL bool& GetBool(const uint64_t& idx);
 	CAP_DLL std::string& GetString(const uint64_t& idx);
 
+	CAP_DLL const uint64_t CustomPut(void* mem);
+
 	uint64_t BlockIdx;
 	uint64_t StackIdx;
 private:
@@ -40,4 +42,5 @@ private:
 	double* m_vReal;
 	bool* m_vBool;
 	std::string* m_vString;
+	std::vector<void*>& m_vCustom;
 };

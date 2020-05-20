@@ -287,7 +287,7 @@ void Registration::Run()
 	
 	m_customRegister.reserve(10000);
 
-	PreProcessorData data(m_variablesReal, m_variablesBool, m_variablesString);
+	PreProcessorData data(m_variablesReal, m_variablesBool, m_variablesString, m_customRegister);
 
 	if (!GlobalPre(data))
 		return;
@@ -320,7 +320,7 @@ void Registration::Run()
 	init.CustomRegisterMutex = &m_customRegisterMutex;
 	init.CustomRegister = &m_customRegister;
 	init.Stop = &Registration::Stop;
-	init.VariableRegistry = &m_variableRegistry;
+	init.VariableRegistry = nullptr;// isnt working right now due to changes &m_variableRegistry;
 	init.DebugMode = m_debugBuild;
 	init.BeginTime = &m_timeBegin;
 
@@ -543,7 +543,7 @@ bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
 				{
 					uint64_t stagesSize = stages.size();
 
-					for (uint64_t c = 0; c < (stagesSize - initStages[b].second) + 1; c++)
+					for (uint64_t c = 0; c < (initStages[b].second - stagesSize) + 1; c++)
 					{
 						stages.push_back(std::vector<blockDataInitialization>());
 						stageStackIdx.push_back(std::vector<uint64_t>());
@@ -696,21 +696,23 @@ bool Registration::TestSuperDebug()
 
 void Registration::CompileDataDebug()
 {
+	uint64_t tempTotal = 0;
 	uint64_t variableIdx = 0;
 
-	auto addToRegistry = [&](std::string name)
+	auto addToRegistry = [&](const std::string& name, const uint64_t& idx)
 	{
-		for (uint64_t i = 0; i < m_variableRegistry.size(); i++)
+		for (uint64_t i = 0; i < m_variableRegistry[idx].size(); i++)
 		{
-			if (m_variableRegistry[i] == name)
+			if (m_variableRegistry[idx][i] == name)
 			{
-				variableIdx = i;
+				variableIdx = i + m_variableRegistryOffsets[idx];
 				return false;
 			}
 		}
 
-		variableIdx = m_variableRegistry.size();
-		m_variableRegistry.push_back(name);
+		variableIdx = tempTotal;
+		tempTotal++;
+		m_variableRegistry[idx].push_back(name);
 
 		return true;
 	};
@@ -719,6 +721,9 @@ void Registration::CompileDataDebug()
 
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
+		m_variableRegistry.push_back(std::vector<std::string>());
+		m_variableRegistryOffsets.push_back(tempTotal);
+
 		std::vector<std::vector<int64_t>*>* hauledVariablesStack = new std::vector<std::vector<int64_t>*>();
 
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
@@ -733,7 +738,7 @@ void Registration::CompileDataDebug()
 			{
 				if (types[b] == ModBlockDataType::VAR)
 				{
-					addToRegistry(*(std::string*)data[b]);
+					addToRegistry(*(std::string*)data[b], i);
 					hauledVariablesBlock->push_back(variableIdx);
 				}
 				else
@@ -745,12 +750,12 @@ void Registration::CompileDataDebug()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	m_variablesReal = new double[m_variableRegistry.size()];
-	m_variablesBool = new bool[m_variableRegistry.size()];
-	m_variablesString = new std::string[m_variableRegistry.size()];
+	m_variablesReal = new double[tempTotal];
+	m_variablesBool = new bool[tempTotal];
+	m_variablesString = new std::string[tempTotal];
 
-	std::fill(m_variablesReal, m_variablesReal + m_variableRegistry.size(), 0.0);
-	std::fill(m_variablesBool, m_variablesBool + m_variableRegistry.size(), false);
+	std::fill(m_variablesReal, m_variablesReal + tempTotal, 0.0);
+	std::fill(m_variablesBool, m_variablesBool + tempTotal, false);
 
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
@@ -759,58 +764,70 @@ void Registration::CompileDataDebug()
 
 void Registration::CompileDataRelease()
 {
-	std::vector<std::string> variableRegistryReal;
-	std::vector<std::string> variableRegistryBool;
-	std::vector<std::string> variableRegistryString;
 	uint64_t variableIdx = 0;
 
-	auto addToRegistryReal = [&](std::string name)
+	std::vector<std::vector<std::string>> tempRegistryReal;
+	std::vector<uint64_t> tempRegistryRealOffset;
+	uint64_t tempTotalReal = 0;
+
+	std::vector<std::vector<std::string>> tempRegistryBool;
+	std::vector<uint64_t> tempRegistryBoolOffset;
+	uint64_t tempTotalBool = 0;
+
+	std::vector<std::vector<std::string>> tempRegistryString;
+	std::vector<uint64_t> tempRegistryStringOffset;
+	uint64_t tempTotalString = 0;
+
+	auto addToRegistryReal = [&](const std::string& name, const uint64_t& idx)
 	{
-		for (uint64_t i = 0; i < variableRegistryReal.size(); i++)
+		for (uint64_t i = 0; i < tempRegistryReal[idx].size(); i++)
 		{
-			if (variableRegistryReal[i] == name)
+			if (tempRegistryReal[idx][i] == name)
 			{
-				variableIdx = i;
+				variableIdx = i + tempRegistryRealOffset[idx];
 				return false;
 			}
 		}
 
-		variableIdx = variableRegistryReal.size();
-		variableRegistryReal.push_back(name);
+		variableIdx = tempTotalReal;
+		tempTotalReal++;
+		tempRegistryReal[idx].push_back(name);
 
 		return true;
 	};
 
-	auto addToRegistryBool = [&](std::string name)
+	auto addToRegistryBool = [&](const std::string& name, const uint64_t& idx)
 	{
-		for (uint64_t i = 0; i < variableRegistryBool.size(); i++)
+		for (uint64_t i = 0; i < tempRegistryBool[idx].size(); i++)
 		{
-			if (variableRegistryBool[i] == name)
+			if (tempRegistryBool[idx][i] == name)
 			{
-				variableIdx = i;
+				variableIdx = i + tempRegistryBoolOffset[idx];
 				return false;
 			}
 		}
 
-		variableIdx = variableRegistryBool.size();
-		variableRegistryBool.push_back(name);
+		variableIdx = tempTotalBool;
+		tempTotalBool++;
+		tempRegistryBool[idx].push_back(name);
 
 		return true;
 	};
 
-	auto addToRegistryString = [&](std::string name)
+	auto addToRegistryString = [&](const std::string& name, const uint64_t& idx)
 	{
-		for (uint64_t i = 0; i < variableRegistryString.size(); i++)
+		for (uint64_t i = 0; i < tempRegistryString[idx].size(); i++)
 		{
-			if (variableRegistryString[i] == name)
+			if (tempRegistryString[idx][i] == name)
 			{
-				variableIdx = i;
+				variableIdx = i + tempRegistryStringOffset[idx];
 				return false;
 			}
 		}
 
-		variableIdx = variableRegistryString.size();
-		variableRegistryString.push_back(name);
+		variableIdx = tempTotalString;
+		tempTotalString++;
+		tempRegistryString[idx].push_back(name);
 
 		return true;
 	};
@@ -819,6 +836,14 @@ void Registration::CompileDataRelease()
 
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
+		tempRegistryReal.push_back(std::vector<std::string>());
+		tempRegistryBool.push_back(std::vector<std::string>());
+		tempRegistryString.push_back(std::vector<std::string>());
+
+		tempRegistryRealOffset.push_back(tempTotalReal);
+		tempRegistryBoolOffset.push_back(tempTotalBool);
+		tempRegistryStringOffset.push_back(tempTotalString);
+
 		std::vector<std::vector<int64_t>*>* hauledVariablesStack = new std::vector<std::vector<int64_t>*>();
 
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
@@ -834,11 +859,11 @@ void Registration::CompileDataRelease()
 				if (types[b] == ModBlockDataType::VAR)
 				{
 					if (interpretations[b] == ModBlockDataInterpretation::REAL)
-						addToRegistryReal(*(std::string*)data[b]);
+						addToRegistryReal(*(std::string*)data[b], i);
 					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
-						addToRegistryBool(*(std::string*)data[b]);
+						addToRegistryBool(*(std::string*)data[b], i);
 					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
-						addToRegistryString(*(std::string*)data[b]);
+						addToRegistryString(*(std::string*)data[b], i);
 
 					hauledVariablesBlock->push_back(variableIdx);
 				}
@@ -852,9 +877,9 @@ void Registration::CompileDataRelease()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	m_variablesReal = new double[variableRegistryReal.size()];
-	m_variablesBool = new bool[variableRegistryBool.size()];
-	m_variablesString = new std::string[variableRegistryString.size()];
+	m_variablesReal = new double[tempRegistryReal.size()];
+	m_variablesBool = new bool[tempRegistryBool.size()];
+	m_variablesString = new std::string[tempRegistryString.size()];
 
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
@@ -961,4 +986,6 @@ std::atomic<bool> Registration::m_breakFullResume;
 
 std::atomic<bool> Registration::m_breakSingleResume;
 
-std::vector<std::string> Registration::m_variableRegistry;
+std::vector<std::vector<std::string>> Registration::m_variableRegistry;
+
+std::vector<uint64_t> Registration::m_variableRegistryOffsets;

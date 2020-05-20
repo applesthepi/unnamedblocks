@@ -1,8 +1,8 @@
 #include "PreProcessorData.h"
 #include "Cappuccino/Logger.h"
 
-PreProcessorData::PreProcessorData(double* vReal, bool* vBool, std::string* vString)
-	:m_vReal(vReal), m_vBool(vBool), m_vString(vString)
+PreProcessorData::PreProcessorData(double* vReal, bool* vBool, std::string* vString, std::vector<void*>& vCustom)
+	:m_vReal(vReal), m_vBool(vBool), m_vString(vString), m_vCustom(vCustom)
 {
 	BlockIdx = 0;
 	StackIdx = 0;
@@ -39,4 +39,10 @@ CAP_DLL bool& PreProcessorData::GetBool(const uint64_t& idx)
 CAP_DLL std::string& PreProcessorData::GetString(const uint64_t& idx)
 {
 	return m_vString[idx];
+}
+
+CAP_DLL const uint64_t PreProcessorData::CustomPut(void* mem)
+{
+	m_vCustom.push_back(mem);
+	return m_vCustom.size() - 1;
 }

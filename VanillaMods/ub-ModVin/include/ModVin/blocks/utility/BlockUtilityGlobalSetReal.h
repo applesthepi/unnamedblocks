@@ -1,7 +1,7 @@
 #pragma once
 #include "ModVin/ModCategories.h"
 
-class BlockUtilityFunctionCall : public ModBlock
+class BlockUtilityGlobalSetReal : public ModBlock
 {
 public:
 	const char* GetUnlocalizedName() const override;
@@ -9,6 +9,9 @@ public:
 
 	blockExecution PullExecuteDebug() const override;
 	blockExecution PullExecuteRelease() const override;
+
+	blockInitialization GetRuntimeGlobalPreInit() const override;
+	blockInitialization GetRuntimeGlobalPostInit() const override;
 
 	std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const override;
 

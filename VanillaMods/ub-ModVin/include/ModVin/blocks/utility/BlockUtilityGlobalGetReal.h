@@ -1,7 +1,7 @@
 #pragma once
 #include "ModVin/ModCategories.h"
 
-class BlockUtilityFunctionCall : public ModBlock
+class BlockUtilityGlobalGetReal : public ModBlock
 {
 public:
 	const char* GetUnlocalizedName() const override;

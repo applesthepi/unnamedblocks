@@ -28,11 +28,13 @@ static void ThreadExecution(ExecutionThread* thr)
 	pass->SetData(regData);
 	pass->SetSuccessful(&successful);
 	pass->SetFinished((std::atomic<bool>*)&finished);
+	pass->SetCallstackLocal(&localCallStack);
+	pass->SetCalls(calls);
 	
 	while (!finished)
 	{
 loop:
-		if (functionCallCount[callstackStackIdx.back()] == callstackBlockIdx.back())
+		if (callstackBlockIdx.back() >= functionCallCount[callstackStackIdx.back()])
 		{
 			callstackStackIdx.pop_back();
 			callstackBlockIdx.pop_back();
@@ -45,6 +47,9 @@ loop:
 			}
 
 			callstackBlockIdx.back()++;
+			localCallStack = calls[callstackStackIdx.back()];
+
+			continue;
 		}
 
 		localCallStack[callstackBlockIdx.back()](pass);

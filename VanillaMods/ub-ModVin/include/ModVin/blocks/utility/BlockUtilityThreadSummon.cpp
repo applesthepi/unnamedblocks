@@ -1,4 +1,5 @@
 #include "BlockUtilityThreadSummon.h"
+#include "BlockUtilityFunctionDefine.h"
 
 #include <Cappuccino/Registration.h>
 
@@ -21,7 +22,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 	ModBlockPass* np = new ModBlockPass(init);
 	Registration::RegisterPass(np);
 
-	ExecutionThread* thr = new ExecutionThread((uint64_t)*pass->GetReal(1), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
+	ExecutionThread* thr = new ExecutionThread(*(uint64_t*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
 	uint64_t putIdx = pass->CustomPut(thr);
@@ -55,7 +56,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ModBlockPass* np = new ModBlockPass(init);
 	Registration::RegisterPass(np);
 
-	ExecutionThread* thr = new ExecutionThread(*pass->GetReal(1), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
+	ExecutionThread* thr = new ExecutionThread(*(uint64_t*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
 	uint64_t putIdx = pass->CustomPut(thr);
@@ -68,6 +69,17 @@ static void ExecuteDebug(ModBlockPass* pass)
 	};
 
 	pass->AddDeallocation(dealloc);
+}
+
+static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
+{
+	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
+	uint64_t* loc = new uint64_t;
+
+	*loc = finder->GetFunctionStackIdx(*(std::string*)blockData.GetData()[0]);
+	blockData.GetPreData().push_back(loc);
+
+	return true;
 }
 
 const char* BlockUtilityThreadSummon::GetUnlocalizedName() const
@@ -90,6 +102,13 @@ blockExecution BlockUtilityThreadSummon::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
+std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityThreadSummon::GetRuntimeStages() const
+{
+	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	stages.push_back(std::make_pair(RuntimeInit, 1));
+	return stages;
+}
+
 const std::vector<BlockArgumentInitializer> BlockUtilityThreadSummon::GetArguments() const
 {
 	std::vector<BlockArgumentInitializer> args;
@@ -97,7 +116,7 @@ const std::vector<BlockArgumentInitializer> BlockUtilityThreadSummon::GetArgumen
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "summon thread"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "thread"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "at"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "function"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"));
 
 	return args;
 }

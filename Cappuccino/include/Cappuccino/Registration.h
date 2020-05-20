@@ -121,5 +121,6 @@ private:
 	static std::atomic<bool> m_breakFullResume;
 	static std::atomic<bool> m_breakSingleResume;
 
-	static std::vector<std::string> m_variableRegistry; // debug only
+	static std::vector<std::vector<std::string>> m_variableRegistry;
+	static std::vector<uint64_t> m_variableRegistryOffsets;
 };

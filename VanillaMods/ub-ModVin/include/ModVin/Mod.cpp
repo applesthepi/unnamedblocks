@@ -25,6 +25,8 @@
 #include "blocks/utility/BlockUtilityFunctionCall.h"
 #include "blocks/utility/BlockUtilityThreadSummon.h"
 #include "blocks/utility/BlockUtilityThreadKill.h"
+#include "blocks/utility/BlockUtilityGlobalSetReal.h"
+#include "blocks/utility/BlockUtilityGlobalGetReal.h"
 
 // graphics
 
@@ -45,7 +47,6 @@
 
 #include "blocks/booleans/BlockBooleanForce.h"
 #include "blocks/booleans/BlockBooleanLog.h"
-
 #include "blocks/booleans/BlockBooleanSet.h"
 #include "blocks/booleans/BlockBooleanFlip.h"
 #include "blocks/booleans/BlockBooleanAnd.h"
@@ -148,6 +149,8 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockUtilityFunctionCall());
 	data->RegisterBlock(new BlockUtilityThreadSummon());
 	data->RegisterBlock(new BlockUtilityThreadKill());
+	data->RegisterBlock(new BlockUtilityGlobalSetReal());
+	data->RegisterBlock(new BlockUtilityGlobalGetReal());
 
 	// graphics
 

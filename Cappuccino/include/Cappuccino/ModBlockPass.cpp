@@ -15,9 +15,15 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		m_getReal = &ModBlockPass::GetRealDebug;
 		m_getBool = &ModBlockPass::GetBoolDebug;
 		m_getString = &ModBlockPass::GetStringDebug;
-		m_getVaraibleReal = &ModBlockPass::GetVariableRealDebug;
-		m_getVariableBool = &ModBlockPass::GetVariableBoolDebug;
-		m_getVariableString = &ModBlockPass::GetVariableStringDebug;
+
+		//m_getVaraibleReal = &ModBlockPass::GetVariableRealDebug;
+		//m_getVariableBool = &ModBlockPass::GetVariableBoolDebug;
+		//m_getVariableString = &ModBlockPass::GetVariableStringDebug;
+		// because m_variableRegistry isnt working right now due to changes
+		m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
+		m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
+		m_getVariableString = &ModBlockPass::GetVariableStringRelease;
+
 		m_getPreData = &ModBlockPass::GetPreDataDebug;
 	}
 	else
@@ -66,6 +72,16 @@ CAP_DLL void ModBlockPass::SetSuccessful(bool* successful)
 CAP_DLL void ModBlockPass::SetFinished(std::atomic<bool>* finished)
 {
 	m_finished = finished;
+}
+
+CAP_DLL void ModBlockPass::SetCallstackLocal(void(***localCallstack)(ModBlockPass*))
+{
+	m_localCallstack = localCallstack;
+}
+
+CAP_DLL void ModBlockPass::SetCalls(void(***calls)(ModBlockPass*))
+{
+	m_calls = calls;
 }
 
 CAP_DLL void ModBlockPass::PerformDeallocationCallbacks()
@@ -131,7 +147,6 @@ CAP_DLL std::chrono::steady_clock::time_point* ModBlockPass::GetBeginTime()
 
 CAP_DLL void ModBlockPass::Stop()
 {
-	//*m_successful = true;
 	m_stop();
 
 	while (!*m_finished)
@@ -146,6 +161,11 @@ CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackStack()
 CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackBlock()
 {
 	return *m_callstackBlockIdx;
+}
+
+CAP_DLL void ModBlockPass::UpdateLocalCallstack()
+{
+	*m_localCallstack = m_calls[m_callstackStackIdx->back()];
 }
 
 CAP_DLL std::mt19937_64& ModBlockPass::GetRandomGenerator()

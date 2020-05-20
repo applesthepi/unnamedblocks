@@ -12,7 +12,21 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
-	*((double*)(blockData.GetCData()[0])) = preData.StackIdx;
+	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
+	finder->AddFunction(*(std::string*)blockData.GetData()[0], preData.StackIdx);
+
+	return true;
+}
+
+static bool RuntimeGlobalPreInit(PreProcessorData& data)
+{
+	data.AddStructure(FUNCTION_FINDER_NAME, new FunctionFinder());
+	return true;
+}
+
+static bool RuntimeGlobalPostInit(PreProcessorData& data)
+{
+	delete data.GetStructure(FUNCTION_FINDER_NAME);
 	return true;
 }
 
@@ -41,6 +55,16 @@ blockExecution BlockUtilityFunctionDefine::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
+blockInitialization BlockUtilityFunctionDefine::GetRuntimeGlobalPreInit() const
+{
+	return RuntimeGlobalPreInit;
+}
+
+blockInitialization BlockUtilityFunctionDefine::GetRuntimeGlobalPostInit() const
+{
+	return RuntimeGlobalPostInit;
+}
+
 std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityFunctionDefine::GetRuntimeStages() const
 {
 	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
@@ -53,7 +77,7 @@ const std::vector<BlockArgumentInitializer> BlockUtilityFunctionDefine::GetArgum
 	std::vector<BlockArgumentInitializer> args;
 
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "define function"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "function"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"));
 
 	return args;
 }

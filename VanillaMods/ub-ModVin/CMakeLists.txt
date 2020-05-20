@@ -64,6 +64,25 @@ set(ModVin_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityThreadSummon.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityThreadKill.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityThreadKill.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalGetReal.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalGetReal.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalGetBool.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalGetBool.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalGetString.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalGetString.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalSetReal.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalSetReal.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalSetBool.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalSetBool.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalSetString.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/BlockUtilityGlobalSetString.cpp"
+	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalReal.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalReal.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalBool.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalBool.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalString.h"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalString.cpp"
 	
 	#======================================================================================================================
 	#=========== Graphics

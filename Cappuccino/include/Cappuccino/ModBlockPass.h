@@ -77,6 +77,8 @@ public:
 	CAP_DLL void SetCallstackBlock(std::vector<uint64_t>* callstack);
 	CAP_DLL void SetSuccessful(bool* successful);
 	CAP_DLL void SetFinished(std::atomic<bool>* finished);
+	CAP_DLL void SetCallstackLocal(void(***localCallstack)(ModBlockPass*));
+	CAP_DLL void SetCalls(void(***calls)(ModBlockPass*));
 	CAP_DLL void PerformDeallocationCallbacks();
 
 	// ====================================================
@@ -120,6 +122,7 @@ public:
 
 	CAP_DLL std::vector<uint64_t>& GetCallstackStack();
 	CAP_DLL std::vector<uint64_t>& GetCallstackBlock();
+	CAP_DLL void UpdateLocalCallstack();
 
 	CAP_DLL std::mt19937_64& GetRandomGenerator();
 
@@ -198,6 +201,9 @@ private:
 
 	std::vector<uint64_t>* m_callstackStackIdx;
 	std::vector<uint64_t>* m_callstackBlockIdx;
+
+	void(***m_localCallstack)(ModBlockPass*);
+	void(***m_calls)(ModBlockPass*);
 
 	std::vector<std::function<void(ModBlockPass*)>*> m_deallocationCalls;
 
