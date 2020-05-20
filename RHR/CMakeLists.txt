@@ -47,6 +47,7 @@ target_link_libraries(RHR PUBLIC
 	sfml-graphics
 	sfml-system
 	sfml-window
+	sfml-network
 	${libtcc}
 )
 target_include_directories(RHR PUBLIC

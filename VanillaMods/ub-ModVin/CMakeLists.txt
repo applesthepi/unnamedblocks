@@ -243,6 +243,7 @@ target_include_directories(ModVin PUBLIC
 target_link_libraries(ModVin PUBLIC
 	sfml-graphics
 	sfml-system
+	sfml-network
 	RHR
 	Espresso
 	Cappuccino

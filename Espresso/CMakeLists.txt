@@ -31,5 +31,6 @@ target_link_libraries(Espresso PUBLIC
 	sfml-graphics
 	sfml-window
 	sfml-system
+	sfml-network
 )
 

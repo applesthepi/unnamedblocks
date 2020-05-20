@@ -82,6 +82,7 @@ target_link_libraries(unnamedblocks PUBLIC
 	sfml-graphics
 	sfml-system
 	sfml-window
+	sfml-network
 	optimized "${csfml-audio}"
     optimized "${csfml-network}"
     optimized "${csfml-graphics}"
@@ -176,6 +177,7 @@ if(MSVC)
 		$<TARGET_FILE:sfml-system>
 		$<TARGET_FILE:sfml-window>
 		$<TARGET_FILE:sfml-graphics>
+		$<TARGET_FILE:sfml-network>
 		"${CMAKE_SOURCE_DIR}/cmake/bin/libtcc.dll"
 		$<TARGET_FILE_DIR:unnamedblocks>)
 	add_custom_command(

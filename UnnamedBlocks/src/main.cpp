@@ -29,6 +29,7 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <SFML/Network.hpp>
 
 #define CONTEXT_COLOR 180, 180, 180, 200
 
@@ -67,7 +68,7 @@ int main()
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default);
 	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(200);
+	window.setFramerateLimit(60);
 
 	// Initialization
 
@@ -76,6 +77,109 @@ int main()
 	InputHandler::Initialization();
 	ButtonRegistry::Initialize();
 	PreProcessor::Initialize();
+
+	{
+		//
+		// intro
+		//
+
+		sf::Http http("kikoho.ddns.net");
+
+		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"));
+		const std::string& bodyApple = responseApple.getBody();// expecting 128
+		sf::Image imgApples;
+		imgApples.loadFromMemory(bodyApple.c_str(), bodyApple.length());
+
+		sf::Http::Response responseEmp = http.sendRequest(sf::Http::Request("The-Emperor10.png"));
+		const std::string& bodyEmp = responseEmp.getBody();// expecting 128
+		sf::Image imgEmp;
+		imgEmp.loadFromMemory(bodyEmp.c_str(), bodyEmp.length());
+
+		sf::Texture txApples;
+		txApples.loadFromImage(imgApples);
+
+		sf::Texture txEmp;
+		txEmp.loadFromImage(imgEmp);
+
+		sf::Text title("Unnamed Blocks", *Global::Font, 48);
+		title.setPosition((window.getSize().x / 2.0) - (title.getLocalBounds().width / 2.0), 40);
+		title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+
+		sf::Sprite spApples(txApples);
+		spApples.setPosition((window.getSize().x / 3.0) - 64, (window.getSize().y / 2.0) - 64);
+
+		sf::Sprite spEmp(txEmp);
+		spEmp.setPosition(((window.getSize().x * 2.0) / 3.0) - 64, (window.getSize().y / 2.0) - 64);
+
+		double txtStartHeight = (window.getSize().y / 2.0) + 200;
+		double txtEndHeight = (window.getSize().y / 2.0) + 70;
+
+		sf::Text txtApples("applesthepi", *Global::Font, 24);
+		int32_t xposApples = (window.getSize().x / 3.0) - (txtApples.getLocalBounds().width / 2.0);
+		txtApples.setPosition(xposApples, (window.getSize().y / 2.0) + 70);
+		txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+
+		sf::Text txtEmp("The-Emperor10", *Global::Font, 24);
+		int32_t xposEmp = ((window.getSize().x * 2) / 3.0) - (txtEmp.getLocalBounds().width / 2.0);
+		txtEmp.setPosition(xposEmp, (window.getSize().y / 2.0) + 70);
+		txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+
+		sf::Text titleGit("github.com/applesthepi/unnamedblocks", *Global::Font, 24);
+		titleGit.setPosition((window.getSize().x / 2.0) - (titleGit.getLocalBounds().width / 2.0), window.getSize().y - 50);
+		titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+
+		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+
+		bool fading = false;
+		double endTime = 1200;
+		double fadeOffset = 1000;
+
+		while (true)
+		{
+			sf::Event ev;
+
+			while (window.pollEvent(ev)) {}
+
+			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+
+			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
+				break;
+
+			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
+				fading = true;
+
+			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
+
+			// update
+
+			if (fading)
+			{
+				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, (1.0 - t) * 255));
+				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, (1.0 - t) * 255));
+
+				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, (1.0 - t) * 255));
+				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, (1.0 - t) * 255));
+
+				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+			}
+
+			// render
+
+			window.clear(MOD_BACKGROUND_LOW);
+
+			window.draw(title);
+			window.draw(spApples);
+			window.draw(spEmp);
+			window.draw(txtApples);
+			window.draw(txtEmp);
+			window.draw(titleGit);
+
+			window.display();
+		}
+	}
+
+	window.setFramerateLimit(200);
 
 	BlockRegistry* pRegistry = new BlockRegistry();
 	run(pRegistry);
