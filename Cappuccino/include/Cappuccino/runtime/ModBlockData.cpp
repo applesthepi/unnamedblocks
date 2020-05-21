@@ -102,6 +102,11 @@ void ModBlockData::SetInterpretations(const std::vector<ModBlockDataInterpretati
 	m_interpretations = interpretations;
 }
 
+MODBLOCK_EXPORT void ModBlockData::SetInterpretation(const ModBlockDataInterpretation& interpretation, const uint64_t& idx)
+{
+	m_interpretations[idx] = interpretation;
+}
+
 MODBLOCK_EXPORT ModBlockData& ModBlockData::operator=(ModBlockData& data)
 {
 	if (data.m_setup)

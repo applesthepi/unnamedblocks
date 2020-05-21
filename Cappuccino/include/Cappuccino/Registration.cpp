@@ -698,8 +698,9 @@ void Registration::CompileDataDebug()
 {
 	uint64_t tempTotal = 0;
 	uint64_t variableIdx = 0;
+	std::vector<std::vector<ModBlockDataInterpretation>> tempRegsitryTypes;
 
-	auto addToRegistry = [&](const std::string& name, const uint64_t& idx)
+	auto addToRegistry = [&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp)
 	{
 		for (uint64_t i = 0; i < m_variableRegistry[idx].size(); i++)
 		{
@@ -713,6 +714,7 @@ void Registration::CompileDataDebug()
 		variableIdx = tempTotal;
 		tempTotal++;
 		m_variableRegistry[idx].push_back(name);
+		tempRegsitryTypes[idx].push_back(interp);
 
 		return true;
 	};
@@ -722,6 +724,7 @@ void Registration::CompileDataDebug()
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
 		m_variableRegistry.push_back(std::vector<std::string>());
+		tempRegsitryTypes.push_back(std::vector<ModBlockDataInterpretation>());
 		m_variableRegistryOffsets.push_back(tempTotal);
 
 		std::vector<std::vector<int64_t>*>* hauledVariablesStack = new std::vector<std::vector<int64_t>*>();
@@ -738,8 +741,29 @@ void Registration::CompileDataDebug()
 			{
 				if (types[b] == ModBlockDataType::VAR)
 				{
-					addToRegistry(*(std::string*)data[b], i);
-					hauledVariablesBlock->push_back(variableIdx);
+					if (interpretations[b] == ModBlockDataInterpretation::ANY)
+					{
+						bool found = false;
+
+						for (uint64_t c = 0; c < m_variableRegistry[i].size(); c++)
+						{
+							if (m_variableRegistry[i][c] == *(std::string*)data[b])
+							{
+								hauledVariablesBlock->push_back(c);
+								m_data[i][a].SetInterpretation(tempRegsitryTypes[i][c], b);
+								found = true;
+								break;
+							}
+						}
+
+						if (!found)
+							Logger::Warn("*any* variable \"" + *(std::string*)data[b] + "\" was not found");
+					}
+					else
+					{
+						addToRegistry(*(std::string*)data[b], i, interpretations[b]);
+						hauledVariablesBlock->push_back(variableIdx);
+					}
 				}
 				else
 					hauledVariablesBlock->push_back(-1);
@@ -858,14 +882,84 @@ void Registration::CompileDataRelease()
 			{
 				if (types[b] == ModBlockDataType::VAR)
 				{
-					if (interpretations[b] == ModBlockDataInterpretation::REAL)
-						addToRegistryReal(*(std::string*)data[b], i);
-					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
-						addToRegistryBool(*(std::string*)data[b], i);
-					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
-						addToRegistryString(*(std::string*)data[b], i);
+					if (interpretations[b] == ModBlockDataInterpretation::ANY)
+					{
+						bool found = false;
 
-					hauledVariablesBlock->push_back(variableIdx);
+						if (!found)
+						{
+							for (uint64_t c = 0; c < tempRegistryReal.size(); c++)
+							{
+								for (uint64_t d = 0; d < tempRegistryReal[c].size(); d++)
+								{
+									if (tempRegistryReal[c][d] == *(std::string*)data[b])
+									{
+										hauledVariablesBlock->push_back(c);
+										m_data[i][a].SetInterpretation(ModBlockDataInterpretation::REAL, b);
+										found = true;
+										break;
+									}
+								}
+
+								if (found)
+									break;
+							}
+						}
+
+						if (!found)
+						{
+							for (uint64_t c = 0; c < tempRegistryBool.size(); c++)
+							{
+								for (uint64_t d = 0; d < tempRegistryBool[c].size(); d++)
+								{
+									if (tempRegistryBool[c][d] == *(std::string*)data[b])
+									{
+										hauledVariablesBlock->push_back(c);
+										m_data[i][a].SetInterpretation(ModBlockDataInterpretation::BOOL, b);
+										found = true;
+										break;
+									}
+								}
+
+								if (found)
+									break;
+							}
+						}
+
+						if (!found)
+						{
+							for (uint64_t c = 0; c < tempRegistryString.size(); c++)
+							{
+								for (uint64_t d = 0; d < tempRegistryString[c].size(); d++)
+								{
+									if (tempRegistryString[c][d] == *(std::string*)data[b])
+									{
+										hauledVariablesBlock->push_back(c);
+										m_data[i][a].SetInterpretation(ModBlockDataInterpretation::STRING, b);
+										found = true;
+										break;
+									}
+								}
+
+								if (found)
+									break;
+							}
+						}
+
+						if (!found)
+							Logger::Warn("*any* variable \"" + *(std::string*)data[b] + "\" was not found");
+					}
+					else
+					{
+						if (interpretations[b] == ModBlockDataInterpretation::REAL)
+							addToRegistryReal(*(std::string*)data[b], i);
+						else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
+							addToRegistryBool(*(std::string*)data[b], i);
+						else if (interpretations[b] == ModBlockDataInterpretation::STRING)
+							addToRegistryString(*(std::string*)data[b], i);
+
+						hauledVariablesBlock->push_back(variableIdx);
+					}
 				}
 				else
 					hauledVariablesBlock->push_back(-1);

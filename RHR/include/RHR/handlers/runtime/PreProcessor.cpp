@@ -118,6 +118,8 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 						argInterpretations.push_back(ModBlockDataInterpretation::REAL);
 					else if (type == BlockArgumentType::STRING)
 						argInterpretations.push_back(ModBlockDataInterpretation::STRING);
+					else if (type == BlockArgumentType::ANY)
+						argInterpretations.push_back(ModBlockDataInterpretation::ANY);
 				}
 				else if (type == BlockArgumentType::STRING)
 				{

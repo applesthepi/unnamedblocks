@@ -31,6 +31,7 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentString.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentText.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentReal.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentAny.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Block.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Plane.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Stack.h"

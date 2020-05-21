@@ -28,8 +28,10 @@ enum class BlockArgumentType
 {
 	/*
 	This is the argument type, an argument can only allow this variable type to be used.
+
+	"ANY" is indicated for any *variable* input. The type will unspecified in Cappuccino and will be presented as a "void*"
 	*/
-	TEXT, REAL, BOOL, STRING
+	TEXT, REAL, BOOL, STRING, ANY
 };
 
 enum class BlockArgumentVariableModeRestriction

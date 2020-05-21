@@ -25,8 +25,20 @@
 #include "blocks/utility/BlockUtilityFunctionCall.h"
 #include "blocks/utility/BlockUtilityThreadSummon.h"
 #include "blocks/utility/BlockUtilityThreadKill.h"
+#include "blocks/utility/BlockUtilityGetMicro.h"
 #include "blocks/utility/BlockUtilityGlobalSetReal.h"
 #include "blocks/utility/BlockUtilityGlobalGetReal.h"
+#include "blocks/utility/BlockUtilityListCreate.h"
+#include "blocks/utility/BlockUtilityListDestroy.h"
+#include "blocks/utility/BlockUtilityListIndexReal.h"
+#include "blocks/utility/BlockUtilityListIndexBool.h"
+#include "blocks/utility/BlockUtilityListIndexString.h"
+#include "blocks/utility/BlockUtilityListInsert.h"
+#include "blocks/utility/BlockUtilityListRemove.h"
+#include "blocks/utility/BlockUtilityListReplace.h"
+#include "blocks/utility/BlockUtilityListReserve.h"
+#include "blocks/utility/BlockUtilityListAdd.h"
+#include "blocks/utility/BlockUtilityListSize.h"
 
 // graphics
 
@@ -149,8 +161,21 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockUtilityFunctionCall());
 	data->RegisterBlock(new BlockUtilityThreadSummon());
 	data->RegisterBlock(new BlockUtilityThreadKill());
+	data->RegisterBlock(new BlockUtilityGetMicro());
 	data->RegisterBlock(new BlockUtilityGlobalSetReal());
 	data->RegisterBlock(new BlockUtilityGlobalGetReal());
+	data->RegisterBlock(new BlockUtilityListCreate());
+	data->RegisterBlock(new BlockUtilityListDestroy());
+	data->RegisterBlock(new BlockUtilityListIndexReal());
+	data->RegisterBlock(new BlockUtilityListIndexBool());
+	data->RegisterBlock(new BlockUtilityListIndexString());
+	data->RegisterBlock(new BlockUtilityListInsert());
+	data->RegisterBlock(new BlockUtilityListRemove());
+	data->RegisterBlock(new BlockUtilityListReplace());
+	data->RegisterBlock(new BlockUtilityListReserve());
+	data->RegisterBlock(new BlockUtilityListAdd());
+	data->RegisterBlock(new BlockUtilityListSize());
+
 
 	// graphics
 

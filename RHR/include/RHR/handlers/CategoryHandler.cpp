@@ -7,6 +7,11 @@
 
 #include <SFML/Graphics.hpp>
 
+#ifndef LINUX
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
 void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPlane)
 {
 	m_running = false;
@@ -321,6 +326,22 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 
 		Button* button = new Button(sf::Vector2i(70 * 3, 0), sf::Vector2u(70, 16), function);
 		button->SetButtonModeText("saveas", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
+
+		ButtonRegistry::AddButton(button);
+	}
+	{
+		std::function<void()>* function = new std::function<void()>();
+		*function = [primaryPlane]()
+		{
+#ifndef LINUX
+			ShellExecute(0, 0, "https://github.com/applesthepi/unnamedblocks/issues", 0, 0, SW_SHOW);
+#else
+			system("xdg-open https://github.com/applesthepi/unnamedblocks/issues")
+#endif
+		};
+
+		Button* button = new Button(sf::Vector2i(70 * 4, 0), sf::Vector2u(70, 16), function);
+		button->SetButtonModeText("issue", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 12);
 
 		ButtonRegistry::AddButton(button);
 	}

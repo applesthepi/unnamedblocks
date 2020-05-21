@@ -3,6 +3,8 @@
 #include "args/ArgumentString.h"
 #include "args/ArgumentReal.h"
 #include "args/ArgumentBoolean.h"
+#include "args/ArgumentAny.h"
+
 #include <Cappuccino/Logger.h>
 #include <Cappuccino/block/ModBlock.h>
 
@@ -87,6 +89,19 @@ Block::Block(std::string type, BlockRegistry* registry, std::function<void()>* f
 
 			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
 			arg->SetMode(args[i].Mode);
+			arg->SetData(args[i].DefaultValue);
+			arg->ReInspectData();
+
+			offset += arg->GetArgumentRawWidth() + Global::BlockBorder;
+
+			m_args.push_back(arg);
+		}
+		else if (args[i].Type == BlockArgumentType::ANY)
+		{
+			ArgumentAny* arg = new ArgumentAny(sf::Vector2u(offset, 0));
+
+			arg->SetupInBlock(m_relitivePosition, m_absolutePosition, m_functionUpdatePreTextureArgs, m_functionSelect);
+			arg->SetMode(BlockArgumentVariableMode::VAR);
 			arg->SetData(args[i].DefaultValue);
 			arg->ReInspectData();
 
