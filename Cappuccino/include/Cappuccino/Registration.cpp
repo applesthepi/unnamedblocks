@@ -744,12 +744,13 @@ void Registration::CompileDataDebug()
 					if (interpretations[b] == ModBlockDataInterpretation::ANY)
 					{
 						bool found = false;
+						uint64_t countTotal = tempTotal - m_variableRegistry[i].size();
 
 						for (uint64_t c = 0; c < m_variableRegistry[i].size(); c++)
 						{
 							if (m_variableRegistry[i][c] == *(std::string*)data[b])
 							{
-								hauledVariablesBlock->push_back(c);
+								hauledVariablesBlock->push_back(countTotal + c);
 								m_data[i][a].SetInterpretation(tempRegsitryTypes[i][c], b);
 								found = true;
 								break;
