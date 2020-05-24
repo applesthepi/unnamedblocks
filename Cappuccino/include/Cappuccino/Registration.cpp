@@ -808,7 +808,6 @@ void Registration::CompileDataDebug()
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			//std::vector<uint64_t> runtimeData;
 			std::vector<uint64_t>* hauledVariablesBlock = new std::vector<uint64_t>();
 
 			for (uint64_t b = 0; b < data.size(); b++)
@@ -827,7 +826,6 @@ void Registration::CompileDataDebug()
 							{
 								hauledVariablesBlock->push_back(countTotal + c);
 								m_data[i][a].SetInterpretation(tempRegsitryTypes[i][c], b);
-								//runtimeData.push_back(c);
 
 								found = true;
 								break;
@@ -841,7 +839,6 @@ void Registration::CompileDataDebug()
 					{
 						addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
 						hauledVariablesBlock->push_back(variableIdx - countTotal);
-						//runtimeData.push_back(variableIdx - countTotal);
 					}
 				}
 				else
@@ -857,7 +854,6 @@ void Registration::CompileDataDebug()
 						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::STRING, new std::string(*(std::string*)data[b]));
 
 					hauledVariablesBlock->push_back(variableIdx - countTotal);
-					//runtimeData.push_back(variableIdx - countTotal);
 				}
 			}
 
@@ -911,72 +907,78 @@ void Registration::CompileDataRelease()
 	uint64_t variableIdx = 0;
 
 	std::vector<std::vector<std::string>> tempRegistryReal;
-	std::vector<uint64_t> tempRegistryRealOffset;
+	std::vector<std::vector<double*>> tempRegsitryValueReal;
+	std::vector<uint64_t> tempOffsetReal;
 	uint64_t tempTotalReal = 0;
 
 	std::vector<std::vector<std::string>> tempRegistryBool;
-	std::vector<uint64_t> tempRegistryBoolOffset;
+	std::vector<std::vector<bool*>> tempRegsitryValueBool;
+	std::vector<uint64_t> tempOffsetBool;
 	uint64_t tempTotalBool = 0;
 
 	std::vector<std::vector<std::string>> tempRegistryString;
-	std::vector<uint64_t> tempRegistryStringOffset;
+	std::vector<std::vector<std::string*>> tempRegsitryValueString;
+	std::vector<uint64_t> tempOffsetString;
 	uint64_t tempTotalString = 0;
 
-	auto addToRegistryReal = [&](const std::string& name, const uint64_t& idx)
+	auto addToRegistryReal = [&](const std::string& name, const uint64_t& idx, double* use = nullptr)
 	{
 		for (uint64_t i = 0; i < tempRegistryReal[idx].size(); i++)
 		{
 			if (tempRegistryReal[idx][i] == name)
 			{
-				variableIdx = i + tempRegistryRealOffset[idx];
+				variableIdx = i;
 				return false;
 			}
 		}
 
-		variableIdx = tempTotalReal;
+		variableIdx = tempRegistryReal[idx].size();
 		tempTotalReal++;
 		tempRegistryReal[idx].push_back(name);
+		tempRegsitryValueReal[idx].push_back(use);
 
 		return true;
 	};
 
-	auto addToRegistryBool = [&](const std::string& name, const uint64_t& idx)
+	auto addToRegistryBool = [&](const std::string& name, const uint64_t& idx, bool* use = nullptr)
 	{
 		for (uint64_t i = 0; i < tempRegistryBool[idx].size(); i++)
 		{
 			if (tempRegistryBool[idx][i] == name)
 			{
-				variableIdx = i + tempRegistryBoolOffset[idx];
+				variableIdx = i;
 				return false;
 			}
 		}
 
-		variableIdx = tempTotalBool;
+		variableIdx = tempRegistryBool[idx].size();
 		tempTotalBool++;
 		tempRegistryBool[idx].push_back(name);
+		tempRegsitryValueBool[idx].push_back(use);
 
 		return true;
 	};
 
-	auto addToRegistryString = [&](const std::string& name, const uint64_t& idx)
+	auto addToRegistryString = [&](const std::string& name, const uint64_t& idx, std::string* use = nullptr)
 	{
 		for (uint64_t i = 0; i < tempRegistryString[idx].size(); i++)
 		{
 			if (tempRegistryString[idx][i] == name)
 			{
-				variableIdx = i + tempRegistryStringOffset[idx];
+				variableIdx = i;
 				return false;
 			}
 		}
 
-		variableIdx = tempTotalString;
+		variableIdx = tempRegistryString[idx].size();
 		tempTotalString++;
 		tempRegistryString[idx].push_back(name);
+		tempRegsitryValueString[idx].push_back(use);
 
 		return true;
 	};
 
-	std::vector<std::vector<std::vector<int64_t>*>*> hauledVariablesPlane;
+	std::vector<std::vector<std::vector<uint64_t>*>*> hauledVariablesPlane;
 
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
@@ -984,11 +986,15 @@ void Registration::CompileDataRelease()
 		tempRegistryBool.push_back(std::vector<std::string>());
 		tempRegistryString.push_back(std::vector<std::string>());
 
-		tempRegistryRealOffset.push_back(tempTotalReal);
-		tempRegistryBoolOffset.push_back(tempTotalBool);
-		tempRegistryStringOffset.push_back(tempTotalString);
+		tempRegsitryValueReal.push_back(std::vector<double*>());
+		tempRegsitryValueBool.push_back(std::vector<bool*>());
+		tempRegsitryValueString.push_back(std::vector<std::string*>());
 
-		std::vector<std::vector<int64_t>*>* hauledVariablesStack = new std::vector<std::vector<int64_t>*>();
+		tempOffsetReal.push_back(tempTotalReal);
+		tempOffsetBool.push_back(tempTotalBool);
+		tempOffsetString.push_back(tempTotalString);
+
+		std::vector<std::vector<uint64_t>*>* hauledVariablesStack = new std::vector<std::vector<uint64_t>*>();
 
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
 		{
@@ -996,7 +1002,7 @@ void Registration::CompileDataRelease()
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			std::vector<int64_t>* hauledVariablesBlock = new std::vector<int64_t>();
+			std::vector<uint64_t>* hauledVariablesBlock = new std::vector<uint64_t>();
 
 			for (uint64_t b = 0; b < data.size(); b++)
 			{
@@ -1012,10 +1018,11 @@ void Registration::CompileDataRelease()
 							{
 								for (uint64_t d = 0; d < tempRegistryReal[c].size(); d++)
 								{
-									if (tempRegistryReal[c][d] == *(std::string*)data[b])
+									if (tempRegistryReal[c][d] == "_L_" + *(std::string*)data[b])
 									{
 										hauledVariablesBlock->push_back(c);
 										m_data[i][a].SetInterpretation(ModBlockDataInterpretation::REAL, b);
+
 										found = true;
 										break;
 									}
@@ -1032,10 +1039,11 @@ void Registration::CompileDataRelease()
 							{
 								for (uint64_t d = 0; d < tempRegistryBool[c].size(); d++)
 								{
-									if (tempRegistryBool[c][d] == *(std::string*)data[b])
+									if (tempRegistryBool[c][d] == "_L_" + *(std::string*)data[b])
 									{
 										hauledVariablesBlock->push_back(c);
 										m_data[i][a].SetInterpretation(ModBlockDataInterpretation::BOOL, b);
+
 										found = true;
 										break;
 									}
@@ -1052,10 +1060,11 @@ void Registration::CompileDataRelease()
 							{
 								for (uint64_t d = 0; d < tempRegistryString[c].size(); d++)
 								{
-									if (tempRegistryString[c][d] == *(std::string*)data[b])
+									if (tempRegistryString[c][d] == "_L_" + *(std::string*)data[b])
 									{
 										hauledVariablesBlock->push_back(c);
 										m_data[i][a].SetInterpretation(ModBlockDataInterpretation::STRING, b);
+
 										found = true;
 										break;
 									}
@@ -1072,17 +1081,43 @@ void Registration::CompileDataRelease()
 					else
 					{
 						if (interpretations[b] == ModBlockDataInterpretation::REAL)
-							addToRegistryReal(*(std::string*)data[b], i);
+						{
+							addToRegistryReal("_L_" + *(std::string*)data[b], i);
+							hauledVariablesBlock->push_back(variableIdx);
+						}
 						else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
-							addToRegistryBool(*(std::string*)data[b], i);
+						{
+							addToRegistryBool("_L_" + *(std::string*)data[b], i);
+							hauledVariablesBlock->push_back(variableIdx);
+						}
 						else if (interpretations[b] == ModBlockDataInterpretation::STRING)
-							addToRegistryString(*(std::string*)data[b], i);
-
-						hauledVariablesBlock->push_back(variableIdx);
+						{
+							addToRegistryString("_L_" + *(std::string*)data[b], i);
+							hauledVariablesBlock->push_back(variableIdx);
+						}
 					}
 				}
 				else
-					hauledVariablesBlock->push_back(-1);
+				{
+					char buffer[20];
+					sprintf(buffer, "_R_%u_%u_%u", i, a, b);
+
+					if (interpretations[b] == ModBlockDataInterpretation::REAL)
+					{
+						addToRegistryReal(std::string(buffer), i, new double(*(double*)data[b]));
+						hauledVariablesBlock->push_back(variableIdx);
+					}
+					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
+					{
+						addToRegistryBool(std::string(buffer), i, new bool(*(bool*)data[b]));
+						hauledVariablesBlock->push_back(variableIdx);
+					}
+					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
+					{
+						addToRegistryString(std::string(buffer), i, new std::string(*(std::string*)data[b]));
+						hauledVariablesBlock->push_back(variableIdx);
+					}
+				}
 			}
 
 			hauledVariablesStack->push_back(hauledVariablesBlock);
@@ -1091,7 +1126,44 @@ void Registration::CompileDataRelease()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	// TODO fix
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		m_variableRealCount.push_back(tempRegistryReal[i].size());
+		m_variableBoolCount.push_back(tempRegistryBool[i].size());
+		m_variableStringCount.push_back(tempRegistryString[i].size());
+	}
+
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		m_variableRealTemplate.push_back(new double[m_variableRealCount[i]]);
+		m_variableBoolTemplate.push_back(new bool[m_variableBoolCount[i]]);
+		m_variableStringTemplate.push_back(new std::string[m_variableStringCount[i]]);
+
+		for (uint64_t a = 0; a < m_variableRealCount[i]; a++)
+		{
+			if (tempRegsitryValueReal[i][a] != nullptr)
+				m_variableRealTemplate.back()[a] = *(double*)tempRegsitryValueReal[i][a];
+		}
+
+		for (uint64_t a = 0; a < m_variableBoolCount[i]; a++)
+		{
+			if (tempRegsitryValueBool[i][a] != nullptr)
+				m_variableBoolTemplate.back()[a] = *(bool*)tempRegsitryValueBool[i][a];
+		}
+
+		for (uint64_t a = 0; a < m_variableStringCount[i]; a++)
+		{
+			if (tempRegsitryValueString[i][a] != nullptr)
+				m_variableStringTemplate.back()[a] = *(std::string*)tempRegsitryValueString[i][a];
+		}
+
+		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		{
+			m_data[i][a].ClearData();
+			m_data[i][a].SetRuntimeData(*hauledVariablesPlane[i]->at(a));
+			m_data[i][a].SetDataTemplates(i);
+		}
+	}
 }
 
 void Registration::RunContext()
