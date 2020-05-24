@@ -1,6 +1,6 @@
 <ul>
-	<li><h3>About</h3></li>
-	<li><h3>News</h3></li>
-	<li><h3>Docs</h3></li>
-	<li><h3>Downloads</h3></li>
+	<li href="https://applesthepi.github.io/unnamedblocks/">About</li>
+	<li href="https://applesthepi.github.io/unnamedblocks/news.html">News</li>
+	<li>Docs</li>
+	<li>Downloads</li>
 </ul>
