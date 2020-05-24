@@ -33,9 +33,9 @@ public:
 	// user data
 
 	void** Data;
-	double* VariablesReal;
-	bool* VariablesBool;
-	std::string* VariablesString;
+	const std::vector<uint64_t>* VariablesRealCount;
+	const std::vector<uint64_t>* VariablesBoolCount;
+	const std::vector<uint64_t>* VariablesStringCount;
 
 	std::mutex* CustomRegisterMutex;
 	std::vector<void*>* CustomRegister;
@@ -93,9 +93,9 @@ public:
 	// get the value at the argument the user typed in.
 	// if its a variable, it will be auto converted.
 
-	CAP_DLL double* GetReal(const uint64_t& idx);
-	CAP_DLL bool* GetBool(const uint64_t& idx);
-	CAP_DLL std::string* GetString(const uint64_t& idx);
+	CAP_DLL double& GetReal(const uint64_t& idx);
+	CAP_DLL bool& GetBool(const uint64_t& idx);
+	CAP_DLL std::string& GetString(const uint64_t& idx);
 
 	// data set during the initializations processes.
 
@@ -104,25 +104,28 @@ public:
 	// only use these if your directly changing the variable registry.
 	// if your trying to get the value in the block argument from the user, use Get<T> above.
 
-	CAP_DLL double& GetVariableReal(const uint64_t& idx);
-	CAP_DLL bool& GetVariableBool(const uint64_t& idx);
-	CAP_DLL std::string& GetVariableString(const uint64_t& idx);
+	//CAP_DLL double& GetVariableReal(const uint64_t& idx);
+	//CAP_DLL bool& GetVariableBool(const uint64_t& idx);
+	//CAP_DLL std::string& GetVariableString(const uint64_t& idx);
 
 	// only use these if your instancing a new ModBlockPass
 
-	CAP_DLL double* GetVariableRegistryReal();
-	CAP_DLL bool* GetVariableRegistryBool();
-	CAP_DLL std::string* GetVariableRegistryString();
-	CAP_DLL std::mutex* GetCustomRegisterMutex();
-	CAP_DLL std::vector<void*>* GetCustomRegister();
-	CAP_DLL std::vector<std::string>* GetVariableRegistry();
+	//CAP_DLL double* GetVariableRegistryReal();
+	//CAP_DLL bool* GetVariableRegistryBool();
+	//CAP_DLL std::string* GetVariableRegistryString();
+	//CAP_DLL std::mutex* GetCustomRegisterMutex();
+	//CAP_DLL std::vector<void*>* GetCustomRegister();
+	//CAP_DLL std::vector<std::string>* GetVariableRegistry();
 	CAP_DLL std::chrono::steady_clock::time_point* GetBeginTime();
 
 	CAP_DLL void Stop();
 
-	CAP_DLL std::vector<uint64_t>& GetCallstackStack();
-	CAP_DLL std::vector<uint64_t>& GetCallstackBlock();
-	CAP_DLL void UpdateLocalCallstack();
+	//CAP_DLL std::vector<uint64_t>& GetCallstackStack();
+	//CAP_DLL std::vector<uint64_t>& GetCallstackBlock();
+	//CAP_DLL void UpdateLocalCallstack();
+
+	CAP_DLL void AddCallstack(const uint64_t& stack, const uint64_t& block);
+	CAP_DLL void PopCallstack();
 
 	CAP_DLL std::mt19937_64& GetRandomGenerator();
 
@@ -152,29 +155,17 @@ public:
 private:
 	// user data interactions
 
-	double* (ModBlockPass::* m_getReal)(const uint64_t& idx);
-	double* GetRealDebug(const uint64_t& idx);
-	double* GetRealRelease(const uint64_t& idx);
+	double& (ModBlockPass::* m_getReal)(const uint64_t& idx);
+	double& GetRealDebug(const uint64_t& idx);
+	double& GetRealRelease(const uint64_t& idx);
 
-	bool* (ModBlockPass::* m_getBool)(const uint64_t& idx);
-	bool* GetBoolDebug(const uint64_t& idx);
-	bool* GetBoolRelease(const uint64_t& idx);
+	bool& (ModBlockPass::* m_getBool)(const uint64_t& idx);
+	bool& GetBoolDebug(const uint64_t& idx);
+	bool& GetBoolRelease(const uint64_t& idx);
 
-	std::string* (ModBlockPass::* m_getString)(const uint64_t& idx);
-	std::string* GetStringDebug(const uint64_t& idx);
-	std::string* GetStringRelease(const uint64_t& idx);
-
-	double& (ModBlockPass::* m_getVaraibleReal)(const uint64_t& idx);
-	double& GetVariableRealDebug(const uint64_t& idx);
-	double& GetVariableRealRelease(const uint64_t& idx);
-
-	bool& (ModBlockPass::* m_getVariableBool)(const uint64_t& idx);
-	bool& GetVariableBoolDebug(const uint64_t& idx);
-	bool& GetVariableBoolRelease(const uint64_t& idx);
-
-	std::string& (ModBlockPass::* m_getVariableString)(const uint64_t& idx);
-	std::string& GetVariableStringDebug(const uint64_t& idx);
-	std::string& GetVariableStringRelease(const uint64_t& idx);
+	std::string& (ModBlockPass::* m_getString)(const uint64_t& idx);
+	std::string& GetStringDebug(const uint64_t& idx);
+	std::string& GetStringRelease(const uint64_t& idx);
 
 	void* (ModBlockPass::* m_getPreData)(const uint64_t& idx);
 	void* GetPreDataDebug(const uint64_t& idx);
@@ -192,10 +183,23 @@ private:
 	// user data
 
 	ModBlockData** m_data;
+
+	std::vector<std::vector<std::vector<uint64_t>>> m_dataStackIdx;
+	std::vector<std::vector<std::vector<void*>>> m_dataStackPre;
+	std::vector<double*> m_dataStackReal;
+	std::vector<bool*> m_dataStackBool;
+	std::vector<std::string*> m_dataStackString;
+
+	uint64_t** m_activeIdx;
+	std::vector<std::vector<void*>>* m_activePre;
+	double* m_activeReal;
+	bool* m_activeBool;
+	std::string* m_activeString;
 	
-	double* m_variablesReal;
-	bool* m_variablesBool;
-	std::string* m_variablesString;
+	const std::vector<uint64_t>* m_variablesRealCount;
+	const std::vector<uint64_t>* m_variablesBoolCount;
+	const std::vector<uint64_t>* m_variablesStringCount;
+
 	std::mutex* m_customRegistrerMutex;
 	std::vector<void*>* m_customRegister;
 

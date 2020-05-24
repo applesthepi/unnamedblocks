@@ -1,4 +1,5 @@
 ﻿#include "ModBlockPass.h"
+#include "Registration.h"
 
 #include <thread>
 #include <cstddef>
@@ -7,6 +8,10 @@
 #include <ctime>
 #include <cstring>
 #include <chrono>
+
+static double gReal = 0.0;
+static bool gBool = false;
+static std::string gString;
 
 ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 {
@@ -20,9 +25,9 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		//m_getVariableBool = &ModBlockPass::GetVariableBoolDebug;
 		//m_getVariableString = &ModBlockPass::GetVariableStringDebug;
 		// because m_variableRegistry isnt working right now due to changes
-		m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
-		m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
-		m_getVariableString = &ModBlockPass::GetVariableStringRelease;
+		//m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
+		//m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
+		//m_getVariableString = &ModBlockPass::GetVariableStringRelease;
 
 		m_getPreData = &ModBlockPass::GetPreDataDebug;
 	}
@@ -31,15 +36,15 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		m_getReal = &ModBlockPass::GetRealRelease;
 		m_getBool = &ModBlockPass::GetBoolRelease;
 		m_getString = &ModBlockPass::GetStringRelease;
-		m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
-		m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
-		m_getVariableString = &ModBlockPass::GetVariableStringRelease;
+		//m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
+		//m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
+		//m_getVariableString = &ModBlockPass::GetVariableStringRelease;
 		m_getPreData = &ModBlockPass::GetPreDataRelease;
 	}
 
-	m_variablesReal = init.VariablesReal;
-	m_variablesBool = init.VariablesBool;
-	m_variablesString = init.VariablesString;
+	m_variablesRealCount = init.VariablesRealCount;
+	m_variablesBoolCount = init.VariablesBoolCount;
+	m_variablesStringCount = init.VariablesStringCount;
 	m_customRegistrerMutex = init.CustomRegisterMutex;
 	m_customRegister = init.CustomRegister;
 	m_stop = init.Stop;
@@ -47,6 +52,14 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 	m_beginTime = init.BeginTime;
 	m_random.seed(std::time(0));
 	m_messages.reserve(1024);
+	m_activeIdx = nullptr;
+	
+	for (uint64_t i = 0; i < m_variablesRealCount->size(); i++)
+	{
+		m_dataStackReal.push_back(new double[m_variablesRealCount->at(i)]);
+		m_dataStackBool.push_back(new bool[m_variablesBoolCount->at(i)]);
+		m_dataStackString.push_back(new std::string[m_variablesStringCount->at(i)]);
+	}
 }
 
 CAP_DLL void ModBlockPass::SetData(ModBlockData** data)
@@ -94,7 +107,7 @@ CAP_DLL void ModBlockPass::PerformDeallocationCallbacks()
 
 	m_deallocationCalls.clear();
 }
-
+/*
 CAP_DLL double& ModBlockPass::GetVariableReal(const uint64_t& idx)
 {
 	return (this->*(m_getVaraibleReal))(idx);
@@ -139,7 +152,7 @@ CAP_DLL std::vector<std::string>* ModBlockPass::GetVariableRegistry()
 {
 	return m_variableRegistry;
 }
-
+*/
 CAP_DLL std::chrono::steady_clock::time_point* ModBlockPass::GetBeginTime()
 {
 	return m_beginTime;
@@ -153,6 +166,101 @@ CAP_DLL void ModBlockPass::Stop()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
+CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& block)
+{
+	if (m_activeIdx != nullptr)
+	{
+		for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
+			delete[] m_activeIdx[i];
+
+		delete[] m_activeIdx;
+		m_activeIdx = nullptr;
+	}
+
+	m_callstackStackIdx->push_back(stack);
+	m_callstackBlockIdx->push_back(block);
+	*m_localCallstack = m_calls[m_callstackStackIdx->back()];
+	
+	m_dataStackReal.push_back(new double[m_variablesRealCount->at(stack)]);
+	m_dataStackBool.push_back(new bool[m_variablesBoolCount->at(stack)]);
+	m_dataStackString.push_back(new std::string[m_variablesStringCount->at(stack)]);
+	
+	std::vector<std::vector<void*>> preData;
+
+	for (uint64_t i = 0; i < Registration::GetFunctionTotalCount(); i++)
+		for (uint64_t a = 0; a < Registration::GetFunctionCallCount()[i]; a++)
+			preData.push_back(m_data[i][a].GetPreData());
+
+	std::vector<std::vector<uint64_t>> idxData;
+
+	for (uint64_t i = 0; i < Registration::GetFunctionTotalCount(); i++)
+		for (uint64_t a = 0; a < Registration::GetFunctionCallCount()[i]; a++)
+			idxData.push_back(m_data[i][a].GetRuntimeData());
+
+	m_dataStackPre.push_back(preData);
+	m_dataStackIdx.push_back(idxData);
+
+	m_activeReal = m_dataStackReal.back();
+	m_activeBool = m_dataStackBool.back();
+	m_activeString = m_dataStackString.back();
+	m_activePre = &m_dataStackPre.back();
+
+	m_activeIdx = new uint64_t*[m_dataStackIdx.back().size()];
+
+	for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
+	{
+		m_activeIdx[i] = new uint64_t[m_dataStackIdx.back()[i].size()];
+
+		for (uint64_t a = 0; a < m_dataStackIdx.back()[i].size(); a++)
+			m_activeIdx[i][a] = m_dataStackIdx.back()[i][a];
+	}
+}
+
+CAP_DLL void ModBlockPass::PopCallstack()
+{
+	if (m_activeIdx != nullptr)
+	{
+		for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
+			delete[] m_activeIdx[i];
+
+		delete[] m_activeIdx;
+		m_activeIdx = nullptr;
+	}
+
+	m_callstackStackIdx->pop_back();
+	m_callstackBlockIdx->pop_back();
+
+	delete[] m_dataStackReal.back();
+	delete[] m_dataStackBool.back();
+	delete[] m_dataStackString.back();
+
+	m_dataStackReal.pop_back();
+	m_dataStackBool.pop_back();
+	m_dataStackString.pop_back();
+	m_dataStackPre.pop_back();
+
+	if (m_callstackStackIdx->size() > 0)
+	{
+		*m_localCallstack = m_calls[m_callstackStackIdx->back()];
+
+		m_activeReal = m_dataStackReal.back();
+		m_activeBool = m_dataStackBool.back();
+		m_activeString = m_dataStackString.back();
+		m_activePre = &m_dataStackPre.back();
+	}
+
+	m_activeIdx = new uint64_t*[m_dataStackIdx.back().size()];
+
+	for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
+	{
+		m_activeIdx[i] = new uint64_t[m_dataStackIdx.back()[i].size()];
+
+		for (uint64_t a = 0; a < m_dataStackIdx.back()[i].size(); a++)
+			m_activeIdx[i][a] = m_dataStackIdx.back()[i][a];
+	}
+}
+
+/*
 CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackStack()
 {
 	return *m_callstackStackIdx;
@@ -167,7 +275,7 @@ CAP_DLL void ModBlockPass::UpdateLocalCallstack()
 {
 	*m_localCallstack = m_calls[m_callstackStackIdx->back()];
 }
-
+*/
 CAP_DLL std::mt19937_64& ModBlockPass::GetRandomGenerator()
 {
 	return m_random;
@@ -333,17 +441,17 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 	m_messages[index] += message;
 }
 
-CAP_DLL double* ModBlockPass::GetReal(const uint64_t& idx)
+CAP_DLL double& ModBlockPass::GetReal(const uint64_t& idx)
 {
 	return (this->*(m_getReal))(idx);
 }
 
-CAP_DLL bool* ModBlockPass::GetBool(const uint64_t& idx)
+CAP_DLL bool& ModBlockPass::GetBool(const uint64_t& idx)
 {
 	return (this->*(m_getBool))(idx);
 }
 
-CAP_DLL std::string* ModBlockPass::GetString(const uint64_t& idx)
+CAP_DLL std::string& ModBlockPass::GetString(const uint64_t& idx)
 {
 	return (this->*(m_getString))(idx);
 }
@@ -365,145 +473,68 @@ CAP_DLL void ModBlockPass::ReturnMessages()
 	m_messagesMutex.unlock();
 }
 
-double* ModBlockPass::GetRealDebug(const uint64_t& idx)
+double& ModBlockPass::GetRealDebug(const uint64_t& idx)
 {
-	if (m_data == nullptr)
-		LogWarning("pulling invalid data! attempted to get real from index \"" + std::to_string(idx) + "\"");
-
-	const std::vector<void*>& data = m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetData();
-
-	if (idx >= data.size())
+	if (idx >= m_variablesRealCount->at(m_callstackStackIdx->back()))
 	{
-		LogError("attempted to get real out of range \"" + std::to_string(idx) + "\". data size is \"" + std::to_string(data.size()) + "\"", LoggerFatality::ABORT);
-		return nullptr;
+		LogError("attempted to get real out of range \"" + std::to_string(idx) + "\". registry size is \"" + std::to_string(m_variablesRealCount->at(m_callstackStackIdx->back())) + "\"", LoggerFatality::ABORT);
+		return gReal;
 	}
 
-	return (double*)data[idx];
+	return m_activeReal[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-double* ModBlockPass::GetRealRelease(const uint64_t& idx)
+double& ModBlockPass::GetRealRelease(const uint64_t& idx)
 {
-	return (double*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
+	return m_activeReal[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-bool* ModBlockPass::GetBoolDebug(const uint64_t& idx)
+bool& ModBlockPass::GetBoolDebug(const uint64_t& idx)
 {
-	if (m_data == nullptr)
-		LogWarning("pulling invalid data! attempted to get bool from index \"" + std::to_string(idx) + "\"");
-
-	const std::vector<void*>& data = m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetData();
-
-	if (idx >= data.size())
+	if (idx >= m_variablesBoolCount->at(m_callstackStackIdx->back()))
 	{
-		LogError("attempted to get bool out of range \"" + std::to_string(idx) + "\". data size is \"" + std::to_string(data.size()) + "\"", LoggerFatality::ABORT);
-		return nullptr;
+		LogError("attempted to get bool out of range \"" + std::to_string(idx) + "\". registry size is \"" + std::to_string(m_variablesBoolCount->at(m_callstackStackIdx->back())) + "\"", LoggerFatality::ABORT);
+		return gBool;
 	}
 
-	return (bool*)data[idx];
+	return m_activeBool[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-bool* ModBlockPass::GetBoolRelease(const uint64_t& idx)
+bool& ModBlockPass::GetBoolRelease(const uint64_t& idx)
 {
-	return (bool*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
+	return m_activeBool[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-std::string* ModBlockPass::GetStringDebug(const uint64_t& idx)
+std::string& ModBlockPass::GetStringDebug(const uint64_t& idx)
 {
-	if (m_data == nullptr)
-		LogWarning("pulling invalid data! attempted to get string from index \"" + std::to_string(idx) + "\"");
-
-	const std::vector<void*>& data = m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetData();
-	
-	if (idx >= data.size())
+	if (idx >= m_variablesStringCount->at(m_callstackStackIdx->back()))
 	{
-		LogError("attempted to get string out of range \"" + std::to_string(idx) + "\". data size is \"" + std::to_string(data.size()) + "\"", LoggerFatality::ABORT);
-		return nullptr;
+		LogError("attempted to get string out of range \"" + std::to_string(idx) + "\". registry size is \"" + std::to_string(m_variablesStringCount->at(m_callstackStackIdx->back())) + "\"", LoggerFatality::ABORT);
+		return gString;
 	}
 
-	return (std::string*)data[idx];
+	return m_activeString[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-std::string* ModBlockPass::GetStringRelease(const uint64_t& idx)
+std::string& ModBlockPass::GetStringRelease(const uint64_t& idx)
 {
-	return (std::string*)m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCData()[idx];
-}
-
-double& ModBlockPass::GetVariableRealDebug(const uint64_t& idx)
-{
-	if (idx >= m_variableRegistry->size())
-	{
-		LogError("attempted to get variable out of range", LoggerFatality::ABORT);
-		double dud = 0.0;
-		return dud;
-	}
-	else
-	{
-		LogDebug("getting variable \"" + m_variableRegistry->at(idx) + "\" with *real* value \"" + std::to_string(m_variablesReal[idx]) + "\"");
-		return m_variablesReal[idx];
-	}
-}
-
-double& ModBlockPass::GetVariableRealRelease(const uint64_t& idx)
-{
-	return m_variablesReal[idx];
-}
-
-bool& ModBlockPass::GetVariableBoolDebug(const uint64_t& idx)
-{
-	if (idx >= m_variableRegistry->size())
-	{
-		LogError("attempted to get variable out of range", LoggerFatality::ABORT);
-		bool dud = false;
-		return dud;
-	}
-	else
-	{
-		LogDebug("getting variable \"" + m_variableRegistry->at(idx) + "\" with *bool* value \"" + std::string(m_variablesBool[idx] ? "true" : "false") + "\"");
-		return m_variablesBool[idx];
-	}
-}
-
-bool& ModBlockPass::GetVariableBoolRelease(const uint64_t& idx)
-{
-	return m_variablesBool[idx];
-}
-
-std::string& ModBlockPass::GetVariableStringDebug(const uint64_t& idx)
-{
-	if (idx >= m_variableRegistry->size())
-	{
-		LogError("attempted to get variable out of range", LoggerFatality::ABORT);
-		std::string dud;
-		return dud;
-	}
-	else
-	{
-		LogDebug("getting variable \"" + m_variableRegistry->at(idx) + "\" with *string* value \"" + m_variablesString[idx] + "\"");
-		return m_variablesString[idx];
-	}
-}
-
-std::string& ModBlockPass::GetVariableStringRelease(const uint64_t& idx)
-{
-	return m_variablesString[idx];
+	return m_activeString[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
 void* ModBlockPass::GetPreDataDebug(const uint64_t& idx)
 {
-	const std::vector<void*>& data = m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetPreData();
-
-	if (idx >= data.size())
+	if (idx >= m_variablesStringCount->at(m_callstackStackIdx->back()))
 	{
-		LogError("attempted to get PreData out of range \"" + std::to_string(idx) + "\". PreData size is \"" + std::to_string(data.size()) + "\"", LoggerFatality::ABORT);
+		LogError("attempted to get predata out of range \"" + std::to_string(idx) + "\". predata size is \"" + std::to_string(m_activePre->size()) + "\"", LoggerFatality::ABORT);
 		return nullptr;
 	}
 
-	return data[idx];
+	return m_activePre->at(m_callstackBlockIdx->back())[idx];
 }
 
 void* ModBlockPass::GetPreDataRelease(const uint64_t& idx)
 {
-	return m_data[m_callstackStackIdx->back()][m_callstackBlockIdx->back()].GetCPreData()[idx];
+	return m_activePre->at(m_callstackBlockIdx->back())[idx];
 }
 
 ModBlockPassInitializer::ModBlockPassInitializer()
@@ -511,9 +542,9 @@ ModBlockPassInitializer::ModBlockPassInitializer()
 	DebugMode = true;
 
 	Data = nullptr;
-	VariablesReal = nullptr;
-	VariablesBool = nullptr;
-	VariablesString = nullptr;
+	VariablesRealCount = nullptr;
+	VariablesBoolCount = nullptr;
+	VariablesStringCount = nullptr;
 
 	CustomRegisterMutex = nullptr;
 	CustomRegister = nullptr;

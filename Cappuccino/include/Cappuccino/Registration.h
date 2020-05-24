@@ -48,6 +48,7 @@ public:
 	static std::atomic<bool>& GetUtilFinished();
 	static std::atomic<bool>& GetStop();
 	static CAP_DLL uint64_t* GetFunctionCallCount();
+	static CAP_DLL const uint64_t& GetFunctionTotalCount();
 	static CAP_DLL executionFunctionStackList GetCalls();
 	static void SetUtilReturnFinished(bool finished);
 	static void RunUtilityTick();
@@ -96,9 +97,9 @@ private:
 	static ModBlockData** m_data;
 	static ModBlock*** m_blocks;
 
-	static double* m_variablesReal;
-	static bool* m_variablesBool;
-	static std::string* m_variablesString;
+	static std::vector<uint64_t> m_variableRealCount;
+	static std::vector<uint64_t> m_variableBoolCount;
+	static std::vector<uint64_t> m_variableStringCount;
 
 	static std::mutex m_customRegisterMutex;
 	static std::vector<void*> m_customRegister;

@@ -25,7 +25,7 @@ void* PreProcessorData::GetStructure(const std::string& name)
 	Logger::Error("failed to locate structure \"" + name + "\"");
 	return nullptr;
 }
-
+/*
 CAP_DLL double& PreProcessorData::GetReal(const uint64_t& idx)
 {
 	return m_vReal[idx];
@@ -40,7 +40,7 @@ CAP_DLL std::string& PreProcessorData::GetString(const uint64_t& idx)
 {
 	return m_vString[idx];
 }
-
+*/
 CAP_DLL const uint64_t PreProcessorData::CustomPut(void* mem)
 {
 	m_vCustom.push_back(mem);
