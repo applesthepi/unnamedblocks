@@ -1,2 +1,2 @@
-{% include header.html %}
+{% include header.md %}
 _more info_
