@@ -2,7 +2,6 @@
 
 {% include header_docs.md %}
 
-# Documentation
 ### UI
 the user interface and how the editor works
 ### Vin
