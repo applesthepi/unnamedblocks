@@ -6,7 +6,7 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	UtilityGlobalReal* global = (UtilityGlobalReal*)pass->CustomGet(*(uint64_t*)pass->GetPreData(0));
-	*pass->GetReal(1) = global->Get(*(uint64_t*)pass->GetPreData(1));
+	pass->GetReal(1) = global->Get(*(uint64_t*)pass->GetPreData(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

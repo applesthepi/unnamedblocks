@@ -57,6 +57,14 @@ void Registration::Initialize()
 	m_customRegister.clear();
 	m_variableRegistry.clear();
 
+	m_variableRealCount.clear();
+	m_variableBoolCount.clear();
+	m_variableStringCount.clear();
+
+	m_variableRealTemplate.clear();
+	m_variableBoolTemplate.clear();
+	m_variableStringTemplate.clear();
+
 	m_timeBegin = std::chrono::steady_clock::now();
 }
 
@@ -292,7 +300,7 @@ void Registration::Run()
 	
 	m_customRegister.reserve(10000);
 
-	PreProcessorData data(m_variablesReal, m_variablesBool, m_variablesString, m_customRegister);
+	PreProcessorData data(m_customRegister);
 
 	if (!GlobalPre(data))
 		return;
@@ -319,9 +327,9 @@ void Registration::Run()
 
 	init.DataSize = 0;
 	init.Data = nullptr;
-	init.VariablesReal = m_variablesReal;
-	init.VariablesBool = m_variablesBool;
-	init.VariablesString = m_variablesString;
+	init.VariablesRealCount = &m_variableRealCount;
+	init.VariablesBoolCount = &m_variableBoolCount;
+	init.VariablesStringCount = &m_variableStringCount;
 	init.CustomRegisterMutex = &m_customRegisterMutex;
 	init.CustomRegister = &m_customRegister;
 	init.Stop = &Registration::Stop;
@@ -359,6 +367,23 @@ void Registration::Run()
 			delete m_customRegister[i];
 	}
 
+	for (uint64_t i = 0; i < m_variableRealTemplate.size(); i++)
+		delete[] m_variableRealTemplate[i];
+
+	for (uint64_t i = 0; i < m_variableBoolTemplate.size(); i++)
+		delete[] m_variableBoolTemplate[i];
+
+	for (uint64_t i = 0; i < m_variableStringTemplate.size(); i++)
+		delete[] m_variableStringTemplate[i];
+
+	m_variableRealTemplate.clear();
+	m_variableBoolTemplate.clear();
+	m_variableStringTemplate.clear();
+
+	m_variableRealCount.clear();
+	m_variableBoolCount.clear();
+	m_variableStringCount.clear();
+
 	printf("#########[ Stopped Cappuccino\n");
 }
 
@@ -375,6 +400,46 @@ bool Registration::IsAllDone()
 
 	return true;
 	*/
+}
+
+const std::vector<double*>& Registration::GetRealTemplate()
+{
+	return m_variableRealTemplate;
+}
+
+const std::vector<bool*>& Registration::GetBoolTemplate()
+{
+	return m_variableBoolTemplate;
+}
+
+const std::vector<std::string*>& Registration::GetStringTemplate()
+{
+	return m_variableStringTemplate;
+}
+
+CAP_DLL const std::vector<uint64_t>* Registration::GetRealCount()
+{
+	return &m_variableRealCount;
+}
+
+CAP_DLL const std::vector<uint64_t>* Registration::GetBoolCount()
+{
+	return &m_variableBoolCount;
+}
+
+CAP_DLL const std::vector<uint64_t>* Registration::GetStringCount()
+{
+	return &m_variableStringCount;
+}
+
+CAP_DLL std::mutex* Registration::GetCustomMutex()
+{
+	return &m_customRegisterMutex;
+}
+
+CAP_DLL std::vector<void*>* Registration::GetCustomRegistry()
+{
+	return &m_customRegister;
 }
 
 ModBlockData** Registration::GetData()
@@ -704,8 +769,9 @@ void Registration::CompileDataDebug()
 	uint64_t tempTotal = 0;
 	uint64_t variableIdx = 0;
 	std::vector<std::vector<ModBlockDataInterpretation>> tempRegsitryTypes;
+	std::vector<std::vector<void*>> tempRegsitryValues;
 
-	auto addToRegistry = [&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp)
+	auto addToRegistry = [&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
 	{
 		for (uint64_t i = 0; i < m_variableRegistry[idx].size(); i++)
 		{
@@ -720,6 +786,7 @@ void Registration::CompileDataDebug()
 		tempTotal++;
 		m_variableRegistry[idx].push_back(name);
 		tempRegsitryTypes[idx].push_back(interp);
+		tempRegsitryValues[idx].push_back(use);
 
 		return true;
 	};
@@ -730,6 +797,7 @@ void Registration::CompileDataDebug()
 	{
 		m_variableRegistry.push_back(std::vector<std::string>());
 		tempRegsitryTypes.push_back(std::vector<ModBlockDataInterpretation>());
+		tempRegsitryValues.push_back(std::vector<void*>());
 		m_variableRegistryOffsets.push_back(tempTotal);
 
 		std::vector<std::vector<uint64_t>*>* hauledVariablesStack = new std::vector<std::vector<uint64_t>*>();
@@ -755,7 +823,7 @@ void Registration::CompileDataDebug()
 
 						for (uint64_t c = 0; c < m_variableRegistry[i].size(); c++)
 						{
-							if (m_variableRegistry[i][c] == *(std::string*)data[b])
+							if (m_variableRegistry[i][c] == "_L_" + *(std::string*)data[b])
 							{
 								hauledVariablesBlock->push_back(countTotal + c);
 								m_data[i][a].SetInterpretation(tempRegsitryTypes[i][c], b);
@@ -765,33 +833,25 @@ void Registration::CompileDataDebug()
 								break;
 							}
 						}
-						/*
-						
-						
-						
-						
-						add a template variable real/bool/string vectors so the modblockpass can use it to initialize the variable registries during runtime. dont forget about release compile mode.
-						
-						
-						
-						
-						
-						
-						*/
+
 						if (!found)
 							Logger::Warn("*any* variable \"" + *(std::string*)data[b] + "\" was not found");
 					}
 					else
 					{
-						addToRegistry(*(std::string*)data[b], i, interpretations[b]);
+						addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
 						hauledVariablesBlock->push_back(variableIdx);
 						runtimeData.push_back(variableIdx - countTotal);
 					}
 				}
 				else
 				{
-					hauledVariablesBlock->push_back(-1);
-					runtimeData.push_back();
+					char buffer[20];
+					sprintf(buffer, "_R_%u_%u_%u", i, a, b);
+
+					addToRegistry(std::string(buffer), i, interpretations[b], data[b]);
+					hauledVariablesBlock->push_back(variableIdx);
+					runtimeData.push_back(variableIdx - countTotal);
 				}
 			}
 
@@ -800,16 +860,44 @@ void Registration::CompileDataDebug()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	for (uint64_t i = 0; i < m_variableRegistry.size(); i++)
+	for (uint64_t i = 0; i < m_functionTotalCount; i++)
 	{
-		m_variableRealCount.push_back(m_variableRegistry.size());
-		m_variableBoolCount.push_back(m_variableRegistry.size());
-		m_variableStringCount.push_back(m_variableRegistry.size());
+		m_variableRealCount.push_back(m_variableRegistry[i].size());
+		m_variableBoolCount.push_back(m_variableRegistry[i].size());
+		m_variableStringCount.push_back(m_variableRegistry[i].size());
 	}
 
 	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	{
+		m_variableRealTemplate.push_back(new double[m_variableRealCount[i]]);
+		m_variableBoolTemplate.push_back(new bool[m_variableBoolCount[i]]);
+		m_variableStringTemplate.push_back(new std::string[m_variableStringCount[i]]);
+
+		for (uint64_t a = 0; a < m_variableRealCount[i]; a++)
+		{
+			if (tempRegsitryValues[i][a] != nullptr && tempRegsitryTypes[i][a] == ModBlockDataInterpretation::REAL)
+				m_variableRealTemplate.back()[a] = *(double*)tempRegsitryValues[i][a];
+		}
+
+		for (uint64_t a = 0; a < m_variableBoolCount[i]; a++)
+		{
+			if (tempRegsitryValues[i][a] != nullptr && tempRegsitryTypes[i][a] == ModBlockDataInterpretation::BOOL)
+				m_variableBoolTemplate.back()[a] = *(bool*)tempRegsitryValues[i][a];
+		}
+
+		for (uint64_t a = 0; a < m_variableStringCount[i]; a++)
+		{
+			if (tempRegsitryValues[i][a] != nullptr && tempRegsitryTypes[i][a] == ModBlockDataInterpretation::STRING)
+				m_variableStringTemplate.back()[a] = *(std::string*)tempRegsitryValues[i][a];
+		}
+
 		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
-			m_data[i][a].HaulRuntimeData(*hauledVariablesPlane[i]->at(a));
+		{
+			m_data[i][a].ClearData();
+			m_data[i][a].SetRuntimeData(*hauledVariablesPlane[i]->at(a));
+			m_data[i][a].SetDataTemplates(i);
+		}
+	}
 }
 
 void Registration::CompileDataRelease()
@@ -997,13 +1085,7 @@ void Registration::CompileDataRelease()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	m_variablesReal = new double[tempRegistryReal.size()];
-	m_variablesBool = new bool[tempRegistryBool.size()];
-	m_variablesString = new std::string[tempRegistryString.size()];
-
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
-			m_data[i][a].HaulData(*hauledVariablesPlane[i]->at(a), m_variablesReal, m_variablesBool, m_variablesString);
+	// TODO fix
 }
 
 void Registration::RunContext()
@@ -1071,6 +1153,12 @@ std::vector<uint64_t> Registration::m_variableRealCount;
 std::vector<uint64_t> Registration::m_variableBoolCount;
 
 std::vector<uint64_t> Registration::m_variableStringCount;
+
+std::vector<double*> Registration::m_variableRealTemplate;
+
+std::vector<bool*> Registration::m_variableBoolTemplate;
+
+std::vector<std::string*> Registration::m_variableStringTemplate;
 
 std::mutex Registration::m_customRegisterMutex;
 

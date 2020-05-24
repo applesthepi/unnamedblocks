@@ -2,7 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = 3.141592653589793;
+	pass->GetReal(0) = 3.141592653589793;
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

@@ -3,9 +3,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetCallstackStack().push_back(*(uint64_t*)(pass->GetPreData(0)));
-	pass->GetCallstackBlock().push_back(0);
-	pass->UpdateLocalCallstack();
+	pass->AddCallstack(*(uint64_t*)(pass->GetPreData(0)), 0);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

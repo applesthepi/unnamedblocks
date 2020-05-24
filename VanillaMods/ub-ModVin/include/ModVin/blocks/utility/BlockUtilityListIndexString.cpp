@@ -4,20 +4,20 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetString(2) = *(std::string*)((std::vector<void*>*)pass->CustomGet(*pass->GetReal(0)))->at(*pass->GetReal(1));
+	pass->GetString(2) = *(std::string*)((std::vector<void*>*)pass->CustomGet(pass->GetReal(0)))->at(pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	std::vector<void*>* list = (std::vector<void*>*)pass->CustomGet(*pass->GetReal(0));
+	std::vector<void*>* list = (std::vector<void*>*)pass->CustomGet(pass->GetReal(0));
 
-	if (*pass->GetReal(1) >= list->size() || *pass->GetReal(1) < 0 || std::floor(*pass->GetReal(1)) != *pass->GetReal(1))
+	if (pass->GetReal(1) >= list->size() || pass->GetReal(1) < 0 || std::floor(pass->GetReal(1)) != pass->GetReal(1))
 	{
-		pass->LogError("failed to index *string* with \"" + std::to_string(*pass->GetReal(1)) + "\" of a list; index is invalid", LoggerFatality::BREAK);
+		pass->LogError("failed to index *string* with \"" + std::to_string(pass->GetReal(1)) + "\" of a list; index is invalid", LoggerFatality::BREAK);
 		return;
 	}
 
-	*pass->GetString(2) = *(std::string*)list->at(*pass->GetReal(1));
+	pass->GetString(2) = *(std::string*)list->at(pass->GetReal(1));
 }
 
 const char* BlockUtilityListIndexString::GetUnlocalizedName() const

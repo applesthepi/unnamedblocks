@@ -2,8 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	bool* db = pass->GetBool(0);
-	pass->LogInfo(*db ? "true" : "false");
+	pass->LogInfo(pass->GetBool(0) ? "true" : "false");
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

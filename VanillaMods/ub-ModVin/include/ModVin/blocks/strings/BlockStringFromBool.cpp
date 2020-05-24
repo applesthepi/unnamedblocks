@@ -2,7 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetString(0) = (*pass->GetBool(1)) ? "true" : "false";
+	pass->GetString(0) = (pass->GetBool(1)) ? "true" : "false";
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

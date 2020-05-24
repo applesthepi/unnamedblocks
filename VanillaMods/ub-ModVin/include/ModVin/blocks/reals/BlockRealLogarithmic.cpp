@@ -4,7 +4,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = std::log(*pass->GetReal(0)) / std::log(*pass->GetReal(1));
+	pass->GetReal(0) = std::log(pass->GetReal(0)) / std::log(pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

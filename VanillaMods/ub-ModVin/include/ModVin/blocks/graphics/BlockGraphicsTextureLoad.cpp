@@ -5,24 +5,24 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	sf::Texture* texture = new sf::Texture();
-	texture->loadFromFile(*pass->GetString(0));
+	texture->loadFromFile(pass->GetString(0));
 
-	*pass->GetReal(1) = pass->CustomPut(texture);
+	pass->GetReal(1) = pass->CustomPut(texture);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
 	sf::Texture* texture = new sf::Texture();
-	if (!texture->loadFromFile(*pass->GetString(0)))
+	if (!texture->loadFromFile(pass->GetString(0)))
 	{
-		pass->LogError("failed to load texture from path \"" + *pass->GetString(0) + "\"; loading test texture instead", LoggerFatality::BREAK);
+		pass->LogError("failed to load texture from path \"" + pass->GetString(0) + "\"; loading test texture instead", LoggerFatality::BREAK);
 		
 		texture->loadFromFile("res/test.png");
-		*pass->GetReal(1) = pass->CustomPut(texture);
+		pass->GetReal(1) = pass->CustomPut(texture);
 		return;
 	}
 
-	*pass->GetReal(1) = pass->CustomPut(texture);
+	pass->GetReal(1) = pass->CustomPut(texture);
 }
 
 const char* BlockGraphicsTextureLoad::GetUnlocalizedName() const

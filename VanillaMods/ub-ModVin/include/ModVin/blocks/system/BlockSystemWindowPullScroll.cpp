@@ -7,8 +7,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(0));
-	*pass->GetReal(1) = handler->PullScroll();
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	pass->GetReal(1) = handler->PullScroll();
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

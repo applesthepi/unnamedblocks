@@ -80,6 +80,7 @@ public:
 	CAP_DLL void SetCallstackLocal(void(***localCallstack)(ModBlockPass*));
 	CAP_DLL void SetCalls(void(***calls)(ModBlockPass*));
 	CAP_DLL void PerformDeallocationCallbacks();
+	CAP_DLL void PerformLocationUpdate();
 
 	// ====================================================
 	// user calls
@@ -127,6 +128,9 @@ public:
 	CAP_DLL void AddCallstack(const uint64_t& stack, const uint64_t& block);
 	CAP_DLL void PopCallstack();
 
+	CAP_DLL void SetStackIdx(const uint64_t& idx);
+	CAP_DLL void SetBlockIdx(const uint64_t& idx);
+
 	CAP_DLL std::mt19937_64& GetRandomGenerator();
 
 	// deallocation callbacks MUST be on the heap.
@@ -153,6 +157,9 @@ public:
 	CAP_DLL void* CustomGet(const uint64_t& idx);
 	CAP_DLL void CustomFree(const uint64_t& idx, bool deallocate = true);
 private:
+	void PreUpdateLocations();
+	void PostUpdateLocations();
+
 	// user data interactions
 
 	double& (ModBlockPass::* m_getReal)(const uint64_t& idx);

@@ -3,7 +3,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = std::abs(*pass->GetReal(0));
+	pass->GetReal(0) = std::abs(pass->GetReal(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

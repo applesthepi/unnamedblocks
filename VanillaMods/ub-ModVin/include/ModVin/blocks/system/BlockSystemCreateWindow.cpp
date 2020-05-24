@@ -14,7 +14,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 	window->display();
 
 	WindowHandler* handler = new WindowHandler(pass, window);
-	*pass->GetReal(0) = pass->CustomPut(handler);
+	pass->GetReal(0) = pass->CustomPut(handler);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

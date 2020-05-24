@@ -1,8 +1,9 @@
 #include "PreProcessorData.h"
 #include "Cappuccino/Logger.h"
+#include "Registration.h"
 
-PreProcessorData::PreProcessorData(double* vReal, bool* vBool, std::string* vString, std::vector<void*>& vCustom)
-	:m_vReal(vReal), m_vBool(vBool), m_vString(vString), m_vCustom(vCustom)
+PreProcessorData::PreProcessorData(std::vector<void*>& vCustom)
+	:m_vReal(Registration::GetRealTemplate()), m_vBool(Registration::GetBoolTemplate()), m_vString(Registration::GetStringTemplate()), m_vCustom(vCustom)
 {
 	BlockIdx = 0;
 	StackIdx = 0;

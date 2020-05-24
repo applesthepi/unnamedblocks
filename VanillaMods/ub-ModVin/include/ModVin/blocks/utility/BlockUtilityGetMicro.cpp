@@ -4,7 +4,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - *pass->GetBeginTime()).count();
+	pass->GetReal(0) = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - *pass->GetBeginTime()).count();
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

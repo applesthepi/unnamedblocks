@@ -28,7 +28,7 @@ static bool RuntimeLocalPostInit(PreProcessorData& data)
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
 	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
-	std::string* name = (std::string*)blockData.GetCData()[0];
+	std::string* name = (std::string*)blockData.GetData()[0];
 	finder->AddPoint(preData.BlockIdx, *name);
 
 	return true;

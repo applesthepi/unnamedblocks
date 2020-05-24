@@ -8,14 +8,10 @@ static void ThreadExecution(ExecutionThread* thr)
 {
 	const executionFunctionStackList calls = thr->GetCalls();
 	const uint64_t* functionCallCount = thr->GetFunctionCallCount();
-	uint64_t start = thr->GetFunctionStart();
-	executionFunctionStack localCallStack = calls[start];
+	executionFunctionStack localCallStack;
 	
 	std::vector<uint64_t> callstackBlockIdx;
 	std::vector<uint64_t> callstackStackIdx;
-
-	callstackBlockIdx.push_back(1);
-	callstackStackIdx.push_back(thr->GetFunctionStart());
 
 	bool successful = false;
 	const std::atomic<bool>& finished = thr->GetFinished();
@@ -30,6 +26,8 @@ static void ThreadExecution(ExecutionThread* thr)
 	pass->SetFinished((std::atomic<bool>*)&finished);
 	pass->SetCallstackLocal(&localCallStack);
 	pass->SetCalls(calls);
+
+	pass->AddCallstack(thr->GetFunctionStart(), 0);
 	
 	while (!finished)
 	{

@@ -5,12 +5,12 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds((uint64_t)*pass->GetReal(0)));
+	std::this_thread::sleep_for(std::chrono::milliseconds((uint64_t)pass->GetReal(0)));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	const double& ms = *pass->GetReal(0);
+	const double& ms = pass->GetReal(0);
 
 	if (std::floor(ms) != ms)
 	{

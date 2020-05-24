@@ -2,12 +2,12 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	size_t result = pass->GetString(0)->find(*pass->GetString(1), *pass->GetReal(2));
+	size_t result = pass->GetString(0).find(pass->GetString(1), pass->GetReal(2));
 
 	if (result == std::string::npos)
-		*pass->GetReal(3) = -1;
+		pass->GetReal(3) = -1;
 	else
-		*pass->GetReal(3) = result;
+		pass->GetReal(3) = result;
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

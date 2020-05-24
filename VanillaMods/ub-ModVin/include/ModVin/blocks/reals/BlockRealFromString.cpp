@@ -3,7 +3,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = std::stod(*pass->GetString(1));
+	pass->GetReal(0) = std::stod(pass->GetString(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -12,15 +12,15 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 	try
 	{
-		nd = std::stod(*pass->GetString(1));
+		nd = std::stod(pass->GetString(1));
 	}
 	catch (std::invalid_argument&)
 	{
-		pass->LogError("failed to set real \"" + std::to_string(*pass->GetReal(0)) + "\" to string \"" + *pass->GetString(1) + "\"; the string could not be parsed into a real", LoggerFatality::BREAK);
+		pass->LogError("failed to set real \"" + std::to_string(pass->GetReal(0)) + "\" to string \"" + pass->GetString(1) + "\"; the string could not be parsed into a real", LoggerFatality::BREAK);
 		return;
 	}
 
-	*pass->GetReal(0) = nd;
+	pass->GetReal(0) = nd;
 }
 
 const char* BlockRealFromString::GetUnlocalizedName() const

@@ -2,7 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->LogInfo(*pass->GetString(0));
+	pass->LogInfo(pass->GetString(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

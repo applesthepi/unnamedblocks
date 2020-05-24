@@ -5,8 +5,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(2));
-	((sf::Sprite*)handler->GetRenderable(pass->GetReal(0)))->rotate(*pass->GetReal(1));
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(2));
+	((sf::Sprite*)handler->GetRenderable(&pass->GetReal(0)))->rotate(pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

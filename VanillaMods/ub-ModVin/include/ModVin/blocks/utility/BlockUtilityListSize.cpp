@@ -4,7 +4,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(1) = ((std::vector<void*>*)pass->CustomGet(*pass->GetReal(0)))->size();
+	pass->GetReal(1) = ((std::vector<void*>*)pass->CustomGet(pass->GetReal(0)))->size();
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

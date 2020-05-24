@@ -42,6 +42,5 @@ void ModData::RegisterBlock(ModBlock* block)
 
 void ModData::RegisterCategory(ModCatagory* category)
 {
-	std::cout << "registering: " << category->GetDisplayName() << std::endl;
 	Categories.push_back(category);
 }

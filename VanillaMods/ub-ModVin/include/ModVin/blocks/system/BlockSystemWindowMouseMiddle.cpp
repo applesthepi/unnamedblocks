@@ -6,7 +6,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
+	pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

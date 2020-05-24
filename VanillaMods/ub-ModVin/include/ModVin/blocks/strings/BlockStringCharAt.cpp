@@ -2,30 +2,30 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetString(2) = pass->GetString(0)->at((uint64_t)*pass->GetReal(1));
+	pass->GetString(2) = pass->GetString(0).at((uint64_t)pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	std::string* str = pass->GetString(0);
-	double* chAt = pass->GetReal(1);
-	std::string* finalStr = pass->GetString(2);
+	std::string& str = pass->GetString(0);
+	double& chAt = pass->GetReal(1);
+	std::string& finalStr = pass->GetString(2);
 
-	if (std::floor(*chAt) != *chAt)
+	if (std::floor(chAt) != chAt)
 	{
-		pass->LogError("failed to get char at \"" + std::to_string(*chAt) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; index is a decimal", LoggerFatality::BREAK);
+		pass->LogError("failed to get char at \"" + std::to_string(chAt) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; index is a decimal", LoggerFatality::BREAK);
 		return;
 	}
 
-	int64_t idx = *chAt;
+	int64_t idx = chAt;
 
-	if (idx >= str->length() || idx < 0)
+	if (idx >= str.length() || idx < 0)
 	{
-		pass->LogError("failed to get char at \"" + std::to_string(idx) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; index out of range", LoggerFatality::BREAK);
+		pass->LogError("failed to get char at \"" + std::to_string(idx) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; index out of range", LoggerFatality::BREAK);
 		return;
 	}
 
-	*finalStr = str->at(idx);
+	finalStr = str.at(idx);
 }
 
 const char* BlockStringCharAt::GetUnlocalizedName() const

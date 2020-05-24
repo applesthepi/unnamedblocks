@@ -55,6 +55,16 @@ public:
 	static void Run();
 	static bool IsAllDone();
 
+	static CAP_DLL const std::vector<double*>& GetRealTemplate();
+	static CAP_DLL const std::vector<bool*>& GetBoolTemplate();
+	static CAP_DLL const std::vector<std::string*>& GetStringTemplate();
+
+	static CAP_DLL const std::vector<uint64_t>* GetRealCount();
+	static CAP_DLL const std::vector<uint64_t>* GetBoolCount();
+	static CAP_DLL const std::vector<uint64_t>* GetStringCount();
+
+	static CAP_DLL std::mutex* GetCustomMutex();
+	static CAP_DLL std::vector<void*>* GetCustomRegistry();
 	static ModBlockData** GetData();
 private:
 	static bool GlobalPre(PreProcessorData& data);
@@ -100,6 +110,10 @@ private:
 	static std::vector<uint64_t> m_variableRealCount;
 	static std::vector<uint64_t> m_variableBoolCount;
 	static std::vector<uint64_t> m_variableStringCount;
+
+	static std::vector<double*> m_variableRealTemplate;
+	static std::vector<bool*> m_variableBoolTemplate;
+	static std::vector<std::string*> m_variableStringTemplate;
 
 	static std::mutex m_customRegisterMutex;
 	static std::vector<void*> m_customRegister;

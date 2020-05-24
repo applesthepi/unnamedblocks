@@ -2,8 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	bool* vl = pass->GetBool(0);
-	*vl = !*vl;
+	pass->GetBool(0) = !pass->GetBool(0);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

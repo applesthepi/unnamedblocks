@@ -5,10 +5,10 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(2));
-	sf::Texture* texture = (sf::Texture*)pass->CustomGet(*pass->GetReal(0));
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(2));
+	sf::Texture* texture = (sf::Texture*)pass->CustomGet(pass->GetReal(0));
 
-	sf::Sprite* sprite = (sf::Sprite*)handler->GetRenderable(pass->GetReal(1));
+	sf::Sprite* sprite = (sf::Sprite*)handler->GetRenderable(&pass->GetReal(1));
 	sprite->setTexture(*texture);
 }
 

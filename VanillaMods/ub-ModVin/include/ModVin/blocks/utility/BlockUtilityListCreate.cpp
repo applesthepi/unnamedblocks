@@ -4,7 +4,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = pass->CustomPut(new std::vector<void*>());
+	pass->GetReal(0) = pass->CustomPut(new std::vector<void*>());
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

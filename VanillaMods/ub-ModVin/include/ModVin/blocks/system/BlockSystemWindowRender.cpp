@@ -5,7 +5,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {	
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(0));
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
 
 	handler->GetWindow()->clear(sf::Color(30, 30, 40));
 	handler->DrawAll();

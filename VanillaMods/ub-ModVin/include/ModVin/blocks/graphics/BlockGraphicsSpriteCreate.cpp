@@ -5,10 +5,10 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(1));
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(1));
 	sf::Sprite* sprite = new sf::Sprite();
 	
-	handler->AddRenderable(sprite, pass->GetReal(0));
+	handler->AddRenderable(sprite, &pass->GetReal(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

@@ -5,8 +5,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(1));
-	double* idx = (double*)pass->CustomGet(*pass->GetReal(0));
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(1));
+	double* idx = (double*)pass->CustomGet(pass->GetReal(0));
 
 	handler->SetRenderableEnabled(*idx, false);
 }

@@ -2,7 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(1) = pass->GetString(0)->length();
+	pass->GetReal(1) = pass->GetString(0).length();
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

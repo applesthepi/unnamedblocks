@@ -7,7 +7,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(*pass->GetReal(0));
+	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
 	sf::RenderWindow* window = handler->GetWindow();
 	
 	sf::Event ev;

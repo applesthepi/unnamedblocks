@@ -4,7 +4,7 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	std::uniform_real_distribution<double> draw(0.0, 1.0);
-	*pass->GetReal(0) = draw(pass->GetRandomGenerator());
+	pass->GetReal(0) = draw(pass->GetRandomGenerator());
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

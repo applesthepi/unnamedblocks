@@ -9,13 +9,13 @@ static void ExecuteRelease(ModBlockPass* pass)
 
 	init.DataSize = 0;
 	init.Data = nullptr;
-	init.VariablesReal = pass->GetVariableRegistryReal();
-	init.VariablesBool = pass->GetVariableRegistryBool();
-	init.VariablesString = pass->GetVariableRegistryString();
-	init.CustomRegisterMutex = pass->GetCustomRegisterMutex();
-	init.CustomRegister = pass->GetCustomRegister();
+	init.VariablesRealCount = Registration::GetRealCount();
+	init.VariablesBoolCount = Registration::GetBoolCount();
+	init.VariablesStringCount = Registration::GetStringCount();
+	init.CustomRegisterMutex = Registration::GetCustomMutex();
+	init.CustomRegister = Registration::GetCustomRegistry();
 	init.Stop = &Registration::Stop;
-	init.VariableRegistry = pass->GetVariableRegistry();
+	init.VariableRegistry = nullptr;// TODO isnt working right now
 	init.DebugMode = false;
 	init.BeginTime = pass->GetBeginTime();
 
@@ -26,7 +26,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 	Registration::RegisterExecutionThread(thr);
 
 	uint64_t putIdx = pass->CustomPut(thr);
-	*pass->GetReal(0) = putIdx;
+	pass->GetReal(0) = putIdx;
 
 	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
 	*dealloc = [putIdx](ModBlockPass* pass)
@@ -43,13 +43,13 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 	init.DataSize = 0;
 	init.Data = nullptr;
-	init.VariablesReal = pass->GetVariableRegistryReal();
-	init.VariablesBool = pass->GetVariableRegistryBool();
-	init.VariablesString = pass->GetVariableRegistryString();
-	init.CustomRegisterMutex = pass->GetCustomRegisterMutex();
-	init.CustomRegister = pass->GetCustomRegister();
+	init.VariablesRealCount = Registration::GetRealCount();
+	init.VariablesBoolCount = Registration::GetBoolCount();
+	init.VariablesStringCount = Registration::GetStringCount();
+	init.CustomRegisterMutex = Registration::GetCustomMutex();
+	init.CustomRegister = Registration::GetCustomRegistry();
 	init.Stop = &Registration::Stop;
-	init.VariableRegistry = pass->GetVariableRegistry();
+	init.VariableRegistry = nullptr;// TODO isnt working right now
 	init.DebugMode = true;
 	init.BeginTime = pass->GetBeginTime();
 
@@ -60,7 +60,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	Registration::RegisterExecutionThread(thr);
 
 	uint64_t putIdx = pass->CustomPut(thr);
-	*pass->GetReal(0) = putIdx;
+	pass->GetReal(0) = putIdx;
 
 	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
 	*dealloc = [putIdx](ModBlockPass* pass)

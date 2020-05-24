@@ -107,6 +107,13 @@ CAP_DLL void ModBlockPass::PerformDeallocationCallbacks()
 
 	m_deallocationCalls.clear();
 }
+
+CAP_DLL void ModBlockPass::PerformLocationUpdate()
+{
+	PreUpdateLocations();
+	PostUpdateLocations();
+}
+
 /*
 CAP_DLL double& ModBlockPass::GetVariableReal(const uint64_t& idx)
 {
@@ -168,14 +175,7 @@ CAP_DLL void ModBlockPass::Stop()
 
 CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& block)
 {
-	if (m_activeIdx != nullptr)
-	{
-		for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
-			delete[] m_activeIdx[i];
-
-		delete[] m_activeIdx;
-		m_activeIdx = nullptr;
-	}
+	PreUpdateLocations();
 
 	m_callstackStackIdx->push_back(stack);
 	m_callstackBlockIdx->push_back(block);
@@ -184,6 +184,19 @@ CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& b
 	m_dataStackReal.push_back(new double[m_variablesRealCount->at(stack)]);
 	m_dataStackBool.push_back(new bool[m_variablesBoolCount->at(stack)]);
 	m_dataStackString.push_back(new std::string[m_variablesStringCount->at(stack)]);
+
+	const std::vector<double*>& realTemplate = Registration::GetRealTemplate();
+	const std::vector<bool*>& boolTemplate = Registration::GetBoolTemplate();
+	const std::vector<std::string*>& stringTemplate = Registration::GetStringTemplate();
+	
+	for (uint64_t i = 0; i < m_variablesRealCount->at(stack); i++)
+		m_dataStackReal.back()[i] = realTemplate[stack][i];
+
+	for (uint64_t i = 0; i < m_variablesBoolCount->at(stack); i++)
+		m_dataStackBool.back()[i] = boolTemplate[stack][i];
+
+	for (uint64_t i = 0; i < m_variablesStringCount->at(stack); i++)
+		m_dataStackString.back()[i] = stringTemplate[stack][i];
 	
 	std::vector<std::vector<void*>> preData;
 
@@ -205,27 +218,12 @@ CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& b
 	m_activeString = m_dataStackString.back();
 	m_activePre = &m_dataStackPre.back();
 
-	m_activeIdx = new uint64_t*[m_dataStackIdx.back().size()];
-
-	for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
-	{
-		m_activeIdx[i] = new uint64_t[m_dataStackIdx.back()[i].size()];
-
-		for (uint64_t a = 0; a < m_dataStackIdx.back()[i].size(); a++)
-			m_activeIdx[i][a] = m_dataStackIdx.back()[i][a];
-	}
+	PostUpdateLocations();
 }
 
 CAP_DLL void ModBlockPass::PopCallstack()
 {
-	if (m_activeIdx != nullptr)
-	{
-		for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
-			delete[] m_activeIdx[i];
-
-		delete[] m_activeIdx;
-		m_activeIdx = nullptr;
-	}
+	PreUpdateLocations();
 
 	m_callstackStackIdx->pop_back();
 	m_callstackBlockIdx->pop_back();
@@ -249,33 +247,29 @@ CAP_DLL void ModBlockPass::PopCallstack()
 		m_activePre = &m_dataStackPre.back();
 	}
 
-	m_activeIdx = new uint64_t*[m_dataStackIdx.back().size()];
-
-	for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
-	{
-		m_activeIdx[i] = new uint64_t[m_dataStackIdx.back()[i].size()];
-
-		for (uint64_t a = 0; a < m_dataStackIdx.back()[i].size(); a++)
-			m_activeIdx[i][a] = m_dataStackIdx.back()[i][a];
-	}
+	PostUpdateLocations();
 }
 
-/*
-CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackStack()
+CAP_DLL void ModBlockPass::SetStackIdx(const uint64_t& idx)
 {
-	return *m_callstackStackIdx;
+	PreUpdateLocations();
+
+	if (m_callstackStackIdx->size() > 0)
+		m_callstackStackIdx->back() = idx;
+
+	PostUpdateLocations();
 }
 
-CAP_DLL std::vector<uint64_t>& ModBlockPass::GetCallstackBlock()
+CAP_DLL void ModBlockPass::SetBlockIdx(const uint64_t& idx)
 {
-	return *m_callstackBlockIdx;
+	PreUpdateLocations();
+
+	if (m_callstackBlockIdx->size() > 0)
+		m_callstackBlockIdx->back() = idx;
+
+	PostUpdateLocations();
 }
 
-CAP_DLL void ModBlockPass::UpdateLocalCallstack()
-{
-	*m_localCallstack = m_calls[m_callstackStackIdx->back()];
-}
-*/
 CAP_DLL std::mt19937_64& ModBlockPass::GetRandomGenerator()
 {
 	return m_random;
@@ -473,6 +467,31 @@ CAP_DLL void ModBlockPass::ReturnMessages()
 	m_messagesMutex.unlock();
 }
 
+void ModBlockPass::PreUpdateLocations()
+{
+	if (m_activeIdx != nullptr)
+	{
+		for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
+			delete[] m_activeIdx[i];
+
+		delete[] m_activeIdx;
+		m_activeIdx = nullptr;
+	}
+}
+
+void ModBlockPass::PostUpdateLocations()
+{
+	m_activeIdx = new uint64_t*[m_dataStackIdx.back().size()];
+
+	for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
+	{
+		m_activeIdx[i] = new uint64_t[m_dataStackIdx.back()[i].size()];
+
+		for (uint64_t a = 0; a < m_dataStackIdx.back()[i].size(); a++)
+			m_activeIdx[i][a] = m_dataStackIdx.back()[i][a];
+	}
+}
+
 double& ModBlockPass::GetRealDebug(const uint64_t& idx)
 {
 	if (idx >= m_variablesRealCount->at(m_callstackStackIdx->back()))
@@ -481,7 +500,9 @@ double& ModBlockPass::GetRealDebug(const uint64_t& idx)
 		return gReal;
 	}
 
-	return m_activeReal[m_activeIdx[m_callstackBlockIdx->back()][idx]];
+	uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+	double& value = m_activeReal[vIdx];
+	return value;
 }
 
 double& ModBlockPass::GetRealRelease(const uint64_t& idx)
@@ -497,7 +518,9 @@ bool& ModBlockPass::GetBoolDebug(const uint64_t& idx)
 		return gBool;
 	}
 
-	return m_activeBool[m_activeIdx[m_callstackBlockIdx->back()][idx]];
+	uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+	bool& value = m_activeBool[vIdx];
+	return value;
 }
 
 bool& ModBlockPass::GetBoolRelease(const uint64_t& idx)
@@ -513,7 +536,9 @@ std::string& ModBlockPass::GetStringDebug(const uint64_t& idx)
 		return gString;
 	}
 
-	return m_activeString[m_activeIdx[m_callstackBlockIdx->back()][idx]];
+	uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+	std::string& value = m_activeString[vIdx];
+	return value;
 }
 
 std::string& ModBlockPass::GetStringRelease(const uint64_t& idx)

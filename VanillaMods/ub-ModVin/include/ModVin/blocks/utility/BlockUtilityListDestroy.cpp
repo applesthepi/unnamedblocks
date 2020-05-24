@@ -4,7 +4,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->CustomFree(*pass->GetReal(0));
+	pass->CustomFree(pass->GetReal(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

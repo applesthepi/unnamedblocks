@@ -3,7 +3,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetReal(0) = std::sin(*pass->GetReal(0) * (3.141592653589793 / 180.0));
+	pass->GetReal(0) = std::sin(pass->GetReal(0) * (3.141592653589793 / 180.0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

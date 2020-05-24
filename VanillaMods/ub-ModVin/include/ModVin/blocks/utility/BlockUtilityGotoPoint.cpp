@@ -6,7 +6,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetCallstackBlock().back() = *(int64_t*)pass->GetPreData(0);
+	pass->SetBlockIdx(*(int64_t*)pass->GetPreData(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -17,7 +17,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
 	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
-	int64_t idx = finder->FindPoint(*(std::string*)blockData.GetCData()[0]);
+	int64_t idx = finder->FindPoint(*(std::string*)blockData.GetData()[0]);
 
 	if (idx == -1)
 		return false;

@@ -1,5 +1,12 @@
 #include "ModBlockData.h"
 
+#include <Cappuccino/Registration.h>
+
+MODBLOCK_EXPORT ModBlockData::ModBlockData()
+{
+
+}
+
 MODBLOCK_EXPORT ModBlockData::ModBlockData(const std::vector<void*>& data, const std::vector<ModBlockDataType>& types, const std::vector<ModBlockDataInterpretation>& interpretations)
 	:m_data(data), m_types(types), m_interpretations(interpretations)
 {
@@ -31,10 +38,9 @@ const std::vector<ModBlockDataInterpretation>& ModBlockData::GetInterpretations(
 	return m_interpretations;
 }
 
-MODBLOCK_EXPORT void ModBlockData::BakeRuntimeData()
+MODBLOCK_EXPORT void ModBlockData::ClearData()
 {
-	for (uint64_t i = 0; i < m_data.size(); i++)
-		m_runtimeData.push_back(0);
+	m_data.clear();
 }
 
 MODBLOCK_EXPORT void ModBlockData::SetRuntimeData(const std::vector<uint64_t>& data)
@@ -42,12 +48,20 @@ MODBLOCK_EXPORT void ModBlockData::SetRuntimeData(const std::vector<uint64_t>& d
 	m_runtimeData = data;
 }
 
-void ModBlockData::HaulRuntimeData(const std::vector<uint64_t>& data)
+MODBLOCK_EXPORT void ModBlockData::SetDataTemplates(const uint64_t& stackIdx)
 {
+	const std::vector<double*>& reals = Registration::GetRealTemplate();
+	const std::vector<bool*>& bools = Registration::GetBoolTemplate();
+	const std::vector<std::string*>& strings = Registration::GetStringTemplate();
+
 	for (uint64_t i = 0; i < m_runtimeData.size(); i++)
 	{
-		if (data[i] != -1)
-			m_runtimeData[i] = data[i];
+		if (m_interpretations[i] == ModBlockDataInterpretation::REAL)
+			m_data.push_back(&(reals[stackIdx][m_runtimeData[i]]));
+		else if (m_interpretations[i] == ModBlockDataInterpretation::BOOL)
+			m_data.push_back(&(bools[stackIdx][m_runtimeData[i]]));
+		else if (m_interpretations[i] == ModBlockDataInterpretation::STRING)
+			m_data.push_back(&(strings[stackIdx][m_runtimeData[i]]));
 	}
 }
 

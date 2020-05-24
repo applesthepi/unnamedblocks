@@ -2,50 +2,50 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	*pass->GetString(3) = pass->GetString(0)->substr((uint64_t)*pass->GetReal(1), (uint64_t)*pass->GetReal(2));
+	pass->GetString(3) = pass->GetString(0).substr((uint64_t)pass->GetReal(1), (uint64_t)pass->GetReal(2));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	std::string* str = pass->GetString(0);
-	double* offset = pass->GetReal(1);
-	double* count = pass->GetReal(2);
-	std::string* finalStr = pass->GetString(3);
+	std::string& str = pass->GetString(0);
+	double& offset = pass->GetReal(1);
+	double& count = pass->GetReal(2);
+	std::string& finalStr = pass->GetString(3);
 
-	if (std::floor(*offset) != *offset)
+	if (std::floor(offset) != offset)
 	{
-		pass->LogError("failed to substring at \"" + std::to_string(*offset) + "\" for count \"" + std::to_string(*count) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; offset is a decimal", LoggerFatality::BREAK);
+		pass->LogError("failed to substring at \"" + std::to_string(offset) + "\" for count \"" + std::to_string(count) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; offset is a decimal", LoggerFatality::BREAK);
 		return;
 	}
 
-	if (std::floor(*count) != *count)
+	if (std::floor(count) != count)
 	{
-		pass->LogError("failed to substring at \"" + std::to_string(*offset) + "\" for count \"" + std::to_string(*count) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; count is a decimal", LoggerFatality::BREAK);
+		pass->LogError("failed to substring at \"" + std::to_string(offset) + "\" for count \"" + std::to_string(count) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; count is a decimal", LoggerFatality::BREAK);
 		return;
 	}
 
-	int64_t idxAt = *offset;
-	int64_t idxCount = *count;
+	int64_t idxAt = offset;
+	int64_t idxCount = count;
 
-	if (idxAt >= str->length() || idxAt < 0)
+	if (idxAt >= str.length() || idxAt < 0)
 	{
-		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; offset index out of range", LoggerFatality::BREAK);
+		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; offset index out of range", LoggerFatality::BREAK);
 		return;
 	}
 
-	if (idxCount + idxAt > str->length())
+	if (idxCount + idxAt > str.length())
 	{
-		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; count to high", LoggerFatality::BREAK);
+		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; count to high", LoggerFatality::BREAK);
 		return;
 	}
 
 	if (idxCount < 0)
 	{
-		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + *str + "\" to replacing string \"" + *finalStr + "\"; count index out of range", LoggerFatality::BREAK);
+		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; count index out of range", LoggerFatality::BREAK);
 		return;
 	}
 
-	*finalStr = str->substr(idxAt, idxCount);
+	finalStr = str.substr(idxAt, idxCount);
 }
 
 const char* BlockStringSubString::GetUnlocalizedName() const
