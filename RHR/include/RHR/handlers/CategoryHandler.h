@@ -13,7 +13,7 @@ public:
 	static void Initialize(BlockRegistry* blockRegistry, Plane* toolbarPlane);
 	static void Render(sf::RenderWindow* window, Plane* toolbarPlane);
 	static void RenderPost(sf::RenderWindow* window);
-	static void FrameUpdate(BlockRegistry* blockRegistry, Plane* toolbarPlane);
+	static void FrameUpdate(sf::RenderWindow* window, BlockRegistry* blockRegistry, Plane* toolbarPlane, Plane* primaryPlane);
 
 	static void ToggleMod(const uint16_t& modIdx, BlockRegistry* blockRegistry, Plane* toolbarPlane, const uint64_t& catIdx);
 	static const uint32_t UpdateButtons();
@@ -39,6 +39,7 @@ private:
 
 	static bool m_running;
 	static bool m_fullBreak;
+	static bool m_needsUpdate;
 
 	static std::vector<Button*> m_editorButtons;
 	static std::vector<Button*> m_runtimeButtons;

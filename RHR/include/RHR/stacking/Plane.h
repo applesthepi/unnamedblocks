@@ -54,4 +54,6 @@ private:
 	bool m_dragging;
 
 	sf::Text m_innerPositionText;
+	sf::RenderTexture m_renderBuffer;
+	sf::Sprite m_renderSprite;
 };

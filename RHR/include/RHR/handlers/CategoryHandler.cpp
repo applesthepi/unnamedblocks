@@ -16,6 +16,7 @@ void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPla
 {
 	m_running = false;
 	m_fullBreak = false;
+	m_needsUpdate = false;
 
 	m_selectedCategory = 0;
 	m_toolbarStackCount = 0;
@@ -99,7 +100,7 @@ void CategoryHandler::RenderPost(sf::RenderWindow* window)
 		window->draw(m_modIco[i]);
 }
 
-void CategoryHandler::FrameUpdate(BlockRegistry* blockRegistry, Plane* toolbarPlane)
+void CategoryHandler::FrameUpdate(sf::RenderWindow* window, BlockRegistry* blockRegistry, Plane* toolbarPlane, Plane* primaryPlane)
 {
 	if (toolbarPlane->GetStackCount() != m_toolbarStackCount)
 		UpdateBlocks(blockRegistry, toolbarPlane, m_selectedCategory);
@@ -127,6 +128,14 @@ void CategoryHandler::FrameUpdate(BlockRegistry* blockRegistry, Plane* toolbarPl
 
 		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
 			ButtonRegistry::RemoveButton(m_editorButtons[i]);
+	}
+
+	if (m_needsUpdate)
+	{
+		m_needsUpdate = false;
+
+		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
+		primaryPlane->SetSize(sf::Vector2u(window->getSize().x - primaryPlane->GetPosition().x - 5, window->getSize().y - primaryPlane->GetPosition().y - 5));
 	}
 }
 
@@ -214,6 +223,8 @@ void CategoryHandler::UpdateBlocks(BlockRegistry* blockRegistry, Plane* toolbarP
 
 	toolbarPlane->SetPosition(sf::Vector2u(5, offset + 5));
 	UpdateButtons();
+
+	m_needsUpdate = true;
 }
 
 void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primaryPlane)
@@ -469,6 +480,8 @@ uint64_t CategoryHandler::m_selectedCategory;
 bool CategoryHandler::m_running;
 
 bool CategoryHandler::m_fullBreak;
+
+bool CategoryHandler::m_needsUpdate;
 
 std::vector<Button*> CategoryHandler::m_editorButtons;
 

@@ -89,6 +89,11 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 	m_draggingConnection = sf::RectangleShape(sf::Vector2f(0, 4));
 	m_useDraggingConnection = false;
 	m_dragging = false;
+
+	m_renderBuffer.create(m_size.x, m_size.y);
+	m_renderSprite.setTexture(m_renderBuffer.getTexture());
+	m_renderSprite.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_size.y), static_cast<int32_t>(m_size.x), -1 * static_cast<int32_t>(m_size.y)));
+	m_renderSprite.setPosition(sf::Vector2f(m_position->x, m_position->y));
 }
 
 Plane::~Plane()
@@ -122,21 +127,11 @@ void Plane::AddStack(Stack* stack)
 
 void Plane::Render(sf::RenderWindow* window)
 {
-	//sf::Shader blankShader;
-	//blankShader.loadFromFile("res/black.vs", "res/black.fs");
-
-	//sf::RectangleShape blackRect = sf::RectangleShape((sf::Vector2f)m_size);
-
-	sf::RenderTexture rT;
-	rT.create(m_size.x, m_size.y);
-	rT.clear(sf::Color(0, 0, 0, 0));
-	//rT.draw(blackRect, &blackShader);
-	//if (!m_toolbar)
-	//	rT.setView(view);
+	m_renderBuffer.clear(sf::Color(0, 0, 0, 0));
 
 	for (unsigned int i = 0; i < m_stacks.size(); i++)
 	{
-		m_stacks[i]->Render(&rT, window);
+		m_stacks[i]->Render(&m_renderBuffer, window);
 
 		if (Global::CutRenderingPlane)
 		{
@@ -144,10 +139,6 @@ void Plane::Render(sf::RenderWindow* window)
 			break;
 		}
 	}
-
-	sf::Sprite sp = sf::Sprite(rT.getTexture());
-	sp.setTextureRect(sf::IntRect(0, static_cast<int32_t>(rT.getSize().y), static_cast<int32_t>(rT.getSize().x), -1 * static_cast<int32_t>(rT.getSize().y)));
-	sp.setPosition(sf::Vector2f(m_position->x, m_position->y));
 	
 	if (Global::Dragging && Global::DraggingPlaneOver == this)
 	{
@@ -169,7 +160,8 @@ void Plane::Render(sf::RenderWindow* window)
 	shader->setUniform("dotColor", sf::Glsl::Vec3(MOD_BACKGROUND_HIGH_C / 255.0f, MOD_BACKGROUND_HIGH_C / 255.0f, MOD_BACKGROUND_HIGH_C / 255.0f));
 
 	window->draw(m_background, shader);
-	window->draw(sp);//all blocks inside the stack
+	//m_renderSprite.setPosition(10, 500);
+	window->draw(m_renderSprite);//all blocks inside the stack
 
 	if (!m_toolbar)
 	{
@@ -339,11 +331,15 @@ sf::Vector2u Plane::GetAbsolutePosition() const
 void Plane::SetPosition(sf::Vector2u position)
 {
 	*m_position = position;
+	m_renderSprite.setPosition(sf::Vector2f(m_position->x, m_position->y));
 }
 
 void Plane::SetSize(sf::Vector2u size)
 {
 	m_size = size;
+	m_renderBuffer.create(m_size.x, m_size.y);
+	m_renderSprite.setTexture(m_renderBuffer.getTexture());
+	m_renderSprite.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_size.y), static_cast<int32_t>(m_size.x), -1 * static_cast<int32_t>(m_size.y)));
 }
 
 Stack* Plane::GetStack(unsigned int index) const

@@ -196,6 +196,9 @@ int main()
 	toolbarPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100), true);
 	Plane::Planes->push_back(toolbarPlane);
 
+	primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
+	primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
+
 	CategoryHandler::Initialize(pRegistry, toolbarPlane);
 	CategoryHandler::RegisterHeader(pRegistry, primaryPlane);
 
@@ -286,9 +289,6 @@ int main()
 		CategoryHandler::Render(&window, toolbarPlane);
 
 		//engine frame update
-
-		primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
-		primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
 
 		//frame update
 
@@ -387,7 +387,7 @@ int main()
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->FrameUpdate(false);
 
-		CategoryHandler::FrameUpdate(pRegistry, toolbarPlane);
+		CategoryHandler::FrameUpdate(&window, pRegistry, toolbarPlane, primaryPlane);
 
 		//render
 
