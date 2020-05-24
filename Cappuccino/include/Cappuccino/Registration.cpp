@@ -777,12 +777,12 @@ void Registration::CompileDataDebug()
 		{
 			if (m_variableRegistry[idx][i] == name)
 			{
-				variableIdx = i + m_variableRegistryOffsets[idx];
+				variableIdx = i;
 				return false;
 			}
 		}
 
-		variableIdx = tempTotal;
+		variableIdx = m_variableRegistry[idx].size();
 		tempTotal++;
 		m_variableRegistry[idx].push_back(name);
 		tempRegsitryTypes[idx].push_back(interp);
@@ -824,7 +824,7 @@ void Registration::CompileDataDebug()
 						{
 							if (m_variableRegistry[i][c] == "_L_" + *(std::string*)data[b])
 							{
-								hauledVariablesBlock->push_back(countTotal + c);
+								hauledVariablesBlock->push_back(countTotal);
 								m_data[i][a].SetInterpretation(tempRegsitryTypes[i][c], b);
 
 								found = true;
@@ -838,7 +838,7 @@ void Registration::CompileDataDebug()
 					else
 					{
 						addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
-						hauledVariablesBlock->push_back(variableIdx - countTotal);
+						hauledVariablesBlock->push_back(variableIdx);
 					}
 				}
 				else
@@ -853,12 +853,13 @@ void Registration::CompileDataDebug()
 					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
 						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::STRING, new std::string(*(std::string*)data[b]));
 
-					hauledVariablesBlock->push_back(variableIdx - countTotal);
+					hauledVariablesBlock->push_back(variableIdx);
 				}
 			}
 
 			hauledVariablesStack->push_back(hauledVariablesBlock);
 		}
+
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
