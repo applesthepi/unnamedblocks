@@ -336,7 +336,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 #ifndef LINUX
 			ShellExecute(0, 0, "https://github.com/applesthepi/unnamedblocks/issues", 0, 0, SW_SHOW);
 #else
-			system("xdg-open https://github.com/applesthepi/unnamedblocks/issues")
+			system("xdg-open https://github.com/applesthepi/unnamedblocks/issues");
 #endif
 		};
 

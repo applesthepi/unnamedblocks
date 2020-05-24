@@ -18,18 +18,18 @@
 #include <chrono>
 
 #include <GL/glew.h>
-#include <RHR/RHR.h>
-
-#ifdef LINUX
-#include <X11/Xlib.h>
-#endif
+#include <SFML/Network.hpp>
 
 #include <iostream>
 #include <cstring>
 #include <vector>
 #include <math.h>
 #include <string>
-#include <SFML/Network.hpp>
+
+// Include last, has defines that conflict with enums
+#ifdef LINUX
+#include <X11/Xlib.h>
+#endif
 
 #define CONTEXT_COLOR 180, 180, 180, 200
 
