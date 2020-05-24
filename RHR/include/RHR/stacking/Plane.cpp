@@ -90,10 +90,15 @@ Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 	m_useDraggingConnection = false;
 	m_dragging = false;
 
-	m_renderBuffer.create(m_size.x, m_size.y);
-	m_renderSprite.setTexture(m_renderBuffer.getTexture());
-	m_renderSprite.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_size.y), static_cast<int32_t>(m_size.x), -1 * static_cast<int32_t>(m_size.y)));
-	m_renderSprite.setPosition(sf::Vector2f(m_position->x, m_position->y));
+	if (m_size.x > 0 && m_size.y > 0)
+	{
+		m_renderBuffer.create(m_size.x, m_size.y);
+		m_renderSprite.setTexture(m_renderBuffer.getTexture());
+		m_renderSprite.setTextureRect(sf::IntRect(0, static_cast<int32_t>(m_size.y), static_cast<int32_t>(m_size.x), -1 * static_cast<int32_t>(m_size.y)));
+		m_renderSprite.setPosition(sf::Vector2f(m_position->x, m_position->y));
+	}
+	else
+		m_renderBuffer.create(10, 10);
 }
 
 Plane::~Plane()
