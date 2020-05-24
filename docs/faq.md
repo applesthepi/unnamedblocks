@@ -3,7 +3,7 @@
 # FAQ
 
 ### A Bad Scratch Clone.
-Nope! its soooo much faster and the blocks run almost native speeds. At the time of writing, Arch Linux can execute almost 3 million logging blocks per second on Arch Linux. Unnamed Blocks can also be modded very easily. Along with being easy, mods are very versatile and can do a lot. One of the pushes were trying to make is Unnamed Blocks will be better than Scratch in EVERY way.
+Nope! its soooo much faster and the blocks run almost native speeds. At the time of writing, Unnamed Blocks can execute almost 3 million logging blocks per second on Arch Linux. Unnamed Blocks can also be modded very easily. Along with being easy, mods are very versatile and can do a lot. One of the pushes were trying to make is Unnamed Blocks will be better than Scratch in EVERY way.
 ### Is Unnamed Blocks Done?
 Unnamed Blocks is still in the early stages of development and things will continue to change as it gets developed for years to come. This goes for `RHR`, `Espresso`, `Cappuccino`, `Unnamed Blocks`, and all vanilla mods. Please be patient as this gets developed!
 ### Is Unnamed Blocks Slow?
