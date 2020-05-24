@@ -80,7 +80,7 @@ public:
 	CAP_DLL void SetCallstackLocal(void(***localCallstack)(ModBlockPass*));
 	CAP_DLL void SetCalls(void(***calls)(ModBlockPass*));
 	CAP_DLL void PerformDeallocationCallbacks();
-	CAP_DLL void PerformLocationUpdate();
+	//CAP_DLL void PerformLocationUpdate();
 
 	// ====================================================
 	// user calls
@@ -157,8 +157,9 @@ public:
 	CAP_DLL void* CustomGet(const uint64_t& idx);
 	CAP_DLL void CustomFree(const uint64_t& idx, bool deallocate = true);
 private:
-	void PreUpdateLocations();
-	void PostUpdateLocations();
+	void UpdateLocations();
+	//void PreUpdateLocations();
+	//void PostUpdateLocations();
 
 	// user data interactions
 
@@ -191,18 +192,19 @@ private:
 
 	ModBlockData** m_data;
 
-	std::vector<std::vector<std::vector<uint64_t>>> m_dataStackIdx;
-	std::vector<std::vector<std::vector<void*>>> m_dataStackPre;
+	std::vector<const uint64_t**> m_dataStackIdx;
+	std::vector<void***> m_dataStackPre;
 	std::vector<double*> m_dataStackReal;
 	std::vector<bool*> m_dataStackBool;
 	std::vector<std::string*> m_dataStackString;
 
-	uint64_t** m_activeIdx;
-	std::vector<std::vector<void*>>* m_activePre;
+	const uint64_t** m_activeIdx;
+	void*** m_activePre;
 	double* m_activeReal;
 	bool* m_activeBool;
 	std::string* m_activeString;
 	
+	std::vector<uint64_t*> m_preDataCount;
 	const std::vector<uint64_t>* m_variablesRealCount;
 	const std::vector<uint64_t>* m_variablesBoolCount;
 	const std::vector<uint64_t>* m_variablesStringCount;

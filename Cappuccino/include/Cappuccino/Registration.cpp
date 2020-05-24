@@ -808,7 +808,7 @@ void Registration::CompileDataDebug()
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			std::vector<uint64_t> runtimeData;
+			//std::vector<uint64_t> runtimeData;
 			std::vector<uint64_t>* hauledVariablesBlock = new std::vector<uint64_t>();
 
 			for (uint64_t b = 0; b < data.size(); b++)
@@ -827,7 +827,7 @@ void Registration::CompileDataDebug()
 							{
 								hauledVariablesBlock->push_back(countTotal + c);
 								m_data[i][a].SetInterpretation(tempRegsitryTypes[i][c], b);
-								runtimeData.push_back(c);
+								//runtimeData.push_back(c);
 
 								found = true;
 								break;
@@ -840,18 +840,24 @@ void Registration::CompileDataDebug()
 					else
 					{
 						addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
-						hauledVariablesBlock->push_back(variableIdx);
-						runtimeData.push_back(variableIdx - countTotal);
+						hauledVariablesBlock->push_back(variableIdx - countTotal);
+						//runtimeData.push_back(variableIdx - countTotal);
 					}
 				}
 				else
 				{
 					char buffer[20];
 					sprintf(buffer, "_R_%u_%u_%u", i, a, b);
+					
+					if (interpretations[b] == ModBlockDataInterpretation::REAL)
+						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::REAL, new double(*(double*)data[b]));
+					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
+						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::BOOL, new bool(*(bool*)data[b]));
+					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
+						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::STRING, new std::string(*(std::string*)data[b]));
 
-					addToRegistry(std::string(buffer), i, interpretations[b], data[b]);
-					hauledVariablesBlock->push_back(variableIdx);
-					runtimeData.push_back(variableIdx - countTotal);
+					hauledVariablesBlock->push_back(variableIdx - countTotal);
+					//runtimeData.push_back(variableIdx - countTotal);
 				}
 			}
 

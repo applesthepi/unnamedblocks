@@ -75,8 +75,9 @@ static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
 	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
 	uint64_t* loc = new uint64_t;
+	std::string* str = (std::string*)(blockData.GetData()[1]);
 
-	*loc = finder->GetFunctionStackIdx(*(std::string*)blockData.GetData()[0]);
+	*loc = finder->GetFunctionStackIdx(*str);
 	blockData.GetPreData().push_back(loc);
 
 	return true;

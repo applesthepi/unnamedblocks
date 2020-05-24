@@ -53,7 +53,7 @@ MODBLOCK_EXPORT void ModBlockData::SetDataTemplates(const uint64_t& stackIdx)
 	const std::vector<double*>& reals = Registration::GetRealTemplate();
 	const std::vector<bool*>& bools = Registration::GetBoolTemplate();
 	const std::vector<std::string*>& strings = Registration::GetStringTemplate();
-
+	std::string* str;
 	for (uint64_t i = 0; i < m_runtimeData.size(); i++)
 	{
 		if (m_interpretations[i] == ModBlockDataInterpretation::REAL)
