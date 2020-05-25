@@ -96,7 +96,7 @@ The release configuration will take longer to compile, and is much less safe and
 
 <h2 id="r_and_l_values">R & L values</h2>
 
-Every **L** value is stored in a text registry as **_L_ + data[b]**. **data** is the following member snippit from a **ModBlockData**:
+Every **L** value is stored in a text registry as **\_L\_ + data[b]**. **data** is the following member snippit from a **ModBlockData**:
 
 ```cpp
 std::vector<void*> m_data;
@@ -118,7 +118,7 @@ sprintf(buffer, "_R_%u_%u_%u", i, a, b);
 This is continued from [R & L values](#r_and_l_values). The debug variable registry starts as one text channel. Every time an **R** or **L** value needs to be registered, no matter the **ModBlockDataInterpretation**, its text name will be added to this single channel. The **size()** of the channel before addition will be the argument's relitive index. To add to the registry, it calls a lambda with the following declaration:
 
 ```cpp
-auto addToRegistry = [&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
+[&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
 ```
 
 As you can see, the lambda takes in **void\* use = nullptr**. This parameter is optional (defaulted to **nullptr**). **R** values use this to initialize the memory. Because all **R** values come with either a **double\***, **bool\***, or **std::string\*** we can initialize it through this function.
@@ -133,13 +133,48 @@ Meanwhile **L** values are left as **nullptr**
 addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
 ```
 
-
-
 <h2 id="compile_release">Compile Release</h2>
 
+This is continued from [R & L values](#r_and_l_values) and is in response to [Compile Debug](#compile_debug). The release variable registry minimizes memory by interlacing variables with the same indicies, but seperated into different channels. This means that if a **ModBlock** calls **GetReal(1)**, but the second parameter is a boolean, then it will return an invalid **double&**. This could further cause a crash or cause other **ModBlock**s to currupt data or files.
 
+<h1 id="modblockpass">ModBlockPass</h1>
 
-<h2 id="modblockpass">ModBlockPass</h2>
+The **ModBlockPass** is passed to a **ModBlock** call function pointer. The **ModBlockPass** consists of several important features. This page will only be going over how it handles data and requests. If you want to see how to use the modding features, see the [Espresso Documentation](https://applesthepi.github.io/unnamedblocks/docs_espresso.html) page.
+
+To optomize runtime performance, the **ModBlockPass** has the following convention for most use calls:
+
+```cpp
+public:
+	double& GetReal(const uint64_t& idx);
+private:
+	double& (ModBlockPass::* m_getReal)(const uint64_t& idx);
+	double& GetRealDebug(const uint64_t& idx);
+	double& GetRealRelease(const uint64_t& idx);
+```
+
+When the user runs **GetReal(0)**, all it does is call and return a function pointer.
+
+```cpp
+double& ModBlockPass::GetReal(const uint64_t& idx)
+{
+	return (this->*(m_getReal))(idx);
+}
+```
+
+This is so the function pointer that is being called, can be set to any function. This is very useful to change between [debug](#compile_debug) and [release](#compile_release) configurations. This can be seen in the **ModBlockPass** constructor.
+
+```cpp
+if (init.DebugMode)
+{
+	m_getReal = &ModBlockPass::GetRealDebug;
+	// continued
+}
+else
+{
+	m_getReal = &ModBlockPass::GetRealRelease;
+	// continued
+}
+```
 
 
 
