@@ -19,7 +19,7 @@
 
 <h1 id="about">About</h1>
 
-**Cappuccino** is a library that performs the compiles, debugs, and runs ub programs. During early development **Cappuccino** did not exist. Since we started to really crack down on performance, we needed to create a dedicated runtime environment.
+**Cappuccino** is a library that compiles, debugs, and runs ub programs. During early development **Cappuccino** did not exist. Since we started to really crack down on performance, we needed to create a dedicated runtime environment.
 
 <h1 id="preprocessor">PreProcessor</h1>
 
