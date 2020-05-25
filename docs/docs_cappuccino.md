@@ -10,10 +10,11 @@ Cappuccino is a library that preforms the second phase of preprocessing stage, c
 
 ### PreProcessor - Stage 1
 
-The first stage of the PreProcessor takes place on the executable. Going though all blocks, it creates a `ModBlockData` for each one. The `ModBlockData` contains the following items:
-<ol>
-	<li>data</li>
-	<li>preData</li>
-	<li>types</li>
-	<li>interpretations</li>
-<ol>
+The first preprocessor stage takes place on the executable. Going though all blocks, it creates a **ModBlockData** for each one. The **ModBlockData** contains the following items:
+```cpp
+std::vector<void*> m_data;
+std::vector<void*> m_preData;
+std::vector<ModBlockDataType> m_types;
+std::vector<ModBlockDataInterpretation> m_interpretations;
+```
+the **data** is a list of 
