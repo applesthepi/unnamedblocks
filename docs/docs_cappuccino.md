@@ -10,6 +10,7 @@
 	<li><a href="#compile_debug">Compile Debug</a></li>
 	<li><a href="#compile_release">Compile Release</a></li>
 	<li><a href="#modblockpass_variables">ModBlockPass - Variables</a></li>
+	<li><a href="#modblockpass_custom">ModBlockPass - Custom</a></li>
 	<li><a href="#modblockpass_callstack">ModBlockPass - Callstack</a></li>
 	<li><a href="#executionthread">ExecutionThread</a></li>
 	<li><a href="#super_instructions">Super Instructions</a></li>
@@ -97,7 +98,13 @@ The release configuration will take longer to compile, and is much less safe and
 
 <h1 id="r_and_l_values">R & L values</h1>
 
-Every **L** value is stored in a text registry as **\_L\_ + data[b]**. **data** is the following member snippit from a **ModBlockData**:
+Every **L** value is stored in a text registry as:
+
+```cpp
+("\_L\_" + data[b])
+```
+
+**data** is the following member snippit from a **ModBlockData**:
 
 ```cpp
 std::vector<void*> m_data;
@@ -193,6 +200,8 @@ It first checks to see if the **idx** provided is higher than the argument count
 return m_activeReal[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 ```
 
+<h1 id="modblockpass_custom">ModBlockPass - Custom</h1>
+
 Custom data can be altered in three ways to the user:
 
 ```cpp
@@ -261,9 +270,6 @@ m_activeString = m_stackingString.back();
 ```
 
 You might be thinking, "why do you need a member to specify the active stack's varaible registry when you can get it using **m_stackingReal.back()**?"
-
-<br>
-<br>
 
 As I will respond with, "performance". A better question would be, "why can you just set the **m_activeReal** to the template registry instead of pushing it to another vector first?" There is a very important reason for this, and it has to do with these public functions:
 
