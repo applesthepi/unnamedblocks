@@ -389,7 +389,7 @@ void Block::PreRender()
 {
 	if (m_width != m_preTexture.getSize().x)
 		m_preTexture.create(m_width, Global::BlockHeight);
-
+	
 	m_preTexture.clear();
 	m_preTexture.draw(m_background);
 

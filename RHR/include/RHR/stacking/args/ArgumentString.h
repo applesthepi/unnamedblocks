@@ -85,7 +85,7 @@ public:
 	void Render(sf::RenderTexture* render) override
 	{
 		render->draw(m_inputBackground);
-
+		
 		if (m_selected)
 		{
 			render->draw(m_input);

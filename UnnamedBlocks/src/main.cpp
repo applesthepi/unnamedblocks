@@ -68,7 +68,7 @@ int main()
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default);
 	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(200);
 
 	// Initialization
 
@@ -243,6 +243,9 @@ int main()
 			{
 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
 				window.setView(sf::View(visibleArea));
+
+				primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
+				primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
 			}
 			else if (ev.type == sf::Event::MouseWheelScrolled)
 			{
