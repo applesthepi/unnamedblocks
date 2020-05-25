@@ -6,10 +6,7 @@
 <ul>
 	<li><a href="#preprocessor">PreProcessor</a></li>
 	<li><a href="#configurations">Configurations</a></li>
-<<<<<<< Updated upstream
 	<li><a href="#r_and_l_values">R & L values</a></li>
-=======
->>>>>>> Stashed changes
 	<li><a href="#compile_debug">Compile Debug</a></li>
 	<li><a href="#compile_release">Compile Release</a></li>
 	<li><a href="#modblockpass">ModBlockPass</a></li>
@@ -97,7 +94,6 @@ A very important feature of **Unnamed Blocks** are the debug and release build c
 
 The release configuration will take longer to compile, and is much less safe and prone to overflows and crashes. The release configuration does anything in its power to be as fast as possible during runtime. Its much faster than the debug configuration because of all the optomizations it puts in place and minimizes safty guards.
 
-<<<<<<< Updated upstream
 <h2 id="r_and_l_values">R & L values</h2>
 
 Every **L** value is stored in a text registry as **_L_ + data[b]**. **data** is the following member snippit from a **ModBlockData**:
@@ -138,11 +134,6 @@ addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
 ```
 
 
-=======
-<h2 id="compile_debug">Compile Debug</h2>
-
-The debug variable registry starts as one channel. Every **L** value is stored in a text registry as **_L_ + **
->>>>>>> Stashed changes
 
 <h2 id="compile_release">Compile Release</h2>
 
