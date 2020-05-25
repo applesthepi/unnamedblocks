@@ -5,6 +5,7 @@
 
 <ul>
 	<li><a href="#preprocessor">PreProcessor</a></li>
+	<li><a href="#configurations">Configurations</a></li>
 	<li><a href="#compalation">Compalation</a></li>
 	<li><a href="#modblockpass">ModBlockPass</a></li>
 	<li><a href="#executionthread">ExecutionThread</a></li>
@@ -85,7 +86,11 @@ One symbol you will reconize right away, **ModBlockData\*\* functionData**. This
 
 **uint8_t\* superInstruction** is an unsigned 8 byte integer that specifies the instruction that can be read and written to by the executable and **Cappuccino**. This is mutexed on both sides though a **std::mutex\***, descised as **void\* superMutex**. This is so **TCC** can compile it, but **Registration** (**Cappuccino** side) is fully aware of this being an **std::mutex\***. Similarly the **int64_t\* superData** carries the data next to the instruction.
 
+<h2 id="configurations">Configurations</h2>
 
+A very important feature of **Unnamed Blocks** are the debug and release build configurations. The debug configuration gives buffers and makes it really easy to find issues with a program with the cost of performance. It also alows the use of thread breaking and stepping. The debug configuration is only avilable with the editor attached.
+
+The release configuration will take longer to compile, and is much less safe and prone to overflows and crashes. The release configuration does anything in its power to be as fast as possible during runtime. Its much faster than the debug configuration because of all the optomizations it puts in place and minimizes safty guards.
 
 <h2 id="compalation">Compalation</h2>
 
