@@ -54,7 +54,6 @@ enum class ModBlockDataType
 {
 	VAR, RAW
 };
-
 ```
 **ModBlockDataInterpretation** is an enum that defines the interpretation of an argument. This is only between preprocessor stages to state how to read and interpret the data inside **ModBlockData**
 
