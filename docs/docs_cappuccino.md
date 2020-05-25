@@ -6,7 +6,9 @@
 <ul>
 	<li><a href="#preprocessor">PreProcessor</a></li>
 	<li><a href="#configurations">Configurations</a></li>
-	<li><a href="#compalation">Compalation</a></li>
+	<li><a href="#r_and_l_values">R & L values</a></li>
+	<li><a href="#compile_debug">Compile Debug</a></li>
+	<li><a href="#compile_release">Compile Release</a></li>
 	<li><a href="#modblockpass">ModBlockPass</a></li>
 	<li><a href="#executionthread">ExecutionThread</a></li>
 	<li><a href="#super_instructions">Super Instructions</a></li>
@@ -92,7 +94,48 @@ A very important feature of **Unnamed Blocks** are the debug and release build c
 
 The release configuration will take longer to compile, and is much less safe and prone to overflows and crashes. The release configuration does anything in its power to be as fast as possible during runtime. Its much faster than the debug configuration because of all the optomizations it puts in place and minimizes safty guards.
 
-<h2 id="compalation">Compalation</h2>
+<h2 id="r_and_l_values">R & L values</h2>
+
+Every **L** value is stored in a text registry as **_L_ + data[b]**. **data** is the following member snippit from a **ModBlockData**:
+
+```cpp
+std::vector<void*> m_data;
+```
+
+This is the data set by the **PreProcessor**. If this **ModBlockData**'s **ModBlockDataType** is flagged as **ModBlockDataType::VAR**, then **data[b]** will *always* be an **std::string\***. This is why all **L** values follow this variable name convention.
+
+**R** values are a little different. To the user they are not variables, they are simpler and *must be faster*. This is not true because **R** values need to be stored somewhere. In terms of runtime performance, they are the same. If you have an excecive amount of **R** values (hundreds), you will incresse your compile time and thread summon time respectivly. This is because every single **R** value is stored just like a variable. The following is the **R** value convention:
+
+```cpp
+char buffer[20];
+sprintf(buffer, "_R_%u_%u_%u", i, a, b);
+```
+
+**I** is the stack index, **A** is the block index, and **B** is the argument index. It must be this protected because one block may have more than one **R** value.
+
+<h2 id="compile_debug">Compile Debug</h2>
+
+This is continued from [R & L values](#r_and_l_values). The debug variable registry starts as one text channel. Every time an **R** or **L** value needs to be registered, no matter the **ModBlockDataInterpretation**, its text name will be added to this single channel. The **size()** of the channel before addition will be the argument's relitive index. To add to the registry, it calls a lambda with the following declaration:
+
+```cpp
+auto addToRegistry = [&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
+```
+
+As you can see, the lambda takes in **void\* use = nullptr**. This parameter is optional (defaulted to **nullptr**). **R** values use this to initialize the memory. Because all **R** values come with either a **double\***, **bool\***, or **std::string\*** we can initialize it through this function.
+
+```cpp
+addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::REAL, new double(*(double*)data[b]));
+```
+
+Meanwhile **L** values are left as **nullptr**
+
+```cpp
+addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
+```
+
+
+
+<h2 id="compile_release">Compile Release</h2>
 
 
 
@@ -105,3 +148,4 @@ The release configuration will take longer to compile, and is much less safe and
 
 
 <h2 id="super_instructions">Super Instructions</h2>
+
