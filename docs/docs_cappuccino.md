@@ -4,8 +4,7 @@
 # Cappuccino Documentation
 
 <ul>
-	<li><a href="#pre_1">PreProcessor - Stage 1</a></li>
-	<li><a href="#pre_2">PreProcessor - Stage 2</a></li>
+	<li><a href="#preprocessor">PreProcessor</a></li>
 	<li><a href="#compalation">Compalation</a></li>
 	<li><a href="#modblockpass">ModBlockPass</a></li>
 	<li><a href="#executionthread">ExecutionThread</a></li>
@@ -14,11 +13,11 @@
 
 ## About
 
-**Cappuccino** is a library that preforms the second phase of the preprocessor stage, compiles, debugs, and runs ub programs. During early development **Cappuccino** did not exist. Since we started to really crack down on performance, we needed to create a dedicated runtime environment.
+**Cappuccino** is a library that preforms the compiles, debugs, and runs ub programs. During early development **Cappuccino** did not exist. Since we started to really crack down on performance, we needed to create a dedicated runtime environment.
 
-<h2 id="pre_1">PreProcessor - Stage 1</h2>
+<h2 id="preprocessor">PreProcessor</h2>
 
-The first preprocessor stage takes place on the executable. Going though all blocks, it creates a **ModBlockData** for each one. The **ModBlockData** contains the following items:
+The preprocessor stage takes place on the executable. Going though all blocks, it creates a **ModBlockData** for each one. The **ModBlockData** contains the following items:
 
 ```cpp
 std::vector<void*> m_data;
@@ -85,8 +84,6 @@ One symbol you will reconize right away, **ModBlockData\*\* functionData**. This
 **void (\*\*\*calls)(ModBlockPass\*)** looks very confusing, aspecialy if you dont know **C**. It is basically a pointer to a function that can be called. **void** is the return specifier, **ModBlockPass\*** is the parameter, **calls** is the name, and **\*\*\*** part is a multi-pointer. This is a 2d array of function pointers.
 
 **uint8_t\* superInstruction** is an unsigned 8 byte integer that specifies the instruction that can be read and written to by the executable and **Cappuccino**. This is mutexed on both sides though a **std::mutex\***, descised as **void\* superMutex**. This is so **TCC** can compile it, but **Registration** (**Cappuccino** side) is fully aware of this being an **std::mutex\***. Similarly the **int64_t\* superData** carries the data next to the instruction.
-
-<h2 id="pre_2">PreProcessor - Stage 2</h2>
 
 
 
