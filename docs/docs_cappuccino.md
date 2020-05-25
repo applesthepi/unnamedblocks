@@ -9,7 +9,8 @@
 	<li><a href="#r_and_l_values">R & L values</a></li>
 	<li><a href="#compile_debug">Compile Debug</a></li>
 	<li><a href="#compile_release">Compile Release</a></li>
-	<li><a href="#modblockpass">ModBlockPass</a></li>
+	<li><a href="#modblockpass_variables">ModBlockPass - Variables</a></li>
+	<li><a href="#modblockpass_callstack">ModBlockPass - Callstack</a></li>
 	<li><a href="#executionthread">ExecutionThread</a></li>
 	<li><a href="#super_instructions">Super Instructions</a></li>
 </ul>
@@ -18,7 +19,7 @@
 
 **Cappuccino** is a library that preforms the compiles, debugs, and runs ub programs. During early development **Cappuccino** did not exist. Since we started to really crack down on performance, we needed to create a dedicated runtime environment.
 
-<h2 id="preprocessor">PreProcessor</h2>
+<h1 id="preprocessor">PreProcessor</h1>
 
 The preprocessor stage takes place on the executable. Going though all blocks, it creates a **ModBlockData** for each one. The **ModBlockData** contains the following items:
 
@@ -88,13 +89,13 @@ One symbol you will reconize right away, **ModBlockData\*\* functionData**. This
 
 **uint8_t\* superInstruction** is an unsigned 8 byte integer that specifies the instruction that can be read and written to by the executable and **Cappuccino**. This is mutexed on both sides though a **std::mutex\***, descised as **void\* superMutex**. This is so **TCC** can compile it, but **Registration** (**Cappuccino** side) is fully aware of this being an **std::mutex\***. Similarly the **int64_t\* superData** carries the data next to the instruction.
 
-<h2 id="configurations">Configurations</h2>
+<h1 id="configurations">Configurations</h1>
 
 A very important feature of **Unnamed Blocks** are the debug and release build configurations. The debug configuration gives buffers and makes it really easy to find issues with a program with the cost of performance. It also alows the use of thread breaking and stepping. The debug configuration is only avilable with the editor attached.
 
 The release configuration will take longer to compile, and is much less safe and prone to overflows and crashes. The release configuration does anything in its power to be as fast as possible during runtime. Its much faster than the debug configuration because of all the optomizations it puts in place and minimizes safty guards.
 
-<h2 id="r_and_l_values">R & L values</h2>
+<h1 id="r_and_l_values">R & L values</h1>
 
 Every **L** value is stored in a text registry as **\_L\_ + data[b]**. **data** is the following member snippit from a **ModBlockData**:
 
@@ -113,7 +114,7 @@ sprintf(buffer, "_R_%u_%u_%u", i, a, b);
 
 **I** is the stack index, **A** is the block index, and **B** is the argument index. It must be this protected because one block may have more than one **R** value.
 
-<h2 id="compile_debug">Compile Debug</h2>
+<h1 id="compile_debug">Compile Debug</h1>
 
 This is continued from [R & L values](#r_and_l_values). The debug variable registry starts as one text channel. Every time an **R** or **L** value needs to be registered, no matter the **ModBlockDataInterpretation**, its text name will be added to this single channel. The **size()** of the channel before addition will be the argument's relitive index. To add to the registry, it calls a lambda with the following declaration:
 
@@ -133,11 +134,11 @@ Meanwhile **L** values are left as **nullptr**
 addToRegistry("_L_" + *(std::string*)data[b], i, interpretations[b]);
 ```
 
-<h2 id="compile_release">Compile Release</h2>
+<h1 id="compile_release">Compile Release</h1>
 
 This is continued from [R & L values](#r_and_l_values) and is in response to [Compile Debug](#compile_debug). The release variable registry minimizes memory by interlacing variables with the same indicies, but seperated into different channels. This means that if a **ModBlock** calls **GetReal(1)**, but the second parameter is a boolean, then it will return an invalid **double&**. This could further cause a crash or cause other **ModBlock**s to currupt data or files.
 
-<h1 id="modblockpass">ModBlockPass</h1>
+<h1 id="modblockpass_variables">ModBlockPass - Variables</h1>
 
 The **ModBlockPass** is passed to a **ModBlock** call function pointer. The **ModBlockPass** consists of several important features. This page will only be going over how it handles data and requests. If you want to see how to use the modding features, see the [Espresso Documentation](https://applesthepi.github.io/unnamedblocks/docs_espresso.html) page.
 
@@ -165,22 +166,179 @@ This is so the function pointer that is being called, can be set to any function
 
 ```cpp
 if (init.DebugMode)
-{
 	m_getReal = &ModBlockPass::GetRealDebug;
 	// continued
-}
 else
-{
 	m_getReal = &ModBlockPass::GetRealRelease;
 	// continued
-}
 ```
 
+During a **GetReal(0)** call in debug mode, it has a few steps.
+
+```cpp
+if (idx >= m_variablesBoolCount->at(m_callstackStackIdx->back()))
+{
+	LogError("attempted to get bool out of range \"" + std::to_string(idx) + "\". registry size is \"" + std::to_string(m_variablesBoolCount->at(m_callstackStackIdx->back())) + "\"", LoggerFatality::ABORT);
+	return gBool;
+}
+
+const uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+double& value = m_activeReal[vIdx];
+return value;
+```
+
+It first checks to see if the **idx** provided is higher than the argument count of the current block. This is only important when devloping a mod. It then finds the **vIdx**, this is the variable index of the active varaible stack. Using **vIdx**, it finds and returns a **double&**. The release function is the same, except more compact and it does not have bounds checking.
+
+```cpp
+return m_activeReal[m_activeIdx[m_callstackBlockIdx->back()][idx]];
+```
+
+Custom data can be altered in three ways to the user:
+
+```cpp
+const uint64_t CustomPut(void* mem);
+void* CustomGet(const uint64_t& idx);
+void CustomFree(const uint64_t& idx, bool deallocate = true);
+```
+
+Unlike variables, customs do not have a seperate debug and release configurations. The custom registry is sharred among all of **Cappuccino**. When **CustomPut(mem)** is called, it simply pushes to the registry and returns it's index.
+
+```cpp
+std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
+
+uint64_t customIdx = m_customRegister->size();
+m_customRegister->push_back(mem);
+
+return customIdx;
+```
+
+This however is not a good system because this vector's size is never decressed. You can retrieve the memory by using **CustomGet(idx)**.
+
+```cpp
+std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
+return m_customRegister->at(idx);
+```
+
+The user should NOT free the memory unless **CustomFree(idx, false)** is called with **false**. This tells **Cappuccino** that the memory is no longer in use and to not free it later. If **CustomFree(idx, true)** is called with **true**, then **Cappuccino** knows that the memory is no longer in use, will not free it at the end, but will free it imidetly opon **CustomFree(idx, true)**.
+
+```cpp
+std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
+
+if (deallocate)
+	delete m_customRegister->at(idx);
+
+m_customRegister->at(idx) = nullptr;
+```
+
+<h1 id="modblockpass_callstack">ModBlockPass - Callstack</h1>
+
+This is the convention for all three variable types:
+
+```cpp
+std::vector<double*> m_stackingReal;
+double* m_activeReal;
+
+std::vector<double*> m_dataStackReal;
+const std::vector<uint64_t>* m_variablesRealCount;
+```
+
+I have dilibritly seperated the four members into groups of two. These members may look confusing because there are four names that are very similar. I will be breaking down what each of these members do and how its used thoughout the **ModBlockPass**.
+
+The **m_variablesRealCount** may make sense imidetly. Every element is the amount of real varaibles in the corisponding stack. This includes both [**R** and **L** values](#r_and_l_values). This is generaly used when checking bounds and allocating the other members listed above.
+
+**m_dataStackReal** is ground zero. Every element is an array of a variable type for the corisponding stack. This is used as a template to allocate further members. During **RuntimeInitialization**, **ModBlock**s will be able to set this default data though the **ModBlockData**.
+
+```cpp
+const std::vector<void*>& GetData();
+```
+
+**m_stackingReal** and **m_activeReal** are closly related. **m_stackingReal** is simply a "stack" of active variable registries. It grows and shrinks when functions are called. **m_activeReal** simply refers to the most active variable registry.
+
+```cpp
+m_activeReal = m_stackingReal.back();
+m_activeBool = m_stackingBool.back();
+m_activeString = m_stackingString.back();
+```
+
+You might be thinking, "why do you need a member to specify the active stack's varaible registry when you can get it using **m_stackingReal.back()**?"
+
+<br>
+<br>
+
+As I will respond with, "performance". A better question would be, "why can you just set the **m_activeReal** to the template registry instead of pushing it to another vector first?" There is a very important reason for this, and it has to do with these public functions:
+
+```cpp
+void AddCallstack(const uint64_t& stack, const uint64_t& block, const bool& special = true);
+void PopCallstack();
+```
+
+If you just wanted to quickly change stacks during runtime, you can when **special** is false. This will result in the following code being executed:
+
+```cpp
+m_callstackStackIdx->push_back(stack);
+m_callstackBlockIdx->push_back(block);
+
+m_stackingSpecial.push_back(false);
+
+m_stackingReal.push_back(m_dataStackReal[m_callstackStackIdx->back()]);
+m_stackingBool.push_back(m_dataStackBool[m_callstackStackIdx->back()]);
+m_stackingString.push_back(m_dataStackString[m_callstackStackIdx->back()]);
+```
+
+You may notice an issue with this though. Even though the previus index was saved inside **m_callstackBlockIdx** and **m_callstackStackIdx**, the registry that will be set as active will be from the template registry **m_dataStackReal**. This means that you are treating all [**R** and **L** values](#r_and_l_values) as static. This means there can only be one of each in a particular translation unit, or stack in this case.
+
+```cpp
+static double gReal = 0.0;
+static bool gBool = false;
+static std::string gString;
+```
+
+This is a major issue when you are trying to keep multiple states of the same variable in the same stack. When you call the function that you are inside the middle of, the new callstack will be editing the same variables as the old callstack. This can easily cause memory coruption.
+
+So how can we keep multiple states of the same variables? By flagging **special** true. This instead causes the following code to run:
+
+```cpp
+m_stackingSpecial.push_back(true);
+
+double* reals = new double[m_variablesRealCount->at(m_callstackStackIdx->back())];
+bool* bools = new bool[m_variablesBoolCount->at(m_callstackStackIdx->back())];
+std::string* strings = new std::string[m_variablesStringCount->at(m_callstackStackIdx->back())];
+
+for (uint64_t i = 0; i < m_variablesRealCount->at(m_callstackStackIdx->back()); i++)
+	reals[i] = m_dataStackReal[m_callstackStackIdx->back()][i];
+
+for (uint64_t i = 0; i < m_variablesBoolCount->at(m_callstackStackIdx->back()); i++)
+	bools[i] = m_dataStackBool[m_callstackStackIdx->back()][i];
+
+for (uint64_t i = 0; i < m_variablesStringCount->at(m_callstackStackIdx->back()); i++)
+	strings[i] = m_dataStackString[m_callstackStackIdx->back()][i];
+
+m_stackingReal.push_back(reals);
+m_stackingBool.push_back(bools);
+m_stackingString.push_back(strings);
+```
+
+When **special** is flagged true, instead of pushing the **m_dataStackReal** (template registgry), it instead makes a copy of it. This way, we can have multiple states of the same varaible. When a function comes to the end, it pops the last **m_stackingReal**.
+
+```cpp
+m_callstackStackIdx->pop_back();
+m_callstackBlockIdx->pop_back();
+
+if (m_stackingSpecial.back())
+{
+	delete[] m_stackingReal.back();
+	delete[] m_stackingBool.back();
+	delete[] m_stackingString.back();
+}
+
+m_stackingReal.pop_back();
+m_stackingBool.pop_back();
+m_stackingString.pop_back();
+```
+
+<h1 id="executionthread">ExecutionThread</h1>
 
 
-<h2 id="executionthread">ExecutionThread</h2>
 
-
-
-<h2 id="super_instructions">Super Instructions</h2>
+<h1 id="super_instructions">Super Instructions</h1>
 
