@@ -344,7 +344,57 @@ m_stackingString.pop_back();
 
 <h1 id="executionthread">ExecutionThread</h1>
 
+**ExecutionThread** refers to the thread where the execution is taking place. The **ExecutionThread** has several flags:
 
+```cpp
+std::atomic<bool> m_finished;
+std::atomic<bool> m_kill;
+std::atomic<bool> m_ended;
+
+std::atomic<bool> m_breaked;
+std::atomic<bool>* m_resume;
+std::atomic<bool> m_step;
+```
+
+Due to performance, we didnt want the thread checking all of these threads every block execution. Similarly, we also didnt want to calculate the time since last flag pull to pull after the time is up. Instead we made one single flag be responsible for interupting the execution and to then test the other flags. **m_finished** does exactly this.
+
+As soon as the execution is interupted, it first tests **m_breaked**. If this is true, then **m_finished** will continue to be false so we perform step execution. The following is a *heavly modified snippit* of what happens when **m_breaked** is true:
+
+```cpp
+finished = false;
+
+while (!resume)
+{
+	// true when Cappuccino wants
+	// this thread to die imidetly
+	if (kill)
+		return;
+
+	if (step)
+	{
+		step = false;
+		finished = true;
+		break;
+	}
+}
+
+if (resume)
+	break = false;
+
+// inside execution loop after
+// m_finished is checked
+goto loop;
+```
 
 <h1 id="super_instructions">Super Instructions</h1>
 
+Super instructions are instructions that can be sent and recived from either **Cappuccino** or the executable to perform debugging operations. You can find the list of instructions inside a comment in [this file](https://github.com/applesthepi/unnamedblocks/blob/dev/Cappuccino/include/Cappuccino/Registration.h). Here are the instructions at the time of writting:
+
+```
+1 - [ R/D ] stop; kill all
+2 - [ R/D ] break all
+3 - [ R/D ] resume all
+4 - [ __D ] break single thread (idx)
+5 - [ __D ] step single thread
+6 - [ __D ] resume single thread
+```
