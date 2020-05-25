@@ -66,16 +66,16 @@ enum class ModBlockDataInterpretation
 **TCC**, or **Tiny C Compiler** is not a well known compiler. Its purpose is to be a "middle man" from the executable and Cappuccino. The **PreProcessor** (executable side) works with **TCC** to do a few things. Firstly it links all mods with **Cappuccino** so it has access to the functions inside the mods. The **PreProcessor** defines these symbols though **TCC**:
 
 ```c
-COMP_EXPORT uint64_t functionMain;
-COMP_EXPORT uint64_t* functionCallCount;
-COMP_EXPORT uint64_t functionTotalCount;
-COMP_EXPORT void (***calls)(ModBlockPass*);
-COMP_EXPORT ModBlockData** functionData;
-COMP_EXPORT ModBlock*** modBlocks;
-COMP_EXPORT bool debugBuild;
-COMP_EXPORT uint8_t* superInstruction;
-COMP_EXPORT int64_t* superData;
-COMP_EXPORT void* superMutex;
+uint64_t functionMain;
+uint64_t* functionCallCount;
+uint64_t functionTotalCount;
+void (***calls)(ModBlockPass*);
+ModBlockData** functionData;
+ModBlock*** modBlocks;
+bool debugBuild;
+uint8_t* superInstruction;
+int64_t* superData;
+void* superMutex;
 ```
 
 One symbol you will reconize right away, **ModBlockData\*\* functionData**. This contains every blocks' data through the **ModBlockData**. A couple other easily understandable symbols are the **bool debugBuild** and **ModBlock\*\*\* modBlocks**. The **ModBlock\*\*\*** is understood as a 2d array of **ModBlock\***. See the (Espresso Documentation)[https://applesthepi.github.io/unnamedblocks/docs_espresso.html] for more information.
