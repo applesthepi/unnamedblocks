@@ -20,4 +20,29 @@ Every argument has one index inside this vector. All arguments that are in varia
 ```cpp
 std::vector<void*> m_data;
 ```
-Test
+Predata is data that can be transfered from the initialization stages to the runtime stages. It is part of **ModBlockData** because this is how the **ModBlockPass** gets it's information. Predata does nothing during this stage.
+```cpp
+std::vector<void*> m_preData;
+```
+**ModBlockDataType** is an enum that declares whether or not it is a variable. This is to distinguish between a variable that always uses an **std::string\***, and a raw value that could use any pointer.
+```cpp
+std::vector<ModBlockDataType> m_types;
+```
+This is the definition of **ModBlockDataType**:
+```cpp
+enum class ModBlockDataType
+{
+	VAR, RAW
+};
+```
+**ModBlockDataInterpretation** is an enum that defines the interpretation of an argument. This is only between preprocessor stages to state how to read and interpretate the data inside **ModBlockData**
+```cpp
+std::vector<ModBlockDataInterpretation> m_interpretations;
+```
+This is the definition of **ModBlockDataInterpretation**:
+```cpp
+enum class ModBlockDataInterpretation
+{
+	TEXT, STRING, REAL, BOOL
+};
+```
