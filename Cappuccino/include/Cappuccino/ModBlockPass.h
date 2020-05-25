@@ -91,39 +91,14 @@ public:
 	CAP_DLL void LogWarning(const std::string& message);
 	CAP_DLL void LogError(const std::string& message, const LoggerFatality& fatality);
 
-	// get the value at the argument the user typed in.
-	// if its a variable, it will be auto converted.
-
 	CAP_DLL double& GetReal(const uint64_t& idx);
 	CAP_DLL bool& GetBool(const uint64_t& idx);
 	CAP_DLL std::string& GetString(const uint64_t& idx);
 
-	// data set during the initializations processes.
-
 	CAP_DLL void* GetPreData(const uint64_t& idx);
-
-	// only use these if your directly changing the variable registry.
-	// if your trying to get the value in the block argument from the user, use Get<T> above.
-
-	//CAP_DLL double& GetVariableReal(const uint64_t& idx);
-	//CAP_DLL bool& GetVariableBool(const uint64_t& idx);
-	//CAP_DLL std::string& GetVariableString(const uint64_t& idx);
-
-	// only use these if your instancing a new ModBlockPass
-
-	//CAP_DLL double* GetVariableRegistryReal();
-	//CAP_DLL bool* GetVariableRegistryBool();
-	//CAP_DLL std::string* GetVariableRegistryString();
-	//CAP_DLL std::mutex* GetCustomRegisterMutex();
-	//CAP_DLL std::vector<void*>* GetCustomRegister();
-	//CAP_DLL std::vector<std::string>* GetVariableRegistry();
 	CAP_DLL std::chrono::steady_clock::time_point* GetBeginTime();
 
 	CAP_DLL void Stop();
-
-	//CAP_DLL std::vector<uint64_t>& GetCallstackStack();
-	//CAP_DLL std::vector<uint64_t>& GetCallstackBlock();
-	//CAP_DLL void UpdateLocalCallstack();
 
 	CAP_DLL void AddCallstack(const uint64_t& stack, const uint64_t& block);
 	CAP_DLL void PopCallstack();
@@ -158,8 +133,6 @@ public:
 	CAP_DLL void CustomFree(const uint64_t& idx, bool deallocate = true);
 private:
 	void UpdateLocations();
-	//void PreUpdateLocations();
-	//void PostUpdateLocations();
 
 	// user data interactions
 

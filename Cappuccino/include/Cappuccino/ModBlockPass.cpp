@@ -21,14 +21,6 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		m_getBool = &ModBlockPass::GetBoolDebug;
 		m_getString = &ModBlockPass::GetStringDebug;
 
-		//m_getVaraibleReal = &ModBlockPass::GetVariableRealDebug;
-		//m_getVariableBool = &ModBlockPass::GetVariableBoolDebug;
-		//m_getVariableString = &ModBlockPass::GetVariableStringDebug;
-		// because m_variableRegistry isnt working right now due to changes
-		//m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
-		//m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
-		//m_getVariableString = &ModBlockPass::GetVariableStringRelease;
-
 		m_getPreData = &ModBlockPass::GetPreDataDebug;
 	}
 	else
@@ -36,9 +28,7 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		m_getReal = &ModBlockPass::GetRealRelease;
 		m_getBool = &ModBlockPass::GetBoolRelease;
 		m_getString = &ModBlockPass::GetStringRelease;
-		//m_getVaraibleReal = &ModBlockPass::GetVariableRealRelease;
-		//m_getVariableBool = &ModBlockPass::GetVariableBoolRelease;
-		//m_getVariableString = &ModBlockPass::GetVariableStringRelease;
+		
 		m_getPreData = &ModBlockPass::GetPreDataRelease;
 	}
 
@@ -173,52 +163,6 @@ CAP_DLL void ModBlockPass::PerformDeallocationCallbacks()
 	m_deallocationCalls.clear();
 }
 
-/*
-CAP_DLL double& ModBlockPass::GetVariableReal(const uint64_t& idx)
-{
-	return (this->*(m_getVaraibleReal))(idx);
-}
-
-CAP_DLL bool& ModBlockPass::GetVariableBool(const uint64_t& idx)
-{
-	return (this->*(m_getVariableBool))(idx);
-}
-
-CAP_DLL std::string& ModBlockPass::GetVariableString(const uint64_t& idx)
-{
-	return (this->*(m_getVariableString))(idx);
-}
-
-CAP_DLL double* ModBlockPass::GetVariableRegistryReal()
-{
-	return m_variablesReal;
-}
-
-CAP_DLL bool* ModBlockPass::GetVariableRegistryBool()
-{
-	return m_variablesBool;
-}
-
-CAP_DLL std::string* ModBlockPass::GetVariableRegistryString()
-{
-	return m_variablesString;
-}
-
-CAP_DLL std::mutex* ModBlockPass::GetCustomRegisterMutex()
-{
-	return m_customRegistrerMutex;
-}
-
-CAP_DLL std::vector<void*>* ModBlockPass::GetCustomRegister()
-{
-	return m_customRegister;
-}
-
-CAP_DLL std::vector<std::string>* ModBlockPass::GetVariableRegistry()
-{
-	return m_variableRegistry;
-}
-*/
 CAP_DLL std::chrono::steady_clock::time_point* ModBlockPass::GetBeginTime()
 {
 	return m_beginTime;
@@ -483,42 +427,6 @@ void ModBlockPass::UpdateLocations()
 	*m_localCallstack = m_calls[m_callstackStackIdx->back()];
 }
 
-/*
-void ModBlockPass::PreUpdateLocations()
-{
-	if (m_activeIdx != nullptr)
-	{
-		for (uint64_t i = 0; i < m_dataStackIdx.back().size(); i++)
-			delete[] m_activeIdx[i];
-
-		delete[] m_activeIdx;
-		m_activeIdx = nullptr;
-	}
-}
-
-void ModBlockPass::PostUpdateLocations()
-{
-	m_activeIdx = new uint64_t*[m_dataStackIdx[m_callstackStackIdx->back()].size()];
-
-	for (uint64_t i = 0; i < m_dataStackIdx[m_callstackStackIdx->back()].size(); i++)
-	{
-		m_activeIdx[i] = new uint64_t[m_dataStackIdx[m_callstackStackIdx->back()][i].size()];
-
-		for (uint64_t a = 0; a < m_dataStackIdx[m_callstackStackIdx->back()][i].size(); a++)
-			m_activeIdx[i][a] = m_dataStackIdx[m_callstackStackIdx->back()][i][a];
-	}
-
-	m_activePre = new void**[m_dataStackPre[m_callstackStackIdx->back()].size()];
-
-	for (uint64_t i = 0; i < m_dataStackPre[m_callstackStackIdx->back()].size(); i++)
-	{
-		m_activePre[i] = new void*[m_dataStackPre[m_callstackStackIdx->back()][i].size()];
-
-		for (uint64_t a = 0; a < m_dataStackPre[m_callstackStackIdx->back()][i].size(); a++)
-			m_activePre[i][a] = m_dataStackPre[m_callstackStackIdx->back()][i][a];
-	}
-}
-*/
 double& ModBlockPass::GetRealDebug(const uint64_t& idx)
 {
 	if (idx >= m_variablesRealCount->at(m_callstackStackIdx->back()))
