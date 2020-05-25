@@ -27,22 +27,17 @@ static void ThreadExecution(ExecutionThread* thr)
 	pass->SetCallstackLocal(&localCallStack);
 	pass->SetCalls(calls);
 
-	pass->AddCallstack(thr->GetFunctionStart(), 0);
+	pass->AddCallstack(thr->GetFunctionStart(), 0, false);
 	
 	while (!finished)
 	{
 loop:
 		if (callstackBlockIdx.back() >= functionCallCount[callstackStackIdx.back()])
 		{
-			callstackStackIdx.pop_back();
-			callstackBlockIdx.pop_back();
+			pass->PopCallstack();
 
-			if (callstackBlockIdx.size() == 0)
-			{
-				thr->SetFinished(true);
-				successful = true;
+			if (finished)
 				break;
-			}
 
 			callstackBlockIdx.back()++;
 			localCallStack = calls[callstackStackIdx.back()];

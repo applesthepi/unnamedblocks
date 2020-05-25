@@ -176,19 +176,42 @@ CAP_DLL void ModBlockPass::Stop()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
-CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& block)
+CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& block, const bool& special)
 {
 	m_callstackStackIdx->push_back(stack);
 	m_callstackBlockIdx->push_back(block);
 	
-	SetStackIdx(stack);
-	SetBlockIdx(block);
+	if (special)
+	{
+		m_stackingSpecial.push_back(true);
 
-	m_activeReal = m_dataStackReal[m_callstackStackIdx->back()];
-	m_activeBool = m_dataStackBool[m_callstackStackIdx->back()];
-	m_activeString = m_dataStackString[m_callstackStackIdx->back()];
-	m_activeIdx = m_dataStackIdx[m_callstackStackIdx->back()];
-	m_activePre = m_dataStackPre[m_callstackStackIdx->back()];
+		double* reals = new double[m_variablesRealCount->at(m_callstackStackIdx->back())];
+		bool* bools = new bool[m_variablesBoolCount->at(m_callstackStackIdx->back())];
+		std::string* strings = new std::string[m_variablesStringCount->at(m_callstackStackIdx->back())];
+
+		for (uint64_t i = 0; i < m_variablesRealCount->at(m_callstackStackIdx->back()); i++)
+			reals[i] = m_dataStackReal[m_callstackStackIdx->back()][i];
+
+		for (uint64_t i = 0; i < m_variablesBoolCount->at(m_callstackStackIdx->back()); i++)
+			bools[i] = m_dataStackBool[m_callstackStackIdx->back()][i];
+
+		for (uint64_t i = 0; i < m_variablesStringCount->at(m_callstackStackIdx->back()); i++)
+			strings[i] = m_dataStackString[m_callstackStackIdx->back()][i];
+
+		m_stackingReal.push_back(reals);
+		m_stackingBool.push_back(bools);
+		m_stackingString.push_back(strings);
+	}
+	else
+	{
+		m_stackingSpecial.push_back(false);
+
+		m_stackingReal.push_back(m_dataStackReal[m_callstackStackIdx->back()]);
+		m_stackingBool.push_back(m_dataStackBool[m_callstackStackIdx->back()]);
+		m_stackingString.push_back(m_dataStackString[m_callstackStackIdx->back()]);
+	}
+
+	UpdateLocations();
 }
 
 CAP_DLL void ModBlockPass::PopCallstack()
@@ -196,18 +219,23 @@ CAP_DLL void ModBlockPass::PopCallstack()
 	m_callstackStackIdx->pop_back();
 	m_callstackBlockIdx->pop_back();
 
-	m_dataStackReal.pop_back();
-	m_dataStackBool.pop_back();
-	m_dataStackString.pop_back();
-	m_dataStackPre.pop_back();
+	if (m_stackingSpecial.back())
+	{
+		delete[] m_stackingReal.back();
+		delete[] m_stackingBool.back();
+		delete[] m_stackingString.back();
+	}
+
+	m_stackingReal.pop_back();
+	m_stackingBool.pop_back();
+	m_stackingString.pop_back();
 
 	if (m_callstackStackIdx->size() > 0)
-	{
 		UpdateLocations();
-
-		m_activeReal = m_dataStackReal.back();
-		m_activeBool = m_dataStackBool.back();
-		m_activeString = m_dataStackString.back();
+	else
+	{
+		*m_finished = true;
+		*m_successful = true;
 	}
 }
 
@@ -425,6 +453,12 @@ CAP_DLL void ModBlockPass::ReturnMessages()
 void ModBlockPass::UpdateLocations()
 {
 	*m_localCallstack = m_calls[m_callstackStackIdx->back()];
+
+	m_activeReal = m_stackingReal.back();
+	m_activeBool = m_stackingBool.back();
+	m_activeString = m_stackingString.back();
+	m_activeIdx = m_dataStackIdx[m_callstackStackIdx->back()];
+	m_activePre = m_dataStackPre[m_callstackStackIdx->back()];
 }
 
 double& ModBlockPass::GetRealDebug(const uint64_t& idx)

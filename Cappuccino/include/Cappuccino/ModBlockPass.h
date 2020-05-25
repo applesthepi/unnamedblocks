@@ -100,7 +100,7 @@ public:
 
 	CAP_DLL void Stop();
 
-	CAP_DLL void AddCallstack(const uint64_t& stack, const uint64_t& block);
+	CAP_DLL void AddCallstack(const uint64_t& stack, const uint64_t& block, const bool& special = true);
 	CAP_DLL void PopCallstack();
 
 	CAP_DLL void SetStackIdx(const uint64_t& idx);
@@ -177,6 +177,11 @@ private:
 	bool* m_activeBool;
 	std::string* m_activeString;
 	
+	std::vector<bool> m_stackingSpecial;
+	std::vector<double*> m_stackingReal;
+	std::vector<bool*> m_stackingBool;
+	std::vector<std::string*> m_stackingString;
+
 	std::vector<uint64_t*> m_preDataCount;
 	const std::vector<uint64_t>* m_variablesRealCount;
 	const std::vector<uint64_t>* m_variablesBoolCount;
