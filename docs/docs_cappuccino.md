@@ -102,7 +102,7 @@ The release configuration will take longer to compile, and is much less safe and
 Every **L** value is stored in a text registry as:
 
 ```cpp
-("\_L\_" + data[b])
+("_L_" + data[b])
 ```
 
 **data** is the following member snippet from a **ModBlockData**:
