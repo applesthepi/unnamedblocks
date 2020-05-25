@@ -28,7 +28,6 @@ std::vector<void*> m_preData;
 ```cpp
 std::vector<ModBlockDataType> m_types;
 ```
-This is the definition of **ModBlockDataType**:
 ```cpp
 enum class ModBlockDataType
 {
@@ -39,7 +38,6 @@ enum class ModBlockDataType
 ```cpp
 std::vector<ModBlockDataInterpretation> m_interpretations;
 ```
-This is the definition of **ModBlockDataInterpretation**:
 ```cpp
 enum class ModBlockDataInterpretation
 {
