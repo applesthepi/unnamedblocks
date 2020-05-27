@@ -243,7 +243,10 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 			std::function<void(const bool&)> cb = [&](const bool& result)
 			{
 				if (result)
+				{
 					primaryPlane->DeleteAllBlocks();
+					ProjectHandler::CurrentPath.clear();
+				}
 			};
 
 			MessageHandler::RegisterMessage(new MessageConfirm("unsaved progress will be lost", &cb), true);

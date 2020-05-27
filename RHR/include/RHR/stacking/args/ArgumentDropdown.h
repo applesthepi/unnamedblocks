@@ -9,14 +9,14 @@
 #include <iostream>
 #include <Cappuccino/Logger.h>
 
-class ArgumentString : public Argument
+class ArgumentDropdown : public Argument
 {
 public:
-	ArgumentString(const sf::Vector2u& relitivePosition)
+	ArgumentDropdown(const sf::Vector2u& relitivePosition)
 		:Argument(relitivePosition)
 	{
+		/*
 		m_isDown = false;
-		m_variableMode = BlockArgumentVariableMode::RAW;
 		m_selected = false;
 		m_fullSelect = false;
 
@@ -44,16 +44,18 @@ public:
 			else
 				InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
 		};
+		*/
 	}
 
 	void FrameUpdate() override
 	{
+		/*
 		if (m_selected && !m_fullSelect)
 			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), (sf::Vector2u)m_inputBackground.getSize(), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder, 0);
 
 		m_input.setString(m_text);
 		m_input.setPosition(GetRelitivePosition().x + (float)Global::BlockBorder, GetRelitivePosition().y);
-		
+
 		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 		m_inputBackground.setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
 
@@ -80,12 +82,14 @@ public:
 			m_inputLocHigh.setPosition(GetRelitivePosition().x + sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
 			m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
 		}
+		*/
 	}
 
 	void Render(sf::RenderTexture* render) override
 	{
+		/*
 		render->draw(m_inputBackground);
-		
+
 		if (m_selected)
 		{
 			render->draw(m_input);
@@ -93,16 +97,18 @@ public:
 			render->draw(m_inputLoc);
 		}
 		else
-			render->draw(m_input);
+			ender->draw(m_input);
+		*/
 	}
 
 	unsigned int GetArgumentRawWidth() override
 	{
-		return m_inputBackground.getSize().x;
+		//return m_inputBackground.getSize().x;
 	}
 
 	const bool MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
+		/*
 		if (down && m_fullSelect)
 		{
 			m_textLocHigh = 0;
@@ -121,31 +127,7 @@ public:
 			return true;
 		}
 
-		if (button == sf::Mouse::Middle && down &&
-			position.x >= m_realAbsolutePosition.x && position.x <= m_realAbsolutePosition.x + m_inputBackground.getSize().x &&
-			position.y >= m_realAbsolutePosition.y && position.y <= m_realAbsolutePosition.y + m_inputBackground.getSize().y)
-		{
-			SelectGlobaly();
-			if (m_variableMode == BlockArgumentVariableMode::RAW)
-				m_variableMode = BlockArgumentVariableMode::VAR;
-			else
-				m_variableMode = BlockArgumentVariableMode::RAW;
-
-			if (m_selected)
-			{
-				m_textLocHigh = 0;
-				m_textLoc = m_text.length();
-			}
-			else
-			{
-				InputHandler::RegisterKeyCallback(&m_textCallback);
-
-				m_selected = true;
-				m_textLocHigh = 0;
-				m_textLoc = m_text.length();
-			}
-		}
-		else if (button == sf::Mouse::Left)
+		if (button == sf::Mouse::Left)
 		{
 			TextSystem tSys(&m_text, &m_textLocHigh, &m_textLoc, &m_isDown);
 
@@ -174,6 +156,7 @@ public:
 				return false;
 			}
 		}
+		*/
 
 		return false;
 	}
@@ -185,40 +168,29 @@ public:
 
 	void SetData(const std::string& data) override
 	{
-		m_text = data;
-		m_input.setString(m_text);
-	}
-
-	void SetMode(const BlockArgumentVariableMode& mode) override
-	{
-		m_variableMode = mode;
+		//m_text = data;
+		//m_input.setString(m_text);
 	}
 
 	const std::string& GetData() override
 	{
-		return (m_variableMode == BlockArgumentVariableMode::VAR ? '1' : '0') + m_text;
+		//return (m_variableMode == BlockArgumentVariableMode::VAR ? '1' : '0') + m_text;
 	}
 
 	const std::string& GetDataRaw() override
 	{
-		return m_text;
+		//return;
 	}
 
 	const BlockArgumentVariableMode GetMode() override
 	{
-		return m_variableMode;
-	}
-
-	void Deallocate() override
-	{
-		if (m_selected)
-			InputHandler::UnregisterKeyCallback(&m_textCallback);
+		return BlockArgumentVariableMode::RAW;
 	}
 
 	void Select() override
 	{
 		SelectGlobaly();
-
+		/*
 		if (m_selected)
 			InputHandler::RunMouseProccess(&m_input, &m_textLocHigh, &m_textLoc, &m_isDown, true, Global::MousePosition, Global::BlockHeight - Global::BlockBorder);
 		else
@@ -226,15 +198,14 @@ public:
 			InputHandler::RegisterKeyCallback(&m_textCallback);
 
 			m_selected = true;
-			m_textLocHigh = 0;
-			m_textLoc = 0;
 			m_fullSelect = true;
 		}
+		*/
 	}
 
 	void ReInspectData() override
 	{
-		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
+		//m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	}
 
 	const BlockArgumentType GetType() override
@@ -242,19 +213,11 @@ public:
 		return BlockArgumentType::STRING;
 	}
 private:
-	std::string m_text;
-	sf::Text m_input;
-	sf::RectangleShape m_inputBackground;
-	sf::RectangleShape m_inputLocHigh;
-	sf::RectangleShape m_inputLoc;
-	uint64_t m_textLoc;
-	uint64_t m_textLocHigh;
+	//bool m_isDown;
+	//bool m_selected;
+	//bool m_fullSelect;
 
-	BlockArgumentVariableMode m_variableMode;
+	bool m_isOpen;
 
-	bool m_isDown;
-	bool m_selected;
-	bool m_fullSelect;
-
-	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
+	//std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
 };

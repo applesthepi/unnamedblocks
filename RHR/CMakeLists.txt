@@ -16,6 +16,7 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Stack.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Button.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Dropdown.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.cpp"
 	#${CMAKE_CURRENT_SOURCE_DIR}/ Headers
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.h"
@@ -32,11 +33,13 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentText.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentReal.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentAny.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/args/ArgumentDropdown.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Block.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Plane.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/stacking/Stack.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/StatmentIf.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Button.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Dropdown.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.h"
 	)
 add_library(RHR STATIC

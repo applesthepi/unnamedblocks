@@ -3,7 +3,7 @@
 #include <Espresso/Global.h>
 #include <Cappuccino/Logger.h>
 
-Argument::Argument(sf::Vector2u relitivePosition)
+Argument::Argument(const sf::Vector2u& relitivePosition)
 {
 	m_relitivePosition = relitivePosition;
 	Next = false;
@@ -43,22 +43,22 @@ unsigned int Argument::GetArgumentRawWidth()
 	return 0;
 }
 
-bool Argument::MouseButton(bool, sf::Vector2i, sf::Mouse::Button)
+const bool Argument::MouseButton(const bool&, const sf::Vector2i&, const sf::Mouse::Button&)
 {
 	return false;
 }
 
-bool Argument::HasData()
+const bool Argument::HasData()
 {
 	return false;
 }
 
-void Argument::SetData(std::string)
+void Argument::SetData(const std::string&)
 {
 
 }
 
-void Argument::SetMode(BlockArgumentVariableMode)
+void Argument::SetMode(const BlockArgumentVariableMode&)
 {
 
 }
@@ -73,22 +73,22 @@ void Argument::ReInspectData()
 
 }
 
-std::string* Argument::GetData()
+const std::string& Argument::GetData()
 {
 	return nullptr;
 }
 
-std::string* Argument::GetDataRaw()
+const std::string& Argument::GetDataRaw()
 {
 	return nullptr;
 }
 
-BlockArgumentVariableMode* Argument::GetMode()
+const BlockArgumentVariableMode Argument::GetMode()
 {
-	return nullptr;
+	return BlockArgumentVariableMode::RAW;
 }
 
-BlockArgumentType Argument::GetType()
+const BlockArgumentType Argument::GetType()
 {
 	return BlockArgumentType::TEXT;
 }
@@ -113,12 +113,12 @@ void Argument::Update(bool global)
 	UpdateTexture();
 }
 
-void Argument::SetRelitivePosition(sf::Vector2u relitivePosition)
+void Argument::SetRelitivePosition(const sf::Vector2u& relitivePosition)
 {
 	m_relitivePosition = relitivePosition;
 }
 
-bool Argument::GetNext()
+const bool Argument::GetNext()
 {
 	if (Next)
 	{
@@ -151,17 +151,17 @@ void Argument::SelectGlobaly()
 	(*m_functionSelect)();
 }
 
-sf::Vector2i Argument::GetAbsolutePosition()
+const sf::Vector2i& Argument::GetAbsolutePosition()
 {
 	return m_absolutePosition;
 }
 
-sf::Vector2i Argument::GetRealAbsolutePosition()
+const sf::Vector2i& Argument::GetRealAbsolutePosition()
 {
 	return m_realAbsolutePosition;
 }
 
-sf::Vector2u Argument::GetRelitivePosition()
+const sf::Vector2u& Argument::GetRelitivePosition()
 {
 	return m_relitivePosition;
 }

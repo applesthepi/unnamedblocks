@@ -1,11 +1,14 @@
 #include "BlockUtilityListInsert.h"
+#include "aid/UtilityList.h"
 
 #include <Cappuccino/Registration.h>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	std::vector<void*>* list = (std::vector<void*>*)pass->CustomGet(pass->GetReal(0));
-	list->insert(list->begin() + pass->GetReal(2), &pass->GetReal(1));
+	if (pass->GetBool(3))
+		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->InsertValue(new double(pass->GetReal(1)), true);
+	else
+		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->AddValue(&pass->GetReal(1), false);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -51,6 +54,8 @@ const std::vector<BlockArgumentInitializer> BlockUtilityListInsert::GetArguments
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::ANY, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "variable"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "at"));
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "copy"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"));
 
 	return args;
 }

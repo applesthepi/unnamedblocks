@@ -10,5 +10,7 @@ public:
 	blockExecution PullExecuteDebug() const override;
 	blockExecution PullExecuteRelease() const override;
 
+	blockInitialization GetRuntimeGlobalPreInit() const override;
+
 	const std::vector<BlockArgumentInitializer> GetArguments() const override;
 };

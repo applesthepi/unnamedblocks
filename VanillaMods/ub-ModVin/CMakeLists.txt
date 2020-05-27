@@ -107,6 +107,8 @@ set(ModVin_SRC
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalBool.cpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalString.h"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityGlobalString.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityList.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/utility/aid/UtilityList.cpp"
 	
 	#======================================================================================================================
 	#=========== Graphics

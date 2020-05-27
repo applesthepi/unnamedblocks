@@ -6,55 +6,51 @@
 class ArgumentText : public Argument
 {
 public:
-	ArgumentText(sf::Vector2u relitivePosition)
+	ArgumentText(const sf::Vector2u& relitivePosition)
 		:Argument(relitivePosition)
 	{
-		m_TextAgent = sf::Text(m_Text, *Global::Font, Global::BlockHeight - 10);
+		m_textAgent = sf::Text(m_text, *Global::Font, Global::BlockHeight - 10);
 
-		m_TextAgent.setFillColor(sf::Color::Black);
+		m_textAgent.setFillColor(sf::Color::Black);
 
-		m_TextAgent.setString(m_Text);
-		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
-		m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
+		m_textAgent.setString(m_text);
+		m_textAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
+		m_textAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
 	}
 
 	void FrameUpdate() override
 	{
-		m_TextAgent.setString(m_Text);
-		m_TextAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
-		//m_TextAgent.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y);
-		m_TextAgent.setPosition(GetRelitivePosition().x, GetRelitivePosition().y);
+		m_textAgent.setString(m_text);
+		m_textAgent.setCharacterSize(Global::BlockHeight - Global::BlockBorder);
+		m_textAgent.setPosition(GetRelitivePosition().x, GetRelitivePosition().y);
 	}
 
 	void Render(sf::RenderTexture* render) override
 	{
-		render->draw(m_TextAgent);
+		render->draw(m_textAgent);
 	}
 
 	unsigned int GetArgumentRawWidth() override
 	{
-		return m_TextAgent.getLocalBounds().width;
+		return m_textAgent.getLocalBounds().width;
 	}
 
-	void SetData(std::string data) override
+	void SetData(const std::string& data) override
 	{
-		m_Text = data;
-		m_TextAgent.setString(m_Text);
+		m_text = data;
+		m_textAgent.setString(m_text);
 	}
 
-	BlockArgumentVariableMode* GetMode() override
+	const BlockArgumentVariableMode GetMode() override
 	{
-		m_VMode = BlockArgumentVariableMode::RAW;
-		return &m_VMode;
+		return BlockArgumentVariableMode::RAW;
 	}
 
-	BlockArgumentType GetType() override
+	const BlockArgumentType GetType() override
 	{
 		return BlockArgumentType::TEXT;
 	}
-
 private:
-	std::string m_Text;
-	BlockArgumentVariableMode m_VMode;
-	sf::Text m_TextAgent;
+	std::string m_text;
+	sf::Text m_textAgent;
 };

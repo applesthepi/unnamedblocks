@@ -15,11 +15,11 @@
 class ArgumentBoolean : public Argument
 {
 public:
-	ArgumentBoolean(sf::Vector2u relitivePosition)
+	ArgumentBoolean(const sf::Vector2u& relitivePosition)
 		:Argument(relitivePosition)
 	{
 		m_isDown = false;
-		m_variableMode = false;
+		m_variableMode = BlockArgumentVariableMode::RAW;
 		m_selected = false;
 		m_fullSelect = false;
 
@@ -47,7 +47,7 @@ public:
 				Next = true;
 			else
 			{
-				if (m_variableMode)
+				if (m_variableMode == BlockArgumentVariableMode::VAR)
 					InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
 				else
 					InputHandler::RunNumberProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
@@ -63,7 +63,7 @@ public:
 		if (m_selected && !m_fullSelect)
 			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(m_inputBackground.getSize().x + (ARGUMENT_DECOR_REACH * 2), m_inputBackground.getSize().y), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder, ARGUMENT_DECOR_REACH);
 
-		if (m_variableMode)
+		if (m_variableMode == BlockArgumentVariableMode::VAR)
 		{
 			m_input.setString(m_text);
 			m_input.setPosition(GetRelitivePosition().x + (float)Global::BlockBorder + ((Global::BlockHeight - Global::BlockBorder) / 2), GetRelitivePosition().y);
@@ -120,7 +120,7 @@ public:
 
 		render->draw(m_inputBackground);
 
-		if (m_variableMode)
+		if (m_variableMode == BlockArgumentVariableMode::VAR)
 		{
 			if (m_selected)
 			{
@@ -138,7 +138,7 @@ public:
 		return m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 	}
 
-	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button) override
+	const bool MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
 		if (!down && m_fullSelect)
 		{
@@ -152,7 +152,7 @@ public:
 
 		uint64_t superWidthBounds;
 
-		if (m_variableMode)
+		if (m_variableMode == BlockArgumentVariableMode::VAR)
 			superWidthBounds = m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 		else
 			superWidthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
@@ -162,9 +162,12 @@ public:
 			position.y >= m_realAbsolutePosition.y && position.y <= m_realAbsolutePosition.y + m_inputBackground.getSize().y)
 		{
 			SelectGlobaly();
-			m_variableMode = !m_variableMode;
+			if (m_variableMode == BlockArgumentVariableMode::RAW)
+				m_variableMode = BlockArgumentVariableMode::VAR;
+			else
+				m_variableMode = BlockArgumentVariableMode::RAW;
 
-			if (m_variableMode)
+			if (m_variableMode == BlockArgumentVariableMode::VAR)
 				m_text = m_lastVar;
 			else
 			{
@@ -192,7 +195,7 @@ public:
 		{
 			uint64_t widthBounds;
 
-			if (m_variableMode)
+			if (m_variableMode == BlockArgumentVariableMode::VAR)
 				widthBounds = m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 			else
 				widthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
@@ -228,41 +231,35 @@ public:
 		return false;
 	}
 
-	bool HasData() override
+	const bool HasData() override
 	{
 		return true;
 	}
 
-	void SetData(std::string data) override
+	void SetData(const std::string& data) override
 	{
 		m_text = data;
 		m_input.setString(m_text);
 	}
 
-	void SetMode(BlockArgumentVariableMode mode) override
+	void SetMode(const BlockArgumentVariableMode& mode) override
 	{
-		m_variableMode = mode == BlockArgumentVariableMode::VAR;
+		m_variableMode = mode;
 	}
 
-	std::string* GetData() override
+	const std::string& GetData() override
 	{
-		m_vText = (m_variableMode ? '1' : '0') + m_text;
-		return &m_vText;
+		return (m_variableMode == BlockArgumentVariableMode::VAR ? '1' : '0') + m_text;
 	}
 
-	std::string* GetDataRaw() override
+	const std::string& GetDataRaw() override
 	{
-		return &m_text;
+		return m_text;
 	}
 
-	BlockArgumentVariableMode* GetMode() override
+	const BlockArgumentVariableMode GetMode() override
 	{
-		if (m_variableMode)
-			m_vMode = BlockArgumentVariableMode::VAR;
-		else
-			m_vMode = BlockArgumentVariableMode::RAW;
-
-		return &m_vMode;
+		return m_variableMode;
 	}
 
 	void Deallocate() override
@@ -273,7 +270,7 @@ public:
 
 	void Select() override
 	{
-		if (!m_variableMode)
+		if (m_variableMode == BlockArgumentVariableMode::RAW)
 		{
 			if (m_text == "1")
 				m_text = "0";
@@ -303,15 +300,13 @@ public:
 		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	}
 
-	BlockArgumentType GetType() override
+	const BlockArgumentType GetType() override
 	{
 		return BlockArgumentType::BOOL;
 	}
 private:
 	std::string m_lastVar;
 	std::string m_text;
-	std::string m_vText;
-	BlockArgumentVariableMode m_vMode;
 	sf::Text m_input;
 	sf::RectangleShape m_inputBackground;
 	sf::RectangleShape m_inputLocHigh;
@@ -322,9 +317,10 @@ private:
 	sf::CircleShape* m_left;
 	sf::CircleShape* m_right;
 
+	BlockArgumentVariableMode m_variableMode;
+
 	bool m_isDown;
 	bool m_selected;
-	bool m_variableMode;
 	bool m_fullSelect;
 
 	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;

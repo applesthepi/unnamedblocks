@@ -12,11 +12,11 @@
 class ArgumentAny : public Argument
 {
 public:
-	ArgumentAny(sf::Vector2u relitivePosition)
+	ArgumentAny(const sf::Vector2u& relitivePosition)
 		:Argument(relitivePosition)
 	{
 		m_isDown = false;
-		m_variableMode = true;
+		m_variableMode = BlockArgumentVariableMode::VAR;
 		m_selected = false;
 		m_fullSelect = false;
 
@@ -57,7 +57,7 @@ public:
 		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 		m_inputBackground.setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
 
-		if (m_variableMode)
+		if (m_variableMode == BlockArgumentVariableMode::VAR)
 		{
 			m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
 			m_input.setFillColor(MOD_BUTTON_TEXT_FG);
@@ -101,7 +101,7 @@ public:
 		return m_inputBackground.getSize().x;
 	}
 
-	bool MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button) override
+	const bool MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
 		if (down && m_fullSelect)
 		{
@@ -154,37 +154,35 @@ public:
 		return false;
 	}
 
-	bool HasData() override
+	const bool HasData() override
 	{
 		return true;
 	}
 
-	void SetData(std::string data) override
+	void SetData(const std::string& data) override
 	{
 		m_text = data;
 		m_input.setString(m_text);
 	}
 
-	void SetMode(BlockArgumentVariableMode mode) override
+	void SetMode(const BlockArgumentVariableMode& mode) override
 	{
-		m_variableMode = mode == BlockArgumentVariableMode::VAR;
+		m_variableMode = mode;
 	}
 
-	std::string* GetData() override
+	const std::string& GetData() override
 	{
-		m_vText = (m_variableMode ? '1' : '0') + m_text;
-		return &m_vText;
+		return (m_variableMode == BlockArgumentVariableMode::VAR ? '1' : '0') + m_text;
 	}
 
-	std::string* GetDataRaw() override
+	const std::string& GetDataRaw() override
 	{
-		return &m_text;
+		return m_text;
 	}
 
-	BlockArgumentVariableMode* GetMode() override
+	const BlockArgumentVariableMode GetMode() override
 	{
-		m_vMode = BlockArgumentVariableMode::VAR;
-		return &m_vMode;
+		return BlockArgumentVariableMode::VAR;
 	}
 
 	void Deallocate() override
@@ -215,14 +213,12 @@ public:
 		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	}
 
-	BlockArgumentType GetType() override
+	const BlockArgumentType GetType() override
 	{
 		return BlockArgumentType::ANY;
 	}
 private:
 	std::string m_text;
-	std::string m_vText;
-	BlockArgumentVariableMode m_vMode;
 	sf::Text m_input;
 	sf::RectangleShape m_inputBackground;
 	sf::RectangleShape m_inputLocHigh;
@@ -230,9 +226,10 @@ private:
 	uint64_t m_textLoc;
 	uint64_t m_textLocHigh;
 
+	BlockArgumentVariableMode m_variableMode;
+
 	bool m_isDown;
 	bool m_selected;
-	bool m_variableMode;
 	bool m_fullSelect;
 
 	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
