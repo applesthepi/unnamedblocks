@@ -388,7 +388,7 @@ goto loop;
 
 <h1 id="super_instructions">Super Instructions</h1>
 
-Super instructions are instructions that can be sent and received from either **Cappuccino** or the executable to perform debugging operations. You can find the list of instructions inside a comment in [this file] (https://github.com/applesthepi/unnamedblocks/blob/dev/Cappuccino/include/Cappuccino/Registration.h). Here are the instructions at the time of writing:
+Super instructions are instructions that can be sent and received from either **Cappuccino** or the executable to perform debugging operations. You can find the list of instructions inside a comment in [this file](https://github.com/applesthepi/unnamedblocks/blob/dev/Cappuccino/include/Cappuccino/Registration.h). Here are the instructions at the time of writing:
 
 ```
 1 - [ R/D ] stop; kill all
