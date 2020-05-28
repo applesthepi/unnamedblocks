@@ -10,7 +10,7 @@ Dropdown::Dropdown(const sf::Vector2i& position)
 	
 }
 
-void Dropdown::FrameUpdate()
+void Dropdown::frameUpdate(const double& deltaTime)
 {
 	if (m_buttons.size() == 0)
 		return;
@@ -18,10 +18,10 @@ void Dropdown::FrameUpdate()
 	if (m_enabled && m_open)
 	{
 		for (uint16_t i = 0; i < m_buttons.size(); i++)
-			m_buttons[i].FrameUpdate();
+			m_buttons[i].frameUpdate(deltaTime);
 	}
 	else
-		m_buttons.front().FrameUpdate();
+		m_buttons.front().frameUpdate(deltaTime);
 }
 
 void Dropdown::SetEnabled(const bool& enabled)
@@ -89,8 +89,7 @@ void Dropdown::SetElements(const std::vector<std::string>& elements, const uint6
 			Toggle();
 		};
 
-		m_buttons.push_back(Button(m_position, sf::Vector2u(m_width, Global::BlockHeight - Global::BlockBorder), &m_buttonCallbacks.back()));
-		m_buttons.back().SetButtonModeText(elements[idx], MOD_BUTTON_TEXT_BG_ACCENT_WEAK, MOD_BUTTON_TEXT_FG, Global::BlockHeight - Global::BlockBorder);
+		m_buttons.push_back(ButtonText(&m_buttonCallbacks.back(), elements[idx], Global::BlockHeight - Global::BlockBorder, sf::Vector2f(m_width, Global::BlockHeight - Global::BlockBorder), MOD_BUTTON_TEXT_BG_ACCENT_WEAK, MOD_BUTTON_TEXT_FG));
 	}
 
 	for (uint16_t i = 0; i < elements.size(); i++)
@@ -101,8 +100,7 @@ void Dropdown::SetElements(const std::vector<std::string>& elements, const uint6
 			Select(i);
 		};
 
-		m_buttons.push_back(Button(m_position, sf::Vector2u(m_width, Global::BlockHeight - Global::BlockBorder), &m_buttonCallbacks.back()));
-		m_buttons.back().SetButtonModeText(elements[i], MOD_BUTTON_TEXT_BG_ACCENT_WEAK, MOD_BUTTON_TEXT_FG, Global::BlockHeight - Global::BlockBorder);
+		m_buttons.push_back(ButtonText(&m_buttonCallbacks.back(), elements[i], Global::BlockHeight - Global::BlockBorder, sf::Vector2f(m_width, Global::BlockHeight - Global::BlockBorder), MOD_BUTTON_TEXT_BG_ACCENT_WEAK, MOD_BUTTON_TEXT_FG));
 	}
 
 	Reload();
@@ -119,7 +117,7 @@ const uint64_t Dropdown::GetWidth()
 	return m_width;
 }
 
-const bool Dropdown::MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+const bool Dropdown::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!m_enabled || m_buttons.size() == 0)
 		return false;
@@ -130,7 +128,7 @@ const bool Dropdown::MouseButton(const bool& down, const sf::Vector2i& position,
 
 		for (uint16_t i = 0; i < m_buttons.size(); i++)
 		{
-			if (m_buttons[i].MouseButton(down, position, button))
+			if (m_buttons[i].mouseButton(down, position, button))
 				hit = true;
 		}
 
@@ -138,7 +136,7 @@ const bool Dropdown::MouseButton(const bool& down, const sf::Vector2i& position,
 	}
 	else
 	{
-		return m_buttons.front().MouseButton(down, position, button);
+		return m_buttons.front().mouseButton(down, position, button);
 	}
 }
 

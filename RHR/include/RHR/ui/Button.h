@@ -1,15 +1,28 @@
 #pragma once
+#include "MouseUpdatable.h"
+#include "UBRenderable.h"
+
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <Espresso/Global.h>
 
-class Button : public sf::Drawable, public sf::Transformable
+#define HOVOR_SHADE_HARD 0.7
+#define HOVOR_SHADE_LIGHT 0.85
+
+class Button : public UBRenderable, public sf::Transformable, public MouseUpdatable
 {
 public:
-	Button(std::function<void()>* callback);
+	Button(std::function<void()>* callback, const sf::Vector2f& size);
 
-	virtual void FrameUpdate();
+	void setSize(const sf::Vector2f& size);
+	const sf::Vector2f& getSize();
+
+	void setEnabled(const bool& enabled);
+	const bool& getEnabled();
 protected:
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates state) const override;
-
 	std::function<void()>* m_callback;
+	bool m_broken;
+private:
+	sf::Vector2f m_size;
+	bool m_enabled;
 };

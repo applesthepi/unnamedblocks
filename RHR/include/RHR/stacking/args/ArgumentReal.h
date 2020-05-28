@@ -42,7 +42,7 @@ public:
 		m_textCallback = [&](const sf::Event::KeyEvent& ev)
 		{
 			if (ev.code == sf::Keyboard::Key::Tab)
-				Next = true;
+				m_next = true;
 			else
 			{
 				if (m_variableMode == BlockArgumentVariableMode::VAR)
@@ -77,6 +77,9 @@ public:
 
 	~ArgumentReal()
 	{
+		if (m_selected)
+			InputHandler::UnregisterKeyCallback(&m_textCallback);
+
 		delete m_leftTop;
 		delete m_leftBottom;
 
@@ -84,7 +87,7 @@ public:
 		delete m_rightBottom;
 	}
 
-	void FrameUpdate() override
+	void frameUpdate(const double& deltaTime) override
 	{
 		if (m_selected && !m_fullSelect)
 			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(m_inputBackground.getSize().x + (ARGUMENT_DECOR_REACH * 2), m_inputBackground.getSize().y), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder, ARGUMENT_DECOR_REACH);
@@ -135,25 +138,6 @@ public:
 			m_inputLocHigh.setPosition(ARGUMENT_DECOR_REACH + GetRelitivePosition().x + sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
 			m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
 		}
-	}
-
-	void Render(sf::RenderTexture* render) override
-	{
-		render->draw(m_inputBackground);
-
-		render->draw(*m_leftTop);
-		render->draw(*m_leftBottom);
-		render->draw(*m_rightTop);
-		render->draw(*m_rightBottom);
-
-		if (m_selected)
-		{
-			render->draw(m_input);
-			render->draw(m_inputLocHigh);
-			render->draw(m_inputLoc);
-		}
-		else
-			render->draw(m_input);
 	}
 
 	unsigned int GetArgumentRawWidth() override
@@ -269,12 +253,6 @@ public:
 		return m_variableMode;
 	}
 
-	void Deallocate() override
-	{
-		if (m_selected)
-			InputHandler::UnregisterKeyCallback(&m_textCallback);
-	}
-
 	void Select() override
 	{
 		SelectGlobaly();
@@ -300,6 +278,25 @@ public:
 	const BlockArgumentType GetType() override
 	{
 		return BlockArgumentType::REAL;
+	}
+protected:
+	void draw(sf::RenderTarget& target, sf::RenderStates state) const override
+	{
+		target.draw(m_inputBackground);
+
+		target.draw(*m_leftTop);
+		target.draw(*m_leftBottom);
+		target.draw(*m_rightTop);
+		target.draw(*m_rightBottom);
+
+		if (m_selected)
+		{
+			target.draw(m_input);
+			target.draw(m_inputLocHigh);
+			target.draw(m_inputLoc);
+		}
+		else
+			target.draw(m_input);
 	}
 private:
 	std::string m_lastVar;

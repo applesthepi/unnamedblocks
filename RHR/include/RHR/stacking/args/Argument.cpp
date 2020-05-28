@@ -4,10 +4,7 @@
 #include <Cappuccino/Logger.h>
 
 Argument::Argument(const sf::Vector2u& relitivePosition)
-{
-	m_relitivePosition = relitivePosition;
-	Next = false;
-}
+	:m_relitivePosition(relitivePosition), m_functionUpdatePreTexture(nullptr), m_functionSelect(nullptr), m_next(false) {}
 
 void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelect)
 {
@@ -16,36 +13,12 @@ void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbso
 	m_functionUpdatePreTexture = functionUpdatePreTexture;
 	m_functionSelect = functionSelect;
 
-	FrameUpdate();
-}
-
-void Argument::Deallocate()
-{
-
-}
-
-void Argument::Render(sf::RenderTexture* render)
-{
-	sf::RectangleShape basic = sf::RectangleShape(sf::Vector2f(GetArgumentRawWidth(), Global::BlockHeight));
-	basic.setFillColor(sf::Color::Magenta);
-	basic.setPosition(m_relitivePosition.x, m_relitivePosition.y);
-
-	render->draw(basic);
-}
-
-void Argument::FrameUpdate()
-{
-
+	frameUpdate(0.0);
 }
 
 unsigned int Argument::GetArgumentRawWidth()
 {
 	return 0;
-}
-
-const bool Argument::MouseButton(const bool&, const sf::Vector2i&, const sf::Mouse::Button&)
-{
-	return false;
 }
 
 const bool Argument::HasData()
@@ -93,7 +66,7 @@ const BlockArgumentType Argument::GetType()
 	return BlockArgumentType::TEXT;
 }
 
-void Argument::Update(bool global)
+void Argument::preFrameUpdate(const bool& global)
 {
 	if (global)
 	{
@@ -108,8 +81,11 @@ void Argument::Update(bool global)
 
 	m_realAbsolutePosition.x = (int)m_relitivePosition.x + m_blockAbsolute->x;
 	m_realAbsolutePosition.y = (int)m_relitivePosition.y + m_blockAbsolute->y;
+}
 
-	FrameUpdate();
+void Argument::frameUpdate(const double& deltaTime)
+{
+	frameUpdateArgument(deltaTime);
 	UpdateTexture();
 }
 
@@ -118,11 +94,11 @@ void Argument::SetRelitivePosition(const sf::Vector2u& relitivePosition)
 	m_relitivePosition = relitivePosition;
 }
 
-const bool Argument::GetNext()
+const bool Argument::PullNext()
 {
-	if (Next)
+	if (m_next)
 	{
-		Next = false;
+		m_next = false;
 		return true;
 	}
 	else
@@ -140,7 +116,7 @@ void Argument::SelectGlobaly()
 	{
 		Argument* gArg = (Argument*)Global::SelectedArgument;
 		Global::SelectedArgument = (void*)this;
-		gArg->FrameUpdate();
+		gArg->frameUpdate(0.0);
 		gArg->UpdateTexture();
 	}
 	else
@@ -164,4 +140,9 @@ const sf::Vector2i& Argument::GetRealAbsolutePosition()
 const sf::Vector2u& Argument::GetRelitivePosition()
 {
 	return m_relitivePosition;
+}
+
+void Argument::frameUpdateArgument(const double& deltaTime)
+{
+
 }

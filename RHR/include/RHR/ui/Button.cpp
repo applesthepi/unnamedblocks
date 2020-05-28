@@ -240,3 +240,26 @@ void Button::SetText(const std::string& text)
 }
 
 */
+
+Button::Button(std::function<void()>* callback, const sf::Vector2f& size)
+	:m_callback(callback), m_broken(false), m_size(size), m_enabled(true) {}
+
+void Button::setSize(const sf::Vector2f& size)
+{
+	m_size = size;
+}
+
+const sf::Vector2f& Button::getSize()
+{
+	return m_size;
+}
+
+void Button::setEnabled(const bool& enabled)
+{
+	m_enabled = enabled;
+}
+
+const bool& Button::getEnabled()
+{
+	return m_enabled;
+}
