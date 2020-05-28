@@ -1,5 +1,6 @@
 #pragma once
 #include "Argument.h"
+#include "RHR/ui/Dropdown.h"
 
 #include <Espresso/Global.h>
 #include <Espresso/InputHandler.h>
@@ -47,6 +48,27 @@ public:
 		*/
 	}
 
+	void ProcessData(const std::string& data)
+	{
+		m_elementText = data;
+
+		std::vector<std::string> elements;
+		std::string element;
+
+		element.reserve(16);
+		elements.reserve(4);
+
+		for (uint64_t i = 0; i < data.length(); i++)
+		{
+			if (data[i] == ';')
+				elements.push_back(element);
+			else
+				element += data[i];
+		}
+
+		m_dropdown.SetElements(elements, 0);
+	}
+
 	void FrameUpdate() override
 	{
 		/*
@@ -87,78 +109,24 @@ public:
 
 	void Render(sf::RenderTexture* render) override
 	{
-		/*
-		render->draw(m_inputBackground);
-
-		if (m_selected)
-		{
-			render->draw(m_input);
-			render->draw(m_inputLocHigh);
-			render->draw(m_inputLoc);
-		}
-		else
-			ender->draw(m_input);
-		*/
+		m_dropdown.Render(*render)
+			sf::RenderWindow.
 	}
 
 	unsigned int GetArgumentRawWidth() override
 	{
-		//return m_inputBackground.getSize().x;
+		return m_dropdown.GetWidth();
 	}
 
 	const bool MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
-		/*
-		if (down && m_fullSelect)
+		if (!m_dropdown.MouseButton(down, position, button))
+			return false;
+		else
 		{
-			m_textLocHigh = 0;
-			m_textLoc = m_text.length();
-			m_isDown = false;
-
-			return true;
+			m_data = "0" + std::to_string(m_dropdown.GetSelected());
+			m_rawData = std::to_string(m_dropdown.GetSelected());
 		}
-		else if (!down && m_fullSelect)
-		{
-			m_fullSelect = false;
-			m_textLocHigh = 0;
-			m_textLoc = m_text.length();
-			m_isDown = false;
-
-			return true;
-		}
-
-		if (button == sf::Mouse::Left)
-		{
-			TextSystem tSys(&m_text, &m_textLocHigh, &m_textLoc, &m_isDown);
-
-			if (InputHandler::RunMouseProccess(tSys, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(m_inputBackground.getSize().x, m_inputBackground.getSize().y), down, position, Global::BlockHeight - Global::BlockBorder, 0))
-			{
-				if (down)
-					Select();
-
-				return true;
-			}
-			else
-			{
-				if (Global::SelectedArgument == this)
-				{
-					m_selected = false;
-					Global::SelectedStack = nullptr;
-					Global::SelectedBlock = nullptr;
-					Global::SelectedArgument = nullptr;
-					Global::Dragging = false;
-
-					InputHandler::UnregisterKeyCallback(&m_textCallback);
-
-					(*m_functionUpdatePreTexture)();
-				}
-
-				return false;
-			}
-		}
-		*/
-
-		return false;
 	}
 
 	const bool HasData() override
@@ -168,18 +136,17 @@ public:
 
 	void SetData(const std::string& data) override
 	{
-		//m_text = data;
-		//m_input.setString(m_text);
+		ProcessData(data);
 	}
 
 	const std::string& GetData() override
 	{
-		//return (m_variableMode == BlockArgumentVariableMode::VAR ? '1' : '0') + m_text;
+		return m_data;
 	}
 
 	const std::string& GetDataRaw() override
 	{
-		//return;
+		return m_rawData;
 	}
 
 	const BlockArgumentVariableMode GetMode() override
@@ -190,22 +157,12 @@ public:
 	void Select() override
 	{
 		SelectGlobaly();
-		/*
-		if (m_selected)
-			InputHandler::RunMouseProccess(&m_input, &m_textLocHigh, &m_textLoc, &m_isDown, true, Global::MousePosition, Global::BlockHeight - Global::BlockBorder);
-		else
-		{
-			InputHandler::RegisterKeyCallback(&m_textCallback);
-
-			m_selected = true;
-			m_fullSelect = true;
-		}
-		*/
+		m_dropdown.SetEnabled(true);
 	}
 
 	void ReInspectData() override
 	{
-		//m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
+		ProcessData(m_elementText);
 	}
 
 	const BlockArgumentType GetType() override
@@ -218,6 +175,10 @@ private:
 	//bool m_fullSelect;
 
 	bool m_isOpen;
+	Dropdown m_dropdown;
+	std::string m_data;
+	std::string m_rawData;
+	std::string m_elementText;
 
 	//std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
 };

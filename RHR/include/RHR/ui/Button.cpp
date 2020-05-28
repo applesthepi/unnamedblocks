@@ -2,6 +2,8 @@
 
 #include <Espresso/Global.h>
 
+/*
+
 #define HOVOR_SHADE_HARD 0.7
 #define HOVOR_SHADE_LIGHT 0.85
 
@@ -97,12 +99,12 @@ void Button::SetButtonModeImage(std::string path)
 	m_modeColor->setPosition(m_position.x, m_position.y);
 }
 
-void Button::FrameUpdate(sf::RenderWindow* window)
+void Button::FrameUpdate()
 {
 	if (!m_enabled)
 		return;
 
-	sf::Vector2i pos = sf::Mouse::getPosition(*window);
+	sf::Vector2i pos = Global::MousePosition;
 
 	if (m_mode == ButtonMode::Color)
 	{
@@ -161,24 +163,24 @@ void Button::FrameUpdate(sf::RenderWindow* window)
 	}
 }
 
-void Button::Render(sf::RenderWindow* window)
+void Button::Render(sf::RenderTarget& target)
 {
 	if (!m_enabled)
 		return;
 
 	if (m_mode == ButtonMode::Color)
 	{
-		window->draw(*m_modeColor);
+		target.draw(*m_modeColor);
 	}
 	else if (m_mode == ButtonMode::Image)
 	{
-		window->draw(*m_modeColor);
-		window->draw(*m_modeImageSprite);
+		target.draw(*m_modeColor);
+		target.draw(*m_modeImageSprite);
 	}
 	else if (m_mode == ButtonMode::Text)
 	{
-		window->draw(*m_modeColor);
-		window->draw(*m_modeText);
+		target.draw(*m_modeColor);
+		target.draw(*m_modeText);
 	}
 }
 
@@ -232,3 +234,9 @@ void Button::SetImage(const std::string& path)
 	m_modeImageSprite->setTexture(*m_modeImageTexture);
 }
 
+void Button::SetText(const std::string& text)
+{
+	m_modeText->setString(text);
+}
+
+*/
