@@ -1,7 +1,9 @@
 #include "ShaderRegistry.h"
+#include "util.h"
 
 #include <Espresso/Global.h>
 #include <Cappuccino/Logger.h>
+#include <Espresso/util.h>
 
 void ShaderRegistry::Initialize()
 {
@@ -34,7 +36,7 @@ bool ShaderRegistry::LoadShader(std::string path, std::string unlocalizedName)
     m_mutex.lock();
 
     sf::Shader* shader = new sf::Shader();
-    if (!shader->loadFromFile("res/shaders/" + path + ".vs", "res/shaders/" + path + ".fs"))
+    if (!shader->loadFromFile(get_runtime_path() + "/res/shaders/" + path + ".vs", get_runtime_path() + "/res/shaders/" + path + ".fs"))
     {
         Logger::Error("failed to load shader; shaders \"" + path + "\" does not exist!");
         
@@ -58,7 +60,7 @@ bool ShaderRegistry::ReplaceShader(std::string unlocalizedName, std::string path
         if ((*m_shaderUnlocalizedNames)[i] == unlocalizedName)
         {
             sf::Shader* shader = new sf::Shader();
-            if (!shader->loadFromFile("res/shaders/" + path + ".vs", "res/shaders/" + path + ".fs"))
+            if (!shader->loadFromFile(get_runtime_path() + "/res/shaders/" + path + ".vs", get_runtime_path() + "/res/shaders/" + path + ".fs"))
             {
                 Logger::Error("failed to load shader; shaders \"" + path + "\" does not exist!");
                 

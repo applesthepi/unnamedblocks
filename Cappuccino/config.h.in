@@ -4,6 +4,10 @@
 #define _CRT_SECURE_NO_WARNINGS
 #cmakedefine LINUX
 #cmakedefine POSIX
+#cmakedefine UNIX
+#cmakedefine WIN32
+#cmakedefine MSVC
+#cmakedefine MINGW
 #ifdef NDEBUG
 #define UB_ASSERT(expression)
 #else

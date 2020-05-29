@@ -61,3 +61,4 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E touch
 	"${CMAKE_SOURCE_DIR}/UnnamedBlocks/src/main.cpp"
 )
+install(TARGETS Cappuccino DESTINATION lib)

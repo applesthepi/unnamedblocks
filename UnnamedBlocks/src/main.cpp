@@ -3,7 +3,9 @@
 #include "handlers/CategoryHandler.h"
 
 #include <Espresso/InputHandler.h>
+#include <Espresso/util.h>
 #include <SFML/Window/Event.hpp>
+#include <filesystem>
 
 #ifdef POSIX
 #include "config.h"
@@ -25,12 +27,21 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <limits.h>
 
 // Include last, has defines that conflict with enums
 #ifdef LINUX
 #include <X11/Xlib.h>
+#include <unistd.h>
 #endif
 
+#ifdef WIN32
+#define FILE_DEL '\\'
+#elif defined(UNIX)
+#define FILE_DEL '/'
+#else
+#error "Unsupported platform"
+#endif
 #define CONTEXT_COLOR 180, 180, 180, 200
 
 std::vector<Button*> contextButtons;
@@ -47,15 +58,72 @@ void ReturnFinished()
 {
 	returnFinished = true;
 }
-
 int main()
 {
 	Logger::Info(UnnamedBlocksVersion);
 	if (UnnamedBlocksBeta)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
+	// Initialize executable_path and copy mods and res if they dont exist
+	{
+#ifdef LINUX
+		char buf[PATH_MAX];
+		ssize_t size = readlink("/proc/self/exe", buf, PATH_MAX);
+		executable_path = std::string(buf, (size > 0 ? size : 0));
+		size_t pos = executable_path.rfind('/');
+		if(pos != std::string::npos) {
+			executable_path.erase(pos+1);
+		}
+		else {
+			Logger::Warn("How tf is the executable path not an absolute path? This is probably about to crash. Ill be suprised if it doesn't");
+			executable_path.erase();
+		}
+#elif defined(FREEBSD) // TODO:
+		char buf[PATH_MAX];
+		ssize_t size = readlink("/proc/curproc/file", buf, PATH_MAX);
+		executable_path = std::string(buf, (size > 0 ? size : 0));
+		size_t pos = executable_path.rfind('/');
+		if(pos != std::string::npos) {
+			executable_path.erase(pos+1);
+		}
+		else {
+			Logger::Warn("How tf is the executable path not an absolute path? This is probably about to crash. Ill be suprised if it doesn't");
+			executable_path.erase();
+		}
+#elif defined(WIN32)
+		char buf[MAX_PATH];
+		executable_path = std::string(buf, GetModuleFileNameA( NULL, buf, MAX_PATH));
+		size_t pos = executable_path.rfind('\\');
+		if(pos != std::string::npos) {
+			executable_path.erase(pos+1);
+		}
+		else {
+			Logger::Warn("How tf is the executable path not an absolute path? This is probably about to crash. Ill be suprised if it doesn't");
+			executable_path.erase();
+		}
+#else
+#error "Unsupported platform"
+#endif
+		const std::string& runtime_path = get_runtime_path();
+		const std::string mods_path = runtime_path + "/mods"; 
+		const std::string res_path = runtime_path + "/res";
 
+		if(!std::filesystem::exists(runtime_path))
+			std::filesystem::create_directory(runtime_path);
+
+		if(!std::filesystem::exists(mods_path)) {
+			Logger::Info("Mods folder doesnt exist. Creating one now and copying standard mods.");
+			std::filesystem::copy(executable_path + "mods", mods_path, std::filesystem::copy_options::recursive);
+		}
+
+		if(!std::filesystem::exists(res_path)) {
+			Logger::Info("Res folder doesnt exist. Creating one now and copying standard resources.");
+			std::filesystem::copy(executable_path + "res", res_path, std::filesystem::copy_options::recursive);
+		}
+	}
 #ifdef LINUX
 	// TODO: Proper wayland support
+	XInitThreads();
+#elif defined(FREEBSD)
 	XInitThreads();
 #endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");

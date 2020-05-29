@@ -1,9 +1,12 @@
-#define UnnamedBlocksVersion "@VERSION_UNNAMED_BLOCKS@"
+#define UnnamedBlocksVersion R"(@VERSION_UNNAMED_BLOCKS@)"
 #define UnnamedBlocksBeta @IS_BETA@
 #cmakedefine LINUX
 #cmakedefine POSIX
-#define RES_FOLDER_SEARCH_PATH @RES_FOLDER_SEARCH_PATH@
-#define MODS_FOLDER_SEARCH_PATH @MODS_FOLDER_SEARCH_PATH@
+#cmakedefine UNIX
+#cmakedefine WIN32
+#cmakedefine MSVC
+#cmakedefine MINGW
+
 #ifdef NDEBUG
 #define UB_ASSERT(expression)
 #else

@@ -1,7 +1,12 @@
 #cmakedefine LINUX
 #cmakedefine POSIX
+#cmakedefine UNIX
+#cmakedefine WIN32
+#cmakedefine MSVC
+#cmakedefine MINGW
 #ifdef NDEBUG
 #define UB_ASSERT(expression)
 #else
 #define UB_ASSERT(expression) assert(expression)
 #endif
+#define RUNTIME_FOLDER_PATH R"(@RUNTIME_FOLDER_PATH@)"

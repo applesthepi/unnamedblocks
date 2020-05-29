@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Font.hpp>
 #include <string>
 #include <functional>
+#include "util.h"
 
 #define MOD_BACKGROUND_LOW_C 30
 #define MOD_BACKGROUND_LOW sf::Color(MOD_BACKGROUND_LOW_C, MOD_BACKGROUND_LOW_C, MOD_BACKGROUND_LOW_C, 255)
@@ -61,7 +62,7 @@ public:
 		BlockHeight = 18;
 		BlockBorder = 4;//divisible by 2
 		Font = new sf::Font();
-		Font->loadFromFile("res/AnonymousPro-Regular.ttf");
+		Font->loadFromFile(get_runtime_path() + "/res/AnonymousPro-Regular.ttf");
 		Dragging = false;
 		DraggingStack = nullptr;
 		DraggingStackConnected = nullptr;

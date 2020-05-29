@@ -254,6 +254,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC}
 #source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
 
 set_target_properties(ModVin PROPERTIES OUTPUT_NAME "ModVin")
+set_target_properties(ModVin PROPERTIES PREFIX "")
 
 target_include_directories(ModVin PUBLIC
 	"${PROJECT_BINARY_DIR}"
@@ -288,3 +289,5 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy
 	$<TARGET_FILE:ModVin>
 	$<TARGET_FILE_DIR:unnamedblocks>/mods/)
+
+install(TARGETS ModVin DESTINATION share/unnamedblocks/mods)

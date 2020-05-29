@@ -1,5 +1,6 @@
 #include "CategoryHandler.h"
 #include "Global.h"
+#include "util.h"
 #include "RHR/registries/ButtonRegistry.h"
 #include "ProjectHandler.h"
 #include "MessageHandler.h"
@@ -7,6 +8,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "util.h"
 #ifndef LINUX
 #include <windows.h>
 #include <shellapi.h>
@@ -21,8 +23,8 @@ void CategoryHandler::Initialize(BlockRegistry* blockRegistry, Plane* toolbarPla
 	m_selectedCategory = 0;
 	m_toolbarStackCount = 0;
 
-	m_textureOpen.loadFromFile("res/dir_open.png");
-	m_textureClose.loadFromFile("res/dir_close.png");
+	m_textureOpen.loadFromFile(get_runtime_path() + "/res/dir_open.png");
+	m_textureClose.loadFromFile(get_runtime_path() + "/res/dir_close.png");
 
 	const std::vector<ModCatagory*>& categories = blockRegistry->GetCategories();
 
@@ -382,7 +384,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		};
 
 		Button* button = new Button(sf::Vector2i((16 + 5) * 0 + 5, 16 + 6), sf::Vector2u(16, 16), function);
-		button->SetButtonModeImage("res/deb_run_release.png");
+		button->SetButtonModeImage(get_runtime_path() + "/res/deb_run_release.png");
 
 		ButtonRegistry::AddButton(button);
 		m_editorButtons.push_back(button);
@@ -404,7 +406,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		};
 
 		Button* button = new Button(sf::Vector2i((16 + 5) * 1 + 5, 16 + 6), sf::Vector2u(16, 16), function);
-		button->SetButtonModeImage("res/deb_run_debug.png");
+		button->SetButtonModeImage(get_runtime_path() + "/res/deb_run_debug.png");
 
 		ButtonRegistry::AddButton(button);
 		m_editorButtons.push_back(button);
@@ -418,7 +420,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 		};
 
 		Button* button = new Button(sf::Vector2i((16 + 5) * 0 + 5, 16 + 6), sf::Vector2u(16, 16), function);
-		button->SetButtonModeImage("res/deb_stop.png");
+		button->SetButtonModeImage(get_runtime_path() + "/res/deb_stop.png");
 
 		m_runtimeButtons.push_back(button);
 	}
@@ -433,7 +435,7 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 				Logger::Debug("breaking all");
 				PreProcessor::SetSuper(2, 0);
 
-				m_runtimeButtons[1]->SetImage("res/deb_resume.png");
+				m_runtimeButtons[1]->SetImage(get_runtime_path() + "/res/deb_resume.png");
 			}
 			else
 			{
@@ -442,12 +444,12 @@ void CategoryHandler::RegisterHeader(BlockRegistry* blockRegistry, Plane* primar
 				Logger::Debug("resuming all");
 				PreProcessor::SetSuper(3, 0);
 
-				m_runtimeButtons[1]->SetImage("res/deb_pause.png");
+				m_runtimeButtons[1]->SetImage(get_runtime_path() + "/res/deb_pause.png");
 			}
 		};
 
 		Button* button = new Button(sf::Vector2i((16 + 5) * 1 + 5, 16 + 6), sf::Vector2u(16, 16), function);
-		button->SetButtonModeImage("res/deb_pause.png");
+		button->SetButtonModeImage(get_runtime_path() + "/res/deb_pause.png");
 
 		m_runtimeButtons.push_back(button);
 	}

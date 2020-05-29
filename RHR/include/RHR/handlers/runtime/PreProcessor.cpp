@@ -6,6 +6,7 @@
 #include <libtcc.h>
 #include <Cappuccino/runtime/ModBlockData.h>
 #include <shared_mutex>
+#include <Espresso/util.h>
 
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)
@@ -31,12 +32,14 @@ void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
 {
 	PreProcessor::SetFinished(false);// just in case
 	char* file;
-	PullFileSingle(&file, "res/comp.c");
+	PullFileSingle(&file, (get_runtime_path() + "/res/comp.c").c_str());
 	TCCState* state = tcc_new();
 
-	tcc_add_include_path(state, "Cappuccino/include");
-	tcc_add_include_path(state, "csfml/include");
-	tcc_add_include_path(state, "res");
+	tcc_add_include_path(state, (executable_path + "Cappuccino/include").c_str());
+#ifdef WIN32
+	tcc_add_include_path(state, (executable_path + "csfml/include").c_str());
+#endif
+	tcc_add_include_path(state, (get_runtime_path() + "/res").c_str());
 
 	std::vector<std::string> functionReferences;
 	std::vector<uint32_t> functionIds;

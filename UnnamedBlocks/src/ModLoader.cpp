@@ -1,8 +1,15 @@
 #include "ModLoader.h"
 //TODO temp
 //#include <RHR/config.h>
+#include "config.h"
+#include <cstdlib>
+#include <cstring>
+#include <exception>
 #include <iostream>
 #include <filesystem>
+#include <stdexcept>
+#include <string_view>
+#include <Espresso/util.h>
 #ifdef LINUX
 #include <dlfcn.h>
 #else
@@ -39,14 +46,15 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 	mods->push_back(mod);
 }
 
+
 ModLoaderStatus run(BlockRegistry* registry)
 {
 	ProjectHandler::Mods.clear();
 	typedef void(*f_initialize)(ModData*);
 
 	mods = new std::vector<RegMod>();
-
-	std::filesystem::directory_iterator pathMods("mods");
+	auto path = get_runtime_path();
+	std::filesystem::directory_iterator pathMods(path + "/mods");
 	for(auto& file : pathMods)
 		registerMod(file.path().stem().string(), file.path().extension().string());
 
@@ -59,7 +67,7 @@ ModLoaderStatus run(BlockRegistry* registry)
 			continue;
 		}
 
-		void* so = dlopen(std::string("mods/" + (*mods)[i].FileName + ".so").c_str(), RTLD_NOW);
+		void* so = dlopen(std::string(get_runtime_path() + "/mods/" + (*mods)[i].FileName + ".so").c_str(), RTLD_NOW);
 
 		if (!so)
 		{
@@ -75,14 +83,14 @@ ModLoaderStatus run(BlockRegistry* registry)
 		}
 
 		//dlclose(so);
-#else
+#elif WIN32
 		if (!(*mods)[i].Supported_WIN)
 		{
 			Logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
 			continue;
 		}
 
-		HINSTANCE hGetProcIDDLL = LoadLibrary(std::string("mods/" + (*mods)[i].FileName + ".dll").c_str());
+		HINSTANCE hGetProcIDDLL = LoadLibrary(std::string(get_runtime_path() + "\\mods\\" + (*mods)[i].FileName + ".dll").c_str());
 
 		if (!hGetProcIDDLL)
 		{
@@ -96,6 +104,8 @@ ModLoaderStatus run(BlockRegistry* registry)
 			Logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
+#else
+#error "Unsupported platform"
 #endif
 		initialize((*mods)[i].Data);
 		

@@ -26,3 +26,6 @@ build
 !cmake/**
 .clangd
 compile_commands.json
+/*.pkg.*
+/pkg
+/src

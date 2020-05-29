@@ -7,9 +7,11 @@ set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Global.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/util.cpp"
 	# Headers
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Espresso.h"
-	
+
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/util.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.h"

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 
 # use c++ 20
 set(CMAKE_CXX_STANDARD 20)
@@ -110,20 +110,7 @@ target_include_directories(unnamedblocks PUBLIC
 	"${csfml_include}"
 	)
 
-# Options
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-	# Default search in appdata
-	set(RES_FOLDER_SEARCH_PATH {APPDATA}/unnamedblocks CACHE STRING "(currently nop) Search dir for the res folder. {VARNAME} is environment variable. Blank for working directory")
-	set(MODS_FOLDER_SEARCH_PATH {APPDATA}/unnamedblocks CACHE STRING "(currently nop) Search dir for the mods folder. {VARNAME} is environment variable. Blank for working directory")
-elseif(UNIX AND NOT APPLE)
-	# Default search in .local/share in unix like oses
-	set(RES_FOLDER_SEARCH_PATH {HOME}/.local/share/unnamedblocks CACHE STRING "(currently nop) Search dir for the res folder. {VARNAME} is environment variable. Blank for working directory")
-	set(MODS_FOLDER_SEARCH_PATH {HOME}/.local/share/unnamedblocks CACHE STRING "(currently nop) Search dir for the mods folder. {VARNAME} is environment variable. Blank for working directory")
-else()
-	# Unknown platform, dont assume anything
-	set(RES_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the res folder {VARNAME} is environment variable. Blank for working directory")
-	set(MODS_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the mods folder {VARNAME} is environment variable. Blank for working directory")
-endif()
+set(RUNTIME_FOLDER_PATH "." CACHE STRING "Search dir for the mods and res. \${VARNAME} is environment variable. . for working directory")
 
 set(VERSION_UNNAMED_BLOCKS "0.0.0" CACHE STRING "Version of Unnamed Blocks")
 set(IS_BETA 1 CACHE STRING "Wether or not Unnamed Blocks will be flagged as a beta build")
@@ -196,4 +183,11 @@ else()
 		COMMAND ${CMAKE_COMMAND} -E copy
 		$<TARGET_FILE:Cappuccino>
 		$<TARGET_FILE_DIR:unnamedblocks>/libCappuccino.so)
+endif()
+
+install(TARGETS unnamedblocks DESTINATION share/unnamedblocks)
+install(DIRECTORY res Cappuccino DESTINATION share/unnamedblocks)
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	install(TARGETS sfml-system sfml-graphics sfml-network sfml-window DESTINATION share/unnamedblocks)
+	install(DIRECTORY csfml tcc DESTINATION share/unnamedblocks)
 endif()
