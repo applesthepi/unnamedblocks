@@ -16,56 +16,6 @@ void Argument::SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbso
 	frameUpdate(0.0);
 }
 
-unsigned int Argument::GetArgumentRawWidth()
-{
-	return 0;
-}
-
-const bool Argument::HasData()
-{
-	return false;
-}
-
-void Argument::SetData(const std::string&)
-{
-
-}
-
-void Argument::SetMode(const BlockArgumentVariableMode&)
-{
-
-}
-
-void Argument::Select()
-{
-
-}
-
-void Argument::ReInspectData()
-{
-
-}
-
-const std::string& Argument::GetData()
-{
-	return nullptr;
-}
-
-const std::string& Argument::GetDataRaw()
-{
-	return nullptr;
-}
-
-const BlockArgumentVariableMode Argument::GetMode()
-{
-	return BlockArgumentVariableMode::RAW;
-}
-
-const BlockArgumentType Argument::GetType()
-{
-	return BlockArgumentType::TEXT;
-}
-
 void Argument::preFrameUpdate(const bool& global)
 {
 	if (global)
@@ -87,6 +37,46 @@ void Argument::frameUpdate(const double& deltaTime)
 {
 	frameUpdateArgument(deltaTime);
 	UpdateTexture();
+}
+
+void Argument::SetData(const std::string& data)
+{
+	m_data = data;
+}
+
+const std::string& Argument::GetData()
+{
+	return m_data;
+}
+
+void Argument::SetMode(const BlockArgumentVariableMode& mode)
+{
+	m_mode = mode;
+}
+
+const BlockArgumentVariableMode& Argument::GetMode()
+{
+	return m_mode;
+}
+
+const BlockArgumentType Argument::GetType()
+{
+	return BlockArgumentType::TEXT;
+}
+
+const uint32_t Argument::GetWidth()
+{
+	return 20;
+}
+
+const bool Argument::HasData()
+{
+	return false;
+}
+
+void Argument::Select()
+{
+
 }
 
 void Argument::SetRelitivePosition(const sf::Vector2u& relitivePosition)
@@ -143,6 +133,11 @@ const sf::Vector2u& Argument::GetRelitivePosition()
 }
 
 void Argument::frameUpdateArgument(const double& deltaTime)
+{
+
+}
+
+void Argument::reloadData()
 {
 
 }

@@ -21,8 +21,6 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/MouseUpdatable.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/UBRenderable.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Dropdown.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/FieldText.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/FieldNumber.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Field.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.cpp"
 	#${CMAKE_CURRENT_SOURCE_DIR}/ Headers
@@ -51,8 +49,6 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/MouseUpdatable.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/UBRenderable.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Dropdown.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/FieldText.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/FieldNumber.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Field.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.h"
 	)

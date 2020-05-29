@@ -16,10 +16,11 @@ public:
 
 	void SetEnabled(const bool& enabled);
 	void SetOpen(const bool& open);
+	void SetElements(const std::vector<std::string>& elements, const uint64_t& idx);
+
 	void Select(const uint64_t& idx);
 	void Toggle();
 	void Reload();
-	void SetElements(const std::vector<std::string>& elements, const uint64_t& idx);
 
 	const uint16_t GetSelected();
 	const uint64_t GetWidth();
