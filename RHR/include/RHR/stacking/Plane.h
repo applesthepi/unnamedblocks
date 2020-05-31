@@ -5,6 +5,8 @@
 #include "RHR/ui/IMouseUpdatable.h"
 #include "RHR/ui/ITransformable.h"
 
+#define VA_DATA_OFFSET 24
+
 class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
 {
 public:
@@ -21,14 +23,17 @@ public:
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
+	void CreateBuffer(const uint16_t& collectionIdx);
+	void UpdateBuffer(const uint16_t& bufferIdx);
+
 	std::vector<Collection*> m_collections;
 
-	sf::VertexArray m_vertexArray;
+	sf::Vector2i m_innerPosition;
 
-
-
-
-
+	std::vector<std::vector<sf::Vertex>> m_vertexArrays;
+	std::vector<sf::VertexBuffer> m_vertexBuffers;
+	sf::Transform m_vertexArrayTransform;
+	sf::Text m_innerText;
 
 
 

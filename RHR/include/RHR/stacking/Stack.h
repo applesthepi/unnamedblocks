@@ -1,7 +1,7 @@
 #pragma once
 #include "Block.h"
 
-class Stack
+class Stack : public ITransformable
 {
 public:
 	Stack();

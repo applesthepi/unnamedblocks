@@ -22,20 +22,26 @@
 
 #define HEADER_HEIGHT (32 + 10)
 
+/*
 enum GpuMan
 {
 	INTEL, NVIDIA
 };
+*/
 
 class Global
 {
 public:
 	static void LoadDefaults()
 	{
+		// these are in use and updated for "the_nuking_of_rhr_stacking"
+
 		BlockHeight = 18;
-		BlockBorder = 4;//divisible by 2
-		Font = new sf::Font();
-		Font->loadFromFile("res/AnonymousPro-Regular.ttf");
+		BlockBorder = 4;
+		Font.loadFromFile("res/AnonymousPro-Regular.ttf");
+
+		// these may be old and unused
+
 		Dragging = false;
 		DraggingStack = nullptr;
 		DraggingStackConnected = nullptr;
@@ -54,9 +60,14 @@ public:
 		SelectedStack = nullptr;
 	}
 
-	static unsigned int BlockHeight;
-	static unsigned int BlockBorder;
-	static sf::Font* Font;
+	// these are in use and updated for "the_nuking_of_rhr_stacking"
+
+	static uint8_t BlockHeight;
+	static uint8_t BlockBorder;// must be divisible by 2
+	static sf::Font Font;
+
+	// these may be old and unused
+
 	static bool Dragging;
 	static void* DraggingStack;
 	static void* DraggingStackConnected;

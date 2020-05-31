@@ -10,6 +10,11 @@
 Plane::Plane()
 {
 	m_collections.reserve(5);
+
+	// m_innerText displays the inner position of the plane
+
+	m_innerText = sf::Text("0, 0", Global::Font, 12);
+	m_innerText.setFillColor(MOD_BUTTON_TEXT_FG);
 }
 
 Plane::~Plane()
@@ -39,7 +44,16 @@ const std::vector<Collection*>& Plane::GetCollections()
 
 void Plane::frameUpdate(const double& deltaTime)
 {
+	// innerText
 
+	m_innerText.setPosition(getPosition().x + 5, getPosition().y + getSize().y - 18);
+	char innerText[20];
+	sprintf(innerText, "%d, %d", m_innerPosition.x, m_innerPosition.y); // TODO make sure "%d" has no trailing "0"s.
+ 	m_innerText.setString(innerText);
+
+	// transform applies offset to the vertex array
+
+	m_vertexArrayTransform.translate((sf::Vector2f)m_innerPosition);
 }
 
 const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
@@ -49,12 +63,34 @@ const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, co
 
 void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-
+	target.draw(m_vertexBuffers[0], m_vertexArrayTransform);
+	target.draw(m_innerText);
 }
 
+void Plane::CreateBuffer(const uint16_t& collectionIdx)
+{
+	m_vertexArrays.push_back(std::vector<sf::Vertex>());
 
+	// ====================================================================================================================================================
+	// =============== add collection geometry to vertex array
+	// ====================================================================================================================================================
 
+	// 
 
+	m_vertexArrays.back().push_back(sf::Vertex(m_collections[collectionIdx]->getPosition() + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+
+	// ====================================================================================================================================================
+	// =============== create buffer
+	// ====================================================================================================================================================
+
+	// "Dynamic" because "Occasionally changing data", the buffer will only be changed during a user induced event
+	m_vertexBuffers.push_back(sf::VertexBuffer(sf::PrimitiveType::Triangles, sf::VertexBuffer::Usage::Dynamic));
+}
+
+void Plane::UpdateBuffer(const uint16_t& bufferIdx)
+{
+	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]));
+}
 
 /*
 Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)

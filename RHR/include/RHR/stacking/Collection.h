@@ -1,9 +1,11 @@
 #pragma once
 #include "Stack.h"
-#include "RHR/ui/IRenderable.h"
-#include "RHR/ui/IMouseUpdatable.h"
+#include "RHR/ui/ITransformable.h"
 
-class Collection
+#define COLLECTION_COLOR_OUTLINE sf::Color(49, 49, 66, 255)
+#define COLLECTION_COLOR_FILL sf::Color(23, 23, 28, 255)
+
+class Collection : public ITransformable
 {
 public:
 	Collection();
