@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics/Drawable.hpp>
 
-class UBRenderable : public sf::Drawable
+class IRenderable : public sf::Drawable
 {
 public:
 	virtual void frameUpdate(const double& deltaTime);

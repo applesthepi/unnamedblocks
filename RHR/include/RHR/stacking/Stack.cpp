@@ -51,10 +51,8 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			Global::ContextActive = true;
 	};
 
-	*m_functionContextCallback = [&](unsigned int index)
+	*m_functionContextCallback = [&](const uint8_t& idx)
 	{
-		Global::ContextActive = false;
-		Global::Context.Type = ContextType::NONE;
 		Plane* plane = (Plane*)m_planePtr;
 		if (plane->IsToolbar())
 			return;

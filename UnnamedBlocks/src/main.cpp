@@ -1,6 +1,8 @@
 #include "ModLoader.h"
 #include "RHR/handlers/runtime/PreProcessor.h"
 #include "handlers/CategoryHandler.h"
+#include "registries/UIRegistry.h"
+#include "ui/ButtonText.h"
 
 #include <Espresso/InputHandler.h>
 #include <SFML/Window/Event.hpp>
@@ -30,12 +32,6 @@
 #ifdef LINUX
 #include <X11/Xlib.h>
 #endif
-
-#define CONTEXT_COLOR 180, 180, 180, 200
-
-std::vector<Button*> contextButtons;
-
-ContextSystem sys;
 
 static Plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
@@ -75,9 +71,8 @@ int main()
 	Global::LoadDefaults();//must be first
 	MessageHandler::Initialize();
 	InputHandler::Initialization();
-	ButtonRegistry::Initialize();
 	PreProcessor::Initialize();
-
+	
 	{
 		//
 		// intro
@@ -211,7 +206,6 @@ int main()
 	bool wasDownLeft = false;
 	bool wasDownMiddle = false;
 	bool wasDownRight = false;
-	bool wasContextOpen = false;
 
 	sf::Clock cl;
 	sf::Clock clTrip;
@@ -231,7 +225,7 @@ int main()
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				std::function<void(const bool&)> cb = [&](const bool& result)
+				std::function<void(const bool&)> cb = [&window](const bool& result)
 				{
 					if (result)
 						window.close();
@@ -272,7 +266,7 @@ int main()
 				InputHandler::FireTextEvent(ev.text);
 			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
 			{
-				if (!ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, true))
+				if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
 				{
 					primaryPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
 					toolbarPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
@@ -280,7 +274,7 @@ int main()
 			}
 			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
 			{
-				if (!ButtonRegistry::MouseUpdateButtons(ev.mouseButton.button, false))
+				if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
 				{
 					primaryPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
 					toolbarPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
@@ -291,98 +285,20 @@ int main()
 		window.clear(MOD_BACKGROUND_HIGH);
 		CategoryHandler::Render(&window, toolbarPlane);
 
-		//engine frame update
-
-		//frame update
 
 		if (window.hasFocus())
-		{
 			Global::MousePosition = sf::Mouse::getPosition(window);
-			ButtonRegistry::FrameUpdateUI(&window);
-		}
+		else
+			Global::MousePosition = sf::Vector2i();
 
-		if ((Global::ContextActive && !wasContextOpen) || Global::ContextUpdate)
-		{
-			Global::ContextUpdate = false;
-			wasContextOpen = true;
-
-			if (Global::Context.Position != sys.Position || Global::Context.Type != sys.Type)
-			{
-				sys = Global::Context;
-
-				for (unsigned int i = 0; i < contextButtons.size(); i++)
-				{
-					ButtonRegistry::RemoveButton(contextButtons[i]);
-					delete contextButtons[i];
-				}
-
-				contextButtons.clear();
-
-				if (sys.Type == ContextType::BLOCK)
-				{
-					std::function<void()>* callback0 = new std::function<void()>();
-					*callback0 = []()
-					{
-						(*Global::Context.Callback)(0);
-					};
-
-					std::function<void()>* callback1 = new std::function<void()>();
-					*callback1 = []()
-					{
-						(*Global::Context.Callback)(1);
-					};
-
-					std::function<void()>* callback2 = new std::function<void()>();
-					*callback2 = []()
-					{
-						(*Global::Context.Callback)(2);
-					};
-
-					std::function<void()>* callback3 = new std::function<void()>();
-					*callback3 = []()
-					{
-						(*Global::Context.Callback)(3);
-					};
-
-					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y), sf::Vector2u(300, 16), callback0));
-					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (1 * 16)), sf::Vector2u(300, 16), callback1));
-					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (2 * 16)), sf::Vector2u(300, 16), callback2));
-					contextButtons.push_back(new Button(sf::Vector2i(sys.Position.x, sys.Position.y + (3 * 16)), sf::Vector2u(300, 16), callback3));
-
-					contextButtons[0]->SetButtonModeText("duplicate stack", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
-					contextButtons[1]->SetButtonModeText("delete stack", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
-					contextButtons[2]->SetButtonModeText("duplicate block", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
-					contextButtons[3]->SetButtonModeText("delete block", sf::Color(CONTEXT_COLOR), sf::Color::Black, 12);
-
-					ButtonRegistry::AddButton(contextButtons[0]);
-					ButtonRegistry::AddButton(contextButtons[1]);
-					ButtonRegistry::AddButton(contextButtons[2]);
-					ButtonRegistry::AddButton(contextButtons[3]);
-				}
-				else if (sys.Type == ContextType::NONE)
-				{
-					Global::ContextActive = false;
-				}
-			}
-		}
-		else if (!Global::ContextActive && wasContextOpen)
-		{
-			wasContextOpen = false;
-
-			for (unsigned int i = 0; i < contextButtons.size(); i++)
-			{
-				ButtonRegistry::RemoveButton(contextButtons[i]);
-				delete contextButtons[i];
-			}
-
-			contextButtons.clear();
-		}
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
 		{
 			lastVanityReload = std::chrono::high_resolution_clock::now();
 			primaryPlane->ReloadVanity();
 		}
+
+		UIRegistry::GetRegistry().frameUpdate(0.0);
 
 		toolbarPlane->FrameUpdate(pRegistry);
 		primaryPlane->FrameUpdate(pRegistry);
@@ -401,10 +317,10 @@ int main()
 		toolbarPlane->RenderConnection(&window);
 		primaryPlane->RenderConnection(&window);
 
+		window.draw(UIRegistry::GetRegistry());
+
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->Render(nullptr, &window);
-
-		ButtonRegistry::RenderUI(&window);
 
 		// execution
 

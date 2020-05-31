@@ -1,15 +1,13 @@
 #pragma once
 #include "ButtonText.h"
-#include "RHR/registries/ButtonRegistry.h"
-#include "UBRenderable.h"
-#include "MouseUpdatable.h"
+#include "IUI.h"
 
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <functional>
 
-class Dropdown : public UBRenderable, public sf::Transformable, public MouseUpdatable
+class Dropdown : public IUI, public sf::Transformable
 {
 public:
 	Dropdown(const sf::Vector2i& position);

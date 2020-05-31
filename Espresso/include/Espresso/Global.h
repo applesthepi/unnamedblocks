@@ -27,32 +27,6 @@ enum GpuMan
 	INTEL, NVIDIA
 };
 
-enum ContextType
-{
-	NONE, BLOCK
-};
-
-class ContextSystem
-{
-public:
-	ContextSystem()
-	{
-		Type = ContextType::NONE;
-		Position = sf::Vector2i(0, 0);
-		Callback = nullptr;
-	}
-
-	ContextSystem(ContextType type, sf::Vector2i position, std::function<void(unsigned int index)>* callback)
-		:Type(type), Position(position), Callback(callback)
-	{
-
-	}
-
-	ContextType Type;
-	sf::Vector2i Position;
-	std::function<void(unsigned int index)>* Callback;
-};
-
 class Global
 {
 public:
@@ -75,10 +49,6 @@ public:
 		ApplicationRunning = true;
 		ProjectPath = "";
 		SkipFrame = false;
-		ContextActive = false;
-		Context = ContextSystem(ContextType::NONE, sf::Vector2i(0, 0), nullptr);
-		ContextUpdate = false;
-		ContextData = "";
 		MousePosition = sf::Vector2i(0, 0);
 		SelectedBlock = nullptr;
 		SelectedStack = nullptr;
@@ -100,11 +70,7 @@ public:
 	static bool ApplicationRunning;
 	static std::string ProjectPath;
 	static bool SkipFrame;
-	static bool ContextActive;
-	static ContextSystem Context;
 	static GpuMan GpuType;
-	static std::string ContextData;
-	static bool ContextUpdate;
 	static sf::Vector2i MousePosition;
 	static void* SelectedBlock;
 	static void* SelectedStack;

@@ -346,7 +346,6 @@ bool Block::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 				Global::SelectedBlock = nullptr;
 				Global::SelectedStack = nullptr;
 
-				Global::ContextActive = false;
 				m_selected = false;
 				(*m_functionSplit)(m_index, position);
 			}

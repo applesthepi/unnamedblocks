@@ -1,6 +1,5 @@
 #pragma once
-#include "MouseUpdatable.h"
-#include "UBRenderable.h"
+#include "IUI.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -9,7 +8,7 @@
 #define HOVOR_SHADE_HARD 0.7
 #define HOVOR_SHADE_LIGHT 0.85
 
-class Button : public UBRenderable, public sf::Transformable, public MouseUpdatable
+class Button : public IUI, public sf::Transformable
 {
 public:
 	Button(std::function<void()>* callback, const sf::Vector2f& size);
