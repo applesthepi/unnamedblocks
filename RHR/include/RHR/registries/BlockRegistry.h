@@ -20,24 +20,19 @@ public:
 class BlockRegistry
 {
 public:
-	BlockRegistry();
-
 	void RegisterBlock(ModBlock* block);
 	void RegisterCatagory(ModCatagory* catagory);
-	//void RegisterExeDebug(void(*fun)(ModBlockPass*));
-	//void RegisterExeRelease(void(*fun)(ModBlockPass*));
 
 	const ModBlock* GetBlock(const std::string& unlocalizedName);
 	const ModCatagory* GetCategory(const std::string& unlocalizedName);
 
-	//executionFunction GetExeDebug(const std::string& blockUnlocalizedName);
-	//executionFunction GetExeRelease(const std::string& blockUnlocalizedName);
-
 	const std::vector<ModBlock*>& GetBlocks();
 	const std::vector<ModCatagory*>& GetCategories();
+
+	static BlockRegistry& GetRegistry();
 private:
+	static BlockRegistry m_registry;
+
 	std::vector<ModBlock*> m_blocks;
 	std::vector<ModCatagory*> m_catagories;
-	//std::vector<executionFunction> m_exeDebug;
-	//std::vector<executionFunction> m_exeRelease;
 };

@@ -5,6 +5,17 @@ Collection::Collection()
 	m_stacks.reserve(5);
 }
 
+Collection::Collection(const Collection& collection)
+{
+	for (uint64_t i = 0; i < m_stacks.size(); i++)
+		delete m_stacks[i];
+
+	m_stacks.clear();
+
+	for (uint64_t i = 0; i < collection.m_stacks.size(); i++)
+		m_stacks.push_back(new Stack(collection.m_stacks[i]));
+}
+
 Collection::~Collection()
 {
 	for (uint64_t i = 0; i < m_stacks.size(); i++)

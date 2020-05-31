@@ -1,5 +1,7 @@
 #pragma once
-#include "RHR/ui/Button.h"
+#include "RHR/ui/ButtonText.h"
+#include "RHR/ui/ButtonImage.h"
+#include "RHR/ui/IRenderable.h"
 #include "RHR/registries/BlockRegistry.h"
 #include "RHR/stacking/Plane.h"
 
@@ -7,40 +9,45 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
-class CategoryHandler
+class CategoryHandler : public IRenderable
 {
 public:
-	static void Initialize(BlockRegistry* blockRegistry, Plane* toolbarPlane);
-	static void Render(sf::RenderWindow* window, Plane* toolbarPlane);
-	static void RenderPost(sf::RenderWindow* window);
-	static void FrameUpdate(sf::RenderWindow* window, BlockRegistry* blockRegistry, Plane* toolbarPlane, Plane* primaryPlane);
+	CategoryHandler();
 
-	static void ToggleMod(const uint16_t& modIdx, BlockRegistry* blockRegistry, Plane* toolbarPlane, const uint64_t& catIdx);
-	static const uint32_t UpdateButtons();
-	static void UpdateBlocks(BlockRegistry* blockRegistry, Plane* toolbarPlane, const uint64_t& catIdx);
+	void ToggleMod(const uint16_t& modIdx, const uint64_t& catIdx);
+	void UpdateBlocks(const uint64_t& catIdx);
+	void RegisterHeader();
+	const uint32_t UpdateButtons();
 
-	static void RegisterHeader(BlockRegistry* blockRegistry, Plane* primaryPlane);
+	void frameUpdate(const double& deltaTime) override;
+
+	static CategoryHandler& GetHandler();
+protected:
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
-	static std::vector<Button*> m_modCategoryButtons;
-	static std::vector<std::vector<Button*>> m_buttons;
+	static CategoryHandler m_handler;
 
-	static std::vector<std::function<void()>*> m_modCategoryCallbacks;
-	static std::vector<std::vector<std::function<void()>*>> m_buttonCallbacks;
+	std::vector<ButtonText*> m_modCategoryButtons;
 
-	static std::vector<bool> m_modOpen;
-	static std::vector<sf::Sprite> m_modIco;
-	static sf::Texture m_textureOpen;
-	static sf::Texture m_textureClose;
+	std::vector<std::function<void()>*> m_modCategoryCallbacks;
+	std::vector<std::vector<std::function<void()>*>> m_buttonCallbacks;
 
-	static sf::RectangleShape m_background;
-	static sf::RectangleShape m_backgroundOptions;
-	static uint64_t m_toolbarStackCount;
-	static uint64_t m_selectedCategory;
+	std::vector<bool> m_modOpen;
+	std::vector<sf::Sprite> m_modIco;
+	sf::Texture m_textureOpen;
+	sf::Texture m_textureClose;
 
-	static bool m_running;
-	static bool m_fullBreak;
-	static bool m_needsUpdate;
+	sf::RectangleShape m_background;
+	sf::RectangleShape m_backgroundOptions;
+	uint64_t m_toolbarStackCount;
+	uint64_t m_selectedCategory;
 
-	static std::vector<Button*> m_editorButtons;
-	static std::vector<Button*> m_runtimeButtons;
+	bool m_running;
+	bool m_fullBreak;
+	bool m_needsUpdate;
+
+	std::vector<ButtonText*> m_editorButtons;
+	std::vector<ButtonImage*> m_runtimeButtons;
+
+	uint16_t m_toolbarWidth;
 };

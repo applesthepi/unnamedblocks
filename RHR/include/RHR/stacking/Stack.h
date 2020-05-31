@@ -5,6 +5,8 @@ class Stack : public ITransformable
 {
 public:
 	Stack();
+	Stack(const Stack& stack);
+
 	~Stack();
 
 	void AddBlock(Block* block);

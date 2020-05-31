@@ -44,7 +44,7 @@ public:
 	static void Cleanup();
 
 	// executing
-	static void Start(Plane* planeCopy, BlockRegistry* registry, bool debugBuild);
+	static void Start(Plane* planeCopy, const bool& debugBuild);
 	static bool IsFinished();
 	
 	// util

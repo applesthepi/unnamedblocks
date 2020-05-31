@@ -6,9 +6,8 @@
 class ProjectHandler
 {
 public:
-	static void Initialize();
-	static void LoadProject(std::string& path, Plane* plane, BlockRegistry* registry);
-	static void SaveProject(std::string& path, Plane* plane);
+	static void LoadProject(const std::string& path);
+	static void SaveProject(const std::string& path);
 
 	static std::string CurrentPath;
 	static std::vector<std::string> Mods;

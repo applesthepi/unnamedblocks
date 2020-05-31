@@ -5,6 +5,11 @@
 ButtonImage::ButtonImage(std::function<void()>* callback, const std::string& path, const sf::Vector2f& size)
 	:Button(callback, size), m_wasDown(false)
 {
+	SetImage(path);
+}
+
+void ButtonImage::SetImage(const std::string& path)
+{
 	if (!m_texture.loadFromFile(path))
 	{
 		Logger::Error("failed to load image \"" + path + "\"");

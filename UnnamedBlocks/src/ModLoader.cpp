@@ -39,7 +39,7 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 	mods->push_back(mod);
 }
 
-ModLoaderStatus run(BlockRegistry* registry)
+ModLoaderStatus run()
 {
 	ProjectHandler::Mods.clear();
 	typedef void(*f_initialize)(ModData*);
@@ -104,18 +104,11 @@ ModLoaderStatus run(BlockRegistry* registry)
 		ModDataBaked baked = (*mods)[i].Data->Bake();
 
 		for (uint32_t j = 0; j < baked.CategoriesLength; j++)
-			registry->RegisterCatagory(baked.Categories[j]);
+			BlockRegistry::GetRegistry().RegisterCatagory(baked.Categories[j]);
 
 		for (uint32_t j = 0; j < baked.BlocksLength; j++)
-			registry->RegisterBlock(baked.Blocks[j]);
-
-		//for (uint32_t j = 0; j < baked.BlocksLength; j++)
-		//	registry->RegisterExeDebug(baked.Blocks[j]->PullExecuteDebug());
-		//
-		//for (uint32_t j = 0; j < baked.BlocksLength; j++)
-		//	registry->RegisterExeRelease(baked.Blocks[j]->PullExecuteRelease());
+			BlockRegistry::GetRegistry().RegisterBlock(baked.Blocks[j]);
 	}
 
-	//delete mods;
 	return ModLoaderStatus::ModLoaderStatus_OK;
 }

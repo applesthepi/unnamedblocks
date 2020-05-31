@@ -33,6 +33,7 @@
 #include <X11/Xlib.h>
 #endif
 
+/*
 static Plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
 static unsigned short toolbarStackCount = 0;
@@ -43,6 +44,7 @@ void ReturnFinished()
 {
 	returnFinished = true;
 }
+*/
 
 int main()
 {
@@ -181,29 +183,22 @@ int main()
 	}
 
 	// ==============================================================================================================================
-	// ============== Program Initalization
+	// ============== Program Initialization
 	// ==============================================================================================================================
 
 	window.setFramerateLimit(200);
 
-	BlockRegistry* pRegistry = new BlockRegistry();
-	run(pRegistry);
+	run();
 
 	// Setup
 
-	Plane::Planes = new std::vector<Plane*>();
+	Plane::PrimaryPlane = new Plane();
+	Plane::ToolbarPlane = new Plane();
 
-	Plane* primaryPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100));
-	Plane::Planes->push_back(primaryPlane);
+	Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
+	Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
 
-	toolbarPlane = new Plane(sf::Vector2u(0, 0), sf::Vector2u(100, 100), true);
-	Plane::Planes->push_back(toolbarPlane);
-
-	primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
-	primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
-
-	CategoryHandler::Initialize(pRegistry, toolbarPlane);
-	CategoryHandler::RegisterHeader(pRegistry, primaryPlane);
+	CategoryHandler::GetHandler().RegisterHeader();
 
 #ifdef POSIX
 	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
@@ -250,46 +245,51 @@ int main()
 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
 				window.setView(sf::View(visibleArea));
 
-				primaryPlane->SetPosition(sf::Vector2u(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
-				primaryPlane->SetSize(sf::Vector2u(window.getSize().x - primaryPlane->GetPosition().x - 5, window.getSize().y - primaryPlane->GetPosition().y - 5));
+				primaryPlane->setPosition(sf::Vector2f(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
+				primaryPlane->setSize(sf::Vector2u(window.getSize().x - primaryPlane->getPosition().x - 5, window.getSize().y - primaryPlane->getPosition().y - 5));
 			}
 			else if (ev.type == sf::Event::MouseWheelScrolled)
 			{
-				int32_t delta = ev.mouseWheelScroll.delta * -200;
+				if (window.hasFocus())
+				{
+					int32_t delta = ev.mouseWheelScroll.delta * -200;
 
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-				{
-					primaryPlane->AddInnerPosition(sf::Vector2i(delta, 0));
-					
-					if (Global::Dragging)
-						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(delta, 0));
-				}
-				else
-				{
-					primaryPlane->AddInnerPosition(sf::Vector2i(0, delta));
-					
-					if (Global::Dragging)
-						((Stack*)Global::DraggingStack)->AddPosition(sf::Vector2i(0, delta));
+					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+						primaryPlane->TranslateInnerPosition(sf::Vector2i(delta, 0));
+					else
+						primaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
 				}
 			}
 			else if (ev.type == sf::Event::EventType::KeyPressed)
-				InputHandler::FireKeyEvent(ev.key);
+			{
+				if (window.hasFocus())
+					InputHandler::FireKeyEvent(ev.key);
+			}
 			else if (ev.type == sf::Event::EventType::TextEntered)
-				InputHandler::FireTextEvent(ev.text);
+			{
+				if (window.hasFocus())
+					InputHandler::FireTextEvent(ev.text);
+			}
 			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
 			{
-				if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+				if (window.hasFocus())
 				{
-					primaryPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
-					toolbarPlane->MouseButton(true, Global::MousePosition, ev.mouseButton.button);
+					if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+					{
+						if (!primaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+							toolbarPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
+					}
 				}
 			}
 			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
 			{
-				if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+				if (window.hasFocus())
 				{
-					primaryPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
-					toolbarPlane->MouseButton(false, Global::MousePosition, ev.mouseButton.button);
+					if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+					{
+						if (!primaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+							toolbarPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
+					}
 				}
 			}
 		}
@@ -302,7 +302,6 @@ int main()
 			Global::MousePosition = sf::Mouse::getPosition(window);
 		else
 			Global::MousePosition = sf::Vector2i();
-
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
 		{
@@ -329,18 +328,12 @@ int main()
 		// ==============================================================================================================================
 
 		window.clear(MOD_BACKGROUND_HIGH);
+		
 		CategoryHandler::Render(&window, toolbarPlane);
 
-		toolbarPlane->Render(&window);
-		primaryPlane->Render(&window);
-
-		toolbarPlane->RenderConnection(&window);
-		primaryPlane->RenderConnection(&window);
-
+		window.draw(*toolbarPlane);
+		window.draw(*primaryPlane);
 		window.draw(UIRegistry::GetRegistry());
-
-		if (Global::Dragging)
-			((Stack*)Global::DraggingStack)->Render(nullptr, &window);
 
 		CategoryHandler::RenderPost(&window);
 

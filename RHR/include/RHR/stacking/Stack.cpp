@@ -5,6 +5,17 @@ Stack::Stack()
 	m_blocks.reserve(10);
 }
 
+Stack::Stack(const Stack& stack)
+{
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+		delete m_blocks[i];
+
+	m_blocks.clear();
+
+	for (uint64_t i = 0; i < stack.m_blocks.size(); i++)
+		m_blocks.push_back(new Block(stack.m_blocks[i]));
+}
+
 Stack::~Stack()
 {
 	for (uint64_t i = 0; i < m_blocks.size(); i++)

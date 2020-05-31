@@ -33,4 +33,4 @@ public:
 };
 
 void registerMod(std::string& fileName, std::string& fileType);
-ModLoaderStatus run(BlockRegistry* registry);
+ModLoaderStatus run();

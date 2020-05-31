@@ -27,7 +27,7 @@ void PullFileSingle(char** ptr, const char* file_path)
 	}
 }
 
-void ThreadPreProcessorExecution(bool debugBuild, BlockRegistry* blockRegistry)
+void ThreadPreProcessorExecution(const bool& debugBuild)
 {
 	PreProcessor::SetFinished(false);// just in case
 	char* file;
@@ -303,7 +303,7 @@ void PreProcessor::Cleanup()
 	}
 }
 
-void PreProcessor::Start(Plane* planeCopy, BlockRegistry* registry, bool debugBuild)
+void PreProcessor::Start(Plane* planeCopy, const bool& debugBuild)
 {
 	m_planeCopy = planeCopy;
 	m_registry = registry;

@@ -6,6 +6,8 @@ class ButtonImage : public Button
 public:
 	ButtonImage(std::function<void()>* callback, const std::string& path, const sf::Vector2f& size);
 
+	void SetImage(const std::string& path);
+
 	void frameUpdate(const double& deltaTime) override;
 	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 protected:

@@ -11,28 +11,36 @@ class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
 {
 public:
 	Plane();
+	Plane(const Plane& plane);
+
 	~Plane();
-
-	void AddCollection(Collection* collection);
+	// TODO copy
+	void AddCollection(Collection* collection, bool displayCollectionVanity);
 	void AddCollections(const std::vector<Collection*>& collections);
-
 	const std::vector<Collection*>& GetCollections();
+
+	void TranslateInnerPosition(const sf::Vector2i& position);
+	void DeleteContents();
 
 	void frameUpdate(const double& deltaTime) override;
 	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+
+	static Plane* PrimaryPlane;
+	static Plane* ToolbarPlane;
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
 	void CreateBuffer(const uint16_t& collectionIdx);
 	void UpdateBuffer(const uint16_t& bufferIdx);
 
+	std::vector<bool> m_collectionVanity;
 	std::vector<Collection*> m_collections;
-
-	sf::Vector2i m_innerPosition;
 
 	std::vector<std::vector<sf::Vertex>> m_vertexArrays;
 	std::vector<sf::VertexBuffer> m_vertexBuffers;
-	sf::Transform m_vertexArrayTransform;
+	std::vector<sf::Transform> m_vertexBufferTransform;
+
+	sf::Vector2i m_innerPosition;
 	sf::Text m_innerText;
 
 

@@ -10,11 +10,25 @@
 Plane::Plane()
 {
 	m_collections.reserve(5);
+	m_collectionVanity.reserve(5);
+
+	m_vertexArrays.reserve(5);
 
 	// m_innerText displays the inner position of the plane
 
 	m_innerText = sf::Text("0, 0", Global::Font, 12);
 	m_innerText.setFillColor(MOD_BUTTON_TEXT_FG);
+}
+
+Plane::Plane(const Plane& plane)
+{
+	for (uint64_t i = 0; i < m_collections.size(); i++)
+		delete m_collections[i];
+
+	m_collections.clear();
+
+	for (uint64_t i = 0; i < plane.m_collections.size(); i++)
+		m_collections.push_back(new Collection(plane.m_collections[i]));
 }
 
 Plane::~Plane()
@@ -23,18 +37,27 @@ Plane::~Plane()
 		delete m_collections[i];
 }
 
-void Plane::AddCollection(Collection* collection)
+void Plane::AddCollection(Collection* collection, bool displayCollectionVanity)
 {
 	m_collections.push_back(collection);
+	m_collectionVanity.push_back(displayCollectionVanity);
 }
 
 void Plane::AddCollections(const std::vector<Collection*>& collections)
 {
 	if (m_collections.size() + collections.size() >= m_collections.capacity())
-		m_collections.reserve((uint64_t)std::ceil((float)(m_collections.size() + collections.size()) * 1.5f + 10.0f));
+	{
+		size_t ncap = (uint64_t)std::ceil((float)(m_collections.size() + collections.size()) * 1.5f + 10.0f);
+
+		m_collections.reserve(ncap);
+		m_collectionVanity.reserve(ncap);
+	}
 
 	for (uint64_t i = 0; i < collections.size(); i++)
+	{
 		m_collections.push_back(collections[i]);
+		m_collectionVanity.push_back(true);
+	}
 }
 
 const std::vector<Collection*>& Plane::GetCollections()
@@ -42,18 +65,33 @@ const std::vector<Collection*>& Plane::GetCollections()
 	return m_collections;
 }
 
+void Plane::TranslateInnerPosition(const sf::Vector2i& position)
+{
+	m_innerPosition += position;
+}
+
+void Plane::DeleteContents()
+{
+	for (uint64_t i = 0; i < m_collections.size(); i++)
+		delete m_collections[i];
+
+	m_collections.clear();
+	m_collectionVanity.clear();
+}
+
 void Plane::frameUpdate(const double& deltaTime)
 {
-	// innerText
+	// set innerText to a visual representation of the inner position coordinates
 
 	m_innerText.setPosition(getPosition().x + 5, getPosition().y + getSize().y - 18);
 	char innerText[20];
 	sprintf(innerText, "%d, %d", m_innerPosition.x, m_innerPosition.y); // TODO make sure "%d" has no trailing "0"s.
  	m_innerText.setString(innerText);
 
-	// transform applies offset to the vertex array
+	// transform applies offset to the vertex buffers
 
-	m_vertexArrayTransform.translate((sf::Vector2f)m_innerPosition);
+	for (uint16_t i = 0; i < m_vertexBufferTransform.size(); i++)
+		m_vertexBufferTransform[i].translate((sf::Vector2f)m_innerPosition);
 }
 
 const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
@@ -61,28 +99,99 @@ const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, co
 
 }
 
+Plane* Plane::PrimaryPlane;
+
+Plane* Plane::ToolbarPlane;
+
 void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	target.draw(m_vertexBuffers[0], m_vertexArrayTransform);
+	// render each batch collection
+
+	for (uint16_t i = 0; i < m_vertexBuffers.size(); i++)
+		target.draw(m_vertexBuffers[i], m_vertexBufferTransform[i]);
+
+	// render inner position coordinates
+
 	target.draw(m_innerText);
 }
 
 void Plane::CreateBuffer(const uint16_t& collectionIdx)
 {
 	m_vertexArrays.push_back(std::vector<sf::Vertex>());
+	m_vertexArrays.back().reserve(VA_DATA_OFFSET + 100);
 
 	// ====================================================================================================================================================
-	// =============== add collection geometry to vertex array
+	// =============== add collection geometry to vertex array; see "dev/collection_geometry.png"
 	// ====================================================================================================================================================
 
-	// 
+	const sf::Vector2f& pos = m_collections[collectionIdx]->getPosition();
+	const sf::Vector2u& size = m_collections[collectionIdx]->getSize();
 
-	m_vertexArrays.back().push_back(sf::Vertex(m_collections[collectionIdx]->getPosition() + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+	// 0
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+
+	// 1
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+
+	// 2
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+
+	// 3
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+
+	// 4
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+
+	// 5
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+
+	// 6
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+
+	// 7
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+
+	// 8
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+
+	// 9
+
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+	m_vertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
 
 	// ====================================================================================================================================================
 	// =============== create buffer
 	// ====================================================================================================================================================
 
+	// "Triangles" because we are batch rendering and can not use the other optimized connected primitive types
 	// "Dynamic" because "Occasionally changing data", the buffer will only be changed during a user induced event
 	m_vertexBuffers.push_back(sf::VertexBuffer(sf::PrimitiveType::Triangles, sf::VertexBuffer::Usage::Dynamic));
 }

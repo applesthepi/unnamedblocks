@@ -3,11 +3,6 @@
 #include <fstream>
 #include <string_view>
 
-void ProjectHandler::Initialize()
-{
-	CurrentPath = std::string();
-}
-
 // Oh hey a union
 union u32 {
 	uint32_t value;
@@ -65,7 +60,7 @@ inline void push(std::vector<char> &vec, std::string_view value) {
 //   (int32_t) x y (uint32_t)block_count
 //     (uint32_t) name_id (uint8_t) arg_count
 //       (uint16_t) arg_size (char[]) arg
-void ProjectHandler::SaveProject(std::string& path, Plane* plane) {
+void ProjectHandler::SaveProject(const std::string& path) {
 	std::unordered_map<std::string, uint32_t> ids;
 	std::vector<std::string> names;
 	uint32_t next_id = 0;
@@ -129,7 +124,7 @@ void ProjectHandler::SaveProject(std::string& path, Plane* plane) {
 	file.close();
 }
 
-void ProjectHandler::LoadProject(std::string& path, Plane* plane, BlockRegistry* registry)
+void ProjectHandler::LoadProject(const std::string& path)
 {
 	char buffer[257];
 	std::ifstream file(path, std::ifstream::in | std::ifstream::binary);

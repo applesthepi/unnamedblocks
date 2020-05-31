@@ -39,25 +39,26 @@ public:
 		BlockHeight = 18;
 		BlockBorder = 4;
 		Font.loadFromFile("res/AnonymousPro-Regular.ttf");
+		MousePosition = sf::Vector2i();
 
 		// these may be old and unused
 
-		Dragging = false;
-		DraggingStack = nullptr;
-		DraggingStackConnected = nullptr;
-		DraggingStackConnectedIndex = 0;
-		CutRenderingPlane = false;
-		DraggingPlane = nullptr;
-		DraggingPlaneOver = nullptr;
-		SelectedArgument = nullptr;
-		ToolbarWidth = 300;
-		BlockConnectDistance = 60;
-		ApplicationRunning = true;
-		ProjectPath = "";
-		SkipFrame = false;
-		MousePosition = sf::Vector2i(0, 0);
-		SelectedBlock = nullptr;
-		SelectedStack = nullptr;
+		//Dragging = false;
+		//DraggingStack = nullptr;
+		//DraggingStackConnected = nullptr;
+		//DraggingStackConnectedIndex = 0;
+		//CutRenderingPlane = false;
+		//DraggingPlane = nullptr;
+		//DraggingPlaneOver = nullptr;
+		//SelectedArgument = nullptr;
+		//ToolbarWidth = 300;
+		//BlockConnectDistance = 60;
+		//ApplicationRunning = true;
+		//ProjectPath = "";
+		//SkipFrame = false;
+		//MousePosition = sf::Vector2i(0, 0);
+		//SelectedBlock = nullptr;
+		//SelectedStack = nullptr;
 	}
 
 	// these are in use and updated for "the_nuking_of_rhr_stacking"
@@ -65,25 +66,26 @@ public:
 	static uint8_t BlockHeight;
 	static uint8_t BlockBorder;// must be divisible by 2
 	static sf::Font Font;
+	static sf::Vector2i MousePosition;
 
 	// these may be old and unused
 
-	static bool Dragging;
-	static void* DraggingStack;
-	static void* DraggingStackConnected;
-	static unsigned int DraggingStackConnectedIndex;
-	static bool CutRenderingPlane;
-	static void* DraggingPlane;
-	static void* DraggingPlaneOver;
-	static void* SelectedArgument;
-	static unsigned int ToolbarWidth;
-	static unsigned int BlockConnectDistance;
-	static bool ApplicationRunning;
-	static std::string ProjectPath;
-	static bool SkipFrame;
-	static GpuMan GpuType;
-	static sf::Vector2i MousePosition;
-	static void* SelectedBlock;
-	static void* SelectedStack;
+	//static bool Dragging;
+	//static void* DraggingStack;
+	//static void* DraggingStackConnected;
+	//static unsigned int DraggingStackConnectedIndex;
+	//static bool CutRenderingPlane;
+	//static void* DraggingPlane;
+	//static void* DraggingPlaneOver;
+	//static void* SelectedArgument;
+	//static unsigned int ToolbarWidth;
+	//static unsigned int BlockConnectDistance;
+	//static bool ApplicationRunning;
+	//static std::string ProjectPath;
+	//static bool SkipFrame;
+	//static GpuMan GpuType;
+	//static sf::Vector2i MousePosition;
+	//static void* SelectedBlock;
+	//static void* SelectedStack;
 };
 
