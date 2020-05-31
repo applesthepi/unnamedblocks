@@ -1,4 +1,44 @@
 #include "Stack.h"
+
+Stack::Stack()
+{
+	m_blocks.reserve(10);
+}
+
+Stack::~Stack()
+{
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+		delete m_blocks[i];
+}
+
+void Stack::AddBlock(Block* block)
+{
+	m_blocks.push_back(block);
+}
+
+void Stack::AddBlocks(const std::vector<Block*>& blocks)
+{
+	if (m_blocks.size() + blocks.size() >= m_blocks.capacity())
+		m_blocks.reserve((uint64_t)std::ceil((float)(m_blocks.size() + blocks.size()) * 1.5f + 10.0f));
+
+	for (uint64_t i = 0; i < blocks.size(); i++)
+		m_blocks.push_back(blocks[i]);
+}
+
+const std::vector<Block*>& Stack::GetBlocks()
+{
+	return m_blocks;
+}
+
+
+
+
+
+
+
+
+/*
+#include "Stack.h"
 #include "Plane.h"
 #include "RHR/handlers/StatmentHandler.h"
 
@@ -413,7 +453,7 @@ void Stack::Render(sf::RenderTexture* render, sf::RenderWindow* window)
 	}
 }
 
-void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
+void Stack::FrameUpdate(bool, bool forceUpdate)
 {
 	bool mouseDown = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
@@ -588,10 +628,9 @@ void Stack::FrameUpdate(bool /*updateBlocks*/, bool forceUpdate)
 		}
 		else
 		{
-			/*
-			for (unsigned int i = 0; i < m_blocks.size(); i++)
-				m_blocks[i]->FrameUpdate(sf::Vector2f(visualOffset * 20, 0), true);
-			*/
+			//for (unsigned int i = 0; i < m_blocks.size(); i++)
+			//	m_blocks[i]->FrameUpdate(sf::Vector2f(visualOffset * 20, 0), true);
+			//
 		}
 	}
 	else
@@ -1158,3 +1197,4 @@ void Stack::GenerateTopicalGeometry()
 	m_topicalRenderTexture.display();
 	m_topicalRenderSprite.setTexture(m_topicalRenderTexture.getTexture());
 }
+*/

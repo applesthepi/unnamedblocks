@@ -1,5 +1,35 @@
 #pragma once
 #include "Block.h"
+
+class Stack
+{
+public:
+	Stack();
+	~Stack();
+
+	void AddBlock(Block* block);
+	void AddBlocks(const std::vector<Block*>& blocks);
+
+	const std::vector<Block*>& GetBlocks();
+private:
+	std::vector<Block*> m_blocks;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+#include "Block.h"
 #include "RHR/StatmentIf.h"
 
 #include <vector>
@@ -92,3 +122,4 @@ private:
 	sf::RenderTexture m_topicalRenderTexture;
 	bool m_isTopical;
 };
+*/

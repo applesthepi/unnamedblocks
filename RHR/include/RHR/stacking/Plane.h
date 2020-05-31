@@ -1,13 +1,40 @@
 #pragma once
+#include "Collection.h"
 
-#include "Stack.h"
+#include "RHR/ui/IRenderable.h"
+#include "RHR/ui/IMouseUpdatable.h"
+#include "RHR/ui/ITransformable.h"
 
-#include <vector>
-#include <functional>
-
-class Plane
+class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
 {
 public:
+	Plane();
+	~Plane();
+
+	void AddCollection(Collection* collection);
+	void AddCollections(const std::vector<Collection*>& collections);
+
+	const std::vector<Collection*>& GetCollections();
+
+	void frameUpdate(const double& deltaTime) override;
+	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+protected:
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+private:
+	std::vector<Collection*> m_collections;
+
+	sf::VertexArray m_vertexArray;
+
+
+
+
+
+
+
+
+
+
+	/*
 	Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar = false);
 	~Plane();
 
@@ -34,7 +61,9 @@ public:
 	void MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button button);
 
 	static std::vector<Plane*>* Planes;
+	
 private:
+	
 	std::vector<Stack*> m_stacks;
 	sf::Vector2u* m_position;
 	sf::Vector2i* m_innerPosition;
@@ -56,4 +85,5 @@ private:
 	sf::Text m_innerPositionText;
 	sf::RenderTexture m_renderBuffer;
 	sf::Sprite m_renderSprite;
+	*/
 };

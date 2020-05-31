@@ -7,6 +7,56 @@
 #include <exception>
 #include <iostream>
 
+Plane::Plane()
+{
+	m_collections.reserve(5);
+}
+
+Plane::~Plane()
+{
+	for (uint64_t i = 0; i < m_collections.size(); i++)
+		delete m_collections[i];
+}
+
+void Plane::AddCollection(Collection* collection)
+{
+	m_collections.push_back(collection);
+}
+
+void Plane::AddCollections(const std::vector<Collection*>& collections)
+{
+	if (m_collections.size() + collections.size() >= m_collections.capacity())
+		m_collections.reserve((uint64_t)std::ceil((float)(m_collections.size() + collections.size()) * 1.5f + 10.0f));
+
+	for (uint64_t i = 0; i < collections.size(); i++)
+		m_collections.push_back(collections[i]);
+}
+
+const std::vector<Collection*>& Plane::GetCollections()
+{
+	return m_collections;
+}
+
+void Plane::frameUpdate(const double& deltaTime)
+{
+
+}
+
+const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+{
+
+}
+
+void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+
+}
+
+
+
+
+
+/*
 Plane::Plane(sf::Vector2u position, sf::Vector2u size, bool toolbar)
 {
 	m_position = new sf::Vector2u();
@@ -115,6 +165,21 @@ Plane::~Plane()
 	{
 		delete m_stacks[i];
 	}
+}
+
+void Plane::frameUpdate(const double& deltaTime)
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+
+const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+{
+	throw std::logic_error("The method or operation is not implemented.");
+}
+
+void Plane::draw(RenderTarget& target, RenderStates states) const
+{
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void Plane::AddStack(Stack* stack)
@@ -416,3 +481,4 @@ void Plane::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button butt
 }
 
 std::vector<Plane*>* Plane::Planes;
+*/

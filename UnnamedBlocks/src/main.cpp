@@ -46,6 +46,10 @@ void ReturnFinished()
 
 int main()
 {
+	// ==============================================================================================================================
+	// ============== Initialization
+	// ==============================================================================================================================
+
 	Logger::Info(UnnamedBlocksVersion);
 	if (UnnamedBlocksBeta)
 		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
@@ -72,12 +76,12 @@ int main()
 	MessageHandler::Initialize();
 	InputHandler::Initialization();
 	PreProcessor::Initialize();
+
+	// ==============================================================================================================================
+	// ============== Intro Animation
+	// ==============================================================================================================================
 	
 	{
-		//
-		// intro
-		//
-
 		sf::Http http("kikoho.ddns.net");
 
 		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"));
@@ -176,6 +180,10 @@ int main()
 		}
 	}
 
+	// ==============================================================================================================================
+	// ============== Program Initalization
+	// ==============================================================================================================================
+
 	window.setFramerateLimit(200);
 
 	BlockRegistry* pRegistry = new BlockRegistry();
@@ -217,6 +225,10 @@ int main()
 	frameRate.setCharacterSize(12);
 
 	clTrip.restart();
+
+	// ==============================================================================================================================
+	// ============== Window Main Loop
+	// ==============================================================================================================================
 
 	while (window.isOpen())
 	{
@@ -282,9 +294,9 @@ int main()
 			}
 		}
 
-		window.clear(MOD_BACKGROUND_HIGH);
-		CategoryHandler::Render(&window, toolbarPlane);
-
+		// ==============================================================================================================================
+		// ============== Global
+		// ==============================================================================================================================
 
 		if (window.hasFocus())
 			Global::MousePosition = sf::Mouse::getPosition(window);
@@ -298,6 +310,10 @@ int main()
 			primaryPlane->ReloadVanity();
 		}
 
+		// ==============================================================================================================================
+		// ============== Frame Update
+		// ==============================================================================================================================
+
 		UIRegistry::GetRegistry().frameUpdate(0.0);
 
 		toolbarPlane->FrameUpdate(pRegistry);
@@ -308,12 +324,16 @@ int main()
 
 		CategoryHandler::FrameUpdate(&window, pRegistry, toolbarPlane, primaryPlane);
 
-		//render
+		// ==============================================================================================================================
+		// ============== Render
+		// ==============================================================================================================================
+
+		window.clear(MOD_BACKGROUND_HIGH);
+		CategoryHandler::Render(&window, toolbarPlane);
 
 		toolbarPlane->Render(&window);
 		primaryPlane->Render(&window);
 
-		//render connections
 		toolbarPlane->RenderConnection(&window);
 		primaryPlane->RenderConnection(&window);
 
@@ -322,7 +342,11 @@ int main()
 		if (Global::Dragging)
 			((Stack*)Global::DraggingStack)->Render(nullptr, &window);
 
-		// execution
+		CategoryHandler::RenderPost(&window);
+
+		// ==============================================================================================================================
+		// ============== FPS
+		// ==============================================================================================================================
 
 		if (Global::SkipFrame)
 		{
@@ -340,8 +364,6 @@ int main()
 		}
 
 		frameRate.setPosition(sf::Vector2f(window.getSize().x - 70, 0));
-
-		CategoryHandler::RenderPost(&window);
 
 		window.draw(frameRate);
 		window.display();
