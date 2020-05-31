@@ -18,6 +18,7 @@ public:
 	void UpdateBlocks(const uint64_t& catIdx);
 	void RegisterHeader();
 	const uint32_t UpdateButtons();
+	const uint16_t& GetToolbarWidth();
 
 	void frameUpdate(const double& deltaTime) override;
 
@@ -46,7 +47,7 @@ private:
 	bool m_fullBreak;
 	bool m_needsUpdate;
 
-	std::vector<ButtonText*> m_editorButtons;
+	std::vector<ButtonImage*> m_editorButtons;
 	std::vector<ButtonImage*> m_runtimeButtons;
 
 	uint16_t m_toolbarWidth;

@@ -13,7 +13,7 @@ Collection::Collection(const Collection& collection)
 	m_stacks.clear();
 
 	for (uint64_t i = 0; i < collection.m_stacks.size(); i++)
-		m_stacks.push_back(new Stack(collection.m_stacks[i]));
+		m_stacks.push_back(new Stack(*collection.m_stacks[i]));
 }
 
 Collection::~Collection()

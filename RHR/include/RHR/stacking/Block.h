@@ -1,9 +1,26 @@
 #pragma once
+#include "args/Argument.h"
 #include "RHR/ui/ITransformable.h"
 
+#include <vector>
 
+class Block : public ITransformable
+{
+public:
+	Block();
+	Block(const Block& block);
 
+	~Block();
 
+	void AddArgument(Argument* argument);
+	void AddArguments(const std::vector<Argument*>& arguments);
+
+	const std::vector<Argument*>& GetArguments();
+private:
+	std::vector<Argument*> m_arguments;
+};
+
+/*
 #include "RHR/registries/BlockRegistry.h"
 #include "args/Argument.h"
 
@@ -76,3 +93,4 @@ private:
 	bool m_wasDown;
 	bool m_next;
 };
+*/

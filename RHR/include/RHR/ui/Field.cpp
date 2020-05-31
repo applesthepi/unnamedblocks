@@ -8,7 +8,7 @@ Field::Field(const std::string& text, const bool& canSwitch, const FieldType& fi
 {
 	m_tab = nullptr;
 
-	m_input = sf::Text(m_text, *Global::Font, Global::BlockHeight - Global::BlockBorder);
+	m_input = sf::Text(m_text, Global::Font, Global::BlockHeight - Global::BlockBorder);
 	m_inputBackground = sf::RectangleShape(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 
 	m_inputLoc = sf::RectangleShape(sf::Vector2f(1, Global::BlockHeight - Global::BlockBorder));
@@ -82,6 +82,11 @@ const uint32_t Field::GetWidth()
 	return m_inputBackground.getSize().x;
 }
 
+const std::string& Field::GetText()
+{
+	return m_text;
+}
+
 void Field::frameUpdate(const double& deltaTime)
 {
 	if (!m_enabled)
@@ -109,9 +114,9 @@ void Field::frameUpdate(const double& deltaTime)
 
 	if (m_selected)
 	{
-		m_inputLoc.setPosition(getPosition().x + sf::Text(m_text.substr(0, m_textLoc), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, getPosition().y + (Global::BlockBorder / 2));
-		m_inputLocHigh.setPosition(getPosition().x + sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, getPosition().y + (Global::BlockBorder / 2));
-		m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
+		m_inputLoc.setPosition(getPosition().x + sf::Text(m_text.substr(0, m_textLoc), Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, getPosition().y + (Global::BlockBorder / 2));
+		m_inputLocHigh.setPosition(getPosition().x + sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, getPosition().y + (Global::BlockBorder / 2));
+		m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
 	}
 }
 

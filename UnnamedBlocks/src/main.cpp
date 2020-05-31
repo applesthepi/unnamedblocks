@@ -102,7 +102,7 @@ int main()
 		sf::Texture txEmp;
 		txEmp.loadFromImage(imgEmp);
 
-		sf::Text title("Unnamed Blocks", *Global::Font, 48);
+		sf::Text title("Unnamed Blocks", Global::Font, 48);
 		title.setPosition((window.getSize().x / 2.0) - (title.getLocalBounds().width / 2.0), 40);
 		title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
@@ -115,17 +115,17 @@ int main()
 		double txtStartHeight = (window.getSize().y / 2.0) + 200;
 		double txtEndHeight = (window.getSize().y / 2.0) + 70;
 
-		sf::Text txtApples("applesthepi", *Global::Font, 24);
+		sf::Text txtApples("applesthepi", Global::Font, 24);
 		int32_t xposApples = (window.getSize().x / 3.0) - (txtApples.getLocalBounds().width / 2.0);
 		txtApples.setPosition(xposApples, (window.getSize().y / 2.0) + 70);
 		txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
-		sf::Text txtEmp("The-Emperor10", *Global::Font, 24);
+		sf::Text txtEmp("The-Emperor10", Global::Font, 24);
 		int32_t xposEmp = ((window.getSize().x * 2) / 3.0) - (txtEmp.getLocalBounds().width / 2.0);
 		txtEmp.setPosition(xposEmp, (window.getSize().y / 2.0) + 70);
 		txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
-		sf::Text titleGit("github.com/applesthepi/unnamedblocks", *Global::Font, 24);
+		sf::Text titleGit("github.com/applesthepi/unnamedblocks", Global::Font, 24);
 		titleGit.setPosition((window.getSize().x / 2.0) - (titleGit.getLocalBounds().width / 2.0), window.getSize().y - 50);
 		titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
@@ -213,11 +213,11 @@ int main()
 	sf::Clock cl;
 	sf::Clock clTrip;
 
-	sf::Text frameRate;
-	frameRate.setString("fps: 0");
+	sf::Time lastClTrip;
+	double deltaTime = 0.0;
+
+	sf::Text frameRate = sf::Text("fps: 0", Global::Font, 12);
 	frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
-	frameRate.setFont(*Global::Font);
-	frameRate.setCharacterSize(12);
 
 	clTrip.restart();
 
@@ -245,8 +245,8 @@ int main()
 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
 				window.setView(sf::View(visibleArea));
 
-				primaryPlane->setPosition(sf::Vector2f(Global::ToolbarWidth + 10, HEADER_HEIGHT + 5));
-				primaryPlane->setSize(sf::Vector2u(window.getSize().x - primaryPlane->getPosition().x - 5, window.getSize().y - primaryPlane->getPosition().y - 5));
+				Plane::PrimaryPlane->setPosition(sf::Vector2f(CategoryHandler::GetHandler().GetToolbarWidth() + 10, HEADER_HEIGHT + 5));
+				Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
 			}
 			else if (ev.type == sf::Event::MouseWheelScrolled)
 			{
@@ -255,9 +255,9 @@ int main()
 					int32_t delta = ev.mouseWheelScroll.delta * -200;
 
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-						primaryPlane->TranslateInnerPosition(sf::Vector2i(delta, 0));
+						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(delta, 0));
 					else
-						primaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
+						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
 				}
 			}
 			else if (ev.type == sf::Event::EventType::KeyPressed)
@@ -276,8 +276,8 @@ int main()
 				{
 					if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
 					{
-						if (!primaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
-							toolbarPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
+						if (!Plane::PrimaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+							Plane::ToolbarPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
 					}
 				}
 			}
@@ -287,8 +287,8 @@ int main()
 				{
 					if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
 					{
-						if (!primaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
-							toolbarPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
+						if (!Plane::PrimaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+							Plane::ToolbarPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
 					}
 				}
 			}
@@ -303,25 +303,25 @@ int main()
 		else
 			Global::MousePosition = sf::Vector2i();
 
+		Global::WindowSize = window.getSize();
+
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
 		{
 			lastVanityReload = std::chrono::high_resolution_clock::now();
-			primaryPlane->ReloadVanity();
+			// TODO reload vanity
 		}
+
+		deltaTime = (double)lastClTrip.asMicroseconds() * 0.0000001;
 
 		// ==============================================================================================================================
 		// ============== Frame Update
 		// ==============================================================================================================================
 
-		UIRegistry::GetRegistry().frameUpdate(0.0);
+		UIRegistry::GetRegistry().frameUpdate(deltaTime);
+		CategoryHandler::GetHandler().frameUpdate(deltaTime);
 
-		toolbarPlane->FrameUpdate(pRegistry);
-		primaryPlane->FrameUpdate(pRegistry);
-
-		if (Global::Dragging)
-			((Stack*)Global::DraggingStack)->FrameUpdate(false);
-
-		CategoryHandler::FrameUpdate(&window, pRegistry, toolbarPlane, primaryPlane);
+		Plane::ToolbarPlane->frameUpdate(deltaTime);
+		Plane::PrimaryPlane->frameUpdate(deltaTime);
 
 		// ==============================================================================================================================
 		// ============== Render
@@ -329,30 +329,22 @@ int main()
 
 		window.clear(MOD_BACKGROUND_HIGH);
 		
-		CategoryHandler::Render(&window, toolbarPlane);
-
-		window.draw(*toolbarPlane);
-		window.draw(*primaryPlane);
+		window.draw(CategoryHandler::GetHandler());
+		window.draw(*Plane::ToolbarPlane);
+		window.draw(*Plane::PrimaryPlane);
 		window.draw(UIRegistry::GetRegistry());
-
-		CategoryHandler::RenderPost(&window);
 
 		// ==============================================================================================================================
 		// ============== FPS
 		// ==============================================================================================================================
-
-		if (Global::SkipFrame)
-		{
-			Global::SkipFrame = false;
-			continue;
-		}
 
 		sf::Time tm = cl.getElapsedTime();
 		cl.restart();
 
 		if (clTrip.getElapsedTime().asSeconds() >= 1.0f)
 		{
-			frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / (tm.asMicroseconds() * 0.000001))));
+			frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
+			lastClTrip = clTrip.getElapsedTime();
 			clTrip.restart();
 		}
 
@@ -362,7 +354,6 @@ int main()
 		window.display();
 	}
 
-	Global::ApplicationRunning = false;
 	MessageHandler::Finish();
 
 	return 0;

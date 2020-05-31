@@ -5,6 +5,9 @@
 #include "RHR/ui/IMouseUpdatable.h"
 #include "RHR/ui/ITransformable.h"
 
+#include <SFML/Graphics.hpp>
+#include <functional>
+
 #define VA_DATA_OFFSET 24
 
 class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
@@ -14,7 +17,7 @@ public:
 	Plane(const Plane& plane);
 
 	~Plane();
-	// TODO copy
+	
 	void AddCollection(Collection* collection, bool displayCollectionVanity);
 	void AddCollections(const std::vector<Collection*>& collections);
 	const std::vector<Collection*>& GetCollections();
@@ -33,6 +36,10 @@ private:
 	void CreateBuffer(const uint16_t& collectionIdx);
 	void UpdateBuffer(const uint16_t& bufferIdx);
 
+	void Select(const uint64_t& collection, const uint64_t& stack, const uint64_t& block, const uint64_t& argument);
+	void SelectContext(const uint64_t& collection, const uint64_t& stack, const uint64_t& block);
+	void UnSelect();
+
 	std::vector<bool> m_collectionVanity;
 	std::vector<Collection*> m_collections;
 
@@ -42,6 +49,15 @@ private:
 
 	sf::Vector2i m_innerPosition;
 	sf::Text m_innerText;
+
+	bool m_selected;
+	bool m_selectedContext;
+	Collection* m_selectedCollection;
+	Stack* m_selectedStack;
+	Block* m_selectedBlock;
+	Argument* m_selectedArgument;
+
+	std::function<void(const uint8_t&)> m_contextCallback;
 
 
 

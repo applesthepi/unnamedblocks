@@ -1,19 +1,14 @@
 #pragma once
-#include "RHR/ui/MouseUpdatable.h"
-#include "RHR/ui/UBRenderable.h"
+#include "RHR/ui/ITransformable.h"
 
-#include <SFML/Graphics.hpp>
-#include <functional>
 #include <Cappuccino/block/ModBlock.h>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/Graphics/Image.hpp>
 
-class Argument : public UBRenderable, public MouseUpdatable
+class Argument : public ITransformable
 {
 public:
-	Argument(const sf::Vector2u& relitivePosition);
-	void SetupInBlock(sf::Vector2i* blockRelitive, sf::Vector2i* blockAbsolute, std::function<void()>* functionUpdatePreTexture, std::function<void()>* functionSelect);
-
-	void preFrameUpdate(const bool& global);
-	void frameUpdate(const double& deltaTime) override;
+	Argument();
 
 	// data of the argument must be stored as string for saving
 	void SetData(const std::string& data);
@@ -23,6 +18,15 @@ public:
 	void SetMode(const BlockArgumentVariableMode& mode);
 	const BlockArgumentVariableMode& GetMode();
 
+	// pull whether or not the argument is requesting to goto the next argument
+	const bool PullNext();
+
+	// the geometry, colors, and texture coordinates of the argument
+	const sf::VertexArray& GetVertexArray();
+
+	// if using textures, then this will be what you refer to using the texture coordinates. Later it will get processed with everything.
+	const sf::Image& GetVertexArrayTexture();
+
 	// how to interpret the data
 	virtual const BlockArgumentType GetType();
 
@@ -31,34 +35,19 @@ public:
 
 	// whether or not the argument contains data for storing
 	virtual const bool HasData();
-	
+
 	// select the argument and enable it
 	virtual void Select();
 
-	// pull whether or not the argument is requesting to goto the next argument
-	const bool PullNext();
-
-	void UpdateTexture();
-	void SelectGlobaly();
-	void SetRelitivePosition(const sf::Vector2u& relitivePosition);
-
-	const sf::Vector2i& GetAbsolutePosition();
-	const sf::Vector2i& GetRealAbsolutePosition();
-	const sf::Vector2u& GetRelitivePosition();
+	// when the focus turns off of the argument
+	virtual void UnSelect();
 protected:
-	virtual void frameUpdateArgument(const double& deltaTime);
-	virtual void reloadData();
-
-	sf::Vector2u m_relitivePosition;
-	sf::Vector2i m_absolutePosition;
-	sf::Vector2i m_realAbsolutePosition;
-	sf::Vector2i* m_blockRelitive;
-	sf::Vector2i* m_blockAbsolute;
-
-	std::function<void()>* m_functionUpdatePreTexture;
-	std::function<void()>* m_functionSelect;
+	virtual void UpdateVertexArray();
 
 	bool m_next;
 	std::string m_data;
 	BlockArgumentVariableMode m_mode;
+	
+	sf::VertexArray m_vertexArray;
+	sf::Image m_vertexArrayImage;
 };

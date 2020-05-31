@@ -1,6 +1,6 @@
 #pragma once
-#include "UBRenderable.h"
-#include "MouseUpdatable.h"
+#include "IUI.h"
+#include "ITransformable.h"
 
 #include <SFML/Graphics.hpp>
 #include <string>
@@ -11,7 +11,7 @@ enum FieldType
 	TEXT, NUMBER
 };
 
-class Field : public UBRenderable, public MouseUpdatable, public sf::Transformable
+class Field : public IUI, public ITransformable
 {
 public:
 	Field(const std::string& text, const bool& canSwitch, const FieldType& fieldType);
@@ -25,6 +25,7 @@ public:
 
 	const bool GetSelected();
 	const uint32_t GetWidth();
+	const std::string& GetText();
 
 	void frameUpdate(const double& deltaTime) override;
 	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;

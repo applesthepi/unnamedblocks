@@ -39,7 +39,6 @@ public:
 		BlockHeight = 18;
 		BlockBorder = 4;
 		Font.loadFromFile("res/AnonymousPro-Regular.ttf");
-		MousePosition = sf::Vector2i();
 
 		// these may be old and unused
 
@@ -67,6 +66,7 @@ public:
 	static uint8_t BlockBorder;// must be divisible by 2
 	static sf::Font Font;
 	static sf::Vector2i MousePosition;
+	static sf::Vector2u WindowSize;
 
 	// these may be old and unused
 

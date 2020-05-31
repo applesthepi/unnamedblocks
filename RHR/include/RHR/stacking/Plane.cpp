@@ -1,4 +1,5 @@
 #include "RHR/registries/ShaderRegistry.h"
+#include "RHR/handlers/ContextHandler.h"
 #include "Plane.h"
 
 #include <Espresso/Global.h>
@@ -8,6 +9,7 @@
 #include <iostream>
 
 Plane::Plane()
+	:m_selected(false)
 {
 	m_collections.reserve(5);
 	m_collectionVanity.reserve(5);
@@ -18,6 +20,28 @@ Plane::Plane()
 
 	m_innerText = sf::Text("0, 0", Global::Font, 12);
 	m_innerText.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	// callback for the context menu
+
+	m_contextCallback = [](const uint8_t& idx)
+	{
+		if (idx == 0)
+		{
+			// stack duplicate
+		}
+		else if (idx == 0)
+		{
+			// stack delete
+		}
+		else if (idx == 0)
+		{
+			// block duplicate
+		}
+		else if (idx == 0)
+		{
+			// block delete
+		}
+	};
 }
 
 Plane::Plane(const Plane& plane)
@@ -28,7 +52,7 @@ Plane::Plane(const Plane& plane)
 	m_collections.clear();
 
 	for (uint64_t i = 0; i < plane.m_collections.size(); i++)
-		m_collections.push_back(new Collection(plane.m_collections[i]));
+		m_collections.push_back(new Collection(*plane.m_collections[i]));
 }
 
 Plane::~Plane()
@@ -96,7 +120,75 @@ void Plane::frameUpdate(const double& deltaTime)
 
 const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
+	for (uint64_t i = 0; i < m_collections.size(); i++)
+	{
+		// size
+		
+		const sf::Vector2u& collectionSize = m_collections[i]->getSize();
+		
+		// position
 
+		sf::Vector2f collectionPosition = m_collections[i]->getPosition();
+		collectionPosition += getPosition();
+
+		if (position.x > collectionPosition.x && position.x < collectionPosition.x + collectionSize.x &&
+			position.y > collectionPosition.y && position.y < collectionPosition.y + collectionSize.y)
+		{
+			for (uint64_t a = 0; a < m_collections[i]->GetStacks().size(); a++)
+			{
+				// size
+
+				const sf::Vector2u& stackSize = m_collections[i]->GetStacks()[a]->getSize();
+
+				// position
+
+				sf::Vector2f stackPosition = m_collections[i]->GetStacks()[a]->getPosition();
+				stackPosition += getPosition();
+				stackPosition += collectionPosition;
+
+				if (position.x > stackPosition.x && position.x < stackPosition.x + stackSize.x &&
+					position.y > stackPosition.y && position.y < stackPosition.y + stackSize.y)
+				{
+					for (uint64_t b = 0; b < m_collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
+					{
+						// size
+
+						const sf::Vector2u& blockSize = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->getSize();
+
+						// position
+
+						sf::Vector2f blockPosition = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->getPosition();
+						blockPosition += getPosition();
+						blockPosition += collectionPosition;
+						blockPosition += stackPosition;
+
+						if (position.x > blockPosition.x && position.x < blockPosition.x + stackSize.x &&
+							position.y > blockPosition.y && position.y < blockPosition.y + stackSize.y)
+						{
+							if (down)
+							{
+								if (button == sf::Mouse::Button::Left)
+								{
+									ContextHandler::Disable();
+								}
+								else if (button == sf::Mouse::Button::Right)
+								{
+									ContextHandler::Disable();
+									ContextHandler::Enable((sf::Vector2f)position + sf::Vector2f(5, 5), &m_contextCallback);
+								}
+							}
+
+							break;
+						}
+					}
+
+					break;
+				}
+			}
+
+			break;
+		}
+	}
 }
 
 Plane* Plane::PrimaryPlane;
@@ -199,6 +291,36 @@ void Plane::CreateBuffer(const uint16_t& collectionIdx)
 void Plane::UpdateBuffer(const uint16_t& bufferIdx)
 {
 	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]));
+}
+
+void Plane::Select(const uint64_t& collection, const uint64_t& stack, const uint64_t& block, const uint64_t& argument)
+{
+	m_selected = true;
+
+	m_selectedCollection = m_collections[collection];
+	m_selectedStack = m_collections[collection]->GetStacks()[stack];
+	m_selectedBlock = m_collections[collection]->GetStacks()[stack]->GetBlocks()[block];
+	m_selectedArgument = m_collections[collection]->GetStacks()[stack]->GetBlocks()[block]->GetArguments()[argument];
+}
+
+void Plane::SelectContext(const uint64_t& collection, const uint64_t& stack, const uint64_t& block)
+{
+	m_selected = true;
+
+	m_selectedCollection = m_collections[collection];
+	m_selectedStack = m_collections[collection]->GetStacks()[stack];
+	m_selectedBlock = m_collections[collection]->GetStacks()[stack]->GetBlocks()[block];
+	m_selectedArgument = nullptr;
+}
+
+void Plane::UnSelect()
+{
+	m_selected = false;
+
+	m_selectedCollection = nullptr;
+	m_selectedStack = nullptr;
+	m_selectedBlock = nullptr;
+	m_selectedArgument = nullptr;
 }
 
 /*

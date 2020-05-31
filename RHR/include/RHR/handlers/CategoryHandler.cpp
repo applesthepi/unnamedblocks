@@ -372,7 +372,7 @@ const uint32_t CategoryHandler::UpdateButtons()
 			m_modIco[i].setTexture(m_textureClose);
 
 		offset += 16 + 5;
-
+		/*
 		if (m_modOpen[i])
 		{
 			for (uint64_t a = 0; a < m_buttons[i].size(); a++)
@@ -388,12 +388,18 @@ const uint32_t CategoryHandler::UpdateButtons()
 			for (uint64_t a = 0; a < m_buttons[i].size(); a++)
 				m_buttons[i][a]->SetEnabled(false);
 		}
+		*/
 	}
 
 	m_background.setPosition(sf::Vector2f(5, HEADER_HEIGHT + 5));
 	m_background.setSize(sf::Vector2f(m_toolbarWidth, offset - (16 + 5)));
 
 	return offset;
+}
+
+const uint16_t& CategoryHandler::GetToolbarWidth()
+{
+	return m_toolbarWidth;
 }
 
 CategoryHandler& CategoryHandler::GetHandler()
@@ -403,8 +409,8 @@ CategoryHandler& CategoryHandler::GetHandler()
 
 void CategoryHandler::frameUpdate(const double& deltaTime)
 {
-	if (toolbarPlane->GetStackCount() != m_toolbarStackCount)
-		UpdateBlocks(blockRegistry, toolbarPlane, m_selectedCategory);
+	if (Plane::ToolbarPlane->GetCollections().size() != m_toolbarStackCount)
+		UpdateBlocks(m_selectedCategory);
 
 	if (PreProcessor::IsFinished() && m_running)
 	{
@@ -413,10 +419,10 @@ void CategoryHandler::frameUpdate(const double& deltaTime)
 		m_running = false;
 
 		for (uint16_t i = 0; i < m_runtimeButtons.size(); i++)
-			ButtonRegistry::RemoveButton(m_runtimeButtons[i]);
+			UIRegistry::GetRegistry().RemoveComponent(m_runtimeButtons[i]);
 
 		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
-			ButtonRegistry::AddButton(m_editorButtons[i]);
+			UIRegistry::GetRegistry().AddComponent(m_editorButtons[i]);
 	}
 	else if (!PreProcessor::IsFinished() && !m_running)
 	{
@@ -425,29 +431,29 @@ void CategoryHandler::frameUpdate(const double& deltaTime)
 		m_running = true;
 
 		for (uint16_t i = 0; i < m_runtimeButtons.size(); i++)
-			ButtonRegistry::AddButton(m_runtimeButtons[i]);
+			UIRegistry::GetRegistry().AddComponent(m_runtimeButtons[i]);
 
 		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
-			ButtonRegistry::RemoveButton(m_editorButtons[i]);
+			UIRegistry::GetRegistry().RemoveComponent(m_editorButtons[i]);
 	}
 
 	if (m_needsUpdate)
 	{
 		m_needsUpdate = false;
 
-		primaryPlane->SetPosition(sf::Vector2u(m_toolbarWidth + 10, HEADER_HEIGHT + 5));
-		primaryPlane->SetSize(sf::Vector2u(window->getSize().x - primaryPlane->GetPosition().x - 5, window->getSize().y - primaryPlane->GetPosition().y - 5));
+		Plane::PrimaryPlane->setPosition(sf::Vector2f(m_toolbarWidth + 10, HEADER_HEIGHT + 5));
+		Plane::PrimaryPlane->setSize(sf::Vector2u(Global::WindowSize.x - Plane::PrimaryPlane->getPosition().x - 5, Global::WindowSize.y - Plane::PrimaryPlane->getPosition().y - 5));
 	}
+
+	m_backgroundOptions.setSize(sf::Vector2f(Global::WindowSize.x, HEADER_HEIGHT));
+	Plane::ToolbarPlane->setSize(sf::Vector2u(m_toolbarWidth, Global::WindowSize.y - (Plane::ToolbarPlane->getPosition().y + 5)));
 }
 
 void CategoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	m_backgroundOptions.setSize(sf::Vector2f(window->getSize().x, HEADER_HEIGHT));
-	toolbarPlane->SetSize(sf::Vector2u(m_toolbarWidth, window->getSize().y - (toolbarPlane->GetPosition().y + 5)));
-
-	window->draw(m_backgroundOptions);
-	window->draw(m_background);
+	target.draw(m_backgroundOptions);
+	target.draw(m_background);
 
 	for (uint16_t i = 0; i < m_modIco.size(); i++)
-		window->draw(m_modIco[i]);
+		target.draw(m_modIco[i]);
 }

@@ -6,10 +6,7 @@ const std::atomic<bool>& ContextHandler::IsEnabled()
 	return m_enabled;
 }
 
-void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(const uint8_t&)>* c0,
-	std::function<void(const uint8_t&)>* c1,
-	std::function<void(const uint8_t&)>* c2,
-	std::function<void(const uint8_t&)>* c3)
+void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(const uint8_t&)>* callback)
 {
 	if (m_enabled)
 		return;
@@ -17,24 +14,18 @@ void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(con
 	m_enabled = true;
 
 	m_buttonCallbacks.clear();
-	m_contextCallbacks.clear();
 	m_buttons.clear();
 
-	// context callbacks are from external classes that are called with the index of the context
+	m_contextCallback = nullptr;
 
-	m_contextCallbacks.push_back(c0);
-	m_contextCallbacks.push_back(c1);
-	m_contextCallbacks.push_back(c2);
-	m_contextCallbacks.push_back(c3);
+	// context callback is from external classes that is called with the index of the context
 
-	// make button callbacks and buttons
-
-	std::vector<std::function<void(const uint8_t&)>*>* contextPointer = &m_contextCallbacks;
+	m_contextCallback = callback;
 
 	// button callback
 
 	m_buttonCallbacks.push_back(new std::function<void()>());
-	*m_buttonCallbacks.back() = [contextPointer]() { (*(contextPointer->at(0)))(0); };
+	*m_buttonCallbacks.back() = [callback]() { (*callback)(0); };
 	
 	// button
 
@@ -44,7 +35,7 @@ void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(con
 	// button callback
 
 	m_buttonCallbacks.push_back(new std::function<void()>());
-	*m_buttonCallbacks.back() = [contextPointer]() { (*(contextPointer->at(1)))(1); };
+	*m_buttonCallbacks.back() = [callback]() { (*callback)(1); };
 
 	// button
 
@@ -54,7 +45,7 @@ void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(con
 	// button callback
 
 	m_buttonCallbacks.push_back(new std::function<void()>());
-	*m_buttonCallbacks.back() = [contextPointer]() { (*(contextPointer->at(2)))(2); };
+	*m_buttonCallbacks.back() = [callback]() { (*callback)(2); };
 
 	// button
 
@@ -64,7 +55,7 @@ void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(con
 	// button callback
 
 	m_buttonCallbacks.push_back(new std::function<void()>());
-	*m_buttonCallbacks.back() = [contextPointer]() { (*(contextPointer->at(3)))(3); };
+	*m_buttonCallbacks.back() = [callback]() { (*callback)(3); };
 
 	// button
 
@@ -85,18 +76,19 @@ void ContextHandler::Disable()
 
 		delete m_buttons[i];
 		delete m_buttonCallbacks[i];
-		delete m_contextCallbacks[i];
 	}
 
 	m_buttonCallbacks.clear();
-	m_contextCallbacks.clear();
 	m_buttons.clear();
+
+	// dont deallocate this
+	m_contextCallback = nullptr;
 }
 
 std::atomic<bool> ContextHandler::m_enabled;
 
 std::vector<std::function<void()>*> ContextHandler::m_buttonCallbacks;
 
-std::vector<std::function<void(const uint8_t&)>*> ContextHandler::m_contextCallbacks;
+std::function<void(const uint8_t&)>* ContextHandler::m_contextCallback;
 
 std::vector<ButtonText*> ContextHandler::m_buttons;

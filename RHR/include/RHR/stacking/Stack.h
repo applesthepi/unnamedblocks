@@ -1,5 +1,6 @@
 #pragma once
 #include "Block.h"
+#include "RHR/ui/ITransformable.h"
 
 class Stack : public ITransformable
 {
