@@ -8,12 +8,7 @@
 #include <string_view>
 #include <vector>
 #include <cassert>
-#include <bit>
-//#include <byteswap.h>
-
-constexpr bool big_endian() noexcept {
-    return std::endian::native == std::endian::big;
-}
+#include <netinet/in.h>
 // Oh hey a union
 union u32 {
 	uint32_t value;
@@ -41,36 +36,28 @@ union f32 {
 };
 inline void push(std::vector<char> &vec, u32 value) {
 	u32 v = value;
-	if(big_endian()) {
-		//v.value = __bswap_32(v.value);
-	}
+	v.value = htonl(v.value);
 	for(char i : v.bytes) {
 		vec.push_back(i);
 	}
 }
 inline void push(std::vector<char> &vec, f32 value) {
 	f32 v = value;
-	if(big_endian()) {
-		//v.value = __bswap_32(v.value);
-	}
+	v.value = htonl(v.value);
 	for(char i : value.bytes) {
 		vec.push_back(i);
 	}
 }
 inline void push(std::vector<char> &vec, i32 value) {
 	i32 v = value;
-	if(big_endian()) {
-		//v.value = __bswap_32(v.value);
-	}
+	v.value = htonl(v.value);
 	for(char i : value.bytes) {
 		vec.push_back(i);
 	}
 }
 inline void push(std::vector<char> &vec, u16 value) {
 	u16 v = value;
-	if(big_endian()) {
-		//v.value = __bswap_32(v.value);
-	}
+	v.value = htons(v.value);
 	for(char i : value.bytes) {
 		vec.push_back(i);
 	}
@@ -89,58 +76,43 @@ inline void push(std::vector<char> &vec, std::string_view value) {
 // Ensure buffer is atleast size * count bytes
 inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 2);
-	if(big_endian()) {
-		for(uint16_t i = 0; i < count; i++) {
-			//buffer[i] = __bswap_16(buffer[i * 2]);
-		}
+	for(uint16_t i = 0; i < count; i++) {
+		buffer[i] = ntohs(buffer[i * 2]);
 	}
 }
 // Reads count elements and converts them to the native endian. Stores the result in buffer
 // Ensure buffer is atleast size * count bytes
 inline void read_32(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 4);
-	if(big_endian()) {
-		for(uint16_t i = 0; i < count; i++) {
-			//buffer[i] = __bswap_32(buffer[i * 4]);
-		}
-	}
-}
-// Reads count elements and converts them to the native endian. Stores the result in buffer
-// Ensure buffer is atleast size * count bytes
-inline void read_64(std::ifstream& file, char* buffer, uint16_t count) {
-	file.read(buffer, count * 8);
-	if(big_endian()) {
-		for(uint16_t i = 0; i < count; i++) {
-			//buffer[i] = __bswap_64(buffer[i] * 8);
-		}
+	for(uint16_t i = 0; i < count; i++) {
+		buffer[i] = ntohl(buffer[i * 4]);
 	}
 }
 #define read_float read_32
-#define read_double read_64
 
 // Layout
 // Indent = Can repeat
 // FIXME: Endianness
-// 
+//
 // (uint32_t) mod_count
 //   (uint8_t) name_size (char[]) name
 // (uint32_t) name_count
 //   (uint8_t) name_size (char[]) name
 //
 // Stack:
-// (uint32_t) collection_count 
+// (uint32_t) collection_count
 //   (float) collection_x collection_y (uint32_t) stack_count
 //     (float) stack_x stack_y (uint32_t)block_count
 //       (uint32_t) name_id (uint8_t) arg_count
 //         (uint16_t) arg_size (char[]) arg
 void ProjectHandler::SaveProject(const std::string& path) {
-	std::unordered_map<const std::string&, uint32_t> mod_ids;
+	std::unordered_map<std::string, uint32_t> mod_ids;
 	std::unordered_map<const char*, uint32_t> block_ids;
 	std::vector<std::string> mod_names;
 	std::vector<std::string> block_names;
 	uint32_t next_id = 0;
 	const std::vector<Collection*>& collections = Plane::PrimaryPlane->GetCollections();
-	
+
 	//  Rough estimates
 	std::vector<char> header;
 	std::vector<char> body;
@@ -288,14 +260,14 @@ void ProjectHandler::LoadProject(const std::string& path)
 		// Get stacks
 		for(uint32_t stack_index = 0; stack_index < stack_count; stack_index++) {
 			Stack* stack = new Stack();
-			
+
 			// Read posistion
 			read_float(file, buffer, 2);
 			float x = *(float*)buffer, y = *(((float*)buffer)+1);
 			stack->setPosition(sf::Vector2f(x, y));
 
 			collection->AddStack(stack);
-			
+
 			// Read block count
 			read_32(file, buffer, 1);
 			uint32_t block_count = *(((uint32_t*)buffer)+2);
@@ -305,7 +277,7 @@ void ProjectHandler::LoadProject(const std::string& path)
 				// Read name
 				read_32(file, buffer, 1);
 				uint32_t name_id = *(uint32_t*)buffer;
-				
+
 				// Read arg count
 				uint8_t arg_count = file.get();
 
@@ -322,7 +294,7 @@ void ProjectHandler::LoadProject(const std::string& path)
 					char* hbuffer = (char*)malloc(arg_size+1);
 					hbuffer[arg_size] = 0;
 					file.read(hbuffer, arg_size);
-					
+
 					// Add arg to block
 					Argument* arg = new Argument();
 					arg->SetData(hbuffer);
