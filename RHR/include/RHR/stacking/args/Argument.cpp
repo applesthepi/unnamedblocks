@@ -29,7 +29,7 @@ const BlockArgumentVariableMode& Argument::GetMode()
 	return m_mode;
 }
 
-const bool Argument::PullNext()
+bool Argument::PullNext()
 {
 	return m_next;
 }
@@ -54,12 +54,12 @@ const BlockArgumentType Argument::GetType()
 	return BlockArgumentType::TEXT;
 }
 
-const uint32_t Argument::GetWidth()
+uint32_t Argument::GetWidth()
 {
 	return 50;
 }
 
-const bool Argument::HasData()
+bool Argument::HasData()
 {
 	return false;
 }

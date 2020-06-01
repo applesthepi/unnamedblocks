@@ -128,7 +128,7 @@ public:
 	//		Cappuccino ends, then you must call "CustomFree" with the parameter "deallocate" set to false.
 	//		This will ensure it does not get freed at the end.
 
-	CAP_DLL const uint64_t CustomPut(void* mem);
+	CAP_DLL uint64_t CustomPut(void* mem);
 	CAP_DLL void* CustomGet(uint64_t idx);
 	CAP_DLL void CustomFree(uint64_t idx, bool deallocate = true);
 private:

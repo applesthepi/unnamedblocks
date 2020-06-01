@@ -81,7 +81,7 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		for (uint64_t a = 0; a < Registration::GetFunctionCallCount()[i]; a++)
 			stack[a] = (uint64_t*)m_data[i][a].GetRuntimeData().data();
 
-		m_dataStackIdx.push_back((const uint64_t**)stack);
+		m_dataStackIdx.push_back((uint64_t**)stack);
 	}
 
 	// ======================================================================================================
@@ -276,7 +276,7 @@ CAP_DLL void ModBlockPass::RemoveDeallocation(std::function<void(ModBlockPass*)>
 	}
 }
 
-CAP_DLL const uint64_t ModBlockPass::CustomPut(void* mem)
+CAP_DLL uint64_t ModBlockPass::CustomPut(void* mem)
 {
 	// TODO change to shared
 	std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);

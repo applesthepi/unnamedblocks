@@ -107,17 +107,17 @@ void Dropdown::SetElements(const std::vector<std::string>& elements, uint64_t id
 	SetEnabled(true);
 }
 
-const uint16_t Dropdown::GetSelected()
+uint16_t Dropdown::GetSelected()
 {
 	return m_selected;
 }
 
-const uint64_t Dropdown::GetWidth()
+uint64_t Dropdown::GetWidth()
 {
 	return m_width;
 }
 
-const bool Dropdown::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+bool Dropdown::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!m_enabled || m_buttons.size() == 0)
 		return false;

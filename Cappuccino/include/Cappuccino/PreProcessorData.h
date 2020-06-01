@@ -31,7 +31,7 @@ public:
 	//CAP_DLL bool& GetBool(uint64_t idx);
 	//CAP_DLL std::string& GetString(uint64_t idx);
 
-	CAP_DLL const uint64_t CustomPut(void* mem);
+	CAP_DLL uint64_t CustomPut(void* mem);
 
 	uint64_t BlockIdx;
 	uint64_t StackIdx;

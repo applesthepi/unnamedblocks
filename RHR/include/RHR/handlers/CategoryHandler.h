@@ -17,7 +17,7 @@ public:
 	void ToggleMod(uint16_t modIdx, uint64_t catIdx);
 	void UpdateBlocks(uint64_t catIdx);
 	void RegisterHeader();
-	const uint32_t UpdateButtons();
+	uint32_t UpdateButtons();
 	uint16_t GetToolbarWidth();
 
 	void frameUpdate(double deltaTime) override;

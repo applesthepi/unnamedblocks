@@ -72,12 +72,12 @@ void Field::SelectAll()
 	m_textLoc = 0;
 }
 
-const bool Field::GetSelected()
+bool Field::GetSelected()
 {
 	return m_selected;
 }
 
-const uint32_t Field::GetWidth()
+uint32_t Field::GetWidth()
 {
 	return m_inputBackground.getSize().x;
 }
@@ -120,7 +120,7 @@ void Field::frameUpdate(double deltaTime)
 	}
 }
 
-const bool Field::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+bool Field::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!m_enabled)
 		return false;

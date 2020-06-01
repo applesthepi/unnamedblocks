@@ -38,7 +38,7 @@ void ButtonImage::frameUpdate(double deltaTime)
 		m_sprite.setColor(sf::Color::Transparent);
 }
 
-const bool ButtonImage::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+bool ButtonImage::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!getEnabled() || m_broken)
 		return false;

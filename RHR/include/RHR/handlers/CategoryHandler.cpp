@@ -355,7 +355,7 @@ void CategoryHandler::RegisterHeader()
 	}
 }
 
-const uint32_t CategoryHandler::UpdateButtons()
+uint32_t CategoryHandler::UpdateButtons()
 {
 	uint64_t offset = HEADER_HEIGHT + 10;
 

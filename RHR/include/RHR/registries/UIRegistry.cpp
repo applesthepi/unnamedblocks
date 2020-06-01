@@ -32,7 +32,7 @@ void UIRegistry::frameUpdate(double deltaTime)
 		m_ui[i]->frameUpdate(deltaTime);
 }
 
-const bool UIRegistry::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+bool UIRegistry::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	for (uint64_t i = 0; i < m_ui.size(); i++)
 	{

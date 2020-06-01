@@ -29,12 +29,12 @@ public:
 		return BlockArgumentType::STRING;
 	}
 
-	const uint32_t GetWidth() override
+	uint32_t GetWidth() override
 	{
 		return m_field.GetWidth();
 	}
 
-	const bool HasData() override
+	bool HasData() override
 	{
 		return true;
 	}
@@ -56,7 +56,7 @@ public:
 		m_field.frameUpdate(deltaTime);
 	}
 
-	const bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
+	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
 		if (!m_field.mouseButton(down, position, button) && button == sf::Mouse::Left)
 		{

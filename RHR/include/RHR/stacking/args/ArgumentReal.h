@@ -35,12 +35,12 @@ public:
 		return BlockArgumentType::REAL;
 	}
 
-	const uint32_t GetWidth() override
+	uint32_t GetWidth() override
 	{
 		return m_field.GetWidth();
 	}
 
-	const bool HasData() override
+	bool HasData() override
 	{
 		return true;
 	}

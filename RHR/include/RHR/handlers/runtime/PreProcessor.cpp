@@ -343,7 +343,7 @@ void PreProcessor::SetSuper(uint8_t super, const int64_t& superData)
 	*m_superData = superData;
 }
 
-const uint8_t PreProcessor::GetSuper()
+uint8_t PreProcessor::GetSuper()
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 

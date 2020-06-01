@@ -51,7 +51,7 @@ public:
 	static void SetFinished(bool finished);
 	static Plane* GetPlaneCopy();
 	static void SetSuper(uint8_t super, const int64_t& superData);
-	static const uint8_t GetSuper();
+	static uint8_t GetSuper();
 	static const int64_t GetSuperData();
 
 	static uint8_t* MakeSuper();

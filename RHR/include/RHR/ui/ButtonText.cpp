@@ -35,7 +35,7 @@ void ButtonText::frameUpdate(double deltaTime)
 	}
 }
 
-const bool ButtonText::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+bool ButtonText::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!getEnabled())
 		return false;

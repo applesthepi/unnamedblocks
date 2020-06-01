@@ -9,7 +9,7 @@ public:
 	void SetText(const std::string& text);
 
 	void frameUpdate(double deltaTime) override;
-	const bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates state) const override;
 private:

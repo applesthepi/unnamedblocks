@@ -19,7 +19,7 @@ public:
 	const BlockArgumentVariableMode& GetMode();
 
 	// pull whether or not the argument is requesting to goto the next argument
-	const bool PullNext();
+	bool PullNext();
 
 	// the geometry, colors, and texture coordinates of the argument
 	const sf::VertexArray& GetVertexArray();
@@ -34,10 +34,10 @@ public:
 	virtual const BlockArgumentType GetType();
 
 	// get width for surrounding argument spacing
-	virtual const uint32_t GetWidth();
+	virtual uint32_t GetWidth();
 
 	// whether or not the argument contains data for storing
-	virtual const bool HasData();
+	virtual bool HasData();
 
 	// select the argument and enable it
 	virtual void Select();

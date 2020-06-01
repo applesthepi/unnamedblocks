@@ -42,7 +42,7 @@ CAP_DLL std::string& PreProcessorData::GetString(uint64_t idx)
 	return m_vString[idx];
 }
 */
-CAP_DLL const uint64_t PreProcessorData::CustomPut(void* mem)
+CAP_DLL uint64_t PreProcessorData::CustomPut(void* mem)
 {
 	m_vCustom.push_back(mem);
 	return m_vCustom.size() - 1;
