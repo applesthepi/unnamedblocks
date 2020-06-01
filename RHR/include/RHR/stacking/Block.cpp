@@ -1,12 +1,19 @@
 #include "Block.h"
+#include "RHR/registries/BlockRegistry.h"
 
-Block::Block()
+Block::Block(const std::string& unlocalizedName)
+	:m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName))
 {
+	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory());
+
 	m_arguments.reserve(10);
 }
 
 Block::Block(const Block& block)
+	:m_modBlock(block.m_modBlock)
 {
+	m_modCategory = block.m_modCategory;
+
 	for (uint64_t i = 0; i < m_arguments.size(); i++)
 		delete m_arguments[i];
 
@@ -39,6 +46,11 @@ void Block::AddArguments(const std::vector<Argument*>& arguments)
 const std::vector<Argument*>& Block::GetArguments()
 {
 	return m_arguments;
+}
+
+const sf::Color Block::GetColor()
+{
+	return m_modCategory->GetColor();
 }
 
 /*

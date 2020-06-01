@@ -17,6 +17,8 @@ public:
 	void AddStack(Stack* stack);
 	void AddStacks(const std::vector<Stack*>& stacks);
 
+	void RemoveStack(const uint64_t& idx);
+
 	const std::vector<Stack*>& GetStacks();
 private:
 	std::vector<Stack*> m_stacks;

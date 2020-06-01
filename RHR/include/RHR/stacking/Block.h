@@ -7,7 +7,7 @@
 class Block : public ITransformable
 {
 public:
-	Block();
+	Block(const std::string& unlocalizedName);
 	Block(const Block& block);
 
 	~Block();
@@ -16,8 +16,11 @@ public:
 	void AddArguments(const std::vector<Argument*>& arguments);
 
 	const std::vector<Argument*>& GetArguments();
+	const sf::Color GetColor();
 private:
 	std::vector<Argument*> m_arguments;
+	const ModBlock* m_modBlock;
+	const ModCatagory* m_modCategory;
 };
 
 /*

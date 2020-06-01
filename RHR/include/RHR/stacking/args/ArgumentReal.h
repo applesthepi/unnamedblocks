@@ -94,43 +94,43 @@ public:
 		// =============== Update Vertex Array; see "dev/real_geometry.png"
 		// ===================================================================================================
 
-		m_vertexArray.clear();
+		ResetVertices();
 
 		// 0
 
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(0, 0), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height / 2), col));
+		AddVertex(sf::Vertex(sf::Vector2f(0, 0), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height / 2), col), false);
 
 		// 1
 
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(0, height), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height / 2), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), col));
+		AddVertex(sf::Vertex(sf::Vector2f(0, height), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height / 2), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), col), false);
 
 		// 2
 
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, 0), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), col));
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, 0), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), col), false);
 
 		// 3
 
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, height), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), col));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2), col));
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, height), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), col), false);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2), col), false);
 
 		// 4
 
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), sf::Vector2f(m_vertexArrayImage.getSize().x, 0)));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)));
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), sf::Vector2f(m_vertexArrayImage.getSize().x, 0)), true);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
 
 		// 5
 
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)));
-		m_vertexArray.append(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), sf::Vector2f(0, m_vertexArrayImage.getSize().y)));
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
+		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
+		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), sf::Vector2f(0, m_vertexArrayImage.getSize().y)), true);
 	}
 private:
 	Field m_field;

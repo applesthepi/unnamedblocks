@@ -36,6 +36,11 @@ void Collection::AddStacks(const std::vector<Stack*>& stacks)
 		m_stacks.push_back(stacks[i]);
 }
 
+void Collection::RemoveStack(const uint64_t& idx)
+{
+	m_stacks.erase(m_stacks.begin() + idx);
+}
+
 const std::vector<Stack*>& Collection::GetStacks()
 {
 	return m_stacks;

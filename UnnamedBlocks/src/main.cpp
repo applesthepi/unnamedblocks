@@ -274,6 +274,8 @@ int main()
 			{
 				if (window.hasFocus())
 				{
+					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
+
 					if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
 					{
 						if (!Plane::PrimaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
@@ -285,6 +287,8 @@ int main()
 			{
 				if (window.hasFocus())
 				{
+					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
+
 					if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
 					{
 						if (!Plane::PrimaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))

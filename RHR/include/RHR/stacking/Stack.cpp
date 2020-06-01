@@ -36,6 +36,11 @@ void Stack::AddBlocks(const std::vector<Block*>& blocks)
 		m_blocks.push_back(blocks[i]);
 }
 
+void Stack::RemoveBlock(const uint64_t& idx)
+{
+	m_blocks.erase(m_blocks.begin() + idx);
+}
+
 const std::vector<Block*>& Stack::GetBlocks()
 {
 	return m_blocks;
