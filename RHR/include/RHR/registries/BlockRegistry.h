@@ -20,7 +20,7 @@ public:
 class BlockRegistry
 {
 public:
-	void RegisterBlock(ModBlock* block);
+	void RegisterBlock(ModBlock* block, const std::string& mod);
 	void RegisterCatagory(ModCatagory* catagory);
 
 	const ModBlock* GetBlock(const std::string& unlocalizedName);
@@ -29,10 +29,13 @@ public:
 	const std::vector<ModBlock*>& GetBlocks();
 	const std::vector<ModCatagory*>& GetCategories();
 
+	const std::string& GetBlockMod(const ModBlock* modBlock);
+
 	static BlockRegistry& GetRegistry();
 private:
 	static BlockRegistry m_registry;
 
+	std::vector<std::string> m_blockMods;
 	std::vector<ModBlock*> m_blocks;
 	std::vector<ModCatagory*> m_catagories;
 };

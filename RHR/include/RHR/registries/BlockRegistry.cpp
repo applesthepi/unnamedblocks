@@ -6,9 +6,10 @@ void BlockRegistry::RegisterCatagory(ModCatagory* catagory)
 	m_catagories.push_back(catagory);
 }
 
-void BlockRegistry::RegisterBlock(ModBlock* block)
+void BlockRegistry::RegisterBlock(ModBlock* block, const std::string& mod)
 {
 	m_blocks.push_back(block);
+	m_blockMods.push_back(mod);
 }
 
 const ModBlock* BlockRegistry::GetBlock(const std::string& unlocalizedName)
@@ -49,6 +50,18 @@ const std::vector<ModBlock*>& BlockRegistry::GetBlocks()
 const std::vector<ModCatagory*>& BlockRegistry::GetCategories()
 {
 	return m_catagories;
+}
+
+const std::string& BlockRegistry::GetBlockMod(const ModBlock* modBlock)
+{
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i] == modBlock)
+			return m_blockMods[i];
+	}
+
+	Logger::Error("failed to get mod of block \"" + std::string(modBlock->GetUnlocalizedName()) + "\"");
+	return m_blockMods.front();
 }
 
 BlockRegistry& BlockRegistry::GetRegistry()
