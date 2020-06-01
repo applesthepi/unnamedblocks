@@ -16,7 +16,7 @@ public:
 
 	~Plane();
 	
-	void AddCollection(Collection* collection, bool displayCollectionVanity);
+	void AddCollection(Collection* collection, const bool& displayCollectionVanity);
 	void AddCollections(const std::vector<Collection*>& collections);
 	const std::vector<Collection*>& GetCollections();
 

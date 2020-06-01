@@ -65,7 +65,7 @@ Plane::~Plane()
 		delete m_collections[i];
 }
 
-void Plane::AddCollection(Collection* collection, bool displayCollectionVanity)
+void Plane::AddCollection(Collection* collection, const bool& displayCollectionVanity)
 {
 	m_collections.push_back(collection);
 	m_collectionVanity.push_back(displayCollectionVanity);
@@ -271,7 +271,10 @@ const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, co
 
 
 
-	// TODO REMOVE ME OH GOD PLEASE
+	// TODO REMOVE ME OH GOD PLEASE NO          NO             NO
+	// TODO IF YOU DONT REMOVE ME YOU WILL DIE
+	// TODO YOU BETTTEEERRR STOTOOOOPPP
+	// TODO REMOOOOOOVE MEE888888
 
 	if (m_collections.size() > 0)
 		UpdateBuffer(0);
