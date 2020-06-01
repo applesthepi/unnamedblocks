@@ -120,7 +120,7 @@ public:
 		std::string Arg1;
 	};
 
-	ModBlockActionCreateLocalContainer(const uint64_t& idx, const std::string& container)
+	ModBlockActionCreateLocalContainer(uint64_t idx, const std::string& container)
 	{
 		Data = (void*)new DataContainer();
 		((DataContainer*)Data)->Arg0 = idx;
@@ -150,7 +150,7 @@ public:
 		PreprocessorCell Arg3;
 	};
 
-	ModBlockActionAddLocalContainer(const uint64_t& idx, const std::string& container, const std::string& name, const PreprocessorCell& cell)
+	ModBlockActionAddLocalContainer(uint64_t idx, const std::string& container, const std::string& name, const PreprocessorCell& cell)
 	{
 		Data = (void*)new DataContainer();
 		((DataContainer*)Data)->Arg0 = idx;
@@ -182,7 +182,7 @@ public:
 		void(*Arg3)(const PreprocessorCell& cell);
 	};
 
-	ModBlockActionGetLocalContainer(const uint64_t& idx, const std::string& container, const std::string& name, void(*callback)(const PreprocessorCell&))
+	ModBlockActionGetLocalContainer(uint64_t idx, const std::string& container, const std::string& name, void(*callback)(const PreprocessorCell&))
 	{
 		Data = (void*)new DataContainer();
 		((DataContainer*)Data)->Arg0 = idx;

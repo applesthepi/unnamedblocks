@@ -176,7 +176,7 @@ CAP_DLL void ModBlockPass::Stop()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
-CAP_DLL void ModBlockPass::AddCallstack(const uint64_t& stack, const uint64_t& block, const bool& special)
+CAP_DLL void ModBlockPass::AddCallstack(uint64_t stack, uint64_t block, bool special)
 {
 	m_callstackStackIdx->push_back(stack);
 	m_callstackBlockIdx->push_back(block);
@@ -239,7 +239,7 @@ CAP_DLL void ModBlockPass::PopCallstack()
 	}
 }
 
-CAP_DLL void ModBlockPass::SetStackIdx(const uint64_t& idx)
+CAP_DLL void ModBlockPass::SetStackIdx(uint64_t idx)
 {
 	if (m_callstackStackIdx->size() > 0)
 		m_callstackStackIdx->back() = idx;
@@ -247,7 +247,7 @@ CAP_DLL void ModBlockPass::SetStackIdx(const uint64_t& idx)
 	UpdateLocations();
 }
 
-CAP_DLL void ModBlockPass::SetBlockIdx(const uint64_t& idx)
+CAP_DLL void ModBlockPass::SetBlockIdx(uint64_t idx)
 {
 	if (m_callstackBlockIdx->size() > 0)
 		m_callstackBlockIdx->back() = idx;
@@ -287,7 +287,7 @@ CAP_DLL const uint64_t ModBlockPass::CustomPut(void* mem)
 	return customIdx;
 }
 
-CAP_DLL void* ModBlockPass::CustomGet(const uint64_t& idx)
+CAP_DLL void* ModBlockPass::CustomGet(uint64_t idx)
 {
 	// TODO change to shared
 	std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
@@ -295,7 +295,7 @@ CAP_DLL void* ModBlockPass::CustomGet(const uint64_t& idx)
 	return m_customRegister->at(idx);
 }
 
-CAP_DLL void ModBlockPass::CustomFree(const uint64_t& idx, bool deallocate)
+CAP_DLL void ModBlockPass::CustomFree(uint64_t idx, bool deallocate)
 {
 	std::unique_lock<std::mutex> lock(*m_customRegistrerMutex);
 
@@ -418,22 +418,22 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 	m_messages[index] += message;
 }
 
-CAP_DLL double& ModBlockPass::GetReal(const uint64_t& idx)
+CAP_DLL double& ModBlockPass::GetReal(uint64_t idx)
 {
 	return (this->*(m_getReal))(idx);
 }
 
-CAP_DLL bool& ModBlockPass::GetBool(const uint64_t& idx)
+CAP_DLL bool& ModBlockPass::GetBool(uint64_t idx)
 {
 	return (this->*(m_getBool))(idx);
 }
 
-CAP_DLL std::string& ModBlockPass::GetString(const uint64_t& idx)
+CAP_DLL std::string& ModBlockPass::GetString(uint64_t idx)
 {
 	return (this->*(m_getString))(idx);
 }
 
-CAP_DLL void* ModBlockPass::GetPreData(const uint64_t& idx)
+CAP_DLL void* ModBlockPass::GetPreData(uint64_t idx)
 {
 	return (this->*(m_getPreData))(idx);
 }
@@ -461,7 +461,7 @@ void ModBlockPass::UpdateLocations()
 	m_activePre = m_dataStackPre[m_callstackStackIdx->back()];
 }
 
-double& ModBlockPass::GetRealDebug(const uint64_t& idx)
+double& ModBlockPass::GetRealDebug(uint64_t idx)
 {
 	if (idx >= m_variablesRealCount->at(m_callstackStackIdx->back()))
 	{
@@ -469,17 +469,17 @@ double& ModBlockPass::GetRealDebug(const uint64_t& idx)
 		return gReal;
 	}
 
-	const uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+	uint64_t vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
 	double& value = m_activeReal[vIdx];
 	return value;
 }
 
-double& ModBlockPass::GetRealRelease(const uint64_t& idx)
+double& ModBlockPass::GetRealRelease(uint64_t idx)
 {
 	return m_activeReal[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-bool& ModBlockPass::GetBoolDebug(const uint64_t& idx)
+bool& ModBlockPass::GetBoolDebug(uint64_t idx)
 {
 	if (idx >= m_variablesBoolCount->at(m_callstackStackIdx->back()))
 	{
@@ -487,17 +487,17 @@ bool& ModBlockPass::GetBoolDebug(const uint64_t& idx)
 		return gBool;
 	}
 
-	const uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+	uint64_t vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
 	bool& value = m_activeBool[vIdx];
 	return value;
 }
 
-bool& ModBlockPass::GetBoolRelease(const uint64_t& idx)
+bool& ModBlockPass::GetBoolRelease(uint64_t idx)
 {
 	return m_activeBool[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-std::string& ModBlockPass::GetStringDebug(const uint64_t& idx)
+std::string& ModBlockPass::GetStringDebug(uint64_t idx)
 {
 	if (idx >= m_variablesStringCount->at(m_callstackStackIdx->back()))
 	{
@@ -505,17 +505,17 @@ std::string& ModBlockPass::GetStringDebug(const uint64_t& idx)
 		return gString;
 	}
 
-	const uint64_t& vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
+	uint64_t vIdx = m_activeIdx[m_callstackBlockIdx->back()][idx];
 	std::string& value = m_activeString[vIdx];
 	return value;
 }
 
-std::string& ModBlockPass::GetStringRelease(const uint64_t& idx)
+std::string& ModBlockPass::GetStringRelease(uint64_t idx)
 {
 	return m_activeString[m_activeIdx[m_callstackBlockIdx->back()][idx]];
 }
 
-void* ModBlockPass::GetPreDataDebug(const uint64_t& idx)
+void* ModBlockPass::GetPreDataDebug(uint64_t idx)
 {
 	if (idx >= m_preDataCount[m_callstackStackIdx->back()][m_callstackBlockIdx->back()])
 	{
@@ -527,7 +527,7 @@ void* ModBlockPass::GetPreDataDebug(const uint64_t& idx)
 	return value;
 }
 
-void* ModBlockPass::GetPreDataRelease(const uint64_t& idx)
+void* ModBlockPass::GetPreDataRelease(uint64_t idx)
 {
 	return m_activePre[m_callstackBlockIdx->back()][idx];
 }

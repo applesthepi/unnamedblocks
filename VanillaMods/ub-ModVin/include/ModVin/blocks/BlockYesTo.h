@@ -6,7 +6,7 @@
 class YesFinder
 {
 public:
-	void AddPoint(const uint64_t& idx, std::string& data)
+	void AddPoint(uint64_t idx, std::string& data)
 	{
 		m_names.push_back(data);
 		m_idx.push_back(idx);

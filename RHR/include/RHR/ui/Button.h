@@ -14,8 +14,8 @@ class Button : public IUI, public ITransformable
 public:
 	Button(std::function<void()>* callback, const sf::Vector2f& size);
 
-	void setEnabled(const bool& enabled);
-	const bool& getEnabled();
+	void setEnabled(bool enabled);
+	bool getEnabled();
 protected:
 	std::function<void()>* m_callback;
 	bool m_broken;

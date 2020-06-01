@@ -3,7 +3,7 @@
 #include <Espresso/Global.h>
 #include <Espresso/InputHandler.h>
 
-Field::Field(const std::string& text, const bool& canSwitch, const FieldType& fieldType)
+Field::Field(const std::string& text, bool canSwitch, const FieldType& fieldType)
 	:m_textLoc(0), m_textLocHigh(0), m_enabled(false), m_wasDown(false), m_selected(false), m_variableMode(false), m_canSwitch(canSwitch)
 {
 	m_tab = nullptr;
@@ -36,7 +36,7 @@ void Field::SetText(const std::string& text)
 	m_text = text;
 }
 
-void Field::SetEnabled(const bool& enabled)
+void Field::SetEnabled(bool enabled)
 {
 	m_enabled = enabled;
 
@@ -47,7 +47,7 @@ void Field::SetEnabled(const bool& enabled)
 	}
 }
 
-void Field::SetVariableMode(const bool& variableMode)
+void Field::SetVariableMode(bool variableMode)
 {
 	m_variableMode = variableMode;
 }
@@ -87,7 +87,7 @@ const std::string& Field::GetText()
 	return m_text;
 }
 
-void Field::frameUpdate(const double& deltaTime)
+void Field::frameUpdate(double deltaTime)
 {
 	if (!m_enabled)
 		return;
@@ -120,7 +120,7 @@ void Field::frameUpdate(const double& deltaTime)
 	}
 }
 
-const bool Field::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+const bool Field::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!m_enabled)
 		return false;

@@ -14,11 +14,11 @@ enum FieldType
 class Field : public IUI, public ITransformable
 {
 public:
-	Field(const std::string& text, const bool& canSwitch, const FieldType& fieldType);
+	Field(const std::string& text, bool canSwitch, const FieldType& fieldType);
 
 	void SetText(const std::string& text);
-	void SetEnabled(const bool& enabled);
-	void SetVariableMode(const bool& variableMode);
+	void SetEnabled(bool enabled);
+	void SetVariableMode(bool variableMode);
 	void SetCalculationOffset(const sf::Vector2f& calculationOffset);
 	void SetTab(std::function<void()>* tab);
 	void SelectAll();
@@ -27,8 +27,8 @@ public:
 	const uint32_t GetWidth();
 	const std::string& GetText();
 
-	void frameUpdate(const double& deltaTime) override;
-	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+	void frameUpdate(double deltaTime) override;
+	const bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates state) const override;
 

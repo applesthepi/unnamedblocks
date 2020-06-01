@@ -20,7 +20,7 @@ public:
 	void AddArguments(const std::vector<Argument*>& arguments);
 
 	const std::vector<Argument*>& GetArguments();
-	const uint32_t& GetWidth();
+	uint32_t GetWidth();
 
 	const ModBlock* GetModBlock();
 	const ModCatagory* GetModCategory();

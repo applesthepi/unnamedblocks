@@ -116,7 +116,7 @@ void MessageHandler::Finish()
 	m_messageThread.join();
 }
 
-void MessageHandler::RegisterMessage(Message* message, const bool& sync)
+void MessageHandler::RegisterMessage(Message* message, bool sync)
 {
 	if (sync)
 	{
@@ -260,7 +260,7 @@ void MessageError::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	target.draw(m_message);
 }
 
-MessageConfirm::MessageConfirm(const std::string& message, std::function<void(const bool&)>* cb)
+MessageConfirm::MessageConfirm(const std::string& message, std::function<void(bool)>* cb)
 	:Message()
 {
 	m_message = sf::Text(message, Global::Font, 16);

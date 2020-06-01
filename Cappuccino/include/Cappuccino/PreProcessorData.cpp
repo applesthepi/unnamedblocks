@@ -27,17 +27,17 @@ void* PreProcessorData::GetStructure(const std::string& name)
 	return nullptr;
 }
 /*
-CAP_DLL double& PreProcessorData::GetReal(const uint64_t& idx)
+CAP_DLL double& PreProcessorData::GetReal(uint64_t idx)
 {
 	return m_vReal[idx];
 }
 
-CAP_DLL bool& PreProcessorData::GetBool(const uint64_t& idx)
+CAP_DLL bool& PreProcessorData::GetBool(uint64_t idx)
 {
 	return m_vBool[idx];
 }
 
-CAP_DLL std::string& PreProcessorData::GetString(const uint64_t& idx)
+CAP_DLL std::string& PreProcessorData::GetString(uint64_t idx)
 {
 	return m_vString[idx];
 }

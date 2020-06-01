@@ -10,7 +10,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	const double& ms = pass->GetReal(0);
+	double ms = pass->GetReal(0);
 
 	if (std::floor(ms) != ms)
 	{

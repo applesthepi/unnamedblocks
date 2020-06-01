@@ -13,7 +13,7 @@ public:
 	void AddBlock(Block* block);
 	void AddBlocks(const std::vector<Block*>& blocks);
 
-	void RemoveBlock(const uint64_t& idx);
+	void RemoveBlock(uint64_t idx);
 
 	const std::vector<Block*>& GetBlocks();
 private:

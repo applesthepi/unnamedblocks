@@ -207,7 +207,7 @@ uint64_t* Registration::GetFunctionCallCount()
 	return m_functionCallCount;
 }
 
-CAP_DLL const uint64_t& Registration::GetFunctionTotalCount()
+CAP_DLL uint64_t Registration::GetFunctionTotalCount()
 {
 	return m_functionTotalCount;
 }
@@ -771,7 +771,7 @@ void Registration::CompileDataDebug()
 	std::vector<std::vector<ModBlockDataInterpretation>> tempRegsitryTypes;
 	std::vector<std::vector<void*>> tempRegsitryValues;
 
-	auto addToRegistry = [&](const std::string& name, const uint64_t& idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
+	auto addToRegistry = [&](const std::string& name, uint64_t idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
 	{
 		for (uint64_t i = 0; i < m_variableRegistry[idx].size(); i++)
 		{
@@ -922,7 +922,7 @@ void Registration::CompileDataRelease()
 	std::vector<uint64_t> tempOffsetString;
 	uint64_t tempTotalString = 0;
 
-	auto addToRegistryReal = [&](const std::string& name, const uint64_t& idx, double* use = nullptr)
+	auto addToRegistryReal = [&](const std::string& name, uint64_t idx, double* use = nullptr)
 	{
 		for (uint64_t i = 0; i < tempRegistryReal[idx].size(); i++)
 		{
@@ -941,7 +941,7 @@ void Registration::CompileDataRelease()
 		return true;
 	};
 
-	auto addToRegistryBool = [&](const std::string& name, const uint64_t& idx, bool* use = nullptr)
+	auto addToRegistryBool = [&](const std::string& name, uint64_t idx, bool* use = nullptr)
 	{
 		for (uint64_t i = 0; i < tempRegistryBool[idx].size(); i++)
 		{
@@ -960,7 +960,7 @@ void Registration::CompileDataRelease()
 		return true;
 	};
 
-	auto addToRegistryString = [&](const std::string& name, const uint64_t& idx, std::string* use = nullptr)
+	auto addToRegistryString = [&](const std::string& name, uint64_t idx, std::string* use = nullptr)
 	{
 		for (uint64_t i = 0; i < tempRegistryString[idx].size(); i++)
 		{

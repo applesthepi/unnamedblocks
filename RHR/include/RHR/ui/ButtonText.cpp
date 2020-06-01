@@ -1,6 +1,6 @@
 #include "ButtonText.h"
 
-ButtonText::ButtonText(std::function<void()>* callback, const std::string& text, const uint16_t& charSize, const sf::Vector2f& size, const sf::Color& background, const sf::Color& forground)
+ButtonText::ButtonText(std::function<void()>* callback, const std::string& text, uint16_t charSize, const sf::Vector2f& size, const sf::Color& background, const sf::Color& forground)
 	:Button(callback, size), m_wasDown(false), m_colorBackground(background), m_colorForground(forground)
 {
 	m_background.setFillColor(background);
@@ -14,7 +14,7 @@ void ButtonText::SetText(const std::string& text)
 	m_text.setString(text);
 }
 
-void ButtonText::frameUpdate(const double& deltaTime)
+void ButtonText::frameUpdate(double deltaTime)
 {
 	m_background.setSize((sf::Vector2f)getSize());
 	m_background.setPosition(getPosition());
@@ -35,7 +35,7 @@ void ButtonText::frameUpdate(const double& deltaTime)
 	}
 }
 
-const bool ButtonText::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+const bool ButtonText::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!getEnabled())
 		return false;

@@ -56,7 +56,7 @@ public:
 		return m_dropdown.GetWidth();
 	}
 
-	const bool MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
+	const bool MouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
 		if (!m_dropdown.MouseButton(down, position, button))
 			return false;

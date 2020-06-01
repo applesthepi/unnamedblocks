@@ -5,7 +5,7 @@
 class UtiltiyListCell
 {
 public:
-	UtiltiyListCell(void* memory, const bool& copy);
+	UtiltiyListCell(void* memory, bool copy);
 	~UtiltiyListCell();
 
 	UtiltiyListCell& operator=(const UtiltiyListCell& list);
@@ -17,18 +17,18 @@ public:
 class UtilityList
 {
 public:
-	void AddValue(void* memory, const bool& copy);
-	void InsertValue(void* memory, const uint64_t& idx, const bool& copy);
+	void AddValue(void* memory, bool copy);
+	void InsertValue(void* memory, uint64_t idx, bool copy);
 
-	void RemoveValue(const uint64_t& idx);
-	void ReplaceValue(void* memory, const uint64_t& idx, const bool& copy);
+	void RemoveValue(uint64_t idx);
+	void ReplaceValue(void* memory, uint64_t idx, bool copy);
 
-	void Reserve(const uint64_t& size);
+	void Reserve(uint64_t size);
 	const uint64_t Size();
 
-	double* IndexReal(const uint64_t& idx);
-	bool* IndexBool(const uint64_t& idx);
-	std::string* IndexString(const uint64_t& idx);
+	double* IndexReal(uint64_t idx);
+	bool* IndexBool(uint64_t idx);
+	std::string* IndexString(uint64_t idx);
 private:
 	std::vector<UtiltiyListCell> m_memory;
 };

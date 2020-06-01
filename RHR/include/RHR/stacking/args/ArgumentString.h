@@ -13,7 +13,7 @@
 class ArgumentString : public Argument
 {
 public:
-	ArgumentString(const sf::Vector2u& relitivePosition, const BlockArgumentVariableMode& mode, const bool& canSwitch)
+	ArgumentString(const sf::Vector2u& relitivePosition, const BlockArgumentVariableMode& mode, bool canSwitch)
 		:Argument(relitivePosition), m_field("", canSwitch, FieldType::TEXT)
 	{
 		m_tab = [this]()
@@ -51,12 +51,12 @@ public:
 		}
 	}
 
-	void frameUpdateArgument(const double& deltaTime) override
+	void frameUpdateArgument(double deltaTime) override
 	{
 		m_field.frameUpdate(deltaTime);
 	}
 
-	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
+	const bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
 		if (!m_field.mouseButton(down, position, button) && button == sf::Mouse::Left)
 		{

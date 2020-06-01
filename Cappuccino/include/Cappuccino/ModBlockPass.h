@@ -91,20 +91,20 @@ public:
 	CAP_DLL void LogWarning(const std::string& message);
 	CAP_DLL void LogError(const std::string& message, const LoggerFatality& fatality);
 
-	CAP_DLL double& GetReal(const uint64_t& idx);
-	CAP_DLL bool& GetBool(const uint64_t& idx);
-	CAP_DLL std::string& GetString(const uint64_t& idx);
+	CAP_DLL double& GetReal(uint64_t idx);
+	CAP_DLL bool& GetBool(uint64_t idx);
+	CAP_DLL std::string& GetString(uint64_t idx);
 
-	CAP_DLL void* GetPreData(const uint64_t& idx);
+	CAP_DLL void* GetPreData(uint64_t idx);
 	CAP_DLL std::chrono::steady_clock::time_point* GetBeginTime();
 
 	CAP_DLL void Stop();
 
-	CAP_DLL void AddCallstack(const uint64_t& stack, const uint64_t& block, const bool& special = true);
+	CAP_DLL void AddCallstack(uint64_t stack, uint64_t block, bool special = true);
 	CAP_DLL void PopCallstack();
 
-	CAP_DLL void SetStackIdx(const uint64_t& idx);
-	CAP_DLL void SetBlockIdx(const uint64_t& idx);
+	CAP_DLL void SetStackIdx(uint64_t idx);
+	CAP_DLL void SetBlockIdx(uint64_t idx);
 
 	CAP_DLL std::mt19937_64& GetRandomGenerator();
 
@@ -129,28 +129,28 @@ public:
 	//		This will ensure it does not get freed at the end.
 
 	CAP_DLL const uint64_t CustomPut(void* mem);
-	CAP_DLL void* CustomGet(const uint64_t& idx);
-	CAP_DLL void CustomFree(const uint64_t& idx, bool deallocate = true);
+	CAP_DLL void* CustomGet(uint64_t idx);
+	CAP_DLL void CustomFree(uint64_t idx, bool deallocate = true);
 private:
 	void UpdateLocations();
 
 	// user data interactions
 
-	double& (ModBlockPass::* m_getReal)(const uint64_t& idx);
-	double& GetRealDebug(const uint64_t& idx);
-	double& GetRealRelease(const uint64_t& idx);
+	double& (ModBlockPass::* m_getReal)(uint64_t idx);
+	double& GetRealDebug(uint64_t idx);
+	double& GetRealRelease(uint64_t idx);
 
-	bool& (ModBlockPass::* m_getBool)(const uint64_t& idx);
-	bool& GetBoolDebug(const uint64_t& idx);
-	bool& GetBoolRelease(const uint64_t& idx);
+	bool& (ModBlockPass::* m_getBool)(uint64_t idx);
+	bool& GetBoolDebug(uint64_t idx);
+	bool& GetBoolRelease(uint64_t idx);
 
-	std::string& (ModBlockPass::* m_getString)(const uint64_t& idx);
-	std::string& GetStringDebug(const uint64_t& idx);
-	std::string& GetStringRelease(const uint64_t& idx);
+	std::string& (ModBlockPass::* m_getString)(uint64_t idx);
+	std::string& GetStringDebug(uint64_t idx);
+	std::string& GetStringRelease(uint64_t idx);
 
-	void* (ModBlockPass::* m_getPreData)(const uint64_t& idx);
-	void* GetPreDataDebug(const uint64_t& idx);
-	void* GetPreDataRelease(const uint64_t& idx);
+	void* (ModBlockPass::* m_getPreData)(uint64_t idx);
+	void* GetPreDataDebug(uint64_t idx);
+	void* GetPreDataRelease(uint64_t idx);
 
 	std::mutex m_messagesMutex;
 	std::vector<std::string> m_messages;

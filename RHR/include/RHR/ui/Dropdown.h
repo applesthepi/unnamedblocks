@@ -12,19 +12,19 @@ class Dropdown : public IUI, public sf::Transformable
 public:
 	Dropdown(const sf::Vector2i& position);
 
-	void SetEnabled(const bool& enabled);
-	void SetOpen(const bool& open);
-	void SetElements(const std::vector<std::string>& elements, const uint64_t& idx);
+	void SetEnabled(bool enabled);
+	void SetOpen(bool open);
+	void SetElements(const std::vector<std::string>& elements, uint64_t idx);
 
-	void Select(const uint64_t& idx);
+	void Select(uint64_t idx);
 	void Toggle();
 	void Reload();
 
 	const uint16_t GetSelected();
 	const uint64_t GetWidth();
 
-	void frameUpdate(const double& deltaTime) override;
-	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+	void frameUpdate(double deltaTime) override;
+	const bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates state) const override;
 private:

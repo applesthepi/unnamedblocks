@@ -138,7 +138,7 @@ public:
 		return m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
 	}
 
-	const bool MouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
+	const bool MouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
 		if (!down && m_fullSelect)
 		{

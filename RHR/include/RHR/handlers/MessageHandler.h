@@ -65,12 +65,12 @@ private:
 class MessageConfirm : public Message
 {
 public:
-	MessageConfirm(const std::string& message, std::function<void(const bool&)>* cb);
+	MessageConfirm(const std::string& message, std::function<void(bool)>* cb);
 	~MessageConfirm();
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
-	std::function<void(const bool&)>* m_callback;
+	std::function<void(bool)>* m_callback;
 	std::function<void()> m_buttonCallbackContinue;
 	std::function<void()> m_buttonCallbackCancel;
 
@@ -106,7 +106,7 @@ class MessageHandler
 public:
 	static void Initialize();
 	static void Finish();
-	static void RegisterMessage(Message* message, const bool& sync = false);
+	static void RegisterMessage(Message* message, bool sync = false);
 
 	static std::mutex& GetMessageMutex();
 	static std::vector<Message*>& GetMessages();

@@ -649,7 +649,7 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 		insertString(sf::Clipboard::getString());
 }
 
-bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t* loc, bool* isDown, const bool& down, const sf::Vector2i& pos, const uint64_t& yOverride)
+bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t* loc, bool* isDown, bool down, const sf::Vector2i& pos, uint64_t yOverride)
 {
 	uint64_t yHeight = yOverride;
 
@@ -695,7 +695,7 @@ bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t*
 	return false;
 }
 
-bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, const bool& down, const sf::Vector2i& pos, const uint16_t& fontSize, const int64_t& vanityOffset)
+bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, const int64_t& vanityOffset)
 {
 	if (pos.x >= tPos.x && pos.x <= tPos.x + tSize.x)
 	{
@@ -737,7 +737,7 @@ bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos
 	return false;
 }
 
-void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, const uint64_t& yOverride)
+void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint64_t yOverride)
 {
 	if (*isDown)
 	{
@@ -773,7 +773,7 @@ void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* is
 	}
 }
 
-void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, const uint16_t& fontSize, const int64_t& vanityOffset)
+void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, const int64_t& vanityOffset)
 {
 	if (*isDown)
 	{

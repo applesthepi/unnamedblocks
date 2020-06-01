@@ -36,7 +36,7 @@ void Stack::AddBlocks(const std::vector<Block*>& blocks)
 		m_blocks.push_back(blocks[i]);
 }
 
-void Stack::RemoveBlock(const uint64_t& idx)
+void Stack::RemoveBlock(uint64_t idx)
 {
 	m_blocks.erase(m_blocks.begin() + idx);
 }
@@ -107,7 +107,7 @@ Stack::Stack(sf::Vector2i relitivePosition, BlockRegistry* registry)
 			Global::ContextActive = true;
 	};
 
-	*m_functionContextCallback = [&](const uint8_t& idx)
+	*m_functionContextCallback = [&](uint8_t idx)
 	{
 		Plane* plane = (Plane*)m_planePtr;
 		if (plane->IsToolbar())

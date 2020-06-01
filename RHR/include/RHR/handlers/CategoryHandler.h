@@ -14,13 +14,13 @@ class CategoryHandler : public IRenderable
 public:
 	CategoryHandler();
 
-	void ToggleMod(const uint16_t& modIdx, const uint64_t& catIdx);
-	void UpdateBlocks(const uint64_t& catIdx);
+	void ToggleMod(uint16_t modIdx, uint64_t catIdx);
+	void UpdateBlocks(uint64_t catIdx);
 	void RegisterHeader();
 	const uint32_t UpdateButtons();
-	const uint16_t& GetToolbarWidth();
+	uint16_t GetToolbarWidth();
 
-	void frameUpdate(const double& deltaTime) override;
+	void frameUpdate(double deltaTime) override;
 
 	static CategoryHandler& GetHandler();
 protected:

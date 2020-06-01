@@ -48,7 +48,7 @@ MODBLOCK_EXPORT void ModBlockData::SetRuntimeData(const std::vector<uint64_t>& d
 	m_runtimeData = data;
 }
 
-MODBLOCK_EXPORT void ModBlockData::SetDataTemplates(const uint64_t& stackIdx)
+MODBLOCK_EXPORT void ModBlockData::SetDataTemplates(uint64_t stackIdx)
 {
 	const std::vector<double*>& reals = Registration::GetRealTemplate();
 	const std::vector<bool*>& bools = Registration::GetBoolTemplate();
@@ -75,7 +75,7 @@ void ModBlockData::SetInterpretations(const std::vector<ModBlockDataInterpretati
 	m_interpretations = interpretations;
 }
 
-MODBLOCK_EXPORT void ModBlockData::SetInterpretation(const ModBlockDataInterpretation& interpretation, const uint64_t& idx)
+MODBLOCK_EXPORT void ModBlockData::SetInterpretation(const ModBlockDataInterpretation& interpretation, uint64_t idx)
 {
 	m_interpretations[idx] = interpretation;
 }

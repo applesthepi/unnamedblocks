@@ -44,13 +44,13 @@ public:
 	static void Cleanup();
 
 	// executing
-	static void Start(Plane* planeCopy, const bool& debugBuild);
+	static void Start(Plane* planeCopy, bool debugBuild);
 	static bool IsFinished();
 	
 	// util
-	static void SetFinished(const bool& finished);
+	static void SetFinished(bool finished);
 	static Plane* GetPlaneCopy();
-	static void SetSuper(const uint8_t& super, const int64_t& superData);
+	static void SetSuper(uint8_t super, const int64_t& superData);
 	static const uint8_t GetSuper();
 	static const int64_t GetSuperData();
 

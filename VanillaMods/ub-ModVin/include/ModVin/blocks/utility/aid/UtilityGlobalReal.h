@@ -13,7 +13,7 @@ public:
 	~UtilityGlobalReal();
 
 	void Bake();
-	double& Get(const uint64_t& idx);
+	double& Get(uint64_t idx);
 	void Put(const std::string& name);
 	uint64_t GetIdx(const std::string& name);
 private:

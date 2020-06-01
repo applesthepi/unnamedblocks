@@ -1,3 +1,3 @@
 #include "IRenderable.h"
 
-void IRenderable::frameUpdate(const double& deltaTime) {}
+void IRenderable::frameUpdate(double deltaTime) {}

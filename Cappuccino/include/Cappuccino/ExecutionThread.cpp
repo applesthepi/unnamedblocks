@@ -86,7 +86,7 @@ loop:
 	}
 }
 
-ExecutionThread::ExecutionThread(const uint64_t& functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
+ExecutionThread::ExecutionThread(uint64_t functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
 	:m_functionStart(functionStart), m_functionCallCount(functionCallCount), m_calls(calls), m_pass(pass)
 {
 	m_finished = false;
@@ -99,7 +99,7 @@ ExecutionThread::ExecutionThread(const uint64_t& functionStart, uint64_t* functi
 	m_thread = std::thread(ThreadExecution, this);
 }
 
-const uint64_t& ExecutionThread::GetFunctionStart()
+uint64_t ExecutionThread::GetFunctionStart()
 {
 	return m_functionStart;
 }

@@ -21,7 +21,7 @@ void ButtonImage::SetImage(const std::string& path)
 	m_sprite.setTexture(m_texture);
 }
 
-void ButtonImage::frameUpdate(const double& deltaTime)
+void ButtonImage::frameUpdate(double deltaTime)
 {
 	if (m_broken)
 		return;
@@ -38,7 +38,7 @@ void ButtonImage::frameUpdate(const double& deltaTime)
 		m_sprite.setColor(sf::Color::Transparent);
 }
 
-const bool ButtonImage::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+const bool ButtonImage::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!getEnabled() || m_broken)
 		return false;

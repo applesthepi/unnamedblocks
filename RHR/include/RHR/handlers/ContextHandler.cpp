@@ -6,7 +6,7 @@ const std::atomic<bool>& ContextHandler::IsEnabled()
 	return m_enabled;
 }
 
-void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(const uint8_t&)>* callback)
+void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(uint8_t)>* callback)
 {
 	if (m_enabled)
 		return;
@@ -89,6 +89,6 @@ std::atomic<bool> ContextHandler::m_enabled;
 
 std::vector<std::function<void()>*> ContextHandler::m_buttonCallbacks;
 
-std::function<void(const uint8_t&)>* ContextHandler::m_contextCallback;
+std::function<void(uint8_t)>* ContextHandler::m_contextCallback;
 
 std::vector<ButtonText*> ContextHandler::m_buttons;

@@ -27,8 +27,8 @@ public:
 	const sf::Vector2i& GetInnerPosition();
 	void DeleteContents();
 
-	void frameUpdate(const double& deltaTime) override;
-	const bool mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+	void frameUpdate(double deltaTime) override;
+	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 
 	static Plane* PrimaryPlane;
 	static Plane* ToolbarPlane;
@@ -41,8 +41,8 @@ private:
 	// ================ Rendering
 	// ===============================================================================================================
 
-	void CreateBuffer(const uint16_t& collectionIdx);
-	void UpdateBuffer(const uint16_t& bufferIdx);
+	void CreateBuffer(uint16_t collectionIdx);
+	void UpdateBuffer(uint16_t bufferIdx);
 
 	std::vector<std::vector<sf::Vertex>> m_collectionVertexArrays;
 	std::vector<std::vector<sf::Vertex>> m_vertexArrays;
@@ -55,8 +55,8 @@ private:
 	// ================ Selection & Context
 	// ===============================================================================================================
 
-	void Select(const uint64_t& collection, const uint64_t& stack, const uint64_t& block, const uint64_t& argument);
-	void SelectContext(const uint64_t& collection, const uint64_t& stack, const uint64_t& block);
+	void Select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument);
+	void SelectContext(uint64_t collection, uint64_t stack, uint64_t block);
 	void UnSelect();
 
 	bool m_selected;
@@ -66,18 +66,18 @@ private:
 	Block* m_selectedBlock;
 	Argument* m_selectedArgument;
 
-	std::function<void(const uint8_t&)> m_contextCallback;
+	std::function<void(uint8_t)> m_contextCallback;
 
 	// ===============================================================================================================
 	// ================ Dragging
 	// ===============================================================================================================
 
-	void DragCollection(const uint64_t& collection, const bool& up);
-	void DragStack(const uint64_t& collection, const uint64_t& stack, const bool& up);
+	void DragCollection(uint64_t collection, bool up);
+	void DragStack(uint64_t collection, uint64_t stack, bool up);
 	void UnDrag();
 
-	const bool DraggingCollection();
-	const bool DraggingStack();
+	bool DraggingCollection();
+	bool DraggingStack();
 
 	Collection* m_draggingCollection;
 	Stack* m_draggingStack;

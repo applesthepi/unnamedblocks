@@ -231,7 +231,7 @@ int main()
 		{
 			if (ev.type == sf::Event::Closed)
 			{
-				std::function<void(const bool&)> cb = [&window](const bool& result)
+				std::function<void(bool)> cb = [&window](bool result)
 				{
 					if (result)
 						window.close();

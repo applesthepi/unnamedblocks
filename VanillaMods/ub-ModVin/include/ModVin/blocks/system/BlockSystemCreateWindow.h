@@ -47,7 +47,7 @@ public:
         return scroll;
     }
 
-    void AddScroll(const double& scroll)
+    void AddScroll(double scroll)
     {
         std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -89,7 +89,7 @@ public:
         return m_renderables[(uint64_t)*idx];
     }
 
-	void SetRenderableEnabled(const uint64_t& idx, const bool& enabled)
+	void SetRenderableEnabled(uint64_t idx, bool enabled)
 	{
         m_renderableEnabled[idx] = enabled;
 	}

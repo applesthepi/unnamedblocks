@@ -85,7 +85,7 @@ void Argument::ResetVertices()
 	m_vertexCoords.clear();
 }
 
-void Argument::AddVertex(const sf::Vertex& vertex, const bool& hasTextureCoords)
+void Argument::AddVertex(const sf::Vertex& vertex, bool hasTextureCoords)
 {
 	m_vertexArray.append(vertex);
 	m_vertexCoords.push_back(hasTextureCoords);

@@ -27,7 +27,7 @@ void PullFileSingle(char** ptr, const char* file_path)
 	}
 }
 
-void ThreadPreProcessorExecution(const bool& debugBuild)
+void ThreadPreProcessorExecution(bool debugBuild)
 {
 	PreProcessor::SetFinished(false);// just in case
 	char* file;
@@ -312,7 +312,7 @@ void PreProcessor::Cleanup()
 	}
 }
 
-void PreProcessor::Start(Plane* planeCopy, const bool& debugBuild)
+void PreProcessor::Start(Plane* planeCopy, bool debugBuild)
 {
 	m_planeCopy = planeCopy;
 	m_finished = false;
@@ -325,7 +325,7 @@ bool PreProcessor::IsFinished()
 	return m_finished;
 }
 
-void PreProcessor::SetFinished(const bool& finished)
+void PreProcessor::SetFinished(bool finished)
 {
 	m_finished = finished;
 }
@@ -335,7 +335,7 @@ Plane* PreProcessor::GetPlaneCopy()
 	return m_planeCopy;
 }
 
-void PreProcessor::SetSuper(const uint8_t& super, const int64_t& superData)
+void PreProcessor::SetSuper(uint8_t super, const int64_t& superData)
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 

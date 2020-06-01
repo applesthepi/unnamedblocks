@@ -8,7 +8,7 @@
 class FunctionFinder
 {
 public:
-	void AddFunction(const std::string& name, const uint64_t& stackIdx)
+	void AddFunction(const std::string& name, uint64_t stackIdx)
 	{
 		for (uint64_t i = 0; i < m_names.size(); i++)
 		{

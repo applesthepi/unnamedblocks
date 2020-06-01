@@ -48,7 +48,7 @@ protected:
 	virtual void UpdateVertexArray();
 
 	void ResetVertices();
-	void AddVertex(const sf::Vertex& vertex, const bool& hasTextureCoords);
+	void AddVertex(const sf::Vertex& vertex, bool hasTextureCoords);
 
 	bool m_next;
 	std::string m_data;

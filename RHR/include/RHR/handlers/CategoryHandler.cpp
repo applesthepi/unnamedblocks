@@ -84,13 +84,13 @@ CategoryHandler::CategoryHandler()
 	m_backgroundOptions.setPosition(sf::Vector2f(0, 0));
 }
 
-void CategoryHandler::ToggleMod(const uint16_t& modIdx, const uint64_t& catIdx)
+void CategoryHandler::ToggleMod(uint16_t modIdx, uint64_t catIdx)
 {
 	m_modOpen[modIdx] = !m_modOpen[modIdx];
 	UpdateBlocks(catIdx);
 }
 
-void CategoryHandler::UpdateBlocks(const uint64_t& catIdx)
+void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 {
 	const uint32_t offset = UpdateButtons();
 	Plane::ToolbarPlane->DeleteContents();
@@ -146,7 +146,7 @@ void CategoryHandler::RegisterHeader()
 		std::function<void()>* function = new std::function<void()>();
 		*function = []()
 		{
-			std::function<void(const bool&)> cb = [&](const bool& result)
+			std::function<void(bool)> cb = [&](bool result)
 			{
 				if (result)
 				{
@@ -397,7 +397,7 @@ const uint32_t CategoryHandler::UpdateButtons()
 	return offset;
 }
 
-const uint16_t& CategoryHandler::GetToolbarWidth()
+uint16_t CategoryHandler::GetToolbarWidth()
 {
 	return m_toolbarWidth;
 }
@@ -407,7 +407,7 @@ CategoryHandler& CategoryHandler::GetHandler()
 	return m_handler;
 }
 
-void CategoryHandler::frameUpdate(const double& deltaTime)
+void CategoryHandler::frameUpdate(double deltaTime)
 {
 	if (Plane::ToolbarPlane->GetCollections().size() != m_toolbarStackCount)
 		UpdateBlocks(m_selectedCategory);

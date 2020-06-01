@@ -17,7 +17,7 @@ void UtilityGlobalReal::Bake()
 	m_variables = new double[m_varNames.size()];
 }
 
-double& UtilityGlobalReal::Get(const uint64_t& idx)
+double& UtilityGlobalReal::Get(uint64_t idx)
 {
 	return m_variables[idx];
 }

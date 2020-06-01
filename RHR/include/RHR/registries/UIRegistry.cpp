@@ -26,13 +26,13 @@ UIRegistry& UIRegistry::GetRegistry()
 	return m_registry;
 }
 
-void UIRegistry::frameUpdate(const double& deltaTime)
+void UIRegistry::frameUpdate(double deltaTime)
 {
 	for (uint64_t i = 0; i < m_ui.size(); i++)
 		m_ui[i]->frameUpdate(deltaTime);
 }
 
-const bool UIRegistry::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+const bool UIRegistry::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	for (uint64_t i = 0; i < m_ui.size(); i++)
 	{

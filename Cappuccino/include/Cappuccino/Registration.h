@@ -48,7 +48,7 @@ public:
 	static std::atomic<bool>& GetUtilFinished();
 	static std::atomic<bool>& GetStop();
 	static CAP_DLL uint64_t* GetFunctionCallCount();
-	static CAP_DLL const uint64_t& GetFunctionTotalCount();
+	static CAP_DLL uint64_t GetFunctionTotalCount();
 	static CAP_DLL executionFunctionStackList GetCalls();
 	static void SetUtilReturnFinished(bool finished);
 	static void RunUtilityTick();

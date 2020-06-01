@@ -35,10 +35,10 @@ public:
 
 	MODBLOCK_EXPORT void ClearData();
 	MODBLOCK_EXPORT void SetRuntimeData(const std::vector<uint64_t>& data);
-	MODBLOCK_EXPORT void SetDataTemplates(const uint64_t& stackIdx);
+	MODBLOCK_EXPORT void SetDataTemplates(uint64_t stackIdx);
 	MODBLOCK_EXPORT void SetTypes(const std::vector<ModBlockDataType>& types);
 	MODBLOCK_EXPORT void SetInterpretations(const std::vector<ModBlockDataInterpretation>& interpretations);
-	MODBLOCK_EXPORT void SetInterpretation(const ModBlockDataInterpretation& interpretation, const uint64_t& idx);
+	MODBLOCK_EXPORT void SetInterpretation(const ModBlockDataInterpretation& interpretation, uint64_t idx);
 	MODBLOCK_EXPORT ModBlockData& operator=(ModBlockData& data);
 private:
 	std::vector<void*> m_data;

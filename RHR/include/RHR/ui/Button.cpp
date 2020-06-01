@@ -223,7 +223,7 @@ bool Button::MouseButton(bool down, sf::Vector2i position, sf::Mouse::Button but
 	return false;
 }
 
-void Button::SetEnabled(const bool& enabled)
+void Button::SetEnabled(bool enabled)
 {
 	m_enabled = enabled;
 }
@@ -244,12 +244,12 @@ void Button::SetText(const std::string& text)
 Button::Button(std::function<void()>* callback, const sf::Vector2f& size)
 	:m_callback(callback), m_broken(false), m_size(size), m_enabled(true) {}
 
-void Button::setEnabled(const bool& enabled)
+void Button::setEnabled(bool enabled)
 {
 	m_enabled = enabled;
 }
 
-const bool& Button::getEnabled()
+bool Button::getEnabled()
 {
 	return m_enabled;
 }

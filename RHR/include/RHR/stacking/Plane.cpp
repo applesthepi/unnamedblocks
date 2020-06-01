@@ -39,7 +39,7 @@ Plane::Plane()
 
 	// callback for the context menu
 
-	m_contextCallback = [](const uint8_t& idx)
+	m_contextCallback = [](uint8_t idx)
 	{
 		if (idx == 0)
 		{
@@ -122,7 +122,7 @@ void Plane::DeleteContents()
 	m_collectionVanity.clear();
 }
 
-void Plane::frameUpdate(const double& deltaTime)
+void Plane::frameUpdate(double deltaTime)
 {
 	// set innerText to a visual representation of the inner position coordinates
 
@@ -147,7 +147,7 @@ void Plane::frameUpdate(const double& deltaTime)
 		m_draggingCollection->setPosition(getPosition() + m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
 }
 
-const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	for (uint64_t i = 0; i < m_collections.size(); i++)
 	{
@@ -282,7 +282,10 @@ const bool Plane::mouseButton(const bool& down, const sf::Vector2i& position, co
 
 
 
-	// TODO REMOVE ME OH GOD PLEASE
+	// TODO REMOVE ME OH GOD PLEASE NO          NO             NO
+	// TODO IF YOU DONT REMOVE ME YOU WILL DIE
+	// TODO YOU BETTTEEERRR STOTOOOOPPP
+	// TODO REMOOOOOOVE MEE888888
 
 	if (m_collections.size() > 0)
 		UpdateBuffer(0);
@@ -329,7 +332,7 @@ void Plane::Setup()
 	m_draggingUp = false;
 }
 
-void Plane::CreateBuffer(const uint16_t& collectionIdx)
+void Plane::CreateBuffer(uint16_t collectionIdx)
 {
 	m_vertexArrays.push_back(std::vector<sf::Vertex>());
 	m_vertexArrays.back().reserve(200);
@@ -417,7 +420,7 @@ void Plane::CreateBuffer(const uint16_t& collectionIdx)
 	m_textureMapTexture.push_back(sf::Texture());
 }
 
-void Plane::UpdateBuffer(const uint16_t& bufferIdx)
+void Plane::UpdateBuffer(uint16_t bufferIdx)
 {
 	// clear vertex array
 
@@ -443,7 +446,7 @@ void Plane::UpdateBuffer(const uint16_t& bufferIdx)
 			uint16_t blockWidth = Global::BlockBorder;
 
 			sf::Vector2f blockPos = getPosition() + m_collections[bufferIdx]->getPosition() + m_collections[bufferIdx]->GetStacks()[a]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight);
-			const uint32_t& blockShellWidth = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+			uint32_t blockShellWidth = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
 			const sf::Color blockColor = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetModCategory()->GetColor();
 
 			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor));
@@ -568,7 +571,7 @@ void Plane::UpdateBuffer(const uint16_t& bufferIdx)
 	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]));
 }
 
-void Plane::Select(const uint64_t& collection, const uint64_t& stack, const uint64_t& block, const uint64_t& argument)
+void Plane::Select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument)
 {
 	m_selected = true;
 
@@ -578,7 +581,7 @@ void Plane::Select(const uint64_t& collection, const uint64_t& stack, const uint
 	m_selectedArgument = m_collections[collection]->GetStacks()[stack]->GetBlocks()[block]->GetArguments()[argument];
 }
 
-void Plane::SelectContext(const uint64_t& collection, const uint64_t& stack, const uint64_t& block)
+void Plane::SelectContext(uint64_t collection, uint64_t stack, uint64_t block)
 {
 	m_selected = true;
 
@@ -598,7 +601,7 @@ void Plane::UnSelect()
 	m_selectedArgument = nullptr;
 }
 
-void Plane::DragCollection(const uint64_t& collection, const bool& up)
+void Plane::DragCollection(uint64_t collection, bool up)
 {
 	if (m_draggingStack != nullptr || m_draggingCollection != nullptr)
 		return;
@@ -612,7 +615,7 @@ void Plane::DragCollection(const uint64_t& collection, const bool& up)
 	m_draggingBeginObject = m_draggingCollection->getPosition();
 }
 
-void Plane::DragStack(const uint64_t& collection, const uint64_t& stack, const bool& up)
+void Plane::DragStack(uint64_t collection, uint64_t stack, bool up)
 {
 	if (m_draggingStack != nullptr || m_draggingCollection != nullptr)
 		return;
@@ -633,12 +636,12 @@ void Plane::UnDrag()
 	m_draggingStack = nullptr;
 }
 
-const bool Plane::DraggingCollection()
+bool Plane::DraggingCollection()
 {
 	return m_draggingCollection != nullptr && m_draggingStack == nullptr;
 }
 
-const bool Plane::DraggingStack()
+bool Plane::DraggingStack()
 {
 	return m_draggingCollection != nullptr && m_draggingStack != nullptr;
 }

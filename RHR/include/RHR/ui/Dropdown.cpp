@@ -10,7 +10,7 @@ Dropdown::Dropdown(const sf::Vector2i& position)
 	
 }
 
-void Dropdown::frameUpdate(const double& deltaTime)
+void Dropdown::frameUpdate(double deltaTime)
 {
 	if (m_buttons.size() == 0)
 		return;
@@ -24,7 +24,7 @@ void Dropdown::frameUpdate(const double& deltaTime)
 		m_buttons.front().frameUpdate(deltaTime);
 }
 
-void Dropdown::SetEnabled(const bool& enabled)
+void Dropdown::SetEnabled(bool enabled)
 {
 	m_enabled = enabled;
 
@@ -32,12 +32,12 @@ void Dropdown::SetEnabled(const bool& enabled)
 		SetOpen(false);
 }
 
-void Dropdown::SetOpen(const bool& open)
+void Dropdown::SetOpen(bool open)
 {
 	m_open = open;
 }
 
-void Dropdown::Select(const uint64_t& idx)
+void Dropdown::Select(uint64_t idx)
 {
 	if (m_enabled && m_open)
 	{
@@ -59,7 +59,7 @@ void Dropdown::Reload()
 		m_buttons.front().SetText(m_elements[m_selected]);
 }
 
-void Dropdown::SetElements(const std::vector<std::string>& elements, const uint64_t& idx)
+void Dropdown::SetElements(const std::vector<std::string>& elements, uint64_t idx)
 {
 	m_elements = elements;
 
@@ -117,7 +117,7 @@ const uint64_t Dropdown::GetWidth()
 	return m_width;
 }
 
-const bool Dropdown::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
+const bool Dropdown::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!m_enabled || m_buttons.size() == 0)
 		return false;

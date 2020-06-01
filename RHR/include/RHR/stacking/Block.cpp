@@ -50,7 +50,7 @@ const std::vector<Argument*>& Block::GetArguments()
 	return m_arguments;
 }
 
-const uint32_t& Block::GetWidth()
+uint32_t Block::GetWidth()
 {
 	return m_width;
 }

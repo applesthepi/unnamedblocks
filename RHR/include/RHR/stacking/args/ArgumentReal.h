@@ -17,7 +17,7 @@
 class ArgumentReal : public Argument
 {
 public:
-	ArgumentReal(const BlockArgumentVariableMode& mode, const bool& canSwitch)
+	ArgumentReal(const BlockArgumentVariableMode& mode, bool canSwitch)
 		:Argument(), m_field("", canSwitch, FieldType::NUMBER)
 	{
 		UpdateVertexArray();
