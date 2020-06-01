@@ -429,17 +429,19 @@ void Plane::UpdateBuffer(const uint16_t& bufferIdx)
 		{
 			// add block vertices
 
+			uint16_t blockWidth = Global::BlockBorder;
+
 			sf::Vector2f blockPos = getPosition() + m_collections[bufferIdx]->getPosition() + m_collections[bufferIdx]->GetStacks()[a]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight);
-			const sf::Vector2u& blockSize = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->getSize();
+			const uint32_t& blockShellWidth = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
 			const sf::Color blockColor = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetModCategory()->GetColor();
 
 			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor));
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockSize.x, 0), blockColor));
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockSize.x, blockSize.y), blockColor));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, 0), blockColor));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor));
 
 			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor));
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockSize.x, blockSize.y), blockColor));
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, blockSize.y), blockColor));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, Global::BlockHeight), blockColor));
 
 			// get argument information
 
@@ -450,8 +452,18 @@ void Plane::UpdateBuffer(const uint16_t& bufferIdx)
 				va.push_back(arg->GetVertexArray());
 				vaCoords.push_back(arg->GetVertexArrayCoords());
 				vaTextures.push_back(arg->GetVertexArrayTexture());
+
+				for (uint64_t d = 0; d < va.back().getVertexCount(); d++)
+					va.back()[d].position.x += blockWidth;
+
+				blockWidth += arg->GetWidth();
+				blockWidth += Global::BlockBorder;
 			}
+
+			// for every block
 		}
+
+		// for every stack
 	}
 
 	// change argument textureCoords to fit map of textures
@@ -532,7 +544,7 @@ void Plane::UpdateBuffer(const uint16_t& bufferIdx)
 	m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
 	m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
 
-	// add argument's verticies
+	// add argument's vertices
 
 	for (uint64_t i = 0; i < va.size(); i++)
 	{
