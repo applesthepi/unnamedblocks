@@ -3,14 +3,13 @@
 #include "stacking/Collection.h"
 #include "stacking/Stack.h"
 #include <SFML/System/Vector2.hpp>
-#include <bits>
 #include <unordered_map>
 #include <fstream>
 #include <string_view>
 #include <vector>
 #include <cassert>
 #include <bit>
-#include <byteswap.h>
+//#include <byteswap.h>
 
 constexpr bool big_endian() noexcept {
     return std::endian::native == std::endian::big;
@@ -43,7 +42,7 @@ union f32 {
 inline void push(std::vector<char> &vec, u32 value) {
 	u32 v = value;
 	if(big_endian()) {
-		v.value = __bswap_32(v.value);
+		//v.value = __bswap_32(v.value);
 	}
 	for(char i : v.bytes) {
 		vec.push_back(i);
@@ -52,7 +51,7 @@ inline void push(std::vector<char> &vec, u32 value) {
 inline void push(std::vector<char> &vec, f32 value) {
 	f32 v = value;
 	if(big_endian()) {
-		v.value = __bswap_32(v.value);
+		//v.value = __bswap_32(v.value);
 	}
 	for(char i : value.bytes) {
 		vec.push_back(i);
@@ -61,7 +60,7 @@ inline void push(std::vector<char> &vec, f32 value) {
 inline void push(std::vector<char> &vec, i32 value) {
 	i32 v = value;
 	if(big_endian()) {
-		v.value = __bswap_32(v.value);
+		//v.value = __bswap_32(v.value);
 	}
 	for(char i : value.bytes) {
 		vec.push_back(i);
@@ -70,7 +69,7 @@ inline void push(std::vector<char> &vec, i32 value) {
 inline void push(std::vector<char> &vec, u16 value) {
 	u16 v = value;
 	if(big_endian()) {
-		v.value = __bswap_32(v.value);
+		//v.value = __bswap_32(v.value);
 	}
 	for(char i : value.bytes) {
 		vec.push_back(i);
@@ -92,7 +91,7 @@ inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 2);
 	if(big_endian()) {
 		for(uint16_t i = 0; i < count; i++) {
-			buffer[i] = __bswap_16(buffer[i * 2]);
+			//buffer[i] = __bswap_16(buffer[i * 2]);
 		}
 	}
 }
@@ -102,7 +101,7 @@ inline void read_32(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 4);
 	if(big_endian()) {
 		for(uint16_t i = 0; i < count; i++) {
-			buffer[i] = __bswap_32(buffer[i * 4]);
+			//buffer[i] = __bswap_32(buffer[i * 4]);
 		}
 	}
 }
@@ -112,7 +111,7 @@ inline void read_64(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 8);
 	if(big_endian()) {
 		for(uint16_t i = 0; i < count; i++) {
-			buffer[i] = __bswap_64(buffer[i] * 8);
+			//buffer[i] = __bswap_64(buffer[i] * 8);
 		}
 	}
 }

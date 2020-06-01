@@ -199,11 +199,11 @@ int main()
 
 	CategoryHandler::GetHandler().RegisterHeader();
 
-#ifdef POSIX
-	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
-#else
-	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
-#endif
+//#ifdef POSIX
+//	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
+//#else
+//	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
+//#endif
 
 	bool wasDownLeft = false;
 	bool wasDownMiddle = false;
@@ -308,11 +308,11 @@ int main()
 
 		Global::WindowSize = window.getSize();
 
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
-		{
-			lastVanityReload = std::chrono::high_resolution_clock::now();
-			// TODO reload vanity
-		}
+		//if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
+		//{
+		//	lastVanityReload = std::chrono::high_resolution_clock::now();
+		//	// TODO reload vanity
+		//}
 
 		deltaTime = (double)lastClTrip.asMicroseconds() * 0.0000001;
 

@@ -40,11 +40,13 @@ Plane::Plane()
 
 	// callback for the context menu
 
-	m_contextCallback = [](uint8_t idx)
+	m_contextCallback = [this](uint8_t idx)
 	{
 		if (idx == 0)
 		{
 			// stack duplicate
+
+			//m_selectedCollection->AddStack(new Stack(*m_selectedStack));
 		}
 		else if (idx == 0)
 		{
@@ -259,7 +261,7 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 							// if block was bounded
 
-							break;
+							return true;
 						}
 					}
 
@@ -295,7 +297,7 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 
 
-
+	return false;
 }
 
 Plane* Plane::PrimaryPlane;
