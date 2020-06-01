@@ -4,6 +4,7 @@
 
 #include <Espresso/Global.h>
 #include <Cappuccino/Logger.h>
+#include <SFML/System/Vector2.hpp>
 #include <cassert>
 #include <exception>
 #include <iostream>
@@ -100,6 +101,16 @@ const std::vector<Collection*>& Plane::GetCollections()
 void Plane::TranslateInnerPosition(const sf::Vector2i& position)
 {
 	m_innerPosition += position;
+}
+
+void Plane::SetInnerPosition(sf::Vector2i position)
+{
+	m_innerPosition = position;
+}
+
+const sf::Vector2i& Plane::GetInnerPosition()
+{
+	return m_innerPosition;
 }
 
 void Plane::DeleteContents()

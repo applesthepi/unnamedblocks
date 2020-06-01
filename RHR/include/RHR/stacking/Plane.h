@@ -6,6 +6,7 @@
 #include "RHR/ui/ITransformable.h"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <functional>
 
 class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
@@ -16,11 +17,14 @@ public:
 
 	~Plane();
 	
+	// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
 	void AddCollection(Collection* collection, bool displayCollectionVanity);
 	void AddCollections(const std::vector<Collection*>& collections);
 	const std::vector<Collection*>& GetCollections();
 
 	void TranslateInnerPosition(const sf::Vector2i& position);
+	void SetInnerPosition(sf::Vector2i position);
+	const sf::Vector2i& GetInnerPosition();
 	void DeleteContents();
 
 	void frameUpdate(const double& deltaTime) override;
