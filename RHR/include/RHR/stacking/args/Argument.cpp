@@ -34,19 +34,19 @@ bool Argument::PullNext()
 	return m_next;
 }
 
-const sf::VertexArray& Argument::GetVertexArray()
+const sf::VertexArray* Argument::GetVertexArray()
 {
-	return m_vertexArray;
+	return &m_vertexArray;
 }
 
-const std::vector<bool>& Argument::GetVertexArrayCoords()
+const std::vector<bool>* Argument::GetVertexArrayCoords()
 {
-	return m_vertexCoords;
+	return &m_vertexCoords;
 }
 
-const sf::Image& Argument::GetVertexArrayTexture()
+const sf::Image* Argument::GetVertexArrayTexture()
 {
-	return m_vertexArrayImage;
+	return &m_vertexArrayImage;
 }
 
 const BlockArgumentType Argument::GetType()
@@ -79,10 +79,12 @@ void Argument::UpdateVertexArray()
 
 }
 
-void Argument::ResetVertices()
+void Argument::ResetVertices(uint64_t reserve)
 {
 	m_vertexArray.clear();
 	m_vertexCoords.clear();
+
+	m_vertexCoords.reserve(reserve);
 }
 
 void Argument::AddVertex(const sf::Vertex& vertex, bool hasTextureCoords)

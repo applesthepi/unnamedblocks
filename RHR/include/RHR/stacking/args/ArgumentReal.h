@@ -94,7 +94,7 @@ public:
 		// =============== Update Vertex Array; see "dev/real_geometry.png"
 		// ===================================================================================================
 
-		ResetVertices();
+		ResetVertices(18);
 
 		// 0
 

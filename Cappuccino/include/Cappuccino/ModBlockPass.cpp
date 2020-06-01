@@ -81,7 +81,7 @@ ModBlockPass::ModBlockPass(const ModBlockPassInitializer& init)
 		for (uint64_t a = 0; a < Registration::GetFunctionCallCount()[i]; a++)
 			stack[a] = (uint64_t*)m_data[i][a].GetRuntimeData().data();
 
-		m_dataStackIdx.push_back((uint64_t**)stack);
+		m_dataStackIdx.push_back((const uint64_t**)stack);
 	}
 
 	// ======================================================================================================

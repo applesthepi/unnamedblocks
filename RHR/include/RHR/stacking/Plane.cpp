@@ -8,6 +8,7 @@
 #include <cassert>
 #include <exception>
 #include <iostream>
+#include <vector>
 
 Plane::Plane(const Plane& plane)
 {
@@ -434,8 +435,8 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	// pull vertex buffers from children
 
 	std::vector<sf::VertexArray> va;
-	std::vector<const std::vector<bool>&> vaCoords;
-	std::vector<const sf::Image&> vaTextures;
+	std::vector<const std::vector<bool>*> vaCoords;
+	std::vector<const sf::Image*> vaTextures;
 
 	for (uint64_t a = 0; a < m_collections[bufferIdx]->GetStacks().size(); a++)
 	{
@@ -463,7 +464,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 			{
 				Argument* arg = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetArguments()[c];
 
-				va.push_back(arg->GetVertexArray());
+				va.push_back(*(arg->GetVertexArray()));
 				vaCoords.push_back(arg->GetVertexArrayCoords());
 				vaTextures.push_back(arg->GetVertexArrayTexture());
 
@@ -489,18 +490,18 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	{
 		// make texture wider if its to small
 
-		if (vaTextures[a].getSize().x > textureWidth)
-			textureWidth = vaTextures[a].getSize().x;
+		if (vaTextures[a]->getSize().x > textureWidth)
+			textureWidth = vaTextures[a]->getSize().x;
 
 		// add textureHeight to textureCoords if textured vertex
 
 		for (uint64_t b = 0; b < va[a].getVertexCount(); b++)
 		{
-			if (vaCoords[a][b])
+			if (vaCoords[a]->at(b))
 				va[a][b].texCoords.y += textureHeight;
 		}
 
-		textureHeight += vaTextures[a].getSize().y;
+		textureHeight += vaTextures[a]->getSize().y;
 	}
 
 	// create map
@@ -529,23 +530,23 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	{
 		// proceed if the argument has a texture
 
-		if (vaTextures[a].getSize() == sf::Vector2u(1, 1))
+		if (vaTextures[a]->getSize() == sf::Vector2u(1, 1))
 			continue;
 
-		tempTexture.loadFromImage(vaTextures[a]);
+		tempTexture.loadFromImage(*(vaTextures[a]));
 
 		// move VAO to correct height
 
 		tempVAO[0].position.y = incHeight;
 		tempVAO[1].position.y = incHeight;
-		tempVAO[2].position.y = incHeight + vaTextures[a].getSize().y;
-		tempVAO[3].position.y = incHeight + vaTextures[a].getSize().y;
+		tempVAO[2].position.y = incHeight + vaTextures[a]->getSize().y;
+		tempVAO[3].position.y = incHeight + vaTextures[a]->getSize().y;
 
 		// set VAO textureCoords to match the argument's texture dimensions
 
-		tempVAO[1].texCoords = sf::Vector2f(vaTextures[a].getSize().x, 0);
-		tempVAO[2].texCoords = sf::Vector2f(vaTextures[a].getSize().x, vaTextures[a].getSize().y);
-		tempVAO[3].texCoords = sf::Vector2f(0, vaTextures[a].getSize().y);
+		tempVAO[1].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, 0);
+		tempVAO[2].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, vaTextures[a]->getSize().y);
+		tempVAO[3].texCoords = sf::Vector2f(0, vaTextures[a]->getSize().y);
 
 		// render argument's texture to map
 

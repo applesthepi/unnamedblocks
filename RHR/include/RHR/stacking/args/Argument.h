@@ -22,13 +22,13 @@ public:
 	bool PullNext();
 
 	// the geometry, colors, and texture coordinates of the argument
-	const sf::VertexArray& GetVertexArray();
+	const sf::VertexArray* GetVertexArray();
 
 	// a list of the vertices as booleans for whether or not they are intended to have texture coordinates
-	const std::vector<bool>& GetVertexArrayCoords();
+	const std::vector<bool>* GetVertexArrayCoords();
 
 	// if using textures, then this will be what you refer to using the texture coordinates. Later it will get processed with everything.
-	const sf::Image& GetVertexArrayTexture();
+	const sf::Image* GetVertexArrayTexture();
 
 	// how to interpret the data
 	virtual const BlockArgumentType GetType();
@@ -47,7 +47,7 @@ public:
 protected:
 	virtual void UpdateVertexArray();
 
-	void ResetVertices();
+	void ResetVertices(uint64_t reserve);
 	void AddVertex(const sf::Vertex& vertex, bool hasTextureCoords);
 
 	bool m_next;
