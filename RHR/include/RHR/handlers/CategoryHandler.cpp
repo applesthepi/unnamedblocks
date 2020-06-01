@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <shellapi.h>
 #endif
+CategoryHandler CategoryHandler::m_handler;
 
 CategoryHandler::CategoryHandler()
 {
