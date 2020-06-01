@@ -1,6 +1,6 @@
 #include "MessageHandler.h"
 #include "InputHandler.h"
-#include "RHR/registries/ButtonRegistry.h"
+#include "RHR/registries/UIRegistry.h"
 
 #include <Espresso/Global.h>
 
@@ -44,8 +44,8 @@ void ThreadMessage()
 			window.close();
 		};
 
-		Button* button = new Button(sf::Vector2i(10, 10), sf::Vector2u(100, 20), &ubShutdown);
-		button->SetButtonModeText("abort", MOD_VAR, sf::Color::Black, 16);
+		ButtonText* button = new ButtonText(&ubShutdown, "abort", 16, sf::Vector2f(100, 20), MOD_VAR, sf::Color::Black);
+		button->setPosition(10, 10);
 
 		messages.back()->SetClose(&windowClose);
 
@@ -57,13 +57,13 @@ void ThreadMessage()
 			{
 				if (ev.type == sf::Event::MouseButtonPressed)
 				{
-					button->MouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
-					messages.back()->MouseUpdate(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
+					button->mouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
+					messages.back()->mouseButton(true, sf::Mouse::getPosition(window), sf::Mouse::Left);
 				}
 				else if (ev.type == sf::Event::MouseButtonReleased)
 				{
-					button->MouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
-					messages.back()->MouseUpdate(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
+					button->mouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
+					messages.back()->mouseButton(false, sf::Mouse::getPosition(window), sf::Mouse::Left);
 				}
 				else if (ev.type == sf::Event::EventType::KeyPressed) {
 					InputHandler::FireKeyEvent(ev.key);
@@ -77,11 +77,11 @@ void ThreadMessage()
 			{
 				window.clear(MOD_BACKGROUND_LOW);
 
-				messages.back()->FrameUpdate(window);
-				messages.back()->Render(window);
+				messages.back()->frameUpdate(0.0);
+				window.draw(*messages.back());
 
-				button->FrameUpdate(&window);
-				button->Render(&window);
+				button->frameUpdate(0.0);
+				window.draw(*button);
 
 				window.display();
 			}
@@ -94,11 +94,10 @@ void ThreadMessage()
 		}
 
 		delete button;
-
-		messages.back()->Shutdown();
 		delete messages.back();
-		messages.pop_back();
 
+		messages.pop_back();
+		
 		if (messages.size() > 0)
 			goto skipMutex;
 
@@ -156,314 +155,211 @@ std::atomic<bool>& MessageHandler::GetFinished()
 }
 
 std::atomic<bool> MessageHandler::m_finish;
-
 std::mutex MessageHandler::m_messageMutex;
-
 std::vector<Message*> MessageHandler::m_messages;
-
 std::thread MessageHandler::m_messageThread;
-
-Message::Message()
-{
-	Stop = new std::function<void()>();
-}
-
-Message::~Message()
-{
-	delete Stop;
-}
 
 void Message::SetClose(std::function<void()>* stop)
 {
-	*Stop = *stop;
-}
-
-void Message::FrameUpdate(sf::RenderWindow& window)
-{
-	
-}
-
-void Message::Render(sf::RenderWindow& window)
-{
-
-}
-
-void Message::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
-{
-
-}
-
-void Message::Shutdown()
-{
-
+	m_stop = stop;
 }
 
 MessageInfo::MessageInfo(const std::string& message, std::function<void()>* cb)
 	:Message()
 {
-	m_message = sf::Text("[Info] " + message, *Global::Font, 16);
+	m_message = sf::Text("[Info] " + message, Global::Font, 16);
 	m_message.setPosition(sf::Vector2f(10, 35));
 	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	Callback = cb;
+	m_callback = cb;
 
 	m_buttonCallback = [this]()
 	{
-		(*Callback)();
-		(*Stop)();
+		(*m_callback)();
+		(*m_stop)();
 	};
 
-	m_buttonOk = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallback);
-	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonOk->setPosition(120, 10);
+
+	UIRegistry::GetRegistry().AddComponent(m_buttonOk);
 }
 
-void MessageInfo::FrameUpdate(sf::RenderWindow& window)
+MessageInfo::~MessageInfo()
 {
-	m_buttonOk->FrameUpdate(&window);
-	window.setTitle("Info");
-}
-
-void MessageInfo::Render(sf::RenderWindow& window)
-{
-	window.draw(m_message);
-	m_buttonOk->Render(&window);
-}
-
-void MessageInfo::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
-{
-	m_buttonOk->MouseButton(down, pos, button);
-}
-
-void MessageInfo::Shutdown()
-{
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonOk);
 	delete m_buttonOk;
+}
+
+void MessageInfo::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_message);
 }
 
 MessageWarning::MessageWarning(const std::string& message, std::function<void()>* cb)
 	:Message()
 {
-	m_message = sf::Text("[Warn] " + message, *Global::Font, 16);
+	m_message = sf::Text("[Warn] " + message, Global::Font, 16);
 	m_message.setPosition(sf::Vector2f(10, 35));
 	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	Callback = cb;
+	m_callback = cb;
 
 	m_buttonCallback = [this]()
 	{
-		(*Callback)();
-		(*Stop)();
+		(*m_callback)();
+		(*m_stop)();
 	};
 
-	m_buttonOk = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallback);
-	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonOk->setPosition(120, 10);
+
+	UIRegistry::GetRegistry().AddComponent(m_buttonOk);
 }
 
-void MessageWarning::FrameUpdate(sf::RenderWindow& window)
+MessageWarning::~MessageWarning()
 {
-	m_buttonOk->FrameUpdate(&window);
-	window.setTitle("Warning");
-}
-
-void MessageWarning::Render(sf::RenderWindow& window)
-{
-	window.draw(m_message);
-	m_buttonOk->Render(&window);
-}
-
-void MessageWarning::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
-{
-	m_buttonOk->MouseButton(down, pos, button);
-}
-
-void MessageWarning::Shutdown()
-{
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonOk);
 	delete m_buttonOk;
+}
+
+void MessageWarning::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_message);
 }
 
 MessageError::MessageError(const std::string& message, std::function<void()>* cb)
 	:Message()
 {
-	m_message = sf::Text("[ERROR] " + message, *Global::Font, 16);
+	m_message = sf::Text("[Error] " + message, Global::Font, 16);
 	m_message.setPosition(sf::Vector2f(10, 35));
 	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	Callback = cb;
+	m_callback = cb;
 
 	m_buttonCallback = [this]()
 	{
-		(*Callback)();
-		(*Stop)();
+		(*m_callback)();
+		(*m_stop)();
 	};
 
-	m_buttonOk = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallback);
-	m_buttonOk->SetButtonModeText("ok", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonOk->setPosition(120, 10);
+
+	UIRegistry::GetRegistry().AddComponent(m_buttonOk);
 }
 
-void MessageError::FrameUpdate(sf::RenderWindow& window)
+MessageError::~MessageError()
 {
-	m_buttonOk->FrameUpdate(&window);
-	window.setTitle("ERROR");
-}
-
-void MessageError::Render(sf::RenderWindow& window)
-{
-	window.draw(m_message);
-	m_buttonOk->Render(&window);
-}
-
-void MessageError::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
-{
-	m_buttonOk->MouseButton(down, pos, button);
-}
-
-void MessageError::Shutdown()
-{
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonOk);
 	delete m_buttonOk;
+}
+
+void MessageError::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_message);
 }
 
 MessageConfirm::MessageConfirm(const std::string& message, std::function<void(const bool&)>* cb)
 	:Message()
 {
-	m_message = sf::Text(message, *Global::Font, 16);
+	m_message = sf::Text(message, Global::Font, 16);
 	m_message.setPosition(sf::Vector2f(10, 35));
 	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	Callback = cb;
+	m_callback = cb;
 
 	m_buttonCallbackContinue = [this]()
 	{
-		(*Callback)(true);
-		(*Stop)();
+		(*m_callback)(true);
+		(*m_stop)();
 	};
 
 	m_buttonCallbackCancel = [this]()
 	{
-		(*Callback)(false);
-		(*Stop)();
+		(*m_callback)(false);
+		(*m_stop)();
 	};
 
-	m_buttonContinue = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_buttonCallbackContinue);
-	m_buttonContinue->SetButtonModeText("continue", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+	m_buttonContinue = new ButtonText(&m_buttonCallbackContinue, "continue", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonContinue->setPosition(120, 10);
 
-	m_buttonCancel = new Button(sf::Vector2i(230, 10), sf::Vector2u(100, 20), &m_buttonCallbackCancel);
-	m_buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
+	m_buttonCancel = new ButtonText(&m_buttonCallbackCancel, "cancel", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonCancel->setPosition(230, 10);
+
+	UIRegistry::GetRegistry().AddComponent(m_buttonContinue);
+	UIRegistry::GetRegistry().AddComponent(m_buttonCancel);
 }
 
-void MessageConfirm::FrameUpdate(sf::RenderWindow& window)
+MessageConfirm::~MessageConfirm()
 {
-	m_buttonContinue->FrameUpdate(&window);
-	m_buttonCancel->FrameUpdate(&window);
-}
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonContinue);
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonCancel);
 
-void MessageConfirm::Render(sf::RenderWindow& window)
-{
-	window.draw(m_message);
-	m_buttonContinue->Render(&window);
-	m_buttonCancel->Render(&window);
-}
-
-void MessageConfirm::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
-{
-	m_buttonContinue->MouseButton(down, pos, button);
-	m_buttonCancel->MouseButton(down, pos, button);
-}
-
-void MessageConfirm::Shutdown()
-{
 	delete m_buttonContinue;
 	delete m_buttonCancel;
 }
 
-MessageInput::MessageInput(const std::string& message, std::function<void(const std::string&)>* cb)
-	:Message()
+void MessageConfirm::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	m_message = sf::Text(message, *Global::Font, 16);
+	target.draw(m_message);
+}
+
+MessageInput::MessageInput(const std::string& message, std::function<void(const std::string&)>* cb)
+	:Message(), m_field(message, false, FieldType::TEXT)
+{
+	m_field.setPosition(10, 35);
+
+	m_message = sf::Text(message, Global::Font, 16);
 	m_message.setPosition(sf::Vector2f(10, 35));
 	m_message.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	Callback = cb;
-	m_textLoc = 0;
-	m_textLocHigh = 0;
-	m_isDown = false;
+	m_callback = cb;
 
 	m_enter = [this]()
 	{
-		(*Callback)(m_text);
-		(*Stop)();
+		(*m_callback)(m_field.GetText());
+		(*m_stop)();
 	};
 
 	m_escape = [this]()
 	{
-		m_text = "";
-		m_enter();
+		(*m_callback)("");
+		(*m_stop)();
 	};
 
 	m_textCallback = [this](const sf::Event::KeyEvent& ev)
 	{
-		InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, &m_enter, &m_escape, ev);
+		if (ev.code == sf::Keyboard::Key::Enter)
+			m_enter();
+		else if (ev.code == sf::Keyboard::Key::Escape)
+			m_escape();
 	};
 
-	m_buttonEnter = new Button(sf::Vector2i(120, 10), sf::Vector2u(100, 20), &m_enter);
-	m_buttonEnter->SetButtonModeText("enter", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
-
-	m_buttonCancel = new Button(sf::Vector2i(230, 10), sf::Vector2u(100, 20), &m_escape);
-	m_buttonCancel->SetButtonModeText("cancel", MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG, 16);
-
-	m_inputBackground = sf::RectangleShape(sf::Vector2f(780, 24));
-	m_inputBackground.setPosition(sf::Vector2f(10, 58));
-	m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG);
-
-	m_inputLoc = sf::RectangleShape(sf::Vector2f(1, 16));
-	m_inputLoc.setFillColor(MOD_BUTTON_TEXT_FG);
-
-	m_inputLocHigh = sf::RectangleShape(sf::Vector2f(0, 16));
-	m_inputLocHigh.setFillColor(MOD_HIGHLIGHT_COLOR);
-
-	m_input = sf::Text("", *Global::Font, 16);
-	m_input.setPosition(10, 61);
-	m_input.setFillColor(MOD_BUTTON_TEXT_FG);
-
 	InputHandler::RegisterKeyCallback(&m_textCallback);
+
+	m_buttonEnter = new ButtonText(&m_enter, "enter", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonEnter->setPosition(120, 10);
+
+	m_buttonCancel = new ButtonText(&m_escape, "cancel", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
+	m_buttonCancel->setPosition(230, 10);
+
+	UIRegistry::GetRegistry().AddComponent(m_buttonEnter);
+	UIRegistry::GetRegistry().AddComponent(m_buttonCancel);
+	UIRegistry::GetRegistry().AddComponent(&m_field);
 }
 
-void MessageInput::FrameUpdate(sf::RenderWindow& window)
+MessageInput::~MessageInput()
 {
-	m_buttonEnter->FrameUpdate(&window);
-	m_buttonCancel->FrameUpdate(&window);
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonEnter);
+	UIRegistry::GetRegistry().RemoveComponent(m_buttonCancel);
+	UIRegistry::GetRegistry().RemoveComponent(&m_field);
 
-	InputHandler::RunMouseProccessFrame(&m_input, &m_textLoc, &m_isDown, sf::Mouse::getPosition(window), 24);
-
-	m_input.setString(m_text);
-	m_inputLoc.setPosition(sf::Text(m_text.substr(0, m_textLoc), *Global::Font, 16).getLocalBounds().width + m_input.getPosition().x, m_input.getPosition().y + 2);
-
-	m_inputLocHigh.setPosition(sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, 16).getLocalBounds().width + m_input.getPosition().x, m_input.getPosition().y + 2);
-	m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, 16).getLocalBounds().width, 16));
-}
-
-void MessageInput::Render(sf::RenderWindow& window)
-{
-	window.draw(m_message);
-	window.draw(m_inputBackground);
-	window.draw(m_input);
-	window.draw(m_inputLocHigh);
-	window.draw(m_inputLoc);
-
-	m_buttonEnter->Render(&window);
-	m_buttonCancel->Render(&window);
-}
-
-void MessageInput::MouseUpdate(const bool& down, const sf::Vector2i& pos, const sf::Mouse::Button& button)
-{
-	m_buttonEnter->MouseButton(down, pos, button);
-	m_buttonCancel->MouseButton(down, pos, button);
-
-	InputHandler::RunMouseProccess(&m_input, &m_textLocHigh, &m_textLoc, &m_isDown, down, pos, 24);
-}
-
-void MessageInput::Shutdown()
-{
 	delete m_buttonEnter;
 	delete m_buttonCancel;
+}
 
-	InputHandler::UnregisterKeyCallback(&m_textCallback);
+void MessageInput::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	target.draw(m_message);
 }

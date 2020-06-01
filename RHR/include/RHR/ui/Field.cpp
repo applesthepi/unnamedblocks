@@ -123,7 +123,7 @@ void Field::frameUpdate(const double& deltaTime)
 const bool Field::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	if (!m_enabled)
-		return;
+		return false;
 
 	if (m_canSwitch && button == sf::Mouse::Middle && down &&
 		Global::MousePosition.x >= getPosition().x + m_calculationOffset.x && Global::MousePosition.x <= getPosition().x + m_inputBackground.getSize().x + m_calculationOffset.x &&

@@ -1,50 +1,11 @@
 #include "Global.h"
 
-unsigned int Global::BlockHeight;
+uint8_t Global::BlockHeight;
 
-unsigned int Global::BlockBorder;
+uint8_t Global::BlockBorder;
 
-sf::Font* Global::Font;
-
-bool Global::Dragging;
-
-void* Global::DraggingStack;
-
-void* Global::DraggingStackConnected;
-
-unsigned int Global::DraggingStackConnectedIndex;
-
-bool Global::CutRenderingPlane;
-
-void* Global::DraggingPlane;
-
-void* Global::DraggingPlaneOver;
-
-void* Global::SelectedArgument;
-
-unsigned int Global::ToolbarWidth;
-
-unsigned int Global::BlockConnectDistance;
-
-bool Global::ApplicationRunning;
-
-std::string Global::ProjectPath;
-
-bool Global::SkipFrame;
-
-bool Global::ContextActive;
-
-ContextSystem Global::Context;
-
-GpuMan Global::GpuType;
-
-std::string Global::ContextData;
-
-bool Global::ContextUpdate;
+sf::Font Global::Font;
 
 sf::Vector2i Global::MousePosition;
 
-void* Global::SelectedBlock;
-
-void* Global::SelectedStack;
-
+sf::Vector2u Global::WindowSize;

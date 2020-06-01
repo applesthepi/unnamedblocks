@@ -674,8 +674,8 @@ bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t*
 				}
 				else
 				{
-					ix += sf::Text(text->getString().substring(0, i), *Global::Font, 16).getLocalBounds().width;
-					ix += sf::Text(text->getString().substring(i, 1), *Global::Font, 16).getLocalBounds().width / 2.0;
+					ix += sf::Text(text->getString().substring(0, i), Global::Font, 16).getLocalBounds().width;
+					ix += sf::Text(text->getString().substring(i, 1), Global::Font, 16).getLocalBounds().width / 2.0;
 				}
 
 				if (pos.x <= ix)
@@ -718,8 +718,8 @@ bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos
 				}
 				else
 				{
-					ix += sf::Text(system.Text->substr(0, i), *Global::Font, fontSize).getLocalBounds().width;
-					ix += sf::Text(system.Text->substr(i, 1), *Global::Font, fontSize).getLocalBounds().width / 2.0;
+					ix += sf::Text(system.Text->substr(0, i), Global::Font, fontSize).getLocalBounds().width;
+					ix += sf::Text(system.Text->substr(i, 1), Global::Font, fontSize).getLocalBounds().width / 2.0;
 				}
 
 				if (pos.x <= ix)
@@ -759,8 +759,8 @@ void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* is
 				}
 				else
 				{
-					ix += sf::Text(text->getString().substring(0, i), *Global::Font, 16).getLocalBounds().width;
-					ix += sf::Text(text->getString().substring(i, 1), *Global::Font, 16).getLocalBounds().width / 2.0;
+					ix += sf::Text(text->getString().substring(0, i), Global::Font, 16).getLocalBounds().width;
+					ix += sf::Text(text->getString().substring(i, 1), Global::Font, 16).getLocalBounds().width / 2.0;
 				}
 
 				if (pos.x <= ix)
@@ -790,8 +790,8 @@ void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& 
 				}
 				else
 				{
-					ix += sf::Text(text->substr(0, i), *Global::Font, fontSize).getLocalBounds().width;
-					ix += sf::Text(text->substr(i, 1), *Global::Font, fontSize).getLocalBounds().width / 2.0;
+					ix += sf::Text(text->substr(0, i), Global::Font, fontSize).getLocalBounds().width;
+					ix += sf::Text(text->substr(i, 1), Global::Font, fontSize).getLocalBounds().width / 2.0;
 				}
 
 				if (pos.x <= ix)

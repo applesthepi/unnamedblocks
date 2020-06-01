@@ -5,13 +5,18 @@ ButtonText::ButtonText(std::function<void()>* callback, const std::string& text,
 {
 	m_background.setFillColor(background);
 
-	m_text = sf::Text(text, *Global::Font, charSize);
+	m_text = sf::Text(text, Global::Font, charSize);
 	m_text.setFillColor(forground);
+}
+
+void ButtonText::SetText(const std::string& text)
+{
+	m_text.setString(text);
 }
 
 void ButtonText::frameUpdate(const double& deltaTime)
 {
-	m_background.setSize(getSize());
+	m_background.setSize((sf::Vector2f)getSize());
 	m_background.setPosition(getPosition());
 
 	m_text.setPosition(getPosition() + sf::Vector2f(2.0f, 0.0f));

@@ -10,7 +10,7 @@
 // registries
 
 #include "registries/BlockRegistry.h"
-#include "registries/ButtonRegistry.h"
+#include "registries/UIRegistry.h"
 #include "registries/ShaderRegistry.h"
 
 // stacking

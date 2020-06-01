@@ -46,16 +46,25 @@ void ThreadPreProcessorExecution(const bool& debugBuild)
 	uint64_t functionMain = 0;
 	bool functionMainFound = false;
 
-	const std::vector<Stack*>* stacks = PreProcessor::GetPlaneCopy()->GetAllStacks();
-	ModBlockData** functionData = new ModBlockData*[stacks->size()];
-	ModBlock*** modBlocks = new ModBlock**[stacks->size()];
-	
-	for (uint64_t i = 0; i < stacks->size(); i++)
-	{
-		functionData[i] = new ModBlockData[stacks->at(i)->GetBlockCount()];
-		modBlocks[i] = new ModBlock*[stacks->at(i)->GetBlockCount()];
+	std::vector<Stack*> stacks;
 
-		if (stacks->at(i)->GetBlockCount() >= 1 && stacks->at(i)->GetBlock(0)->GetUnlocalizedName() == "vin_main")
+	for (uint64_t i = 0; i < PreProcessor::GetPlaneCopy()->GetCollections().size(); i++)
+	{
+		const std::vector<Stack*>& colStacks = PreProcessor::GetPlaneCopy()->GetCollections()[i]->GetStacks();
+
+		for (uint64_t a = 0; a < colStacks.size(); a++)
+			stacks.push_back(colStacks[a]);
+	}
+
+	ModBlockData** functionData = new ModBlockData*[stacks.size()];
+	ModBlock*** modBlocks = new ModBlock**[stacks.size()];
+	
+	for (uint64_t i = 0; i < stacks.size(); i++)
+	{
+		functionData[i] = new ModBlockData[stacks[i]->GetBlocks().size()];
+		modBlocks[i] = new ModBlock*[stacks[i]->GetBlocks().size()];
+
+		if (stacks[i]->GetBlocks().size() >= 1 && std::string(stacks[i]->GetBlocks()[0]->GetModBlock()->GetUnlocalizedName()) == "vin_main")
 		{
 			if (functionMainFound)
 			{
@@ -76,30 +85,30 @@ void ThreadPreProcessorExecution(const bool& debugBuild)
 
 		std::vector<void(*)(ModBlockPass* pass)> transCalls;
 
-		for (uint64_t a = 0; a < stacks->at(i)->GetBlockCount(); a++)
+		for (uint64_t a = 0; a < stacks[i]->GetBlocks().size(); a++)
 		{
 			if (debugBuild)
-				transCalls.push_back(PreProcessor::GetRegistry()->GetBlock(stacks->at(i)->GetBlock(a)->GetUnlocalizedName())->PullExecuteDebug());
+				transCalls.push_back(stacks[i]->GetBlocks()[a]->GetModBlock()->PullExecuteDebug());
 			else
-				transCalls.push_back(PreProcessor::GetRegistry()->GetBlock(stacks->at(i)->GetBlock(a)->GetUnlocalizedName())->PullExecuteRelease());
+				transCalls.push_back(stacks[i]->GetBlocks()[a]->GetModBlock()->PullExecuteRelease());
 
-			modBlocks[i][a] = (ModBlock*)blockRegistry->GetBlock(stacks->at(i)->GetBlock(a)->GetUnlocalizedName());
+			modBlocks[i][a] = (ModBlock*)stacks[i]->GetBlocks()[a]->GetModBlock();
 
 			std::vector<void*> argData;
 			std::vector<ModBlockDataType> argTypes;
 			std::vector<ModBlockDataInterpretation> argInterpretations;
 
-			for (uint64_t b = 0; b < stacks->at(i)->GetBlock(a)->GetArgumentCount(); b++)
+			for (uint64_t b = 0; b < stacks[i]->GetBlocks()[a]->GetArguments().size(); b++)
 			{
-				BlockArgumentType type = stacks->at(i)->GetBlock(a)->GetArgument(b)->GetType();
+				BlockArgumentType type = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetType();
 
-				if (*stacks->at(i)->GetBlock(a)->GetArgument(b)->GetMode() == BlockArgumentVariableMode::VAR)
+				if (stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetMode() == BlockArgumentVariableMode::VAR)
 				{
 					std::string* dt = new std::string();
 
 					try
 					{
-						*dt = *stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw();
+						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData();
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -127,7 +136,7 @@ void ThreadPreProcessorExecution(const bool& debugBuild)
 					
 					try
 					{
-						*dt = *stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw();
+						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData();
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -145,7 +154,7 @@ void ThreadPreProcessorExecution(const bool& debugBuild)
 
 					try
 					{
-						*dt = *stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw() == "1";
+						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData() == "1";
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -163,7 +172,7 @@ void ThreadPreProcessorExecution(const bool& debugBuild)
 					
 					try
 					{
-						*dt = std::stod(*stacks->at(i)->GetBlock(a)->GetArgument(b)->GetDataRaw());
+						*dt = std::stod(stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData());
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -213,7 +222,7 @@ void ThreadPreProcessorExecution(const bool& debugBuild)
 
 	bool buildType = debugBuild;
 
-	uint64_t functionTotalCount = stacks->size();
+	uint64_t functionTotalCount = stacks.size();
 
 	uint8_t* super = PreProcessor::MakeSuper();
 	int64_t* superData = PreProcessor::GetMadeData();
@@ -306,9 +315,8 @@ void PreProcessor::Cleanup()
 void PreProcessor::Start(Plane* planeCopy, const bool& debugBuild)
 {
 	m_planeCopy = planeCopy;
-	m_registry = registry;
 	m_finished = false;
-	m_thread = std::thread(ThreadPreProcessorExecution, debugBuild, registry);
+	m_thread = std::thread(ThreadPreProcessorExecution, debugBuild);
 	m_thread.detach();
 }
 
@@ -325,11 +333,6 @@ void PreProcessor::SetFinished(const bool& finished)
 Plane* PreProcessor::GetPlaneCopy()
 {
 	return m_planeCopy;
-}
-
-BlockRegistry* PreProcessor::GetRegistry()
-{
-	return m_registry;
 }
 
 void PreProcessor::SetSuper(const uint8_t& super, const int64_t& superData)
@@ -388,8 +391,6 @@ std::thread PreProcessor::m_thread;
 std::atomic<bool> PreProcessor::m_finished;
 
 Plane* PreProcessor::m_planeCopy;
-
-BlockRegistry* PreProcessor::m_registry;
 
 uint8_t* PreProcessor::m_super;
 

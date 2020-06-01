@@ -76,7 +76,7 @@ void Dropdown::SetElements(const std::vector<std::string>& elements, const uint6
 
 	for (uint16_t i = 0; i < elements.size(); i++)
 	{
-		uint16_t width = sf::Text(elements[i], *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width;
+		uint16_t width = sf::Text(elements[i], Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width;
 
 		if (width > m_width)
 			m_width = width;

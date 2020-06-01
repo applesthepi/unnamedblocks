@@ -105,7 +105,7 @@ void CategoryHandler::UpdateBlocks(const uint64_t& catIdx)
 			collection->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
 
 			Stack* stack = new Stack();// sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))));
-			Block* block = new Block();// BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName(), stack->GetFunctionUpdate(), stack->GetFunctionSelect());
+			Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());// BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName(), stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 			
 			stack->AddBlock(block);
 			collection->AddStack(stack);
@@ -362,7 +362,7 @@ const uint32_t CategoryHandler::UpdateButtons()
 	for (uint64_t i = 0; i < m_modCategoryButtons.size(); i++)
 	{
 		m_modCategoryButtons[i]->setPosition(sf::Vector2f(10, offset));
-		m_modCategoryButtons[i]->setSize(sf::Vector2f(m_toolbarWidth - 10, 16));
+		m_modCategoryButtons[i]->setSize(sf::Vector2u(m_toolbarWidth - 10, 16));
 
 		m_modIco[i].setPosition(sf::Vector2f(10, offset));
 

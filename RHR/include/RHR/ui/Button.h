@@ -1,5 +1,6 @@
 #pragma once
 #include "IUI.h"
+#include "ITransformable.h"
 
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -8,13 +9,10 @@
 #define HOVOR_SHADE_HARD 0.7
 #define HOVOR_SHADE_LIGHT 0.85
 
-class Button : public IUI, public sf::Transformable
+class Button : public IUI, public ITransformable
 {
 public:
 	Button(std::function<void()>* callback, const sf::Vector2f& size);
-
-	void setSize(const sf::Vector2f& size);
-	const sf::Vector2f& getSize();
 
 	void setEnabled(const bool& enabled);
 	const bool& getEnabled();

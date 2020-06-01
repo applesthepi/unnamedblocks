@@ -1,6 +1,7 @@
 #include "StatmentHandler.h"
 #include "RHR/StatmentIf.h"
 
+/*
 std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)
 {
 	std::vector<StatmentIf> ifStatments;
@@ -66,3 +67,4 @@ std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)
 
 	return ifStatments;
 }
+*/

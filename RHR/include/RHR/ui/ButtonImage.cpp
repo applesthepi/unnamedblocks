@@ -29,7 +29,7 @@ void ButtonImage::frameUpdate(const double& deltaTime)
 	m_sprite.setScale(getScale());
 	m_sprite.setPosition(getPosition());
 
-	setSize(sf::Vector2f(m_texture.getSize().x * getScale().x, m_texture.getSize().y * getScale().y));
+	setSize(sf::Vector2u(m_texture.getSize().x * getScale().x, m_texture.getSize().y * getScale().y));
 
 	if (Global::MousePosition.x > getPosition().x && Global::MousePosition.x < getPosition().x + static_cast<int32_t>(getSize().x) &&
 		Global::MousePosition.y > getPosition().y && Global::MousePosition.y < getPosition().y + static_cast<int32_t>(getSize().y))

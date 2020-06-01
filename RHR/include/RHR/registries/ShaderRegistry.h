@@ -6,14 +6,13 @@
 class ShaderRegistry
 {
 public:
-    static void Initialize();
     static void ReloadAllShaders();
-    static sf::Shader* GetShader(std::string unlocalizedName);
+    static sf::Shader* GetShader(const std::string& name);
 private:
-    static bool LoadShader(std::string path, std::string unlocalizedName);
-    static bool ReplaceShader(std::string unlocalizedName, std::string path);
+    static bool LoadShader(const std::string& name, const std::string& path);
+    static bool ReplaceShader(const std::string& name, const std::string& path);
 
-    static std::vector<std::string>* m_shaderUnlocalizedNames;
-    static std::vector<sf::Shader*>* m_shaders;
+    static std::vector<std::string> m_shaderUnlocalizedNames;
+    static std::vector<sf::Shader*> m_shaders;
     static std::mutex m_mutex;
 };

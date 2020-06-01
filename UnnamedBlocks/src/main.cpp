@@ -62,7 +62,6 @@ int main()
 #endif
 	Logger::Info("all unsaved progress will be lost if this window is closed");
 
-	ShaderRegistry::Initialize();
 	ShaderRegistry::ReloadAllShaders();
 
 	// Window Setup

@@ -35,7 +35,12 @@ void UIRegistry::frameUpdate(const double& deltaTime)
 const bool UIRegistry::mouseButton(const bool& down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	for (uint64_t i = 0; i < m_ui.size(); i++)
-		m_ui[i]->mouseButton(down, position, button);
+	{
+		if (m_ui[i]->mouseButton(down, position, button))
+			return true;
+	}
+
+	return false;
 }
 
 void UIRegistry::draw(sf::RenderTarget& target, sf::RenderStates states) const
