@@ -7,6 +7,7 @@ set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Global.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/util.cpp"
 	# Headers
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Espresso.h"
 	
@@ -14,6 +15,7 @@ set(Espresso_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Global.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/util.h"
 	)
 add_library(Espresso STATIC
 	${Espresso_SRC}
