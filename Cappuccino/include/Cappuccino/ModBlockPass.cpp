@@ -314,7 +314,7 @@ CAP_DLL void ModBlockPass::LogDebug(const std::string& message)
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [DEBUG] ",
+	snprintf(prefix, 100, "[%02lu%02luu] %03luu:%03lu%03luu] [DEBUG] ",
 		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
@@ -338,7 +338,7 @@ void ModBlockPass::LogInfo(const std::string& message)
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [INFO] ",
+	snprintf(prefix, 100, "[%02lu:%02lu] [%03lu%03luu%03luu] [INFO] ",
 		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
@@ -362,7 +362,7 @@ CAP_DLL void ModBlockPass::LogWarning(const std::string& message)
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
-	snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [WARN] ",
+	snprintf(prefix, 100, "[%02lu:%02lu] [%03lu%03luu%03luu] [WARN] ",
 		((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 		((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
@@ -387,21 +387,21 @@ void ModBlockPass::LogError(const std::string& message, const LoggerFatality& fa
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messagesMutex);
 
 	if (fatality == LoggerFatality::OK)
-		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-OK] ",
+		snprintf(prefix, 100, "[%02lu:%02lu] [%03lu:%03lu:%03lu] [ERROR-OK] ",
 			((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 			((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 			((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
 			((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
 			((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 	else if (fatality == LoggerFatality::BREAK)
-		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-BREAK] ",
+		snprintf(prefix, 100, "[%02lu:%02lu] [%03lu:%03lu:%03lu] [ERROR-BREAK] ",
 			((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 			((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 			((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,
 			((uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_beginTime).count()) % 1000,
 			((uint64_t)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_beginTime).count()) % 1000);
 	else if (fatality == LoggerFatality::ABORT)
-		snprintf(prefix, 100, "[%02u:%02u] [%03u:%03u:%03u] [ERROR-ABORT] ",
+		snprintf(prefix, 100, "[%02lu:%02lu] [%03lu:%03lu:%03lu] [ERROR-ABORT] ",
 			((uint64_t)std::chrono::duration_cast<std::chrono::minutes>(now - *m_beginTime).count()),
 			((uint64_t)std::chrono::duration_cast<std::chrono::seconds>(now - *m_beginTime).count()),
 			((uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_beginTime).count()) % 1000,

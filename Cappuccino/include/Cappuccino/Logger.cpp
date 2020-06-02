@@ -1,3 +1,3 @@
 #include "Logger.h"
 
-std::mutex CAP_EXPORT Logger::m_logMutex;
+std::mutex CAP_C_EXPORT Logger::m_logMutex;
