@@ -37,7 +37,7 @@ public:
 
 	uint32_t GetWidth() override
 	{
-		return m_field.GetWidth();
+		return m_field.GetWidth() + (REAL_GEOMETRY_REACH * 2);
 	}
 
 	bool HasData() override
@@ -84,18 +84,30 @@ public:
 		//	Global::Font.getGlyph(wstr[i], Global::BlockHeight - Global::BlockBorder, false).textureRect;
 		//}
 		
-		sf::Text textRecreation = sf::Text(text, Global::Font, height);
+		//sf::Text textRecreation = sf::Text(text, Global::Font, height);
+		//textRecreation.setFillColor(sf::Color(0, 0, 0, 255));
+		//
+		//uint32_t textWidth = textRecreation.getLocalBounds().width;
+		//uint32_t textHeight = textRecreation.getLocalBounds().height;
+		//
+		//if (textWidth == 0 || textHeight == 0)
+		//{
+		//	textWidth = 1;
+		//	textHeight = Global::BlockHeight - Global::BlockBorder;
+		//}
 
-		m_textRendered.create(textRecreation.getLocalBounds().width, textRecreation.getLocalBounds().height);
-		m_textRendered.draw(textRecreation);
+		m_textRendered.create(100, Global::BlockHeight - Global::BlockBorder);
+		m_textRendered.clear(sf::Color(50, 50, 150, 255));
+		//m_textRendered.draw(textRecreation);
 		m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
 
 		// ===================================================================================================
 		// =============== Update Vertex Array; see "dev/real_geometry.png"
 		// ===================================================================================================
 
-		ResetVertices(18);
-
+		//ResetVertices(18);
+		ResetVertices(12);
+		
 		// 0
 
 		AddVertex(sf::Vertex(sf::Vector2f(0, 0), col), false);
@@ -122,20 +134,25 @@ public:
 
 		// 4
 
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), sf::Vector2f(m_vertexArrayImage.getSize().x, 0)), true);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
+		//AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
+		//AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), sf::Vector2f(m_vertexArrayImage.getSize().x, 0)), true);
+		//AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
 
 		// 5
 
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), sf::Vector2f(0, m_vertexArrayImage.getSize().y)), true);
+		//AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
+		//AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
+		//AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), sf::Vector2f(0, m_vertexArrayImage.getSize().y)), true);
 	}
 
 	bool UseVertexArrayTexture() override
 	{
-		return false;
+		return true;
+	}
+protected:
+	void UpdateData() override
+	{
+		m_field.SetText(m_data);
 	}
 private:
 	Field m_field;

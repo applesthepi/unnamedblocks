@@ -92,8 +92,8 @@ void Block::UpdateArguments()
 		{
 			args.push_back(new ArgumentReal(argumentInit[i].Mode, argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
 
-			args.back()->SetData(argumentInit[i].DefaultValue);
 			args.back()->setPosition(width, Global::BlockBorder);
+			args.back()->SetData(argumentInit[i].DefaultValue);
 
 			width += args.back()->GetWidth();
 		}

@@ -472,8 +472,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 				for (uint64_t d = 0; d < va.back().getVertexCount(); d++)
 				{
-					va.back()[d].position.x += blockWidth + blockPos.x;
-					va.back()[d].position.y += blockPos.y;
+					va.back()[d].position += sf::Vector2f(blockWidth + blockPos.x, blockPos.y);
 				}
 
 				blockWidth += arg->GetWidth();
@@ -519,7 +518,44 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		// create map
 
 		sf::RenderTexture textureMap;
-		textureMap.create(textureWidth, textureHeight);
+		textureMap.create(textureWidth + 1, textureHeight + 1);
+		textureMap.clear(sf::Color(255, 0, 255, 255));
+
+		sf::Texture tempTexture;
+		sf::Sprite tempSprite;
+
+		uint32_t incHeight = 1;
+
+		for (uint64_t a = 0; a < vaTextures.size(); a++)
+		{
+			// proceed if the argument has a texture
+
+			if (vaTextures[a] == nullptr)
+				continue;
+
+			tempTexture.loadFromImage(*(vaTextures[a]));
+
+			tempSprite.setTexture(tempTexture);
+			tempSprite.setPosition(1, incHeight);
+
+			textureMap.draw(tempSprite);
+			incHeight += vaTextures[a]->getSize().y;
+		}
+
+		// retrieve render
+
+		m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
+		m_textureMapImage[bufferIdx].setPixel(0, 0, sf::Color(0, 0, 0, 255));
+
+		m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
+
+		m_textureMapEnabled[bufferIdx] = true;
+
+		/*
+		// create map
+
+		sf::RenderTexture textureMap;
+		textureMap.create(textureWidth + 1, textureHeight + 1);
 		textureMap.clear(sf::Color(0, 0, 0, 0));
 
 		sf::Texture tempTexture;
@@ -542,7 +578,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		{
 			// proceed if the argument has a texture
 
-			if (vaTextures[a]->getSize() == sf::Vector2u(1, 1))
+			if (vaTextures[a] == nullptr)
 				continue;
 
 			tempTexture.loadFromImage(*(vaTextures[a]));
@@ -556,9 +592,9 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 			// set VAO textureCoords to match the argument's texture dimensions
 
-			tempVAO[1].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, 0);
-			tempVAO[2].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, vaTextures[a]->getSize().y);
-			tempVAO[3].texCoords = sf::Vector2f(0, vaTextures[a]->getSize().y);
+			tempVAO[1].texCoords = sf::Vector2f(vaTextures[a]->getSize().x + 1, 1);
+			tempVAO[2].texCoords = sf::Vector2f(vaTextures[a]->getSize().x + 1, vaTextures[a]->getSize().y + 1);
+			tempVAO[3].texCoords = sf::Vector2f(1, vaTextures[a]->getSize().y + 1);
 
 			// render argument's texture to map
 
@@ -569,9 +605,13 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		// retrieve render
 
 		m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
+		m_textureMapImage[bufferIdx].setPixel(0, 0, sf::Color(0, 0, 0, 255));
+
 		m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
 
 		m_textureMapEnabled[bufferIdx] = true;
+
+		*/
 	}
 	else
 		m_textureMapEnabled[bufferIdx] = false;

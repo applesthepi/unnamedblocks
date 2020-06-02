@@ -12,6 +12,8 @@ Argument::Argument()
 void Argument::SetData(const std::string& data)
 {
 	m_data = data;
+	UpdateData();
+	UpdateVertexArray();
 }
 
 const std::string& Argument::GetData()
@@ -22,6 +24,7 @@ const std::string& Argument::GetData()
 void Argument::SetMode(const BlockArgumentVariableMode& mode)
 {
 	m_mode = mode;
+	UpdateVertexArray();
 }
 
 const BlockArgumentVariableMode& Argument::GetMode()
@@ -83,6 +86,11 @@ bool Argument::UseVertexArrayTexture()
 }
 
 void Argument::UpdateVertexArray()
+{
+
+}
+
+void Argument::UpdateData()
 {
 
 }

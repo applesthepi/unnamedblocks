@@ -49,6 +49,7 @@ public:
 	virtual bool UseVertexArrayTexture();
 protected:
 	virtual void UpdateVertexArray();
+	virtual void UpdateData();
 
 	void ResetVertices(uint64_t reserve);
 	void AddVertex(const sf::Vertex& vertex, bool hasTextureCoords);
