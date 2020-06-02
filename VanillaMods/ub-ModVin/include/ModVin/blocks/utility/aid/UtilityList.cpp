@@ -16,6 +16,8 @@ UtiltiyListCell& UtiltiyListCell::operator=(const UtiltiyListCell& list)
 
 	Memory = list.Memory;
 	Copy = list.Copy;
+
+	return *this;
 }
 
 void UtilityList::AddValue(void* memory, bool copy)

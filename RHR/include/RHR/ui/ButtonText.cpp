@@ -16,6 +16,9 @@ void ButtonText::SetText(const std::string& text)
 
 void ButtonText::frameUpdate(double deltaTime)
 {
+	if (!m_enabled)
+		return;
+
 	m_background.setSize((sf::Vector2f)getSize());
 	m_background.setPosition(getPosition());
 
@@ -37,7 +40,7 @@ void ButtonText::frameUpdate(double deltaTime)
 
 bool ButtonText::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
-	if (!getEnabled())
+	if (!m_enabled)
 		return false;
 
 	if (button == sf::Mouse::Left)
@@ -67,6 +70,9 @@ bool ButtonText::mouseButton(bool down, const sf::Vector2i& position, const sf::
 
 void ButtonText::draw(sf::RenderTarget& target, sf::RenderStates state) const
 {
+	if (!m_enabled)
+		return;
+
 	target.draw(m_background);
 	target.draw(m_text);
 }

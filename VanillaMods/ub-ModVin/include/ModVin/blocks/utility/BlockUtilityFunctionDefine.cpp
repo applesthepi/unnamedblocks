@@ -77,7 +77,7 @@ const std::vector<BlockArgumentInitializer> BlockUtilityFunctionDefine::GetArgum
 	std::vector<BlockArgumentInitializer> args;
 
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "define function"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::ONLY_RAW, BlockArgumentVariableMode::RAW, "function"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::RAW, "function"));
 
 	return args;
 }

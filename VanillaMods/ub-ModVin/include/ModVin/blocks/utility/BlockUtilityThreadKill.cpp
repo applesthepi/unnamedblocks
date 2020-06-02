@@ -43,7 +43,7 @@ const std::vector<BlockArgumentInitializer> BlockUtilityThreadKill::GetArguments
 	std::vector<BlockArgumentInitializer> args;
 
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "kill thread"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "thread"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "thread"));
 
 	return args;
 }

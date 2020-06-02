@@ -44,6 +44,9 @@ public:
 
 	// when the focus turns off of the argument
 	virtual void UnSelect();
+
+	// whether to use the vertexArrayImage or not
+	virtual bool UseVertexArrayTexture();
 protected:
 	virtual void UpdateVertexArray();
 

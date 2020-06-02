@@ -23,7 +23,7 @@ void ButtonImage::SetImage(const std::string& path)
 
 void ButtonImage::frameUpdate(double deltaTime)
 {
-	if (m_broken)
+	if (m_broken || !m_enabled)
 		return;
 
 	m_sprite.setScale(getScale());
@@ -40,7 +40,7 @@ void ButtonImage::frameUpdate(double deltaTime)
 
 bool ButtonImage::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
-	if (!getEnabled() || m_broken)
+	if (!m_enabled || m_broken)
 		return false;
 
 	if (button == sf::Mouse::Left)
@@ -70,7 +70,7 @@ bool ButtonImage::mouseButton(bool down, const sf::Vector2i& position, const sf:
 
 void ButtonImage::draw(sf::RenderTarget& target, sf::RenderStates state) const
 {
-	if (m_broken)
+	if (m_broken || !m_enabled)
 		return;
 
 	target.draw(m_sprite);

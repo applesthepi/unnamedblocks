@@ -22,13 +22,17 @@ public:
 
 	void frameUpdate(double deltaTime) override;
 
+	static void CreateHandler();
 	static CategoryHandler& GetHandler();
+
+	void PostRender(sf::RenderWindow* window);
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
-	static CategoryHandler m_handler;
+	static CategoryHandler* m_handler;
 
 	std::vector<ButtonText*> m_modCategoryButtons;
+	std::vector<std::vector<ButtonText*>> m_buttons;
 
 	std::vector<std::function<void()>*> m_modCategoryCallbacks;
 	std::vector<std::vector<std::function<void()>*>> m_buttonCallbacks;

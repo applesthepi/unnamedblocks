@@ -40,10 +40,9 @@ enum class BlockArgumentVariableModeRestriction
 	This controls how the input is given to the mod
 
 	NONE          - excepts either raw or var, raw will be raw, var will be the value
-	ONLY_RAW      - excepts only raw         , raw will be raw
-	ONLY_VAR      - excepts only var         , var will be the value
+	RESTRICTED    - does not change from initial "BlockArgumentVariableMode"
 	*/
-	NONE, ONLY_RAW, ONLY_VAR
+	NONE, RESTRICTED
 };
 
 enum class BlockArgumentVariableMode

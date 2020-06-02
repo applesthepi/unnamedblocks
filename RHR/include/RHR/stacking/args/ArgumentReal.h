@@ -132,6 +132,11 @@ public:
 		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
 		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), sf::Vector2f(0, m_vertexArrayImage.getSize().y)), true);
 	}
+
+	bool UseVertexArrayTexture() override
+	{
+		return false;
+	}
 private:
 	Field m_field;
 	std::function<void()> m_tab;

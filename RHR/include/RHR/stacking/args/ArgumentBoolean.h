@@ -8,7 +8,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <Cappuccino/Logger.h>
-
+/*
 #define RED_COLOR sf::Color(177, 37, 33)
 #define GREEN_COLOR sf::Color(99, 195, 77)
 
@@ -325,3 +325,4 @@ private:
 
 	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
 };
+*/

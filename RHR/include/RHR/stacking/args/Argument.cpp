@@ -46,7 +46,10 @@ const std::vector<bool>* Argument::GetVertexArrayCoords()
 
 const sf::Image* Argument::GetVertexArrayTexture()
 {
-	return &m_vertexArrayImage;
+	if (UseVertexArrayTexture())
+		return &m_vertexArrayImage;
+	else
+		return nullptr;
 }
 
 const BlockArgumentType Argument::GetType()
@@ -72,6 +75,11 @@ void Argument::Select()
 void Argument::UnSelect()
 {
 
+}
+
+bool Argument::UseVertexArrayTexture()
+{
+	return false;
 }
 
 void Argument::UpdateVertexArray()

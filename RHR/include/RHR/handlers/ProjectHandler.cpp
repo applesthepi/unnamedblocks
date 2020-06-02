@@ -8,7 +8,14 @@
 #include <string_view>
 #include <vector>
 #include <cassert>
-#include <netinet/in.h>
+#include <bit>
+
+//#ifdef POSIX
+//#include <netinet/in.h>
+//#else
+//#include <WinSock2.h>
+//#endif
+
 // Oh hey a union
 union u32 {
 	uint32_t value;
@@ -36,28 +43,28 @@ union f32 {
 };
 inline void push(std::vector<char> &vec, u32 value) {
 	u32 v = value;
-	v.value = htonl(v.value);
+	//v.value = htonl(v.value);
 	for(char i : v.bytes) {
 		vec.push_back(i);
 	}
 }
 inline void push(std::vector<char> &vec, f32 value) {
 	f32 v = value;
-	v.value = htonl(v.value);
+	//v.value = htonl(v.value);
 	for(char i : value.bytes) {
 		vec.push_back(i);
 	}
 }
 inline void push(std::vector<char> &vec, i32 value) {
 	i32 v = value;
-	v.value = htonl(v.value);
+	//v.value = htonl(v.value);
 	for(char i : value.bytes) {
 		vec.push_back(i);
 	}
 }
 inline void push(std::vector<char> &vec, u16 value) {
 	u16 v = value;
-	v.value = htons(v.value);
+	//v.value = htons(v.value);
 	for(char i : value.bytes) {
 		vec.push_back(i);
 	}
@@ -77,7 +84,7 @@ inline void push(std::vector<char> &vec, std::string_view value) {
 inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 2);
 	for(uint16_t i = 0; i < count; i++) {
-		buffer[i] = ntohs(buffer[i * 2]);
+		//buffer[i] = ntohs(buffer[i * 2]);
 	}
 }
 // Reads count elements and converts them to the native endian. Stores the result in buffer
@@ -85,7 +92,7 @@ inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
 inline void read_32(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 4);
 	for(uint16_t i = 0; i < count; i++) {
-		buffer[i] = ntohl(buffer[i * 4]);
+		//buffer[i] = ntohl(buffer[i * 4]);
 	}
 }
 #define read_float read_32

@@ -22,6 +22,8 @@ public:
 	void AddCollections(const std::vector<Collection*>& collections);
 	const std::vector<Collection*>& GetCollections();
 
+	void DeleteCollection(uint64_t idx);
+
 	void TranslateInnerPosition(const sf::Vector2i& position);
 	void SetInnerPosition(sf::Vector2i position);
 	const sf::Vector2i& GetInnerPosition();
@@ -41,7 +43,7 @@ private:
 	// ================ Rendering
 	// ===============================================================================================================
 
-	void CreateBuffer(uint16_t collectionIdx);
+	void CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity);
 	void UpdateBuffer(uint16_t bufferIdx);
 
 	std::vector<std::vector<sf::Vertex>> m_collectionVertexArrays;
@@ -50,6 +52,7 @@ private:
 	std::vector<sf::Transform> m_vertexBufferTransform;
 	std::vector<sf::Image> m_textureMapImage;
 	std::vector<sf::Texture> m_textureMapTexture;
+	std::vector<bool> m_textureMapEnabled;
 
 	// ===============================================================================================================
 	// ================ Selection & Context
