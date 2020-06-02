@@ -11,7 +11,6 @@
 #include <windows.h>
 #include <shellapi.h>
 #endif
-CategoryHandler CategoryHandler::m_handler;
 
 CategoryHandler::CategoryHandler()
 {
@@ -59,6 +58,7 @@ CategoryHandler::CategoryHandler()
 			m_modIco.push_back(sf::Sprite(m_textureClose));
 			m_modOpen.push_back(false);
 
+			m_buttons.push_back(std::vector<ButtonText*>());
 			m_buttonCallbacks.push_back(std::vector<std::function<void()>*>());
 		}
 		
@@ -70,9 +70,9 @@ CategoryHandler::CategoryHandler()
 			UpdateBlocks(catIdx);
 		};
 
-		m_modCategoryButtons.push_back(new ButtonText(m_buttonCallbacks.back().back(), categories[i]->GetDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), categories[i]->GetColor(), sf::Color::Black));
-		m_modCategoryButtons.back()->setPosition(sf::Vector2f(20, offset));
-		UIRegistry::GetRegistry().AddComponent(m_modCategoryButtons.back());
+		m_buttons.back().push_back(new ButtonText(m_buttonCallbacks.back().back(), categories[i]->GetDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), categories[i]->GetColor(), sf::Color::Black));
+		m_buttons.back().back()->setPosition(20, offset);
+		UIRegistry::GetRegistry().AddComponent(m_buttons.back().back());
 	}
 
 	m_modOpen[0] = true;
@@ -373,13 +373,13 @@ uint32_t CategoryHandler::UpdateButtons()
 			m_modIco[i].setTexture(m_textureClose);
 
 		offset += 16 + 5;
-		/*
+		
 		if (m_modOpen[i])
 		{
 			for (uint64_t a = 0; a < m_buttons[i].size(); a++)
 			{
-				m_buttons[i][a]->SetEnabled(true);
-				m_buttons[i][a]->setPosition(sf::Vector2i(10 + 20, offset));
+				m_buttons[i][a]->setEnabled(true);
+				m_buttons[i][a]->setPosition(sf::Vector2f(10 + 20, offset));
 				m_buttons[i][a]->setSize(sf::Vector2u(m_toolbarWidth - (10 + 20), 16));
 				offset += 16 + 5;
 			}
@@ -387,9 +387,8 @@ uint32_t CategoryHandler::UpdateButtons()
 		else
 		{
 			for (uint64_t a = 0; a < m_buttons[i].size(); a++)
-				m_buttons[i][a]->SetEnabled(false);
+				m_buttons[i][a]->setEnabled(false);
 		}
-		*/
 	}
 
 	m_background.setPosition(sf::Vector2f(5, HEADER_HEIGHT + 5));
@@ -405,7 +404,13 @@ uint16_t CategoryHandler::GetToolbarWidth()
 
 CategoryHandler& CategoryHandler::GetHandler()
 {
-	return m_handler;
+	return *m_handler;
+}
+
+void CategoryHandler::PostRender(sf::RenderWindow* window)
+{
+	for (uint16_t i = 0; i < m_modIco.size(); i++)
+		window->draw(m_modIco[i]);
 }
 
 void CategoryHandler::frameUpdate(double deltaTime)
@@ -450,11 +455,15 @@ void CategoryHandler::frameUpdate(double deltaTime)
 	Plane::ToolbarPlane->setSize(sf::Vector2u(m_toolbarWidth, Global::WindowSize.y - (Plane::ToolbarPlane->getPosition().y + 5)));
 }
 
+void CategoryHandler::CreateHandler()
+{
+	m_handler = new CategoryHandler();
+}
+
 void CategoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	target.draw(m_backgroundOptions);
 	target.draw(m_background);
-
-	for (uint16_t i = 0; i < m_modIco.size(); i++)
-		target.draw(m_modIco[i]);
 }
+
+CategoryHandler* CategoryHandler::m_handler;

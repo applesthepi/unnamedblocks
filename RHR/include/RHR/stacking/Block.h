@@ -16,6 +16,8 @@ public:
 
 	~Block();
 
+	// would not recommend calling these
+
 	void AddArgument(Argument* argument);
 	void AddArguments(const std::vector<Argument*>& arguments);
 
@@ -25,6 +27,7 @@ public:
 	const ModBlock* GetModBlock();
 	const ModCatagory* GetModCategory();
 private:
+	void UpdateArguments();
 	void UpdateWidth();
 
 	uint32_t m_width;

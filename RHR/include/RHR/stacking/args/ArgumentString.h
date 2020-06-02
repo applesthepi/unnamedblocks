@@ -9,7 +9,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <Cappuccino/Logger.h>
-
+/*
 class ArgumentString : public Argument
 {
 public:
@@ -85,3 +85,4 @@ private:
 	Field m_field;
 	std::function<void()> m_tab;
 };
+*/

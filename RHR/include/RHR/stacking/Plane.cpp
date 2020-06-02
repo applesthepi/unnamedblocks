@@ -74,7 +74,7 @@ void Plane::AddCollection(Collection* collection, bool displayCollectionVanity)
 	m_collections.push_back(collection);
 	m_collectionVanity.push_back(displayCollectionVanity);
 
-	CreateBuffer(m_collections.size() - 1);
+	CreateBuffer(m_collections.size() - 1, displayCollectionVanity);
 }
 
 void Plane::AddCollections(const std::vector<Collection*>& collections)
@@ -92,13 +92,28 @@ void Plane::AddCollections(const std::vector<Collection*>& collections)
 		m_collections.push_back(collections[i]);
 		m_collectionVanity.push_back(true);
 
-		CreateBuffer(m_collections.size() - 1);
+		CreateBuffer(m_collections.size() - 1, true);
 	}
 }
 
 const std::vector<Collection*>& Plane::GetCollections()
 {
 	return m_collections;
+}
+
+void Plane::DeleteCollection(uint64_t idx)
+{
+	m_collectionVertexArrays.erase(m_collectionVertexArrays.begin() + idx);
+	m_vertexArrays.erase(m_vertexArrays.begin() + idx);
+	m_vertexBuffers.erase(m_vertexBuffers.begin() + idx);
+	m_vertexBufferTransform.erase(m_vertexBufferTransform.begin() + idx);
+	m_textureMapImage.erase(m_textureMapImage.begin() + idx);
+	m_textureMapTexture.erase(m_textureMapTexture.begin() + idx);
+	m_textureMapEnabled.erase(m_textureMapEnabled.begin() + idx);
+	m_collectionVanity.erase(m_collectionVanity.begin() + idx);
+
+	delete m_collections[idx];
+	m_collections.erase(m_collections.begin() + idx);
 }
 
 void Plane::TranslateInnerPosition(const sf::Vector2i& position)
@@ -119,10 +134,7 @@ const sf::Vector2i& Plane::GetInnerPosition()
 void Plane::DeleteContents()
 {
 	for (uint64_t i = 0; i < m_collections.size(); i++)
-		delete m_collections[i];
-
-	m_collections.clear();
-	m_collectionVanity.clear();
+		DeleteCollection(0);
 }
 
 void Plane::frameUpdate(double deltaTime)
@@ -277,31 +289,10 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 		}
 	}
 
-
-
-
-
-
-
-
-
-	// TODO REMOVE ME OH GOD PLEASE NO          NO             NO
-	// TODO IF YOU DONT REMOVE ME YOU WILL DIE
-	// TODO YOU BETTTEEERRR STOTOOOOPPP
-	// TODO REMOOOOOOVE MEE888888
-
-	if (m_collections.size() > 0)
-		UpdateBuffer(0);
-
-
-
-
-
 	return false;
 }
 
 Plane* Plane::PrimaryPlane;
-
 Plane* Plane::ToolbarPlane;
 
 void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -314,7 +305,9 @@ void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[i];
-		states.texture = &(m_textureMapTexture[i]);
+
+		if (m_textureMapEnabled[i])
+			states.texture = &(m_textureMapTexture[i]);
 
 		// render VBO
 		
@@ -335,80 +328,84 @@ void Plane::Setup()
 	m_draggingUp = false;
 }
 
-void Plane::CreateBuffer(uint16_t collectionIdx)
+void Plane::CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity)
 {
 	m_vertexArrays.push_back(std::vector<sf::Vertex>());
 	m_vertexArrays.back().reserve(200);
 
 	m_collectionVertexArrays.push_back(std::vector<sf::Vertex>());
-	m_collectionVertexArrays.back().reserve(24);
 
-	// ====================================================================================================================================================
-	// =============== add collection geometry to vertex array; see "dev/collection_geometry.png"
-	// ====================================================================================================================================================
+	if (displayCollectionVanity)
+	{
+		m_collectionVertexArrays.back().reserve(24);
 
-	const sf::Vector2f& pos = m_collections[collectionIdx]->getPosition();
-	const sf::Vector2u& size = m_collections[collectionIdx]->getSize();
+		// ====================================================================================================================================================
+		// =============== add collection geometry to vertex array; see "dev/collection_geometry.png"
+		// ====================================================================================================================================================
 
-	// 0
+		const sf::Vector2f& pos = m_collections[collectionIdx]->getPosition();
+		const sf::Vector2u& size = m_collections[collectionIdx]->getSize();
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		// 0
 
-	// 1
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+		// 1
 
-	// 2
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+		// 2
 
-	// 3
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+		// 3
 
-	// 4
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		// 4
 
-	// 5
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		// 5
 
-	// 6
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		// 6
 
-	// 7
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		// 7
 
-	// 8
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+		// 8
 
-	// 9
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
 
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+		// 9
+
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+		m_collectionVertexArrays.back().push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+	}
 
 	// ====================================================================================================================================================
 	// =============== Create Vertex Buffer
@@ -421,6 +418,9 @@ void Plane::CreateBuffer(uint16_t collectionIdx)
 	m_vertexBufferTransform.push_back(sf::Transform());
 	m_textureMapImage.push_back(sf::Image());
 	m_textureMapTexture.push_back(sf::Texture());
+	m_textureMapEnabled.push_back(false);
+
+	UpdateBuffer(collectionIdx);
 }
 
 void Plane::UpdateBuffer(uint16_t bufferIdx)
@@ -471,7 +471,10 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 				vaTextures.push_back(arg->GetVertexArrayTexture());
 
 				for (uint64_t d = 0; d < va.back().getVertexCount(); d++)
-					va.back()[d].position.x += blockWidth;
+				{
+					va.back()[d].position.x += blockWidth + blockPos.x;
+					va.back()[d].position.y += blockPos.y;
+				}
 
 				blockWidth += arg->GetWidth();
 				blockWidth += Global::BlockBorder;
@@ -490,6 +493,11 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 	for (uint64_t a = 0; a < vaTextures.size(); a++)
 	{
+		// if the argument doesnt use a texture
+
+		if (vaTextures[a] == nullptr)
+			continue;
+
 		// make texture wider if its to small
 
 		if (vaTextures[a]->getSize().x > textureWidth)
@@ -506,60 +514,67 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		textureHeight += vaTextures[a]->getSize().y;
 	}
 
-	// create map
-
-	sf::RenderTexture textureMap;
-	textureMap.create(textureWidth, textureHeight);
-	textureMap.clear(sf::Color(0, 0, 0, 0));
-
-	sf::Texture tempTexture;
-
-	sf::VertexArray tempVAO;
-	tempVAO.setPrimitiveType(sf::Quads);
-
-	tempVAO.append(sf::Vertex(sf::Vector2f(0, 0), sf::Vector2f(0, 0)));
-	tempVAO.append(sf::Vertex(sf::Vector2f(textureWidth, 0), sf::Vector2f(0, 0)));
-	tempVAO.append(sf::Vertex(sf::Vector2f(textureWidth, 0), sf::Vector2f(0, 0)));
-	tempVAO.append(sf::Vertex(sf::Vector2f(0, 0), sf::Vector2f(0, 0)));
-
-	sf::VertexBuffer tempVBO = sf::VertexBuffer(sf::PrimitiveType::Triangles, sf::VertexBuffer::Stream);
-	tempVBO.create(4);
-	tempVBO.update(&(tempVAO[0]));
-
-	uint32_t incHeight = 0;
-
-	for (uint64_t a = 0; a < vaTextures.size(); a++)
+	if (textureWidth > 0 && textureHeight > 0)
 	{
-		// proceed if the argument has a texture
+		// create map
 
-		if (vaTextures[a]->getSize() == sf::Vector2u(1, 1))
-			continue;
+		sf::RenderTexture textureMap;
+		textureMap.create(textureWidth, textureHeight);
+		textureMap.clear(sf::Color(0, 0, 0, 0));
 
-		tempTexture.loadFromImage(*(vaTextures[a]));
+		sf::Texture tempTexture;
 
-		// move VAO to correct height
+		sf::VertexArray tempVAO;
+		tempVAO.setPrimitiveType(sf::Quads);
 
-		tempVAO[0].position.y = incHeight;
-		tempVAO[1].position.y = incHeight;
-		tempVAO[2].position.y = incHeight + vaTextures[a]->getSize().y;
-		tempVAO[3].position.y = incHeight + vaTextures[a]->getSize().y;
+		tempVAO.append(sf::Vertex(sf::Vector2f(0, 0), sf::Vector2f(0, 0)));
+		tempVAO.append(sf::Vertex(sf::Vector2f(textureWidth, 0), sf::Vector2f(0, 0)));
+		tempVAO.append(sf::Vertex(sf::Vector2f(textureWidth, 0), sf::Vector2f(0, 0)));
+		tempVAO.append(sf::Vertex(sf::Vector2f(0, 0), sf::Vector2f(0, 0)));
 
-		// set VAO textureCoords to match the argument's texture dimensions
-
-		tempVAO[1].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, 0);
-		tempVAO[2].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, vaTextures[a]->getSize().y);
-		tempVAO[3].texCoords = sf::Vector2f(0, vaTextures[a]->getSize().y);
-
-		// render argument's texture to map
-
+		sf::VertexBuffer tempVBO = sf::VertexBuffer(sf::PrimitiveType::Triangles, sf::VertexBuffer::Stream);
+		tempVBO.create(4);
 		tempVBO.update(&(tempVAO[0]));
-		textureMap.draw(tempVBO, &tempTexture);
+
+		uint32_t incHeight = 0;
+
+		for (uint64_t a = 0; a < vaTextures.size(); a++)
+		{
+			// proceed if the argument has a texture
+
+			if (vaTextures[a]->getSize() == sf::Vector2u(1, 1))
+				continue;
+
+			tempTexture.loadFromImage(*(vaTextures[a]));
+
+			// move VAO to correct height
+
+			tempVAO[0].position.y = incHeight;
+			tempVAO[1].position.y = incHeight;
+			tempVAO[2].position.y = incHeight + vaTextures[a]->getSize().y;
+			tempVAO[3].position.y = incHeight + vaTextures[a]->getSize().y;
+
+			// set VAO textureCoords to match the argument's texture dimensions
+
+			tempVAO[1].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, 0);
+			tempVAO[2].texCoords = sf::Vector2f(vaTextures[a]->getSize().x, vaTextures[a]->getSize().y);
+			tempVAO[3].texCoords = sf::Vector2f(0, vaTextures[a]->getSize().y);
+
+			// render argument's texture to map
+
+			tempVBO.update(&(tempVAO[0]));
+			textureMap.draw(tempVBO, &tempTexture);
+		}
+
+		// retrieve render
+
+		m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
+		m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
+
+		m_textureMapEnabled[bufferIdx] = true;
 	}
-
-	// retrieve render
-
-	m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
-	m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
+	else
+		m_textureMapEnabled[bufferIdx] = false;
 
 	// add argument's vertices
 
@@ -571,7 +586,8 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 	// update collection VBO
 
-	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]));
+	m_vertexBuffers[bufferIdx].create(m_vertexArrays[bufferIdx].size());
+	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]), m_vertexArrays[bufferIdx].size(), 0);
 }
 
 void Plane::Select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument)

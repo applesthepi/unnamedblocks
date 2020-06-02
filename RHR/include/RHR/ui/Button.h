@@ -19,7 +19,7 @@ public:
 protected:
 	std::function<void()>* m_callback;
 	bool m_broken;
+	bool m_enabled;
 private:
 	sf::Vector2f m_size;
-	bool m_enabled;
 };

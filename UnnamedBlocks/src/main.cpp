@@ -197,6 +197,7 @@ int main()
 	Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
 	Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
 
+	CategoryHandler::CreateHandler();
 	CategoryHandler::GetHandler().RegisterHeader();
 
 //#ifdef POSIX
@@ -336,6 +337,8 @@ int main()
 		window.draw(*Plane::ToolbarPlane);
 		window.draw(*Plane::PrimaryPlane);
 		window.draw(UIRegistry::GetRegistry());
+
+		CategoryHandler::GetHandler().PostRender(&window);
 
 		// ==============================================================================================================================
 		// ============== FPS

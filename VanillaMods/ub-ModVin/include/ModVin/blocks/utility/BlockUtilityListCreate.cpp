@@ -1,5 +1,4 @@
 #include "BlockUtilityListCreate.h"
-#include "aid/UtilityListCopies.h"
 
 #include <Cappuccino/Registration.h>
 
@@ -11,12 +10,6 @@ static void ExecuteRelease(ModBlockPass* pass)
 static void ExecuteDebug(ModBlockPass* pass)
 {
 	ExecuteRelease(pass);
-}
-
-static bool RuntimeGlobalPreInit(PreProcessorData& data)
-{
-	data.AddStructure("vin_list", new UtilityListCopies());
-	return true;
 }
 
 const char* BlockUtilityListCreate::GetUnlocalizedName() const
@@ -39,17 +32,12 @@ blockExecution BlockUtilityListCreate::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
-blockInitialization BlockUtilityListCreate::GetRuntimeGlobalPreInit() const
-{
-	return RuntimeGlobalPreInit;
-}
-
 const std::vector<BlockArgumentInitializer> BlockUtilityListCreate::GetArguments() const
 {
 	std::vector<BlockArgumentInitializer> args;
 
 	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "list create"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::ONLY_VAR, BlockArgumentVariableMode::VAR, "list"));
+	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "list"));
 
 	return args;
 }

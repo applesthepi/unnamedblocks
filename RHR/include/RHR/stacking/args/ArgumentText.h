@@ -2,7 +2,7 @@
 #include "Argument.h"
 
 #include <Espresso/Global.h>
-
+/*
 class ArgumentText : public Argument
 {
 public:
@@ -54,3 +54,4 @@ private:
 	std::string m_text;
 	sf::Text m_textAgent;
 };
+*/

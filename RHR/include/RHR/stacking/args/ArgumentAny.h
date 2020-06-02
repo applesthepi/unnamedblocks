@@ -8,7 +8,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <Cappuccino/Logger.h>
-
+/*
 class ArgumentAny : public Argument
 {
 public:
@@ -234,3 +234,4 @@ private:
 
 	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
 };
+*/

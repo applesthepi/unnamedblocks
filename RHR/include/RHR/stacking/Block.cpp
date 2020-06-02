@@ -1,14 +1,18 @@
 #include "Block.h"
 #include "RHR/registries/BlockRegistry.h"
 
+#include "args/ArgumentReal.h"
+#include "args/ArgumentBoolean.h"
+#include "args/ArgumentString.h"
+#include "args/ArgumentAny.h"
+
 #include <Espresso/Global.h>
 
 Block::Block(const std::string& unlocalizedName)
 	:m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName))
 {
 	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory());
-
-	m_arguments.reserve(10);
+	UpdateArguments();
 }
 
 Block::Block(const Block& block)
@@ -34,6 +38,8 @@ Block::~Block()
 void Block::AddArgument(Argument* argument)
 {
 	m_arguments.push_back(argument);
+
+	UpdateWidth();
 }
 
 void Block::AddArguments(const std::vector<Argument*>& arguments)
@@ -43,6 +49,8 @@ void Block::AddArguments(const std::vector<Argument*>& arguments)
 
 	for (uint64_t i = 0; i < arguments.size(); i++)
 		m_arguments.push_back(arguments[i]);
+
+	UpdateWidth();
 }
 
 const std::vector<Argument*>& Block::GetArguments()
@@ -63,6 +71,35 @@ const ModBlock* Block::GetModBlock()
 const ModCatagory* Block::GetModCategory()
 {
 	return m_modCategory;
+}
+
+void Block::UpdateArguments()
+{
+	for (uint64_t i = 0; i < m_arguments.size(); i++)
+		delete m_arguments[i];
+
+	m_arguments.clear();
+	m_arguments.reserve(m_modBlock->GetArguments().size());
+
+	std::vector<BlockArgumentInitializer> argumentInit = m_modBlock->GetArguments();
+	std::vector<Argument*> args;
+
+	uint32_t width = Global::BlockBorder;
+
+	for (uint64_t i = 0; i < argumentInit.size(); i++)
+	{
+		if (argumentInit[i].Type == BlockArgumentType::REAL)
+		{
+			args.push_back(new ArgumentReal(argumentInit[i].Mode, argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+
+			args.back()->SetData(argumentInit[i].DefaultValue);
+			args.back()->setPosition(width, Global::BlockBorder);
+
+			width += args.back()->GetWidth();
+		}
+	}
+
+	AddArguments(args);
 }
 
 void Block::UpdateWidth()
