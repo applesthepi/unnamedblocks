@@ -3,67 +3,36 @@
 #include "stacking/Collection.h"
 #include "stacking/Stack.h"
 #include <SFML/System/Vector2.hpp>
+#include <bits/stdint-intn.h>
 #include <unordered_map>
 #include <fstream>
 #include <string_view>
 #include <vector>
 #include <cassert>
-#include <netinet/in.h>
-// Oh hey a union
-union u32 {
-	uint32_t value;
-	char bytes[sizeof(uint32_t)];
-};
-// More unions
-union i32 {
-	int32_t value;
-	char bytes[sizeof(int32_t)];
-};
+#include <Espresso/util.h>
+using namespace endianness;
 
-union u16 {
-	uint16_t value;
-	char bytes[sizeof(uint16_t)];
-};
-
-union u8 {
-	uint8_t value;
-	char bytes[sizeof(uint8_t)];
-};
-
-union f32 {
-	float value;
-	char bytes[sizeof(float)];
-};
-inline void push(std::vector<char> &vec, u32 value) {
-	u32 v = value;
-	v.value = htonl(v.value);
-	for(char i : v.bytes) {
+inline void push(std::vector<char> &vec, uint32_t value) {
+	auto bytes = to_le_bytes(value);
+	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, f32 value) {
-	f32 v = value;
-	v.value = htonl(v.value);
-	for(char i : value.bytes) {
+inline void push(std::vector<char> &vec, float value) {
+	auto bytes = to_le_bytes(value);
+	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, i32 value) {
-	i32 v = value;
-	v.value = htonl(v.value);
-	for(char i : value.bytes) {
+inline void push(std::vector<char> &vec, int32_t value) {
+	auto bytes = to_le_bytes(value);
+	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, u16 value) {
-	u16 v = value;
-	v.value = htons(v.value);
-	for(char i : value.bytes) {
-		vec.push_back(i);
-	}
-}
-inline void push(std::vector<char> &vec, u8 value) {
-	for(char i : value.bytes) {
+inline void push(std::vector<char> &vec, uint16_t value) {
+	auto bytes = to_le_bytes(value);
+	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
@@ -72,12 +41,18 @@ inline void push(std::vector<char> &vec, std::string_view value) {
 		vec.push_back(i);
 	}
 }
+inline void push(std::vector<char> &vec, char value) {
+	vec.push_back(value);
+}
 // Reads count elements and converts them to the native endian. Stores the result in buffer
 // Ensure buffer is atleast size * count bytes
 inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 2);
 	for(uint16_t i = 0; i < count; i++) {
-		buffer[i] = ntohs(buffer[i * 2]);
+		std::array<char, 2> bytes;
+		bytes[0] = buffer[i * 2];
+		bytes[1] = buffer[i * 2 + 1];
+		buffer[i] = u16_from_le_bytes(bytes);
 	}
 }
 // Reads count elements and converts them to the native endian. Stores the result in buffer
@@ -85,10 +60,16 @@ inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
 inline void read_32(std::ifstream& file, char* buffer, uint16_t count) {
 	file.read(buffer, count * 4);
 	for(uint16_t i = 0; i < count; i++) {
-		buffer[i] = ntohl(buffer[i * 4]);
+		std::array<char, 4> bytes;
+		bytes[0] = buffer[i * 2];
+		bytes[1] = buffer[i * 2 + 1];
+		bytes[2] = buffer[i * 2 + 2];
+		bytes[3] = buffer[i * 2 + 3];
+		buffer[i] = u32_from_le_bytes(bytes);
 	}
 }
-#define read_float read_32
+const auto& read_float = read_32;
+const auto& read_f32 = read_32;
 
 // Layout
 // Indent = Can repeat
@@ -119,20 +100,20 @@ void ProjectHandler::SaveProject(const std::string& path) {
 	header.reserve(1000 * collections.size());
 	body.reserve(10000 * collections.size());
 
-	push(body, u32 {static_cast<uint32_t>(collections.size())});
+	push(body, static_cast<uint32_t>(collections.size()));
 	// Collections
 	for(Collection* i : collections) {
 		const std::vector<Stack*>& stacks = i->GetStacks();
-		push(body, f32 {i->getPosition().x});
-		push(body, f32 {i->getPosition().y});
-		push(body, u32 {static_cast<uint32_t>(stacks.size())});
+		push(body, i->getPosition().x);
+		push(body, i->getPosition().y);
+		push(body, static_cast<uint32_t>(stacks.size()));
 		for(Stack* stack : stacks) {
 			sf::Vector2f position = stack->getPosition();
 			const std::vector<Block*>& blocks = stack->GetBlocks();
 
-			push(body, f32 {position.x});
-			push(body, f32 {position.y});
-			push(body, u32 {static_cast<uint32_t>(blocks.size())});
+			push(body, position.x);
+			push(body, position.y);
+			push(body, static_cast<uint32_t>(blocks.size()));
 
 			for(Block* block : blocks) {
 				const char* block_name = block->GetModBlock()->GetUnlocalizedName();
@@ -160,9 +141,9 @@ void ProjectHandler::SaveProject(const std::string& path) {
 					block_names.push_back(block_name);
 				}
 
-				push(body, u32 {id});
+				push(body, id);
 				// Put placeholder argument count
-				push(body, u8 {0});
+				push(body, 0);
 				// Save the placeholder position for later
 				const uint64_t pos = body.size();
 				uint8_t argument_count = 0;
@@ -173,23 +154,23 @@ void ProjectHandler::SaveProject(const std::string& path) {
 					// Check size
 					UB_ASSERT(data.size() < 65535);
 
-					push(body, u16 {(uint16_t)data.size()});
+					push(body, (uint16_t)data.size());
 					push(body, data);
 				}
 				body[pos] = argument_count;
 			}
 		}
 	}
-	push(header, u32 {(uint32_t)mod_ids.size()});
+	push(header, (uint32_t)mod_ids.size());
 	for(std::string& i : mod_names) {
 		UB_ASSERT(i.size() < 255);
-		push(header, u8 {(uint8_t)i.size()});
+		push(header, (uint8_t)i.size());
 		push(header, i);
 	}
-	push(header, u32 {(uint32_t)block_ids.size()});
+	push(header, (uint32_t)block_ids.size());
 	for(std::string& i : block_names) {
 		UB_ASSERT(i.size() < 255);
-		push(header, u8 {(uint8_t)i.size()});
+		push(header, (uint8_t)i.size());
 		push(header, i);
 	}
 	std::ofstream file(path, std::ofstream::trunc | std::ofstream::out | std::ofstream::binary);
