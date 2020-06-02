@@ -3,7 +3,6 @@
 #include "stacking/Collection.h"
 #include "stacking/Stack.h"
 #include <SFML/System/Vector2.hpp>
-#include <bits/stdint-intn.h>
 #include <unordered_map>
 #include <fstream>
 #include <string_view>
