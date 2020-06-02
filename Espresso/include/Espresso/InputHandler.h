@@ -42,11 +42,11 @@ public:
 	
 	// run once per mouse update events on window
 	static bool RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t* loc, bool* isDown, bool down, const sf::Vector2i& pos, uint64_t yOverride = 0);
-	static bool RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, const int64_t& vanityOffset);
+	static bool RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, int16_t vanityOffset);
 	
 	// run every frame
 	static void RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint64_t yOverride = 0);
-	static void RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, const int64_t& vanityOffset);
+	static void RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, int16_t vanityOffset);
 private:
 	static std::vector<std::function<void(const sf::Event::TextEvent&)>*>* m_textCallbacks;
 	static std::vector<std::function<void(const sf::Event::KeyEvent&)>*>* m_keyCallbacks;

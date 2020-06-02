@@ -50,9 +50,9 @@ public:
 	// util
 	static void SetFinished(bool finished);
 	static Plane* GetPlaneCopy();
-	static void SetSuper(uint8_t super, const int64_t& superData);
+	static void SetSuper(uint8_t super, int16_t superData);
 	static uint8_t GetSuper();
-	static const int64_t GetSuperData();
+	static int64_t GetSuperData();
 
 	static uint8_t* MakeSuper();
 	static int64_t* GetMadeData();

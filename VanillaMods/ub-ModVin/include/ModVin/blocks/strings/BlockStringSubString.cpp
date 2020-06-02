@@ -27,13 +27,13 @@ static void ExecuteDebug(ModBlockPass* pass)
 	int64_t idxAt = offset;
 	int64_t idxCount = count;
 
-	if (idxAt >= str.length() || idxAt < 0)
+	if (idxAt >= static_cast<int64_t>(str.length()) || idxAt < 0)
 	{
 		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; offset index out of range", LoggerFatality::BREAK);
 		return;
 	}
 
-	if (idxCount + idxAt > str.length())
+	if (idxCount + idxAt > static_cast<int64_t>(str.length()))
 	{
 		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; count to high", LoggerFatality::BREAK);
 		return;

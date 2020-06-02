@@ -31,7 +31,7 @@ public:
 	const sf::Image* GetVertexArrayTexture();
 
 	// how to interpret the data
-	virtual const BlockArgumentType GetType();
+	virtual BlockArgumentType GetType();
 
 	// get width for surrounding argument spacing
 	virtual uint32_t GetWidth();

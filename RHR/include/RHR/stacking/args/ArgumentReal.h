@@ -30,7 +30,7 @@ public:
 		m_field.SetTab(&m_tab);
 	}
 
-	const BlockArgumentType GetType() override
+	BlockArgumentType GetType() override
 	{
 		return BlockArgumentType::REAL;
 	}

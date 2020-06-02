@@ -844,7 +844,7 @@ void Registration::CompileDataDebug()
 				else
 				{
 					char buffer[20];
-					sprintf(buffer, "_R_%u_%u_%u", i, a, b);
+					sprintf(buffer, "_R_%lu_%lu_%lu", i, a, b);
 					
 					if (interpretations[b] == ModBlockDataInterpretation::REAL)
 						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::REAL, new double(*(double*)data[b]));
@@ -1101,7 +1101,7 @@ void Registration::CompileDataRelease()
 				else
 				{
 					char buffer[20];
-					sprintf(buffer, "_R_%u_%u_%u", i, a, b);
+					sprintf(buffer, "_R_%lu_%lu_%lu", i, a, b);
 
 					if (interpretations[b] == ModBlockDataInterpretation::REAL)
 					{

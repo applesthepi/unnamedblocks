@@ -55,7 +55,7 @@ const sf::Image* Argument::GetVertexArrayTexture()
 		return nullptr;
 }
 
-const BlockArgumentType Argument::GetType()
+BlockArgumentType Argument::GetType()
 {
 	return BlockArgumentType::TEXT;
 }

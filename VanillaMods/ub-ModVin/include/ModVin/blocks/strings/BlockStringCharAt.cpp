@@ -19,7 +19,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 	int64_t idx = chAt;
 
-	if (idx >= str.length() || idx < 0)
+	if (idx >= static_cast<int64_t>(str.length()) || idx < 0)
 	{
 		pass->LogError("failed to get char at \"" + std::to_string(idx) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; index out of range", LoggerFatality::BREAK);
 		return;

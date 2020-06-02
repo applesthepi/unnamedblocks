@@ -4,6 +4,7 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Clipboard.hpp>
+#include <bits/stdint-intn.h>
 #include <chrono>
 #include <iostream>
 #include <GL/glew.h>
@@ -97,7 +98,7 @@ void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_
 					for (int64_t i = *loc - 1; i >= 0; i--)
 					{
 						char re = text->at(i);
-						if (i != oLoc - 1 && (
+						if (i != static_cast<int64_t>(oLoc) - 1 && (
 							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
 							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
 							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
@@ -471,7 +472,7 @@ void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint6
 					for (int64_t i = *loc - 1; i >= 0; i--)
 					{
 						char re = text->at(i);
-						if (i != oLoc - 1 && (
+						if (i != static_cast<int64_t>(oLoc) - 1 && (
 							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
 							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
 							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
@@ -664,7 +665,7 @@ bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t*
 
 			for (uint64_t i = 0; i < text->getString().getSize() + 1; i++)
 			{
-				uint64_t ix = text->getPosition().x;
+				double ix = text->getPosition().x;
 
 				if (i == text->getString().getSize())
 				{
@@ -695,20 +696,20 @@ bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t*
 	return false;
 }
 
-bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, const int64_t& vanityOffset)
+bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, int16_t vanityOffset)
 {
-	if (pos.x >= tPos.x && pos.x <= tPos.x + tSize.x)
+	if (pos.x >= tPos.x && pos.x <= tPos.x + static_cast<int64_t>(tSize.x))
 	{
 		if (!down)
 			*system.IsDown = false;
 
-		if (down && pos.y >= tPos.y && pos.y <= tPos.y + tSize.y)
+		if (down && pos.y >= tPos.y && pos.y <= tPos.y + static_cast<int64_t>(tSize.y))
 		{
 			*system.IsDown = true;
 
 			for (uint64_t i = 0; i < system.Text->length() + 1; i++)
 			{
-				uint64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
+				int64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
 
 				if (i == system.Text->length())
 				{
@@ -731,7 +732,7 @@ bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos
 			}
 		}
 
-		return pos.y >= tPos.y && pos.y <= tPos.y + tSize.y;
+		return pos.y >= tPos.y && pos.y <= tPos.y + static_cast<int64_t>(tSize.y);
 	}
 
 	return false;
@@ -750,7 +751,7 @@ void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* is
 		{
 			for (uint64_t i = 0; i < text->getString().getSize() + 1; i++)
 			{
-				uint64_t ix = text->getPosition().x;
+				float ix = text->getPosition().x;
 
 				if (i == text->getString().getSize())
 				{
@@ -773,15 +774,15 @@ void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* is
 	}
 }
 
-void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, const int64_t& vanityOffset)
+void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, int16_t vanityOffset)
 {
 	if (*isDown)
 	{
-		if (pos.x >= tPos.x && pos.x <= tPos.x + tSize.x)
+		if (pos.x >= tPos.x && pos.x <= tPos.x + static_cast<int64_t>(tSize.x))
 		{
 			for (uint64_t i = 0; i < text->length() + 1; i++)
 			{
-				uint64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
+				int64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
 
 				if (i == text->length())
 				{

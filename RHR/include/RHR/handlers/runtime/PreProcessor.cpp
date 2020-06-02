@@ -335,7 +335,7 @@ Plane* PreProcessor::GetPlaneCopy()
 	return m_planeCopy;
 }
 
-void PreProcessor::SetSuper(uint8_t super, const int64_t& superData)
+void PreProcessor::SetSuper(uint8_t super, int16_t superData)
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 
@@ -350,7 +350,7 @@ uint8_t PreProcessor::GetSuper()
 	return *m_super;
 }
 
-const int64_t PreProcessor::GetSuperData()
+int64_t PreProcessor::GetSuperData()
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 

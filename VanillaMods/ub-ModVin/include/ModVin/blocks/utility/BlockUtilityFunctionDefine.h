@@ -20,7 +20,7 @@ public:
 		m_stackIdx.push_back(stackIdx);
 	}
 
-	const uint64_t GetFunctionStackIdx(const std::string& name)
+	uint64_t GetFunctionStackIdx(const std::string& name)
 	{
 		for (uint64_t i = 0; i < m_names.size(); i++)
 		{
@@ -48,8 +48,8 @@ public:
 	blockExecution PullExecuteDebug() const override;
 	blockExecution PullExecuteRelease() const override;
 
-	blockInitialization GetRuntimeGlobalPreInit() const;
-	blockInitialization GetRuntimeGlobalPostInit() const;
+	blockInitialization GetRuntimeGlobalPreInit() const override;
+	blockInitialization GetRuntimeGlobalPostInit() const override;
 
 	std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const override;
 

@@ -24,7 +24,7 @@ public:
 	void ReplaceValue(void* memory, uint64_t idx, bool copy);
 
 	void Reserve(uint64_t size);
-	const uint64_t Size();
+	uint64_t Size();
 
 	double* IndexReal(uint64_t idx);
 	bool* IndexBool(uint64_t idx);

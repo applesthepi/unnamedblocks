@@ -40,7 +40,7 @@ Plane::Plane()
 
 	// callback for the context menu
 
-	m_contextCallback = [this](uint8_t idx)
+	m_contextCallback = [](uint8_t idx)
 	{
 		if (idx == 0)
 		{

@@ -37,7 +37,7 @@ public:
         return m_window;
     }
 
-    const double PullScroll()
+    double PullScroll()
     {
         std::unique_lock<std::mutex> lock(m_mutex);
 

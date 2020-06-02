@@ -28,9 +28,9 @@
 #endif
 
 
-TYPDEF_CPP_EXPORT typedef struct ModBlockPass ModBlockPass;
-TYPDEF_CPP_EXPORT typedef struct ModBlockData ModBlockData;
-TYPDEF_CPP_EXPORT typedef struct ModBlock ModBlock;
+TYPDEF_CPP_EXPORT typedef class ModBlockPass ModBlockPass;
+TYPDEF_CPP_EXPORT typedef class ModBlockData ModBlockData;
+TYPDEF_CPP_EXPORT typedef class ModBlock ModBlock;
 
 TYPDEF_CPP_EXPORT typedef void(*executionFunction)(ModBlockPass*);
 TYPDEF_CPP_EXPORT typedef void(**executionFunctionStack)(ModBlockPass*);

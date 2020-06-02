@@ -12,8 +12,8 @@ public:
 
 	static UIRegistry& GetRegistry();
 
-	void frameUpdate(double deltaTime);
-	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button);
+	void frameUpdate(double deltaTime) override;
+	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 protected:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:

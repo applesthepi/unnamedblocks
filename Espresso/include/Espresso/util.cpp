@@ -134,23 +134,23 @@ namespace endianness {
 		}
 		return reversed;
 	}
-	std::array<char, 4> to_ne_bytes(float x) {return to_ne_bytes(x);}
-	std::array<char, 8> to_ne_bytes(double x) {return to_ne_bytes(x);}
-	std::array<char, 2> to_ne_bytes(int16_t x) {return to_ne_bytes(x);}
-	std::array<char, 4> to_ne_bytes(int32_t x) {return to_ne_bytes(x);}
-	std::array<char, 8> to_ne_bytes(int64_t x) {return to_ne_bytes(x);}
+	std::array<char, 4> to_ne_bytes(float x) {return to_ne_bytes(*(uint32_t*)(void*)&x);}
+	std::array<char, 8> to_ne_bytes(double x) {return to_ne_bytes(*(uint64_t*)(void*)&x);}
+	std::array<char, 2> to_ne_bytes(int16_t x) {return to_ne_bytes(*(uint16_t*)(void*)&x);}
+	std::array<char, 4> to_ne_bytes(int32_t x) {return to_ne_bytes(*(uint32_t*)(void*)&x);}
+	std::array<char, 8> to_ne_bytes(int64_t x) {return to_ne_bytes(*(uint64_t*)(void*)&x);}
 
-	std::array<char, 4> to_le_bytes(float x) {return to_le_bytes(x);}
-	std::array<char, 8> to_le_bytes(double x) {return to_le_bytes(x);}
-	std::array<char, 2> to_le_bytes(int16_t x) {return to_le_bytes(x);}
-	std::array<char, 4> to_le_bytes(int32_t x) {return to_le_bytes(x);}
-	std::array<char, 8> to_le_bytes(int64_t x) {return to_le_bytes(x);}
+	std::array<char, 4> to_le_bytes(float x) {return to_le_bytes(*(uint32_t*)(void*)&x);}
+	std::array<char, 8> to_le_bytes(double x) {return to_le_bytes(*(uint64_t*)(void*)&x);}
+	std::array<char, 2> to_le_bytes(int16_t x) {return to_le_bytes(*(uint16_t*)(void*)&x);}
+	std::array<char, 4> to_le_bytes(int32_t x) {return to_le_bytes(*(uint32_t*)(void*)&x);}
+	std::array<char, 8> to_le_bytes(int64_t x) {return to_le_bytes(*(uint64_t*)(void*)&x);}
 
-	std::array<char, 4> to_be_bytes(float x) {return to_be_bytes(x);}
-	std::array<char, 8> to_be_bytes(double x) {return to_be_bytes(x);}
-	std::array<char, 2> to_be_bytes(int16_t x) {return to_be_bytes(x);}
-	std::array<char, 4> to_be_bytes(int32_t x) {return to_be_bytes(x);}
-	std::array<char, 8> to_be_bytes(int64_t x) {return to_be_bytes(x);}
+	std::array<char, 4> to_be_bytes(float x) {return to_be_bytes(*(uint32_t*)(void*)&x);}
+	std::array<char, 8> to_be_bytes(double x) {return to_be_bytes(*(uint64_t*)(void*)&x);}
+	std::array<char, 2> to_be_bytes(int16_t x) {return to_be_bytes(*(uint16_t*)(void*)&x);}
+	std::array<char, 4> to_be_bytes(int32_t x) {return to_be_bytes(*(uint32_t*)(void*)&x);}
+	std::array<char, 8> to_be_bytes(int64_t x) {return to_be_bytes(*(uint64_t*)(void*)&x);}
 	uint16_t u16_from_ne_bytes(std::array<char, 2> bytes) {return (uint16_t)*bytes.data();}
 	uint32_t u32_from_ne_bytes(std::array<char, 4> bytes) {return (uint32_t)*bytes.data();}
 	uint64_t u64_from_ne_bytes(std::array<char, 8> bytes) {return (uint64_t)*bytes.data();}

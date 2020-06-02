@@ -45,7 +45,7 @@ void UtilityList::Reserve(uint64_t size)
 	m_memory.reserve(size);
 }
 
-const uint64_t UtilityList::Size()
+uint64_t UtilityList::Size()
 {
 	return m_memory.size();
 }

@@ -16,7 +16,7 @@ public:
 		m_idx.push_back(idx);
 	}
 
-	const int64_t FindPoint(std::string& data)
+	int64_t FindPoint(std::string& data)
 	{
 		for (uint64_t i = 0; i < m_names.size(); i++)
 		{
