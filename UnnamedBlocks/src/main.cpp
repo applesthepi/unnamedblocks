@@ -334,8 +334,8 @@ int main()
 		window.clear(MOD_BACKGROUND_HIGH);
 		
 		window.draw(CategoryHandler::GetHandler());
-		window.draw(*Plane::ToolbarPlane);
-		window.draw(*Plane::PrimaryPlane);
+		Plane::ToolbarPlane->render(window);
+		Plane::PrimaryPlane->render(window);
 		window.draw(UIRegistry::GetRegistry());
 
 		CategoryHandler::GetHandler().PostRender(&window);

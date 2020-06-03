@@ -4,7 +4,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Clipboard.hpp>
-#include <bits/stdint-intn.h>
 #include <chrono>
 #include <iostream>
 #include <GL/glew.h>

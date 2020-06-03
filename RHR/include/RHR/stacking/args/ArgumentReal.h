@@ -64,13 +64,15 @@ public:
 	{
 		sf::Color col;
 		uint16_t height = Global::BlockHeight - Global::BlockBorder;
-		const uint32_t width = GetWidth();
+		const uint32_t width = m_field.GetWidth();
 		const std::string& text = m_field.GetText();
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
 			col = MOD_BUTTON_TEXT_BG;
 		else if (m_mode == BlockArgumentVariableMode::VAR)
 			col = MOD_BUTTON_TEXT_BG_ACCENT_STRONG;
+
+		col = sf::Color::Green;
 
 		// ===================================================================================================
 		// =============== Prepare Vertex Buffer Texture
@@ -108,41 +110,40 @@ public:
 		//ResetVertices(18);
 		ResetVertices(12);
 		
-		// 0
+		const sf::Vector2f vertices0[] = {
+			sf::Vector2f(0, 0),
+			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(REAL_GEOMETRY_REACH, height / 2),
+		};
 
-		AddVertex(sf::Vertex(sf::Vector2f(0, 0), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height / 2), col), false);
+		const sf::Vector2f vertices1[] = {
+			sf::Vector2f(0, height),
+			sf::Vector2f(REAL_GEOMETRY_REACH, height / 2),
+			sf::Vector2f(REAL_GEOMETRY_REACH, height),
+		};
 
-		// 1
+		const sf::Vector2f vertices2[] = {
+			sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, 0),
+		};
 
-		AddVertex(sf::Vertex(sf::Vector2f(0, height), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height / 2), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), col), false);
+		const sf::Vector2f vertices3[] = {
+			sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, height),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, height),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2)
+		};
 
-		// 2
+		const sf::Color colors[] = {
+			col,
+			col,
+			col
+		};
 
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, 0), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), col), false);
-
-		// 3
-
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, height), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), col), false);
-		AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2), col), false);
-
-		// 4
-
-		//AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
-		//AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, 0), sf::Vector2f(m_vertexArrayImage.getSize().x, 0)), true);
-		//AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
-
-		// 5
-
-		//AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, 0), sf::Vector2f(0, 0)), true);
-		//AddVertex(sf::Vertex(sf::Vector2f(width + REAL_GEOMETRY_REACH, height), sf::Vector2f(m_vertexArrayImage.getSize().x, m_vertexArrayImage.getSize().y)), true);
-		//AddVertex(sf::Vertex(sf::Vector2f(REAL_GEOMETRY_REACH, height), sf::Vector2f(0, m_vertexArrayImage.getSize().y)), true);
+		AddTriangle(vertices0, colors);
+		AddTriangle(vertices1, colors);
+		AddTriangle(vertices2, colors);
+		AddTriangle(vertices3, colors);
 	}
 
 	bool UseVertexArrayTexture() override

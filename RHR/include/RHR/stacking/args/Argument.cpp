@@ -7,6 +7,8 @@ Argument::Argument()
 {
 	m_vertexArrayImage.create(1, 1);
 	m_vertexArray.setPrimitiveType(sf::Triangles);
+
+	m_mode = BlockArgumentVariableMode::RAW;
 }
 
 void Argument::SetData(const std::string& data)
@@ -103,8 +105,24 @@ void Argument::ResetVertices(uint64_t reserve)
 	m_vertexCoords.reserve(reserve);
 }
 
-void Argument::AddVertex(const sf::Vertex& vertex, bool hasTextureCoords)
+void Argument::AddTriangle(const sf::Vector2f positions[], const sf::Vector2f textureCoords[])
 {
-	m_vertexArray.append(vertex);
-	m_vertexCoords.push_back(hasTextureCoords);
+	m_vertexArray.append(sf::Vertex(positions[0], textureCoords[0]));
+	m_vertexArray.append(sf::Vertex(positions[1], textureCoords[1]));
+	m_vertexArray.append(sf::Vertex(positions[2], textureCoords[2]));
+
+	m_vertexCoords.push_back(true);
+	m_vertexCoords.push_back(true);
+	m_vertexCoords.push_back(true);
+}
+
+void Argument::AddTriangle(const sf::Vector2f positions[], const sf::Color colors[])
+{
+	m_vertexArray.append(sf::Vertex(positions[0], colors[0], sf::Vector2f(0, 0)));
+	m_vertexArray.append(sf::Vertex(positions[1], colors[1], sf::Vector2f(1, 0)));
+	m_vertexArray.append(sf::Vertex(positions[2], colors[2], sf::Vector2f(1, 1)));
+
+	m_vertexCoords.push_back(false);
+	m_vertexCoords.push_back(false);
+	m_vertexCoords.push_back(false);
 }

@@ -52,7 +52,8 @@ protected:
 	virtual void UpdateData();
 
 	void ResetVertices(uint64_t reserve);
-	void AddVertex(const sf::Vertex& vertex, bool hasTextureCoords);
+	void AddTriangle(const sf::Vector2f positions[], const sf::Vector2f textureCoords[]);
+	void AddTriangle(const sf::Vector2f positions[], const sf::Color colors[]);
 
 	bool m_next;
 	std::string m_data;

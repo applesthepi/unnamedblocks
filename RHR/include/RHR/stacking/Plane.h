@@ -6,6 +6,7 @@
 #include "RHR/ui/ITransformable.h"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Shader.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <functional>
 
@@ -30,12 +31,13 @@ public:
 	void DeleteContents();
 
 	void frameUpdate(double deltaTime) override;
+	void render(sf::RenderWindow& window);
 	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 
 	static Plane* PrimaryPlane;
 	static Plane* ToolbarPlane;
 protected:
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
 	void Setup();
 
@@ -53,6 +55,8 @@ private:
 	std::vector<sf::Image> m_textureMapImage;
 	std::vector<sf::Texture> m_textureMapTexture;
 	std::vector<bool> m_textureMapEnabled;
+
+	sf::Shader m_shader;
 
 	// ===============================================================================================================
 	// ================ Selection & Context
