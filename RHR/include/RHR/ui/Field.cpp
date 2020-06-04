@@ -34,6 +34,8 @@ Field::Field(const std::string& text, bool canSwitch, const FieldType& fieldType
 void Field::SetText(const std::string& text)
 {
 	m_text = text;
+	m_input.setString(text);
+	m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 }
 
 void Field::SetEnabled(bool enabled)
@@ -95,10 +97,7 @@ void Field::frameUpdate(double deltaTime)
 	if (m_selected)
 		InputHandler::RunMouseProccessFrame(&m_text, (sf::Vector2i)(getPosition() + sf::Vector2f(0, Global::BlockBorder / 2)), (sf::Vector2u)m_inputBackground.getSize(), &m_textLoc, &m_wasDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder, 0);
 
-	m_input.setString(m_text);
 	m_input.setPosition(getPosition() + sf::Vector2f(Global::BlockBorder, 0.0f));
-
-	m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
 	m_inputBackground.setPosition(getPosition() + sf::Vector2f(0.0f, Global::BlockBorder / 2));
 
 	if (m_variableMode)

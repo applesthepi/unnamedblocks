@@ -17,7 +17,7 @@
 class ArgumentReal : public Argument
 {
 public:
-	ArgumentReal(const BlockArgumentVariableMode& mode, bool canSwitch)
+	ArgumentReal(bool canSwitch)
 		:Argument(), m_field("", canSwitch, FieldType::NUMBER)
 	{
 		UpdateVertexArray();
@@ -62,9 +62,11 @@ public:
 
 	void UpdateVertexArray() override
 	{
-		sf::Color col;
+		
 		uint16_t height = Global::BlockHeight - Global::BlockBorder;
 		const uint32_t width = m_field.GetWidth();
+
+		sf::Color col;
 		const std::string& text = m_field.GetText();
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
@@ -72,44 +74,38 @@ public:
 		else if (m_mode == BlockArgumentVariableMode::VAR)
 			col = MOD_BUTTON_TEXT_BG_ACCENT_STRONG;
 
-		col = sf::Color::Green;
-
 		// ===================================================================================================
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		//wchar_t* wstr = (wchar_t*)malloc(sizeof(wchar_t) * text.length());
-		//std::mbstowcs(wstr, text.c_str(), text.length());
-		//
-		//for (uint64_t i = 0; i < text.length(); i++)
-		//{
-		//	Global::Font.getGlyph(wstr[i], Global::BlockHeight - Global::BlockBorder, false).textureRect;
-		//}
+		sf::Text textRecreation = sf::Text(text, Global::Font, height);
+		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
+		textRecreation.setPosition(4, -2);
 		
-		//sf::Text textRecreation = sf::Text(text, Global::Font, height);
-		//textRecreation.setFillColor(sf::Color(0, 0, 0, 255));
-		//
-		//uint32_t textWidth = textRecreation.getLocalBounds().width;
-		//uint32_t textHeight = textRecreation.getLocalBounds().height;
-		//
-		//if (textWidth == 0 || textHeight == 0)
-		//{
-		//	textWidth = 1;
-		//	textHeight = Global::BlockHeight - Global::BlockBorder;
-		//}
+		uint32_t textWidth = width;
+		uint32_t textHeight = height;
+		
+		if (textWidth == 0 || textHeight == 0)
+		{
+			textWidth = 1;
+			textHeight = Global::BlockHeight - Global::BlockBorder;
+		}
 
-		m_textRendered.create(100, Global::BlockHeight - Global::BlockBorder);
-		m_textRendered.clear(sf::Color(50, 50, 150, 255));
-		//m_textRendered.draw(textRecreation);
+		m_textRendered.create(textWidth, textHeight);
+		m_textRendered.clear(col);
+		m_textRendered.draw(textRecreation);
 		m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
 
 		// ===================================================================================================
 		// =============== Update Vertex Array; see "dev/real_geometry.png"
 		// ===================================================================================================
 
-		//ResetVertices(18);
-		ResetVertices(12);
+		ResetVertices(18);
 		
+		// ===================================================================================================
+		// =============== Vanity Geometry
+		// ===================================================================================================
+
 		const sf::Vector2f vertices0[] = {
 			sf::Vector2f(0, 0),
 			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
@@ -144,16 +140,48 @@ public:
 		AddTriangle(vertices1, colors);
 		AddTriangle(vertices2, colors);
 		AddTriangle(vertices3, colors);
+
+		// ===================================================================================================
+		// =============== Core Geometry
+		// ===================================================================================================
+
+		const sf::Vector2f vertices4[] = {
+			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, height)
+		};
+
+		const sf::Vector2f vertices5[] = {
+			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(width + REAL_GEOMETRY_REACH, height),
+			sf::Vector2f(REAL_GEOMETRY_REACH, height)
+		};
+
+		const sf::Vector2f textureCoords0[] = {
+			sf::Vector2f(0, 0),
+			sf::Vector2f(width, 0),
+			sf::Vector2f(width, height)
+		};
+
+		const sf::Vector2f textureCoords1[] = {
+			sf::Vector2f(0, 0),
+			sf::Vector2f(width, height),
+			sf::Vector2f(0, height)
+		};
+
+		AddTriangle(vertices4, textureCoords0);
+		AddTriangle(vertices5, textureCoords1);
 	}
 
 	bool UseVertexArrayTexture() override
 	{
 		return true;
 	}
-protected:
+
 	void UpdateData() override
 	{
 		m_field.SetText(m_data);
+		UpdateVertexArray();
 	}
 private:
 	Field m_field;

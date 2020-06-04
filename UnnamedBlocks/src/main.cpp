@@ -213,7 +213,6 @@ int main()
 	sf::Clock cl;
 	sf::Clock clTrip;
 
-	sf::Time lastClTrip;
 	double deltaTime = 0.0;
 
 	sf::Text frameRate = sf::Text("fps: 0", Global::Font, 12);
@@ -315,7 +314,16 @@ int main()
 		//	// TODO reload vanity
 		//}
 
-		deltaTime = (double)lastClTrip.asMicroseconds() * 0.0000001;
+		// ==============================================================================================================================
+		// ============== FPS
+		// ==============================================================================================================================
+
+		deltaTime = (double)clTrip.getElapsedTime().asMicroseconds() * 0.0000001;
+
+		frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
+		clTrip.restart();
+
+		frameRate.setPosition(sf::Vector2f(window.getSize().x - 100, 0));
 
 		// ==============================================================================================================================
 		// ============== Frame Update
@@ -339,22 +347,6 @@ int main()
 		window.draw(UIRegistry::GetRegistry());
 
 		CategoryHandler::GetHandler().PostRender(&window);
-
-		// ==============================================================================================================================
-		// ============== FPS
-		// ==============================================================================================================================
-
-		sf::Time tm = cl.getElapsedTime();
-		cl.restart();
-
-		if (clTrip.getElapsedTime().asSeconds() >= 1.0f)
-		{
-			frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
-			lastClTrip = clTrip.getElapsedTime();
-			clTrip.restart();
-		}
-
-		frameRate.setPosition(sf::Vector2f(window.getSize().x - 70, 0));
 
 		window.draw(frameRate);
 		window.display();

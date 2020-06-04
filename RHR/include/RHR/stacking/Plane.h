@@ -45,7 +45,10 @@ private:
 	// ================ Rendering
 	// ===============================================================================================================
 
+	// creates a buffer for the collection
 	void CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity);
+
+	// updates the buffer for a collection
 	void UpdateBuffer(uint16_t bufferIdx);
 
 	std::vector<std::vector<sf::Vertex>> m_collectionVertexArrays;

@@ -98,19 +98,20 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 	
 	uint32_t idx = 0;
 	uint32_t widest = 0;
+
+	Collection* collection = new Collection();
+
 	for (unsigned int a = 0; a < BlockRegistry::GetRegistry().GetBlocks().size(); a++)
 	{
 		if (BlockRegistry::GetRegistry().GetBlocks()[a]->GetCategory() == BlockRegistry::GetRegistry().GetCategories()[catIdx]->GetUnlocalizedName())
 		{
-			Collection* collection = new Collection();
-			collection->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
-
 			Stack* stack = new Stack();// sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))));
 			Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());// BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName(), stack->GetFunctionUpdate(), stack->GetFunctionSelect());
 			
+			stack->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
+
 			stack->AddBlock(block);
 			collection->AddStack(stack);
-			Plane::ToolbarPlane->AddCollection(collection, false);
 
 			if (block->GetWidth() > widest)
 				widest = block->GetWidth();
@@ -118,8 +119,7 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 			idx++;
 		}
 	}
-	
-	m_toolbarStackCount = Plane::ToolbarPlane->GetCollections().size();
+
 	m_selectedCategory = catIdx;
 
 	if (widest < 250)
@@ -127,8 +127,18 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 	else
 		m_toolbarWidth = widest + 10;
 
+
 	Plane::ToolbarPlane->setPosition(sf::Vector2f(5, offset + 5));
 	Plane::PrimaryPlane->setPosition(sf::Vector2f(m_toolbarWidth + 10, HEADER_HEIGHT + 5));
+
+	collection->setSize(sf::Vector2u(m_toolbarWidth, offset + 5));
+	Plane::ToolbarPlane->AddCollection(collection, false);
+
+	if (Plane::ToolbarPlane->GetCollections().size() > 0)
+		m_toolbarStackCount = Plane::ToolbarPlane->GetCollections().front()->GetStacks().size();
+	else
+		m_toolbarStackCount = 0;
+
 	UpdateButtons();
 
 	m_needsUpdate = true;
@@ -415,7 +425,7 @@ void CategoryHandler::PostRender(sf::RenderWindow* window)
 
 void CategoryHandler::frameUpdate(double deltaTime)
 {
-	if (Plane::ToolbarPlane->GetCollections().size() != m_toolbarStackCount)
+	if (Plane::ToolbarPlane->GetCollections().size() > 0 && Plane::ToolbarPlane->GetCollections().front()->GetStacks().size() != m_toolbarStackCount)
 		UpdateBlocks(m_selectedCategory);
 
 	if (PreProcessor::IsFinished() && m_running)

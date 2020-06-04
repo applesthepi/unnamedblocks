@@ -149,7 +149,8 @@ void ProjectHandler::SaveProject(const std::string& path) {
 				for(Argument* argument : arguments) {
 					if(!argument->HasData()) continue;
 					argument_count++;
-					const std::string& data = argument->GetData();
+					std::string data = argument->GetData();
+					data.insert(data.begin(), argument->GetMode() == BlockArgumentVariableMode::RAW ? '0' : '1');
 					// Check size
 					UB_ASSERT(data.size() < 65535);
 
@@ -265,7 +266,11 @@ void ProjectHandler::LoadProject(const std::string& path)
 				stack->AddBlock(block);
 
 				// Get args
-				for(uint8_t arg_index = 0; arg_index < arg_count; arg_index++) {
+				for(uint8_t arg_index = 0; arg_index < block->GetArguments().size(); arg_index++) {
+
+					if (!block->GetArguments()[arg_index]->HasData())
+						continue;
+
 					// Read arg size
 					read_16(file, buffer, 1);
 					uint16_t arg_size = *(uint16_t*)buffer;
@@ -275,10 +280,11 @@ void ProjectHandler::LoadProject(const std::string& path)
 					hbuffer[arg_size] = 0;
 					file.read(hbuffer, arg_size);
 
-					// Add arg to block
-					Argument* arg = new Argument();
-					arg->SetData(hbuffer);
-					block->AddArgument(arg);
+					// Update arg data
+
+					block->GetArguments()[arg_index]->SetMode(hbuffer[0] == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
+					block->GetArguments()[arg_index]->SetData(hbuffer + 1);
+					block->GetArguments()[arg_index]->UpdateData();
 
 					free(hbuffer);
 				}

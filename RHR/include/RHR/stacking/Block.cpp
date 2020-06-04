@@ -1,6 +1,7 @@
 #include "Block.h"
 #include "RHR/registries/BlockRegistry.h"
 
+#include "args/ArgumentText.h"
 #include "args/ArgumentReal.h"
 #include "args/ArgumentBoolean.h"
 #include "args/ArgumentString.h"
@@ -88,12 +89,25 @@ void Block::UpdateArguments()
 
 	for (uint64_t i = 0; i < argumentInit.size(); i++)
 	{
-		if (argumentInit[i].Type == BlockArgumentType::REAL)
+		if (argumentInit[i].Type == BlockArgumentType::TEXT)
 		{
-			args.push_back(new ArgumentReal(argumentInit[i].Mode, argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+			args.push_back(new ArgumentText(false));
 
 			args.back()->setPosition(width, Global::BlockBorder);
+			args.back()->SetMode(BlockArgumentVariableMode::RAW);
 			args.back()->SetData(argumentInit[i].DefaultValue);
+			args.back()->UpdateData();
+
+			width += args.back()->GetWidth();
+		}
+		else if (argumentInit[i].Type == BlockArgumentType::REAL)
+		{
+			args.push_back(new ArgumentReal(argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+
+			args.back()->setPosition(width, Global::BlockBorder);
+			args.back()->SetMode(argumentInit[i].Mode);
+			args.back()->SetData(argumentInit[i].DefaultValue);
+			args.back()->UpdateData();
 
 			width += args.back()->GetWidth();
 		}

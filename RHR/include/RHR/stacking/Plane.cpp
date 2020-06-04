@@ -297,6 +297,16 @@ Plane* Plane::ToolbarPlane;
 
 void Plane::render(sf::RenderWindow& window)
 {
+	//if (m_textureMapTexture.size() < 1)
+	//	return;
+	//
+	//sf::Sprite sp;
+	//sp.setTexture(m_textureMapTexture[0]);
+	//sp.setPosition(500, 50);
+	//
+	//window.draw(sp);
+	//return;
+
 	// render each batch collection
 
 	for (uint16_t i = 0; i < m_vertexBuffers.size(); i++)
@@ -508,25 +518,27 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 	for (uint64_t a = 0; a < vaTextures.size(); a++)
 	{
+		uint64_t tIdx = (vaTextures.size() - a) - 1;
+
 		// if the argument doesnt use a texture
 
-		if (vaTextures[a] == nullptr)
+		if (vaTextures[tIdx] == nullptr)
 			continue;
 
 		// make texture wider if its to small
 
-		if (vaTextures[a]->getSize().x > textureWidth)
-			textureWidth = vaTextures[a]->getSize().x;
+		if (vaTextures[tIdx]->getSize().x > textureWidth)
+			textureWidth = vaTextures[tIdx]->getSize().x;
 
 		// offset non-normalized texture coords
 
-		for (uint64_t b = 0; b < va[a].getVertexCount(); b++)
+		for (uint64_t b = 0; b < va[tIdx].getVertexCount(); b++)
 		{
-			if (vaCoords[a]->at(b))
-				va[a][b].texCoords.y += textureHeight;
+			if (vaCoords[tIdx]->at(b))
+				va[tIdx][b].texCoords.y += textureHeight;
 		}
 
-		textureHeight += vaTextures[a]->getSize().y;
+		textureHeight += vaTextures[tIdx]->getSize().y;
 	}
 
 	// normalize
@@ -551,7 +563,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 		sf::RenderTexture textureMap;
 		textureMap.create(textureWidth, textureHeight);
-		textureMap.clear(sf::Color(255, 255, 255, 255));
+		textureMap.clear(sf::Color(0, 0, 0, 0));
 
 		sf::Texture tempTexture;
 		sf::Sprite tempSprite;
@@ -562,14 +574,16 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		{
 			// proceed if the argument has a texture
 		
+			uint64_t tIdx = (vaTextures.size() - a) - 1;
+
 			if (vaTextures[a] == nullptr)
 				continue;
 			
 			tempTexture.loadFromImage(*(vaTextures[a]));
 		
-			tempSprite.setTexture(tempTexture);
+			tempSprite.setTexture(tempTexture, true);
 			tempSprite.setPosition(0, incHeight);
-		
+			
 			textureMap.draw(tempSprite);
 			incHeight += vaTextures[a]->getSize().y;
 		}
@@ -577,6 +591,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		// retrieve render
 
 		m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
+		m_textureMapImage[bufferIdx].setPixel(0, 0, sf::Color::White);
 		
 		m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
 		m_textureMapEnabled[bufferIdx] = true;

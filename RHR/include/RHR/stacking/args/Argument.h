@@ -47,10 +47,13 @@ public:
 
 	// whether to use the vertexArrayImage or not
 	virtual bool UseVertexArrayTexture();
-protected:
-	virtual void UpdateVertexArray();
-	virtual void UpdateData();
 
+	// update geometry
+	virtual void UpdateVertexArray();
+
+	// update data should also cause an update in geometry
+	virtual void UpdateData();
+protected:
 	void ResetVertices(uint64_t reserve);
 	void AddTriangle(const sf::Vector2f positions[], const sf::Vector2f textureCoords[]);
 	void AddTriangle(const sf::Vector2f positions[], const sf::Color colors[]);
