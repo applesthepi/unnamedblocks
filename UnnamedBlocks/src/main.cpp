@@ -81,19 +81,32 @@ int main()
 	// ==============================================================================================================================
 	// ============== Intro Animation
 	// ==============================================================================================================================
-	
+#if TRUE
 	{
 		sf::Http http("kikoho.ddns.net");
-
-		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"));
-		const std::string& bodyApple = responseApple.getBody();// expecting 128
+		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"), sf::milliseconds(200));
+		
 		sf::Image imgApples;
-		imgApples.loadFromMemory(bodyApple.c_str(), bodyApple.length());
+		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
+		{
+			const std::string& bodyApple = responseApple.getBody();// expecting 128
+			imgApples.loadFromMemory(bodyApple.c_str(), bodyApple.length());
+			imgApples.saveToFile("res/applesthepi.png");
+		}
+		else
+			imgApples.loadFromFile("res/applesthepi.png");
 
-		sf::Http::Response responseEmp = http.sendRequest(sf::Http::Request("The-Emperor10.png"));
-		const std::string& bodyEmp = responseEmp.getBody();// expecting 128
+		sf::Http::Response responseEmp = http.sendRequest(sf::Http::Request("The-Emperor10.png"), sf::milliseconds(200));
+
 		sf::Image imgEmp;
-		imgEmp.loadFromMemory(bodyEmp.c_str(), bodyEmp.length());
+		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
+		{
+			const std::string& bodyEmp = responseEmp.getBody();// expecting 128
+			imgEmp.loadFromMemory(bodyEmp.c_str(), bodyEmp.length());
+			imgEmp.saveToFile("res/emp.png");
+		}
+		else
+			imgEmp.loadFromFile("res/emp.png");
 
 		sf::Texture txApples;
 		txApples.loadFromImage(imgApples);
@@ -180,12 +193,12 @@ int main()
 			window.display();
 		}
 	}
-
+#endif
 	// ==============================================================================================================================
 	// ============== Program Initialization
 	// ==============================================================================================================================
 
-	window.setFramerateLimit(200);
+	//window.setFramerateLimit(200);
 
 	run();
 

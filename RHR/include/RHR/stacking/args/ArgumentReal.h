@@ -48,9 +48,12 @@ public:
 	void Select() override
 	{
 		if (m_field.GetSelected())
-			m_field.mouseButton(true, Global::MousePosition, sf::Mouse::Button::Left);
+		{
+			//m_field.mouseButton(true, Global::MousePosition, sf::Mouse::Button::Left);
+		}
 		else
 		{
+			UIRegistry::GetRegistry().AddComponent(&m_field);
 			m_field.SelectAll();
 		}
 	}
@@ -83,7 +86,7 @@ public:
 		textRecreation.setPosition(4, -2);
 		
 		uint32_t textWidth = width;
-		uint32_t textHeight = height;
+		uint32_t textHeight = Global::BlockHeight;
 		
 		if (textWidth == 0 || textHeight == 0)
 		{

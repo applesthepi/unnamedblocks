@@ -111,6 +111,28 @@ void Block::UpdateArguments()
 
 			width += args.back()->GetWidth();
 		}
+		else if (argumentInit[i].Type == BlockArgumentType::STRING)
+		{
+			args.push_back(new ArgumentString(argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+
+			args.back()->setPosition(width, Global::BlockBorder);
+			args.back()->SetMode(argumentInit[i].Mode);
+			args.back()->SetData(argumentInit[i].DefaultValue);
+			args.back()->UpdateData();
+
+			width += args.back()->GetWidth();
+		}
+		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
+		{
+			args.push_back(new ArgumentBool(argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+
+			args.back()->setPosition(width, Global::BlockBorder);
+			args.back()->SetMode(argumentInit[i].Mode);
+			args.back()->SetData(argumentInit[i].DefaultValue);
+			args.back()->UpdateData();
+
+			width += args.back()->GetWidth();
+		}
 	}
 
 	AddArguments(args);

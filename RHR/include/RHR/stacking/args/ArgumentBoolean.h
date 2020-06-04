@@ -1,5 +1,7 @@
 #pragma once
 #include "Argument.h"
+#include "RHR/ui/Field.h"
+#include "RHR/registries/UIRegistry.h"
 
 #include <Espresso/Global.h>
 #include <Espresso/InputHandler.h>
@@ -8,227 +10,37 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 #include <Cappuccino/Logger.h>
-/*
-#define RED_COLOR sf::Color(177, 37, 33)
-#define GREEN_COLOR sf::Color(99, 195, 77)
+#include <cstdlib>
 
-class ArgumentBoolean : public Argument
+#define BOOL_GEOMETRY_REACH ((Global::BlockHeight - Global::BlockBorder) / 2.0f)
+
+class ArgumentBool : public Argument
 {
 public:
-	ArgumentBoolean(const sf::Vector2u& relitivePosition)
-		:Argument(relitivePosition)
+	ArgumentBool(bool canSwitch)
+		:Argument(), m_field("", canSwitch, FieldType::TEXT)
 	{
-		m_isDown = false;
-		m_variableMode = BlockArgumentVariableMode::RAW;
-		m_selected = false;
-		m_fullSelect = false;
+		UpdateVertexArray();
 
-		m_textLoc = 0;
-		m_textLocHigh = 0;
-		m_text = "0";
-
-		m_input = sf::Text(m_text, *Global::Font, Global::BlockHeight - Global::BlockBorder);
-		m_input.setFillColor(MOD_BUTTON_TEXT_FG);
-		m_input.setPosition(GetAbsolutePosition().x + (int)Global::BlockBorder, GetAbsolutePosition().y);
-
-		m_inputBackground = sf::RectangleShape(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
-		m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG);
-		m_inputBackground.setPosition(GetAbsolutePosition().x, GetAbsolutePosition().y + (int)(Global::BlockBorder / 2));
-
-		m_inputLoc = sf::RectangleShape(sf::Vector2f(1, Global::BlockHeight - Global::BlockBorder));
-		m_inputLoc.setFillColor(MOD_BUTTON_TEXT_FG);
-
-		m_inputLocHigh = sf::RectangleShape(sf::Vector2f(0, Global::BlockHeight));
-		m_inputLocHigh.setFillColor(MOD_HIGHLIGHT_COLOR);
-
-		m_textCallback = [&](const sf::Event::KeyEvent& ev)
+		m_tab = [this]()
 		{
-			if (ev.code == sf::Keyboard::Key::Tab)
-				Next = true;
-			else
-			{
-				if (m_variableMode == BlockArgumentVariableMode::VAR)
-					InputHandler::RunTextProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
-				else
-					InputHandler::RunNumberProccess(&m_text, &m_textLocHigh, &m_textLoc, nullptr, nullptr, ev);
-			}
+			m_next = true;
 		};
 
-		m_left = new sf::CircleShape((Global::BlockHeight - Global::BlockBorder) / 2, 10);
-		m_right = new sf::CircleShape((Global::BlockHeight - Global::BlockBorder) / 2, 10);
+		m_field.SetTab(&m_tab);
 	}
 
-	void FrameUpdate() override
+	BlockArgumentType GetType() override
 	{
-		if (m_selected && !m_fullSelect)
-			InputHandler::RunMouseProccessFrame(&m_text, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(m_inputBackground.getSize().x + (ARGUMENT_DECOR_REACH * 2), m_inputBackground.getSize().y), &m_textLoc, &m_isDown, Global::MousePosition, Global::BlockHeight - Global::BlockBorder, ARGUMENT_DECOR_REACH);
+		return BlockArgumentType::BOOL;
+	}
 
-		if (m_variableMode == BlockArgumentVariableMode::VAR)
-		{
-			m_input.setString(m_text);
-			m_input.setPosition(GetRelitivePosition().x + (float)Global::BlockBorder + ((Global::BlockHeight - Global::BlockBorder) / 2), GetRelitivePosition().y);
-
-			m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
-
-			m_inputBackground.setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
-			m_left->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
-			m_right->setFillColor(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
-
-			m_input.setFillColor(MOD_BUTTON_TEXT_FG);
-
-			if (m_selected)
-			{
-				m_inputLoc.setPosition(((Global::BlockHeight - Global::BlockBorder) / 2) + GetRelitivePosition().x + sf::Text(m_text.substr(0, m_textLoc), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
-				m_inputLocHigh.setPosition(((Global::BlockHeight - Global::BlockBorder) / 2) + GetRelitivePosition().x + sf::Text(m_text.substr(0, std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width + (int)Global::BlockBorder, GetRelitivePosition().y + (Global::BlockBorder / 2));
-				m_inputLocHigh.setSize(sf::Vector2f(sf::Text(m_text.substr(std::min(m_textLocHigh, m_textLoc), std::max(m_textLocHigh, m_textLoc) - std::min(m_textLocHigh, m_textLoc)), *Global::Font, Global::BlockHeight - Global::BlockBorder).getLocalBounds().width, Global::BlockHeight - Global::BlockBorder));
-			}
-		}
+	uint32_t GetWidth() override
+	{
+		if (m_mode == BlockArgumentVariableMode::RAW)
+			return Global::BlockHeight - Global::BlockBorder;
 		else
-		{
-			if (m_text == "1")
-			{
-				m_inputBackground.setFillColor(GREEN_COLOR);
-				m_left->setFillColor(GREEN_COLOR);
-				m_right->setFillColor(GREEN_COLOR);
-			}
-			else if (m_text == "0")
-			{
-				m_inputBackground.setFillColor(RED_COLOR);
-				m_left->setFillColor(RED_COLOR);
-				m_right->setFillColor(RED_COLOR);
-			}
-			else
-				Logger::Warn("invalid boolean value \"" + m_text + "\"");
-		}
-
-		m_inputBackground.setPosition(GetRelitivePosition().x + ((Global::BlockHeight - Global::BlockBorder) / 2), GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
-
-		if (m_selected && (Global::SelectedArgument != this || Global::Dragging))
-		{
-			InputHandler::UnregisterKeyCallback(&m_textCallback);
-			m_selected = false;
-		}
-
-		m_left->setPosition(GetRelitivePosition().x, GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
-		m_right->setPosition(GetRelitivePosition().x + GetArgumentRawWidth() - (Global::BlockHeight - Global::BlockBorder), GetRelitivePosition().y + (int)(Global::BlockBorder / 2));
-	}
-
-	void Render(sf::RenderTexture* render) override
-	{
-		render->draw(*m_left);
-		render->draw(*m_right);
-
-		render->draw(m_inputBackground);
-
-		if (m_variableMode == BlockArgumentVariableMode::VAR)
-		{
-			if (m_selected)
-			{
-				render->draw(m_input);
-				render->draw(m_inputLocHigh);
-				render->draw(m_inputLoc);
-			}
-			else
-				render->draw(m_input);
-		}
-	}
-
-	unsigned int GetArgumentRawWidth() override
-	{
-		return m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
-	}
-
-	bool MouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
-	{
-		if (!down && m_fullSelect)
-		{
-			m_fullSelect = false;
-			m_textLocHigh = 0;
-			m_textLoc = m_text.length();
-			m_isDown = false;
-
-			return true;
-		}
-
-		uint64_t superWidthBounds;
-
-		if (m_variableMode == BlockArgumentVariableMode::VAR)
-			superWidthBounds = m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
-		else
-			superWidthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
-
-		if (button == sf::Mouse::Middle && down &&
-			position.x >= m_realAbsolutePosition.x && position.x <= m_realAbsolutePosition.x + superWidthBounds &&
-			position.y >= m_realAbsolutePosition.y && position.y <= m_realAbsolutePosition.y + m_inputBackground.getSize().y)
-		{
-			SelectGlobaly();
-			if (m_variableMode == BlockArgumentVariableMode::RAW)
-				m_variableMode = BlockArgumentVariableMode::VAR;
-			else
-				m_variableMode = BlockArgumentVariableMode::RAW;
-
-			if (m_variableMode == BlockArgumentVariableMode::VAR)
-				m_text = m_lastVar;
-			else
-			{
-				m_lastVar = m_text;
-				m_text = "0";
-
-				m_inputBackground.setSize(sf::Vector2f(Global::BlockHeight - Global::BlockBorder, Global::BlockHeight - Global::BlockBorder));
-			}
-
-			if (m_selected)
-			{
-				m_textLocHigh = 0;
-				m_textLoc = m_text.length();
-			}
-			else
-			{
-				InputHandler::RegisterKeyCallback(&m_textCallback);
-
-				m_selected = true;
-				m_textLocHigh = 0;
-				m_textLoc = m_text.length();
-			}
-		}
-		else if (button == sf::Mouse::Left)
-		{
-			uint64_t widthBounds;
-
-			if (m_variableMode == BlockArgumentVariableMode::VAR)
-				widthBounds = m_inputBackground.getSize().x + (Global::BlockHeight - Global::BlockBorder);
-			else
-				widthBounds = (Global::BlockHeight - Global::BlockBorder) * 2;
-
-			TextSystem tSys(&m_text, &m_textLocHigh, &m_textLoc, &m_isDown);
-
-			if (InputHandler::RunMouseProccess(tSys, sf::Vector2i(m_realAbsolutePosition.x, m_realAbsolutePosition.y + (Global::BlockBorder / 2)), sf::Vector2u(widthBounds, m_inputBackground.getSize().y), down, position, Global::BlockHeight - Global::BlockBorder, ARGUMENT_DECOR_REACH))
-			{
-				if (down)
-					Select();
-
-				return true;
-			}
-			else
-			{
-				if (Global::SelectedArgument == this)
-				{
-					m_selected = false;
-					Global::SelectedStack = nullptr;
-					Global::SelectedBlock = nullptr;
-					Global::SelectedArgument = nullptr;
-					Global::Dragging = false;
-
-					InputHandler::UnregisterKeyCallback(&m_textCallback);
-
-					(*m_functionUpdatePreTexture)();
-				}
-
-				return false;
-			}
-		}
-
-		return false;
+			return m_field.GetWidth() + (BOOL_GEOMETRY_REACH * 2);
 	}
 
 	bool HasData() override
@@ -236,93 +48,266 @@ public:
 		return true;
 	}
 
-	void SetData(const std::string& data) override
-	{
-		m_text = data;
-		m_input.setString(m_text);
-	}
-
-	void SetMode(const BlockArgumentVariableMode& mode) override
-	{
-		m_variableMode = mode;
-	}
-
-	const std::string& GetData() override
-	{
-		return (m_variableMode == BlockArgumentVariableMode::VAR ? '1' : '0') + m_text;
-	}
-
-	const std::string& GetDataRaw() override
-	{
-		return m_text;
-	}
-
-	const BlockArgumentVariableMode GetMode() override
-	{
-		return m_variableMode;
-	}
-
-	void Deallocate() override
-	{
-		if (m_selected)
-			InputHandler::UnregisterKeyCallback(&m_textCallback);
-	}
-
 	void Select() override
 	{
-		if (m_variableMode == BlockArgumentVariableMode::RAW)
+		if (m_field.GetSelected())
 		{
-			if (m_text == "1")
-				m_text = "0";
-			else if (m_text == "0")
-				m_text = "1";
-			else
-				Logger::Warn("invalid boolean value \"" + m_text + "\"");
+			//m_field.mouseButton(true, Global::MousePosition, sf::Mouse::Button::Left);
 		}
-
-		SelectGlobaly();
-
-		if (m_selected)
-			InputHandler::RunMouseProccess(&m_input, &m_textLocHigh, &m_textLoc, &m_isDown, true, Global::MousePosition, Global::BlockHeight - Global::BlockBorder);
 		else
 		{
-			InputHandler::RegisterKeyCallback(&m_textCallback);
-
-			m_selected = true;
-			m_textLocHigh = 0;
-			m_textLoc = 0;
-			m_fullSelect = true;
+			UIRegistry::GetRegistry().AddComponent(&m_field);
+			m_field.SelectAll();
 		}
 	}
 
-	void ReInspectData() override
+	void UnSelect() override
 	{
-		m_inputBackground.setSize(sf::Vector2f(m_input.getLocalBounds().width + (float)(Global::BlockBorder * 2), Global::BlockHeight - Global::BlockBorder));
+		UIRegistry::GetRegistry().RemoveComponent(&m_field);
 	}
 
-	const BlockArgumentType GetType() override
+	sf::Vector2f LCir(float angle)
 	{
-		return BlockArgumentType::BOOL;
+		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
+
+		float x = halfHeight * std::cosf(angle * (3.14159f / 180.0f));
+		float y = halfHeight * std::sinf(angle * (3.14159f / 180.0f));
+
+		return sf::Vector2f(x, y);
+	}
+
+	sf::Vector2f RCir(float angle)
+	{
+		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
+
+		float x;
+		float y = halfHeight * std::sinf(angle * (3.14159f / 180.0f));
+		
+		if (m_mode == BlockArgumentVariableMode::RAW)
+			x = (halfHeight + (Global::BlockHeight - Global::BlockBorder)) * std::cosf(angle * (3.14159f / 180.0f));
+		else
+			x = (halfHeight + m_field.GetWidth()) * std::cosf(angle * (3.14159f / 180.0f));
+
+		return sf::Vector2f(x, y);
+	}
+
+	void UpdateVertexArray() override
+	{
+		uint16_t height = Global::BlockHeight - Global::BlockBorder;
+		const uint32_t width = m_field.GetWidth();
+
+		sf::Color col;
+		const std::string& text = m_field.GetText();
+
+		if (m_mode == BlockArgumentVariableMode::RAW)
+		{
+			if (m_data == "1")
+				col = sf::Color(0, 200, 0);
+			else
+				col = sf::Color(200, 0, 0);
+		}
+		else if (m_mode == BlockArgumentVariableMode::VAR)
+			col = MOD_BUTTON_TEXT_BG_ACCENT_STRONG;
+
+		// ===================================================================================================
+		// =============== Prepare Vertex Buffer Texture
+		// ===================================================================================================
+
+		if (m_mode == BlockArgumentVariableMode::VAR)
+		{
+			sf::Text textRecreation = sf::Text(text, Global::Font, height);
+			textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
+			textRecreation.setPosition(4, -2);
+
+			uint32_t textWidth = width;
+			uint32_t textHeight = Global::BlockHeight;
+
+			if (textWidth == 0 || textHeight == 0)
+			{
+				textWidth = 1;
+				textHeight = Global::BlockHeight - Global::BlockBorder;
+			}
+
+			m_textRendered.create(textWidth, textHeight);
+			m_textRendered.clear(col);
+			m_textRendered.draw(textRecreation);
+			m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
+		}
+
+		// ===================================================================================================
+		// =============== Update Vertex Array; see "dev/bool_geometry.png"
+		// ===================================================================================================
+
+		ResetVertices(42);
+
+		const float Langles[] = {
+			0.0f, 30.0f, 60.0f, 90.0f,
+			120.0f, 150.0f, 180.0f
+		};
+
+		const float Rangles[] = {
+			0.0f, -30.0f, -60.0f, -90.0f,
+			-120.0f, -150.0f, -180.0f
+		};
+
+		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
+
+		const sf::Vector2f center(halfHeight, halfHeight);
+
+		// ===================================================================================================
+		// =============== Vanity Geometry Left
+		// ===================================================================================================
+
+		const sf::Vector2f vertices0[] = {
+			LCir(Langles[1]),
+			LCir(Langles[0]),
+			center
+		};
+
+		const sf::Vector2f vertices1[] = {
+			LCir(Langles[2]),
+			LCir(Langles[1]),
+			center
+		};
+
+		const sf::Vector2f vertices2[] = {
+			LCir(Langles[3]),
+			LCir(Langles[2]),
+			center
+		};
+
+		const sf::Vector2f vertices3[] = {
+			LCir(Langles[4]),
+			LCir(Langles[3]),
+			center
+		};
+
+		const sf::Vector2f vertices4[] = {
+			LCir(Langles[5]),
+			LCir(Langles[4]),
+			center
+		};
+
+		const sf::Vector2f vertices5[] = {
+			LCir(Langles[6]),
+			LCir(Langles[5]),
+			center
+		};
+
+		// ===================================================================================================
+		// =============== Vanity Geometry Right
+		// ===================================================================================================
+
+		const sf::Vector2f vertices6[] = {
+			RCir(Rangles[1]),
+			RCir(Rangles[0]),
+			center
+		};
+
+		const sf::Vector2f vertices7[] = {
+			RCir(Rangles[2]),
+			RCir(Rangles[1]),
+			center
+		};
+
+		const sf::Vector2f vertices8[] = {
+			RCir(Rangles[3]),
+			RCir(Rangles[2]),
+			center
+		};
+
+		const sf::Vector2f vertices9[] = {
+			RCir(Rangles[4]),
+			RCir(Rangles[3]),
+			center
+		};
+
+		const sf::Vector2f vertices10[] = {
+			RCir(Rangles[5]),
+			RCir(Rangles[4]),
+			center
+		};
+
+		const sf::Vector2f vertices11[] = {
+			RCir(Rangles[6]),
+			RCir(Rangles[5]),
+			center
+		};
+
+		// ===================================================================================================
+		// =============== Core Geometry
+		// ===================================================================================================
+
+		const sf::Vector2f vertices12[] = {
+			sf::Vector2f(halfHeight, 0),
+			sf::Vector2f(width + halfHeight, 0),
+			sf::Vector2f(width + halfHeight, height)
+		};
+
+		const sf::Vector2f vertices13[] = {
+			sf::Vector2f(halfHeight, 0),
+			sf::Vector2f(width + halfHeight, height),
+			sf::Vector2f(halfHeight, height)
+		};
+
+		const sf::Vector2f textureCoords0[] = {
+			sf::Vector2f(halfHeight, 0),
+			sf::Vector2f(width + halfHeight, 0),
+			sf::Vector2f(width + halfHeight, height)
+		};
+
+		const sf::Vector2f textureCoords1[] = {
+			sf::Vector2f(halfHeight, 0),
+			sf::Vector2f(width + halfHeight, height),
+			sf::Vector2f(halfHeight, height)
+		};
+
+		const sf::Color colors[] = {
+			col,
+			col,
+			col
+		};
+
+		AddTriangle(vertices0, colors);
+		AddTriangle(vertices1, colors);
+		AddTriangle(vertices2, colors);
+		AddTriangle(vertices3, colors);
+		AddTriangle(vertices4, colors);
+		AddTriangle(vertices5, colors);
+
+		AddTriangle(vertices6, colors);
+		AddTriangle(vertices7, colors);
+		AddTriangle(vertices8, colors);
+		AddTriangle(vertices9, colors);
+		AddTriangle(vertices10, colors);
+		AddTriangle(vertices11, colors);
+
+		if (m_mode == BlockArgumentVariableMode::RAW)
+		{
+			AddTriangle(vertices12, colors);
+			AddTriangle(vertices13, colors);
+		}
+		else
+		{
+			AddTriangle(vertices12, textureCoords0);
+			AddTriangle(vertices13, textureCoords1);
+		}
+	}
+
+	bool UseVertexArrayTexture() override
+	{
+		return m_mode == BlockArgumentVariableMode::VAR;
+	}
+
+	void UpdateData() override
+	{
+		if (m_mode == BlockArgumentVariableMode::VAR)
+			m_field.SetText(m_data);
+
+		UpdateVertexArray();
 	}
 private:
-	std::string m_lastVar;
-	std::string m_text;
-	sf::Text m_input;
-	sf::RectangleShape m_inputBackground;
-	sf::RectangleShape m_inputLocHigh;
-	sf::RectangleShape m_inputLoc;
-	uint64_t m_textLoc;
-	uint64_t m_textLocHigh;
-
-	sf::CircleShape* m_left;
-	sf::CircleShape* m_right;
-
-	BlockArgumentVariableMode m_variableMode;
-
-	bool m_isDown;
-	bool m_selected;
-	bool m_fullSelect;
-
-	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
+	Field m_field;
+	std::function<void()> m_tab;
+	sf::RenderTexture m_textRendered;
 };
-*/

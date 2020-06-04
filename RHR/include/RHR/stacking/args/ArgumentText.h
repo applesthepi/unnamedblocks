@@ -56,7 +56,7 @@ public:
 		// ===================================================================================================
 
 		uint32_t textWidth = width;
-		uint32_t textHeight = height;
+		uint32_t textHeight = Global::BlockHeight;
 
 		if (textWidth == 0 || textHeight == 0)
 		{
