@@ -40,6 +40,7 @@ protected:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
 	void Setup();
+	void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2f pos, sf::Vector2u size);
 
 	// ===============================================================================================================
 	// ================ Rendering
@@ -51,7 +52,6 @@ private:
 	// updates the buffer for a collection
 	void UpdateBuffer(uint16_t bufferIdx);
 
-	std::vector<std::vector<sf::Vertex>> m_collectionVertexArrays;
 	std::vector<std::vector<sf::Vertex>> m_vertexArrays;
 	std::vector<sf::VertexBuffer> m_vertexBuffers;
 	std::vector<sf::Transform> m_vertexBufferTransform;

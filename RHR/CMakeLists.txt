@@ -59,6 +59,23 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Dropdown.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Field.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/CategoryHandler.h"
+	
+	#IMGUI-SFML
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imconfig.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imconfig-SFML.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_internal.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui-SFML.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui-SFML_export.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imstb_rectpack.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imstb_textedit.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imstb_truetype.h"
+	#IMGUI-SFML
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_demo.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_draw.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_widgets.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui-SFML.cpp"
 	)
 add_library(RHR STATIC
 	${RHR_SRC}

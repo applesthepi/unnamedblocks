@@ -2,9 +2,9 @@
 #include "Stack.h"
 #include "RHR/ui/ITransformable.h"
 
-#define COLLECTION_COLOR_OUTLINE sf::Color(49, 49, 66, 255)
+#define COLLECTION_COLOR_OUTLINE sf::Color(61, 61, 81, 255)
 #define COLLECTION_COLOR_FILL sf::Color(23, 23, 28, 255)
-#define COLLECTION_OUTLINE_WIDTH 2
+#define COLLECTION_OUTLINE_WIDTH 4
 
 class Collection : public ITransformable
 {

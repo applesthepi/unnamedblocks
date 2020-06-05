@@ -131,8 +131,8 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 	Plane::ToolbarPlane->setPosition(sf::Vector2f(5, offset + 5));
 	Plane::PrimaryPlane->setPosition(sf::Vector2f(m_toolbarWidth + 10, HEADER_HEIGHT + 5));
 
-	collection->setSize(sf::Vector2u(m_toolbarWidth, offset + 5));
-	Plane::ToolbarPlane->AddCollection(collection, true);
+	collection->setSize(sf::Vector2u(m_toolbarWidth, collection->GetStacks().size() * (Global::BlockHeight + 5) - 5));
+	Plane::ToolbarPlane->AddCollection(collection, false);
 
 	if (Plane::ToolbarPlane->GetCollections().size() > 0)
 		m_toolbarStackCount = Plane::ToolbarPlane->GetCollections().front()->GetStacks().size();

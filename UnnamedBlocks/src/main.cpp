@@ -4,6 +4,9 @@
 #include "registries/UIRegistry.h"
 #include "ui/ButtonText.h"
 
+#include "imgui/imgui.h"
+#include "imgui/imgui-SFML.h"
+
 #include <Espresso/InputHandler.h>
 #include <SFML/Window/Event.hpp>
 
@@ -68,7 +71,7 @@ int main()
 
 	sf::RenderWindow window;
 	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default, sf::ContextSettings(0, 0, 4));
-	window.setFramerateLimit(250);
+	window.setFramerateLimit(60);
 
 	// Initialization
 
@@ -226,12 +229,25 @@ int main()
 	sf::Clock clDeltaTime;
 
 	double deltaTime = 0.0;
+	sf::Time sfmlDeltaTime(sf::Time::Zero);
+
+	int fps = 240;
+	int lastFps = 0;
+	
+	// inverted
+	bool vSync = true;
+
+	bool fpsLimiter = true;
 
 	sf::Text frameRate = sf::Text("fps: 0", Global::Font, 12);
 	frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
 
 	clDeltaDisplay.restart();
 	clDeltaTime.restart();
+
+#ifdef _DEBUG
+	ImGui::SFML::Init(window);
+#endif
 
 	// ==============================================================================================================================
 	// ============== Window Main Loop
@@ -242,6 +258,10 @@ int main()
 		sf::Event ev;
 		while (window.pollEvent(ev))
 		{
+#ifdef _DEBUG
+			ImGui::SFML::ProcessEvent(ev);
+#endif
+
 			if (ev.type == sf::Event::Closed)
 			{
 				std::function<void(bool)> cb = [&window](bool result)
@@ -332,6 +352,7 @@ int main()
 		// ==============================================================================================================================
 
 		deltaTime = static_cast<double>(clDeltaTime.getElapsedTime().asMicroseconds()) * 0.000001;
+		sfmlDeltaTime = clDeltaTime.getElapsedTime();
 
 		if (clDeltaDisplay.getElapsedTime().asMilliseconds() >= 100)
 		{
@@ -366,10 +387,95 @@ int main()
 
 		CategoryHandler::GetHandler().PostRender(&window);
 
+		// ==============================================================================================================================
+		// ============== ImGui
+		// ==============================================================================================================================
+
+#ifdef _DEBUG
+
+		ImGui::SFML::Update(window, sfmlDeltaTime);
+
+		{
+			ImGui::Begin("Debugging");
+
+			if (ImGui::TreeNode("FPS"))
+			{
+				if (ImGui::Checkbox("Disable VSync", &vSync))
+				{
+					if (!vSync)
+					{
+						window.setVerticalSyncEnabled(true);
+						window.setFramerateLimit(0);
+
+						fpsLimiter = false;
+						fps = 0;
+					}
+					else
+					{
+						window.setVerticalSyncEnabled(false);
+						window.setFramerateLimit(fps);
+
+						fpsLimiter = false;
+						fps = 0;
+					}
+				}
+
+				if (vSync)
+				{
+					if (ImGui::Checkbox("Enable FPS Limiter", &fpsLimiter))
+					{
+						if (fpsLimiter)
+							fps = 240;
+						else
+							fps = 0;
+					}
+
+					if (fpsLimiter)
+					{
+						ImGui::SliderInt("FPS", &fps, 5, 500);
+
+						if (ImGui::Button("60", sf::Vector2f(50, 20)))
+							fps = 60;
+
+						ImGui::SameLine();
+						if (ImGui::Button("75", sf::Vector2f(50, 20)))
+							fps = 75;
+
+						ImGui::SameLine();
+						if (ImGui::Button("120", sf::Vector2f(50, 20)))
+							fps = 120;
+
+						ImGui::SameLine();
+						if (ImGui::Button("144", sf::Vector2f(50, 20)))
+							fps = 144;
+
+						ImGui::SameLine();
+						if (ImGui::Button("240", sf::Vector2f(50, 20)))
+							fps = 240;
+					}
+
+					if (fps != lastFps)
+					{
+						lastFps = fps;
+						window.setFramerateLimit(fps);
+					}
+				}
+
+				ImGui::TreePop();
+			}
+
+			ImGui::End();
+		}
+
+		ImGui::SFML::Render(window);
+
+#endif
+		
 		window.draw(frameRate);
 		window.display();
 	}
 
+	ImGui::SFML::Shutdown();
 	MessageHandler::Finish();
 
 	return 0;
