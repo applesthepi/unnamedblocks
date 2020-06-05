@@ -81,7 +81,7 @@ public:
 
 		sf::Text textRecreation = sf::Text(text, Global::Font, height);
 		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
-		textRecreation.setPosition(4, -2);
+		textRecreation.setPosition(4, -1);
 
 		uint32_t textWidth = width;
 		uint32_t textHeight = Global::BlockHeight;
