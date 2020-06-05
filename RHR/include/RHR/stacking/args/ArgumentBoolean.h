@@ -38,9 +38,9 @@ public:
 	uint32_t GetWidth() override
 	{
 		if (m_mode == BlockArgumentVariableMode::RAW)
-			return Global::BlockHeight - Global::BlockBorder;
+			return (Global::BlockHeight - Global::BlockBorder) * 2;
 		else
-			return m_field.GetWidth() + (BOOL_GEOMETRY_REACH * 2);
+			return m_field.GetWidth() + (Global::BlockHeight - Global::BlockBorder);
 	}
 
 	bool HasData() override
@@ -70,23 +70,27 @@ public:
 	{
 		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
 
-		float x = halfHeight * std::cosf(angle * (3.14159f / 180.0f));
-		float y = halfHeight * std::sinf(angle * (3.14159f / 180.0f));
+		float x = halfHeight * std::sinf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
+		float y = halfHeight * std::cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
 
 		return sf::Vector2f(x, y);
 	}
 
 	sf::Vector2f RCir(float angle)
 	{
-		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
+		uint16_t height = Global::BlockHeight - Global::BlockBorder;
+		uint32_t width = m_field.GetWidth();
 
-		float x;
-		float y = halfHeight * std::sinf(angle * (3.14159f / 180.0f));
-		
+		float halfHeight = static_cast<float>(height) / 2.0f;
+		float centerFar;
+
 		if (m_mode == BlockArgumentVariableMode::RAW)
-			x = (halfHeight + (Global::BlockHeight - Global::BlockBorder)) * std::cosf(angle * (3.14159f / 180.0f));
+			centerFar = height + halfHeight;
 		else
-			x = (halfHeight + m_field.GetWidth()) * std::cosf(angle * (3.14159f / 180.0f));
+			centerFar = halfHeight + width;
+
+		float x = halfHeight * std::sinf(angle * (3.14159f / 180.0f)) + centerFar;
+		float y = halfHeight * std::cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
 
 		return sf::Vector2f(x, y);
 	}
@@ -138,129 +142,150 @@ public:
 		// =============== Update Vertex Array; see "dev/bool_geometry.png"
 		// ===================================================================================================
 
-		ResetVertices(42);
+		//ResetVertices(42);
+		ResetVertices(0);
 
-		const float Langles[] = {
+		const float angles[] = {
 			0.0f, 30.0f, 60.0f, 90.0f,
 			120.0f, 150.0f, 180.0f
-		};
-
-		const float Rangles[] = {
-			0.0f, -30.0f, -60.0f, -90.0f,
-			-120.0f, -150.0f, -180.0f
 		};
 
 		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
 
 		const sf::Vector2f center(halfHeight, halfHeight);
+		sf::Vector2f centerFar;
+
+		if (m_mode == BlockArgumentVariableMode::RAW)
+			centerFar = sf::Vector2f(height + halfHeight, halfHeight);
+		else
+			centerFar = sf::Vector2f(halfHeight + width, halfHeight);
 
 		// ===================================================================================================
 		// =============== Vanity Geometry Left
 		// ===================================================================================================
 
 		const sf::Vector2f vertices0[] = {
-			LCir(Langles[1]),
-			LCir(Langles[0]),
+			LCir(angles[1]),
+			LCir(angles[0]),
 			center
 		};
 
 		const sf::Vector2f vertices1[] = {
-			LCir(Langles[2]),
-			LCir(Langles[1]),
+			LCir(angles[2]),
+			LCir(angles[1]),
 			center
 		};
 
 		const sf::Vector2f vertices2[] = {
-			LCir(Langles[3]),
-			LCir(Langles[2]),
+			LCir(angles[3]),
+			LCir(angles[2]),
 			center
 		};
 
 		const sf::Vector2f vertices3[] = {
-			LCir(Langles[4]),
-			LCir(Langles[3]),
+			LCir(angles[4]),
+			LCir(angles[3]),
 			center
 		};
 
 		const sf::Vector2f vertices4[] = {
-			LCir(Langles[5]),
-			LCir(Langles[4]),
+			LCir(angles[5]),
+			LCir(angles[4]),
 			center
 		};
 
 		const sf::Vector2f vertices5[] = {
-			LCir(Langles[6]),
-			LCir(Langles[5]),
+			LCir(angles[6]),
+			LCir(angles[5]),
 			center
 		};
 
 		// ===================================================================================================
 		// =============== Vanity Geometry Right
 		// ===================================================================================================
-
+		
 		const sf::Vector2f vertices6[] = {
-			RCir(Rangles[1]),
-			RCir(Rangles[0]),
-			center
+			RCir(angles[1]),
+			RCir(angles[0]),
+			centerFar
 		};
 
 		const sf::Vector2f vertices7[] = {
-			RCir(Rangles[2]),
-			RCir(Rangles[1]),
-			center
+			RCir(angles[2]),
+			RCir(angles[1]),
+			centerFar
 		};
 
 		const sf::Vector2f vertices8[] = {
-			RCir(Rangles[3]),
-			RCir(Rangles[2]),
-			center
+			RCir(angles[3]),
+			RCir(angles[2]),
+			centerFar
 		};
 
 		const sf::Vector2f vertices9[] = {
-			RCir(Rangles[4]),
-			RCir(Rangles[3]),
-			center
+			RCir(angles[4]),
+			RCir(angles[3]),
+			centerFar
 		};
 
 		const sf::Vector2f vertices10[] = {
-			RCir(Rangles[5]),
-			RCir(Rangles[4]),
-			center
+			RCir(angles[5]),
+			RCir(angles[4]),
+			centerFar
 		};
 
 		const sf::Vector2f vertices11[] = {
-			RCir(Rangles[6]),
-			RCir(Rangles[5]),
-			center
+			RCir(angles[6]),
+			RCir(angles[5]),
+			centerFar
 		};
-
+		
 		// ===================================================================================================
 		// =============== Core Geometry
 		// ===================================================================================================
 
-		const sf::Vector2f vertices12[] = {
-			sf::Vector2f(halfHeight, 0),
-			sf::Vector2f(width + halfHeight, 0),
-			sf::Vector2f(width + halfHeight, height)
-		};
+		sf::Vector2f verticesCore0[3];
+		sf::Vector2f verticesCore1[3];
 
-		const sf::Vector2f vertices13[] = {
-			sf::Vector2f(halfHeight, 0),
-			sf::Vector2f(width + halfHeight, height),
-			sf::Vector2f(halfHeight, height)
-		};
+		sf::Vector2f textureCore0[3];
+		sf::Vector2f textureCore1[3];
 
-		const sf::Vector2f textureCoords0[] = {
-			sf::Vector2f(halfHeight, 0),
-			sf::Vector2f(width + halfHeight, 0),
-			sf::Vector2f(width + halfHeight, height)
-		};
+		if (m_mode == BlockArgumentVariableMode::RAW)
+		{
+			verticesCore0[0] = sf::Vector2f(halfHeight, 0);
+			verticesCore0[1] = sf::Vector2f(halfHeight + height, 0);
+			verticesCore0[2] = sf::Vector2f(halfHeight + height, height);
 
-		const sf::Vector2f textureCoords1[] = {
-			sf::Vector2f(halfHeight, 0),
-			sf::Vector2f(width + halfHeight, height),
-			sf::Vector2f(halfHeight, height)
-		};
+			verticesCore1[0] = sf::Vector2f(halfHeight, 0);
+			verticesCore1[1] = sf::Vector2f(halfHeight + height, height);
+			verticesCore1[2] = sf::Vector2f(halfHeight, height);
+
+			textureCore0[0] = sf::Vector2f(0, 0);
+			textureCore0[1] = sf::Vector2f(height, 0);
+			textureCore0[2] = sf::Vector2f(height, height);
+
+			textureCore1[0] = sf::Vector2f(0, 0);
+			textureCore1[1] = sf::Vector2f(height, height);
+			textureCore1[2] = sf::Vector2f(0, height);
+		}
+		else
+		{
+			verticesCore0[0] = sf::Vector2f(halfHeight, 0);
+			verticesCore0[1] = sf::Vector2f(halfHeight + width, 0);
+			verticesCore0[2] = sf::Vector2f(halfHeight + width, height);
+
+			verticesCore1[0] = sf::Vector2f(halfHeight, 0);
+			verticesCore1[1] = sf::Vector2f(halfHeight + width, height);
+			verticesCore1[2] = sf::Vector2f(halfHeight, height);
+
+			textureCore0[0] = sf::Vector2f(0, 0);
+			textureCore0[1] = sf::Vector2f(width, 0);
+			textureCore0[2] = sf::Vector2f(width, height);
+
+			textureCore1[0] = sf::Vector2f(0, 0);
+			textureCore1[1] = sf::Vector2f(width, height);
+			textureCore1[2] = sf::Vector2f(0, height);
+		}
 
 		const sf::Color colors[] = {
 			col,
@@ -284,13 +309,13 @@ public:
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
 		{
-			AddTriangle(vertices12, colors);
-			AddTriangle(vertices13, colors);
+			AddTriangle(verticesCore0, colors);
+			AddTriangle(verticesCore1, colors);
 		}
 		else
 		{
-			AddTriangle(vertices12, textureCoords0);
-			AddTriangle(vertices13, textureCoords1);
+			AddTriangle(verticesCore0, textureCore0);
+			AddTriangle(verticesCore1, textureCore1);
 		}
 	}
 
