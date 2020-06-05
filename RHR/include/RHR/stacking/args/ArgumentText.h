@@ -15,7 +15,7 @@
 class ArgumentText : public Argument
 {
 public:
-	ArgumentText(bool canSwitch)
+	ArgumentText()
 		:Argument()
 	{
 		m_text = sf::Text("", Global::Font, Global::BlockHeight - Global::BlockBorder);
@@ -31,7 +31,7 @@ public:
 
 	uint32_t GetWidth() override
 	{
-		return m_text.getLocalBounds().width;
+		return m_text.getLocalBounds().width + Global::BlockBorder;
 	}
 
 	bool HasData() override
@@ -55,7 +55,7 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		uint32_t textWidth = width;
+		uint32_t textWidth = width + Global::BlockBorder;
 		uint32_t textHeight = Global::BlockHeight;
 
 		if (textWidth == 0 || textHeight == 0)
@@ -64,7 +64,7 @@ public:
 			textHeight = Global::BlockHeight - Global::BlockBorder;
 		}
 
-		m_text.setPosition(0, -2);
+		m_text.setPosition(static_cast<float>(Global::BlockBorder) / 2.0f, -2);
 
 		m_textRendered.create(textWidth, textHeight);
 		m_textRendered.clear(sf::Color(0, 0, 0, 0));
@@ -79,26 +79,26 @@ public:
 
 		const sf::Vector2f vertices0[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, 0),
-			sf::Vector2f(width, height)
+			sf::Vector2f(textWidth, 0),
+			sf::Vector2f(textWidth, textHeight)
 		};
 
 		const sf::Vector2f vertices1[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, height),
-			sf::Vector2f(0, height)
+			sf::Vector2f(textWidth, textHeight),
+			sf::Vector2f(0, textHeight)
 		};
 
 		const sf::Vector2f textureCoords0[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, 0),
-			sf::Vector2f(width, height)
+			sf::Vector2f(textWidth, 0),
+			sf::Vector2f(textWidth, textHeight)
 		};
 
 		const sf::Vector2f textureCoords1[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, height),
-			sf::Vector2f(0, height)
+			sf::Vector2f(textWidth, textHeight),
+			sf::Vector2f(0, textHeight)
 		};
 
 		AddTriangle(vertices0, textureCoords0);

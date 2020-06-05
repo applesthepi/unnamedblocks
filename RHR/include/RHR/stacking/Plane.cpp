@@ -297,15 +297,17 @@ Plane* Plane::ToolbarPlane;
 
 void Plane::render(sf::RenderWindow& window)
 {
-	//if (m_textureMapTexture.size() < 1)
-	//	return;
-	//
-	//sf::Sprite sp;
-	//sp.setTexture(m_textureMapTexture[0]);
-	//sp.setPosition(500, 50);
-	//
-	//window.draw(sp);
-	//return;
+#if FALSE
+	if (m_textureMapTexture.size() < 1)
+		return;
+	
+	sf::Sprite sp;
+	sp.setTexture(m_textureMapTexture[0]);
+	sp.setPosition(500, 50);
+	
+	window.draw(sp);
+	return;
+#endif
 
 	// render each batch collection
 
@@ -464,7 +466,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 			// add block vertices
 
-			uint16_t blockWidth = Global::BlockBorder;
+			float blockWidth = static_cast<float>(Global::BlockBorder);
 
 			sf::Vector2f blockPos = getPosition() + m_collections[bufferIdx]->getPosition() + m_collections[bufferIdx]->GetStacks()[a]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight);
 			uint32_t blockShellWidth = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
@@ -498,11 +500,11 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 				{
 					// make VAO absolute
 
-					va.back()[d].position += sf::Vector2f(blockWidth + blockPos.x, blockPos.y + ((float)Global::BlockBorder / 2.0f));
+					va.back()[d].position += sf::Vector2f(static_cast<float>(blockWidth) + blockPos.x, blockPos.y + ((float)Global::BlockBorder / 2.0f));
 				}
 
-				blockWidth += arg->GetWidth();
-				blockWidth += Global::BlockBorder;
+				blockWidth += static_cast<float>(arg->GetWidth());
+				blockWidth += static_cast<float>(Global::BlockBorder);
 			}
 
 			// for every block
@@ -541,6 +543,28 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		textureHeight += vaTextures[tIdx]->getSize().y;
 	}
 
+	// get power of 2 texture
+
+	uint8_t powI = 8;
+	sf::Vector2u powUnits(0, 0);
+	uint64_t powCurrent = 0;
+
+	while (powUnits.x == 0 || powUnits.y == 0)
+	{
+		powCurrent = std::pow(2, powI);
+
+		if (textureWidth < powCurrent)
+			powUnits.x = powCurrent;
+
+		if (textureHeight < powCurrent)
+			powUnits.y = powCurrent;
+
+		powI++;
+	}
+
+	textureWidth = powCurrent;
+	textureHeight = powCurrent;
+
 	// normalize
 
 	for (uint64_t a = 0; a < vaTextures.size(); a++)
@@ -568,24 +592,24 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		sf::Texture tempTexture;
 		sf::Sprite tempSprite;
 
-		uint32_t incHeight = 0;
+		int64_t incHeight = textureHeight;
 
 		for (uint64_t a = 0; a < vaTextures.size(); a++)
 		{
 			// proceed if the argument has a texture
-		
+
 			uint64_t tIdx = (vaTextures.size() - a) - 1;
 
-			if (vaTextures[a] == nullptr)
+			if (vaTextures[tIdx] == nullptr)
 				continue;
 			
-			tempTexture.loadFromImage(*(vaTextures[a]));
-		
+			tempTexture.loadFromImage(*(vaTextures[tIdx]));
+			incHeight -= vaTextures[tIdx]->getSize().y;
+
 			tempSprite.setTexture(tempTexture, true);
 			tempSprite.setPosition(0, incHeight);
 			
 			textureMap.draw(tempSprite);
-			incHeight += vaTextures[a]->getSize().y;
 		}
 
 		// retrieve render

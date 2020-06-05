@@ -91,10 +91,9 @@ void Block::UpdateArguments()
 	{
 		if (argumentInit[i].Type == BlockArgumentType::TEXT)
 		{
-			args.push_back(new ArgumentText(false));
+			args.push_back(new ArgumentText());
 
 			args.back()->setPosition(width, Global::BlockBorder);
-			args.back()->SetMode(BlockArgumentVariableMode::RAW);
 			args.back()->SetData(argumentInit[i].DefaultValue);
 			args.back()->UpdateData();
 
@@ -128,6 +127,16 @@ void Block::UpdateArguments()
 
 			args.back()->setPosition(width, Global::BlockBorder);
 			args.back()->SetMode(argumentInit[i].Mode);
+			args.back()->SetData(argumentInit[i].DefaultValue);
+			args.back()->UpdateData();
+
+			width += args.back()->GetWidth();
+		}
+		else if (argumentInit[i].Type == BlockArgumentType::ANY)
+		{
+			args.push_back(new ArgumentAny());
+
+			args.back()->setPosition(width, Global::BlockBorder);
 			args.back()->SetData(argumentInit[i].DefaultValue);
 			args.back()->UpdateData();
 

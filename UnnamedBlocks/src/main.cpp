@@ -67,9 +67,8 @@ int main()
 	// Window Setup
 
 	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default);
-	window.setVerticalSyncEnabled(false);
-	window.setFramerateLimit(200);
+	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default, sf::ContextSettings(0, 0, 4));
+	window.setFramerateLimit(250);
 
 	// Initialization
 
@@ -223,15 +222,16 @@ int main()
 	bool wasDownMiddle = false;
 	bool wasDownRight = false;
 
-	sf::Clock cl;
-	sf::Clock clTrip;
+	sf::Clock clDeltaDisplay;
+	sf::Clock clDeltaTime;
 
 	double deltaTime = 0.0;
 
 	sf::Text frameRate = sf::Text("fps: 0", Global::Font, 12);
 	frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	clTrip.restart();
+	clDeltaDisplay.restart();
+	clDeltaTime.restart();
 
 	// ==============================================================================================================================
 	// ============== Window Main Loop
@@ -331,10 +331,15 @@ int main()
 		// ============== FPS
 		// ==============================================================================================================================
 
-		deltaTime = (double)clTrip.getElapsedTime().asMicroseconds() * 0.0000001;
+		deltaTime = static_cast<double>(clDeltaTime.getElapsedTime().asMicroseconds()) * 0.000001;
 
-		frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
-		clTrip.restart();
+		if (clDeltaDisplay.getElapsedTime().asMilliseconds() >= 100)
+		{
+			frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
+			clDeltaDisplay.restart();
+		}
+
+		clDeltaTime.restart();
 
 		frameRate.setPosition(sf::Vector2f(window.getSize().x - 100, 0));
 

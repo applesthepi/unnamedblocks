@@ -402,7 +402,7 @@ uint32_t CategoryHandler::UpdateButtons()
 	}
 
 	m_background.setPosition(sf::Vector2f(5, HEADER_HEIGHT + 5));
-	m_background.setSize(sf::Vector2f(m_toolbarWidth, offset - (16 + 5)));
+	m_background.setSize(sf::Vector2f(m_toolbarWidth, offset - (HEADER_HEIGHT + 5)));
 
 	return offset;
 }

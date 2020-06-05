@@ -85,9 +85,9 @@ public:
 		float centerFar;
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
-			centerFar = height + halfHeight;
+			centerFar = static_cast<float>(height) + halfHeight;
 		else
-			centerFar = halfHeight + width;
+			centerFar = halfHeight + static_cast<float>(width);
 
 		float x = halfHeight * std::sinf(angle * (3.14159f / 180.0f)) + centerFar;
 		float y = halfHeight * std::cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
@@ -142,8 +142,7 @@ public:
 		// =============== Update Vertex Array; see "dev/bool_geometry.png"
 		// ===================================================================================================
 
-		//ResetVertices(42);
-		ResetVertices(0);
+		ResetVertices(42);
 
 		const float angles[] = {
 			0.0f, 30.0f, 60.0f, 90.0f,
