@@ -3,6 +3,7 @@
 Collection::Collection()
 {
 	m_stacks.reserve(5);
+	m_enabled = true;
 }
 
 Collection::Collection(const Collection& collection)
@@ -44,4 +45,14 @@ void Collection::RemoveStack(uint64_t idx)
 const std::vector<Stack*>& Collection::GetStacks()
 {
 	return m_stacks;
+}
+
+void Collection::SetEnabled(bool enabled)
+{
+	m_enabled = enabled;
+}
+
+bool Collection::GetEnabled()
+{
+	return m_enabled;
 }

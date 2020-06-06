@@ -100,7 +100,7 @@ const std::vector<Collection*>& Plane::GetCollections()
 	return m_collections;
 }
 
-void Plane::DeleteCollection(uint64_t idx)
+void Plane::DeleteCollection(uint64_t idx, bool dealloc)
 {
 	m_vertexArrays.erase(m_vertexArrays.begin() + idx);
 	m_vertexBuffers.erase(m_vertexBuffers.begin() + idx);
@@ -110,7 +110,9 @@ void Plane::DeleteCollection(uint64_t idx)
 	m_textureMapEnabled.erase(m_textureMapEnabled.begin() + idx);
 	m_collectionVanity.erase(m_collectionVanity.begin() + idx);
 
-	delete m_collections[idx];
+	if (dealloc)
+		delete m_collections[idx];
+
 	m_collections.erase(m_collections.begin() + idx);
 }
 
@@ -129,10 +131,68 @@ const sf::Vector2i& Plane::GetInnerPosition()
 	return m_innerPosition;
 }
 
-void Plane::DeleteContents()
+void Plane::DeleteContents(bool dealloc)
 {
 	for (uint64_t i = 0; i < m_collections.size(); i++)
-		DeleteCollection(0);
+		DeleteCollection(0, dealloc);
+}
+
+void Plane::UpdateVAOPosition(uint64_t idx)
+{
+	uint64_t i = 0;
+
+	if (m_collectionVanity[idx])
+	{
+		const sf::Vector2f pos = m_collections[idx]->getPosition() + getPosition();
+		const sf::Vector2f size = (sf::Vector2f)m_collections[idx]->getSize();
+
+		m_vertexArrays[idx][i++].position = pos;
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos;
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+	}
+
+	// TODO not finished; may not need
+}
+
+void Plane::UpdateVAO(uint64_t idx)
+{
+	UpdateBuffer(idx);
 }
 
 void Plane::frameUpdate(double deltaTime)
@@ -309,8 +369,11 @@ void Plane::render(sf::RenderWindow& window)
 
 	// render each batch collection
 
-	for (uint16_t i = 0; i < m_vertexBuffers.size(); i++)
+	for (uint16_t i = 0; i < m_collections.size(); i++)
 	{
+		if (!m_collections[i]->GetEnabled())
+			continue;
+
 		// setup render
 
 		sf::RenderStates states;
@@ -409,7 +472,7 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2f pos, 
 	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
 
 	// 9
-
+	
 	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
 	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
 	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
@@ -442,6 +505,8 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 	if (m_collectionVanity[bufferIdx])
 		UpdateCollectionVAO(&(m_vertexArrays[bufferIdx]), m_collections[bufferIdx]->getPosition(), m_collections[bufferIdx]->getSize());
+	else
+		m_vertexArrays[bufferIdx].clear();
 
 	// pull vertex buffers from children
 

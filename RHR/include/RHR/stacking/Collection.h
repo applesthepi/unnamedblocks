@@ -20,6 +20,10 @@ public:
 	void RemoveStack(uint64_t idx);
 
 	const std::vector<Stack*>& GetStacks();
+
+	void SetEnabled(bool enabled);
+	bool GetEnabled();
 private:
 	std::vector<Stack*> m_stacks;
+	bool m_enabled;
 };

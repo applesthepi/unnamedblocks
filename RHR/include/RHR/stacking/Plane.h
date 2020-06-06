@@ -23,12 +23,17 @@ public:
 	void AddCollections(const std::vector<Collection*>& collections);
 	const std::vector<Collection*>& GetCollections();
 
-	void DeleteCollection(uint64_t idx);
+	void DeleteCollection(uint64_t idx, bool dealloc = true);
 
 	void TranslateInnerPosition(const sf::Vector2i& position);
 	void SetInnerPosition(sf::Vector2i position);
 	const sf::Vector2i& GetInnerPosition();
-	void DeleteContents();
+	void DeleteContents(bool dealloc = true);
+
+	// TODO not finished; may not need
+	void UpdateVAOPosition(uint64_t idx);
+
+	void UpdateVAO(uint64_t idx);
 
 	void frameUpdate(double deltaTime) override;
 	void render(sf::RenderWindow& window);

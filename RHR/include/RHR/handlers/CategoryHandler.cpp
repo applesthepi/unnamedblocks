@@ -4,6 +4,7 @@
 #include "ProjectHandler.h"
 #include "MessageHandler.h"
 #include "runtime/PreProcessor.h"
+#include "RHR/stacking/Plane.h"
 
 #include <SFML/Graphics.hpp>
 
@@ -51,6 +52,7 @@ CategoryHandler::CategoryHandler()
 
 			m_modCategoryButtons.push_back(new ButtonText(m_modCategoryCallbacks.back(), "   " + categories[i]->GetModDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG));
 			m_modCategoryButtons.back()->setPosition(sf::Vector2f(5, offset));
+			
 			UIRegistry::GetRegistry().AddComponent(m_modCategoryButtons.back());
 
 			offset += 16 + 5;
@@ -73,6 +75,29 @@ CategoryHandler::CategoryHandler()
 		m_buttons.back().push_back(new ButtonText(m_buttonCallbacks.back().back(), categories[i]->GetDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), categories[i]->GetColor(), sf::Color::Black));
 		m_buttons.back().back()->setPosition(20, offset);
 		UIRegistry::GetRegistry().AddComponent(m_buttons.back().back());
+
+		Collection* collection = new Collection();
+		collection->SetEnabled(false);
+
+		uint64_t idx = 0;
+
+		for (unsigned int a = 0; a < BlockRegistry::GetRegistry().GetBlocks().size(); a++)
+		{
+			if (BlockRegistry::GetRegistry().GetBlocks()[a]->GetCategory() == BlockRegistry::GetRegistry().GetCategories()[i]->GetUnlocalizedName())
+			{
+				Stack* stack = new Stack();
+				Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());
+
+				stack->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
+
+				stack->AddBlock(block);
+				collection->AddStack(stack);
+
+				idx++;
+			}
+		}
+
+		Plane::ToolbarPlane->AddCollection(collection, false);
 	}
 
 	m_modOpen[0] = true;
@@ -94,31 +119,17 @@ void CategoryHandler::ToggleMod(uint16_t modIdx, uint64_t catIdx)
 void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 {
 	const uint32_t offset = UpdateButtons();
-	Plane::ToolbarPlane->DeleteContents();
 	
-	uint32_t idx = 0;
 	uint32_t widest = 0;
 
-	Collection* collection = new Collection();
-
-	for (unsigned int a = 0; a < BlockRegistry::GetRegistry().GetBlocks().size(); a++)
+	for (uint64_t i = 0; i < Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size(); i++)
 	{
-		if (BlockRegistry::GetRegistry().GetBlocks()[a]->GetCategory() == BlockRegistry::GetRegistry().GetCategories()[catIdx]->GetUnlocalizedName())
-		{
-			Stack* stack = new Stack();// sf::Vector2i(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5)))));
-			Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());// BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName(), stack->GetFunctionUpdate(), stack->GetFunctionSelect());
-			
-			stack->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
-
-			stack->AddBlock(block);
-			collection->AddStack(stack);
-
-			if (block->GetWidth() > widest)
-				widest = block->GetWidth();
-
-			idx++;
-		}
+		if (Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks()[i]->GetBlocks().front()->GetWidth() > widest)
+			widest = Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks()[i]->GetBlocks().front()->GetWidth();
 	}
+
+	Plane::ToolbarPlane->GetCollections()[m_selectedCategory]->SetEnabled(false);
+	Plane::ToolbarPlane->GetCollections()[catIdx]->SetEnabled(true);
 
 	m_selectedCategory = catIdx;
 
@@ -127,17 +138,13 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 	else
 		m_toolbarWidth = widest + 10;
 
-
 	Plane::ToolbarPlane->setPosition(sf::Vector2f(5, offset + 5));
 	Plane::PrimaryPlane->setPosition(sf::Vector2f(m_toolbarWidth + 10, HEADER_HEIGHT + 5));
+	Plane::ToolbarPlane->GetCollections()[catIdx]->setSize(sf::Vector2u(m_toolbarWidth, Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size() * (Global::BlockHeight + 5) - 5));
 
-	collection->setSize(sf::Vector2u(m_toolbarWidth, collection->GetStacks().size() * (Global::BlockHeight + 5) - 5));
-	Plane::ToolbarPlane->AddCollection(collection, false);
+	Plane::ToolbarPlane->UpdateVAO(catIdx);
 
-	if (Plane::ToolbarPlane->GetCollections().size() > 0)
-		m_toolbarStackCount = Plane::ToolbarPlane->GetCollections().front()->GetStacks().size();
-	else
-		m_toolbarStackCount = 0;
+	m_toolbarStackCount = Plane::ToolbarPlane->GetCollections().front()->GetStacks().size();
 
 	UpdateButtons();
 
