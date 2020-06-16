@@ -661,8 +661,6 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		19, 20, 21,
 	};
 
-	// TODO replace with intrinsic functions
-
 	for (uint8_t i = 0; i < 31 * 2; i++)
 	{
 		if (i % 2 == 0)

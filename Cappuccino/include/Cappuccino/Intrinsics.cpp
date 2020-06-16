@@ -1,5 +1,6 @@
 #include "Intrinsics.h"
 
+#ifdef WIN32
 #include <iostream>
 #include <vector>
 #include <bitset>
@@ -190,7 +191,15 @@ private:
 // Initialize static member data
 const InstructionSet::InstructionSet_Internal InstructionSet::CPU_Rep;
 
+#else
+#include <x86intrin.h>
+#endif
+
 bool Intrinsics::AVX2()
 {
+#ifdef WIN32
 	return InstructionSet::AVX2();
+#else
+	return __builtin_cpu_supports("avx2");
+#endif
 }
