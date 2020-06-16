@@ -537,6 +537,16 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_OUTLINE_WIDTH,
 		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
 		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		// 23 (background)
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH + size.y,
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH + size.y,
+		// 27 (tab background)
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
 	};
 
 	const uint8_t colors[] = {
@@ -568,6 +578,16 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		255, 255, 255,
 		255, 255, 255,
 		255, 255, 255,
+		// 23 (background)
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		// 27 (tab background)
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
+		COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B,
 	};
 
 	const float textureCoords[] = {
@@ -599,6 +619,16 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		91, 1,
 		91, 31,
 		1, 31,
+		// 23 (background)
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		// 27 (tab background)
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
 	};
 
 	const uint8_t indices[] = {
@@ -622,14 +652,20 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		18, 16, 17,
 		// 15
 		18, 15, 16,
-		// 16 (tab texture)
+		// 16 (background)
+		23, 25, 26,
+		23, 24, 25,
+		// 18 (tab background)
+		27, 29, 30,
+		27, 28, 29,
+		// 20 (tab texture)
 		19, 21, 22,
 		19, 20, 21,
 	};
 
 	// TODO replace with intrinsic functions
 
-	for (uint8_t i = 0; i < 23 * 2; i++)
+	for (uint8_t i = 0; i < 31 * 2; i++)
 	{
 		if (i % 2 == 0)
 			positions[i] -= COLLECTION_OUTLINE_WIDTH;
@@ -638,9 +674,9 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 	}
 
 	vao->clear();
-	vao->reserve(18 * 3);
+	vao->reserve(22 * 3);
 
-	ParseIndices(vao, positions, colors, textureCoords, indices, 18);
+	ParseIndices(vao, positions, colors, textureCoords, indices, 22);
 }
 
 void Plane::CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity)
@@ -771,7 +807,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 		for (uint8_t i = 0; i < 6; i++)
 		{
-			m_vertexArrays[bufferIdx][16 * 3 + i].texCoords.y += textureHeight;
+			m_vertexArrays[bufferIdx][20 * 3 + i].texCoords.y += textureHeight;
 		}
 
 		textureHeight += m_textureCollectionOpen.getSize().y;
@@ -806,7 +842,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	{
 		// normalize
 
-		for (uint8_t a = 0; a < 18 * 3; a++)
+		for (uint8_t a = 0; a < 22 * 3; a++)
 			m_vertexArrays[bufferIdx][a].texCoords = sf::Vector2f(m_vertexArrays[bufferIdx][a].texCoords.x / (float)textureWidth, m_vertexArrays[bufferIdx][a].texCoords.y / (float)textureHeight);
 	}
 
