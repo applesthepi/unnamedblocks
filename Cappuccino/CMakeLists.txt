@@ -16,6 +16,7 @@ set(Cappuccino_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Logger.cpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Intrinsics.cpp"
 	# Headers
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockActions.h"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlags.h"
@@ -31,6 +32,7 @@ set(Cappuccino_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Logger.h"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Intrinsics.h"
 	)
 add_library(Cappuccino SHARED
 	${Cappuccino_SRC}

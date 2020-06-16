@@ -240,6 +240,26 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 	if (DraggingStack() || DraggingCollection())
 		collectionMax--;
 
+	if (DraggingStack() || DraggingCollection())
+	{
+		if (!down && DraggingStack() && !m_draggingUp)
+		{
+			Logger::Debug("dragging of stack released");
+
+			// dragging and mouse released (used when dragging a stack)
+
+			UnDrag(position);
+		}
+		else if (down && DraggingStack() && m_draggingUp)
+		{
+			Logger::Debug("dragging of stack released");
+
+			// dragging and mouse pressed (used when duplicating stack)
+
+			UnDrag(position);
+		}
+	}
+
 	for (uint64_t i = 0; i < collectionMax; i++)
 	{
 		// size
@@ -327,8 +347,6 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 										m_collections[i]->AddStack(leftStack);
 									}
 
-									//std::cout << "old col " << m_collections[i]->getPosition().x << ", " << m_collections[i]->getPosition().y << std::endl;
-
 									activeCollection->setPosition(m_collections[i]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight) + (sf::Vector2f)activeStack->getPosition());
 									
 									if (m_toolbar)
@@ -342,7 +360,7 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 									m_collections[i]->RemoveStack(a);
 									activeCollection->AddStack(activeStack);
-									AddCollection(activeCollection, !m_toolbar);
+									AddCollection(activeCollection, false);
 
 									// update buffer that was taken from
 
@@ -382,26 +400,6 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 			// if collection was bounded
 
 			break;
-		}
-	}
-
-	if (DraggingStack() || DraggingCollection())
-	{
-		if (!down && DraggingStack() && !m_draggingUp)
-		{
-			Logger::Debug("dragging of stack released");
-
-			// dragging and mouse released (used when dragging a stack)
-
-			UnDrag(position);
-		}
-		else if (down && DraggingStack() && m_draggingUp)
-		{
-			Logger::Debug("dragging of stack released");
-
-			// dragging and mouse pressed (used when duplicating stack)
-
-			UnDrag(position);
 		}
 	}
 
@@ -1039,15 +1037,13 @@ void Plane::UnDrag(const sf::Vector2i& position)
 				if (position.x > colPos.x && position.x < colPos.x + colSize.x &&
 					position.y > colPos.y && position.y < colPos.y + colSize.y)
 				{
-					//m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition());
-					
-					m_draggingCollection->RemoveAll(false);
-					DeleteCollection(m_collections.size() - 1, true);
-
-					m_draggingStack->setPosition(50, 50);
+					m_draggingStack->setPosition((m_draggingCollection->getPosition() + getPosition()) - colPos);
 					Plane::PrimaryPlane->GetCollections()[i]->AddStack(m_draggingStack);
 
 					Plane::PrimaryPlane->UpdateBuffer(i);
+
+					m_draggingCollection->RemoveAll(false);
+					DeleteCollection(m_collections.size() - 1, true);
 
 					found = true;
 					break;
