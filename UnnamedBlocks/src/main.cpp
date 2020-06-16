@@ -206,8 +206,8 @@ int main()
 
 	// Setup
 
-	Plane::PrimaryPlane = new Plane();
-	Plane::ToolbarPlane = new Plane();
+	Plane::PrimaryPlane = new Plane(false);
+	Plane::ToolbarPlane = new Plane(true);
 
 	Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
 	Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
@@ -386,6 +386,8 @@ int main()
 		window.draw(UIRegistry::GetRegistry());
 
 		CategoryHandler::GetHandler().PostRender(&window);
+		Plane::ToolbarPlane->postRender(window);
+		Plane::PrimaryPlane->postRender(window);
 
 		// ==============================================================================================================================
 		// ============== ImGui

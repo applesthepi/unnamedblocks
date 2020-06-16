@@ -2,9 +2,19 @@
 #include "Stack.h"
 #include "RHR/ui/ITransformable.h"
 
-#define COLLECTION_COLOR_OUTLINE sf::Color(61, 61, 81, 255)
-#define COLLECTION_COLOR_FILL sf::Color(23, 23, 28, 255)
+#define COLLECTION_COLOR_OUTLINE_R 61
+#define COLLECTION_COLOR_OUTLINE_G 61
+#define COLLECTION_COLOR_OUTLINE_B 81
+#define COLLECTION_COLOR_OUTLINE sf::Color(COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B)
+
+#define COLLECTION_COLOR_FILL_R 23
+#define COLLECTION_COLOR_FILL_G 23
+#define COLLECTION_COLOR_FILL_B 28
+#define COLLECTION_COLOR_FILL sf::Color(COLLECTION_COLOR_FILL_R, COLLECTION_COLOR_FILL_G, COLLECTION_COLOR_FILL_B)
+
 #define COLLECTION_OUTLINE_WIDTH 4
+#define COLLECTION_TAB_PART 30
+#define COLLECTION_TAB_PART_COUNT 3
 
 class Collection : public ITransformable
 {
@@ -18,6 +28,7 @@ public:
 	void AddStacks(const std::vector<Stack*>& stacks);
 
 	void RemoveStack(uint64_t idx);
+	void RemoveAll(bool dealloc);
 
 	const std::vector<Stack*>& GetStacks();
 

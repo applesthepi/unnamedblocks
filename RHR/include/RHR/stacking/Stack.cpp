@@ -36,6 +36,19 @@ void Stack::AddBlocks(const std::vector<Block*>& blocks)
 		m_blocks.push_back(blocks[i]);
 }
 
+uint64_t Stack::GetWidestBlock()
+{
+	uint64_t widest = 0;
+
+	for (uint64_t i = 0; i < m_blocks.size(); i++)
+	{
+		if (m_blocks[i]->GetWidth() > widest)
+			widest = m_blocks[i]->GetWidth();
+	}
+
+	return widest;
+}
+
 void Stack::RemoveBlock(uint64_t idx)
 {
 	m_blocks.erase(m_blocks.begin() + idx);

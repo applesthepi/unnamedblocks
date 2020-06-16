@@ -45,6 +45,8 @@ public:
 
 	void Select() override
 	{
+		Logger::Debug("selected");
+
 		if (m_field.GetSelected())
 		{
 			//m_field.mouseButton(true, Global::MousePosition, sf::Mouse::Button::Left);
@@ -58,6 +60,7 @@ public:
 
 	void UnSelect() override
 	{
+		Logger::Debug("unselected");
 		UIRegistry::GetRegistry().RemoveComponent(&m_field);
 	}
 

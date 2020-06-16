@@ -122,6 +122,28 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 	
 	uint32_t widest = 0;
 
+	if (Plane::ToolbarPlane->GetCollections().front()->GetStacks().size() != m_toolbarStackCount)
+	{
+		uint64_t idx = 0;
+		Plane::ToolbarPlane->GetCollections()[catIdx]->RemoveAll(true);
+
+		for (unsigned int a = 0; a < BlockRegistry::GetRegistry().GetBlocks().size(); a++)
+		{
+			if (BlockRegistry::GetRegistry().GetBlocks()[a]->GetCategory() == BlockRegistry::GetRegistry().GetCategories()[catIdx]->GetUnlocalizedName())
+			{
+				Stack* stack = new Stack();
+				Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());
+
+				stack->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
+
+				stack->AddBlock(block);
+				Plane::ToolbarPlane->GetCollections()[catIdx]->AddStack(stack);
+
+				idx++;
+			}
+		}
+	}
+
 	for (uint64_t i = 0; i < Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size(); i++)
 	{
 		if (Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks()[i]->GetBlocks().front()->GetWidth() > widest)
@@ -296,7 +318,7 @@ void CategoryHandler::RegisterHeader()
 			else
 				Logger::Debug("running \"" + ProjectHandler::CurrentPath + "\"");
 
-			Plane* planeCopy = new Plane(*Plane::PrimaryPlane);
+			Plane* planeCopy = new Plane(false, *Plane::PrimaryPlane);
 
 			PreProcessor::Cleanup();
 			PreProcessor::Start(planeCopy, false);
@@ -317,7 +339,7 @@ void CategoryHandler::RegisterHeader()
 			else
 				Logger::Debug("running \"" + ProjectHandler::CurrentPath + "\"");
 
-			Plane* planeCopy = new Plane(*Plane::PrimaryPlane);
+			Plane* planeCopy = new Plane(false, *Plane::PrimaryPlane);
 
 			PreProcessor::Cleanup();
 			PreProcessor::Start(planeCopy, true);

@@ -13,8 +13,8 @@
 class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
 {
 public:
-	Plane(const Plane& plane);
-	Plane();
+	Plane(bool toolbar, const Plane& plane);
+	Plane(bool toolbar);
 
 	~Plane();
 	
@@ -37,6 +37,7 @@ public:
 
 	void frameUpdate(double deltaTime) override;
 	void render(sf::RenderWindow& window);
+	void postRender(sf::RenderWindow& window);
 	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 
 	static Plane* PrimaryPlane;
@@ -44,8 +45,8 @@ public:
 protected:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
-	void Setup();
-	void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2f pos, sf::Vector2u size);
+	void Setup(bool toolbar);
+	void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size);
 
 	// ===============================================================================================================
 	// ================ Rendering
@@ -57,6 +58,8 @@ private:
 	// updates the buffer for a collection
 	void UpdateBuffer(uint16_t bufferIdx);
 
+	// parses an array into a nice vertex array that sfml can understand
+	void ParseIndices(std::vector<sf::Vertex>* vao, const float positions[], const uint8_t colors[], const float textureCoords[], const uint8_t indices[], uint8_t indexCount);
 	std::vector<std::vector<sf::Vertex>> m_vertexArrays;
 	std::vector<sf::VertexBuffer> m_vertexBuffers;
 	std::vector<sf::Transform> m_vertexBufferTransform;
@@ -65,6 +68,8 @@ private:
 	std::vector<bool> m_textureMapEnabled;
 
 	sf::Shader m_shader;
+	sf::Texture m_textureCollectionOpen;
+	sf::Texture m_textureCollectionClosed;
 
 	// ===============================================================================================================
 	// ================ Selection & Context
@@ -87,9 +92,9 @@ private:
 	// ================ Dragging
 	// ===============================================================================================================
 
-	void DragCollection(uint64_t collection, bool up);
-	void DragStack(uint64_t collection, uint64_t stack, bool up);
-	void UnDrag();
+	void DragCollection(Collection* collection, bool up);
+	void DragStack(Collection* collection, Stack* stack, bool up);
+	void UnDrag(const sf::Vector2i& position);
 
 	bool DraggingCollection();
 	bool DraggingStack();
@@ -111,4 +116,5 @@ private:
 
 	sf::Vector2i m_innerPosition;
 	sf::Text m_innerText;
+	bool m_toolbar;
 };

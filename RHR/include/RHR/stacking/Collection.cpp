@@ -42,6 +42,17 @@ void Collection::RemoveStack(uint64_t idx)
 	m_stacks.erase(m_stacks.begin() + idx);
 }
 
+void Collection::RemoveAll(bool dealloc)
+{
+	if (dealloc)
+	{
+		for (uint64_t i = 0; i < m_stacks.size(); i++)
+			delete m_stacks[i];
+	}
+
+	m_stacks.clear();
+}
+
 const std::vector<Stack*>& Collection::GetStacks()
 {
 	return m_stacks;

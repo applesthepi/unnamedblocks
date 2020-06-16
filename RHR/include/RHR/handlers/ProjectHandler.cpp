@@ -213,6 +213,7 @@ void ProjectHandler::LoadProject(const std::string& path)
 
 	uint32_t block_name_count = *(uint32_t*)buffer;
 	std::string* block_names = new std::string[block_name_count];
+
 	for(uint32_t block_name_index = 0; block_name_index < block_name_count; block_name_index++) {
 		uint8_t name_size = file.get();
 		block_names[block_name_index].reserve(name_size);

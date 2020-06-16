@@ -10,9 +10,9 @@
 #include <iostream>
 #include <vector>
 
-Plane::Plane(const Plane& plane)
+Plane::Plane(bool toolbar, const Plane& plane)
 {
-	Setup();
+	Setup(toolbar);
 
 	for (uint64_t i = 0; i < m_collections.size(); i++)
 		delete m_collections[i];
@@ -23,9 +23,9 @@ Plane::Plane(const Plane& plane)
 		m_collections.push_back(new Collection(*plane.m_collections[i]));
 }
 
-Plane::Plane()
+Plane::Plane(bool toolbar)
 {
-	Setup();
+	Setup(toolbar);
 
 	m_collections.reserve(5);
 	m_collectionVanity.reserve(5);
@@ -72,6 +72,8 @@ void Plane::AddCollection(Collection* collection, bool displayCollectionVanity)
 {
 	m_collections.push_back(collection);
 	m_collectionVanity.push_back(displayCollectionVanity);
+
+	//std::cout << "add col " << collection->getPosition().x << ", " << collection->getPosition().y << std::endl;
 
 	CreateBuffer(m_collections.size() - 1, displayCollectionVanity);
 }
@@ -139,53 +141,56 @@ void Plane::DeleteContents(bool dealloc)
 
 void Plane::UpdateVAOPosition(uint64_t idx)
 {
+	/*
 	uint64_t i = 0;
 
 	if (m_collectionVanity[idx])
 	{
-		const sf::Vector2f pos = m_collections[idx]->getPosition() + getPosition();
+		//const sf::Vector2f pos = m_collections[idx]->getPosition() + getPosition();
 		const sf::Vector2f size = (sf::Vector2f)m_collections[idx]->getSize();
 
-		m_vertexArrays[idx][i++].position = pos;
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f();
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos;
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f();
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
 	}
+	*/
+
 
 	// TODO not finished; may not need
 }
@@ -202,27 +207,40 @@ void Plane::frameUpdate(double deltaTime)
 	m_innerText.setPosition(getPosition().x + 5, getPosition().y + getSize().y - 18);
 	char innerText[20];
 	sprintf(innerText, "%d, %d", m_innerPosition.x, m_innerPosition.y); // TODO make sure "%d" has no trailing "0"s.
- 	m_innerText.setString(innerText);
-
-	// transform applies offset to the vertex buffers
-
-	for (uint16_t i = 0; i < m_vertexBufferTransform.size(); i++)
-		m_vertexBufferTransform[i].translate((sf::Vector2f)m_innerPosition);
+	m_innerText.setString(innerText);
 
 	// dragging stack
 
 	if (DraggingStack())
-		m_draggingStack->setPosition(getPosition() + m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
+	{
+		m_draggingCollection->setPosition(m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
+		//std::cout << "col pos: " << m_draggingCollection->getPosition().x << ", " << m_draggingCollection->getPosition().y << std::endl;
+	}
 
 	// dragging collection
 
 	if (DraggingCollection())
-		m_draggingCollection->setPosition(getPosition() + m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
+		m_draggingCollection->setPosition(m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
+
+	// update dragging buffer
+
+	//if (DraggingCollection() || DraggingStack())
+	//	UpdateBuffer(m_collections.size() - 1);
+
+	// transform applies offset to the vertex buffers
+
+	for (uint64_t i = 0; i < m_vertexBufferTransform.size(); i++)
+		m_vertexBufferTransform[i] = sf::Transform().translate((sf::Vector2f)m_innerPosition).translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
 }
 
 bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
-	for (uint64_t i = 0; i < m_collections.size(); i++)
+	uint64_t collectionMax = m_collections.size();
+
+	if (DraggingStack() || DraggingCollection())
+		collectionMax--;
+
+	for (uint64_t i = 0; i < collectionMax; i++)
 	{
 		// size
 		
@@ -240,12 +258,19 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 			{
 				// size
 
-				const sf::Vector2u& stackSize = m_collections[i]->GetStacks()[a]->getSize();
+				sf::Vector2u stackSize;
+
+				for (uint64_t b = 0; b < m_collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
+				{
+					if (m_collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() > stackSize.x)
+						stackSize.x = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+				}
+
+				stackSize.y = m_collections[i]->GetStacks()[a]->GetBlocks().size() * Global::BlockHeight;
 
 				// position
 
 				sf::Vector2f stackPosition = m_collections[i]->GetStacks()[a]->getPosition();
-				stackPosition += getPosition();
 				stackPosition += collectionPosition;
 
 				if (position.x > stackPosition.x && position.x < stackPosition.x + stackSize.x &&
@@ -255,78 +280,91 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 					{
 						// size
 
-						const sf::Vector2u& blockSize = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->getSize();
+						sf::Vector2u blockSize;
+
+						blockSize.x = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+						blockSize.y = Global::BlockHeight;
 
 						// position
 
 						sf::Vector2f blockPosition = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->getPosition();
-						blockPosition += getPosition();
-						blockPosition += collectionPosition;
 						blockPosition += stackPosition;
 
 						if (position.x > blockPosition.x && position.x < blockPosition.x + stackSize.x &&
 							position.y > blockPosition.y && position.y < blockPosition.y + stackSize.y)
 						{
+							Logger::Debug("mouseUpdate inside block");
+
 							if (down && !DraggingStack())
 							{
 								// not dragging and mouse down
 
 								if (button == sf::Mouse::Button::Left)
 								{
+									Logger::Debug("mouse down on block");
+
 									// remove context menu
 
 									ContextHandler::Disable();
 									UnSelect();
 
-									Stack* currentStack = m_collections[i]->GetStacks()[a];
+									Collection* activeCollection = new Collection();
+									Stack* activeStack = m_collections[i]->GetStacks()[a];
 
 									if (b > 0)
 									{
 										// create stack that is left behind (no the one picked up)
 
-										Stack* stack = new Stack();
-										stack->setPosition(currentStack->getPosition());
+										Stack* leftStack = new Stack();
+										leftStack->setPosition(activeStack->getPosition());
 										
 										for (uint64_t c = 0; c < b; c++)
-											stack->AddBlock(m_collections[i]->GetStacks()[a]->GetBlocks()[c]);
-
-										m_collections[i]->AddStack(stack);
+											leftStack->AddBlock(m_collections[i]->GetStacks()[a]->GetBlocks()[c]);
 
 										for (uint64_t c = 0; c < b; c++)
-											currentStack->RemoveBlock(0);
+											activeStack->RemoveBlock(0);
 
-										currentStack->setPosition(stack->getPosition() + sf::Vector2f(0, b * Global::BlockHeight));
+										m_collections[i]->AddStack(leftStack);
 									}
 
-									// remove it from vertex array
+									//std::cout << "old col " << m_collections[i]->getPosition().x << ", " << m_collections[i]->getPosition().y << std::endl;
+
+									activeCollection->setPosition(m_collections[i]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight) + (sf::Vector2f)activeStack->getPosition());
+									
+									if (m_toolbar)
+										activeCollection->setSize(sf::Vector2u(activeStack->GetWidestBlock() + 100, activeStack->GetBlocks().size() * Global::BlockHeight + 100));
+									else
+										activeCollection->setSize(m_collections[i]->getSize());
+
+									activeStack->setPosition(0, 0);
+
+									// register stack and collection
 
 									m_collections[i]->RemoveStack(a);
-									UpdateBuffer(i);
+									activeCollection->AddStack(activeStack);
+									AddCollection(activeCollection, !m_toolbar);
+
+									// update buffer that was taken from
+
+									if (m_collections[i]->GetStacks().size() > 0)
+										UpdateBuffer(i);
+									else
+										DeleteCollection(i, true);
 
 									// drag the current stack (excludes the stack that was left behind)
 
-									DragStack(i, a, false);
+									DragStack(activeCollection, activeStack, false);
 								}
 								else if (button == sf::Mouse::Button::Right)
 								{
+									Logger::Debug("opening context menu");
+
 									// startup context menu on block
 
 									ContextHandler::Disable();
 									ContextHandler::Enable((sf::Vector2f)position + sf::Vector2f(5, 5), &m_contextCallback);
 									SelectContext(i, a, b);
 								}
-							}
-							else if (!down && DraggingStack() && !m_draggingUp)
-							{
-								// dragging and mouse released (used when dragging a stack)
-
-								UnDrag();
-							}
-							else if (down && DraggingStack() && m_draggingUp)
-							{
-								// dragging and mouse pressed (used when duplicating stack)
-
-								UnDrag();
 							}
 
 							// if block was bounded
@@ -344,6 +382,26 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 			// if collection was bounded
 
 			break;
+		}
+	}
+
+	if (DraggingStack() || DraggingCollection())
+	{
+		if (!down && DraggingStack() && !m_draggingUp)
+		{
+			Logger::Debug("dragging of stack released");
+
+			// dragging and mouse released (used when dragging a stack)
+
+			UnDrag(position);
+		}
+		else if (down && DraggingStack() && m_draggingUp)
+		{
+			Logger::Debug("dragging of stack released");
+
+			// dragging and mouse pressed (used when duplicating stack)
+
+			UnDrag(position);
 		}
 	}
 
@@ -367,9 +425,14 @@ void Plane::render(sf::RenderWindow& window)
 	return;
 #endif
 
+	uint16_t collectionMax = m_collections.size();
+
+	if (DraggingStack() || DraggingCollection())
+		collectionMax--;
+
 	// render each batch collection
 
-	for (uint16_t i = 0; i < m_collections.size(); i++)
+	for (uint16_t i = 0; i < collectionMax; i++)
 	{
 		if (!m_collections[i]->GetEnabled())
 			continue;
@@ -378,6 +441,7 @@ void Plane::render(sf::RenderWindow& window)
 
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[i];
+		//states.transform.translate(getPosition());
 
 		if (m_textureMapEnabled[i])
 			m_shader.setUniform("texture", m_textureMapTexture[i]);
@@ -385,7 +449,6 @@ void Plane::render(sf::RenderWindow& window)
 		states.shader = &m_shader;
 
 		// render VBO
-
 		window.draw(m_vertexBuffers[i], states);
 	}
 
@@ -394,8 +457,29 @@ void Plane::render(sf::RenderWindow& window)
 	window.draw(m_innerText);
 }
 
-void Plane::Setup()
+void Plane::postRender(sf::RenderWindow& window)
 {
+	if (DraggingCollection())
+	{
+
+	}
+	else if (DraggingStack())
+	{
+		sf::RenderStates states;
+		states.transform = m_vertexBufferTransform[m_vertexBufferTransform.size() - 1];
+
+		if (m_textureMapEnabled[m_vertexBufferTransform.size() - 1])
+			m_shader.setUniform("texture", m_textureMapTexture[m_vertexBufferTransform.size() - 1]);
+
+		states.shader = &m_shader;
+
+		window.draw(m_vertexBuffers.back(), states);
+	}
+}
+
+void Plane::Setup(bool toolbar)
+{
+	m_toolbar = toolbar;
 	m_selected = false;
 	m_selectedContext = false;
 
@@ -404,78 +488,159 @@ void Plane::Setup()
 	m_draggingUp = false;
 
 	m_shader.loadFromFile("res/shaders/blocks.vert", "res/shaders/blocks.frag");
+
+	sf::Image imageCollectionOpen;
+	sf::Image imageCollectionClose;
+
+	imageCollectionOpen.loadFromFile("res/collection_tab_open.png");
+	imageCollectionClose.loadFromFile("res/collection_tab_closed.png");
+
+	imageCollectionOpen.flipVertically();
+	imageCollectionClose.flipVertically();
+
+	m_textureCollectionOpen.loadFromImage(imageCollectionOpen);
+	m_textureCollectionClosed.loadFromImage(imageCollectionClose);
 }
 
-void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2f pos, sf::Vector2u size)
+void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 {
-	pos += sf::Vector2f(1, 1);
-
-	vao->clear();
-	vao->reserve(30);
-
 	// ====================================================================================================================================================
 	// =============== add vao; see "dev/collection_geometry.png"
 	// ====================================================================================================================================================
 
-	// 0
+	float positions[] = {
+		// 0
+		0.0f, 0.0f,
+		(COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT) + COLLECTION_OUTLINE_WIDTH, 0.0f,
+		(COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT) + (COLLECTION_OUTLINE_WIDTH * 2), 0.0f,
+		(COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT) + (COLLECTION_OUTLINE_WIDTH * 2), COLLECTION_TAB_PART,
+		size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART,
+		// 5
+		size.x + (COLLECTION_OUTLINE_WIDTH * 2), COLLECTION_TAB_PART,
+		size.x + (COLLECTION_OUTLINE_WIDTH * 2), COLLECTION_TAB_PART + size.y + COLLECTION_OUTLINE_WIDTH,
+		size.x + (COLLECTION_OUTLINE_WIDTH * 2), COLLECTION_TAB_PART + size.y + (COLLECTION_OUTLINE_WIDTH * 2),
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + size.y + (COLLECTION_OUTLINE_WIDTH * 2),
+		0.0f, COLLECTION_TAB_PART + size.y + (COLLECTION_OUTLINE_WIDTH * 2),
+		// 10
+		0.0f, COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_TAB_PART,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		// 15
+		size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH + size.y,
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH + size.y,
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		// 19 (tab texture)
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH + (COLLECTION_TAB_PART * COLLECTION_TAB_PART_COUNT), COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+		COLLECTION_OUTLINE_WIDTH, COLLECTION_TAB_PART + COLLECTION_OUTLINE_WIDTH,
+	};
 
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
+	const uint8_t colors[] = {
+		// 0
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		// 5
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		// 10
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		// 15
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		COLLECTION_COLOR_OUTLINE_R, COLLECTION_COLOR_OUTLINE_G, COLLECTION_COLOR_OUTLINE_B,
+		// 19 (tab texture)
+		255, 255, 255,
+		255, 255, 255,
+		255, 255, 255,
+		255, 255, 255,
+	};
 
-	// 1
+	const float textureCoords[] = {
+		// 0
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		// 5
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		// 10
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		// 15
+		0, 0,
+		0, 0,
+		0, 0,
+		0, 0,
+		// 19 (tab texture)
+		1, 1,
+		91, 1,
+		91, 31,
+		1, 31,
+	};
 
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(), COLLECTION_COLOR_OUTLINE));
+	const uint8_t indices[] = {
+		// 0
+		0, 12, 10,
+		1, 12, 0,
+		2, 3, 1,
+		13, 12, 3,
+		14, 13, 15,
+		// 5
+		4, 15, 13,
+		5, 6, 4,
+		6, 16, 15,
+		7, 17, 16,
+		8, 17, 7,
+		// 10
+		9, 10, 8,
+		10, 11, 8,
+		11, 14, 18,
+		11, 12, 14,
+		18, 16, 17,
+		// 15
+		18, 15, 16,
+		// 16 (tab texture)
+		19, 21, 22,
+		19, 20, 21,
+	};
 
-	// 2
+	// TODO replace with intrinsic functions
 
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
+	for (uint8_t i = 0; i < 23 * 2; i++)
+	{
+		if (i % 2 == 0)
+			positions[i] -= COLLECTION_OUTLINE_WIDTH;
+		else
+			positions[i] -= COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART;
+	}
 
-	// 3
+	vao->clear();
+	vao->reserve(18 * 3);
 
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0), COLLECTION_COLOR_OUTLINE));
-
-	// 4
-
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-
-	// 5
-
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-
-	// 6
-
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-
-	// 7
-
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(0, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_OUTLINE));
-
-	// 8
-
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-
-	// 9
-	
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
-	vao->push_back(sf::Vertex(pos + sf::Vector2f(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH), COLLECTION_COLOR_FILL));
+	ParseIndices(vao, positions, colors, textureCoords, indices, 18);
 }
 
 void Plane::CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity)
@@ -502,11 +667,11 @@ void Plane::CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity)
 void Plane::UpdateBuffer(uint16_t bufferIdx)
 {
 	// clean and update collection VAO
+	
+	m_vertexArrays[bufferIdx].clear();
 
 	if (m_collectionVanity[bufferIdx])
-		UpdateCollectionVAO(&(m_vertexArrays[bufferIdx]), m_collections[bufferIdx]->getPosition(), m_collections[bufferIdx]->getSize());
-	else
-		m_vertexArrays[bufferIdx].clear();
+		UpdateCollectionVAO(&(m_vertexArrays[bufferIdx]), m_collections[bufferIdx]->getSize());
 
 	// pull vertex buffers from children
 
@@ -525,22 +690,22 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 			float blockWidth = static_cast<float>(Global::BlockBorder);
 
-			sf::Vector2f blockPos = getPosition() + m_collections[bufferIdx]->getPosition() + m_collections[bufferIdx]->GetStacks()[a]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight);
+			sf::Vector2f blockPos = m_collections[bufferIdx]->GetStacks()[a]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight);
 			uint32_t blockShellWidth = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
 			const sf::Color blockColor = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetModCategory()->GetColor();
 
 			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor, sf::Vector2f(0, 0)));
 			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, 0), blockColor, sf::Vector2f(1, 0)));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, 0), blockColor, sf::Vector2f(0, 0)));
 			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(1, 1)));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
 			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
 
 			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor, sf::Vector2f(0, 0)));
 			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(1, 1)));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
 			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, Global::BlockHeight), blockColor, sf::Vector2f(0, 1)));
+			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
 			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
 
 			// get argument information
@@ -600,6 +765,21 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		textureHeight += vaTextures[tIdx]->getSize().y;
 	}
 
+	if (m_collectionVanity[bufferIdx])
+	{
+		// TODO replace with intrinsic functions
+
+		for (uint8_t i = 0; i < 6; i++)
+		{
+			m_vertexArrays[bufferIdx][16 * 3 + i].texCoords.y += textureHeight;
+		}
+
+		textureHeight += m_textureCollectionOpen.getSize().y;
+
+		if (m_textureCollectionOpen.getSize().x > textureWidth)
+			textureWidth = m_textureCollectionOpen.getSize().x;
+	}
+
 	// get power of 2 texture
 
 	uint8_t powI = 8;
@@ -622,6 +802,14 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	textureWidth = powCurrent;
 	textureHeight = powCurrent;
 
+	if (m_collectionVanity[bufferIdx])
+	{
+		// normalize
+
+		for (uint8_t a = 0; a < 18 * 3; a++)
+			m_vertexArrays[bufferIdx][a].texCoords = sf::Vector2f(m_vertexArrays[bufferIdx][a].texCoords.x / (float)textureWidth, m_vertexArrays[bufferIdx][a].texCoords.y / (float)textureHeight);
+	}
+
 	// normalize
 
 	for (uint64_t a = 0; a < vaTextures.size(); a++)
@@ -636,14 +824,6 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	{
 		for (uint8_t b = 0; b < 6; b++)
 			vaBox[a][b]->texCoords = sf::Vector2f(vaBox[a][b]->texCoords.x / (float)textureWidth, vaBox[a][b]->texCoords.y / (float)textureHeight);
-	}
-
-	// nest positions
-
-	if (m_collectionVanity[bufferIdx])
-	{
-		for (uint8_t i = 0; i < 30; i++)
-			m_vertexArrays[bufferIdx][i].position += getPosition();
 	}
 
 	if (textureWidth > 0 && textureHeight > 0)
@@ -677,6 +857,18 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 			textureMap.draw(tempSprite);
 		}
 
+		// render collection tab
+
+		if (m_collectionVanity[bufferIdx])
+		{
+			incHeight -= m_textureCollectionOpen.getSize().y;
+
+			tempSprite.setTexture(m_textureCollectionOpen, true);
+			tempSprite.setPosition(0, incHeight);
+
+			textureMap.draw(tempSprite);
+		}
+
 		// retrieve render
 
 		m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
@@ -700,6 +892,30 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 	m_vertexBuffers[bufferIdx].create(m_vertexArrays[bufferIdx].size());
 	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]), m_vertexArrays[bufferIdx].size(), 0);
+}
+
+void Plane::ParseIndices(std::vector<sf::Vertex>* vao, const float positions[], const uint8_t colors[], const float textureCoords[], const uint8_t indices[], uint8_t indexCount)
+{
+	for (uint8_t i = 0; i < indexCount; i++)
+	{
+		uint8_t idx0 = indices[i * 3];
+
+		vao->push_back(sf::Vertex(sf::Vector2f(positions[idx0 * 2], positions[idx0 * 2 + 1]),
+			sf::Color(colors[idx0 * 3], colors[idx0 * 3 + 1], colors[idx0 * 3 + 2]),
+			sf::Vector2f(textureCoords[idx0 * 2], textureCoords[idx0 * 2 + 1])));
+
+		uint8_t idx1 = indices[i * 3 + 1];
+
+		vao->push_back(sf::Vertex(sf::Vector2f(positions[idx1 * 2], positions[idx1 * 2 + 1]),
+			sf::Color(colors[idx1 * 3], colors[idx1 * 3 + 1], colors[idx1 * 3 + 2]),
+			sf::Vector2f(textureCoords[idx1 * 2], textureCoords[idx1 * 2 + 1])));
+
+		uint8_t idx2 = indices[i * 3 + 2];
+
+		vao->push_back(sf::Vertex(sf::Vector2f(positions[idx2 * 2], positions[idx2 * 2 + 1]),
+			sf::Color(colors[idx2 * 3], colors[idx2 * 3 + 1], colors[idx2 * 3 + 2]),
+			sf::Vector2f(textureCoords[idx2 * 2], textureCoords[idx2 * 2 + 1])));
+	}
 }
 
 void Plane::Select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument)
@@ -732,36 +948,86 @@ void Plane::UnSelect()
 	m_selectedArgument = nullptr;
 }
 
-void Plane::DragCollection(uint64_t collection, bool up)
+void Plane::DragCollection(Collection* collection, bool up)
 {
 	if (m_draggingStack != nullptr || m_draggingCollection != nullptr)
 		return;
 
 	m_draggingUp = up;
 
-	m_draggingCollection = m_collections[collection];
+	m_draggingCollection = collection;
 	m_draggingStack = nullptr;
 
 	m_draggingBeginMouse = Global::MousePosition;
 	m_draggingBeginObject = m_draggingCollection->getPosition();
 }
 
-void Plane::DragStack(uint64_t collection, uint64_t stack, bool up)
+void Plane::DragStack(Collection* collection, Stack* stack, bool up)
 {
 	if (m_draggingStack != nullptr || m_draggingCollection != nullptr)
 		return;
 
 	m_draggingUp = up;
 
-	m_draggingCollection = m_collections[collection];
-	m_draggingStack = m_collections[collection]->GetStacks()[stack];
+	m_draggingCollection = collection;
+	m_draggingStack = stack;
 
 	m_draggingBeginMouse = Global::MousePosition;
-	m_draggingBeginObject = m_draggingStack->getPosition();
+	m_draggingBeginObject = collection->getPosition();
+
+	//std::cout << "starting pos " << m_draggingBeginObject.x << ", " << m_draggingBeginObject.y << std::endl;
 }
 
-void Plane::UnDrag()
+void Plane::UnDrag(const sf::Vector2i& position)
 {
+	if (DraggingStack())
+	{
+		if (position.x > Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getPosition().x + Plane::ToolbarPlane->getSize().x &&
+			position.y > Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getPosition().y + Plane::ToolbarPlane->getSize().y)
+		{
+			DeleteCollection(m_collections.size() - 1, true);
+		}
+		else if (position.x > Plane::PrimaryPlane->getPosition().x && position.x < Plane::PrimaryPlane->getPosition().x + Plane::PrimaryPlane->getSize().x &&
+				 position.y > Plane::PrimaryPlane->getPosition().y && position.y < Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y)
+		{
+			bool found = false;
+
+			for (uint64_t i = 0; i < Plane::PrimaryPlane->GetCollections().size(); i++)
+			{
+				if (Plane::PrimaryPlane->GetCollections()[i] == m_draggingCollection)
+					continue;
+
+				sf::Vector2f colPos = Plane::PrimaryPlane->GetCollections()[i]->getPosition() + Plane::PrimaryPlane->getPosition();
+				sf::Vector2f colSize = (sf::Vector2f)Plane::PrimaryPlane->GetCollections()[i]->getSize();
+
+				if (position.x > colPos.x && position.x < colPos.x + colSize.x &&
+					position.y > colPos.y && position.y < colPos.y + colSize.y)
+				{
+					//m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition());
+					
+					m_draggingCollection->RemoveAll(false);
+					DeleteCollection(m_collections.size() - 1, true);
+
+					m_draggingStack->setPosition(50, 50);
+					Plane::PrimaryPlane->GetCollections()[i]->AddStack(m_draggingStack);
+
+					Plane::PrimaryPlane->UpdateBuffer(i);
+
+					found = true;
+					break;
+				}
+			}
+
+			if (!found)
+			{
+				m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition());
+
+				DeleteCollection(m_collections.size() - 1, false);
+				Plane::PrimaryPlane->AddCollection(m_draggingCollection, true);
+			}
+		}
+	}
+
 	m_draggingUp = false;
 	m_draggingCollection = nullptr;
 	m_draggingStack = nullptr;

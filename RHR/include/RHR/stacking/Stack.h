@@ -13,6 +13,8 @@ public:
 	void AddBlock(Block* block);
 	void AddBlocks(const std::vector<Block*>& blocks);
 
+	uint64_t GetWidestBlock();
+
 	void RemoveBlock(uint64_t idx);
 
 	const std::vector<Block*>& GetBlocks();
