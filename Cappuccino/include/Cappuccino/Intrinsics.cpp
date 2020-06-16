@@ -6,7 +6,6 @@
 #include <bitset>
 #include <array>
 #include <string>
-#include <intrin.h>
 
 class InstructionSet
 {
@@ -191,8 +190,6 @@ private:
 // Initialize static member data
 const InstructionSet::InstructionSet_Internal InstructionSet::CPU_Rep;
 
-#else
-#include <x86intrin.h>
 #endif
 
 bool Intrinsics::AVX2()

@@ -4,6 +4,7 @@
 
 #include <Espresso/Global.h>
 #include <Cappuccino/Logger.h>
+#include <Cappuccino/Intrinsics.h>
 #include <SFML/System/Vector2.hpp>
 #include <cassert>
 #include <exception>
@@ -661,12 +662,84 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		19, 20, 21,
 	};
 
-	for (uint8_t i = 0; i < 31 * 2; i++)
+	if (Intrinsics::AVX2())
 	{
-		if (i % 2 == 0)
-			positions[i] -= COLLECTION_OUTLINE_WIDTH;
-		else
-			positions[i] -= COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART;
+		__m256 _positions, _op, _result;
+
+		_op = _mm256_set_ps(
+			COLLECTION_OUTLINE_WIDTH,
+			COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART,
+			COLLECTION_OUTLINE_WIDTH,
+			COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART,
+			COLLECTION_OUTLINE_WIDTH,
+			COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART,
+			COLLECTION_OUTLINE_WIDTH,
+			COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART);
+
+		for (uint8_t i = 0; i < 7; i++)
+		{
+			_positions = _mm256_set_ps(
+				positions[i * 8 + 0], positions[i * 8 + 1], positions[i * 8 + 2], positions[i * 8 + 3],
+				positions[i * 8 + 4], positions[i * 8 + 5], positions[i * 8 + 6], positions[i * 8 + 7]);
+
+			_result = _mm256_sub_ps(_positions, _op);
+
+#ifdef WIN32
+			positions[i * 8 + 0] = _result.m256_f32[7];
+			positions[i * 8 + 1] = _result.m256_f32[6];
+			positions[i * 8 + 2] = _result.m256_f32[5];
+			positions[i * 8 + 3] = _result.m256_f32[4];
+
+			positions[i * 8 + 4] = _result.m256_f32[3];
+			positions[i * 8 + 5] = _result.m256_f32[2];
+			positions[i * 8 + 6] = _result.m256_f32[1];
+			positions[i * 8 + 7] = _result.m256_f32[0];
+#else
+			positions[i * 8 + 0] = _result[7];
+			positions[i * 8 + 1] = _result[6];
+			positions[i * 8 + 2] = _result[5];
+			positions[i * 8 + 3] = _result[4];
+
+			positions[i * 8 + 4] = _result[3];
+			positions[i * 8 + 5] = _result[2];
+			positions[i * 8 + 6] = _result[1];
+			positions[i * 8 + 7] = _result[0];
+#endif
+		}
+
+		_positions = _mm256_set_ps(
+			positions[56], positions[57], positions[58], positions[59],
+			positions[60], positions[61], COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART);
+
+		_result = _mm256_sub_ps(_positions, _op);
+
+#ifdef WIN32
+		positions[56] = _result.m256_f32[0];
+		positions[57] = _result.m256_f32[1];
+		positions[58] = _result.m256_f32[2];
+		positions[59] = _result.m256_f32[3];
+
+		positions[60] = _result.m256_f32[4];
+		positions[61] = _result.m256_f32[5];
+#else
+		positions[56] = _result[0];
+		positions[57] = _result[1];
+		positions[58] = _result[2];
+		positions[59] = _result[3];
+
+		positions[60] = _result[4];
+		positions[61] = _result[5];
+#endif
+	}
+	else
+	{
+		for (uint8_t i = 0; i < 31 * 2; i++)
+		{
+			if (i % 2 == 0)
+				positions[i] -= COLLECTION_OUTLINE_WIDTH;
+			else
+				positions[i] -= COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART;
+		}
 	}
 
 	vao->clear();
