@@ -226,24 +226,31 @@ void Plane::frameUpdate(double deltaTime)
 	// transform applies offset to the vertex buffers
 
 	for (uint64_t i = 0; i < m_vertexBufferTransform.size(); i++)
-		m_vertexBufferTransform[i] = sf::Transform().translate((sf::Vector2f)m_innerPosition).translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
+		m_vertexBufferTransform[i] = sf::Transform().translate(sf::Vector2f(m_innerPosition.x * -1, m_innerPosition.y * -1)).translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
 }
 
 bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
 {
 	uint64_t collectionMax = m_collections.size();
 
+	if (collectionMax == 0)
+		return false;
+
+	if (this == Plane::ToolbarPlane && Plane::PrimaryPlane->DraggingStack() ||
+		this == Plane::PrimaryPlane && Plane::ToolbarPlane->DraggingStack())
+		return false;
+
 	if (DraggingStack() || DraggingCollection())
 		collectionMax--;
 
-	if (DraggingStack() || DraggingCollection())
+	if (DraggingStack())
 	{
-		if (!down && DraggingStack() && !m_draggingUp)
+		if (!down && !m_draggingUp)
 		{
 			// dragging and mouse released (used when dragging a stack)
 			UnDrag(position);
 		}
-		else if (down && DraggingStack() && m_draggingUp)
+		else if (down && m_draggingUp)
 		{
 			// dragging and mouse pressed (used when duplicating stack)
 			UnDrag(position);
@@ -297,21 +304,19 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 						// position
 
-						sf::Vector2f blockPosition = m_collections[i]->GetStacks()[a]->GetBlocks()[b]->getPosition();
-						blockPosition += stackPosition;
+						sf::Vector2f blockPosition = stackPosition;
+						blockPosition.y += Global::BlockHeight * b;
 
-						if (position.x > blockPosition.x && position.x < blockPosition.x + stackSize.x &&
-							position.y > blockPosition.y && position.y < blockPosition.y + stackSize.y)
+						if (position.x >= blockPosition.x && position.x < blockPosition.x + blockSize.x &&
+							position.y >= blockPosition.y && position.y < blockPosition.y + blockSize.y)
 						{
-							Logger::Debug("mouseUpdate inside block");
-
 							if (down && !DraggingStack())
 							{
 								// not dragging and mouse down
 
 								if (button == sf::Mouse::Button::Left)
 								{
-									Logger::Debug("mouse down on block");
+									Logger::Debug("mouse down on block " + std::to_string(b));
 
 									// remove context menu
 
@@ -339,10 +344,12 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 									activeCollection->setPosition(m_collections[i]->getPosition() + sf::Vector2f(0, b * Global::BlockHeight) + (sf::Vector2f)activeStack->getPosition());
 									
-									if (m_toolbar)
-										activeCollection->setSize(sf::Vector2u(activeStack->GetWidestBlock() + 100, activeStack->GetBlocks().size() * Global::BlockHeight + 100));
-									else
-										activeCollection->setSize(m_collections[i]->getSize());
+									//if (m_toolbar)
+									//	activeCollection->setSize(sf::Vector2u(activeStack->GetWidestBlock(), activeStack->GetBlocks().size() * Global::BlockHeight));
+									//else
+									//	activeCollection->setSize(m_collections[i]->getSize());
+
+									activeCollection->setSize(sf::Vector2u(activeStack->GetWidestBlock(), activeStack->GetBlocks().size()* Global::BlockHeight));
 
 									activeStack->setPosition(0, 0);
 
@@ -415,6 +422,9 @@ void Plane::render(sf::RenderWindow& window)
 
 	uint16_t collectionMax = m_collections.size();
 
+	if (collectionMax == 0)
+		return;
+
 	if (DraggingStack() || DraggingCollection())
 		collectionMax--;
 
@@ -452,8 +462,8 @@ void Plane::snapRender(sf::RenderWindow& window)
 	if (IsSnap())
 	{
 		m_draggingShape.setPosition(
-			m_draggingSnapPlane->getPosition() +
-			m_draggingSnapPlane->GetCollections()[m_draggingSnapCollection]->getPosition() +
+			Plane::PrimaryPlane->getPosition() +
+			Plane::PrimaryPlane->GetCollections()[m_draggingSnapCollection]->getPosition() +
 			m_draggingSnapStack->getPosition() +
 			sf::Vector2f(0, m_draggingSnapStackLoc * Global::BlockHeight));
 
@@ -478,6 +488,7 @@ void Plane::postRender(sf::RenderWindow& window)
 	{
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[m_vertexBufferTransform.size() - 1];
+		states.transform.translate(m_draggingStack->getPosition().x * -1, m_draggingStack->getPosition().y * -1);
 
 		if (m_textureMapEnabled[m_vertexBufferTransform.size() - 1])
 			m_shader.setUniform("texture", m_textureMapTexture[m_vertexBufferTransform.size() - 1]);
@@ -518,7 +529,6 @@ void Plane::Setup(bool toolbar)
 	m_draggingSnapCollection = 0;
 	m_draggingSnapStackLoc = 0;
 	m_draggingSnapStack = nullptr;
-	m_draggingSnapPlane = nullptr;
 }
 
 void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
@@ -1168,7 +1178,11 @@ void Plane::UnDrag(const sf::Vector2i& position)
 
 				if (!found)
 				{
-					m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition());
+					m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition() - m_draggingStack->getPosition());
+					m_draggingCollection->setPosition((sf::Vector2f)m_draggingCollection->getPosition() - sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE));
+					m_draggingCollection->setSize((sf::Vector2u)m_draggingCollection->getSize() + sf::Vector2u(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
+
+					m_draggingStack->setPosition(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE);
 
 					DeleteCollection(m_collections.size() - 1, false);
 					Plane::PrimaryPlane->AddCollection(m_draggingCollection, true);
@@ -1272,7 +1286,7 @@ void Plane::DraggingStackUpdate()
 						if (position.x >= boundingPos.x && position.x < boundingPos.x + boundingSize.x &&
 							position.y >= boundingPos.y && position.y < boundingPos.y + boundingSize.y)
 						{
-							SetSnap(i, b, useCollections[i]->GetStacks()[a], usePlane);
+							SetSnap(i, b, useCollections[i]->GetStacks()[a]);
 
 							// if block was bounded
 
@@ -1303,14 +1317,13 @@ bool Plane::DraggingStack()
 	return m_draggingCollection != nullptr && m_draggingStack != nullptr;
 }
 
-void Plane::SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack, Plane* plane)
+void Plane::SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack)
 {
 	m_draggingSnap = true;
 
 	m_draggingSnapCollection = collection;
 	m_draggingSnapStackLoc = stackLoc;
 	m_draggingSnapStack = stack;
-	m_draggingSnapPlane = plane;
 }
 
 void Plane::ClearSnap()
@@ -1320,7 +1333,6 @@ void Plane::ClearSnap()
 	m_draggingSnapCollection = 0;
 	m_draggingSnapStackLoc = 0;
 	m_draggingSnapStack = nullptr;
-	m_draggingSnapPlane = nullptr;
 }
 
 bool Plane::IsSnap()

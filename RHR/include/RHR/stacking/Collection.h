@@ -16,6 +16,8 @@
 #define COLLECTION_TAB_PART 30
 #define COLLECTION_TAB_PART_COUNT 3
 
+#define COLLECTION_EMPTY_SPACE 50
+
 class Collection : public ITransformable
 {
 public:

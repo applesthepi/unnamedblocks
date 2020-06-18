@@ -1,4 +1,5 @@
 #include "Collection.h"
+#include <Espresso/Global.h>
 
 Collection::Collection()
 {
@@ -26,6 +27,12 @@ Collection::~Collection()
 void Collection::AddStack(Stack* stack)
 {
 	m_stacks.push_back(stack);
+
+	if (stack->getPosition().x + stack->GetWidestBlock() > getSize().x)
+		m_size.x = stack->getPosition().x + stack->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
+
+	if (stack->getPosition().y + (stack->GetBlocks().size() * Global::BlockHeight) > getSize().y)
+		m_size.y = stack->getPosition().y + (stack->GetBlocks().size() * Global::BlockHeight) + COLLECTION_EMPTY_SPACE;
 }
 
 void Collection::AddStacks(const std::vector<Stack*>& stacks)
@@ -34,7 +41,15 @@ void Collection::AddStacks(const std::vector<Stack*>& stacks)
 		m_stacks.reserve((uint64_t)std::ceil((float)(m_stacks.size() + stacks.size()) * 1.5f + 10.0f));
 
 	for (uint64_t i = 0; i < stacks.size(); i++)
+	{
 		m_stacks.push_back(stacks[i]);
+
+		if (stacks[i]->getPosition().x + stacks[i]->GetWidestBlock() > getSize().x)
+			m_size.x = stacks[i]->getPosition().x + stacks[i]->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
+
+		if (stacks[i]->getPosition().y + (stacks[i]->GetBlocks().size() * Global::BlockHeight) > getSize().y)
+			m_size.y = stacks[i]->getPosition().y + (stacks[i]->GetBlocks().size() * Global::BlockHeight) + COLLECTION_EMPTY_SPACE;
+	}
 }
 
 void Collection::RemoveStack(uint64_t idx)

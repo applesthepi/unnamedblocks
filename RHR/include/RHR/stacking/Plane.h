@@ -116,7 +116,7 @@ private:
 	// ================ Snapping
 	// ===============================================================================================================
 
-	void SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack, Plane* plane);
+	void SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack);
 	void ClearSnap();
 
 	bool IsSnap();
@@ -126,7 +126,6 @@ private:
 	uint64_t m_draggingSnapCollection;
 	uint64_t m_draggingSnapStackLoc;
 	Stack* m_draggingSnapStack;
-	Plane* m_draggingSnapPlane;
 
 	bool m_draggingSnap;
 

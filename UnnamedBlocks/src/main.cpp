@@ -202,8 +202,6 @@ int main()
 	// ============== Program Initialization
 	// ==============================================================================================================================
 
-	//window.setFramerateLimit(200);
-
 	run();
 
 	// Setup
@@ -235,6 +233,8 @@ int main()
 
 	int fps = 240;
 	int lastFps = 0;
+
+	window.setFramerateLimit(fps);
 	
 	// inverted
 	bool vSync = true;
