@@ -192,11 +192,18 @@ const InstructionSet::InstructionSet_Internal InstructionSet::CPU_Rep;
 
 #endif
 
-bool Intrinsics::AVX2()
+void Intrinsics::Initialize()
 {
 #ifdef WIN32
-	return InstructionSet::AVX2();
+	m_avx2 = InstructionSet::AVX2();
 #else
-	return __builtin_cpu_supports("avx2");
+	m_avx2 = __builtin_cpu_supports("avx2");
 #endif
 }
+
+bool Intrinsics::AVX2()
+{
+	return m_avx2;
+}
+
+bool Intrinsics::m_avx2;

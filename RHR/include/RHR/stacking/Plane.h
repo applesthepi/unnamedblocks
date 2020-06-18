@@ -10,6 +10,9 @@
 #include <SFML/System/Vector2.hpp>
 #include <functional>
 
+#define SNAP_DISTANCE 30.0f
+#define SNAP_GRAPHIC_HEIGHT 2.0f
+
 class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
 {
 public:
@@ -37,6 +40,7 @@ public:
 
 	void frameUpdate(double deltaTime) override;
 	void render(sf::RenderWindow& window);
+	void snapRender(sf::RenderWindow& window);
 	void postRender(sf::RenderWindow& window);
 	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
 
@@ -95,6 +99,7 @@ private:
 	void DragCollection(Collection* collection, bool up);
 	void DragStack(Collection* collection, Stack* stack, bool up);
 	void UnDrag(const sf::Vector2i& position);
+	void DraggingStackUpdate();
 
 	bool DraggingCollection();
 	bool DraggingStack();
@@ -106,6 +111,24 @@ private:
 	sf::Vector2i m_draggingBeginMouse;
 
 	bool m_draggingUp;
+
+	// ===============================================================================================================
+	// ================ Snapping
+	// ===============================================================================================================
+
+	void SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack, Plane* plane);
+	void ClearSnap();
+
+	bool IsSnap();
+
+	sf::RectangleShape m_draggingShape;
+
+	uint64_t m_draggingSnapCollection;
+	uint64_t m_draggingSnapStackLoc;
+	Stack* m_draggingSnapStack;
+	Plane* m_draggingSnapPlane;
+
+	bool m_draggingSnap;
 
 	// ===============================================================================================================
 	// ================ Other Data

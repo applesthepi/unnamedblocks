@@ -19,5 +19,8 @@
 class Intrinsics
 {
 public:
+	static CAP_DLL void Initialize();
 	static CAP_DLL bool AVX2();
+private:
+	static bool m_avx2;
 };

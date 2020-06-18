@@ -20,6 +20,7 @@
 #include <RHR/RHR.h>
 #include <SFML/Graphics.hpp>
 #include <Cappuccino/Logger.h>
+#include <Cappuccino/Intrinsics.h>
 #include <chrono>
 
 #include <GL/glew.h>
@@ -79,6 +80,7 @@ int main()
 	MessageHandler::Initialize();
 	InputHandler::Initialization();
 	PreProcessor::Initialize();
+	Intrinsics::Initialize();
 
 	// ==============================================================================================================================
 	// ============== Intro Animation
@@ -384,6 +386,9 @@ int main()
 		Plane::ToolbarPlane->render(window);
 		Plane::PrimaryPlane->render(window);
 		window.draw(UIRegistry::GetRegistry());
+
+		Plane::ToolbarPlane->snapRender(window);
+		Plane::PrimaryPlane->snapRender(window);
 
 		CategoryHandler::GetHandler().PostRender(&window);
 		Plane::ToolbarPlane->postRender(window);

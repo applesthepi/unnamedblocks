@@ -205,28 +205,23 @@ void Plane::frameUpdate(double deltaTime)
 {
 	// set innerText to a visual representation of the inner position coordinates
 
-	m_innerText.setPosition(getPosition().x + 5, getPosition().y + getSize().y - 18);
-	char innerText[20];
-	sprintf(innerText, "%d, %d", m_innerPosition.x, m_innerPosition.y); // TODO make sure "%d" has no trailing "0"s.
-	m_innerText.setString(innerText);
-
-	// dragging stack
-
-	if (DraggingStack())
+	if (!m_toolbar)
 	{
-		m_draggingCollection->setPosition(m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
-		//std::cout << "col pos: " << m_draggingCollection->getPosition().x << ", " << m_draggingCollection->getPosition().y << std::endl;
+		m_innerText.setPosition(getPosition().x + 5, getPosition().y + getSize().y - 18);
+		char innerText[20];
+		sprintf(innerText, "%d, %d", m_innerPosition.x, m_innerPosition.y); // TODO make sure "%d" has no trailing "0"s.
+		m_innerText.setString(innerText);
 	}
 
-	// dragging collection
+	// dragging position
 
-	if (DraggingCollection())
+	if (DraggingStack() || DraggingCollection())
 		m_draggingCollection->setPosition(m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse));
 
-	// update dragging buffer
+	// dragging connections
 
-	//if (DraggingCollection() || DraggingStack())
-	//	UpdateBuffer(m_collections.size() - 1);
+	if (DraggingStack())
+		DraggingStackUpdate();
 
 	// transform applies offset to the vertex buffers
 
@@ -245,18 +240,12 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 	{
 		if (!down && DraggingStack() && !m_draggingUp)
 		{
-			Logger::Debug("dragging of stack released");
-
 			// dragging and mouse released (used when dragging a stack)
-
 			UnDrag(position);
 		}
 		else if (down && DraggingStack() && m_draggingUp)
 		{
-			Logger::Debug("dragging of stack released");
-
 			// dragging and mouse pressed (used when duplicating stack)
-
 			UnDrag(position);
 		}
 	}
@@ -275,7 +264,7 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 		if (position.x > collectionPosition.x && position.x < collectionPosition.x + collectionSize.x &&
 			position.y > collectionPosition.y && position.y < collectionPosition.y + collectionSize.y)
 		{
-			for (uint64_t a = 0; a < m_collections[i]->GetStacks().size(); a++)
+			for (int64_t a = m_collections[i]->GetStacks().size() - 1; a >= 0; a--)
 			{
 				// size
 
@@ -456,6 +445,29 @@ void Plane::render(sf::RenderWindow& window)
 	window.draw(m_innerText);
 }
 
+void Plane::snapRender(sf::RenderWindow& window)
+{
+	// snap graphic
+
+	if (IsSnap())
+	{
+		m_draggingShape.setPosition(
+			m_draggingSnapPlane->getPosition() +
+			m_draggingSnapPlane->GetCollections()[m_draggingSnapCollection]->getPosition() +
+			m_draggingSnapStack->getPosition() +
+			sf::Vector2f(0, m_draggingSnapStackLoc * Global::BlockHeight));
+
+		uint64_t refIdx = 0;
+
+		if (m_draggingSnapStackLoc > 0)
+			refIdx = m_draggingSnapStackLoc - 1;
+
+		m_draggingShape.setSize(sf::Vector2f(m_draggingSnapStack->GetBlocks()[refIdx]->GetWidth(), SNAP_GRAPHIC_HEIGHT));
+
+		window.draw(m_draggingShape);
+	}
+}
+
 void Plane::postRender(sf::RenderWindow& window)
 {
 	if (DraggingCollection())
@@ -499,6 +511,14 @@ void Plane::Setup(bool toolbar)
 
 	m_textureCollectionOpen.loadFromImage(imageCollectionOpen);
 	m_textureCollectionClosed.loadFromImage(imageCollectionClose);
+
+	m_draggingShape.setFillColor(MOD_BUTTON_TEXT_FG);
+
+	m_draggingSnap = false;
+	m_draggingSnapCollection = 0;
+	m_draggingSnapStackLoc = 0;
+	m_draggingSnapStack = nullptr;
+	m_draggingSnapPlane = nullptr;
 }
 
 void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
@@ -783,13 +803,15 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	std::vector<sf::VertexArray> va;
 	std::vector<const std::vector<bool>*> vaCoords;
 	std::vector<const sf::Image*> vaTextures;
-	std::vector<std::vector<sf::Vertex*>> vaBox;
+	std::vector<std::vector<sf::Vertex>> vaBox;
+	std::vector<uint16_t> vaSize;
 
 	for (uint64_t a = 0; a < m_collections[bufferIdx]->GetStacks().size(); a++)
 	{
 		for (uint64_t b = 0; b < m_collections[bufferIdx]->GetStacks()[a]->GetBlocks().size(); b++)
 		{
-			vaBox.push_back(std::vector<sf::Vertex*>());
+			vaBox.push_back(std::vector<sf::Vertex>());
+			uint16_t calcSize = 0;
 
 			// add block vertices
 
@@ -799,25 +821,21 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 			uint32_t blockShellWidth = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
 			const sf::Color blockColor = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetModCategory()->GetColor();
 
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor, sf::Vector2f(0, 0)));
-			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, 0), blockColor, sf::Vector2f(0, 0)));
-			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
-			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
+			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor, sf::Vector2f(0, 0)));
+			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, 0), blockColor, sf::Vector2f(0, 0)));
+			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
 
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor, sf::Vector2f(0, 0)));
-			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
-			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
-			m_vertexArrays[bufferIdx].push_back(sf::Vertex(blockPos + sf::Vector2f(0, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
-			vaBox.back().push_back(&m_vertexArrays[bufferIdx].back());
+			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(0, 0), blockColor, sf::Vector2f(0, 0)));
+			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(blockShellWidth, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
+			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(0, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
 
 			// get argument information
 
 			for (uint64_t c = 0; c < m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetArguments().size(); c++)
 			{
 				Argument* arg = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetArguments()[c];
+
+				calcSize++;
 
 				va.push_back(*(arg->GetVertexArray()));
 				vaCoords.push_back(arg->GetVertexArrayCoords());
@@ -833,6 +851,8 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 				blockWidth += static_cast<float>(arg->GetWidth());
 				blockWidth += static_cast<float>(Global::BlockBorder);
 			}
+
+			vaSize.push_back(calcSize);
 
 			// for every block
 		}
@@ -928,7 +948,10 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	for (uint64_t a = 0; a < vaBox.size(); a++)
 	{
 		for (uint8_t b = 0; b < 6; b++)
-			vaBox[a][b]->texCoords = sf::Vector2f(vaBox[a][b]->texCoords.x / (float)textureWidth, vaBox[a][b]->texCoords.y / (float)textureHeight);
+		{
+			vaBox[a][b].texCoords = sf::Vector2f(vaBox[a][b].texCoords.x / (float)textureWidth, vaBox[a][b].texCoords.y / (float)textureHeight);
+			//m_vertexArrays[bufferIdx].push_back(vaBox[a][b]);
+		}
 	}
 
 	if (textureWidth > 0 && textureHeight > 0)
@@ -985,12 +1008,26 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	else
 		m_textureMapEnabled[bufferIdx] = false;
 
-	// add argument's vertices
+	// add vertices
 
-	for (uint64_t i = 0; i < va.size(); i++)
+	uint32_t fullSize = 0;
+
+	for (uint64_t i = 0; i < vaSize.size(); i++)
 	{
-		for (uint64_t a = 0; a < va[i].getVertexCount(); a++)
-			m_vertexArrays[bufferIdx].push_back(va[i][a]);
+		// add block vertices to VAO
+
+		for (uint8_t a = 0; a < 6; a++)
+			m_vertexArrays[bufferIdx].push_back(vaBox[i][a]);
+
+		// add block argument vertices to VAO
+
+		for (uint16_t a = 0; a < vaSize[i]; a++)
+		{
+			for (uint16_t b = 0; b < va[fullSize].getVertexCount(); b++)
+				m_vertexArrays[bufferIdx].push_back(va[fullSize][b]);
+
+			fullSize++;
+		}
 	}
 
 	// update collection VBO
@@ -1079,54 +1116,63 @@ void Plane::DragStack(Collection* collection, Stack* stack, bool up)
 
 	m_draggingBeginMouse = Global::MousePosition;
 	m_draggingBeginObject = collection->getPosition();
-
-	//std::cout << "starting pos " << m_draggingBeginObject.x << ", " << m_draggingBeginObject.y << std::endl;
 }
 
 void Plane::UnDrag(const sf::Vector2i& position)
 {
 	if (DraggingStack())
 	{
-		if (position.x > Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getPosition().x + Plane::ToolbarPlane->getSize().x &&
-			position.y > Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getPosition().y + Plane::ToolbarPlane->getSize().y)
+		if (IsSnap())
 		{
+			m_draggingSnapStack->InsertBlocks(m_draggingStack->GetBlocks(), m_draggingSnapStackLoc);
+			m_draggingCollection->RemoveAll(false);
+
 			DeleteCollection(m_collections.size() - 1, true);
+			Plane::PrimaryPlane->UpdateBuffer(m_draggingSnapCollection);
 		}
-		else if (position.x > Plane::PrimaryPlane->getPosition().x && position.x < Plane::PrimaryPlane->getPosition().x + Plane::PrimaryPlane->getSize().x &&
-				 position.y > Plane::PrimaryPlane->getPosition().y && position.y < Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y)
+		else
 		{
-			bool found = false;
-
-			for (uint64_t i = 0; i < Plane::PrimaryPlane->GetCollections().size(); i++)
+			if (position.x > Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getPosition().x + Plane::ToolbarPlane->getSize().x &&
+				position.y > Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getPosition().y + Plane::ToolbarPlane->getSize().y)
 			{
-				if (Plane::PrimaryPlane->GetCollections()[i] == m_draggingCollection)
-					continue;
-
-				sf::Vector2f colPos = Plane::PrimaryPlane->GetCollections()[i]->getPosition() + Plane::PrimaryPlane->getPosition();
-				sf::Vector2f colSize = (sf::Vector2f)Plane::PrimaryPlane->GetCollections()[i]->getSize();
-
-				if (position.x > colPos.x && position.x < colPos.x + colSize.x &&
-					position.y > colPos.y && position.y < colPos.y + colSize.y)
-				{
-					m_draggingStack->setPosition((m_draggingCollection->getPosition() + getPosition()) - colPos);
-					Plane::PrimaryPlane->GetCollections()[i]->AddStack(m_draggingStack);
-
-					Plane::PrimaryPlane->UpdateBuffer(i);
-
-					m_draggingCollection->RemoveAll(false);
-					DeleteCollection(m_collections.size() - 1, true);
-
-					found = true;
-					break;
-				}
+				DeleteCollection(m_collections.size() - 1, true);
 			}
-
-			if (!found)
+			else if (position.x > Plane::PrimaryPlane->getPosition().x && position.x < Plane::PrimaryPlane->getPosition().x + Plane::PrimaryPlane->getSize().x &&
+				position.y > Plane::PrimaryPlane->getPosition().y && position.y < Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y)
 			{
-				m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition());
+				bool found = false;
 
-				DeleteCollection(m_collections.size() - 1, false);
-				Plane::PrimaryPlane->AddCollection(m_draggingCollection, true);
+				for (uint64_t i = 0; i < Plane::PrimaryPlane->GetCollections().size(); i++)
+				{
+					if (Plane::PrimaryPlane->GetCollections()[i] == m_draggingCollection)
+						continue;
+
+					sf::Vector2f colPos = Plane::PrimaryPlane->GetCollections()[i]->getPosition() + Plane::PrimaryPlane->getPosition();
+					sf::Vector2f colSize = (sf::Vector2f)Plane::PrimaryPlane->GetCollections()[i]->getSize();
+
+					if (position.x > colPos.x && position.x < colPos.x + colSize.x &&
+						position.y > colPos.y && position.y < colPos.y + colSize.y)
+					{
+						m_draggingStack->setPosition((m_draggingCollection->getPosition() + getPosition()) - colPos);
+						Plane::PrimaryPlane->GetCollections()[i]->AddStack(m_draggingStack);
+
+						Plane::PrimaryPlane->UpdateBuffer(i);
+
+						m_draggingCollection->RemoveAll(false);
+						DeleteCollection(m_collections.size() - 1, true);
+
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					m_draggingCollection->setPosition((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse)) - Plane::PrimaryPlane->getPosition() + getPosition());
+
+					DeleteCollection(m_collections.size() - 1, false);
+					Plane::PrimaryPlane->AddCollection(m_draggingCollection, true);
+				}
 			}
 		}
 	}
@@ -1134,6 +1180,117 @@ void Plane::UnDrag(const sf::Vector2i& position)
 	m_draggingUp = false;
 	m_draggingCollection = nullptr;
 	m_draggingStack = nullptr;
+
+	ClearSnap();
+}
+
+void Plane::DraggingStackUpdate()
+{
+	ClearSnap();
+
+	Plane* usePlane = Plane::PrimaryPlane;
+
+	sf::Vector2f position = m_draggingStack->getPosition();
+	position += getPosition();
+	position += m_draggingCollection->getPosition();
+
+	if (position.x >= Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getSize().x + Plane::ToolbarPlane->getPosition().x &&
+		position.y >= Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getSize().y + Plane::ToolbarPlane->getPosition().y)
+		return;
+
+	const std::vector<Collection*>& useCollections = usePlane->GetCollections();
+
+	uint64_t collectionMax = useCollections.size();
+
+	if (collectionMax == 0)
+		return;
+
+	if (usePlane == this && (DraggingStack() || DraggingCollection()))
+		collectionMax--;
+
+	for (uint64_t i = 0; i < collectionMax; i++)
+	{
+		// size
+
+		sf::Vector2u collectionSize = useCollections[i]->getSize();
+		collectionSize += sf::Vector2u(SNAP_DISTANCE * 2, SNAP_DISTANCE * 2);
+
+		// position
+
+		sf::Vector2f collectionPosition = useCollections[i]->getPosition();
+		collectionPosition += usePlane->getPosition();
+		collectionPosition -= sf::Vector2f(SNAP_DISTANCE, SNAP_DISTANCE);
+
+		if (position.x > collectionPosition.x && position.x < collectionPosition.x + collectionSize.x &&
+			position.y > collectionPosition.y && position.y < collectionPosition.y + collectionSize.y)
+		{
+			for (int64_t a = useCollections[i]->GetStacks().size() - 1; a >= 0; a--)
+			{
+				// size
+
+				sf::Vector2u stackSize;
+
+				for (uint64_t b = 0; b < useCollections[i]->GetStacks()[a]->GetBlocks().size(); b++)
+				{
+					if (useCollections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() > stackSize.x)
+						stackSize.x = useCollections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+				}
+
+				stackSize.y = useCollections[i]->GetStacks()[a]->GetBlocks().size() * Global::BlockHeight;
+				stackSize += sf::Vector2u(SNAP_DISTANCE * 2, SNAP_DISTANCE * 2);
+
+				// position
+
+				sf::Vector2f stackPosition = useCollections[i]->GetStacks()[a]->getPosition();
+				stackPosition += collectionPosition;
+
+				if (position.x > stackPosition.x && position.x < stackPosition.x + stackSize.x &&
+					position.y > stackPosition.y && position.y < stackPosition.y + stackSize.y)
+				{
+					for (uint64_t b = 0; b < useCollections[i]->GetStacks()[a]->GetBlocks().size() + 1; b++)
+					{
+						uint64_t refIdx = 0;
+
+						if (b > 0)
+							refIdx = b - 1;
+
+						// size
+
+						sf::Vector2u boundingSize(
+							useCollections[i]->GetStacks()[a]->GetBlocks()[refIdx]->GetWidth(),
+							Global::BlockHeight);
+
+						boundingSize += sf::Vector2u(SNAP_DISTANCE * 2, 0);
+
+						// position
+
+						sf::Vector2f boundingPos = stackPosition;
+						boundingPos += sf::Vector2f(0, SNAP_DISTANCE);
+						boundingPos.y += b * Global::BlockHeight;
+						boundingPos -= sf::Vector2f(0, (float)Global::BlockHeight / 2.0f);
+
+						if (position.x >= boundingPos.x && position.x < boundingPos.x + boundingSize.x &&
+							position.y >= boundingPos.y && position.y < boundingPos.y + boundingSize.y)
+						{
+							SetSnap(i, b, useCollections[i]->GetStacks()[a], usePlane);
+
+							// if block was bounded
+
+							return;
+						}
+					}
+
+					// if stack was bounded
+
+					break;
+				}
+			}
+
+			// if collection was bounded
+
+			break;
+		}
+	}
 }
 
 bool Plane::DraggingCollection()
@@ -1144,6 +1301,31 @@ bool Plane::DraggingCollection()
 bool Plane::DraggingStack()
 {
 	return m_draggingCollection != nullptr && m_draggingStack != nullptr;
+}
+
+void Plane::SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack, Plane* plane)
+{
+	m_draggingSnap = true;
+
+	m_draggingSnapCollection = collection;
+	m_draggingSnapStackLoc = stackLoc;
+	m_draggingSnapStack = stack;
+	m_draggingSnapPlane = plane;
+}
+
+void Plane::ClearSnap()
+{
+	m_draggingSnap = false;
+
+	m_draggingSnapCollection = 0;
+	m_draggingSnapStackLoc = 0;
+	m_draggingSnapStack = nullptr;
+	m_draggingSnapPlane = nullptr;
+}
+
+bool Plane::IsSnap()
+{
+	return m_draggingSnap;
 }
 
 void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const
