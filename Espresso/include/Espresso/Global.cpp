@@ -9,3 +9,5 @@ sf::Font Global::Font;
 sf::Vector2i Global::MousePosition;
 
 sf::Vector2u Global::WindowSize;
+
+float Global::BlockZoom;

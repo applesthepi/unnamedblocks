@@ -30,6 +30,7 @@ public:
 
 	void TranslateInnerPosition(const sf::Vector2i& position);
 	void SetInnerPosition(sf::Vector2i position);
+	void SetInnerPositionZoom(const sf::Vector2i& position);
 	const sf::Vector2i& GetInnerPosition();
 	void DeleteContents(bool dealloc = true);
 
@@ -137,6 +138,7 @@ private:
 	std::vector<Collection*> m_collections;
 
 	sf::Vector2i m_innerPosition;
+	sf::Vector2i m_innerPositionZoom;
 	sf::Text m_innerText;
 	bool m_toolbar;
 };

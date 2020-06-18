@@ -129,6 +129,11 @@ void Plane::SetInnerPosition(sf::Vector2i position)
 	m_innerPosition = position;
 }
 
+void Plane::SetInnerPositionZoom(const sf::Vector2i& position)
+{
+	m_innerPositionZoom = position;
+}
+
 const sf::Vector2i& Plane::GetInnerPosition()
 {
 	return m_innerPosition;
@@ -226,7 +231,7 @@ void Plane::frameUpdate(double deltaTime)
 	// transform applies offset to the vertex buffers
 
 	for (uint64_t i = 0; i < m_vertexBufferTransform.size(); i++)
-		m_vertexBufferTransform[i] = sf::Transform().translate(sf::Vector2f(m_innerPosition.x * -1, m_innerPosition.y * -1)).translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
+		m_vertexBufferTransform[i] = sf::Transform().translate(sf::Vector2f((m_innerPosition.x + m_innerPositionZoom.x) * -1, (m_innerPosition.y + m_innerPositionZoom.y) * -1)).translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
 }
 
 bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
@@ -439,8 +444,8 @@ void Plane::render(sf::RenderWindow& window)
 
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[i];
-		//states.transform.translate(getPosition());
-
+		states.transform.scale(sf::Vector2f(Global::BlockZoom, Global::BlockZoom), /*sf::Vector2f(getSize().x / 2.0f, getSize().y / 2.0f) - */-m_collections[i]->getPosition());
+		
 		if (m_textureMapEnabled[i])
 			m_shader.setUniform("texture", m_textureMapTexture[i]);
 

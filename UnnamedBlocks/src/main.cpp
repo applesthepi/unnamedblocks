@@ -247,6 +247,29 @@ int main()
 	clDeltaDisplay.restart();
 	clDeltaTime.restart();
 
+	uint8_t zoomLevel = 5;
+	std::vector<float> zoomLevels;
+
+	{
+		float zl = 1.0f;
+
+		for (uint8_t i = 0; i < zoomLevel; i++)
+		{
+			zl *= 0.7;
+			zoomLevels.insert(zoomLevels.begin(), zl);
+		}
+
+		zoomLevels.push_back(1.0);
+
+		zl = 1.0f;
+
+		for (uint8_t i = 0; i < zoomLevel; i++)
+		{
+			zl *= 1.3;
+			zoomLevels.push_back(zl);
+		}
+	}
+
 #ifdef _DEBUG
 	ImGui::SFML::Init(window);
 #endif
@@ -290,6 +313,48 @@ int main()
 
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(delta, 0));
+					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+					{
+						uint8_t oldZoomLevel = zoomLevel;
+
+						if ((int16_t)zoomLevel + ev.mouseWheelScroll.delta >= zoomLevels.size())
+							zoomLevel = zoomLevels.size() - 1;
+						else if ((int16_t)zoomLevel + ev.mouseWheelScroll.delta < 0)
+							zoomLevel = 0;
+						else
+							zoomLevel += ev.mouseWheelScroll.delta;
+
+						Global::BlockZoom = zoomLevels[zoomLevel];
+
+						float propWidth = (Plane::PrimaryPlane->getPosition().x + Plane::PrimaryPlane->getSize().x) - Global::MousePosition.x;
+						propWidth /= Plane::PrimaryPlane->getSize().x;
+						propWidth = 1.0f - propWidth;
+
+						float propHeight = (Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y) - Global::MousePosition.y;
+						propHeight /= Plane::PrimaryPlane->getSize().y;
+						propHeight = 1.0f - propHeight;
+
+						/*
+						Plane::PrimaryPlane->SetInnerPositionZoom(sf::Vector2i(
+							(Global::BlockZoom - 1.0f) * (propWidth * Plane::PrimaryPlane->getSize().x),
+							(Global::BlockZoom - 1.0f) * (propHeight * Plane::PrimaryPlane->getSize().y)
+						));
+						*/
+						
+						float mFactor = zoomLevel - ((zoomLevels.size() - 1) / 2.0f);
+
+						mFactor *= -1;
+						mFactor += (zoomLevels.size() - 1) / 2.0f;
+
+						std::cout << "mFactor: " << mFactor << std::endl;
+
+						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(
+							((Global::MousePosition.x) - Plane::PrimaryPlane->getPosition().x) * (zoomLevels[zoomLevel] - zoomLevels[oldZoomLevel]),
+							((Global::MousePosition.y) - Plane::PrimaryPlane->getPosition().y) * (zoomLevels[zoomLevel] - zoomLevels[oldZoomLevel])
+						));
+
+						std::cout << "zoom: " << Global::BlockZoom << std::endl;
+					}
 					else
 						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
 				}
