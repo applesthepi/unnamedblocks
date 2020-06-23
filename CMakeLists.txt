@@ -126,9 +126,10 @@ else()
 endif()
 
 set(VERSION_UNNAMED_BLOCKS "0.0.0" CACHE STRING "Version of Unnamed Blocks")
-set(IS_BETA 1 CACHE STRING "Wether or not Unnamed Blocks will be flagged as a beta build")
-
+option(IS_BETA "Wether or not Unnamed Blocks will be flagged as a beta build" ON)
+option(ENABLE_AVX2 "Enable AVX2 support. This is supported on Intel Haswell processors or newer and AMD Excavator processors and all Zen processors or newer" OFF)
 option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)
+
 if (NOT DISABLE_ALL_MOD_BUILDS)
 	add_subdirectory(VanillaMods)
 endif()

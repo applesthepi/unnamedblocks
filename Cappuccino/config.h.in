@@ -4,6 +4,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #cmakedefine LINUX
 #cmakedefine POSIX
+#cmakedefine ENABLE_AVX2
 #ifdef NDEBUG
 #define UB_ASSERT(expression)
 #else

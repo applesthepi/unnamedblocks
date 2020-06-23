@@ -70,8 +70,8 @@ public:
 	{
 		float halfHeight = (Global::BlockHeight - Global::BlockBorder) / 2.0f;
 
-		float x = halfHeight * std::sinf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
-		float y = halfHeight * std::cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
+		float x = halfHeight * sinf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
+		float y = halfHeight * cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
 
 		return sf::Vector2f(x, y);
 	}
@@ -89,8 +89,8 @@ public:
 		else
 			centerFar = halfHeight + static_cast<float>(width);
 
-		float x = halfHeight * std::sinf(angle * (3.14159f / 180.0f)) + centerFar;
-		float y = halfHeight * std::cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
+		float x = halfHeight * sinf(angle * (3.14159f / 180.0f)) + centerFar;
+		float y = halfHeight * cosf(angle * (3.14159f / 180.0f)) * -1 + halfHeight;
 
 		return sf::Vector2f(x, y);
 	}

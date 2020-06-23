@@ -70,8 +70,9 @@ int main()
 	// ==============================================================================================================================
 
 	Logger::Info(UnnamedBlocksVersion);
-	if (UnnamedBlocksBeta)
-		Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
+#ifdef IS_BETA
+	Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
+#endif
 
 #ifdef LINUX
 	// TODO: Proper wayland support
@@ -93,7 +94,7 @@ int main()
 	MessageHandler::Initialize();
 	InputHandler::Initialization();
 	PreProcessor::Initialize();
-	Intrinsics::Initialize();
+	//Intrinsics::Initialize();
 
 	// ==============================================================================================================================
 	// ============== Intro Animation
@@ -217,6 +218,7 @@ int main()
 
 	run();
 
+
 	// Setup
 
 	Plane::PrimaryPlane = new Plane(false);
@@ -263,7 +265,9 @@ int main()
 	*Plane::ToolbarPlane->GetView() = window.getDefaultView();
 	*Plane::PrimaryPlane->GetView() = window.getDefaultView();
 
-#ifdef _DEBUG
+#ifndef NDEBUG
+	//auto killme = ImGui::CreateContext();
+	//ImGui::SetCurrentContext(killme);
 	ImGui::SFML::Init(window);
 #endif
 
@@ -276,7 +280,7 @@ int main()
 		sf::Event ev;
 		while (window.pollEvent(ev))
 		{
-#ifdef _DEBUG
+#ifndef NDEBUG
 			ImGui::SFML::ProcessEvent(ev);
 #endif
 
@@ -415,8 +419,7 @@ int main()
 		// ============== ImGui
 		// ==============================================================================================================================
 
-#ifdef _DEBUG
-
+#ifndef NDEBUG
 		ImGui::SFML::Update(window, sfmlDeltaTime);
 
 		{

@@ -1,7 +1,8 @@
 #define UnnamedBlocksVersion "@VERSION_UNNAMED_BLOCKS@"
-#define UnnamedBlocksBeta @IS_BETA@
+#cmakedefine IS_BETA 
 #cmakedefine LINUX
 #cmakedefine POSIX
+#cmakedefine ENABLE_AVX2
 #define RES_FOLDER_SEARCH_PATH @RES_FOLDER_SEARCH_PATH@
 #define MODS_FOLDER_SEARCH_PATH @MODS_FOLDER_SEARCH_PATH@
 #ifdef NDEBUG
