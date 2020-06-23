@@ -39,7 +39,6 @@ public:
 		BlockHeight = 18;
 		BlockBorder = 4;
 		Font.loadFromFile("res/AnonymousPro-Regular.ttf");
-		BlockZoom = 1.0f;
 
 		// these may be old and unused
 
@@ -68,7 +67,6 @@ public:
 	static sf::Font Font;
 	static sf::Vector2i MousePosition;
 	static sf::Vector2u WindowSize;
-	static float BlockZoom;
 
 	// these may be old and unused
 

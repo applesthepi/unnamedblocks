@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <cmath>
 #include <vector>
 #include <math.h>
 #include <string>
@@ -49,6 +50,18 @@ void ReturnFinished()
 	returnFinished = true;
 }
 */
+
+void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow& window, sf::View* view, float zoom)
+{
+	window.setView(*view);
+	const sf::Vector2f beforeCoord{ window.mapPixelToCoords(pixel) };
+	view->zoom(zoom);
+	window.setView(*view);
+	const sf::Vector2f afterCoord{ window.mapPixelToCoords(pixel) };
+	const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
+	view->move(offsetCoords);
+	window.setView(window.getDefaultView());
+}
 
 int main()
 {
@@ -89,7 +102,7 @@ int main()
 	{
 		sf::Http http("kikoho.ddns.net");
 		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"), sf::milliseconds(200));
-		
+
 		sf::Image imgApples;
 		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
 		{
@@ -215,11 +228,11 @@ int main()
 	CategoryHandler::CreateHandler();
 	CategoryHandler::GetHandler().RegisterHeader();
 
-//#ifdef POSIX
-//	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
-//#else
-//	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
-//#endif
+	//#ifdef POSIX
+	//	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
+	//#else
+	//	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
+	//#endif
 
 	bool wasDownLeft = false;
 	bool wasDownMiddle = false;
@@ -235,7 +248,7 @@ int main()
 	int lastFps = 0;
 
 	window.setFramerateLimit(fps);
-	
+
 	// inverted
 	bool vSync = true;
 
@@ -247,28 +260,8 @@ int main()
 	clDeltaDisplay.restart();
 	clDeltaTime.restart();
 
-	uint8_t zoomLevel = 5;
-	std::vector<float> zoomLevels;
-
-	{
-		float zl = 1.0f;
-
-		for (uint8_t i = 0; i < zoomLevel; i++)
-		{
-			zl *= 0.7;
-			zoomLevels.insert(zoomLevels.begin(), zl);
-		}
-
-		zoomLevels.push_back(1.0);
-
-		zl = 1.0f;
-
-		for (uint8_t i = 0; i < zoomLevel; i++)
-		{
-			zl *= 1.3;
-			zoomLevels.push_back(zl);
-		}
-	}
+	*Plane::ToolbarPlane->GetView() = window.getDefaultView();
+	*Plane::PrimaryPlane->GetView() = window.getDefaultView();
 
 #ifdef _DEBUG
 	ImGui::SFML::Init(window);
@@ -315,45 +308,10 @@ int main()
 						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(delta, 0));
 					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 					{
-						uint8_t oldZoomLevel = zoomLevel;
-
-						if ((int16_t)zoomLevel + ev.mouseWheelScroll.delta >= zoomLevels.size())
-							zoomLevel = zoomLevels.size() - 1;
-						else if ((int16_t)zoomLevel + ev.mouseWheelScroll.delta < 0)
-							zoomLevel = 0;
+						if (ev.mouseWheelScroll.delta > 0)
+							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
 						else
-							zoomLevel += ev.mouseWheelScroll.delta;
-
-						Global::BlockZoom = zoomLevels[zoomLevel];
-
-						float propWidth = (Plane::PrimaryPlane->getPosition().x + Plane::PrimaryPlane->getSize().x) - Global::MousePosition.x;
-						propWidth /= Plane::PrimaryPlane->getSize().x;
-						propWidth = 1.0f - propWidth;
-
-						float propHeight = (Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y) - Global::MousePosition.y;
-						propHeight /= Plane::PrimaryPlane->getSize().y;
-						propHeight = 1.0f - propHeight;
-
-						/*
-						Plane::PrimaryPlane->SetInnerPositionZoom(sf::Vector2i(
-							(Global::BlockZoom - 1.0f) * (propWidth * Plane::PrimaryPlane->getSize().x),
-							(Global::BlockZoom - 1.0f) * (propHeight * Plane::PrimaryPlane->getSize().y)
-						));
-						*/
-						
-						float mFactor = zoomLevel - ((zoomLevels.size() - 1) / 2.0f);
-
-						mFactor *= -1;
-						mFactor += (zoomLevels.size() - 1) / 2.0f;
-
-						std::cout << "mFactor: " << mFactor << std::endl;
-
-						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(
-							((Global::MousePosition.x) - Plane::PrimaryPlane->getPosition().x) * (zoomLevels[zoomLevel] - zoomLevels[oldZoomLevel]),
-							((Global::MousePosition.y) - Plane::PrimaryPlane->getPosition().y) * (zoomLevels[zoomLevel] - zoomLevels[oldZoomLevel])
-						));
-
-						std::cout << "zoom: " << Global::BlockZoom << std::endl;
+							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
 					}
 					else
 						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
@@ -408,12 +366,6 @@ int main()
 
 		Global::WindowSize = window.getSize();
 
-		//if (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - lastVanityReload).count() > 10)
-		//{
-		//	lastVanityReload = std::chrono::high_resolution_clock::now();
-		//	// TODO reload vanity
-		//}
-
 		// ==============================================================================================================================
 		// ============== FPS
 		// ==============================================================================================================================
@@ -446,7 +398,7 @@ int main()
 		// ==============================================================================================================================
 
 		window.clear(MOD_BACKGROUND_HIGH);
-		
+
 		window.draw(CategoryHandler::GetHandler());
 		Plane::ToolbarPlane->render(window);
 		Plane::PrimaryPlane->render(window);
@@ -542,7 +494,7 @@ int main()
 		ImGui::SFML::Render(window);
 
 #endif
-		
+
 		window.draw(frameRate);
 		window.display();
 	}

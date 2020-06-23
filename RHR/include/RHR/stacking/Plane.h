@@ -23,15 +23,14 @@ public:
 	
 	// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
 	void AddCollection(Collection* collection, bool displayCollectionVanity);
-	void AddCollections(const std::vector<Collection*>& collections);
 	const std::vector<Collection*>& GetCollections();
 
 	void DeleteCollection(uint64_t idx, bool dealloc = true);
 
 	void TranslateInnerPosition(const sf::Vector2i& position);
 	void SetInnerPosition(sf::Vector2i position);
-	void SetInnerPositionZoom(const sf::Vector2i& position);
-	const sf::Vector2i& GetInnerPosition();
+	
+	sf::Vector2i GetInnerPosition();
 	void DeleteContents(bool dealloc = true);
 
 	// TODO not finished; may not need
@@ -44,6 +43,10 @@ public:
 	void snapRender(sf::RenderWindow& window);
 	void postRender(sf::RenderWindow& window);
 	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+
+	sf::View* GetView();
+	sf::Vector2f CalculateZoom();
+	sf::Vector2f CalculateOffset();
 
 	static Plane* PrimaryPlane;
 	static Plane* ToolbarPlane;
@@ -138,7 +141,7 @@ private:
 	std::vector<Collection*> m_collections;
 
 	sf::Vector2i m_innerPosition;
-	sf::Vector2i m_innerPositionZoom;
 	sf::Text m_innerText;
 	bool m_toolbar;
+	sf::View m_view;
 };
