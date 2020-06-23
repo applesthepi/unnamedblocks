@@ -304,8 +304,7 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 						// position
 
-						sf::Vector2f blockPosition = stackPosition;
-						blockPosition.y += Global::BlockHeight * b;
+						sf::Vector2f blockPosition = sf::Vector2f(stackPosition.x, Global::BlockHeight * b * zoom.y + stackPosition.y);
 
 						if (position.x >= blockPosition.x && position.x < blockPosition.x + blockSize.x &&
 							position.y >= blockPosition.y && position.y < blockPosition.y + blockSize.y)
@@ -692,7 +691,7 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		19, 20, 21,
 	};
 
-	if (Intrinsics::AVX2())
+#ifdef INTRINSICS
 	{
 		__m256 _positions, _op, _result;
 
@@ -761,7 +760,7 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		positions[61] = _result[5];
 #endif
 	}
-	else
+#else
 	{
 		for (uint8_t i = 0; i < 31 * 2; i++)
 		{
@@ -771,6 +770,7 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 				positions[i] -= COLLECTION_OUTLINE_WIDTH + COLLECTION_TAB_PART;
 		}
 	}
+#endif
 
 	vao->clear();
 	vao->reserve(22 * 3);

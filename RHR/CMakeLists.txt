@@ -77,9 +77,6 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_widgets.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui-SFML.cpp"
 	)
-if(MSVC)
-  add_compile_options("/arch:AVX2")
-endif()
 add_library(RHR STATIC
 	${RHR_SRC}
 )

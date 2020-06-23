@@ -1,3 +1,4 @@
+/*
 #pragma once
 
 #ifdef WIN32
@@ -24,3 +25,4 @@ public:
 private:
 	static bool m_avx2;
 };
+*/

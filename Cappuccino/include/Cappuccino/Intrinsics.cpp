@@ -1,3 +1,4 @@
+/*
 #include "Intrinsics.h"
 
 #ifdef WIN32
@@ -207,3 +208,4 @@ bool Intrinsics::AVX2()
 }
 
 bool Intrinsics::m_avx2;
+*/
