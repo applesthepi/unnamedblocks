@@ -1,2 +1,2 @@
-# All releases and documentation
+### All releases and documentation
 https://applesthepi.com
