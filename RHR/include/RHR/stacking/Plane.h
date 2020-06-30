@@ -46,7 +46,6 @@ public:
 
 	sf::View* GetView();
 	sf::Vector2f CalculateZoom();
-	sf::Vector2f CalculateOffset();
 
 	static Plane* PrimaryPlane;
 	static Plane* ToolbarPlane;
@@ -102,7 +101,7 @@ private:
 
 	void DragCollection(Collection* collection, bool up);
 	void DragStack(Collection* collection, Stack* stack, bool up);
-	void UnDrag(const sf::Vector2i& position);
+	void UnDrag(const sf::Vector2f& position);
 	void DraggingStackUpdate();
 
 	bool DraggingCollection();
@@ -144,4 +143,5 @@ private:
 	sf::Text m_innerText;
 	bool m_toolbar;
 	sf::View m_view;
+	sf::RenderWindow* m_window;
 };

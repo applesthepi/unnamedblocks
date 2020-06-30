@@ -218,7 +218,6 @@ int main()
 
 	run();
 
-
 	// Setup
 
 	Plane::PrimaryPlane = new Plane(false);
@@ -358,6 +357,8 @@ int main()
 				}
 			}
 		}
+
+		window.setView(window.getDefaultView());
 
 		// ==============================================================================================================================
 		// ============== Global
