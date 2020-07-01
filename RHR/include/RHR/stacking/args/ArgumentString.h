@@ -66,9 +66,8 @@ public:
 
 	void UpdateVertexArray() override
 	{
-
-		uint16_t height = Global::BlockHeight - Global::BlockBorder;
-		const uint32_t width = m_field.GetWidth();
+		uint32_t textHeight = Global::BlockHeight * 2;
+		uint32_t textWidth = m_field.GetWidth() * 2;
 
 		sf::Color col;
 		const std::string& text = m_field.GetText();
@@ -82,12 +81,9 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		sf::Text textRecreation = sf::Text(text, Global::Font, height);
+		sf::Text textRecreation = sf::Text(text, Global::Font, Global::BlockHeight * 2 - Global::BlockBorder);
 		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
 		textRecreation.setPosition(4, -1);
-
-		uint32_t textWidth = width;
-		uint32_t textHeight = Global::BlockHeight;
 
 		if (textWidth == 0 || textHeight == 0)
 		{
@@ -112,26 +108,26 @@ public:
 
 		const sf::Vector2f vertices0[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, 0),
-			sf::Vector2f(width, height)
+			sf::Vector2f(textWidth / 2, 0),
+			sf::Vector2f(textWidth / 2, textHeight / 2)
 		};
 
 		const sf::Vector2f vertices1[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, height),
-			sf::Vector2f(0, height)
+			sf::Vector2f(textWidth / 2, textHeight / 2),
+			sf::Vector2f(0, textHeight / 2)
 		};
 
 		const sf::Vector2f textureCoords0[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, 0),
-			sf::Vector2f(width, height)
+			sf::Vector2f(textWidth, 0),
+			sf::Vector2f(textWidth, textHeight)
 		};
 
 		const sf::Vector2f textureCoords1[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, height),
-			sf::Vector2f(0, height)
+			sf::Vector2f(textWidth, textHeight),
+			sf::Vector2f(0, textHeight)
 		};
 
 		AddTriangle(vertices0, textureCoords0);

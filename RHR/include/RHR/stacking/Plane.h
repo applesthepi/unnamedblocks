@@ -13,6 +13,20 @@
 #define SNAP_DISTANCE 30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
 
+class RevertWindowView
+{
+public:
+	RevertWindowView(sf::RenderWindow* window)
+		:m_window(window) {}
+
+	~RevertWindowView()
+	{
+		m_window->setView(m_window->getDefaultView());
+	}
+private:
+	sf::RenderWindow* m_window;
+};
+
 class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
 {
 public:
@@ -101,7 +115,7 @@ private:
 
 	void DragCollection(Collection* collection, bool up);
 	void DragStack(Collection* collection, Stack* stack, bool up);
-	void UnDrag(const sf::Vector2f& position);
+	void UnDrag(const sf::Vector2i& position);
 	void DraggingStackUpdate();
 
 	bool DraggingCollection();

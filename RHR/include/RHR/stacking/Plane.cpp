@@ -217,8 +217,7 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 	if (m_window == nullptr)
 		return false;
 
-	m_window->setView(m_view);
-	sf::Vector2f mmpos = m_window->mapPixelToCoords(position);
+	sf::Vector2f mmpos = m_window->mapPixelToCoords(position, m_view);
 
 	uint64_t collectionMax = m_collections.size();
 
@@ -237,12 +236,12 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 		if (!down && !m_draggingUp)
 		{
 			// dragging and mouse released (used when dragging a stack)
-			UnDrag(mmpos);
+			UnDrag(position);
 		}
 		else if (down && m_draggingUp)
 		{
 			// dragging and mouse pressed (used when duplicating stack)
-			UnDrag(mmpos);
+			UnDrag(position);
 		}
 	}
 
@@ -314,8 +313,6 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 								if (button == sf::Mouse::Button::Left)
 								{
-									Logger::Debug("mouse down on block " + std::to_string(b));
-
 									// remove context menu
 
 									ContextHandler::Disable();
@@ -458,11 +455,15 @@ void Plane::snapRender(sf::RenderWindow& window)
 
 	if (IsSnap())
 	{
+		RevertWindowView rwv(&window);
+		window.setView(m_view);
+
 		m_draggingShape.setPosition(
 			Plane::PrimaryPlane->getPosition() +
 			Plane::PrimaryPlane->GetCollections()[m_draggingSnapCollection]->getPosition() +
 			m_draggingSnapStack->getPosition() +
-			sf::Vector2f(0, m_draggingSnapStackLoc * Global::BlockHeight));
+			sf::Vector2f(0, m_draggingSnapStackLoc * Global::BlockHeight) -
+			(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition());
 
 		uint64_t refIdx = 0;
 
@@ -485,9 +486,6 @@ void Plane::postRender(sf::RenderWindow& window)
 	{
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[m_vertexBufferTransform.size() - 1];
-		//states.transform.translate(m_draggingStack->getPosition().x * -1.0f, m_draggingStack->getPosition().y * -1.0f);
-		//states.transform.scale(sf::Vector2f(Global::BlockZoom, Global::BlockZoom), /*sf::Vector2f(getSize().x / 2.0f, getSize().y / 2.0f) - */-m_collections.back()->getPosition());
-		//states.transform.translate(m_collections.back()->getPosition().x * (1.0f - Global::BlockZoom), m_collections.back()->getPosition().y * (1.0f - Global::BlockZoom));
 
 		if (m_textureMapEnabled[m_vertexBufferTransform.size() - 1])
 			m_shader.setUniform("texture", m_textureMapTexture[m_vertexBufferTransform.size() - 1]);
@@ -1132,7 +1130,7 @@ void Plane::DragStack(Collection* collection, Stack* stack, bool up)
 	m_draggingBeginObject = collection->getPosition();
 }
 
-void Plane::UnDrag(const sf::Vector2f& position)
+void Plane::UnDrag(const sf::Vector2i& position)
 {
 	if (DraggingStack())
 	{
@@ -1146,6 +1144,8 @@ void Plane::UnDrag(const sf::Vector2f& position)
 		}
 		else
 		{
+			sf::Vector2f mmpos = m_window->mapPixelToCoords(position, m_view);
+
 			if (position.x > Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getPosition().x + Plane::ToolbarPlane->getSize().x &&
 				position.y > Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getPosition().y + Plane::ToolbarPlane->getSize().y)
 			{
@@ -1162,15 +1162,19 @@ void Plane::UnDrag(const sf::Vector2f& position)
 						continue;
 
 					sf::Vector2f colPos = sf::Vector2f(
-						Plane::PrimaryPlane->GetCollections()[i]->getPosition().x/* - CalculateOffset().x */ + Plane::PrimaryPlane->getPosition().x,
-						Plane::PrimaryPlane->GetCollections()[i]->getPosition().y/* - CalculateOffset().y */ + Plane::PrimaryPlane->getPosition().y);
+						Plane::PrimaryPlane->GetCollections()[i]->getPosition().x,
+						Plane::PrimaryPlane->GetCollections()[i]->getPosition().y
+					);
+
+					colPos += getPosition();
 
 					sf::Vector2f colSize = sf::Vector2f(
-						Plane::PrimaryPlane->GetCollections()[i]->getSize().x * CalculateZoom().x,
-						Plane::PrimaryPlane->GetCollections()[i]->getSize().y * CalculateZoom().y);
+						Plane::PrimaryPlane->GetCollections()[i]->getSize().x,
+						Plane::PrimaryPlane->GetCollections()[i]->getSize().y
+					);
 
-					if (position.x > colPos.x && position.x < colPos.x + colSize.x &&
-						position.y > colPos.y && position.y < colPos.y + colSize.y)
+					if (mmpos.x > colPos.x && mmpos.x < colPos.x + colSize.x &&
+						mmpos.y > colPos.y && mmpos.y < colPos.y + colSize.y)
 					{
 						m_draggingStack->setPosition((m_draggingCollection->getPosition() + getPosition()) - colPos);
 						Plane::PrimaryPlane->GetCollections()[i]->AddStack(m_draggingStack);
@@ -1187,7 +1191,6 @@ void Plane::UnDrag(const sf::Vector2f& position)
 
 				if (!found)
 				{
-					//m_draggingCollection->setPosition(((m_draggingBeginObject + (sf::Vector2f)(Global::MousePosition - m_draggingBeginMouse))) - Plane::PrimaryPlane->getPosition() + getPosition() - m_draggingStack->getPosition());
 					m_draggingCollection->setPosition(sf::Vector2f(
 						m_draggingCollection->getPosition().x - Plane::PrimaryPlane->getPosition().x + getPosition().x,
 						m_draggingCollection->getPosition().y - Plane::PrimaryPlane->getPosition().y + getPosition().y)
@@ -1217,9 +1220,8 @@ void Plane::DraggingStackUpdate()
 
 	Plane* usePlane = Plane::PrimaryPlane;
 
-	sf::Vector2f position = m_draggingStack->getPosition();
+	sf::Vector2f position = (sf::Vector2f)m_window->mapCoordsToPixel(m_draggingCollection->getPosition() + m_draggingStack->getPosition());
 	position += getPosition();
-	position += m_draggingCollection->getPosition();
 
 	if (position.x >= Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getSize().x + Plane::ToolbarPlane->getPosition().x &&
 		position.y >= Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getSize().y + Plane::ToolbarPlane->getPosition().y)

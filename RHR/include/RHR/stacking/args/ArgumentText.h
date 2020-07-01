@@ -18,7 +18,7 @@ public:
 	ArgumentText()
 		:Argument()
 	{
-		m_text = sf::Text("", Global::Font, Global::BlockHeight - Global::BlockBorder);
+		m_text = sf::Text("", Global::Font, Global::BlockHeight * 2 - Global::BlockBorder);
 		m_text.setFillColor(sf::Color::Black);
 
 		UpdateVertexArray();
@@ -31,7 +31,7 @@ public:
 
 	uint32_t GetWidth() override
 	{
-		return m_text.getLocalBounds().width + Global::BlockBorder;
+		return m_text.getLocalBounds().width / 2 + Global::BlockBorder;
 	}
 
 	bool HasData() override
@@ -41,9 +41,6 @@ public:
 
 	void UpdateVertexArray() override
 	{
-		uint16_t height = Global::BlockHeight - Global::BlockBorder;
-		const uint32_t width = m_text.getLocalBounds().width;
-
 		sf::Color col;
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
@@ -55,8 +52,8 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		uint32_t textWidth = width + Global::BlockBorder;
-		uint32_t textHeight = Global::BlockHeight;
+		uint32_t textHeight = Global::BlockHeight * 2;
+		uint32_t textWidth = (m_text.getLocalBounds().width + Global::BlockBorder) * 2;
 
 		if (textWidth == 0 || textHeight == 0)
 		{
@@ -64,7 +61,7 @@ public:
 			textHeight = Global::BlockHeight - Global::BlockBorder;
 		}
 
-		m_text.setPosition(static_cast<float>(Global::BlockBorder) / 2.0f, -1.0f);
+		m_text.setPosition(static_cast<float>(Global::BlockBorder) / 2.0f, -4.0f);
 
 		m_textRendered.create(textWidth, textHeight);
 		m_textRendered.clear(sf::Color(0, 0, 0, 0));
@@ -79,14 +76,14 @@ public:
 
 		const sf::Vector2f vertices0[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(textWidth, 0),
-			sf::Vector2f(textWidth, textHeight)
+			sf::Vector2f(textWidth / 2, 0),
+			sf::Vector2f(textWidth / 2, textHeight / 2)
 		};
 
 		const sf::Vector2f vertices1[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(textWidth, textHeight),
-			sf::Vector2f(0, textHeight)
+			sf::Vector2f(textWidth / 2, textHeight / 2),
+			sf::Vector2f(0, textHeight / 2)
 		};
 
 		const sf::Vector2f textureCoords0[] = {

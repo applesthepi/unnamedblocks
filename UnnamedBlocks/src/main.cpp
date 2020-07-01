@@ -312,9 +312,19 @@ int main()
 					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 					{
 						if (ev.mouseWheelScroll.delta > 0)
+						{
 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
+
+							if (Plane::PrimaryPlane->CalculateZoom().x > 5.0)
+								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
+						}
 						else
+						{
 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
+
+							if (Plane::PrimaryPlane->CalculateZoom().x < 0.2)
+								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
+						}
 					}
 					else
 						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
@@ -357,8 +367,6 @@ int main()
 				}
 			}
 		}
-
-		window.setView(window.getDefaultView());
 
 		// ==============================================================================================================================
 		// ============== Global
