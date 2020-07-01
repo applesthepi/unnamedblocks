@@ -158,4 +158,5 @@ private:
 	bool m_toolbar;
 	sf::View m_view;
 	sf::RenderWindow* m_window;
+	sf::RectangleShape m_background;
 };

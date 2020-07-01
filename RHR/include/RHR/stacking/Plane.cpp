@@ -411,6 +411,13 @@ void Plane::render(sf::RenderWindow& window)
 	return;
 #endif
 
+	m_background.setFillColor(MOD_BACKGROUND_LOW);
+	m_background.setPosition(getPosition());
+	m_background.setSize((sf::Vector2f)getSize());
+
+	window.setView(window.getDefaultView());
+	window.draw(m_background);
+
 	uint16_t collectionMax = m_collections.size();
 
 	if (collectionMax == 0)
