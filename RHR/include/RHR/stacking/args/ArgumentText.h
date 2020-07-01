@@ -61,7 +61,7 @@ public:
 			textHeight = Global::BlockHeight - Global::BlockBorder;
 		}
 
-		m_text.setPosition(static_cast<float>(Global::BlockBorder) / 2.0f, -4.0f);
+		m_text.setPosition(static_cast<float>(Global::BlockBorder) / 2.0f, -6.0f);
 
 		m_textRendered.create(textWidth, textHeight);
 		m_textRendered.clear(sf::Color(0, 0, 0, 0));

@@ -65,9 +65,8 @@ public:
 
 	void UpdateVertexArray() override
 	{
-		
-		uint16_t height = Global::BlockHeight - Global::BlockBorder;
-		const uint32_t width = m_field.GetWidth();
+		uint32_t textHeight = (Global::BlockHeight - Global::BlockBorder) * 2;
+		uint32_t textWidth = m_field.GetWidth() * 2;
 
 		sf::Color col;
 		const std::string& text = m_field.GetText();
@@ -81,12 +80,9 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		sf::Text textRecreation = sf::Text(text, Global::Font, height);
+		sf::Text textRecreation = sf::Text(text, Global::Font, (Global::BlockHeight - Global::BlockBorder) * 2);
 		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
-		textRecreation.setPosition(4, -1);
-		
-		uint32_t textWidth = width;
-		uint32_t textHeight = Global::BlockHeight;
+		textRecreation.setPosition(Global::BlockBorder * 2, -6.0f);
 		
 		if (textWidth == 0 || textHeight == 0)
 		{
@@ -112,25 +108,25 @@ public:
 		const sf::Vector2f vertices0[] = {
 			sf::Vector2f(0, 0),
 			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
-			sf::Vector2f(REAL_GEOMETRY_REACH, height / 2),
+			sf::Vector2f(REAL_GEOMETRY_REACH, textHeight / 4.0f),
 		};
 
 		const sf::Vector2f vertices1[] = {
-			sf::Vector2f(0, height),
-			sf::Vector2f(REAL_GEOMETRY_REACH, height / 2),
-			sf::Vector2f(REAL_GEOMETRY_REACH, height),
+			sf::Vector2f(0, textHeight / 2.0f),
+			sf::Vector2f(REAL_GEOMETRY_REACH, textHeight / 4.0f),
+			sf::Vector2f(REAL_GEOMETRY_REACH, textHeight / 2.0f),
 		};
 
 		const sf::Vector2f vertices2[] = {
-			sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, 0),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(textWidth / 2.0f + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(textWidth / 2.0f + REAL_GEOMETRY_REACH, textHeight / 4.0f),
+			sf::Vector2f(textWidth / 2.0f + REAL_GEOMETRY_REACH, 0),
 		};
 
 		const sf::Vector2f vertices3[] = {
-			sf::Vector2f(width + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, height),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, height),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, height / 2)
+			sf::Vector2f(textWidth / 2.0f + REAL_GEOMETRY_REACH + REAL_GEOMETRY_REACH, textHeight / 2.0f),
+			sf::Vector2f(textWidth / 2.0f + REAL_GEOMETRY_REACH, textHeight / 2.0f),
+			sf::Vector2f(textWidth / 2.0f + REAL_GEOMETRY_REACH, textHeight / 4.0f)
 		};
 
 		const sf::Color colors[] = {
@@ -150,26 +146,26 @@ public:
 
 		const sf::Vector2f vertices4[] = {
 			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, 0),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, height)
+			sf::Vector2f(textWidth / 2 + REAL_GEOMETRY_REACH, 0),
+			sf::Vector2f(textWidth / 2 + REAL_GEOMETRY_REACH, textHeight / 2)
 		};
 
 		const sf::Vector2f vertices5[] = {
 			sf::Vector2f(REAL_GEOMETRY_REACH, 0),
-			sf::Vector2f(width + REAL_GEOMETRY_REACH, height),
-			sf::Vector2f(REAL_GEOMETRY_REACH, height)
+			sf::Vector2f(textWidth / 2 + REAL_GEOMETRY_REACH, textHeight / 2),
+			sf::Vector2f(REAL_GEOMETRY_REACH, textHeight / 2)
 		};
 
 		const sf::Vector2f textureCoords0[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, 0),
-			sf::Vector2f(width, height)
+			sf::Vector2f(textWidth, 0),
+			sf::Vector2f(textWidth, textHeight)
 		};
 
 		const sf::Vector2f textureCoords1[] = {
 			sf::Vector2f(0, 0),
-			sf::Vector2f(width, height),
-			sf::Vector2f(0, height)
+			sf::Vector2f(textWidth, textHeight),
+			sf::Vector2f(0, textHeight)
 		};
 
 		AddTriangle(vertices4, textureCoords0);

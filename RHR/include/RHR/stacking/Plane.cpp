@@ -264,6 +264,8 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 		if (mmpos.x > collectionPosition.x && mmpos.x < collectionPosition.x + collectionSize.x &&
 			mmpos.y > collectionPosition.y && mmpos.y < collectionPosition.y + collectionSize.y)
 		{
+			//for (int64_t a = 0; a < m_collections[i]->GetStacks().size(); a++)
+			//for (int64_t a = m_collections[i]->GetStacks().size() - 1; a >= 0; a--)
 			for (int64_t a = m_collections[i]->GetStacks().size() - 1; a >= 0; a--)
 			{
 				// size
@@ -445,7 +447,7 @@ void Plane::render(sf::RenderWindow& window)
 
 	// render inner position coordinates
 
-	window.draw(m_innerText);
+	//window.draw(m_innerText);
 	m_window = &window;
 }
 

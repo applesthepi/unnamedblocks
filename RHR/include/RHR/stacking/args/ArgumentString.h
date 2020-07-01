@@ -66,7 +66,7 @@ public:
 
 	void UpdateVertexArray() override
 	{
-		uint32_t textHeight = Global::BlockHeight * 2;
+		uint32_t textHeight = (Global::BlockHeight - Global::BlockBorder) * 2;
 		uint32_t textWidth = m_field.GetWidth() * 2;
 
 		sf::Color col;
@@ -81,9 +81,9 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		sf::Text textRecreation = sf::Text(text, Global::Font, Global::BlockHeight * 2 - Global::BlockBorder);
+		sf::Text textRecreation = sf::Text(text, Global::Font, (Global::BlockHeight - Global::BlockBorder) * 2);
 		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
-		textRecreation.setPosition(4, -1);
+		textRecreation.setPosition(Global::BlockBorder * 2, -6.0f);
 
 		if (textWidth == 0 || textHeight == 0)
 		{
