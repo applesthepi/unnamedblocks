@@ -119,9 +119,9 @@ public:
 
 		if (m_mode == BlockArgumentVariableMode::VAR)
 		{
-			sf::Text textRecreation = sf::Text(text, Global::Font, height);
-			textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
-			textRecreation.setPosition(4, -1);
+			//sf::Text textRecreation = sf::Text(text, Global::Font, height);
+			//textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
+			//textRecreation.setPosition(4, -1);
 
 			uint32_t textWidth = width;
 			uint32_t textHeight = Global::BlockHeight;
@@ -132,17 +132,17 @@ public:
 				textHeight = Global::BlockHeight - Global::BlockBorder;
 			}
 
-			m_textRendered.create(textWidth, textHeight);
-			m_textRendered.clear(col);
-			m_textRendered.draw(textRecreation);
-			m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
+			//m_textRendered.create(textWidth, textHeight);
+			//m_textRendered.clear(col);
+			//m_textRendered.draw(textRecreation);
+			//m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
 		}
 
 		// ===================================================================================================
 		// =============== Update Vertex Array; see "dev/bool_geometry.png"
 		// ===================================================================================================
 
-		ResetVertices(42);
+		//ResetVertices(42);
 
 		const float angles[] = {
 			0.0f, 30.0f, 60.0f, 90.0f,
@@ -246,8 +246,8 @@ public:
 		sf::Vector2f verticesCore0[3];
 		sf::Vector2f verticesCore1[3];
 
-		sf::Vector2f textureCore0[3];
-		sf::Vector2f textureCore1[3];
+		//sf::Vector2f textureCore0[3];
+		//sf::Vector2f textureCore1[3];
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
 		{
@@ -259,13 +259,13 @@ public:
 			verticesCore1[1] = sf::Vector2f(halfHeight + height, height);
 			verticesCore1[2] = sf::Vector2f(halfHeight, height);
 
-			textureCore0[0] = sf::Vector2f(0, 0);
-			textureCore0[1] = sf::Vector2f(height, 0);
-			textureCore0[2] = sf::Vector2f(height, height);
-
-			textureCore1[0] = sf::Vector2f(0, 0);
-			textureCore1[1] = sf::Vector2f(height, height);
-			textureCore1[2] = sf::Vector2f(0, height);
+			//textureCore0[0] = sf::Vector2f(0, 0);
+			//textureCore0[1] = sf::Vector2f(height, 0);
+			//textureCore0[2] = sf::Vector2f(height, height);
+			//
+			//textureCore1[0] = sf::Vector2f(0, 0);
+			//textureCore1[1] = sf::Vector2f(height, height);
+			//textureCore1[2] = sf::Vector2f(0, height);
 		}
 		else
 		{
@@ -277,13 +277,13 @@ public:
 			verticesCore1[1] = sf::Vector2f(halfHeight + width, height);
 			verticesCore1[2] = sf::Vector2f(halfHeight, height);
 
-			textureCore0[0] = sf::Vector2f(0, 0);
-			textureCore0[1] = sf::Vector2f(width, 0);
-			textureCore0[2] = sf::Vector2f(width, height);
-
-			textureCore1[0] = sf::Vector2f(0, 0);
-			textureCore1[1] = sf::Vector2f(width, height);
-			textureCore1[2] = sf::Vector2f(0, height);
+			//textureCore0[0] = sf::Vector2f(0, 0);
+			//textureCore0[1] = sf::Vector2f(width, 0);
+			//textureCore0[2] = sf::Vector2f(width, height);
+			//
+			//textureCore1[0] = sf::Vector2f(0, 0);
+			//textureCore1[1] = sf::Vector2f(width, height);
+			//textureCore1[2] = sf::Vector2f(0, height);
 		}
 
 		const sf::Color colors[] = {
@@ -292,36 +292,39 @@ public:
 			col
 		};
 
-		AddTriangle(vertices0, colors);
-		AddTriangle(vertices1, colors);
-		AddTriangle(vertices2, colors);
-		AddTriangle(vertices3, colors);
-		AddTriangle(vertices4, colors);
-		AddTriangle(vertices5, colors);
+		GetVAO().AddTriangle(vertices0, colors);
+		GetVAO().AddTriangle(vertices1, colors);
+		GetVAO().AddTriangle(vertices2, colors);
+		GetVAO().AddTriangle(vertices3, colors);
+		GetVAO().AddTriangle(vertices4, colors);
+		GetVAO().AddTriangle(vertices5, colors);
 
-		AddTriangle(vertices6, colors);
-		AddTriangle(vertices7, colors);
-		AddTriangle(vertices8, colors);
-		AddTriangle(vertices9, colors);
-		AddTriangle(vertices10, colors);
-		AddTriangle(vertices11, colors);
+		GetVAO().AddTriangle(vertices6, colors);
+		GetVAO().AddTriangle(vertices7, colors);
+		GetVAO().AddTriangle(vertices8, colors);
+		GetVAO().AddTriangle(vertices9, colors);
+		GetVAO().AddTriangle(vertices10, colors);
+		GetVAO().AddTriangle(vertices11, colors);
 
 		if (m_mode == BlockArgumentVariableMode::RAW)
 		{
-			AddTriangle(verticesCore0, colors);
-			AddTriangle(verticesCore1, colors);
+			GetVAO().AddTriangle(verticesCore0, colors);
+			GetVAO().AddTriangle(verticesCore1, colors);
 		}
 		else
 		{
-			AddTriangle(verticesCore0, textureCore0);
-			AddTriangle(verticesCore1, textureCore1);
+			//AddTriangle(verticesCore0, textureCore0);
+			//AddTriangle(verticesCore1, textureCore1);
+
+			//for (uint32_t i = 0; i < text.length(); i++)
+			//	GetVAO().AddChar(sf::FloatRect(i * Global::BlockHeight, 0, Global::BlockHeight, Global::BlockHeight), text[i]);
 		}
 	}
 
-	bool UseVertexArrayTexture() override
-	{
-		return m_mode == BlockArgumentVariableMode::VAR;
-	}
+	//bool UseVertexArrayTexture() override
+	//{
+	//	return m_mode == BlockArgumentVariableMode::VAR;
+	//}
 
 	void UpdateData() override
 	{

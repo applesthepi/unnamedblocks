@@ -5,8 +5,8 @@
 
 Argument::Argument()
 {
-	m_vertexArrayImage.create(1, 1);
-	m_vertexArray.setPrimitiveType(sf::Triangles);
+	//m_vertexArrayImage.create(1, 1);
+	//m_vertexArray.setPrimitiveType(sf::Triangles);
 
 	m_mode = BlockArgumentVariableMode::RAW;
 }
@@ -35,7 +35,7 @@ bool Argument::PullNext()
 {
 	return m_next;
 }
-
+/*
 const sf::VertexArray* Argument::GetVertexArray()
 {
 	return &m_vertexArray;
@@ -53,7 +53,7 @@ const sf::Image* Argument::GetVertexArrayTexture()
 	else
 		return nullptr;
 }
-
+*/
 BlockArgumentType Argument::GetType()
 {
 	return BlockArgumentType::TEXT;
@@ -78,12 +78,12 @@ void Argument::UnSelect()
 {
 
 }
-
+/*
 bool Argument::UseVertexArrayTexture()
 {
 	return false;
 }
-
+*/
 void Argument::UpdateVertexArray()
 {
 
@@ -94,6 +94,12 @@ void Argument::UpdateData()
 
 }
 
+VAO& Argument::GetVAO()
+{
+	return m_vao;
+}
+
+/*
 void Argument::ResetVertices(uint64_t reserve)
 {
 	m_vertexArray.clear();
@@ -123,3 +129,4 @@ void Argument::AddTriangle(const sf::Vector2f positions[], const sf::Color color
 	m_vertexCoords.push_back(false);
 	m_vertexCoords.push_back(false);
 }
+*/

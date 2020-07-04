@@ -81,9 +81,9 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		sf::Text textRecreation = sf::Text(text, Global::Font, (Global::BlockHeight - Global::BlockBorder) * 2);
-		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
-		textRecreation.setPosition(Global::BlockBorder * 2, -6.0f);
+		//sf::Text textRecreation = sf::Text(text, Global::Font, (Global::BlockHeight - Global::BlockBorder) * 2);
+		//textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
+		//textRecreation.setPosition(Global::BlockBorder * 2, -6.0f);
 
 		if (textWidth == 0 || textHeight == 0)
 		{
@@ -91,53 +91,56 @@ public:
 			textHeight = Global::BlockHeight - Global::BlockBorder;
 		}
 
-		m_textRendered.create(textWidth, textHeight);
-		m_textRendered.clear(col);
-		m_textRendered.draw(textRecreation);
-		m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
+		//m_textRendered.create(textWidth, textHeight);
+		//m_textRendered.clear(col);
+		//m_textRendered.draw(textRecreation);
+		//m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
 
 		// ===================================================================================================
 		// =============== Update Vertex Array; see "dev/string_geometry.png"
 		// ===================================================================================================
 
-		ResetVertices(6);
+		//ResetVertices(6);
 
 		// ===================================================================================================
 		// =============== Core Geometry
 		// ===================================================================================================
 
-		const sf::Vector2f vertices0[] = {
-			sf::Vector2f(0, 0),
-			sf::Vector2f(textWidth / 2, 0),
-			sf::Vector2f(textWidth / 2, textHeight / 2)
-		};
+		//const sf::Vector2f vertices0[] = {
+		//	sf::Vector2f(0, 0),
+		//	sf::Vector2f(textWidth / 2, 0),
+		//	sf::Vector2f(textWidth / 2, textHeight / 2)
+		//};
+		//
+		//const sf::Vector2f vertices1[] = {
+		//	sf::Vector2f(0, 0),
+		//	sf::Vector2f(textWidth / 2, textHeight / 2),
+		//	sf::Vector2f(0, textHeight / 2)
+		//};
 
-		const sf::Vector2f vertices1[] = {
-			sf::Vector2f(0, 0),
-			sf::Vector2f(textWidth / 2, textHeight / 2),
-			sf::Vector2f(0, textHeight / 2)
-		};
+		//const sf::Vector2f textureCoords0[] = {
+		//	sf::Vector2f(0, 0),
+		//	sf::Vector2f(textWidth, 0),
+		//	sf::Vector2f(textWidth, textHeight)
+		//};
+		//
+		//const sf::Vector2f textureCoords1[] = {
+		//	sf::Vector2f(0, 0),
+		//	sf::Vector2f(textWidth, textHeight),
+		//	sf::Vector2f(0, textHeight)
+		//};
 
-		const sf::Vector2f textureCoords0[] = {
-			sf::Vector2f(0, 0),
-			sf::Vector2f(textWidth, 0),
-			sf::Vector2f(textWidth, textHeight)
-		};
+		//AddTriangle(vertices0, textureCoords0);
+		//AddTriangle(vertices1, textureCoords1);
 
-		const sf::Vector2f textureCoords1[] = {
-			sf::Vector2f(0, 0),
-			sf::Vector2f(textWidth, textHeight),
-			sf::Vector2f(0, textHeight)
-		};
-
-		AddTriangle(vertices0, textureCoords0);
-		AddTriangle(vertices1, textureCoords1);
+		//for (uint32_t i = 0; i < text.length(); i++)
+		//	GetVAO().AddChar(sf::FloatRect(i * Global::BlockHeight, 0, Global::BlockHeight, Global::BlockHeight), text[i]);
 	}
 
-	bool UseVertexArrayTexture() override
-	{
-		return true;
-	}
+	//bool UseVertexArrayTexture() override
+	//{
+	//	return true;
+	//}
 
 	void UpdateData() override
 	{

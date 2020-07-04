@@ -122,7 +122,7 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 	
 	uint32_t widest = 0;
 
-	if (Plane::ToolbarPlane->GetCollections().front()->GetStacks().size() != m_toolbarStackCount)
+	if (Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size() != m_toolbarStackCount)
 	{
 		uint64_t idx = 0;
 		Plane::ToolbarPlane->GetCollections()[catIdx]->RemoveAll(true);
@@ -166,7 +166,7 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 
 	Plane::ToolbarPlane->UpdateVAO(catIdx);
 
-	m_toolbarStackCount = Plane::ToolbarPlane->GetCollections().front()->GetStacks().size();
+	m_toolbarStackCount = Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size();
 
 	UpdateButtons();
 
@@ -454,7 +454,7 @@ void CategoryHandler::PostRender(sf::RenderWindow* window)
 
 void CategoryHandler::frameUpdate(double deltaTime)
 {
-	if (Plane::ToolbarPlane->GetCollections().size() > 0 && Plane::ToolbarPlane->GetCollections().front()->GetStacks().size() != m_toolbarStackCount)
+	if (Plane::ToolbarPlane->GetCollections().size() > m_selectedCategory && Plane::ToolbarPlane->GetCollections()[m_selectedCategory]->GetStacks().size() != m_toolbarStackCount)
 		UpdateBlocks(m_selectedCategory);
 
 	if (PreProcessor::IsFinished() && m_running)

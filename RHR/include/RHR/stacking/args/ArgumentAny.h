@@ -74,9 +74,9 @@ public:
 		// =============== Prepare Vertex Buffer Texture
 		// ===================================================================================================
 
-		sf::Text textRecreation = sf::Text(text, Global::Font, height);
-		textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
-		textRecreation.setPosition(4, -1);
+		//sf::Text textRecreation = sf::Text(text, Global::Font, height);
+		//textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
+		//textRecreation.setPosition(4, -1);
 
 		uint32_t textWidth = width;
 		uint32_t textHeight = Global::BlockHeight;
@@ -87,16 +87,16 @@ public:
 			textHeight = Global::BlockHeight - Global::BlockBorder;
 		}
 
-		m_textRendered.create(textWidth, textHeight);
-		m_textRendered.clear(col);
-		m_textRendered.draw(textRecreation);
-		m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
+		//m_textRendered.create(textWidth, textHeight);
+		//m_textRendered.clear(col);
+		//m_textRendered.draw(textRecreation);
+		//m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
 
 		// ===================================================================================================
 		// =============== Update Vertex Array; see "dev/string_geometry.png"
 		// ===================================================================================================
 
-		ResetVertices(6);
+		//ResetVertices(6);
 
 		// ===================================================================================================
 		// =============== Core Geometry
@@ -114,26 +114,29 @@ public:
 			sf::Vector2f(0, height)
 		};
 
-		const sf::Vector2f textureCoords0[] = {
-			sf::Vector2f(0, 0),
-			sf::Vector2f(width, 0),
-			sf::Vector2f(width, height)
-		};
+		//const sf::Vector2f textureCoords0[] = {
+		//	sf::Vector2f(0, 0),
+		//	sf::Vector2f(width, 0),
+		//	sf::Vector2f(width, height)
+		//};
+		//
+		//const sf::Vector2f textureCoords1[] = {
+		//	sf::Vector2f(0, 0),
+		//	sf::Vector2f(width, height),
+		//	sf::Vector2f(0, height)
+		//};
 
-		const sf::Vector2f textureCoords1[] = {
-			sf::Vector2f(0, 0),
-			sf::Vector2f(width, height),
-			sf::Vector2f(0, height)
-		};
+		//AddTriangle(vertices0, textureCoords0);
+		//AddTriangle(vertices1, textureCoords1);
 
-		AddTriangle(vertices0, textureCoords0);
-		AddTriangle(vertices1, textureCoords1);
+		//for (uint32_t i = 0; i < text.length(); i++)
+		//	GetVAO().AddChar(sf::FloatRect(i * Global::BlockHeight, 0, Global::BlockHeight, Global::BlockHeight), text[i]);
 	}
 
-	bool UseVertexArrayTexture() override
-	{
-		return true;
-	}
+	//bool UseVertexArrayTexture() override
+	//{
+	//	return true;
+	//}
 
 	void UpdateData() override
 	{

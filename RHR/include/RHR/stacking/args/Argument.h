@@ -1,5 +1,6 @@
 #pragma once
 #include "RHR/ui/ITransformable.h"
+#include "VAO.h"
 
 #include <Cappuccino/block/ModBlock.h>
 #include <SFML/Graphics/VertexArray.hpp>
@@ -22,13 +23,13 @@ public:
 	bool PullNext();
 
 	// the geometry, colors, and texture coordinates of the argument
-	const sf::VertexArray* GetVertexArray();
+	//const sf::VertexArray* GetVertexArray();
 
 	// a list of the vertices as booleans for whether or not they are intended to have texture coordinates
-	const std::vector<bool>* GetVertexArrayCoords();
+	//const std::vector<bool>* GetVertexArrayCoords();
 
 	// if using textures, then this will be what you refer to using the texture coordinates. Later it will get processed with everything.
-	const sf::Image* GetVertexArrayTexture();
+	//const sf::Image* GetVertexArrayTexture();
 
 	// how to interpret the data
 	virtual BlockArgumentType GetType();
@@ -46,24 +47,20 @@ public:
 	virtual void UnSelect();
 
 	// whether to use the vertexArrayImage or not
-	virtual bool UseVertexArrayTexture();
+	//virtual bool UseVertexArrayTexture();
 
 	// update geometry
 	virtual void UpdateVertexArray();
 
 	// update data should also cause an update in geometry
 	virtual void UpdateData();
-protected:
-	void ResetVertices(uint64_t reserve);
-	void AddTriangle(const sf::Vector2f positions[], const sf::Vector2f textureCoords[]);
-	void AddTriangle(const sf::Vector2f positions[], const sf::Color colors[]);
 
+	// contains all data including: position, colors, and characters.
+	VAO& GetVAO();
+protected:
 	bool m_next;
 	std::string m_data;
 	BlockArgumentVariableMode m_mode;
-	
-	sf::Image m_vertexArrayImage;
 private:
-	sf::VertexArray m_vertexArray;
-	std::vector<bool> m_vertexCoords;
+	VAO m_vao;
 };

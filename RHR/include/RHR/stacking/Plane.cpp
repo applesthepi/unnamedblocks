@@ -11,6 +11,14 @@
 #include <iostream>
 #include <vector>
 
+#ifdef ENABLE_AVX2
+#ifdef WIN32
+#include <immintrin.h>
+#else
+// TODO add Unix intrinsics
+#endif
+#endif
+
 Plane::Plane(bool toolbar, const Plane& plane)
 {
 	Setup(toolbar);
@@ -245,8 +253,11 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 		}
 	}
 
-	for (uint64_t i = 0; i < collectionMax; i++)
+	for (int64_t i = collectionMax - 1; i >= 0; i--)
 	{
+		if (!m_collections[i]->GetEnabled())
+			continue;
+
 		// size
 		
 		sf::Vector2u collectionSize = sf::Vector2u(
@@ -399,18 +410,6 @@ Plane* Plane::ToolbarPlane;
 
 void Plane::render(sf::RenderWindow& window)
 {
-#if FALSE
-	if (m_textureMapTexture.size() < 1)
-		return;
-	
-	sf::Sprite sp;
-	sp.setTexture(m_textureMapTexture[0]);
-	sp.setPosition(500, 50);
-	
-	window.draw(sp);
-	return;
-#endif
-
 	m_background.setFillColor(MOD_BACKGROUND_LOW);
 	m_background.setPosition(getPosition());
 	m_background.setSize((sf::Vector2f)getSize());
@@ -442,7 +441,7 @@ void Plane::render(sf::RenderWindow& window)
 		//states.transform.scale(sf::Vector2f(Global::BlockZoom, Global::BlockZoom), getPosition());//, /*sf::Vector2f(getSize().x / 2.0f, getSize().y / 2.0f) - */-(m_collections[i]->getPosition() * Global::BlockZoom));
 		
 		if (m_textureMapEnabled[i])
-			m_shader.setUniform("texture", m_textureMapTexture[i]);
+			m_shader.setUniform("texture", /*TEST_TEXTURE*/m_textureMapTexture[i]);
 
 		states.shader = &m_shader;
 
@@ -505,6 +504,15 @@ void Plane::postRender(sf::RenderWindow& window)
 		window.draw(m_vertexBuffers.back(), states);
 		window.setView(window.getDefaultView());
 	}
+
+#if 0
+	if (m_textureMapTexture.size() > 0)
+	{
+		TEST_TEXTURE = m_textureMapTexture.front();
+		TEST_SPRITE.setTexture(TEST_TEXTURE);
+	}
+	window.draw(TEST_SPRITE);
+#endif
 }
 
 void Plane::Setup(bool toolbar)
@@ -702,7 +710,7 @@ void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size)
 		19, 20, 21,
 	};
 
-#ifdef INTRINSICS
+#ifdef ENABLE_AVX2
 	{
 		__m256 _positions, _op, _result;
 
@@ -822,10 +830,12 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	// pull vertex buffers from children
 
 	std::vector<sf::VertexArray> va;
-	std::vector<const std::vector<bool>*> vaCoords;
-	std::vector<const sf::Image*> vaTextures;
+	std::vector<std::vector<bool>*> vaChar;
+	//std::vector<const sf::Image*> vaTextures;
 	std::vector<std::vector<sf::Vertex>> vaBox;
 	std::vector<uint16_t> vaSize;
+
+	uint16_t charSize = (Global::BlockHeight) * 2;
 
 	for (uint64_t a = 0; a < m_collections[bufferIdx]->GetStacks().size(); a++)
 	{
@@ -851,22 +861,56 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 			vaBox.back().push_back(sf::Vertex(blockPos + sf::Vector2f(0, Global::BlockHeight), blockColor, sf::Vector2f(0, 0)));
 
 			// get argument information
-
+			
 			for (uint64_t c = 0; c < m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetArguments().size(); c++)
 			{
 				Argument* arg = m_collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetArguments()[c];
 
 				calcSize++;
 
-				va.push_back(*(arg->GetVertexArray()));
-				vaCoords.push_back(arg->GetVertexArrayCoords());
-				vaTextures.push_back(arg->GetVertexArrayTexture());
+				va.push_back(*arg->GetVAO().GetVertexArray());
+				vaChar.push_back(arg->GetVAO().GetChar());
 
 				for (uint64_t d = 0; d < va.back().getVertexCount(); d++)
 				{
-					// make VAO absolute
+					if (vaChar.back()->at(d))
+					{
+						sf::Glyph gl = Global::Font.getGlyph(va.back()[d].texCoords.x, charSize, false);
+						
+						// make char texture coordinate match the charsheet
 
-					va.back()[d].position += sf::Vector2f(static_cast<float>(blockWidth) + blockPos.x, blockPos.y + ((float)Global::BlockBorder / 2.0f));
+						va.back()[d + 0].texCoords = sf::Vector2f(gl.textureRect.left, gl.textureRect.top);
+						va.back()[d + 1].texCoords = sf::Vector2f(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top);
+						va.back()[d + 2].texCoords = sf::Vector2f(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
+						va.back()[d + 3].texCoords = sf::Vector2f(gl.textureRect.left, gl.textureRect.top);
+						va.back()[d + 4].texCoords = sf::Vector2f(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
+						va.back()[d + 5].texCoords = sf::Vector2f(gl.textureRect.left, gl.textureRect.top + gl.textureRect.height);
+
+						//(*va.back())[d + 0].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 0].texCoords;
+						//(*va.back())[d + 1].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 1].texCoords;
+						//(*va.back())[d + 2].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 2].texCoords;
+						//(*va.back())[d + 3].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 3].texCoords;
+						//(*va.back())[d + 4].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 4].texCoords;
+						//(*va.back())[d + 5].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 5].texCoords;
+
+						//(*va.back())[d + 0].texCoords = sf::Vector2f(0, 0);
+						//(*va.back())[d + 1].texCoords = sf::Vector2f(0, 0);
+						//(*va.back())[d + 2].texCoords = sf::Vector2f(0, 0);
+						//(*va.back())[d + 3].texCoords = sf::Vector2f(0, 0);
+						//(*va.back())[d + 4].texCoords = sf::Vector2f(0, 0);
+						//(*va.back())[d + 5].texCoords = sf::Vector2f(0, 0);
+
+						va.back()[d].position += sf::Vector2f(
+							static_cast<float>(blockWidth) + blockPos.x,
+							blockPos.y + ((float)Global::BlockBorder / 2.0f)
+						);
+					}
+					else
+						// make VAO absolute
+						va.back()[d].position += sf::Vector2f(
+							static_cast<float>(blockWidth) + blockPos.x,
+							blockPos.y + ((float)Global::BlockBorder / 2.0f)
+						);
 				}
 
 				blockWidth += static_cast<float>(arg->GetWidth());
@@ -886,30 +930,39 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	uint32_t textureHeight = 1;
 	uint32_t textureWidth = 0;
 
-	for (uint64_t a = 0; a < vaTextures.size(); a++)
-	{
-		uint64_t tIdx = (vaTextures.size() - a) - 1;
+	const sf::Texture& charSheet = Global::Font.getTexture(charSize);
+	//sf::Texture charSheet;
+	//charSheet.loadFromFile("res/grade.png");
+	TEST_TEXTURE = sf::Texture(charSheet);
+	TEST_SPRITE.setTexture(TEST_TEXTURE, true);
+	
+	textureHeight += charSheet.getSize().y;
+	textureWidth += charSheet.getSize().x;
 
-		// if the argument doesnt use a texture
-
-		if (vaTextures[tIdx] == nullptr)
-			continue;
-
-		// make texture wider if its to small
-
-		if (vaTextures[tIdx]->getSize().x > textureWidth)
-			textureWidth = vaTextures[tIdx]->getSize().x;
-
-		// offset non-normalized texture coords
-
-		for (uint64_t b = 0; b < va[tIdx].getVertexCount(); b++)
-		{
-			if (vaCoords[tIdx]->at(b))
-				va[tIdx][b].texCoords.y += textureHeight;
-		}
-
-		textureHeight += vaTextures[tIdx]->getSize().y;
-	}
+	//for (uint64_t a = 0; a < vaTextures.size(); a++)
+	//{
+	//	uint64_t tIdx = (vaTextures.size() - a) - 1;
+	//
+	//	// if the argument doesnt use a texture
+	//
+	//	if (vaTextures[tIdx] == nullptr)
+	//		continue;
+	//
+	//	// make texture wider if its to small
+	//
+	//	if (vaTextures[tIdx]->getSize().x > textureWidth)
+	//		textureWidth = vaTextures[tIdx]->getSize().x;
+	//
+	//	// offset non-normalized texture coords
+	//
+	//	for (uint64_t b = 0; b < va[tIdx].getVertexCount(); b++)
+	//	{
+	//		if (vaCoords[tIdx]->at(b))
+	//			va[tIdx][b].texCoords.y += textureHeight;
+	//	}
+	//
+	//	textureHeight += vaTextures[tIdx]->getSize().y;
+	//}
 
 	if (m_collectionVanity[bufferIdx])
 	{
@@ -958,10 +1011,15 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 
 	// normalize
 
-	for (uint64_t a = 0; a < vaTextures.size(); a++)
+	for (uint64_t a = 0; a < va.size(); a++)
 	{
 		for (uint64_t b = 0; b < va[a].getVertexCount(); b++)
-			va[a][b].texCoords = sf::Vector2f(va[a][b].texCoords.x / (float)textureWidth, va[a][b].texCoords.y / (float)textureHeight);
+		{
+			va[a][b].texCoords = sf::Vector2f(
+				va[a][b].texCoords.x / static_cast<float>(textureWidth),
+				va[a][b].texCoords.y / static_cast<float>(textureHeight)
+			);
+		}
 	}
 
 	// normalize
@@ -983,40 +1041,46 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		textureMap.create(textureWidth, textureHeight);
 		textureMap.clear(sf::Color(0, 0, 0, 0));
 
-		sf::Texture tempTexture;
-		sf::Sprite tempSprite;
+		//sf::Texture tempTexture;
+		sf::Sprite tempSprite(charSheet);
 
 		int64_t incHeight = textureHeight;
 
-		for (uint64_t a = 0; a < vaTextures.size(); a++)
-		{
-			// proceed if the argument has a texture
+		//for (uint64_t a = 0; a < vaTextures.size(); a++)
+		//{
+		//	// proceed if the argument has a texture
+		//
+		//	uint64_t tIdx = (vaTextures.size() - a) - 1;
+		//
+		//	if (vaTextures[tIdx] == nullptr)
+		//		continue;
+		//	
+		//	tempTexture.loadFromImage(*(vaTextures[tIdx]));
+		//	incHeight -= vaTextures[tIdx]->getSize().y;
+		//
+		//	tempSprite.setTexture(tempTexture, true);
+		//	tempSprite.setPosition(0, incHeight);
+		//	
+		//	textureMap.draw(tempSprite);
+		//}
+		//
+		// render charsheet
 
-			uint64_t tIdx = (vaTextures.size() - a) - 1;
-
-			if (vaTextures[tIdx] == nullptr)
-				continue;
-			
-			tempTexture.loadFromImage(*(vaTextures[tIdx]));
-			incHeight -= vaTextures[tIdx]->getSize().y;
-
-			tempSprite.setTexture(tempTexture, true);
-			tempSprite.setPosition(0, incHeight);
-			
-			textureMap.draw(tempSprite);
-		}
+		tempSprite.setPosition(0, 1);
+		textureMap.draw(tempSprite);
+		textureMap.display();
 
 		// render collection tab
 
-		if (m_collectionVanity[bufferIdx])
-		{
-			incHeight -= m_textureCollectionOpen.getSize().y;
-
-			tempSprite.setTexture(m_textureCollectionOpen, true);
-			tempSprite.setPosition(0, incHeight);
-
-			textureMap.draw(tempSprite);
-		}
+		//if (m_collectionVanity[bufferIdx])
+		//{
+		//	incHeight -= m_textureCollectionOpen.getSize().y;
+		//
+		//	tempSprite.setTexture(m_textureCollectionOpen, true);
+		//	tempSprite.setPosition(0, incHeight);
+		//
+		//	textureMap.draw(tempSprite);
+		//}
 
 		// retrieve render
 
@@ -1024,7 +1088,14 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		m_textureMapImage[bufferIdx].setPixel(0, 0, sf::Color::White);
 		
 		m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
+
 		m_textureMapEnabled[bufferIdx] = true;
+
+
+
+
+
+		//m_textureMapTexture[bufferIdx] = charSheet;
 	}
 	else
 		m_textureMapEnabled[bufferIdx] = false;
@@ -1052,7 +1123,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	}
 
 	// update collection VBO
-
+	puts("reloading");
 	m_vertexBuffers[bufferIdx].create(m_vertexArrays[bufferIdx].size());
 	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]), m_vertexArrays[bufferIdx].size(), 0);
 }
