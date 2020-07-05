@@ -19,7 +19,10 @@
 #endif
 #endif
 
+static sf::Sprite TEST_SPRITE;
+
 Plane::Plane(bool toolbar, const Plane& plane)
+	:m_fontTexture(Global::Font.getTexture(Global::BlockHeight * 2))
 {
 	Setup(toolbar);
 
@@ -33,6 +36,7 @@ Plane::Plane(bool toolbar, const Plane& plane)
 }
 
 Plane::Plane(bool toolbar)
+	:m_fontTexture(Global::Font.getTexture(Global::BlockHeight * 2))
 {
 	Setup(toolbar);
 
@@ -439,9 +443,10 @@ void Plane::render(sf::RenderWindow& window)
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[i];
 		//states.transform.scale(sf::Vector2f(Global::BlockZoom, Global::BlockZoom), getPosition());//, /*sf::Vector2f(getSize().x / 2.0f, getSize().y / 2.0f) - */-(m_collections[i]->getPosition() * Global::BlockZoom));
-		
-		if (m_textureMapEnabled[i])
-			m_shader.setUniform("texture", /*TEST_TEXTURE*/m_textureMapTexture[i]);
+		//sf::Texture re;
+		//re.loadFromFile("res/grade.png");
+		//if (m_textureMapEnabled[i])
+		m_shader.setUniform("texture", /*TEST_TEXTURE*//*m_textureMapTexture[i]*//*re*/m_fontEditedTexture);
 
 		states.shader = &m_shader;
 
@@ -506,12 +511,10 @@ void Plane::postRender(sf::RenderWindow& window)
 	}
 
 #if 0
-	if (m_textureMapTexture.size() > 0)
-	{
-		TEST_TEXTURE = m_textureMapTexture.front();
-		TEST_SPRITE.setTexture(TEST_TEXTURE);
-	}
-	window.draw(TEST_SPRITE);
+	sf::Texture re;
+	re.loadFromFile("res/grade.png");
+
+	window.draw(sf::Sprite(re));
 #endif
 }
 
@@ -820,6 +823,13 @@ void Plane::CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity)
 
 void Plane::UpdateBuffer(uint16_t bufferIdx)
 {
+	// update font image
+
+	m_fontEditedImage = m_fontTexture.copyToImage();
+	m_fontEditedImage.setPixel(0, 0, sf::Color::White);
+	m_fontEditedTexture.loadFromImage(m_fontEditedImage);
+	TEST_SPRITE.setTexture(m_fontEditedTexture, true);
+
 	// clean and update collection VAO
 	
 	m_vertexArrays[bufferIdx].clear();
@@ -834,8 +844,6 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	//std::vector<const sf::Image*> vaTextures;
 	std::vector<std::vector<sf::Vertex>> vaBox;
 	std::vector<uint16_t> vaSize;
-
-	uint16_t charSize = (Global::BlockHeight) * 2;
 
 	for (uint64_t a = 0; a < m_collections[bufferIdx]->GetStacks().size(); a++)
 	{
@@ -875,7 +883,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 				{
 					if (vaChar.back()->at(d))
 					{
-						sf::Glyph gl = Global::Font.getGlyph(va.back()[d].texCoords.x, charSize, false);
+						sf::Glyph gl = Global::Font.getGlyph(va.back()[d].texCoords.x, Global::BlockHeight * 2, false);
 						
 						// make char texture coordinate match the charsheet
 
@@ -886,31 +894,19 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 						va.back()[d + 4].texCoords = sf::Vector2f(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
 						va.back()[d + 5].texCoords = sf::Vector2f(gl.textureRect.left, gl.textureRect.top + gl.textureRect.height);
 
-						//(*va.back())[d + 0].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 0].texCoords;
-						//(*va.back())[d + 1].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 1].texCoords;
-						//(*va.back())[d + 2].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 2].texCoords;
-						//(*va.back())[d + 3].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 3].texCoords;
-						//(*va.back())[d + 4].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 4].texCoords;
-						//(*va.back())[d + 5].texCoords = sf::Vector2f(128, 128) - (*va.back())[d + 5].texCoords;
-
-						//(*va.back())[d + 0].texCoords = sf::Vector2f(0, 0);
-						//(*va.back())[d + 1].texCoords = sf::Vector2f(0, 0);
-						//(*va.back())[d + 2].texCoords = sf::Vector2f(0, 0);
-						//(*va.back())[d + 3].texCoords = sf::Vector2f(0, 0);
-						//(*va.back())[d + 4].texCoords = sf::Vector2f(0, 0);
-						//(*va.back())[d + 5].texCoords = sf::Vector2f(0, 0);
-
 						va.back()[d].position += sf::Vector2f(
 							static_cast<float>(blockWidth) + blockPos.x,
 							blockPos.y + ((float)Global::BlockBorder / 2.0f)
 						);
 					}
 					else
+					{
 						// make VAO absolute
 						va.back()[d].position += sf::Vector2f(
 							static_cast<float>(blockWidth) + blockPos.x,
 							blockPos.y + ((float)Global::BlockBorder / 2.0f)
 						);
+					}
 				}
 
 				blockWidth += static_cast<float>(arg->GetWidth());
@@ -925,88 +921,20 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		// for every stack
 	}
 
-	// change argument textureCoords to fit map of textures
-
-	uint32_t textureHeight = 1;
-	uint32_t textureWidth = 0;
-
-	const sf::Texture& charSheet = Global::Font.getTexture(charSize);
-	//sf::Texture charSheet;
-	//charSheet.loadFromFile("res/grade.png");
-	TEST_TEXTURE = sf::Texture(charSheet);
-	TEST_SPRITE.setTexture(TEST_TEXTURE, true);
-	
-	textureHeight += charSheet.getSize().y;
-	textureWidth += charSheet.getSize().x;
-
-	//for (uint64_t a = 0; a < vaTextures.size(); a++)
-	//{
-	//	uint64_t tIdx = (vaTextures.size() - a) - 1;
-	//
-	//	// if the argument doesnt use a texture
-	//
-	//	if (vaTextures[tIdx] == nullptr)
-	//		continue;
-	//
-	//	// make texture wider if its to small
-	//
-	//	if (vaTextures[tIdx]->getSize().x > textureWidth)
-	//		textureWidth = vaTextures[tIdx]->getSize().x;
-	//
-	//	// offset non-normalized texture coords
-	//
-	//	for (uint64_t b = 0; b < va[tIdx].getVertexCount(); b++)
-	//	{
-	//		if (vaCoords[tIdx]->at(b))
-	//			va[tIdx][b].texCoords.y += textureHeight;
-	//	}
-	//
-	//	textureHeight += vaTextures[tIdx]->getSize().y;
-	//}
-
 	if (m_collectionVanity[bufferIdx])
 	{
 		// TODO replace with intrinsic functions
 
 		for (uint8_t i = 0; i < 6; i++)
-		{
-			m_vertexArrays[bufferIdx][20 * 3 + i].texCoords.y += textureHeight;
-		}
-
-		textureHeight += m_textureCollectionOpen.getSize().y;
-
-		if (m_textureCollectionOpen.getSize().x > textureWidth)
-			textureWidth = m_textureCollectionOpen.getSize().x;
-	}
-
-	// get power of 2 texture
-
-	uint8_t powI = 8;
-	sf::Vector2u powUnits(0, 0);
-	uint64_t powCurrent = 0;
-
-	while (powUnits.x == 0 || powUnits.y == 0)
-	{
-		powCurrent = std::pow(2, powI);
-
-		if (textureWidth < powCurrent)
-			powUnits.x = powCurrent;
-
-		if (textureHeight < powCurrent)
-			powUnits.y = powCurrent;
-
-		powI++;
-	}
-
-	textureWidth = powCurrent;
-	textureHeight = powCurrent;
-
-	if (m_collectionVanity[bufferIdx])
-	{
-		// normalize
+			m_vertexArrays[bufferIdx][20 * 3 + i].texCoords.y += m_fontEditedImage.getSize().y;
 
 		for (uint8_t a = 0; a < 22 * 3; a++)
-			m_vertexArrays[bufferIdx][a].texCoords = sf::Vector2f(m_vertexArrays[bufferIdx][a].texCoords.x / (float)textureWidth, m_vertexArrays[bufferIdx][a].texCoords.y / (float)textureHeight);
+		{
+			m_vertexArrays[bufferIdx][a].texCoords = sf::Vector2f(
+				m_vertexArrays[bufferIdx][a].texCoords.x / static_cast<float>(m_fontEditedImage.getSize().x),
+				m_vertexArrays[bufferIdx][a].texCoords.y / static_cast<float>(m_fontEditedImage.getSize().y)
+			);
+		}
 	}
 
 	// normalize
@@ -1016,8 +944,8 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 		for (uint64_t b = 0; b < va[a].getVertexCount(); b++)
 		{
 			va[a][b].texCoords = sf::Vector2f(
-				va[a][b].texCoords.x / static_cast<float>(textureWidth),
-				va[a][b].texCoords.y / static_cast<float>(textureHeight)
+				va[a][b].texCoords.x / static_cast<float>(m_fontEditedImage.getSize().x),
+				va[a][b].texCoords.y / static_cast<float>(m_fontEditedImage.getSize().y)
 			);
 		}
 	}
@@ -1028,77 +956,13 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	{
 		for (uint8_t b = 0; b < 6; b++)
 		{
-			vaBox[a][b].texCoords = sf::Vector2f(vaBox[a][b].texCoords.x / (float)textureWidth, vaBox[a][b].texCoords.y / (float)textureHeight);
+			vaBox[a][b].texCoords = sf::Vector2f(
+				vaBox[a][b].texCoords.x / static_cast<float>(m_fontEditedImage.getSize().x),
+				vaBox[a][b].texCoords.y / static_cast<float>(m_fontEditedImage.getSize().y)
+			);
 			//m_vertexArrays[bufferIdx].push_back(vaBox[a][b]);
 		}
 	}
-
-	if (textureWidth > 0 && textureHeight > 0)
-	{
-		// create map
-
-		sf::RenderTexture textureMap;
-		textureMap.create(textureWidth, textureHeight);
-		textureMap.clear(sf::Color(0, 0, 0, 0));
-
-		//sf::Texture tempTexture;
-		sf::Sprite tempSprite(charSheet);
-
-		int64_t incHeight = textureHeight;
-
-		//for (uint64_t a = 0; a < vaTextures.size(); a++)
-		//{
-		//	// proceed if the argument has a texture
-		//
-		//	uint64_t tIdx = (vaTextures.size() - a) - 1;
-		//
-		//	if (vaTextures[tIdx] == nullptr)
-		//		continue;
-		//	
-		//	tempTexture.loadFromImage(*(vaTextures[tIdx]));
-		//	incHeight -= vaTextures[tIdx]->getSize().y;
-		//
-		//	tempSprite.setTexture(tempTexture, true);
-		//	tempSprite.setPosition(0, incHeight);
-		//	
-		//	textureMap.draw(tempSprite);
-		//}
-		//
-		// render charsheet
-
-		tempSprite.setPosition(0, 1);
-		textureMap.draw(tempSprite);
-		textureMap.display();
-
-		// render collection tab
-
-		//if (m_collectionVanity[bufferIdx])
-		//{
-		//	incHeight -= m_textureCollectionOpen.getSize().y;
-		//
-		//	tempSprite.setTexture(m_textureCollectionOpen, true);
-		//	tempSprite.setPosition(0, incHeight);
-		//
-		//	textureMap.draw(tempSprite);
-		//}
-
-		// retrieve render
-
-		m_textureMapImage[bufferIdx] = textureMap.getTexture().copyToImage();
-		m_textureMapImage[bufferIdx].setPixel(0, 0, sf::Color::White);
-		
-		m_textureMapTexture[bufferIdx].loadFromImage(m_textureMapImage[bufferIdx]);
-
-		m_textureMapEnabled[bufferIdx] = true;
-
-
-
-
-
-		//m_textureMapTexture[bufferIdx] = charSheet;
-	}
-	else
-		m_textureMapEnabled[bufferIdx] = false;
 
 	// add vertices
 
@@ -1123,7 +987,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	}
 
 	// update collection VBO
-	puts("reloading");
+
 	m_vertexBuffers[bufferIdx].create(m_vertexArrays[bufferIdx].size());
 	m_vertexBuffers[bufferIdx].update(&(m_vertexArrays[bufferIdx][0]), m_vertexArrays[bufferIdx].size(), 0);
 }

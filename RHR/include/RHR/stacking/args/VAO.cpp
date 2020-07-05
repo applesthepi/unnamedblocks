@@ -20,7 +20,7 @@ void VAO::AddTriangle(const sf::Vector2f positions[], const sf::Color colors[])
 void VAO::AddChar(const sf::Glyph& gl, char character, uint32_t* offset)
 {
 	sf::FloatRect rect = sf::FloatRect(
-		*offset,
+		gl.bounds.left + *offset,
 		gl.bounds.top + (Global::BlockHeight - Global::BlockBorder - 1),
 		gl.bounds.width,
 		gl.bounds.height

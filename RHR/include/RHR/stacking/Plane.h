@@ -160,8 +160,7 @@ private:
 	sf::RenderWindow* m_window;
 	sf::RectangleShape m_background;
 
-#if 1
-	sf::Texture TEST_TEXTURE;
-	sf::Sprite TEST_SPRITE;
-#endif
+	const sf::Texture& m_fontTexture;
+	sf::Image m_fontEditedImage;
+	sf::Texture m_fontEditedTexture;
 };
