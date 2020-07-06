@@ -22,7 +22,8 @@
 static sf::Sprite TEST_SPRITE;
 
 Plane::Plane(bool toolbar, const Plane& plane)
-	:m_fontTexture(Global::Font.getTexture(Global::BlockHeight * 2))
+	:m_fontTexture(Global::Font.getTexture(Global::BlockHeight * 2)),
+	m_fontBoldTexture(Global::FontBold.getTexture(Global::BlockHeight * 2))
 {
 	Setup(toolbar);
 
@@ -36,7 +37,8 @@ Plane::Plane(bool toolbar, const Plane& plane)
 }
 
 Plane::Plane(bool toolbar)
-	:m_fontTexture(Global::Font.getTexture(Global::BlockHeight * 2))
+	:m_fontTexture(Global::Font.getTexture(Global::BlockHeight * 2)),
+	m_fontBoldTexture(Global::FontBold.getTexture(Global::BlockHeight * 2))
 {
 	Setup(toolbar);
 
@@ -446,7 +448,10 @@ void Plane::render(sf::RenderWindow& window)
 		//sf::Texture re;
 		//re.loadFromFile("res/grade.png");
 		//if (m_textureMapEnabled[i])
-		m_shader.setUniform("texture", /*TEST_TEXTURE*//*m_textureMapTexture[i]*//*re*/m_fontEditedTexture);
+		if (CalculateZoom().x < 0.95f)
+			m_shader.setUniform("texture", /*TEST_TEXTURE*//*m_textureMapTexture[i]*//*re*/m_fontBoldEditedTexture);
+		else
+			m_shader.setUniform("texture", /*TEST_TEXTURE*//*m_textureMapTexture[i]*//*re*/m_fontEditedTexture);
 
 		states.shader = &m_shader;
 
@@ -511,10 +516,7 @@ void Plane::postRender(sf::RenderWindow& window)
 	}
 
 #if 0
-	sf::Texture re;
-	re.loadFromFile("res/grade.png");
-
-	window.draw(sf::Sprite(re));
+	window.draw(TEST_SPRITE);
 #endif
 }
 
@@ -828,7 +830,12 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 	m_fontEditedImage = m_fontTexture.copyToImage();
 	m_fontEditedImage.setPixel(0, 0, sf::Color::White);
 	m_fontEditedTexture.loadFromImage(m_fontEditedImage);
-	TEST_SPRITE.setTexture(m_fontEditedTexture, true);
+
+	m_fontBoldEditedImage = m_fontBoldTexture.copyToImage();
+	m_fontBoldEditedImage.setPixel(0, 0, sf::Color::White);
+	m_fontBoldEditedTexture.loadFromImage(m_fontBoldEditedImage);
+
+	//TEST_SPRITE.setTexture(m_fontBoldEditedTexture, true);
 
 	// clean and update collection VAO
 	
@@ -883,6 +890,7 @@ void Plane::UpdateBuffer(uint16_t bufferIdx)
 				{
 					if (vaChar.back()->at(d))
 					{
+						Global::FontBold.getGlyph(va.back()[d].texCoords.x, Global::BlockHeight * 2, false);
 						sf::Glyph gl = Global::Font.getGlyph(va.back()[d].texCoords.x, Global::BlockHeight * 2, false);
 						
 						// make char texture coordinate match the charsheet

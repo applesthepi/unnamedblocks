@@ -35,25 +35,7 @@ bool Argument::PullNext()
 {
 	return m_next;
 }
-/*
-const sf::VertexArray* Argument::GetVertexArray()
-{
-	return &m_vertexArray;
-}
 
-const std::vector<bool>* Argument::GetVertexArrayCoords()
-{
-	return &m_vertexCoords;
-}
-
-const sf::Image* Argument::GetVertexArrayTexture()
-{
-	if (UseVertexArrayTexture())
-		return &m_vertexArrayImage;
-	else
-		return nullptr;
-}
-*/
 BlockArgumentType Argument::GetType()
 {
 	return BlockArgumentType::TEXT;

@@ -163,4 +163,8 @@ private:
 	const sf::Texture& m_fontTexture;
 	sf::Image m_fontEditedImage;
 	sf::Texture m_fontEditedTexture;
+
+	const sf::Texture& m_fontBoldTexture;
+	sf::Image m_fontBoldEditedImage;
+	sf::Texture m_fontBoldEditedTexture;
 };

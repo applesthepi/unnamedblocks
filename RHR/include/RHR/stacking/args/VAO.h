@@ -8,7 +8,7 @@ public:
 	VAO();
 
 	void AddTriangle(const sf::Vector2f positions[], const sf::Color colors[]);
-	void AddChar(const sf::Glyph& gl, char character, uint32_t* offset);
+	void AddChar(const sf::Glyph& gl, char character, uint32_t* offset, sf::Color color);
 
 	void Reset();
 	void Reserve(size_t triCount);

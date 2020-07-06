@@ -17,7 +17,7 @@ void VAO::AddTriangle(const sf::Vector2f positions[], const sf::Color colors[])
 	m_char.push_back(false);
 }
 
-void VAO::AddChar(const sf::Glyph& gl, char character, uint32_t* offset)
+void VAO::AddChar(const sf::Glyph& gl, char character, uint32_t* offset, sf::Color color)
 {
 	sf::FloatRect rect = sf::FloatRect(
 		gl.bounds.left + *offset,
@@ -26,13 +26,13 @@ void VAO::AddChar(const sf::Glyph& gl, char character, uint32_t* offset)
 		gl.bounds.height
 	);
 
-	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left, rect.top), sf::Color::Black, sf::Vector2f(character, 0)));
-	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left + rect.width, rect.top), sf::Color::Black, sf::Vector2f(0, 0)));
-	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left + rect.width, rect.top + rect.height), sf::Color::Black, sf::Vector2f(0, 0)));
+	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left, rect.top), color, sf::Vector2f(character, 0)));
+	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left + rect.width, rect.top), color, sf::Vector2f(0, 0)));
+	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left + rect.width, rect.top + rect.height), color, sf::Vector2f(0, 0)));
 
-	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left, rect.top), sf::Color::Black, sf::Vector2f(0, 0)));
-	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left + rect.width, rect.top + rect.height), sf::Color::Black, sf::Vector2f(0, 0)));
-	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left, rect.top + rect.height), sf::Color::Black, sf::Vector2f(0, 0)));
+	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left, rect.top), color, sf::Vector2f(0, 0)));
+	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left + rect.width, rect.top + rect.height), color, sf::Vector2f(0, 0)));
+	m_vertexArray.append(sf::Vertex(sf::Vector2f(rect.left, rect.top + rect.height), color, sf::Vector2f(0, 0)));
 
 	m_char.push_back(true);
 	m_char.push_back(false);

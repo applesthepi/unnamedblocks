@@ -38,7 +38,9 @@ public:
 
 		BlockHeight = 18;
 		BlockBorder = 4;
-		Font.loadFromFile("res/AnonymousPro-Regular.ttf");
+		Font.loadFromFile("res/AnonymousPro/AnonymousPro-Regular.ttf");
+		FontBold.loadFromFile("res/AnonymousPro/AnonymousPro-Bold.ttf");
+		//FontBold.loadFromFile("res/AnonymousPro-Bold.ttf");
 
 		// these may be old and unused
 
@@ -65,6 +67,7 @@ public:
 	static uint8_t BlockHeight;
 	static uint8_t BlockBorder;// must be divisible by 2
 	static sf::Font Font;
+	static sf::Font FontBold;
 	static sf::Vector2i MousePosition;
 	static sf::Vector2u WindowSize;
 
