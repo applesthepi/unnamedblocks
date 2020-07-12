@@ -125,7 +125,7 @@ else()
 	set(MODS_FOLDER_SEARCH_PATH "" CACHE STRING "(currently nop) Search dir for the mods folder {VARNAME} is environment variable. Blank for working directory")
 endif()
 
-set(VERSION_UNNAMED_BLOCKS "0.0.0" CACHE STRING "Version of Unnamed Blocks")
+set(VERSION_UNNAMED_BLOCKS "0" CACHE STRING "Version of Unnamed Blocks")
 option(IS_BETA "Wether or not Unnamed Blocks will be flagged as a beta build" ON)
 option(ENABLE_AVX2 "Enable AVX2 support. This is supported on Intel Haswell processors or newer and AMD Excavator processors and all Zen processors or newer" OFF)
 option(DISABLE_ALL_MOD_BUILDS "Disable building the set of vanilla mods." OFF)

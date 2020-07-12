@@ -1172,7 +1172,11 @@ void Plane::DraggingStackUpdate()
 
 	Plane* usePlane = Plane::PrimaryPlane;
 
-	sf::Vector2f position = (sf::Vector2f)m_window->mapCoordsToPixel(m_draggingCollection->getPosition() + m_draggingStack->getPosition());
+	sf::Vector2f position = (sf::Vector2f)m_window->mapCoordsToPixel(
+		m_draggingCollection->getPosition() + m_draggingStack->getPosition(),
+		m_view
+	);
+
 	position += getPosition();
 
 	if (position.x >= Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getSize().x + Plane::ToolbarPlane->getPosition().x &&
@@ -1193,18 +1197,26 @@ void Plane::DraggingStackUpdate()
 	{
 		// size
 
-		sf::Vector2u collectionSize = useCollections[i]->getSize();
-		collectionSize += sf::Vector2u(SNAP_DISTANCE * 2, SNAP_DISTANCE * 2);
+		sf::Vector2u collectionSize = sf::Vector2u(
+			((SNAP_DISTANCE * 2.0f * CalculateZoom().x) + useCollections[i]->getSize().x),
+			((SNAP_DISTANCE * 2.0f * CalculateZoom().y) + useCollections[i]->getSize().y)
+		);
 
 		// position
 
-		sf::Vector2f collectionPosition = useCollections[i]->getPosition();
+		sf::Vector2f collectionPosition = (sf::Vector2f)m_window->mapCoordsToPixel(
+			useCollections[i]->getPosition(),
+			m_view
+		);
+		
 		collectionPosition += usePlane->getPosition();
-		collectionPosition -= sf::Vector2f(SNAP_DISTANCE, SNAP_DISTANCE);
+		collectionPosition -= sf::Vector2f(SNAP_DISTANCE * CalculateZoom().x, SNAP_DISTANCE * CalculateZoom().y);
 
 		if (position.x > collectionPosition.x && position.x < collectionPosition.x + collectionSize.x &&
 			position.y > collectionPosition.y && position.y < collectionPosition.y + collectionSize.y)
 		{
+			puts("collection");
+
 			for (int64_t a = useCollections[i]->GetStacks().size() - 1; a >= 0; a--)
 			{
 				// size
@@ -1214,20 +1226,25 @@ void Plane::DraggingStackUpdate()
 				for (uint64_t b = 0; b < useCollections[i]->GetStacks()[a]->GetBlocks().size(); b++)
 				{
 					if (useCollections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() > stackSize.x)
-						stackSize.x = useCollections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+						stackSize.x = useCollections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() * CalculateZoom().x;
 				}
 
-				stackSize.y = useCollections[i]->GetStacks()[a]->GetBlocks().size() * Global::BlockHeight;
-				stackSize += sf::Vector2u(SNAP_DISTANCE * 2, SNAP_DISTANCE * 2);
+				stackSize.y = useCollections[i]->GetStacks()[a]->GetBlocks().size() * Global::BlockHeight * CalculateZoom().y;
+				stackSize += sf::Vector2u(SNAP_DISTANCE * 2.0f * CalculateZoom().x, SNAP_DISTANCE * 2.0f * CalculateZoom().y);
 
 				// position
 
-				sf::Vector2f stackPosition = useCollections[i]->GetStacks()[a]->getPosition();
-				stackPosition += collectionPosition;
+				sf::Vector2f stackPosition = (sf::Vector2f)m_window->mapCoordsToPixel(useCollections[i]->getPosition() + useCollections[i]->GetStacks()[a]->getPosition(), m_view);
+				stackPosition += usePlane->getPosition();
+				stackPosition -= sf::Vector2f(SNAP_DISTANCE * CalculateZoom().x, SNAP_DISTANCE * CalculateZoom().y);
+				
+				//stackPosition += collectionPosition;
 
 				if (position.x > stackPosition.x && position.x < stackPosition.x + stackSize.x &&
 					position.y > stackPosition.y && position.y < stackPosition.y + stackSize.y)
 				{
+					puts("stack");
+
 					for (uint64_t b = 0; b < useCollections[i]->GetStacks()[a]->GetBlocks().size() + 1; b++)
 					{
 						uint64_t refIdx = 0;
@@ -1238,21 +1255,22 @@ void Plane::DraggingStackUpdate()
 						// size
 
 						sf::Vector2u boundingSize(
-							useCollections[i]->GetStacks()[a]->GetBlocks()[refIdx]->GetWidth(),
-							Global::BlockHeight);
+							useCollections[i]->GetStacks()[a]->GetBlocks()[refIdx]->GetWidth() * CalculateZoom().x,
+							Global::BlockHeight * CalculateZoom().y);
 
 						boundingSize += sf::Vector2u(SNAP_DISTANCE * 2, 0);
 
 						// position
 
 						sf::Vector2f boundingPos = stackPosition;
-						boundingPos += sf::Vector2f(0, SNAP_DISTANCE);
-						boundingPos.y += b * Global::BlockHeight;
-						boundingPos -= sf::Vector2f(0, (float)Global::BlockHeight / 2.0f);
+						boundingPos += sf::Vector2f(0, SNAP_DISTANCE * CalculateZoom().y);
+						boundingPos.y += b * Global::BlockHeight * CalculateZoom().y;
+						boundingPos -= sf::Vector2f(0, (float)Global::BlockHeight / 2.0f * CalculateZoom().y);
 
 						if (position.x >= boundingPos.x && position.x < boundingPos.x + boundingSize.x &&
 							position.y >= boundingPos.y && position.y < boundingPos.y + boundingSize.y)
 						{
+							puts("snapping");
 							SetSnap(i, b, useCollections[i]->GetStacks()[a]);
 
 							// if block was bounded

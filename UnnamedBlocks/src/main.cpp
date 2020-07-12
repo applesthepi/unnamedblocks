@@ -210,6 +210,47 @@ int main()
 
 			window.display();
 		}
+
+		while (true)
+		{
+			sf::Event ev;
+
+			while (window.pollEvent(ev)) {}
+
+			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+
+			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
+				break;
+
+			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
+				fading = true;
+
+			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
+
+			// update
+
+			if (fading)
+			{
+				uint8_t alpha = (1.0 - t) * 253;
+
+				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+
+				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+
+				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+			}
+
+			// render
+
+			window.clear(MOD_BACKGROUND_LOW);
+
+			
+
+			window.display();
+		}
 	}
 #endif
 	// ==============================================================================================================================
