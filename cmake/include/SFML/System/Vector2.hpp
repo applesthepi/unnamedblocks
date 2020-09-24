@@ -76,6 +76,26 @@ public:
     T y; ///< Y coordinate of the vector
 };
 
+// i added this
+template <typename T>
+Vector2<T> operator *(const Vector2<T>& left, const Vector2<T>& right)
+{
+    T X = left.x * right.x;
+    T Y = left.y * right.y;
+    return Vector2<T>(X,Y);
+}
+
+template <typename T>
+Vector2<T> operator /(const Vector2<T>& left, const Vector2<T>& right)
+{
+	if (right.x == 0 || right.y == 0)
+		return Vector2<T>(0, 0);
+	
+    T X = left.x / right.x;
+    T Y = left.y / right.y;
+    return Vector2<T>(X,Y);
+}
+
 ////////////////////////////////////////////////////////////
 /// \relates Vector2
 /// \brief Overload of unary operator -

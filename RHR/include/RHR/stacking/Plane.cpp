@@ -504,13 +504,15 @@ void Plane::postRender(sf::RenderWindow& window)
 	{
 		sf::RenderStates states;
 		states.transform = m_vertexBufferTransform[m_vertexBufferTransform.size() - 1];
+		//states.transform.translate((sf::Vector2f)GetInnerPosition());
 
 		if (m_textureMapEnabled[m_vertexBufferTransform.size() - 1])
 			m_shader.setUniform("texture", m_textureMapTexture[m_vertexBufferTransform.size() - 1]);
 
 		states.shader = &m_shader;
-
-		window.setView(m_view);
+		//std::cout << CalculateZoom().x << std::endl;
+		//window.setView(m_view);
+		window.setView(window.getDefaultView());
 		window.draw(m_vertexBuffers.back(), states);
 		window.setView(window.getDefaultView());
 	}
@@ -1077,9 +1079,13 @@ void Plane::DragStack(Collection* collection, Stack* stack, bool up)
 
 	m_draggingCollection = collection;
 	m_draggingStack = stack;
-
+	//collection->setPosition(collection->getPosition() - (sf::Vector2f)GetInnerPosition());
+	collection->setPosition((sf::Vector2f)m_window->mapPixelToCoords(((sf::Vector2i)collection->getPosition() - (sf::Vector2i)GetInnerPosition()), m_view));
+	//collection->setPosition(collection->getPosition().x * CalculateZoom().x, collection->getPosition().y * CalculateZoom().y);
 	m_draggingBeginMouse = Global::MousePosition;
 	m_draggingBeginObject = collection->getPosition();
+
+	std::cout << "picking up at " << m_draggingCollection->getPosition().x << std::endl;
 }
 
 void Plane::UnDrag(const sf::Vector2i& position)
@@ -1096,15 +1102,13 @@ void Plane::UnDrag(const sf::Vector2i& position)
 		}
 		else
 		{
-			sf::Vector2f mmpos = m_window->mapPixelToCoords(position, m_view);
-
 			if (position.x > Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getPosition().x + Plane::ToolbarPlane->getSize().x &&
 				position.y > Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getPosition().y + Plane::ToolbarPlane->getSize().y)
 			{
 				DeleteCollection(m_collections.size() - 1, true);
 			}
 			else if (position.x > Plane::PrimaryPlane->getPosition().x && position.x < Plane::PrimaryPlane->getPosition().x + Plane::PrimaryPlane->getSize().x &&
-				position.y > Plane::PrimaryPlane->getPosition().y && position.y < Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y)
+					 position.y > Plane::PrimaryPlane->getPosition().y && position.y < Plane::PrimaryPlane->getPosition().y + Plane::PrimaryPlane->getSize().y)
 			{
 				bool found = false;
 
@@ -1113,10 +1117,10 @@ void Plane::UnDrag(const sf::Vector2i& position)
 					if (Plane::PrimaryPlane->GetCollections()[i] == m_draggingCollection)
 						continue;
 
-					sf::Vector2f colPos = sf::Vector2f(
-						Plane::PrimaryPlane->GetCollections()[i]->getPosition().x,
-						Plane::PrimaryPlane->GetCollections()[i]->getPosition().y
-					);
+					sf::Vector2f colPos = (sf::Vector2f)m_window->mapCoordsToPixel(
+						Plane::PrimaryPlane->GetCollections()[i]->getPosition() -
+						(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition(),
+						*Plane::PrimaryPlane->GetView()) + Plane::PrimaryPlane->getPosition();
 
 					colPos += getPosition();
 
@@ -1125,9 +1129,10 @@ void Plane::UnDrag(const sf::Vector2i& position)
 						Plane::PrimaryPlane->GetCollections()[i]->getSize().y
 					);
 
-					if (mmpos.x > colPos.x && mmpos.x < colPos.x + colSize.x &&
-						mmpos.y > colPos.y && mmpos.y < colPos.y + colSize.y)
+					if (m_draggingStack->getPosition().x > colPos.x && m_draggingStack->getPosition().x < colPos.x + colSize.x &&
+						m_draggingStack->getPosition().y > colPos.y && m_draggingStack->getPosition().y < colPos.y + colSize.y)
 					{
+						puts("dropping inside collection");
 						m_draggingStack->setPosition((m_draggingCollection->getPosition() + getPosition()) - colPos);
 						Plane::PrimaryPlane->GetCollections()[i]->AddStack(m_draggingStack);
 
@@ -1143,11 +1148,37 @@ void Plane::UnDrag(const sf::Vector2i& position)
 
 				if (!found)
 				{
-					m_draggingCollection->setPosition(sf::Vector2f(
-						m_draggingCollection->getPosition().x - Plane::PrimaryPlane->getPosition().x + getPosition().x,
-						m_draggingCollection->getPosition().y - Plane::PrimaryPlane->getPosition().y + getPosition().y)
-						- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE));
+					//m_draggingCollection->setPosition(sf::Vector2f(
+					//	m_draggingCollection->getPosition().x - Plane::PrimaryPlane->getPosition().x + getPosition().x,
+					//	m_draggingCollection->getPosition().y - Plane::PrimaryPlane->getPosition().y + getPosition().y)
+					//	- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE));
+					
+					if (this == Plane::PrimaryPlane)
+					{
+						std::cout << "dropping at " << m_draggingCollection->getPosition().x << std::endl;
+						m_draggingCollection->setPosition(
+							m_window->mapPixelToCoords((sf::Vector2i)m_draggingCollection->getPosition()
+								, *Plane::PrimaryPlane->GetView())
 
+								- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
+								+ (sf::Vector2f)GetInnerPosition()
+						);
+							//-Plane::PrimaryPlane->getPosition() +
+							//+(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition()
+							//+ (sf::Vector2f)GetInnerPosition()
+							//- ((sf::Vector2f)m_window->mapPixelToCoords(m_draggingBeginMouse, m_view /* use dragged view (m_view), not explicitly PrimaryPlane's view */) - m_draggingBeginObject));
+					}
+					else
+					{
+						m_draggingCollection->setPosition(
+							m_window->mapPixelToCoords(position, *Plane::PrimaryPlane->GetView())
+							//-Plane::PrimaryPlane->getPosition() +
+							//+(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition()
+							+ (sf::Vector2f)GetInnerPosition()
+							- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
+							- ((sf::Vector2f)m_window->mapPixelToCoords(m_draggingBeginMouse, m_view /* use dragged view (m_view), not explicitly PrimaryPlane's view */) - m_draggingBeginObject));
+					}
+					
 					m_draggingCollection->setSize((sf::Vector2u)m_draggingCollection->getSize() + sf::Vector2u(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
 
 					m_draggingStack->setPosition(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE);
