@@ -53,14 +53,11 @@ void ReturnFinished()
 
 void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow& window, sf::View* view, float zoom)
 {
-	window.setView(*view);
-	const sf::Vector2f beforeCoord{ window.mapPixelToCoords(pixel) };
+	const sf::Vector2f beforeCoord = window.mapPixelToCoords(pixel, *view);
 	view->zoom(zoom);
-	window.setView(*view);
-	const sf::Vector2f afterCoord{ window.mapPixelToCoords(pixel) };
-	const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
+	const sf::Vector2f afterCoord = window.mapPixelToCoords(pixel, *view);
+	const sf::Vector2f offsetCoords = beforeCoord - afterCoord;
 	view->move(offsetCoords);
-	window.setView(window.getDefaultView());
 }
 
 int main()
@@ -349,7 +346,10 @@ int main()
 					int32_t delta = ev.mouseWheelScroll.delta * -200;
 
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(delta, 0));
+					{
+						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(delta, 0.0f));
+					}
 					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 					{
 						if (ev.mouseWheelScroll.delta > 0)
@@ -368,7 +368,10 @@ int main()
 						}
 					}
 					else
-						Plane::PrimaryPlane->TranslateInnerPosition(sf::Vector2i(0, delta));
+					{
+						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(0.0f, delta));
+					}
 				}
 			}
 			else if (ev.type == sf::Event::EventType::KeyPressed)

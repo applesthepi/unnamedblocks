@@ -82,6 +82,7 @@ set(RHR_SRC
 add_library(RHR STATIC
 	${RHR_SRC}
 )
+find_path(GLM_INCLUDE_DIR glm/glm.hpp)
 target_link_libraries(RHR PUBLIC
 	Espresso
 	Cappuccino
@@ -98,6 +99,7 @@ target_include_directories(RHR PUBLIC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR"
 	"${CMAKE_SOURCE_DIR}/Espresso/include"
 	${tcc_include}
+	#${GLM_INCLUDE_DIR}
 )
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/RHR FILES ${RHR_SRC})

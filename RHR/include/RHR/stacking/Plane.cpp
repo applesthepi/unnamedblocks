@@ -114,20 +114,22 @@ void Plane::DeleteCollection(uint64_t idx, bool dealloc)
 	m_collections.erase(m_collections.begin() + idx);
 }
 
-void Plane::TranslateInnerPosition(const sf::Vector2i& position)
-{
-	m_innerPosition += position;
-}
-
-void Plane::SetInnerPosition(sf::Vector2i position)
-{
-	m_innerPosition = position;
-}
-
-sf::Vector2i Plane::GetInnerPosition()
-{
-	return m_innerPosition;
-}
+//void Plane::TranslateInnerPosition(const sf::Vector2i& position)
+//{
+//	//m_innerPosition += position;
+//	m_view.setCenter(m_view.getCenter() + (sf::Vector2f)position);
+//}
+//
+//void Plane::SetInnerPosition(sf::Vector2i position)
+//{
+//	//m_innerPosition = position;
+//	m_view.setCenter((sf::Vector2f)position);
+//}
+//
+//sf::Vector2i Plane::GetInnerPosition()
+//{
+//	return sf::Vector2i();
+//}
 
 void Plane::DeleteContents(bool dealloc)
 {
@@ -204,16 +206,21 @@ void Plane::frameUpdate(double deltaTime)
 	{
 		m_innerText.setPosition(getPosition().x + 5, getPosition().y + getSize().y - 18);
 		char innerText[20];
-		sprintf(innerText, "%d, %d", GetInnerPosition().x, GetInnerPosition().y); // TODO make sure "%d" has no trailing "0"s.
+		// TODO display m_view.center thingy instead of innerPosition
+		//sprintf(innerText, "%d, %d", GetInnerPosition().x, GetInnerPosition().y); // TODO make sure "%d" has no trailing "0"s.
 		m_innerText.setString(innerText);
 	}
 
 	// dragging position
 
 	if (DraggingStack() || DraggingCollection())
+	{
 		m_draggingCollection->setPosition(m_draggingBeginObject + sf::Vector2f(
-			(Global::MousePosition.x - m_draggingBeginMouse.x) / CalculateZoom().x,
-			(Global::MousePosition.y - m_draggingBeginMouse.y) / CalculateZoom().y));
+			(Global::MousePosition.x - m_draggingBeginMouse.x)/* / CalculateZoom().x*/,
+			(Global::MousePosition.y - m_draggingBeginMouse.y)/* / CalculateZoom().y*/) - getPosition());
+
+		//std::cout << "col pos: " << m_draggingCollection->getPosition().y << std::endl;
+	}
 	
 	// dragging connections
 
@@ -223,7 +230,13 @@ void Plane::frameUpdate(double deltaTime)
 	// transform applies offset to the vertex buffers
 
 	for (uint64_t i = 0; i < m_vertexBufferTransform.size(); i++)
-		m_vertexBufferTransform[i] = sf::Transform().translate(sf::Vector2f((GetInnerPosition().x) * -1, (GetInnerPosition().y) * -1)).translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
+		m_vertexBufferTransform[i] = sf::Transform().translate((sf::Vector2f)getPosition()).translate(m_collections[i]->getPosition());
+
+	if (DraggingStack() || DraggingCollection())
+	{
+		sf::Vector2f zoom = Plane::PrimaryPlane->CalculateZoom();
+		m_vertexBufferTransform.back().scale(zoom);
+	}
 }
 
 bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
@@ -274,8 +287,8 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 		// position
 
 		sf::Vector2f collectionPosition = sf::Vector2f(
-			(m_collections[i]->getPosition().x) + getPosition().x - GetInnerPosition().x,
-			(m_collections[i]->getPosition().y) + getPosition().y - GetInnerPosition().y
+			(m_collections[i]->getPosition().x) + getPosition().x,// - GetInnerPosition().x,
+			(m_collections[i]->getPosition().y) + getPosition().y// - GetInnerPosition().y
 		);
 
 		if (mmpos.x > collectionPosition.x && mmpos.x < collectionPosition.x + collectionSize.x &&
@@ -355,9 +368,8 @@ bool Plane::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse
 
 										m_collections[i]->AddStack(leftStack);
 									}
-
 									activeCollection->setPosition((m_collections[i]->getPosition()) + sf::Vector2f(0, b * Global::BlockHeight) + ((sf::Vector2f)activeStack->getPosition()));
-									activeCollection->setSize(sf::Vector2u(activeStack->GetWidestBlock(), activeStack->GetBlocks().size()* Global::BlockHeight));
+									activeCollection->setSize(sf::Vector2u(activeStack->GetWidestBlock(), activeStack->GetBlocks().size() * Global::BlockHeight));
 
 									activeStack->setPosition(0, 0);
 
@@ -480,8 +492,9 @@ void Plane::snapRender(sf::RenderWindow& window)
 			Plane::PrimaryPlane->getPosition() +
 			Plane::PrimaryPlane->GetCollections()[m_draggingSnapCollection]->getPosition() +
 			m_draggingSnapStack->getPosition() +
-			sf::Vector2f(0, m_draggingSnapStackLoc * Global::BlockHeight) -
-			(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition());
+			sf::Vector2f(0, m_draggingSnapStackLoc * Global::BlockHeight)// -
+			//(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition()
+		);
 
 		uint64_t refIdx = 0;
 
@@ -503,11 +516,11 @@ void Plane::postRender(sf::RenderWindow& window)
 	else if (DraggingStack())
 	{
 		sf::RenderStates states;
-		states.transform = m_vertexBufferTransform[m_vertexBufferTransform.size() - 1];
+		states.transform = m_vertexBufferTransform.back();
 		//states.transform.translate((sf::Vector2f)GetInnerPosition());
 
-		if (m_textureMapEnabled[m_vertexBufferTransform.size() - 1])
-			m_shader.setUniform("texture", m_textureMapTexture[m_vertexBufferTransform.size() - 1]);
+		if (m_textureMapEnabled.back())
+			m_shader.setUniform("texture", m_textureMapTexture.back());
 
 		states.shader = &m_shader;
 		//std::cout << CalculateZoom().x << std::endl;
@@ -1080,12 +1093,35 @@ void Plane::DragStack(Collection* collection, Stack* stack, bool up)
 	m_draggingCollection = collection;
 	m_draggingStack = stack;
 	//collection->setPosition(collection->getPosition() - (sf::Vector2f)GetInnerPosition());
-	collection->setPosition((sf::Vector2f)m_window->mapPixelToCoords(((sf::Vector2i)collection->getPosition() - (sf::Vector2i)GetInnerPosition()), m_view));
+	//collection->setPosition(
+	//	(sf::Vector2f)m_window->mapPixelToCoords((sf::Vector2i)collection->getPosition(), m_view)// get coords
+	//);
 	//collection->setPosition(collection->getPosition().x * CalculateZoom().x, collection->getPosition().y * CalculateZoom().y);
 	m_draggingBeginMouse = Global::MousePosition;
-	m_draggingBeginObject = collection->getPosition();
+	m_draggingBeginObject = (sf::Vector2f)m_window->mapCoordsToPixel(collection->getPosition()/*(collection->getPosition() + stack->getPosition()) * CalculateZoom().x*/ 
+		//- (sf::Vector2f)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+		+ getPosition()
+		, m_view);
+	//std::cout << "mapped: " << m_window->mapCoordsToPixel(collection->getPosition(), m_view).x << std::endl;
+	std::cout << "col pos: " << collection->getPosition().x << std::endl;
 
-	std::cout << "picking up at " << m_draggingCollection->getPosition().x << std::endl;
+	// + ((sf::Vector2f(1.0f, 1.0f) - CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+	
+	//m_draggingCollection->setPosition(
+	//	m_window->mapPixelToCoords((sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
+	//		- (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject))
+	//		+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+	//		, *Plane::PrimaryPlane->GetView())
+	//	- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
+	//);
+	
+
+	std::cout << "bObject " << m_draggingBeginObject.x << ", " << m_draggingBeginObject.y << std::endl;
+	std::cout << "bMouse " << m_draggingBeginMouse.x << ", " << m_draggingBeginMouse.y << std::endl;
+
+	//m_draggingBeginMouse += (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject) * (CalculateZoom() - sf::Vector2f(1.0f, 1.0f)));// add offset because of the blocks scales down
+
+	//std::cout << "center " << m_view.getCenter().x << std::endl;
 }
 
 void Plane::UnDrag(const sf::Vector2i& position)
@@ -1118,8 +1154,8 @@ void Plane::UnDrag(const sf::Vector2i& position)
 						continue;
 
 					sf::Vector2f colPos = (sf::Vector2f)m_window->mapCoordsToPixel(
-						Plane::PrimaryPlane->GetCollections()[i]->getPosition() -
-						(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition(),
+						Plane::PrimaryPlane->GetCollections()[i]->getPosition(),// -
+						//(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition(),
 						*Plane::PrimaryPlane->GetView()) + Plane::PrimaryPlane->getPosition();
 
 					colPos += getPosition();
@@ -1148,39 +1184,17 @@ void Plane::UnDrag(const sf::Vector2i& position)
 
 				if (!found)
 				{
-					//m_draggingCollection->setPosition(sf::Vector2f(
-					//	m_draggingCollection->getPosition().x - Plane::PrimaryPlane->getPosition().x + getPosition().x,
-					//	m_draggingCollection->getPosition().y - Plane::PrimaryPlane->getPosition().y + getPosition().y)
-					//	- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE));
+					m_draggingCollection->setPosition(
+						m_window->mapPixelToCoords((sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
+							- (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject))
+							+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+						, *Plane::PrimaryPlane->GetView())
+						- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
+					);
 					
-					if (this == Plane::PrimaryPlane)
-					{
-						std::cout << "dropping at " << m_draggingCollection->getPosition().x << std::endl;
-						m_draggingCollection->setPosition(
-							m_window->mapPixelToCoords((sf::Vector2i)m_draggingCollection->getPosition()
-								, *Plane::PrimaryPlane->GetView())
+					std::cout << Plane::PrimaryPlane->CalculateZoom().x << " || " << Plane::PrimaryPlane->CalculateZoom().y << std::endl;
 
-								- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
-								+ (sf::Vector2f)GetInnerPosition()
-						);
-							//-Plane::PrimaryPlane->getPosition() +
-							//+(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition()
-							//+ (sf::Vector2f)GetInnerPosition()
-							//- ((sf::Vector2f)m_window->mapPixelToCoords(m_draggingBeginMouse, m_view /* use dragged view (m_view), not explicitly PrimaryPlane's view */) - m_draggingBeginObject));
-					}
-					else
-					{
-						m_draggingCollection->setPosition(
-							m_window->mapPixelToCoords(position, *Plane::PrimaryPlane->GetView())
-							//-Plane::PrimaryPlane->getPosition() +
-							//+(sf::Vector2f)Plane::PrimaryPlane->GetInnerPosition()
-							+ (sf::Vector2f)GetInnerPosition()
-							- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
-							- ((sf::Vector2f)m_window->mapPixelToCoords(m_draggingBeginMouse, m_view /* use dragged view (m_view), not explicitly PrimaryPlane's view */) - m_draggingBeginObject));
-					}
-					
 					m_draggingCollection->setSize((sf::Vector2u)m_draggingCollection->getSize() + sf::Vector2u(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
-
 					m_draggingStack->setPosition(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE);
 
 					DeleteCollection(m_collections.size() - 1, false);
@@ -1364,9 +1378,14 @@ sf::View* Plane::GetView()
 sf::Vector2f Plane::CalculateZoom()
 {
 	return sf::Vector2f(
-		Global::WindowSize.x / m_view.getSize().x,
-		Global::WindowSize.y / m_view.getSize().y
+		static_cast<float>(Global::WindowSize.x) / m_view.getSize().x,
+		static_cast<float>(Global::WindowSize.y) / m_view.getSize().y
 	);
+}
+
+sf::Vector2f Plane::GetCoordsFromPixel(sf::Vector2f pixel, sf::RenderWindow& window)
+{
+	return window.mapPixelToCoords((sf::Vector2i)pixel, m_view);
 }
 
 void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const

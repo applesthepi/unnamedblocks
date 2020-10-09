@@ -192,7 +192,8 @@ void ProjectHandler::LoadProject(const std::string& path)
 		return;
 	}
 	// Reset plane
-	Plane::PrimaryPlane->SetInnerPosition(sf::Vector2i(0, 0));
+	sf::View* primaryView = Plane::PrimaryPlane->GetView();
+	primaryView->setCenter(primaryView->getSize() / 2.0f);
 	Plane::PrimaryPlane->DeleteContents();
 
 	// Read mod header

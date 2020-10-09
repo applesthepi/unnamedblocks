@@ -41,10 +41,10 @@ public:
 
 	void DeleteCollection(uint64_t idx, bool dealloc = true);
 
-	void TranslateInnerPosition(const sf::Vector2i& position);
-	void SetInnerPosition(sf::Vector2i position);
+	//void TranslateInnerPosition(const sf::Vector2i& position);
+	//void SetInnerPosition(sf::Vector2i position);
 	
-	sf::Vector2i GetInnerPosition();
+	//sf::Vector2i GetInnerPosition();
 	void DeleteContents(bool dealloc = true);
 
 	// TODO not finished; may not need
@@ -60,6 +60,7 @@ public:
 
 	sf::View* GetView();
 	sf::Vector2f CalculateZoom();
+	sf::Vector2f GetCoordsFromPixel(sf::Vector2f pixel, sf::RenderWindow& window);
 
 	static Plane* PrimaryPlane;
 	static Plane* ToolbarPlane;
@@ -153,7 +154,7 @@ private:
 	std::vector<bool> m_collectionVanity;
 	std::vector<Collection*> m_collections;
 
-	sf::Vector2i m_innerPosition;
+	//sf::Vector2i m_innerPosition;
 	sf::Text m_innerText;
 	bool m_toolbar;
 	sf::View m_view;
