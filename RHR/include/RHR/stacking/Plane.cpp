@@ -1215,19 +1215,13 @@ void Plane::DraggingStackUpdate()
 {
 	ClearSnap();
 
-	Plane* usePlane = Plane::PrimaryPlane;
+	sf::Vector2f position = m_draggingCollection->getPosition();
 
-	sf::Vector2f position = (sf::Vector2f)m_window->mapCoordsToPixel(
-		m_draggingCollection->getPosition() + m_draggingStack->getPosition(),
-		m_view
-	);
-
-	position += getPosition();
-
-	if (position.x >= Plane::ToolbarPlane->getPosition().x && position.x < Plane::ToolbarPlane->getSize().x + Plane::ToolbarPlane->getPosition().x &&
-		position.y >= Plane::ToolbarPlane->getPosition().y && position.y < Plane::ToolbarPlane->getSize().y + Plane::ToolbarPlane->getPosition().y)
+	if (!(position.x >= Plane::PrimaryPlane->getPosition().x && position.x < Plane::PrimaryPlane->getSize().x + Plane::PrimaryPlane->getPosition().x &&
+		position.y >= Plane::PrimaryPlane->getPosition().y && position.y < Plane::PrimaryPlane->getSize().y + Plane::PrimaryPlane->getPosition().y))
 		return;
 
+	Plane* usePlane = Plane::PrimaryPlane;
 	const std::vector<Collection*>& useCollections = usePlane->GetCollections();
 
 	uint64_t collectionMax = useCollections.size();
@@ -1254,6 +1248,14 @@ void Plane::DraggingStackUpdate()
 			m_view
 		);
 		
+		m_draggingCollection->setPosition(
+			m_window->mapPixelToCoords((sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
+				- (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject))
+				+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+				, *Plane::PrimaryPlane->GetView())
+			- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
+		);
+
 		collectionPosition += usePlane->getPosition();
 		collectionPosition -= sf::Vector2f(SNAP_DISTANCE * CalculateZoom().x, SNAP_DISTANCE * CalculateZoom().y);
 
