@@ -2,6 +2,7 @@
 #include <bit>
 #include <cinttypes>
 #include <array>
+#include <SFML/System/Vector2.hpp>
 namespace endianness {
 	constexpr bool is_le = std::endian::native == std::endian::little;
 	template<size_t T> std::array<char, T> reverse(std::array<char, T> bytes);
@@ -64,4 +65,13 @@ namespace endianness {
 	float float_from_be_bytes(std::array<char, 4> bytes);
 	double double_from_be_bytes(std::array<char, 8> bytes);
 
+}
+
+namespace sfmlbad {
+	template<typename T> sf::Vector2<T> MultiplyVec(const sf::Vector2<T>& vec1, const sf::Vector2<T>& vec2) {
+		return sf::Vector2<T> {
+			vec1.x * vec2.x,
+			vec1.y * vec2.y
+		};
+	}
 }
