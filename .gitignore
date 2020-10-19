@@ -26,3 +26,5 @@ build
 !cmake/**
 .clangd
 compile_commands.json
+\#*\#
+*.user

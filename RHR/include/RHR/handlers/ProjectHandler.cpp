@@ -2,6 +2,7 @@
 #include "registries/BlockRegistry.h"
 #include "stacking/Collection.h"
 #include "stacking/Stack.h"
+
 #include <SFML/System/Vector2.hpp>
 #include <unordered_map>
 #include <fstream>

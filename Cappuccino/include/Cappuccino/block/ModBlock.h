@@ -1,9 +1,9 @@
 #pragma once
 #include "ModBlockFlags.h"
 #include "ModBlockActions.h"
+#include "../ModBlockPass.h"
+#include "../runtime/ModBlockData.h"
 
-#include <Cappuccino/ModBlockPass.h>
-#include <Cappuccino/runtime/ModBlockData.h>
 #include <vector>
 #include <string>
 

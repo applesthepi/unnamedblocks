@@ -1,5 +1,5 @@
 #include "PreProcessor.h"
-#include "RHR/handlers/ProjectHandler.h"
+#include "../ProjectHandler.h"
 
 #include <cstring>
 #include <fstream>

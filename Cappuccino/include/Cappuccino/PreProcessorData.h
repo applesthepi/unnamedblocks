@@ -1,5 +1,5 @@
 #pragma once
-#include "Cappuccino/Logger.h"
+#include "Logger.h"
 
 #include <string>
 #include <vector>

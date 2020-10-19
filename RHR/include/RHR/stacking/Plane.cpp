@@ -1184,11 +1184,15 @@ void Plane::UnDrag(const sf::Vector2i& position)
 
 				if (!found)
 				{
-					m_draggingCollection->setPosition(
-						m_window->mapPixelToCoords((sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
+					sf::Vector2i pixelCoords = (sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
 							- (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject))
-							+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->getPosition())
-						, *Plane::PrimaryPlane->GetView())
+							+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()));
+
+					pixelCoords.x *= Plane::PrimaryPlane->getPosition().x;
+					pixelCoords.y *= Plane::PrimaryPlane->getPosition().y;
+
+					m_draggingCollection->setPosition(
+						m_window->mapPixelToCoords(pixelCoords, *Plane::PrimaryPlane->GetView())
 						- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
 					);
 					
