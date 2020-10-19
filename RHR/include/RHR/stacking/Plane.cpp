@@ -10,6 +10,7 @@
 #include <exception>
 #include <iostream>
 #include <vector>
+#include <Espresso/util.h>
 
 #ifdef ENABLE_AVX2
 #ifdef WIN32
@@ -1187,11 +1188,11 @@ void Plane::UnDrag(const sf::Vector2i& position)
 					m_draggingCollection->setPosition(
 						m_window->mapPixelToCoords((sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
 							- (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject))
-							+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+							+ (sf::Vector2i)sfmlbad::MultiplyVec(sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom(), Plane::PrimaryPlane->getPosition())
 						, *Plane::PrimaryPlane->GetView())
 						- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
 					);
-					
+
 					std::cout << Plane::PrimaryPlane->CalculateZoom().x << " || " << Plane::PrimaryPlane->CalculateZoom().y << std::endl;
 
 					m_draggingCollection->setSize((sf::Vector2u)m_draggingCollection->getSize() + sf::Vector2u(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
@@ -1247,11 +1248,11 @@ void Plane::DraggingStackUpdate()
 			useCollections[i]->getPosition(),
 			m_view
 		);
-		
+
 		m_draggingCollection->setPosition(
 			m_window->mapPixelToCoords((sf::Vector2i)(((sf::Vector2f)position - (sf::Vector2f)Plane::PrimaryPlane->getPosition()))
 				- (sf::Vector2i)(((sf::Vector2f)m_draggingBeginMouse - m_draggingBeginObject))
-				+ (sf::Vector2i)((sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->getPosition())
+				+ (sf::Vector2i)sfmlbad::MultiplyVec(sf::Vector2f(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom(), Plane::PrimaryPlane->getPosition())
 				, *Plane::PrimaryPlane->GetView())
 			- sf::Vector2f(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
 		);
@@ -1284,7 +1285,7 @@ void Plane::DraggingStackUpdate()
 				sf::Vector2f stackPosition = (sf::Vector2f)m_window->mapCoordsToPixel(useCollections[i]->getPosition() + useCollections[i]->GetStacks()[a]->getPosition(), m_view);
 				stackPosition += usePlane->getPosition();
 				stackPosition -= sf::Vector2f(SNAP_DISTANCE * CalculateZoom().x, SNAP_DISTANCE * CalculateZoom().y);
-				
+
 				//stackPosition += collectionPosition;
 
 				if (position.x > stackPosition.x && position.x < stackPosition.x + stackSize.x &&
