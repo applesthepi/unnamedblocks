@@ -1,10 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
+project(UB_MOD_VIN)
 
-project(ModVin)
-configure_file(config.h.in config.h)
-set(VERSION_MOD_VIN "0.0.0" CACHE STRING "Version of Mod Vin")
-
-set(ModVin_SRC
+set(UB_MOD_VIN_SRC
 
 	#======================================================================================================================
 	#=========== Mod
@@ -248,45 +245,35 @@ set(ModVin_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin/blocks/strings/BlockStringCatFrom.cpp"
 )
 
-add_library(ModVin MODULE
-	${ModVin_SRC}
-	)
-
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${ModVin_SRC})
-
-set_target_properties(ModVin PROPERTIES OUTPUT_NAME "ModVin")
-
-target_include_directories(ModVin PUBLIC
-	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_SOURCE_DIR}/RHR"
-	"${CMAKE_SOURCE_DIR}RHR/include"
-	"${CMAKE_SOURCE_DIR}Espresso/include"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${csfml_include}"
+add_library(UB_MOD_VIN MODULE
+	${UB_MOD_VIN_SRC}
 )
 
-target_link_libraries(ModVin PUBLIC
-	sfml-graphics
-	sfml-system
-	sfml-network
-	RHR
-	Espresso
-	Cappuccino
-	optimized "${csfml-audio}"
-    optimized "${csfml-network}"
-    optimized "${csfml-graphics}"
-    optimized "${csfml-system}"
-    optimized "${csfml-window}"
-	debug "${csfml-audio-d}"
-    debug "${csfml-network-d}"
-    debug "${csfml-graphics-d}"
-    debug "${csfml-system-d}"
-    debug "${csfml-window-d}"
+# Preserve folders in visual studio structure
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${UB_MOD_VIN_SRC})
+
+set_target_properties(UB_MOD_VIN PROPERTIES OUTPUT_NAME "ModVin")
+
+target_include_directories(UB_MOD_VIN PUBLIC
+	"${PROJECT_BINARY_DIR}"
+	"${CMAKE_SOURCE_DIR}/UB_RHR"
+	"${CMAKE_SOURCE_DIR}/UB_RHR/include"
+	"${CMAKE_SOURCE_DIR}/UB_Espresso/include"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	# "${csfml_include}"
+)
+
+target_link_libraries(UB_MOD_VIN PUBLIC
+	UB_RHR
+	UB_ESPRESSO
+	UB_CAPPUCCINO
 )
 
 add_custom_command(
-	TARGET ModVin POST_BUILD
+	TARGET UB_MOD_VIN POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy
-	$<TARGET_FILE:ModVin>
-	$<TARGET_FILE_DIR:unnamedblocks>/mods/)
+	$<TARGET_FILE:UB_MOD_VIN>
+	$<TARGET_FILE_DIR:UB_CLIENT>/mods/
+)
+
+configure_file(config.h.in config.h)

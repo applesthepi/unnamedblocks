@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
-project(Cappuccino)
+cmake_minimum_required(VERSION 3.15)
+project(UB_CAPPUCCINO)
 
-configure_file(config.h.in config.h)
-set(Cappuccino_SRC
+set(UB_CAPPUCCINO_SRC
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockActions.cpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlags.cpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlagsIterator.cpp"
@@ -33,33 +32,44 @@ set(Cappuccino_SRC
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Intrinsics.h"
-	)
-add_library(Cappuccino SHARED
-	${Cappuccino_SRC}
 )
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino FILES ${Cappuccino_SRC})
-target_link_libraries(Cappuccino PUBLIC
-	optimized "${csfml-audio}"
-    optimized "${csfml-network}"
-    optimized "${csfml-graphics}"
-    optimized "${csfml-system}"
-    optimized "${csfml-window}"
-	debug "${csfml-audio-d}"
-    debug "${csfml-network-d}"
-    debug "${csfml-graphics-d}"
-    debug "${csfml-system-d}"
-    debug "${csfml-window-d}"
+
+# Preserve folders in visual studio structure
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/include" FILES ${UB_CAPPUCCINO_SRC})
+
+set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
+add_library(UB_CAPPUCCINO
+	${UB_CAPPUCCINO_SRC}
 )
-target_include_directories(Cappuccino PUBLIC
-	"${PROJECT_BINARY_DIR}"
-	"${csfml_include}"
-	"${CMAKE_CURRENT_SOURCE_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+
+# add_dependencies(UB_CAPPUCCINO
+
+# )
+
+target_include_directories(UB_CAPPUCCINO SYSTEM PUBLIC
+	${STB_INCLUDE_DIRS}
+	${RAPIDJSON_INCLUDE_DIRS}
+	${VULKAN_INCLUDE_DIRS}
 )
-set_target_properties(Cappuccino PROPERTIES PREFIX "lib")
+
+target_include_directories(UB_CAPPUCCINO PUBLIC
+    "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
+target_link_libraries(UB_CAPPUCCINO PUBLIC
+	glad::glad
+	glm
+	glfw
+	imgui::imgui
+	Vulkan::Vulkan
+)
+
+set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
 
 add_custom_command(
-	TARGET Cappuccino POST_BUILD
+	TARGET UB_CAPPUCCINO POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E touch
-	"${CMAKE_SOURCE_DIR}/UnnamedBlocks/src/main.cpp"
+	"${CMAKE_SOURCE_DIR}/UB_Client/src/main.cpp"
 )
+
+configure_file(config.h.in config.h)

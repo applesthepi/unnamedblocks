@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
+project(UB_RHR)
 
-project(RHR)
-configure_file(config.h.in config.h)
-set(RHR_SRC
+set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/MessageHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/ProjectHandler.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/handlers/runtime/PreProcessor.cpp"
@@ -78,28 +77,30 @@ set(RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_draw.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui_widgets.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/imgui/imgui-SFML.cpp"
-	)
-add_library(RHR STATIC
-	${RHR_SRC}
 )
+
+# Preserve folders in visual studio structure
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/RHR FILES ${UB_RHR_SRC})
+
+add_library(UB_RHR STATIC
+	${UB_RHR_SRC}
+)
+
 find_path(GLM_INCLUDE_DIR glm/glm.hpp)
-target_link_libraries(RHR PUBLIC
-	Espresso
-	Cappuccino
-	sfml-graphics
-	sfml-system
-	sfml-window
-	sfml-network
-	${libtcc}
+target_link_libraries(UB_RHR PUBLIC
+	UB_ESPRESSO
+	UB_CAPPUCCINO
+	# ${libtcc}
 )
-target_include_directories(RHR PUBLIC
+
+target_include_directories(UB_RHR PUBLIC
 	"${PROJECT_BINARY_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR"
-	"${CMAKE_SOURCE_DIR}/Espresso/include"
-	${tcc_include}
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/UB_RHR"
+	"${CMAKE_SOURCE_DIR}/UB_Espresso/include"
+	# ${tcc_include}
 	#${GLM_INCLUDE_DIR}
 )
 
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/RHR FILES ${RHR_SRC})
+configure_file(config.h.in config.h)
