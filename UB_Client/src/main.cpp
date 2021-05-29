@@ -1,30 +1,21 @@
+#include "config.h"
+
 #include "ModLoader.h"
-#include "RHR/handlers/runtime/PreProcessor.h"
 #include "handlers/CategoryHandler.h"
 #include "registries/UIRegistry.h"
 #include "ui/ButtonText.h"
-
 #include "imgui/imgui.h"
-#include "imgui/imgui-SFML.h"
 
-#include <Espresso/InputHandler.h>
-#include <SFML/Window/Event.hpp>
-
-#ifdef POSIX
-#include "config.h"
+#if LINUX
 #include <dlfcn.h>
 #else
 #include <windows.h>
 #endif
 
 #include <RHR/RHR.h>
-#include <SFML/Graphics.hpp>
+#include <Espresso/InputHandler.h>
 #include <Cappuccino/Logger.h>
 #include <Cappuccino/Intrinsics.h>
-#include <chrono>
-
-#include <GL/glew.h>
-#include <SFML/Network.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -32,9 +23,10 @@
 #include <vector>
 #include <math.h>
 #include <string>
+#include <chrono>
 
 // Include last, has defines that conflict with enums
-#ifdef LINUX
+#if LINUX
 #include <X11/Xlib.h>
 #endif
 
@@ -51,7 +43,7 @@ void ReturnFinished()
 }
 */
 
-void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow& window, sf::View* view, float zoom)
+void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, sf::View *view, float zoom)
 {
 	const sf::Vector2f beforeCoord = window.mapPixelToCoords(pixel, *view);
 	view->zoom(zoom);
@@ -66,12 +58,18 @@ int main()
 	// ============== Initialization
 	// ==============================================================================================================================
 
-	Logger::Info(UnnamedBlocksVersion);
-#ifdef IS_BETA
+	Logger::Info("CLIENT  - " std::string(VER_CLIENT));
+	Logger::Info("SERVER  - " std::string(VER_SERVER));
+
+#if MODS
+	Logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
+#endif
+
+#if BETA
 	Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
 #endif
 
-#ifdef LINUX
+#if LINUX
 	// TODO: Proper wayland support
 	XInitThreads();
 #endif
@@ -81,13 +79,13 @@ int main()
 
 	// Window Setup
 
-	sf::RenderWindow window;
-	window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default, sf::ContextSettings(0, 0, 4));
-	window.setFramerateLimit(60);
+	// sf::RenderWindow window;
+	// window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default, sf::ContextSettings(0, 0, 4));
+	// window.setFramerateLimit(60);
 
 	// Initialization
 
-	Global::LoadDefaults();//must be first
+	Global::LoadDefaults(); //must be first
 	MessageHandler::Initialize();
 	InputHandler::Initialization();
 	PreProcessor::Initialize();
@@ -96,160 +94,162 @@ int main()
 	// ==============================================================================================================================
 	// ============== Intro Animation
 	// ==============================================================================================================================
-#if TRUE
-	{
-		sf::Http http("kikoho.ddns.net");
-		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"), sf::milliseconds(200));
+	// #if TRUE
+	// 	{
+	// 		sf::Http http("kikoho.ddns.net");
+	// 		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"), sf::milliseconds(200));
 
-		sf::Image imgApples;
-		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
-		{
-			const std::string& bodyApple = responseApple.getBody();// expecting 128
-			imgApples.loadFromMemory(bodyApple.c_str(), bodyApple.length());
-			imgApples.saveToFile("res/applesthepi.png");
-		}
-		else
-			imgApples.loadFromFile("res/applesthepi.png");
+	// 		sf::Image imgApples;
+	// 		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
+	// 		{
+	// 			const std::string &bodyApple = responseApple.getBody(); // expecting 128
+	// 			imgApples.loadFromMemory(bodyApple.c_str(), bodyApple.length());
+	// 			imgApples.saveToFile("res/applesthepi.png");
+	// 		}
+	// 		else
+	// 			imgApples.loadFromFile("res/applesthepi.png");
 
-		sf::Http::Response responseEmp = http.sendRequest(sf::Http::Request("The-Emperor10.png"), sf::milliseconds(200));
+	// 		sf::Http::Response responseEmp = http.sendRequest(sf::Http::Request("The-Emperor10.png"), sf::milliseconds(200));
 
-		sf::Image imgEmp;
-		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
-		{
-			const std::string& bodyEmp = responseEmp.getBody();// expecting 128
-			imgEmp.loadFromMemory(bodyEmp.c_str(), bodyEmp.length());
-			imgEmp.saveToFile("res/emp.png");
-		}
-		else
-			imgEmp.loadFromFile("res/emp.png");
+	// 		sf::Image imgEmp;
+	// 		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
+	// 		{
+	// 			const std::string &bodyEmp = responseEmp.getBody(); // expecting 128
+	// 			imgEmp.loadFromMemory(bodyEmp.c_str(), bodyEmp.length());
+	// 			imgEmp.saveToFile("res/emp.png");
+	// 		}
+	// 		else
+	// 			imgEmp.loadFromFile("res/emp.png");
 
-		sf::Texture txApples;
-		txApples.loadFromImage(imgApples);
+	// 		sf::Texture txApples;
+	// 		txApples.loadFromImage(imgApples);
 
-		sf::Texture txEmp;
-		txEmp.loadFromImage(imgEmp);
+	// 		sf::Texture txEmp;
+	// 		txEmp.loadFromImage(imgEmp);
 
-		sf::Text title("Unnamed Blocks", Global::Font, 48);
-		title.setPosition((window.getSize().x / 2.0) - (title.getLocalBounds().width / 2.0), 40);
-		title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+	// 		sf::Text title("Unnamed Blocks", Global::Font, 48);
+	// 		title.setPosition((window.getSize().x / 2.0) - (title.getLocalBounds().width / 2.0), 40);
+	// 		title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
-		sf::Sprite spApples(txApples);
-		spApples.setPosition((window.getSize().x / 3.0) - 64, (window.getSize().y / 2.0) - 64);
+	// 		sf::Sprite spApples(txApples);
+	// 		spApples.setPosition((window.getSize().x / 3.0) - 64, (window.getSize().y / 2.0) - 64);
 
-		sf::Sprite spEmp(txEmp);
-		spEmp.setPosition(((window.getSize().x * 2.0) / 3.0) - 64, (window.getSize().y / 2.0) - 64);
+	// 		sf::Sprite spEmp(txEmp);
+	// 		spEmp.setPosition(((window.getSize().x * 2.0) / 3.0) - 64, (window.getSize().y / 2.0) - 64);
 
-		double txtStartHeight = (window.getSize().y / 2.0) + 200;
-		double txtEndHeight = (window.getSize().y / 2.0) + 70;
+	// 		double txtStartHeight = (window.getSize().y / 2.0) + 200;
+	// 		double txtEndHeight = (window.getSize().y / 2.0) + 70;
 
-		sf::Text txtApples("applesthepi", Global::Font, 24);
-		int32_t xposApples = (window.getSize().x / 3.0) - (txtApples.getLocalBounds().width / 2.0);
-		txtApples.setPosition(xposApples, (window.getSize().y / 2.0) + 70);
-		txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+	// 		sf::Text txtApples("applesthepi", Global::Font, 24);
+	// 		int32_t xposApples = (window.getSize().x / 3.0) - (txtApples.getLocalBounds().width / 2.0);
+	// 		txtApples.setPosition(xposApples, (window.getSize().y / 2.0) + 70);
+	// 		txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
-		sf::Text txtEmp("The-Emperor10", Global::Font, 24);
-		int32_t xposEmp = ((window.getSize().x * 2) / 3.0) - (txtEmp.getLocalBounds().width / 2.0);
-		txtEmp.setPosition(xposEmp, (window.getSize().y / 2.0) + 70);
-		txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+	// 		sf::Text txtEmp("The-Emperor10", Global::Font, 24);
+	// 		int32_t xposEmp = ((window.getSize().x * 2) / 3.0) - (txtEmp.getLocalBounds().width / 2.0);
+	// 		txtEmp.setPosition(xposEmp, (window.getSize().y / 2.0) + 70);
+	// 		txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
-		sf::Text titleGit("github.com/applesthepi/unnamedblocks", Global::Font, 24);
-		titleGit.setPosition((window.getSize().x / 2.0) - (titleGit.getLocalBounds().width / 2.0), window.getSize().y - 50);
-		titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
+	// 		sf::Text titleGit("github.com/applesthepi/unnamedblocks", Global::Font, 24);
+	// 		titleGit.setPosition((window.getSize().x / 2.0) - (titleGit.getLocalBounds().width / 2.0), window.getSize().y - 50);
+	// 		titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
 
-		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
+	// 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
 
-		bool fading = false;
-		double endTime = 1200;
-		double fadeOffset = 1000;
+	// 		bool fading = false;
+	// 		double endTime = 1200;
+	// 		double fadeOffset = 1000;
 
-		while (true)
-		{
-			sf::Event ev;
+	// 		while (true)
+	// 		{
+	// 			sf::Event ev;
 
-			while (window.pollEvent(ev)) {}
+	// 			while (window.pollEvent(ev))
+	// 			{
+	// 			}
 
-			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+	// 			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
 
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
-				break;
+	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
+	// 				break;
 
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
-				fading = true;
+	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
+	// 				fading = true;
 
-			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
+	// 			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
 
-			// update
+	// 			// update
 
-			if (fading)
-			{
-				uint8_t alpha = (1.0 - t) * 253;
+	// 			if (fading)
+	// 			{
+	// 				uint8_t alpha = (1.0 - t) * 253;
 
-				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
 
-				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
 
-				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-			}
+	// 				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+	// 				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+	// 			}
 
-			// render
+	// 			// render
 
-			window.clear(MOD_BACKGROUND_LOW);
+	// 			window.clear(MOD_BACKGROUND_LOW);
 
-			window.draw(title);
-			window.draw(spApples);
-			window.draw(spEmp);
-			window.draw(txtApples);
-			window.draw(txtEmp);
-			window.draw(titleGit);
+	// 			window.draw(title);
+	// 			window.draw(spApples);
+	// 			window.draw(spEmp);
+	// 			window.draw(txtApples);
+	// 			window.draw(txtEmp);
+	// 			window.draw(titleGit);
 
-			window.display();
-		}
+	// 			window.display();
+	// 		}
 
-		while (true)
-		{
-			sf::Event ev;
+	// 		while (true)
+	// 		{
+	// 			sf::Event ev;
 
-			while (window.pollEvent(ev)) {}
+	// 			while (window.pollEvent(ev))
+	// 			{
+	// 			}
 
-			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+	// 			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
 
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
-				break;
+	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
+	// 				break;
 
-			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
-				fading = true;
+	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
+	// 				fading = true;
 
-			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
+	// 			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
 
-			// update
+	// 			// update
 
-			if (fading)
-			{
-				uint8_t alpha = (1.0 - t) * 253;
+	// 			if (fading)
+	// 			{
+	// 				uint8_t alpha = (1.0 - t) * 253;
 
-				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
 
-				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
+	// 				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
 
-				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-			}
+	// 				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+	// 				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
+	// 			}
 
-			// render
+	// 			// render
 
-			window.clear(MOD_BACKGROUND_LOW);
+	// 			window.clear(MOD_BACKGROUND_LOW);
 
-			
-
-			window.display();
-		}
-	}
-#endif
+	// 			window.display();
+	// 		}
+	// 	}
+	// #endif
 	// ==============================================================================================================================
 	// ============== Program Initialization
 	// ==============================================================================================================================
@@ -347,7 +347,7 @@ int main()
 
 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 					{
-						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+						sf::View *primaryView = Plane::PrimaryPlane->GetView();
 						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(delta, 0.0f));
 					}
 					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
@@ -369,7 +369,7 @@ int main()
 					}
 					else
 					{
-						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+						sf::View *primaryView = Plane::PrimaryPlane->GetView();
 						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(0.0f, delta));
 					}
 				}
@@ -472,91 +472,91 @@ int main()
 		// ImGui
 		//////////////////////////////////////////////////////////
 
-#ifndef NDEBUG
-		ImGui::SFML::Update(window, sfmlDeltaTime);
+		// #ifndef NDEBUG
+		// 		ImGui::SFML::Update(window, sfmlDeltaTime);
 
-		{
-			ImGui::Begin("Debugging");
+		// 		{
+		// 			ImGui::Begin("Debugging");
 
-			if (ImGui::TreeNode("FPS"))
-			{
-				if (ImGui::Checkbox("Disable VSync", &vSync))
-				{
-					if (!vSync)
-					{
-						window.setVerticalSyncEnabled(true);
-						window.setFramerateLimit(0);
+		// 			if (ImGui::TreeNode("FPS"))
+		// 			{
+		// 				if (ImGui::Checkbox("Disable VSync", &vSync))
+		// 				{
+		// 					if (!vSync)
+		// 					{
+		// 						window.setVerticalSyncEnabled(true);
+		// 						window.setFramerateLimit(0);
 
-						fpsLimiter = false;
-						fps = 0;
-					}
-					else
-					{
-						window.setVerticalSyncEnabled(false);
-						window.setFramerateLimit(fps);
+		// 						fpsLimiter = false;
+		// 						fps = 0;
+		// 					}
+		// 					else
+		// 					{
+		// 						window.setVerticalSyncEnabled(false);
+		// 						window.setFramerateLimit(fps);
 
-						fpsLimiter = false;
-						fps = 0;
-					}
-				}
+		// 						fpsLimiter = false;
+		// 						fps = 0;
+		// 					}
+		// 				}
 
-				if (vSync)
-				{
-					if (ImGui::Checkbox("Enable FPS Limiter", &fpsLimiter))
-					{
-						if (fpsLimiter)
-							fps = 240;
-						else
-							fps = 0;
-					}
+		// 				if (vSync)
+		// 				{
+		// 					if (ImGui::Checkbox("Enable FPS Limiter", &fpsLimiter))
+		// 					{
+		// 						if (fpsLimiter)
+		// 							fps = 240;
+		// 						else
+		// 							fps = 0;
+		// 					}
 
-					if (fpsLimiter)
-					{
-						ImGui::SliderInt("FPS", &fps, 5, 500);
+		// 					if (fpsLimiter)
+		// 					{
+		// 						ImGui::SliderInt("FPS", &fps, 5, 500);
 
-						if (ImGui::Button("60", sf::Vector2f(50, 20)))
-							fps = 60;
+		// 						if (ImGui::Button("60", sf::Vector2f(50, 20)))
+		// 							fps = 60;
 
-						ImGui::SameLine();
-						if (ImGui::Button("75", sf::Vector2f(50, 20)))
-							fps = 75;
+		// 						ImGui::SameLine();
+		// 						if (ImGui::Button("75", sf::Vector2f(50, 20)))
+		// 							fps = 75;
 
-						ImGui::SameLine();
-						if (ImGui::Button("120", sf::Vector2f(50, 20)))
-							fps = 120;
+		// 						ImGui::SameLine();
+		// 						if (ImGui::Button("120", sf::Vector2f(50, 20)))
+		// 							fps = 120;
 
-						ImGui::SameLine();
-						if (ImGui::Button("144", sf::Vector2f(50, 20)))
-							fps = 144;
+		// 						ImGui::SameLine();
+		// 						if (ImGui::Button("144", sf::Vector2f(50, 20)))
+		// 							fps = 144;
 
-						ImGui::SameLine();
-						if (ImGui::Button("240", sf::Vector2f(50, 20)))
-							fps = 240;
-					}
+		// 						ImGui::SameLine();
+		// 						if (ImGui::Button("240", sf::Vector2f(50, 20)))
+		// 							fps = 240;
+		// 					}
 
-					if (fps != lastFps)
-					{
-						lastFps = fps;
-						window.setFramerateLimit(fps);
-					}
-				}
+		// 					if (fps != lastFps)
+		// 					{
+		// 						lastFps = fps;
+		// 						window.setFramerateLimit(fps);
+		// 					}
+		// 				}
 
-				ImGui::TreePop();
-			}
+		// 				ImGui::TreePop();
+		// 			}
 
-			ImGui::End();
-		}
+		// 			ImGui::End();
+		// 		}
 
-		ImGui::SFML::Render(window);
+		// 		ImGui::SFML::Render(window);
 
-#endif
+		// #endif
 
-		window.draw(frameRate);
-		window.display();
+		// 		window.draw(frameRate);
+		// 		window.display();
 	}
 
-	ImGui::SFML::Shutdown();
-	MessageHandler::Finish();
+	// 	ImGui::SFML::Shutdown();
+	// 	MessageHandler::Finish();
 
 	return 0;
 }

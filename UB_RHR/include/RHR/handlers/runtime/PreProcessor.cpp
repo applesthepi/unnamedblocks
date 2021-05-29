@@ -1,9 +1,9 @@
 #include "PreProcessor.h"
 #include "../ProjectHandler.h"
+#include "libtcc.h"
 
 #include <cstring>
 #include <fstream>
-#include <libtcc.h>
 #include <Cappuccino/runtime/ModBlockData.h>
 #include <shared_mutex>
 
@@ -228,7 +228,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	int64_t* superData = PreProcessor::GetMadeData();
 	std::mutex* superMutex = PreProcessor::GetMadeMutex();
 
-#ifdef LINUX
+#if LINUX
 	tcc_define_symbol(state, "LINUX", "1");
 #endif
 

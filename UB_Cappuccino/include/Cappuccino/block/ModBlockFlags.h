@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "config.h"
 
-#ifndef LINUX
+#if !LINUX
 #ifdef __CAP
 #define CAP_DLL __declspec(dllexport)
 #else

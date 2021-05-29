@@ -9,10 +9,9 @@
 #include <vector>
 #include <thread>
 #include <atomic>
-#include <SFML/Graphics.h>
 #include <chrono>
 
-#ifndef LINUX
+#if !LINUX
 #ifdef __CAP
 #define CAP_DLL __declspec(dllexport)
 #else

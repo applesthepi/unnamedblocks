@@ -6,14 +6,12 @@
 #include <shared_mutex>
 #include <vector>
 #include <string>
-#include <SFML/Graphics/RenderWindow.h>
-#include <SFML/System/Mutex.h>
 #include <chrono>
 #include <atomic>
 #include <random>
 #include <functional>
 
-#ifndef LINUX
+#if !LINUX
 	#ifdef __CAP
 		#define CAP_DLL __declspec(dllexport)
 	#else

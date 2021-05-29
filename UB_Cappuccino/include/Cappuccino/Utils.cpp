@@ -1,6 +1,5 @@
-#include "util.h"
-#include <array>
-#include <cinttypes>
+#include "Utils.h"
+
 namespace endianness {
 	std::array<char, 2> to_ne_bytes(uint16_t x) {
 		std::array<char, 2> bytes;

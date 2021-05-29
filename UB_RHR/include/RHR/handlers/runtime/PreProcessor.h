@@ -11,7 +11,7 @@
 #include <filesystem>
 #include <SFML/Graphics.hpp>
 
-#ifdef POSIX
+#if LINUX
 #include <dlfcn.h>
 #else
 #include <windows.h>

@@ -4,7 +4,7 @@
 
 #include <Espresso/Espresso.h>
 
-#ifdef LINUX
+#if LINUX
 #define UB_EXPORT extern "C"
 #else
 #define UB_EXPORT extern "C" __declspec(dllexport)

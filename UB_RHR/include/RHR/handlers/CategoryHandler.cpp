@@ -8,7 +8,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#ifndef LINUX
+#if !LINUX
 #include <windows.h>
 #include <shellapi.h>
 #endif
@@ -289,7 +289,7 @@ void CategoryHandler::RegisterHeader()
 		std::function<void()>* function = new std::function<void()>();
 		*function = []()
 		{
-#ifndef LINUX
+#if !LINUX
 			ShellExecute(0, 0, "https://github.com/applesthepi/unnamedblocks/issues", 0, 0, SW_SHOW);
 #else
 			system("xdg-open https://github.com/applesthepi/unnamedblocks/issues");

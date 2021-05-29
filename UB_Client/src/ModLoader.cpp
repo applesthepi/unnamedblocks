@@ -3,7 +3,7 @@
 //#include <RHR/config.h>
 #include <iostream>
 #include <filesystem>
-#ifdef LINUX
+#if LINUX
 #include <dlfcn.h>
 #else
 #include <windows.h>
@@ -52,7 +52,7 @@ ModLoaderStatus run()
 
 	for (uint16_t i = 0; i < mods->size(); i++)
 	{
-#ifdef LINUX
+#if LINUX
 		if (!(*mods)[i].Supported_LINUX)
 		{
 			Logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");

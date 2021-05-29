@@ -15,7 +15,7 @@ enum class ModBlockDataInterpretation
 	TEXT, STRING, REAL, BOOL, ANY
 };
 
-#ifdef LINUX
+#if LINUX
 #define MODBLOCK_EXPORT
 #else
 #define MODBLOCK_EXPORT __declspec(dllexport)

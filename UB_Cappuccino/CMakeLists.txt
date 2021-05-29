@@ -16,6 +16,7 @@ set(UB_CAPPUCCINO_SRC
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Intrinsics.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Utils.cpp"
 	# Headers
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockActions.h"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/block/ModBlockFlags.h"
@@ -32,6 +33,7 @@ set(UB_CAPPUCCINO_SRC
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/runtime/DataKey.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/PreProcessorData.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Intrinsics.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Utils.h"
 )
 
 # Preserve folders in visual studio structure
@@ -54,6 +56,7 @@ target_include_directories(UB_CAPPUCCINO SYSTEM PUBLIC
 
 target_include_directories(UB_CAPPUCCINO PUBLIC
     "${CMAKE_CURRENT_BINARY_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 target_link_libraries(UB_CAPPUCCINO PUBLIC

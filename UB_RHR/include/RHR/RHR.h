@@ -4,6 +4,7 @@
 
 #include "handlers/MessageHandler.h"
 #include "handlers/ProjectHandler.h"
+#include "handlers/runtime/PreProcessor.h"
 
 // runtime
 
