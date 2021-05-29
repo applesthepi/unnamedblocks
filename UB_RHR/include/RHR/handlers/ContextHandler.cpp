@@ -1,5 +1,6 @@
-#include "ContextHandler.h"
-#include "RHR/registries/UIRegistry.h"
+#include "ContextHandler.hpp"
+
+#include "registries/UIRegistry.hpp"
 
 const std::atomic<bool>& ContextHandler::IsEnabled()
 {

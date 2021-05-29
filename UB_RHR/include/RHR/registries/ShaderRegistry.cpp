@@ -1,6 +1,5 @@
-#include "ShaderRegistry.h"
+#include "ShaderRegistry.hpp"
 
-#include <Espresso/Global.h>
 #include <Cappuccino/Logger.h>
 
 void ShaderRegistry::ReloadAllShaders()

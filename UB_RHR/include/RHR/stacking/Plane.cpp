@@ -1,16 +1,10 @@
-#include "RHR/registries/ShaderRegistry.h"
-#include "RHR/handlers/ContextHandler.h"
-#include "Plane.h"
+#include "Plane.hpp"
 
-#include <Espresso/Global.h>
-#include <Cappuccino/Logger.h>
-#include <Cappuccino/Intrinsics.h>
-#include <SFML/System/Vector2.hpp>
-#include <cassert>
-#include <exception>
-#include <iostream>
-#include <vector>
-#include <Espresso/util.h>
+#include "registries/ShaderRegistry.hpp"
+#include "handlers/ContextHandler.hpp"
+
+#include <Cappuccino/Utils.hpp>
+#include <Cappuccino/Intrinsics.hpp>
 
 #ifdef ENABLE_AVX2
 #ifdef WIN32

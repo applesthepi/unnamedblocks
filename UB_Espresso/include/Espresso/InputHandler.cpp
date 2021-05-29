@@ -1,13 +1,4 @@
-#include "InputHandler.h"
-#include "Global.h"
-
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <SFML/Window/Clipboard.hpp>
-#include <chrono>
-#include <iostream>
-#include <GL/glew.h>
-#include <Cappuccino/Logger.h>
+#include "InputHandler.hpp"
 
 void InputHandler::Initialization()
 {

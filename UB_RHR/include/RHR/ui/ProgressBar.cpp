@@ -1,5 +1,6 @@
-#include "ProgressBar.h"
-#include "../Renderer.h"
+#include "ProgressBar.hpp"
+
+#include "ui/Renderer.hpp"
 
 vui::ProgressBar::ProgressBar(int32_t stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge, HorizontalAlignment horizontal, float horizontalSizeOverride)
     : m_RenderRectangleCompleted(std::make_shared<RenderRectangle>(true))

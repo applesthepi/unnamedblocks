@@ -1,4 +1,4 @@
-#include "UIRegistry.h"
+#include "UIRegistry.hpp"
 
 #include <Cappuccino/Logger.h>
 

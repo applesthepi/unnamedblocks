@@ -1,4 +1,4 @@
-#include "Vertex.h"
+#include "Vertex.hpp"
 
 Vertex::Vertex()
     : Position(VertexPosition(0.0, 0.0, 0.0))

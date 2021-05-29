@@ -1,7 +1,4 @@
-#include "Argument.h"
-
-#include <Espresso/Global.h>
-#include <Cappuccino/Logger.h>
+#include "Argument.hpp"
 
 Argument::Argument()
 {

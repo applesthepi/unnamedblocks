@@ -1,5 +1,4 @@
-#include "StatmentHandler.h"
-#include "RHR/StatmentIf.h"
+#include "StatmentHandler.hpp"
 
 /*
 std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)

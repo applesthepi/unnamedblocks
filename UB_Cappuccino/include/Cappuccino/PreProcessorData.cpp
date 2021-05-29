@@ -1,6 +1,6 @@
-#include "PreProcessorData.h"
-#include "Cappuccino/Logger.h"
-#include "Registration.h"
+#include "PreProcessorData.hpp"
+
+#include "Registration.hpp"
 
 PreProcessorData::PreProcessorData(std::vector<void*>& vCustom)
 	:m_vReal(Registration::GetRealTemplate()), m_vBool(Registration::GetBoolTemplate()), m_vString(Registration::GetStringTemplate()), m_vCustom(vCustom)

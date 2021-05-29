@@ -1,7 +1,8 @@
-#include "Renderer.h"
-#include "RenderTools.h"
-#include "RenderObject.h"
-#include "ui/RenderRectangle.h"
+#include "Renderer.hpp"
+
+#include "ui/RenderTools.hpp"
+#include "ui/RenderObject.hpp"
+#include "ui/RenderRectangle.hpp"
 
 const std::vector<Vertex> testVertices = {
 	{ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },

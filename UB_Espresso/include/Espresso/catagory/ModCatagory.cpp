@@ -1,4 +1,4 @@
-#include "ModCatagory.h"
+#include "ModCatagory.hpp"
 
 ModCatagory::ModCatagory(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 	:m_modUnlocalizedName(modUnlocalizedName), m_modDisplayName(modDisplayName)

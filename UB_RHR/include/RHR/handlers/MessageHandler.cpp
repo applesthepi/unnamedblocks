@@ -1,8 +1,6 @@
-#include "MessageHandler.h"
-// #include "InputHandler.h"
-#include "RHR/registries/UIRegistry.h"
+#include "MessageHandler.hpp"
 
-#include <Espresso/Global.h>
+#include "registries/UIRegistry.hpp"
 
 void ThreadMessage()
 {

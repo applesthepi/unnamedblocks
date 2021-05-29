@@ -1,6 +1,6 @@
-#include "ModBlockData.h"
+#include "ModBlockData.hpp"
 
-#include <Cappuccino/Registration.h>
+#include "Registration.hpp"
 
 MODBLOCK_EXPORT ModBlockData::ModBlockData()
 {

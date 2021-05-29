@@ -1,7 +1,7 @@
-#include "Cappuccino.h"
+#include "Cappuccino.hpp"
 
-#include "Registration.h"
-#include "ModBlockPass.h"
+#include "Registration.hpp"
+#include "ModBlockPass.hpp"
 
 CAP_CPP_EXPORT void cpInit()
 {

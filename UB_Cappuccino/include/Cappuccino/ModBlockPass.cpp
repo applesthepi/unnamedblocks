@@ -1,13 +1,6 @@
-﻿#include "ModBlockPass.h"
-#include "Registration.h"
+﻿#include "ModBlockPass.hpp"
 
-#include <thread>
-#include <cstddef>
-#include <cstdio>
-#include <locale>
-#include <ctime>
-#include <cstring>
-#include <chrono>
+#include "Registration.hpp"
 
 static double gReal = 0.0;
 static bool gBool = false;

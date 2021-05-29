@@ -1,6 +1,7 @@
-#include "RenderObject.h"
-#include "RenderTools.h"
-#include "Renderer.h"
+#include "RenderObject.hpp"
+
+#include "ui/RenderTools.hpp"
+#include "ui/Renderer.hpp"
 
 RenderObject::RenderObject()
     : m_HasVertexBufferData(false)

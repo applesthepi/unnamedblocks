@@ -1,13 +1,10 @@
-#include "Block.h"
-#include "RHR/registries/BlockRegistry.h"
+#include "Block.hpp"
 
-#include "args/ArgumentText.h"
-#include "args/ArgumentReal.h"
-#include "args/ArgumentBoolean.h"
-#include "args/ArgumentString.h"
-#include "args/ArgumentAny.h"
-
-#include <Espresso/Global.h>
+#include "stacking/args/ArgumentText.hpp"
+#include "stacking/args/ArgumentReal.hpp"
+#include "stacking/args/ArgumentBoolean.hpp"
+#include "stacking/args/ArgumentString.hpp"
+#include "stacking/args/ArgumentAny.hpp"
 
 Block::Block(const std::string& unlocalizedName)
 	:m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName))

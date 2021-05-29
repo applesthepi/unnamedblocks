@@ -1,5 +1,4 @@
-#include "Collection.h"
-#include <Espresso/Global.h>
+#include "Collection.hpp"
 
 Collection::Collection()
 {

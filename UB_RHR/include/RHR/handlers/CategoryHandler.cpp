@@ -1,12 +1,10 @@
-#include "CategoryHandler.h"
-#include "Global.h"
-#include "RHR/registries/UIRegistry.h"
-#include "ProjectHandler.h"
-#include "MessageHandler.h"
-#include "runtime/PreProcessor.h"
-#include "RHR/stacking/Plane.h"
+#include "CategoryHandler.hpp"
 
-#include <SFML/Graphics.hpp>
+#include "registries/UIRegistry.hpp"
+#include "handlers/ProjectHandler.hpp"
+#include "handlers/MessageHandler.hpp"
+#include "handlers/runtime/PreProcessor.hpp"
+#include "stacking/Plane.hpp"
 
 #if !LINUX
 #include <windows.h>

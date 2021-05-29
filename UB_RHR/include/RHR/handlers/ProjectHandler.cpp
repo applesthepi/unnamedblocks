@@ -1,15 +1,9 @@
-#include "ProjectHandler.h"
-#include "registries/BlockRegistry.h"
-#include "stacking/Collection.h"
-#include "stacking/Stack.h"
+#include "ProjectHandler.hpp"
 
-#include <SFML/System/Vector2.hpp>
-#include <unordered_map>
-#include <fstream>
-#include <string_view>
-#include <vector>
-#include <cassert>
-#include <Espresso/util.h>
+#include "registries/BlockRegistry.hpp"
+#include "stacking/Collection.hpp"
+#include "stacking/Stack.hpp"
+
 using namespace endianness;
 
 inline void push(std::vector<char> &vec, uint32_t value) {

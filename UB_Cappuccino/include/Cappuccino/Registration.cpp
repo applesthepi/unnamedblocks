@@ -1,10 +1,6 @@
-#include "Registration.h"
-#include "PreProcessorData.h"
+#include "Registration.hpp"
 
-#include <vector>
-#include <string>
-#include <cassert>
-#include <functional>
+#include "PreProcessorData.hpp"
 
 static void ThreadUtilRelease()
 {

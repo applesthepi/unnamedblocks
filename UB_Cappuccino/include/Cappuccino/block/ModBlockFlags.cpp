@@ -1,4 +1,4 @@
-#include "ModBlockFlags.h"
+#include "ModBlockFlags.hpp"
 
 ModBlockFlags::ModBlockFlags()
 	:m_iterator(ModBlockFlagsIterator(&m_flag))

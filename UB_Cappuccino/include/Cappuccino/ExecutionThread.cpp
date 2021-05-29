@@ -1,8 +1,6 @@
-#include "ExecutionThread.h"
-#include "Registration.h"
+#include "ExecutionThread.hpp"
 
-#include <exception>
-#include <ctime>
+#include "Registration.hpp"
 
 static void ThreadExecution(ExecutionThread* thr)
 {

@@ -1,11 +1,9 @@
-#include "PreProcessor.h"
-#include "../ProjectHandler.h"
-#include "libtcc.h"
+#include "PreProcessor.hpp"
 
-#include <cstring>
-#include <fstream>
+#include "handlers/ProjectHandler.hpp"
+
 #include <Cappuccino/runtime/ModBlockData.h>
-#include <shared_mutex>
+#include <libtcc.h>
 
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)

@@ -1,4 +1,4 @@
-#include "ModBlockFlagsIterator.h"
+#include "ModBlockFlagsIterator.hpp"
 
 ModBlockFlagsIterator::ModBlockFlagsIterator(const uint64_t* flag)
 	:m_iterator(0), m_flag(flag)

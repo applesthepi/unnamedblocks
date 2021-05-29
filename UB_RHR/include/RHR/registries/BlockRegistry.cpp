@@ -1,4 +1,5 @@
-#include "BlockRegistry.h"
+#include "BlockRegistry.hpp"
+
 #include <Cappuccino/Logger.h>
 
 void BlockRegistry::RegisterCatagory(ModCatagory* catagory)

@@ -1,4 +1,4 @@
-#include "DataRegistry.h"
+#include "DataRegistry.hpp"
 
 DataRegistry::DataRegistry(uint64_t keyCount)
 {

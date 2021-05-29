@@ -1,5 +1,6 @@
-#include "RenderRectangle.h"
-#include "../Renderer.h"
+#include "RenderRectangle.hpp"
+
+#include "ui/Renderer.hpp"
 
 vui::RenderRectangle::RenderRectangle(bool disableDirty)
     : m_Position({ 0, 0 })

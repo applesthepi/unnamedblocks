@@ -1,4 +1,4 @@
-#include "ModBlock.h"
+#include "ModBlock.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
