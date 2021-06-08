@@ -10,6 +10,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <shared_mutex>
 #include <functional>
 #include <atomic>
 #include <unordered_map>
@@ -20,7 +21,26 @@
 #include <cassert>
 #include <cstdint>
 #include <random>
+#include <set>
+#include <memory>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <stb_image.h>
+#include <rapidjson/rapidjson.h>
+#include <rapidjson/document.h>
+#include <rapidjson/prettywriter.h>
+#include <zstd.h>
+
+#include <vulkan/vulkan.h>
+#define GLFW_INCLUDE_VULKAN
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+#define TIME_POINT std::chrono::system_clock::time_point
 
 namespace endianness
 {

@@ -33,6 +33,11 @@ target_include_directories(UB_ESPRESSO PUBLIC
 
 target_link_libraries(UB_ESPRESSO PUBLIC
 	UB_CAPPUCCINO
+	glad::glad
+	glm
+	glfw
+	imgui::imgui
+	Vulkan::Vulkan
 )
 
 configure_file(config.h.in config.h)

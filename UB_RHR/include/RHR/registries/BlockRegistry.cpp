@@ -1,7 +1,5 @@
 #include "BlockRegistry.hpp"
 
-#include <Cappuccino/Logger.h>
-
 void BlockRegistry::RegisterCatagory(ModCatagory* catagory)
 {
 	m_catagories.push_back(catagory);

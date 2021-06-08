@@ -27,3 +27,5 @@ build
 compile_commands.json
 \#*\#
 *.user
+html
+latex

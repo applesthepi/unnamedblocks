@@ -16,14 +16,14 @@ const std::string ModCatagory::GetModDisplayName()
 	return m_modDisplayName;
 }
 
-const sf::Color ModCatagory::GetColor() const
+const glm::vec<3, uint8_t>&& ModCatagory::GetColor() const
 {
-	return sf::Color::Magenta;
+	return std::move(glm::vec<3, uint8_t>(255, 0, 255));
 }
 
 const std::string ModCatagory::GetUnlocalizedName() const
 {
-	return "vin_null";
+	return "NULL";
 }
 
 const std::string ModCatagory::GetDisplayName() const

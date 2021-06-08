@@ -50,7 +50,7 @@ CategoryHandler::CategoryHandler()
 
 			m_modCategoryButtons.push_back(new ButtonText(m_modCategoryCallbacks.back(), "   " + categories[i]->GetModDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG));
 			m_modCategoryButtons.back()->setPosition(sf::Vector2f(5, offset));
-			
+
 			UIRegistry::GetRegistry().AddComponent(m_modCategoryButtons.back());
 
 			offset += 16 + 5;
@@ -61,7 +61,7 @@ CategoryHandler::CategoryHandler()
 			m_buttons.push_back(std::vector<ButtonText*>());
 			m_buttonCallbacks.push_back(std::vector<std::function<void()>*>());
 		}
-		
+
 		const uint16_t catIdx = i;
 
 		m_buttonCallbacks.back().push_back(new std::function<void()>());
@@ -117,7 +117,7 @@ void CategoryHandler::ToggleMod(uint16_t modIdx, uint64_t catIdx)
 void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 {
 	const uint32_t offset = UpdateButtons();
-	
+
 	uint32_t widest = 0;
 
 	if (Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size() != m_toolbarStackCount)
@@ -410,7 +410,7 @@ uint32_t CategoryHandler::UpdateButtons()
 			m_modIco[i].setTexture(m_textureClose);
 
 		offset += 16 + 5;
-		
+
 		if (m_modOpen[i])
 		{
 			for (uint64_t a = 0; a < m_buttons[i].size(); a++)

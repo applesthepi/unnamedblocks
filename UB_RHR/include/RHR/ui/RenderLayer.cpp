@@ -1,7 +1,7 @@
-#include "RenderLayer.h"
+#include "RenderLayer.hpp"
 
 vui::RenderLayer::RenderLayer()
-    : m_Enabled(false)
+	: m_Enabled(false)
 {
 	m_Frames.reserve(16);
 }
@@ -13,7 +13,7 @@ void vui::RenderLayer::SetEnabled(bool enabled)
 
 void vui::RenderLayer::AddFrame(std::weak_ptr<RenderFrame>&& frame)
 {
-	std::lock_guard<SHARED_MUTEX> lock(m_Mutex);
+	std::unique_lock lock(m_Mutex);
 	m_Frames.push_back(frame);
 }
 
@@ -22,7 +22,7 @@ void vui::RenderLayer::Render()
 	if (!m_Enabled)
 		return;
 
-	std::lock_guard<SHARED_MUTEX> lock(m_Mutex);
+	std::unique_lock lock(m_Mutex);
 	bool erased = false;
 
 	for (size_t i = 0; i < m_Frames.size(); i++)
@@ -45,7 +45,7 @@ void vui::RenderLayer::Render()
 
 void vui::RenderLayer::ReloadSwapChain()
 {
-	std::lock_guard<SHARED_MUTEX> lock(m_Mutex);
+	std::unique_lock lock(m_Mutex);
 	bool erased = false;
 
 	for (size_t i = 0; i < m_Frames.size(); i++)

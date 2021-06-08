@@ -11,7 +11,7 @@ public:
 	const std::string GetModDisplayName();
 
 	// the color of the category, and the background color of all of the blocks registered to this category
-	virtual const sf::Color GetColor() const;
+	virtual const glm::vec<3, uint8_t>&& GetColor() const;
 
 	// the name the engine uses to refer to this category as. Convention example: "mymod_some_category"
 	virtual const std::string GetUnlocalizedName() const;

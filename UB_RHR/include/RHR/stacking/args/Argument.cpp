@@ -1,82 +1,82 @@
 #include "Argument.hpp"
 
-Argument::Argument()
-{
-	//m_vertexArrayImage.create(1, 1);
-	//m_vertexArray.setPrimitiveType(sf::Triangles);
+// Argument::Argument()
+// {
+// 	//m_vertexArrayImage.create(1, 1);
+// 	//m_vertexArray.setPrimitiveType(sf::Triangles);
 
-	m_mode = BlockArgumentVariableMode::RAW;
-}
+// 	m_mode = BlockArgumentVariableMode::RAW;
+// }
 
-void Argument::SetData(const std::string& data)
-{
-	m_data = data;
-}
+// void Argument::SetData(const std::string& data)
+// {
+// 	m_data = data;
+// }
 
-const std::string& Argument::GetData()
-{
-	return m_data;
-}
+// const std::string& Argument::GetData()
+// {
+// 	return m_data;
+// }
 
-void Argument::SetMode(const BlockArgumentVariableMode& mode)
-{
-	m_mode = mode;
-}
+// void Argument::SetMode(const BlockArgumentVariableMode& mode)
+// {
+// 	m_mode = mode;
+// }
 
-const BlockArgumentVariableMode& Argument::GetMode()
-{
-	return m_mode;
-}
+// const BlockArgumentVariableMode& Argument::GetMode()
+// {
+// 	return m_mode;
+// }
 
-bool Argument::PullNext()
-{
-	return m_next;
-}
+// bool Argument::PullNext()
+// {
+// 	return m_next;
+// }
 
-BlockArgumentType Argument::GetType()
-{
-	return BlockArgumentType::TEXT;
-}
+// BlockArgumentType Argument::GetType()
+// {
+// 	return BlockArgumentType::TEXT;
+// }
 
-uint32_t Argument::GetWidth()
-{
-	return 50;
-}
+// uint32_t Argument::GetWidth()
+// {
+// 	return 50;
+// }
 
-bool Argument::HasData()
-{
-	return false;
-}
+// bool Argument::HasData()
+// {
+// 	return false;
+// }
 
-void Argument::Select()
-{
+// void Argument::Select()
+// {
 
-}
+// }
 
-void Argument::UnSelect()
-{
+// void Argument::UnSelect()
+// {
 
-}
-/*
-bool Argument::UseVertexArrayTexture()
-{
-	return false;
-}
-*/
-void Argument::UpdateVertexArray()
-{
+// }
+// /*
+// bool Argument::UseVertexArrayTexture()
+// {
+// 	return false;
+// }
+// */
+// void Argument::UpdateVertexArray()
+// {
 
-}
+// }
 
-void Argument::UpdateData()
-{
+// void Argument::UpdateData()
+// {
 
-}
+// }
 
-VAO& Argument::GetVAO()
-{
-	return m_vao;
-}
+// VAO& Argument::GetVAO()
+// {
+// 	return m_vao;
+// }
 
 /*
 void Argument::ResetVertices(uint64_t reserve)

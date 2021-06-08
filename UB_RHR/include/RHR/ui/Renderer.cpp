@@ -3,6 +3,9 @@
 #include "ui/RenderTools.hpp"
 #include "ui/RenderObject.hpp"
 #include "ui/RenderRectangle.hpp"
+#include "ui/Vertex.hpp"
+
+#include <Espresso/InputHandler.hpp>
 
 const std::vector<Vertex> testVertices = {
 	{ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
@@ -21,14 +24,6 @@ const std::vector<uint32_t> testIndices = {
 	4, 5, 6, 6, 7, 4
 };
 
-static bool keyW = false;
-static bool keyS = false;
-static bool keyA = false;
-static bool keyD = false;
-
-static bool mouseMiddle = false;
-static glm::vec2 mousePosition = glm::vec2();
-
 void frame_buffer_resize_callback(GLFWwindow* window, int width, int height)
 {
 	Renderer::FramebufferResized = true;
@@ -37,71 +32,22 @@ void frame_buffer_resize_callback(GLFWwindow* window, int width, int height)
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-	else if (key == GLFW_KEY_W && action == GLFW_PRESS)
-		keyW = true;
-	else if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		keyW = false;
-	else if (key == GLFW_KEY_S && action == GLFW_PRESS)
-		keyS = true;
-	else if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		keyS = false;
-	else if (key == GLFW_KEY_A && action == GLFW_PRESS)
-		keyA = true;
-	else if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		keyA = false;
-	else if (key == GLFW_KEY_D && action == GLFW_PRESS)
-		keyD = true;
-	else if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		keyD = false;
-	else if (key == GLFW_KEY_F1 && action == GLFW_PRESS)
-	{
-		Logger::Debug(SIDE::CLIENT, "debug reload started...");
-		Client::Instance->GetChunkManager()->DebugReload();
-		Logger::Debug(SIDE::CLIENT, "...debug reload finished");
-	}
-	else if (key == GLFW_KEY_F2 && action == GLFW_PRESS)
-	{
-		auto pos = Client::Instance->GetPlayer()->GetPosition();
-		pos.x += 10;
-		pos.z += 10;
-		Client::Instance->GetPlayer()->SetPosition(pos);
-	}
-	else if (key == GLFW_KEY_F3 && action == GLFW_PRESS)
-	{
-		Client::Instance->GetPlayerPhysics()->SetEnabled(true);
-	}
-
-	Client::Instance->GetPlayerPhysics()->ChangeInput(keyW, keyA, keyS, keyD, false);
-
-	//else if (key == GLFW_KEY_Q && action == GLFW_PRESS)
-	//{
-	//	wireframe = !wireframe;
-	//
-	//	if (wireframe)
-	//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//	else
-	//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//}
+	InputHandler::FireKey(key, action);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
-		Client::Instance->GetPlayer()->CameraDragPress(mousePosition);
-	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
-		Client::Instance->GetPlayer()->CameraDragRelease();
+	InputHandler::FireMouseButton(button, action);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	//Client::Instance->GetPlayer()->ChangeZoom(-yoffset);
+	InputHandler::FireMouseScroll(yoffset);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	mousePosition = { static_cast<float>(xpos), static_cast<float>(ypos) };
+	InputHandler::FireMouseMove({ xpos, ypos });
 }
 
 VkImage depthImage;
@@ -114,6 +60,9 @@ void Renderer::InitializeWindow()
 	FramebufferResized = false;
 	VsyncEnabled = false;
 
+	ViewMatrix = glm::mat4(1.0);
+	ProjectionMatrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
+
 	WindowSize = { 1280, 720 };
 	glm::vec<2, int32_t> windowSize = WindowSize;
 
@@ -125,7 +74,7 @@ void Renderer::InitializeWindow()
 	Window = glfwCreateWindow(windowSize.x, windowSize.y, "MCC", NULL, NULL);
 
 	if (Window == NULL)
-		Logger::Fatal(SIDE::CLIENT, "Failed to create GLFW window");
+		Logger::Fatal("Failed to create GLFW window");
 
 	glfwSetFramebufferSizeCallback(Window, frame_buffer_resize_callback);
 	glfwSetKeyCallback(Window, key_callback);
@@ -138,7 +87,7 @@ void Renderer::InitializeWindow()
 	auto glfwWindowResult = glfwCreateWindowSurface(Instance, Window, nullptr, &Surface);
 
 	if (glfwWindowResult != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, std::to_string(glfwWindowResult));
+		Logger::Fatal(std::to_string(glfwWindowResult));
 }
 
 void Renderer::Initialization()
@@ -153,7 +102,7 @@ void Renderer::Initialization()
 	float queuePriority = 1.0f;
 	for (uint32_t queueFamily : uniqueQueueFamilies)
 	{
-		VkDeviceQueueCreateInfo queueCreateInfo {};
+		VkDeviceQueueCreateInfo queueCreateInfo{};
 		queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 		queueCreateInfo.queueFamilyIndex = queueFamily;
 		queueCreateInfo.queueCount = 1;
@@ -180,77 +129,49 @@ void Renderer::Initialization()
 	RenderTools::CreateAuxCommandBuffer();
 }
 
-void Renderer::AddDirtyObject(std::weak_ptr<RenderObject> object)
+void Renderer::AddDirty(std::weak_ptr<IRenderable> renderable)
 {
-	std::unique_lock<SHARED_MUTEX> lock(m_DirtyMutex);
-	m_DirtyObjects.push_back(object);
-}
-
-void Renderer::AddDirtyFrame(std::weak_ptr<vui::RenderFrame> frame)
-{
-	std::unique_lock<SHARED_MUTEX> lock(m_DirtyMutex);
-	m_DirtyFrames.push_back(frame);
-}
-
-void Renderer::AddDirtyUI(std::weak_ptr<vui::RenderUI> ui)
-{
-	std::unique_lock<SHARED_MUTEX> lock(m_DirtyMutex);
-	m_DirtyUI.push_back(ui);
+	std::unique_lock lock(m_DirtyMutex);
+	m_DirtyRenderable.push_back(renderable);
 }
 
 void Renderer::ProcessDirty()
 {
-	std::unique_lock<SHARED_MUTEX> lock(m_DirtyMutex);
+	std::unique_lock lock(m_DirtyMutex);
 
-	for (uint32_t i = 0; i < m_DirtyObjects.size(); i++)
+	for (auto renderable : m_DirtyRenderable)
 	{
-		if (auto object = m_DirtyObjects[i].lock())
+		if (auto object = renderable.lock())
 			object->UpdateBuffers();
 	}
 
-	m_DirtyObjects.clear();
-
-	for (uint32_t i = 0; i < m_DirtyFrames.size(); i++)
-	{
-		if (auto frame = m_DirtyFrames[i].lock())
-			frame->UpdateBuffers();
-	}
-
-	m_DirtyFrames.clear();
-
-	for (uint32_t i = 0; i < m_DirtyUI.size(); i++)
-	{
-		if (auto ui = m_DirtyUI[i].lock())
-			ui->UpdateBuffers();
-	}
-
-	m_DirtyUI.clear();
+	m_DirtyRenderable.clear();
 }
 
 void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diagnosticsTime)
 {
 	// External Frame Updating
 
-	if (!setup)
-	{
-		Client::Instance->GetPlayer()->UpdateCamera(mousePosition);
-		Renderer::ViewMatrix = Client::Instance->GetPlayer()->GetCamera()->GetView();
-		Renderer::ProjectionMatrix = Client::Instance->GetPlayer()->GetCamera()->GetProjection();
-	}
+	// if (!setup)
+	// {
+	// 	Client::Instance->GetPlayer()->UpdateCamera(mousePosition);
+	// 	Renderer::ViewMatrix = glm::mat4(1.0);
+	// 	Renderer::ProjectionMatrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
+	// }
 
 	Renderer::UIProjectionMatrix = glm::ortho(0.0f, static_cast<float>(WindowSize.x), 0.0f, static_cast<float>(WindowSize.y), -10000.0f, 10000.0f);
 
 	// Render Frame
 
-	VkCommandBufferBeginInfo beginInfo {};
+	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	beginInfo.flags = 0; // Optional
 	beginInfo.pInheritanceInfo = nullptr; // Optional
 
 	if (vkBeginCommandBuffer(ActiveCommandBuffer, &beginInfo) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to start the command buffer");
+		Logger::Fatal("failed to start the command buffer");
 
-	VkRenderPassBeginInfo renderPassInfo {};
+	VkRenderPassBeginInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = RenderPass;
 	renderPassInfo.framebuffer = SwapChainFramebuffers[idx];
@@ -258,28 +179,28 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = SwapChainExtent;
 
-	std::array<VkClearValue, 2> clearValues {};
+	std::array<VkClearValue, 2> clearValues{};
 	clearValues[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
 	clearValues[1].depthStencil = { 1.0f, 0 };
 
 	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 	renderPassInfo.pClearValues = clearValues.data();
 
-	Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
-	diagnosticsTime = std::chrono::high_resolution_clock::now();
+	// Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
+	// diagnosticsTime = std::chrono::high_resolution_clock::now();
 	ProcessDirty();
-	Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
-	diagnosticsTime = std::chrono::high_resolution_clock::now();
+	// Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
+	// diagnosticsTime = std::chrono::high_resolution_clock::now();
 
 	vkCmdBeginRenderPass(ActiveCommandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	if (!setup)
-	{
-		// ChunkManager binds BlocksPipeline
-		Client::Instance->GetChunkManager()->Render(deltaTime);
-		Client::Instance->GetDispatcher()->UpdateDiagnosticData();
-		Client::Instance->GetDiagnostics()->UpdateProgressBars();
-	}
+	// if (!setup)
+	// {
+	// 	// ChunkManager binds BlocksPipeline
+	// 	Client::Instance->GetChunkManager()->Render(deltaTime);
+	// 	Client::Instance->GetDispatcher()->UpdateDiagnosticData();
+	// 	Client::Instance->GetDiagnostics()->UpdateProgressBars();
+	// }
 
 	bool erased = false;
 
@@ -303,7 +224,7 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 	vkCmdEndRenderPass(ActiveCommandBuffer);
 
 	if (vkEndCommandBuffer(ActiveCommandBuffer) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to close the command buffer");
+		Logger::Fatal("failed to close the command buffer");
 }
 
 void Renderer::CleanupSwapChain()
@@ -449,7 +370,7 @@ void Renderer::InitInstance()
 	appInfo.apiVersion = VK_API_VERSION_1_0;
 	appInfo.pNext = NULL;
 
-	VkInstanceCreateInfo createInfo {};
+	VkInstanceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &appInfo;
 
@@ -478,7 +399,7 @@ void Renderer::InitInstance()
 	}
 
 	if (vkCreateInstance(&createInfo, nullptr, &Instance) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "vulkan failed to initialize");
+		Logger::Fatal("vulkan failed to initialize");
 
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
@@ -487,7 +408,7 @@ void Renderer::InitInstance()
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
 	if (EnableValidationLayers && !RenderTools::CheckValidationLayerSupport())
-		Logger::Fatal(SIDE::CLIENT, "vulkan validation layers unsupported");
+		Logger::Fatal("vulkan validation layers unsupported");
 }
 
 void Renderer::InitDebug()
@@ -499,7 +420,7 @@ void Renderer::InitDebug()
 	RenderTools::PopulateDebugMessengerCreateInfo(createInfo);
 
 	if (RenderTools::CreateDebugUtilsMessengerEXT(&Instance, &createInfo, nullptr, &DebugMessenger) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create debug utils message EXT");
+		Logger::Fatal("failed to create debug utils message EXT");
 }
 
 void Renderer::InitDevice()
@@ -508,7 +429,7 @@ void Renderer::InitDevice()
 	vkEnumeratePhysicalDevices(Instance, &deviceCount, nullptr);
 
 	if (deviceCount == 0)
-		Logger::Fatal(SIDE::CLIENT, "no supported vulkan devices found");
+		Logger::Fatal("no supported vulkan devices found");
 
 	std::vector<VkPhysicalDevice> devices(deviceCount);
 	vkEnumeratePhysicalDevices(Instance, &deviceCount, devices.data());
@@ -523,14 +444,14 @@ void Renderer::InitDevice()
 	}
 
 	if (PhysicalDevice == VK_NULL_HANDLE)
-		Logger::Fatal(SIDE::CLIENT, "failed to pick appropriate device");
+		Logger::Fatal("failed to pick appropriate device");
 }
 
 void Renderer::InitLogicalDevice()
 {
 	QueueFamilyIndices indices = RenderTools::FindQueueFamilies(&PhysicalDevice, &Surface);
 
-	VkDeviceQueueCreateInfo queueCreateInfo {};
+	VkDeviceQueueCreateInfo queueCreateInfo{};
 	queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 	queueCreateInfo.queueFamilyIndex = indices.GraphicsFamily.value();
 	queueCreateInfo.queueCount = 1;
@@ -538,10 +459,10 @@ void Renderer::InitLogicalDevice()
 	float queuePriority = 1.0f;
 	queueCreateInfo.pQueuePriorities = &queuePriority;
 
-	VkPhysicalDeviceFeatures deviceFeatures {};
+	VkPhysicalDeviceFeatures deviceFeatures{};
 	deviceFeatures.samplerAnisotropy = VK_TRUE;
 
-	VkDeviceCreateInfo createInfo {};
+	VkDeviceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
 	createInfo.queueCreateInfoCount = static_cast<uint32_t>(QueueCreateInfos.size());
@@ -559,7 +480,7 @@ void Renderer::InitLogicalDevice()
 		createInfo.enabledLayerCount = 0;
 
 	if (vkCreateDevice(PhysicalDevice, &createInfo, nullptr, &Device) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create logical device link to gpu");
+		Logger::Fatal("failed to create logical device link to gpu");
 
 	vkGetDeviceQueue(Device, indices.GraphicsFamily.value(), 0, &GraphicsQueue);
 }
@@ -577,7 +498,7 @@ void Renderer::InitSwapChain()
 	if (swapChainSupport.Capabilities.maxImageCount > 0 && imageCount > swapChainSupport.Capabilities.maxImageCount)
 		imageCount = swapChainSupport.Capabilities.maxImageCount;
 
-	VkSwapchainCreateInfoKHR createInfo {};
+	VkSwapchainCreateInfoKHR createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
 	createInfo.surface = Surface;
 
@@ -611,7 +532,7 @@ void Renderer::InitSwapChain()
 	createInfo.oldSwapchain = VK_NULL_HANDLE;
 
 	if (vkCreateSwapchainKHR(Device, &createInfo, nullptr, &SwapChain) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create swap chain");
+		Logger::Fatal("failed to create swap chain");
 
 	vkGetSwapchainImagesKHR(Device, SwapChain, &imageCount, nullptr);
 	SwapChainImages.resize(imageCount);
@@ -631,7 +552,7 @@ void Renderer::InitImageViews()
 
 void Renderer::InitRenderPass()
 {
-	VkSubpassDependency dependency {};
+	VkSubpassDependency dependency{};
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependency.dstSubpass = 0;
 	dependency.srcAccessMask = 0;
@@ -639,7 +560,7 @@ void Renderer::InitRenderPass()
 	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-	VkAttachmentDescription colorAttachment {};
+	VkAttachmentDescription colorAttachment{};
 	colorAttachment.format = SwapChainImageFormat;
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -649,7 +570,7 @@ void Renderer::InitRenderPass()
 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-	VkAttachmentDescription depthAttachment {};
+	VkAttachmentDescription depthAttachment{};
 	depthAttachment.format = RenderTools::FindDepthFormat();
 	depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -659,22 +580,22 @@ void Renderer::InitRenderPass()
 	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkAttachmentReference colorAttachmentRef {};
+	VkAttachmentReference colorAttachmentRef{};
 	colorAttachmentRef.attachment = 0;
 	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	VkAttachmentReference depthAttachmentRef {};
+	VkAttachmentReference depthAttachmentRef{};
 	depthAttachmentRef.attachment = 1;
 	depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkSubpassDescription subpass {};
+	VkSubpassDescription subpass{};
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
 	subpass.pColorAttachments = &colorAttachmentRef;
 	subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
 	std::array<VkAttachmentDescription, 2> attachments = { colorAttachment, depthAttachment };
-	VkRenderPassCreateInfo renderPassInfo {};
+	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 	renderPassInfo.pAttachments = attachments.data();
@@ -684,19 +605,19 @@ void Renderer::InitRenderPass()
 	renderPassInfo.pDependencies = &dependency;
 
 	if (vkCreateRenderPass(Device, &renderPassInfo, nullptr, &RenderPass) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create render pass");
+		Logger::Fatal("failed to create render pass");
 }
 
 void Renderer::InitDescriptorSetLayout()
 {
-	VkDescriptorSetLayoutBinding uboLayoutBinding {};
+	VkDescriptorSetLayoutBinding uboLayoutBinding{};
 	uboLayoutBinding.binding = 0;
 	uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	uboLayoutBinding.descriptorCount = 1;
 	uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
 	uboLayoutBinding.pImmutableSamplers = nullptr; // Optional
 
-	VkDescriptorSetLayoutBinding samplerLayoutBinding {};
+	VkDescriptorSetLayoutBinding samplerLayoutBinding{};
 	samplerLayoutBinding.binding = 1;
 	samplerLayoutBinding.descriptorCount = 1;
 	samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -704,13 +625,13 @@ void Renderer::InitDescriptorSetLayout()
 	samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { uboLayoutBinding, samplerLayoutBinding };
-	VkDescriptorSetLayoutCreateInfo layoutInfo {};
+	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 	layoutInfo.pBindings = bindings.data();
 
 	if (vkCreateDescriptorSetLayout(Device, &layoutInfo, nullptr, &DescriptorSetLayout) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to set descriptor layout");
+		Logger::Fatal("failed to set descriptor layout");
 }
 
 void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, VkPipelineLayout* layout)
@@ -721,14 +642,14 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	VkShaderModule vertShaderModule = RenderTools::CreateShaderModule(*vertShaderCode, &Device);
 	VkShaderModule fragShaderModule = RenderTools::CreateShaderModule(*fragShaderCode, &Device);
 
-	VkPipelineShaderStageCreateInfo vertShaderStageInfo {};
+	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
 
 	vertShaderStageInfo.module = vertShaderModule;
 	vertShaderStageInfo.pName = "main";
 
-	VkPipelineShaderStageCreateInfo fragShaderStageInfo {};
+	VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
 	fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 	fragShaderStageInfo.module = fragShaderModule;
@@ -739,19 +660,19 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	auto bindingDescription = Vertex::GetBindingDescription();
 	auto attributeDescriptions = Vertex::GetAttributeDescriptions();
 
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo {};
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	vertexInputInfo.vertexBindingDescriptionCount = 1;
 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
-	VkPipelineInputAssemblyStateCreateInfo inputAssembly {};
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-	VkViewport viewport {};
+	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
 	viewport.width = (float)SwapChainExtent.width;
@@ -759,18 +680,18 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 
-	VkRect2D scissor {};
+	VkRect2D scissor{};
 	scissor.offset = { 0, 0 };
 	scissor.extent = SwapChainExtent;
 
-	VkPipelineViewportStateCreateInfo viewportState {};
+	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	viewportState.viewportCount = 1;
 	viewportState.pViewports = &viewport;
 	viewportState.scissorCount = 1;
 	viewportState.pScissors = &scissor;
 
-	VkPipelineRasterizationStateCreateInfo rasterizer {};
+	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.depthClampEnable = VK_FALSE;
 	rasterizer.rasterizerDiscardEnable = VK_FALSE;
@@ -785,7 +706,7 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	rasterizer.depthBiasClamp = 0.0f; // Optional
 	rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
 
-	VkPipelineMultisampleStateCreateInfo multisampling {};
+	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_FALSE;
 	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
@@ -794,7 +715,7 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
 	multisampling.alphaToOneEnable = VK_FALSE; // Optional
 
-	VkPipelineColorBlendAttachmentState colorBlendAttachment {};
+	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	colorBlendAttachment.blendEnable = VK_TRUE;
 	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
@@ -804,7 +725,7 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
-	VkPipelineColorBlendStateCreateInfo colorBlending {};
+	VkPipelineColorBlendStateCreateInfo colorBlending{};
 	colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 	colorBlending.logicOpEnable = VK_FALSE;
 	colorBlending.logicOp = VK_LOGIC_OP_COPY; // Optional
@@ -820,12 +741,12 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 		VK_DYNAMIC_STATE_LINE_WIDTH
 	};
 
-	VkPipelineDynamicStateCreateInfo dynamicState {};
+	VkPipelineDynamicStateCreateInfo dynamicState{};
 	dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
 	dynamicState.dynamicStateCount = 2;
 	dynamicState.pDynamicStates = dynamicStates;
 
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	pipelineLayoutInfo.setLayoutCount = 1;
 	pipelineLayoutInfo.pSetLayouts = &DescriptorSetLayout;
@@ -833,9 +754,9 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
 
 	if (vkCreatePipelineLayout(Device, &pipelineLayoutInfo, nullptr, layout) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create pipeline layout");
+		Logger::Fatal("failed to create pipeline layout");
 
-	VkPipelineDepthStencilStateCreateInfo depthStencil {};
+	VkPipelineDepthStencilStateCreateInfo depthStencil{};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 	depthStencil.depthTestEnable = VK_TRUE;
 	depthStencil.depthWriteEnable = VK_TRUE;
@@ -847,7 +768,7 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	depthStencil.front = {}; // Optional
 	depthStencil.back = {}; // Optional
 
-	VkGraphicsPipelineCreateInfo pipelineInfo {};
+	VkGraphicsPipelineCreateInfo pipelineInfo{};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
 	pipelineInfo.pStages = shaderStages;
@@ -867,7 +788,7 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 	pipelineInfo.basePipelineIndex = -1; // Optional
 
 	if (vkCreateGraphicsPipelines(Device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, pipeline) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create graphics pipeline");
+		Logger::Fatal("failed to create graphics pipeline");
 }
 
 void Renderer::InitPipelines()
@@ -881,13 +802,13 @@ void Renderer::InitCommandPool()
 {
 	QueueFamilyIndices queueFamilyIndices = RenderTools::FindQueueFamilies(&PhysicalDevice, &Surface);
 
-	VkCommandPoolCreateInfo poolInfo {};
+	VkCommandPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	poolInfo.queueFamilyIndex = queueFamilyIndices.GraphicsFamily.value();
 	poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
 
 	if (vkCreateCommandPool(Device, &poolInfo, nullptr, &CommandPool) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create command pool");
+		Logger::Fatal("failed to create command pool");
 }
 
 void Renderer::InitFrameBuffers()
@@ -901,7 +822,7 @@ void Renderer::InitFrameBuffers()
 			DepthImageView
 		};
 
-		VkFramebufferCreateInfo framebufferInfo {};
+		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = RenderPass;
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -911,7 +832,7 @@ void Renderer::InitFrameBuffers()
 		framebufferInfo.layers = 1;
 
 		if (vkCreateFramebuffer(Device, &framebufferInfo, nullptr, &SwapChainFramebuffers[i]) != VK_SUCCESS)
-			Logger::Fatal(SIDE::CLIENT, "failed to create frame buffers");
+			Logger::Fatal("failed to create frame buffers");
 	}
 }
 
@@ -925,10 +846,10 @@ void Renderer::InitDepthResources()
 
 void Renderer::InitTextureSampler()
 {
-	VkPhysicalDeviceProperties properties {};
+	VkPhysicalDeviceProperties properties{};
 	vkGetPhysicalDeviceProperties(PhysicalDevice, &properties);
 
-	VkSamplerCreateInfo samplerInfo {};
+	VkSamplerCreateInfo samplerInfo{};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 	samplerInfo.magFilter = VK_FILTER_NEAREST;
 	samplerInfo.minFilter = VK_FILTER_NEAREST;
@@ -949,12 +870,12 @@ void Renderer::InitTextureSampler()
 	samplerInfo.maxLod = 0.0f;
 
 	if (vkCreateSampler(Device, &samplerInfo, nullptr, &TextureSampler) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create texture sampler");
+		Logger::Fatal("failed to create texture sampler");
 }
 
 void Renderer::InitDescriptorPool()
 {
-	std::array<VkDescriptorPoolSize, 2> poolSizes {};
+	std::array<VkDescriptorPoolSize, 2> poolSizes{};
 
 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	poolSizes[0].descriptorCount = static_cast<uint32_t>(10000);
@@ -962,7 +883,7 @@ void Renderer::InitDescriptorPool()
 	poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	poolSizes[1].descriptorCount = static_cast<uint32_t>(10000);
 
-	VkDescriptorPoolCreateInfo poolInfo {};
+	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
@@ -970,33 +891,33 @@ void Renderer::InitDescriptorPool()
 	poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
 	if (vkCreateDescriptorPool(Device, &poolInfo, nullptr, &DescriptorPool) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create descriptor pool");
+		Logger::Fatal("failed to create descriptor pool");
 }
 
 void Renderer::InitCommandBuffers()
 {
 	CommandBuffers.resize(SwapChainFramebuffers.size());
 
-	VkCommandBufferAllocateInfo allocInfo {};
+	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocInfo.commandPool = CommandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)CommandBuffers.size();
 
 	if (vkAllocateCommandBuffers(Device, &allocInfo, CommandBuffers.data()) != VK_SUCCESS)
-		Logger::Fatal(SIDE::CLIENT, "failed to create command buffers");
+		Logger::Fatal("failed to create command buffers");
 
 	for (size_t i = 0; i < CommandBuffers.size(); i++)
 	{
-		VkCommandBufferBeginInfo beginInfo {};
+		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		beginInfo.flags = 0; // Optional
 		beginInfo.pInheritanceInfo = nullptr; // Optional
 
 		if (vkBeginCommandBuffer(CommandBuffers[i], &beginInfo) != VK_SUCCESS)
-			Logger::Fatal(SIDE::CLIENT, "failed to start the command buffer");
+			Logger::Fatal("failed to start the command buffer");
 
-		VkRenderPassBeginInfo renderPassInfo {};
+		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassInfo.renderPass = RenderPass;
 		renderPassInfo.framebuffer = SwapChainFramebuffers[i];
@@ -1004,7 +925,7 @@ void Renderer::InitCommandBuffers()
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = SwapChainExtent;
 
-		std::array<VkClearValue, 2> clearValues {};
+		std::array<VkClearValue, 2> clearValues{};
 		clearValues[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
 		clearValues[1].depthStencil = { 1.0f, 0 };
 
@@ -1016,7 +937,7 @@ void Renderer::InitCommandBuffers()
 		vkCmdEndRenderPass(CommandBuffers[i]);
 
 		if (vkEndCommandBuffer(CommandBuffers[i]) != VK_SUCCESS)
-			Logger::Fatal(SIDE::CLIENT, "failed to close the command buffer");
+			Logger::Fatal("failed to close the command buffer");
 	}
 }
 
@@ -1039,17 +960,17 @@ void Renderer::InitSyncObjects()
 	InFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
 	ImagesInFlight.resize(SwapChainImages.size(), VK_NULL_HANDLE);
 
-	VkSemaphoreCreateInfo semaphoreInfo {};
+	VkSemaphoreCreateInfo semaphoreInfo{};
 	semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-	VkFenceCreateInfo fenceInfo {};
+	VkFenceCreateInfo fenceInfo{};
 	fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 	fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
 	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
 		if (vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &ImageAvailableSemaphores[i]) != VK_SUCCESS || vkCreateSemaphore(Device, &semaphoreInfo, nullptr, &RenderFinishedSemaphores[i]) != VK_SUCCESS || vkCreateFence(Device, &fenceInfo, nullptr, &InFlightFences[i]) != VK_SUCCESS)
-			Logger::Fatal(SIDE::CLIENT, "failed to create semaphores");
+			Logger::Fatal("failed to create semaphores");
 	}
 }
 
@@ -1100,8 +1021,6 @@ VkPipeline Renderer::BlocksPipeline;
 VkPipeline Renderer::UIPipeline;
 VkPipeline Renderer::UITexturePipeline;
 
-std::vector<std::weak_ptr<RenderObject>> Renderer::m_DirtyObjects;
-std::vector<std::weak_ptr<vui::RenderFrame>> Renderer::m_DirtyFrames;
-std::vector<std::weak_ptr<vui::RenderUI>> Renderer::m_DirtyUI;
+std::vector<std::weak_ptr<IRenderable>> Renderer::m_DirtyRenderable;
 std::vector<std::weak_ptr<vui::RenderLayer>> Renderer::m_Layers;
-SHARED_MUTEX Renderer::m_DirtyMutex;
+std::shared_mutex Renderer::m_DirtyMutex;

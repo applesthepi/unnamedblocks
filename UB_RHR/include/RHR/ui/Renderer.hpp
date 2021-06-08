@@ -2,8 +2,11 @@
 #include "config.h"
 
 #include "ui/RenderLayer.hpp"
+#include "ui/RenderObject.hpp"
+#include "ui/interfaces/IRenderable.hpp"
 
 #include <Cappuccino/Utils.hpp>
+#include <vulkan/vulkan.h>
 
 /*
 
@@ -19,9 +22,7 @@ class Renderer
 public:
 	static void InitializeWindow();
 	static void Initialization();
-	static void AddDirtyObject(std::weak_ptr<RenderObject> object);
-	static void AddDirtyFrame(std::weak_ptr<vui::RenderFrame> frame);
-	static void AddDirtyUI(std::weak_ptr<vui::RenderUI> ui);
+	static void AddDirty(std::weak_ptr<IRenderable> renderable);
 	static void ProcessDirty();
 	static void Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diagnosticsTime);
 	static void CleanupSwapChain();
@@ -106,9 +107,7 @@ private:
 	static void InitCommandBuffers();
 	static void InitSyncObjects();
 
-	static std::vector<std::weak_ptr<RenderObject>> m_DirtyObjects;
-	static std::vector<std::weak_ptr<vui::RenderFrame>> m_DirtyFrames;
-	static std::vector<std::weak_ptr<vui::RenderUI>> m_DirtyUI;
+	static std::vector<std::weak_ptr<IRenderable>> m_DirtyRenderable;
 	static std::vector<std::weak_ptr<vui::RenderLayer>> m_Layers;
-	static SHARED_MUTEX m_DirtyMutex;
+	static std::shared_mutex m_DirtyMutex;
 };

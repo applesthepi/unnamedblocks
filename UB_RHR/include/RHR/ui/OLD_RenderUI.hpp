@@ -35,13 +35,13 @@ namespace vui
 #define COLOR_BACKGROUND_ACCENT_5_DARK glm::vec<3, float>(0.0f, 0.01f, 0.08f)
 
 
-class RenderUI
-{
-public:
-	virtual void SetParent(glm::vec<2, int32_t> position, glm::vec<2, int32_t> size) = 0;
-	virtual void Render() = 0;
-	virtual void UpdateBuffers() = 0;
-	virtual void ReloadSwapChain() = 0;
-};
+// class RenderUI
+// {
+// public:
+// 	virtual void SetParent(glm::vec<2, int32_t> position, glm::vec<2, int32_t> size) = 0;
+// 	virtual void Render() = 0;
+// 	virtual void UpdateBuffers() = 0;
+// 	virtual void ReloadSwapChain() = 0;
+// };
 
 }

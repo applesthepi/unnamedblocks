@@ -2,47 +2,42 @@
 #include "config.h"
 
 #include "ui/Cardinal.hpp"
-#include "ui/RenderUI.hpp"
+#include "ui/interfaces/IUI.hpp"
+#include "ui/interfaces/IPositionable.hpp"
+#include "ui/interfaces/ISizeable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
 namespace vui
 {
+	class RenderFrame : public IUI, public IPositionable<int32_t>, public ISizeable<int32_t>
+	{
+	public:
+		RenderFrame();
 
-class RenderFrame
-{
-public:
-	RenderFrame();
+		void SetPadding(uint8_t padding);
 
-	void SetWeak(std::weak_ptr<RenderFrame>&& weak);
-	void SetPosition(glm::vec<2, int32_t> position);
-	void SetSize(glm::vec<2, int32_t> size);
-	void SetPadding(uint8_t padding);
+		void SetFrame(std::unique_ptr<RenderFrame>& frame);
+		void AddFrame(std::unique_ptr<RenderFrame>& frame, LocalCardinal cardinal);
+		void AddContent(std::weak_ptr<IUI>&& content);
+	protected:
+		void OnRender() override;
+		void OnUpdateBuffers() override;
+		void OnReloadSwapChain() override;
 
-	void SetFrame(std::unique_ptr<RenderFrame>& frame);
-	void AddFrame(std::unique_ptr<RenderFrame>& frame, LocalCardinal cardinal);
-	void AddContent(std::weak_ptr<RenderUI>&& content);
-	void Render();
-	void UpdateBuffers();
-	void ReloadSwapChain();
+		bool OnSetPosition(const glm::vec<2, int32_t>&& position) override;
+		bool OnSetSize(const glm::vec<2, int32_t>&& size) override;
+	private:
+		void UpdateContentDimentions();
 
-private:
-	void UpdateContentDimentions();
-	void MarkDirty();
+		bool m_HasFrame;
+		bool m_HasSpace;
+		bool m_HasContent;
 
-	bool m_HasFrame;
-	bool m_HasSpace;
-	bool m_HasContent;
-	bool m_Dirty;
+		PlaneSpace m_Space;
+		std::vector<std::unique_ptr<RenderFrame>> m_Frames;
+		std::vector<std::weak_ptr<IUI>> m_Content;
 
-	PlaneSpace m_Space;
-	std::vector<std::unique_ptr<RenderFrame>> m_Frames;
-	std::vector<std::weak_ptr<RenderUI>> m_Content;
-
-	uint8_t m_Padding;
-	glm::vec<2, int32_t> m_Position;
-	glm::vec<2, int32_t> m_Size;
-	std::weak_ptr<RenderFrame> m_Weak;
-};
-
+		uint8_t m_Padding;
+	};
 }

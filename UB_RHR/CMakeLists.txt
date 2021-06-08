@@ -55,12 +55,35 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderRectangle.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderTools.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderTools.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderUI.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderUI.cpp"
+	# "${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderUI.hpp"
+	# "${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderUI.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Vertex.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Vertex.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IPositionable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IPositionable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/ISizeable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/ISizeable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IScalable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IScalable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IRenderable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IRenderable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IUpdatable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IUpdatable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IUI.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IUI.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IWeak.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IWeak.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IColorable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IColorable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IDiColorable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IDiColorable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IEnableable.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IEnableable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IBoundedParent.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IBoundedParent.cpp"
 )
 
 # Preserve folders in visual studio structure
@@ -71,10 +94,14 @@ add_library(UB_RHR STATIC
 )
 
 target_link_libraries(UB_RHR PUBLIC
-	glm
 	UB_ESPRESSO
 	UB_CAPPUCCINO
 	"${CMAKE_SOURCE_DIR}/tcc/lib/libtcc1-64.a"
+	glad::glad
+	glm
+	glfw
+	imgui::imgui
+	Vulkan::Vulkan
 )
 
 target_include_directories(UB_RHR PUBLIC

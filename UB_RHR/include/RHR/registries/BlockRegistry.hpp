@@ -2,9 +2,9 @@
 #include "config.h"
 
 #include <Cappuccino/Utils.hpp>
-#include <Cappuccino/block/ModBlock.h>
-#include <Espresso/catagory/ModCatagory.h>
-#include <Cappuccino/ExecutionThread.h>
+#include <Cappuccino/block/ModBlock.hpp>
+#include <Espresso/catagory/ModCatagory.hpp>
+#include <Cappuccino/ExecutionThread.hpp>
 
 class BlockArgumentCaller
 {

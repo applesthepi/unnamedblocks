@@ -5,9 +5,9 @@
 
 #include <Cappuccino/Utils.hpp>
 #include <Cappuccino/block/ModBlock.hpp>
-#include <Espresso/catagory/ModCatagory.h>
+#include <Espresso/catagory/ModCatagory.hpp>
 
-class Block : public ITransformable
+class Block// : public ITransformable
 {
 public:
 	Block(const std::string& unlocalizedName);

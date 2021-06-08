@@ -1,31 +1,14 @@
-#include "RenderFrame.h"
+#include "RenderFrame.hpp"
 
 #include "ui/Renderer.hpp"
 
 vui::RenderFrame::RenderFrame()
-    : m_Space(vui::PlaneSpace::HORIZONTAL)
-    , m_HasSpace(false)
-    , m_HasFrame(false)
-    , m_HasContent(false)
-    , m_Dirty(false)
+	: m_Space(vui::PlaneSpace::HORIZONTAL)
+	, m_HasSpace(false)
+	, m_HasFrame(false)
+	, m_HasContent(false)
 {
-}
-
-void vui::RenderFrame::SetWeak(std::weak_ptr<RenderFrame>&& weak)
-{
-	m_Weak = std::move(weak);
-}
-
-void vui::RenderFrame::SetPosition(glm::vec<2, int32_t> position)
-{
-	m_Position = position;
-	UpdateContentDimentions();
-}
-
-void vui::RenderFrame::SetSize(glm::vec<2, int32_t> size)
-{
-	m_Size = size;
-	UpdateContentDimentions();
+	((IUI*)this)->SetupVirtualFunctions(this);
 }
 
 void vui::RenderFrame::SetPadding(uint8_t padding)
@@ -38,7 +21,7 @@ void vui::RenderFrame::SetFrame(std::unique_ptr<RenderFrame>& frame)
 {
 	if (m_HasContent)
 	{
-		Logger::Error(SIDE::CLIENT, "can not set frame of RenderFrame that has content");
+		Logger::Error("can not set frame of RenderFrame that has content");
 		return;
 	}
 
@@ -53,7 +36,7 @@ void vui::RenderFrame::AddFrame(std::unique_ptr<RenderFrame>& frame, LocalCardin
 {
 	if (m_HasContent)
 	{
-		Logger::Error(SIDE::CLIENT, "can not add frame to RenderFrame that has content");
+		Logger::Error("can not add frame to RenderFrame that has content");
 		return;
 	}
 
@@ -78,14 +61,14 @@ void vui::RenderFrame::AddFrame(std::unique_ptr<RenderFrame>& frame, LocalCardin
 	else if (cardinal == LocalCardinal::RIGHT && m_Space == PlaneSpace::HORIZONTAL)
 		m_Frames.insert(m_Frames.end(), std::move(frame));
 	else
-		Logger::Error(SIDE::CLIENT, "wrong direction when adding a frame to a RenderFrame");
+		Logger::Error("wrong direction when adding a frame to a RenderFrame");
 }
 
-void vui::RenderFrame::AddContent(std::weak_ptr<RenderUI>&& content)
+void vui::RenderFrame::AddContent(std::weak_ptr<IUI>&& content)
 {
 	if (m_HasFrame)
 	{
-		Logger::Error(SIDE::CLIENT, "can not add content to RenderFrame that has internal frames");
+		Logger::Error("can not add content to RenderFrame that has internal frames");
 		return;
 	}
 
@@ -94,12 +77,12 @@ void vui::RenderFrame::AddContent(std::weak_ptr<RenderUI>&& content)
 	UpdateContentDimentions();
 }
 
-void vui::RenderFrame::Render()
+void vui::RenderFrame::OnRender()
 {
 	if (m_HasFrame)
 	{
-		for (size_t i = 0; i < m_Frames.size(); i++)
-			m_Frames[i]->Render();
+		for (auto& frame : m_Frames)
+			((IUI*)frame.get())->GetRenderable()->Render();
 	}
 	else if (m_HasContent)
 	{
@@ -114,7 +97,7 @@ void vui::RenderFrame::Render()
 			}
 
 			if (auto content = m_Content[i].lock())
-				content->Render();
+				content->GetRenderable()->Render();
 			else
 			{
 				m_Content.erase(m_Content.begin() + i);
@@ -124,9 +107,9 @@ void vui::RenderFrame::Render()
 	}
 }
 
-void vui::RenderFrame::UpdateBuffers()
+void vui::RenderFrame::OnUpdateBuffers()
 {
-	m_Dirty = false;
+	((IUI*)this)->GetRenderable()->ClearDirty();
 	bool erased = false;
 
 	for (size_t i = 0; i < m_Content.size(); i++)
@@ -138,7 +121,7 @@ void vui::RenderFrame::UpdateBuffers()
 		}
 
 		if (auto content = m_Content[i].lock())
-			content->UpdateBuffers();
+			content->GetRenderable()->UpdateBuffers();
 		else
 		{
 			m_Content.erase(m_Content.begin() + i);
@@ -147,14 +130,14 @@ void vui::RenderFrame::UpdateBuffers()
 	}
 }
 
-void vui::RenderFrame::ReloadSwapChain()
+void vui::RenderFrame::OnReloadSwapChain()
 {
 	if (m_HasFrame)
 	{
 		bool erased = false;
 
 		for (auto& frame : m_Frames)
-			frame->ReloadSwapChain();
+			((IUI*)frame.get())->GetRenderable()->ReloadSwapChain();
 	}
 	else if (m_HasContent)
 	{
@@ -169,7 +152,7 @@ void vui::RenderFrame::ReloadSwapChain()
 			}
 
 			if (auto content = m_Content[i].lock())
-				content->ReloadSwapChain();
+				content->GetRenderable()->ReloadSwapChain();
 			else
 			{
 				m_Content.erase(m_Content.begin() + i);
@@ -177,6 +160,18 @@ void vui::RenderFrame::ReloadSwapChain()
 			}
 		}
 	}
+}
+
+bool vui::RenderFrame::OnSetPosition(const glm::vec<2, int32_t>&& position)
+{
+	UpdateContentDimentions();
+	return true;
+}
+
+bool vui::RenderFrame::OnSetSize(const glm::vec<2, int32_t>&& size)
+{
+	UpdateContentDimentions();
+	return true;
 }
 
 void vui::RenderFrame::UpdateContentDimentions()
@@ -235,15 +230,6 @@ void vui::RenderFrame::UpdateContentDimentions()
 			}
 		}
 
-		MarkDirty();
+		((IUI*)this)->GetRenderable()->MarkDirty();
 	}
-}
-
-void vui::RenderFrame::MarkDirty()
-{
-	if (m_Dirty || !m_HasContent)
-		return;
-
-	m_Dirty = true;
-	Renderer::AddDirtyFrame(m_Weak);
 }

@@ -16,6 +16,8 @@ public:
 
 	static CAP_C_EXPORT void Error(const std::string& message);
 
+	static CAP_C_EXPORT void Fatal(const std::string& message);
+
 	static CAP_C_EXPORT void Debug(const std::string& message);
 private:
 	static CAP_C_EXPORT std::mutex m_logMutex;

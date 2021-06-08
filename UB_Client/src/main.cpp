@@ -1,9 +1,9 @@
 #include "config.h"
 
 #include "ModLoader.h"
-#include "handlers/CategoryHandler.h"
-#include "registries/UIRegistry.h"
-#include "ui/ButtonText.h"
+#include "handlers/CategoryHandler.hpp"
+#include "registries/UIRegistry.hpp"
+// #include "ui/ButtonText.hpp"
 #include "imgui/imgui.h"
 
 #if LINUX
@@ -12,10 +12,10 @@
 #include <windows.h>
 #endif
 
-#include <RHR/RHR.h>
-#include <Espresso/InputHandler.h>
-#include <Cappuccino/Logger.h>
-#include <Cappuccino/Intrinsics.h>
+// #include <RHR/RHR.h>
+#include <Espresso/InputHandler.hpp>
+#include <Cappuccino/Logger.hpp>
+#include <Cappuccino/Intrinsics.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -43,14 +43,14 @@ void ReturnFinished()
 }
 */
 
-void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, sf::View *view, float zoom)
-{
-	const sf::Vector2f beforeCoord = window.mapPixelToCoords(pixel, *view);
-	view->zoom(zoom);
-	const sf::Vector2f afterCoord = window.mapPixelToCoords(pixel, *view);
-	const sf::Vector2f offsetCoords = beforeCoord - afterCoord;
-	view->move(offsetCoords);
-}
+// void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, sf::View *view, float zoom)
+// {
+// 	const sf::Vector2f beforeCoord = window.mapPixelToCoords(pixel, *view);
+// 	view->zoom(zoom);
+// 	const sf::Vector2f afterCoord = window.mapPixelToCoords(pixel, *view);
+// 	const sf::Vector2f offsetCoords = beforeCoord - afterCoord;
+// 	view->move(offsetCoords);
+// }
 
 int main()
 {
@@ -58,8 +58,8 @@ int main()
 	// ============== Initialization
 	// ==============================================================================================================================
 
-	Logger::Info("CLIENT  - " std::string(VER_CLIENT));
-	Logger::Info("SERVER  - " std::string(VER_SERVER));
+	// Logger::Info("CLIENT  - " std::string(VER_CLIENT));
+	// Logger::Info("SERVER  - " std::string(VER_SERVER));
 
 #if MODS
 	Logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
@@ -85,11 +85,11 @@ int main()
 
 	// Initialization
 
-	Global::LoadDefaults(); //must be first
-	MessageHandler::Initialize();
+	// Global::LoadDefaults(); //must be first
+	// MessageHandler::Initialize();
 	InputHandler::Initialization();
-	PreProcessor::Initialize();
-	//Intrinsics::Initialize();
+	// PreProcessor::Initialize();
+	// Intrinsics::Initialize();
 
 	// ==============================================================================================================================
 	// ============== Intro Animation
@@ -261,8 +261,8 @@ int main()
 	Plane::PrimaryPlane = new Plane(false);
 	Plane::ToolbarPlane = new Plane(true);
 
-	Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
-	Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
+	// Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
+	// Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
 
 	CategoryHandler::CreateHandler();
 	CategoryHandler::GetHandler().RegisterHeader();
@@ -273,290 +273,290 @@ int main()
 	//	std::chrono::time_point<std::chrono::steady_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
 	//#endif
 
-	bool wasDownLeft = false;
-	bool wasDownMiddle = false;
-	bool wasDownRight = false;
+	// bool wasDownLeft = false;
+	// bool wasDownMiddle = false;
+	// bool wasDownRight = false;
 
-	sf::Clock clDeltaDisplay;
-	sf::Clock clDeltaTime;
+	// sf::Clock clDeltaDisplay;
+	// sf::Clock clDeltaTime;
 
-	double deltaTime = 0.0;
-	sf::Time sfmlDeltaTime(sf::Time::Zero);
+	// double deltaTime = 0.0;
+	// sf::Time sfmlDeltaTime(sf::Time::Zero);
 
-	int fps = 240;
-	int lastFps = 0;
+	// int fps = 240;
+	// int lastFps = 0;
 
-	window.setFramerateLimit(fps);
+	// window.setFramerateLimit(fps);
 
 	// inverted
-	bool vSync = true;
+	// bool vSync = true;
 
-	bool fpsLimiter = true;
+	// bool fpsLimiter = true;
 
-	sf::Text frameRate = sf::Text("fps: 0", Global::Font, 12);
-	frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
+	// sf::Text frameRate = sf::Text("fps: 0", Global::Font, 12);
+	// frameRate.setFillColor(MOD_BUTTON_TEXT_FG);
 
-	clDeltaDisplay.restart();
-	clDeltaTime.restart();
+	// clDeltaDisplay.restart();
+	// clDeltaTime.restart();
 
-	*Plane::ToolbarPlane->GetView() = window.getDefaultView();
-	*Plane::PrimaryPlane->GetView() = window.getDefaultView();
+	// *Plane::ToolbarPlane->GetView() = window.getDefaultView();
+	// *Plane::PrimaryPlane->GetView() = window.getDefaultView();
 
-#ifndef NDEBUG
-	//auto killme = ImGui::CreateContext();
-	//ImGui::SetCurrentContext(killme);
-	ImGui::SFML::Init(window);
-#endif
-
-	//////////////////////////////////////////////////////////
-	// Window Main Loop
-	//////////////////////////////////////////////////////////
-
-	while (window.isOpen())
-	{
-		sf::Event ev;
-		while (window.pollEvent(ev))
-		{
-#ifndef NDEBUG
-			ImGui::SFML::ProcessEvent(ev);
-#endif
-
-			if (ev.type == sf::Event::Closed)
-			{
-				std::function<void(bool)> cb = [&window](bool result)
-				{
-					if (result)
-						window.close();
-				};
-
-				MessageHandler::RegisterMessage(new MessageConfirm("unsaved progress will be lost", &cb), true);
-			}
-			else if (ev.type == sf::Event::Resized)
-			{
-				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
-				window.setView(sf::View(visibleArea));
-
-				Plane::PrimaryPlane->setPosition(sf::Vector2f(CategoryHandler::GetHandler().GetToolbarWidth() + 10, HEADER_HEIGHT + 5));
-				Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
-			}
-			else if (ev.type == sf::Event::MouseWheelScrolled)
-			{
-				if (window.hasFocus())
-				{
-					int32_t delta = ev.mouseWheelScroll.delta * -200;
-
-					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-					{
-						sf::View *primaryView = Plane::PrimaryPlane->GetView();
-						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(delta, 0.0f));
-					}
-					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-					{
-						if (ev.mouseWheelScroll.delta > 0)
-						{
-							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
-
-							if (Plane::PrimaryPlane->CalculateZoom().x > 5.0)
-								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
-						}
-						else
-						{
-							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
-
-							if (Plane::PrimaryPlane->CalculateZoom().x < 0.2)
-								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
-						}
-					}
-					else
-					{
-						sf::View *primaryView = Plane::PrimaryPlane->GetView();
-						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(0.0f, delta));
-					}
-				}
-			}
-			else if (ev.type == sf::Event::EventType::KeyPressed)
-			{
-				if (window.hasFocus())
-					InputHandler::FireKeyEvent(ev.key);
-			}
-			else if (ev.type == sf::Event::EventType::TextEntered)
-			{
-				if (window.hasFocus())
-					InputHandler::FireTextEvent(ev.text);
-			}
-			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
-			{
-				if (window.hasFocus())
-				{
-					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
-
-					if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
-					{
-						if (!Plane::PrimaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
-							Plane::ToolbarPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
-					}
-				}
-			}
-			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
-			{
-				if (window.hasFocus())
-				{
-					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
-
-					if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
-					{
-						if (!Plane::PrimaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
-							Plane::ToolbarPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
-					}
-				}
-			}
-		}
+	// #ifndef NDEBUG
+	// 	//auto killme = ImGui::CreateContext();
+	// 	//ImGui::SetCurrentContext(killme);
+	// 	ImGui::SFML::Init(window);
+	// #endif
 
 		//////////////////////////////////////////////////////////
-		// Global
+		// Window Main Loop
 		//////////////////////////////////////////////////////////
 
-		if (window.hasFocus())
-			Global::MousePosition = sf::Mouse::getPosition(window);
-		else
-			Global::MousePosition = sf::Vector2i();
-
-		Global::WindowSize = window.getSize();
-
-		//////////////////////////////////////////////////////////
-		// FPS
-		//////////////////////////////////////////////////////////
-
-		deltaTime = static_cast<double>(clDeltaTime.getElapsedTime().asMicroseconds()) * 0.000001;
-		sfmlDeltaTime = clDeltaTime.getElapsedTime();
-
-		if (clDeltaDisplay.getElapsedTime().asMilliseconds() >= 100)
-		{
-			frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
-			clDeltaDisplay.restart();
-		}
-
-		clDeltaTime.restart();
-
-		frameRate.setPosition(sf::Vector2f(window.getSize().x - 100, 0));
-
-		//////////////////////////////////////////////////////////
-		// Frame Update
-		//////////////////////////////////////////////////////////
-
-		UIRegistry::GetRegistry().frameUpdate(deltaTime);
-		CategoryHandler::GetHandler().frameUpdate(deltaTime);
-
-		Plane::ToolbarPlane->frameUpdate(deltaTime);
-		Plane::PrimaryPlane->frameUpdate(deltaTime);
-
-		//////////////////////////////////////////////////////////
-		// Render
-		//////////////////////////////////////////////////////////
-
-		window.clear(MOD_BACKGROUND_HIGH);
-
-		window.draw(CategoryHandler::GetHandler());
-		Plane::ToolbarPlane->render(window);
-		Plane::PrimaryPlane->render(window);
-		window.draw(UIRegistry::GetRegistry());
-
-		Plane::ToolbarPlane->snapRender(window);
-		Plane::PrimaryPlane->snapRender(window);
-
-		CategoryHandler::GetHandler().PostRender(&window);
-		Plane::ToolbarPlane->postRender(window);
-		Plane::PrimaryPlane->postRender(window);
-
-		//////////////////////////////////////////////////////////
-		// ImGui
-		//////////////////////////////////////////////////////////
-
-		// #ifndef NDEBUG
-		// 		ImGui::SFML::Update(window, sfmlDeltaTime);
-
+	// while (window.isOpen())
+	// {
+		// 		sf::Event ev;
+		// 		while (window.pollEvent(ev))
 		// 		{
-		// 			ImGui::Begin("Debugging");
+		// #ifndef NDEBUG
+		// 			ImGui::SFML::ProcessEvent(ev);
+		// #endif
 
-		// 			if (ImGui::TreeNode("FPS"))
+		// 			if (ev.type == sf::Event::Closed)
 		// 			{
-		// 				if (ImGui::Checkbox("Disable VSync", &vSync))
+		// 				std::function<void(bool)> cb = [&window](bool result)
 		// 				{
-		// 					if (!vSync)
-		// 					{
-		// 						window.setVerticalSyncEnabled(true);
-		// 						window.setFramerateLimit(0);
+		// 					if (result)
+		// 						window.close();
+		// 				};
 
-		// 						fpsLimiter = false;
-		// 						fps = 0;
+		// 				MessageHandler::RegisterMessage(new MessageConfirm("unsaved progress will be lost", &cb), true);
+		// 			}
+		// 			else if (ev.type == sf::Event::Resized)
+		// 			{
+		// 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
+		// 				window.setView(sf::View(visibleArea));
+
+		// 				Plane::PrimaryPlane->setPosition(sf::Vector2f(CategoryHandler::GetHandler().GetToolbarWidth() + 10, HEADER_HEIGHT + 5));
+		// 				Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
+		// 			}
+		// 			else if (ev.type == sf::Event::MouseWheelScrolled)
+		// 			{
+		// 				if (window.hasFocus())
+		// 				{
+		// 					int32_t delta = ev.mouseWheelScroll.delta * -200;
+
+		// 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+		// 					{
+		// 						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+		// 						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(delta, 0.0f));
+		// 					}
+		// 					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+		// 					{
+		// 						if (ev.mouseWheelScroll.delta > 0)
+		// 						{
+		// 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
+
+		// 							if (Plane::PrimaryPlane->CalculateZoom().x > 5.0)
+		// 								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
+		// 						}
+		// 						else
+		// 						{
+		// 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
+
+		// 							if (Plane::PrimaryPlane->CalculateZoom().x < 0.2)
+		// 								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
+		// 						}
 		// 					}
 		// 					else
 		// 					{
-		// 						window.setVerticalSyncEnabled(false);
-		// 						window.setFramerateLimit(fps);
-
-		// 						fpsLimiter = false;
-		// 						fps = 0;
+		// 						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+		// 						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(0.0f, delta));
 		// 					}
 		// 				}
-
-		// 				if (vSync)
-		// 				{
-		// 					if (ImGui::Checkbox("Enable FPS Limiter", &fpsLimiter))
-		// 					{
-		// 						if (fpsLimiter)
-		// 							fps = 240;
-		// 						else
-		// 							fps = 0;
-		// 					}
-
-		// 					if (fpsLimiter)
-		// 					{
-		// 						ImGui::SliderInt("FPS", &fps, 5, 500);
-
-		// 						if (ImGui::Button("60", sf::Vector2f(50, 20)))
-		// 							fps = 60;
-
-		// 						ImGui::SameLine();
-		// 						if (ImGui::Button("75", sf::Vector2f(50, 20)))
-		// 							fps = 75;
-
-		// 						ImGui::SameLine();
-		// 						if (ImGui::Button("120", sf::Vector2f(50, 20)))
-		// 							fps = 120;
-
-		// 						ImGui::SameLine();
-		// 						if (ImGui::Button("144", sf::Vector2f(50, 20)))
-		// 							fps = 144;
-
-		// 						ImGui::SameLine();
-		// 						if (ImGui::Button("240", sf::Vector2f(50, 20)))
-		// 							fps = 240;
-		// 					}
-
-		// 					if (fps != lastFps)
-		// 					{
-		// 						lastFps = fps;
-		// 						window.setFramerateLimit(fps);
-		// 					}
-		// 				}
-
-		// 				ImGui::TreePop();
 		// 			}
+		// 			else if (ev.type == sf::Event::EventType::KeyPressed)
+		// 			{
+		// 				if (window.hasFocus())
+		// 					InputHandler::FireKeyEvent(ev.key);
+		// 			}
+		// 			else if (ev.type == sf::Event::EventType::TextEntered)
+		// 			{
+		// 				if (window.hasFocus())
+		// 					InputHandler::FireTextEvent(ev.text);
+		// 			}
+		// 			else if (ev.type == sf::Event::EventType::MouseButtonPressed)
+		// 			{
+		// 				if (window.hasFocus())
+		// 				{
+		// 					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
 
-		// 			ImGui::End();
+		// 					if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+		// 					{
+		// 						if (!Plane::PrimaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+		// 							Plane::ToolbarPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
+		// 					}
+		// 				}
+		// 			}
+		// 			else if (ev.type == sf::Event::EventType::MouseButtonReleased)
+		// 			{
+		// 				if (window.hasFocus())
+		// 				{
+		// 					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
+
+		// 					if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+		// 					{
+		// 						if (!Plane::PrimaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+		// 							Plane::ToolbarPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
+		// 					}
+		// 				}
+		// 			}
 		// 		}
 
-		// 		ImGui::SFML::Render(window);
+				//////////////////////////////////////////////////////////
+				// Global
+				//////////////////////////////////////////////////////////
 
-		// #endif
+				// if (window.hasFocus())
+				// 	Global::MousePosition = sf::Mouse::getPosition(window);
+				// else
+				// 	Global::MousePosition = sf::Vector2i();
 
-		// 		window.draw(frameRate);
-		// 		window.display();
-	}
+				// Global::WindowSize = window.getSize();
 
-	// 	ImGui::SFML::Shutdown();
-	// 	MessageHandler::Finish();
+				//////////////////////////////////////////////////////////
+				// FPS
+				//////////////////////////////////////////////////////////
+
+				// deltaTime = static_cast<double>(clDeltaTime.getElapsedTime().asMicroseconds()) * 0.000001;
+				// sfmlDeltaTime = clDeltaTime.getElapsedTime();
+
+				// if (clDeltaDisplay.getElapsedTime().asMilliseconds() >= 100)
+				// {
+				// 	frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
+				// 	clDeltaDisplay.restart();
+				// }
+
+				// clDeltaTime.restart();
+
+				// frameRate.setPosition(sf::Vector2f(window.getSize().x - 100, 0));
+
+				//////////////////////////////////////////////////////////
+				// Frame Update
+				//////////////////////////////////////////////////////////
+
+				// UIRegistry::GetRegistry().frameUpdate(deltaTime);
+				// CategoryHandler::GetHandler().frameUpdate(deltaTime);
+
+				// Plane::ToolbarPlane->frameUpdate(deltaTime);
+				// Plane::PrimaryPlane->frameUpdate(deltaTime);
+
+				//////////////////////////////////////////////////////////
+				// Render
+				//////////////////////////////////////////////////////////
+
+				// window.clear(MOD_BACKGROUND_HIGH);
+
+				// window.draw(CategoryHandler::GetHandler());
+				// Plane::ToolbarPlane->render(window);
+				// Plane::PrimaryPlane->render(window);
+				// window.draw(UIRegistry::GetRegistry());
+
+				// Plane::ToolbarPlane->snapRender(window);
+				// Plane::PrimaryPlane->snapRender(window);
+
+				// CategoryHandler::GetHandler().PostRender(&window);
+				// Plane::ToolbarPlane->postRender(window);
+				// Plane::PrimaryPlane->postRender(window);
+
+				//////////////////////////////////////////////////////////
+				// ImGui
+				//////////////////////////////////////////////////////////
+
+				// #ifndef NDEBUG
+				// 		ImGui::SFML::Update(window, sfmlDeltaTime);
+
+				// 		{
+				// 			ImGui::Begin("Debugging");
+
+				// 			if (ImGui::TreeNode("FPS"))
+				// 			{
+				// 				if (ImGui::Checkbox("Disable VSync", &vSync))
+				// 				{
+				// 					if (!vSync)
+				// 					{
+				// 						window.setVerticalSyncEnabled(true);
+				// 						window.setFramerateLimit(0);
+
+				// 						fpsLimiter = false;
+				// 						fps = 0;
+				// 					}
+				// 					else
+				// 					{
+				// 						window.setVerticalSyncEnabled(false);
+				// 						window.setFramerateLimit(fps);
+
+				// 						fpsLimiter = false;
+				// 						fps = 0;
+				// 					}
+				// 				}
+
+				// 				if (vSync)
+				// 				{
+				// 					if (ImGui::Checkbox("Enable FPS Limiter", &fpsLimiter))
+				// 					{
+				// 						if (fpsLimiter)
+				// 							fps = 240;
+				// 						else
+				// 							fps = 0;
+				// 					}
+
+				// 					if (fpsLimiter)
+				// 					{
+				// 						ImGui::SliderInt("FPS", &fps, 5, 500);
+
+				// 						if (ImGui::Button("60", sf::Vector2f(50, 20)))
+				// 							fps = 60;
+
+				// 						ImGui::SameLine();
+				// 						if (ImGui::Button("75", sf::Vector2f(50, 20)))
+				// 							fps = 75;
+
+				// 						ImGui::SameLine();
+				// 						if (ImGui::Button("120", sf::Vector2f(50, 20)))
+				// 							fps = 120;
+
+				// 						ImGui::SameLine();
+				// 						if (ImGui::Button("144", sf::Vector2f(50, 20)))
+				// 							fps = 144;
+
+				// 						ImGui::SameLine();
+				// 						if (ImGui::Button("240", sf::Vector2f(50, 20)))
+				// 							fps = 240;
+				// 					}
+
+				// 					if (fps != lastFps)
+				// 					{
+				// 						lastFps = fps;
+				// 						window.setFramerateLimit(fps);
+				// 					}
+				// 				}
+
+				// 				ImGui::TreePop();
+				// 			}
+
+				// 			ImGui::End();
+				// 		}
+
+				// 		ImGui::SFML::Render(window);
+
+				// #endif
+
+				// 		window.draw(frameRate);
+				// 		window.display();
+// }
+
+// 	ImGui::SFML::Shutdown();
+// 	MessageHandler::Finish();
 
 	return 0;
 }
