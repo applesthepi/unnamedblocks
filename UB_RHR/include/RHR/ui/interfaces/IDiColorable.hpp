@@ -32,4 +32,4 @@ protected:
 	/// Color.
 	Color m_ColorPrimary;
 	Color m_ColorSecondary;
-}
+};

@@ -38,6 +38,7 @@ inline void push(std::vector<char> &vec, std::string_view value) {
 inline void push(std::vector<char> &vec, char value) {
 	vec.push_back(value);
 }
+/*
 // Reads count elements and converts them to the native endian. Stores the result in buffer
 // Ensure buffer is atleast size * count bytes
 inline void read_16(std::ifstream& file, char* buffer, uint16_t count) {
@@ -289,7 +290,7 @@ void ProjectHandler::LoadProject(const std::string& path)
 		}
 	}
 }
-
+*/
 std::string ProjectHandler::CurrentPath;
 
 std::vector<std::string> ProjectHandler::Mods;

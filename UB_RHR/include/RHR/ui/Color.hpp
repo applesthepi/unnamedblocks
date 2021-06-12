@@ -31,4 +31,4 @@ public:
 private:
 	/// Color stored as a 4 component normalized (0.0 - 1.0) vector.
 	glm::vec<4, float> m_Color;
-}
+};

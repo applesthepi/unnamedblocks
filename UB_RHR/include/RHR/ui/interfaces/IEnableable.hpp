@@ -22,4 +22,4 @@ public:
 protected:
 	/// Enabled state.
 	bool m_Enabled;
-}
+};

@@ -9,6 +9,7 @@ IUI::IUI()
 void IUI::SetupVirtualFunctions(IUI* iui)
 {
 	m_Renderable->SetupVirtualFunctions((void(*)())(iui->* & IUI::OnRender), (void(*)())(iui->* & IUI::OnUpdateBuffers), (void(*)())(iui->* & IUI::OnReloadSwapChain));
+	m_Updatable->SetupVirtualFunctions((void(*)(double))(iui->* & IUI::OnFrameUpdate));
 	m_Virtual = true;
 }
 

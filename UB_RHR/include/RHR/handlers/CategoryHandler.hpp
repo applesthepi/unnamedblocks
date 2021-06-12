@@ -5,7 +5,7 @@
 #include "stacking/Plane.hpp"
 
 #include <Cappuccino/Utils.hpp>
-
+/*
 class CategoryHandler : public IRenderable
 {
 public:
@@ -53,3 +53,4 @@ private:
 
 	uint16_t m_toolbarWidth;
 };
+*/

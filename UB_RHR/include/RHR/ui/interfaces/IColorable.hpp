@@ -23,4 +23,4 @@ public:
 protected:
 	/// Color.
 	Color m_Color;
-}
+};

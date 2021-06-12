@@ -1,52 +1,71 @@
 #pragma once
 #include "config.h"
 
+#include "ui/Vertex.hpp"
+#include "ui/interfaces/IUI.hpp"
+
 #include <Cappuccino/Utils.hpp>
 #include <Cappuccino/block/ModBlock.hpp>
 
-class Argument// : public ITransformable
+/// Base class for visual block arguments.
+
+class Argument : public IUI
 {
-// public:
-// 	Argument();
+public:
+	/// TODO
+	Argument();
 
-// 	// data of the argument must be stored as string for saving
-// 	void SetData(const std::string& data);
-// 	const std::string& GetData();
+	/// Sets data. Data of the argument is stored as a string.
+	/// \param Data to set the argument to.
+	void SetData(const std::string& data);
 
-// 	// raw or var
-// 	void SetMode(const BlockArgumentVariableMode& mode);
-// 	const BlockArgumentVariableMode& GetMode();
+	/// Gets data. Data of the argument is stored as a string.
+	/// \return Data from the argument.
+	const std::string& GetData();
 
-// 	// pull whether or not the argument is requesting to goto the next argument
-// 	bool PullNext();
+	/// Sets mode. Mode can either be raw (rvalue) or var (lvalue).
+	/// \param Argument variable mode.
+	void SetMode(BlockArgumentVariableMode mode);
 
-// 	// how to interpret the data
-// 	virtual BlockArgumentType GetType();
+	/// Gets mode. Mode can either be raw (rvalue) or var (lvalue).
+	/// \return Argument variable mode.
+	BlockArgumentVariableMode GetMode();
 
-// 	// get width for surrounding argument spacing
-// 	virtual uint32_t GetWidth();
+	/// Pull whether or not the argument is requesting to goto the next argument.
+	/// \return Pull request.
+	// bool PullNext();
 
-// 	// whether or not the argument contains data for storing
-// 	virtual bool HasData();
+	/// How to interpret the data.
+	/// \return Type of argument.
+	virtual BlockArgumentType GetType();
 
-// 	// select the argument and enable it
-// 	virtual void Select();
+	/// Get width for surrounding argument spacing.
+	/// \return Width of argument.
+	virtual uint32_t GetWidth();
 
-// 	// when the focus turns off of the argument
-// 	virtual void UnSelect();
+	/// Whether or not the argument contains data for storing.
+	/// \return Has data.
+	virtual bool HasData();
 
-// 	// update geometry
-// 	virtual void UpdateVertexArray();
+	/// Select the argument and enable it.
+	virtual void Select();
 
-// 	// update data should also cause an update in geometry
-// 	virtual void UpdateData();
+	/// When the focus turns off of the argument.
+	virtual void UnSelect();
 
-// 	// contains all data including: position, colors, and characters.
-// 	VAO& GetVAO();
-// protected:
-// 	bool m_next;
-// 	std::string m_data;
-// 	BlockArgumentVariableMode m_mode;
-// private:
-// 	VAO m_vao;
+	/// Gets all elements used by the argument.
+	/// \return Vector of elements subject to change.
+	std::vector<IUI>& GetElements();
+protected:
+	/// Gets pulled when Argument::PullNext(); gets called.
+	// bool m_Next;
+
+	/// Data of argument stored as a string.
+	std::string m_Data;
+
+	/// Mode of argument.
+	BlockArgumentVariableMode m_Mode;
+
+	/// Vector of elements used by the argument.
+	std::vector<IUI> m_Elements;
 };

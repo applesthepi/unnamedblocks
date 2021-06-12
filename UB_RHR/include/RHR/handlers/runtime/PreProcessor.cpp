@@ -2,7 +2,7 @@
 
 #include "handlers/ProjectHandler.hpp"
 
-#include <Cappuccino/runtime/ModBlockData.h>
+#include <Cappuccino/runtime/ModBlockData.hpp>
 #include <libtcc.h>
 
 /// Reads file at file_path and stores its contents in ptr

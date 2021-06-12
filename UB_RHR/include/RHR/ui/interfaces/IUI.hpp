@@ -31,6 +31,10 @@ protected:
 
 	/// Regenerates descriptor sets including uniforms.
 	virtual void OnReloadSwapChain();
+
+	/// Runs every frame before rendering.
+	/// \param Seconds since last frame.
+	virtual void OnFrameUpdate(double deltaTime);
 private:
 	/// Check for virtual.
 	bool IsVirtual();

@@ -5,7 +5,7 @@
 #include "registries/UIRegistry.hpp"
 
 #include <Cappuccino/Utils.hpp>
-#include <Espresso/InputHandler.h>
+#include <Espresso/InputHandler.hpp>
 
 #define REAL_GEOMETRY_REACH 5
 

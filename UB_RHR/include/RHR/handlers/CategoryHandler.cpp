@@ -10,7 +10,7 @@
 #include <windows.h>
 #include <shellapi.h>
 #endif
-
+/*
 CategoryHandler::CategoryHandler()
 {
 	m_running = false;
@@ -504,3 +504,4 @@ void CategoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) co
 }
 
 CategoryHandler* CategoryHandler::m_handler;
+*/

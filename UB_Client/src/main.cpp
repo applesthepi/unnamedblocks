@@ -264,8 +264,8 @@ int main()
 	// Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
 	// Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
 
-	CategoryHandler::CreateHandler();
-	CategoryHandler::GetHandler().RegisterHeader();
+	// CategoryHandler::CreateHandler();
+	// CategoryHandler::GetHandler().RegisterHeader();
 
 	//#ifdef POSIX
 	//	std::chrono::time_point<std::chrono::system_clock> lastVanityReload = std::chrono::high_resolution_clock::now();
