@@ -56,7 +56,22 @@ void Argument::UnSelect()
 
 }
 
-std::vector<IUI>& Argument::GetElements()
+void Argument::OnRender()
 {
-	return m_Elements;
+
+}
+
+void Argument::OnUpdateBuffers()
+{
+
+}
+
+void Argument::OnReloadSwapChain()
+{
+
+}
+
+void Argument::OnFrameUpdate(double deltaTime)
+{
+
 }

@@ -11,11 +11,11 @@ class IColorable
 {
 public:
 	/// Sets default color
-	IColorable(const Color&& color);
+	IColorable(const Color& color);
 
 	/// Sets color.
 	/// \param Color.
-	void SetColor(const Color&& color);
+	void SetColor(const Color& color);
 
 	/// Gets color.
 	/// \return Color.

@@ -55,8 +55,21 @@ public:
 
 	/// Gets all elements used by the argument.
 	/// \return Vector of elements subject to change.
-	std::vector<IUI>& GetElements();
+	// std::vector<IUI>& GetElements();
 protected:
+	/// Add draw calls to cmd buffer prebound by Renderer.
+	virtual void OnRender();
+
+	/// Updates mesh on cpu side.
+	virtual void OnUpdateBuffers();
+
+	/// Regenerates descriptor sets including uniforms.
+	virtual void OnReloadSwapChain();
+
+	/// Runs every frame before rendering.
+	/// \param Seconds since last frame.
+	virtual void OnFrameUpdate(double deltaTime);
+
 	/// Gets pulled when Argument::PullNext(); gets called.
 	// bool m_Next;
 

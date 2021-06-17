@@ -11,7 +11,6 @@
 /// interface's virtual functions. Extender must be a std::shared_ptr<T: IWeak>
 /// and to be given an std::weak_ptr reference to itself.
 
-template <typename T>
 class IWeak
 {
 public:
@@ -20,6 +19,7 @@ public:
 
 	/// Sets weak ptr for the extender.
 	/// \param Weak ptr of extender.
+	template <typename T>
 	void SetWeak(std::weak_ptr<T> weak);
 protected:
 	/// Enforce weak check.

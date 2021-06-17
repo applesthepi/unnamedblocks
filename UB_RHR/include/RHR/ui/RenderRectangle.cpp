@@ -1,46 +1,26 @@
 #include "RenderRectangle.hpp"
 
 #include "ui/Renderer.hpp"
+#include "ui/Vertex.hpp"
 
 vui::RenderRectangle::RenderRectangle(bool disableDirty)
-    : m_Position({ 0, 0 })
-    , m_Size({ 0, 0 })
-    , m_ParentPosition({ 0, 0 })
-    , m_ParentSize({ 100, 100 })
-    , m_Color({ 1.0f, 1.0f, 1.0f })
-    , m_Depth(10)
-    , m_Enabled(false)
-    , m_HasColor(false)
-    , m_HasTexture(false)
-    , m_Dirty(false)
+	: IBoundedParent(nullptr, nullptr)
+	, IEnableable(false)
+	, IColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
+	, m_Depth(10)
+	, m_HasColor(false)
+	, m_HasTexture(false)
 	, m_DisableDirty(disableDirty)
-    , m_RenderObject(std::make_shared<RenderObject>())
+	, m_RenderObject(std::make_shared<RenderObject>())
+	, m_WeakSet(false)
 {
 	m_RenderObject->SetWeak(m_RenderObject);
 }
 
-void vui::RenderRectangle::SetWeak(std::weak_ptr<RenderRectangle>&& weak)
+void vui::RenderRectangle::SetWeak(const std::weak_ptr<RenderRectangle>&& weak)
 {
 	m_Weak = std::move(weak);
-}
-
-void vui::RenderRectangle::SetPosition(glm::vec<2, int32_t> position)
-{
-	m_Position = position;
-	MarkDirty();
-}
-
-void vui::RenderRectangle::SetSize(glm::vec<2, int32_t> size)
-{
-	m_Size = size;
-	MarkDirty();
-}
-
-void vui::RenderRectangle::SetColor(glm::vec<3, float> color)
-{
-	m_Color = color;
-	m_HasColor = true;
-	MarkDirty();
+	m_WeakSet = true;
 }
 
 void vui::RenderRectangle::SetTexture(const std::string& texture)
@@ -48,29 +28,32 @@ void vui::RenderRectangle::SetTexture(const std::string& texture)
 	m_Texture = texture;
 	m_RenderObject->SetTexture(texture);
 	m_HasTexture = true;
-	MarkDirty();
+	GetRenderable()->MarkDirty();
 }
 
 void vui::RenderRectangle::SetDepth(uint32_t depth)
 {
 	m_Depth = depth;
-	MarkDirty();
+	GetRenderable()->MarkDirty();
 }
 
-void vui::RenderRectangle::SetEnabled(bool enabled)
+std::weak_ptr<vui::RenderRectangle>& vui::RenderRectangle::GetWeak()
 {
-	m_Enabled = enabled;
-	// dont need to mark dirty
+	return m_Weak;
 }
 
-void vui::RenderRectangle::SetParent(glm::vec<2, int32_t> position, glm::vec<2, int32_t> size)
+bool vui::RenderRectangle::IsWeak()
 {
-	m_ParentPosition = position;
-	m_ParentSize = size;
-	MarkDirty();
+	if (!m_WeakSet)
+	{
+		Logger::Warn("check for vui::RenderRectangle::IsWeak(); failed");
+		return false;
+	}
+
+	return true;
 }
 
-void vui::RenderRectangle::Render()
+void vui::RenderRectangle::OnRender()
 {
 	if (m_Enabled)
 	{
@@ -83,9 +66,9 @@ void vui::RenderRectangle::Render()
 	}
 }
 
-void vui::RenderRectangle::UpdateBuffers()
+void vui::RenderRectangle::OnUpdateBuffers()
 {
-	m_Dirty = false;
+	GetRenderable()->ClearDirty();
 
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -93,12 +76,12 @@ void vui::RenderRectangle::UpdateBuffers()
 	vertices.reserve(4);
 	indices.reserve(6);
 
-	glm::vec<2, int32_t> position = m_Position + m_ParentPosition;
+	glm::vec<2, int32_t> position = m_Position + m_Positionable->GetPosition();
 
-	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color, { 0.0f, 0.0f });
-	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color, { 1.0f, 0.0f });
-	Vertex v2 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color, { 1.0f, 1.0f });
-	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color, { 0.0f, 1.0f });
+	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 0.0f, 0.0f });
+	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 0.0f });
+	Vertex v2 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 1.0f });
+	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 0.0f, 1.0f });
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);
@@ -115,16 +98,7 @@ void vui::RenderRectangle::UpdateBuffers()
 	m_RenderObject->UpdateVertices(&vertices, &indices, true);
 }
 
-void vui::RenderRectangle::ReloadSwapChain()
+void vui::RenderRectangle::OnReloadSwapChain()
 {
 	m_RenderObject->InitDescriptorSet();
-}
-
-void vui::RenderRectangle::MarkDirty()
-{
-	if (m_Dirty || m_DisableDirty)
-		return;
-
-	m_Dirty = true;
-	Renderer::AddDirtyUI(m_Weak);
 }

@@ -6,7 +6,6 @@
 #include "ui/interfaces/ISizeable.hpp"
 #include "ui/interfaces/IBoundedParent.hpp"
 #include "ui/interfaces/IEnableable.hpp"
-#include "ui/interfaces/IWeak.hpp"
 #include "ui/interfaces/IColorable.hpp"
 #include "ui/RenderObject.hpp"
 
@@ -15,15 +14,30 @@
 namespace vui
 {
 
-class RenderRectangle : public IUI, public IPositionable<int32_t>, public ISizeable<int32_t>, public IBoundedParent, public IEnableable, public IWeak<RenderRectange>, public IColorable
+class RenderRectangle : public IUI, public IPositionable<int32_t>, public ISizeable<int32_t>, public IBoundedParent, public IEnableable, public IColorable
 {
 public:
 	RenderRectangle(bool disableDirty = false);
 
+	/// REQUIRED Sets weak.
+	/// \param Weak ptr of itself.
+	void SetWeak(const std::weak_ptr<RenderRectangle>&& weak);
+
+	/// Sets texture of rectange.
+	/// \param Texture path.
 	void SetTexture(const std::string& texture);
+
+	/// Sets Z depth.
+	/// \param Z depth.
 	void SetDepth(uint32_t depth);
 
+	/// Gets the weak reference.
+	/// \return Weak reference to itself.
+	std::weak_ptr<RenderRectangle>& GetWeak();
 private:
+	/// Check for weak.
+	bool IsWeak();
+
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void OnRender() override;
 
@@ -33,7 +47,14 @@ private:
 	/// Regenerates descriptor sets including uniforms.
 	void OnReloadSwapChain() override;
 
+	/// Abstracted RenderObject to render the rectange.
 	std::shared_ptr<RenderObject> m_RenderObject;
+
+	/// Weak reference.
+	std::weak_ptr<RenderRectangle> m_Weak;
+
+	/// Flag if weak is set.
+	bool m_WeakSet;
 
 	bool m_HasColor;
 	bool m_HasTexture;

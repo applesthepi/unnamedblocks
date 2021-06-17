@@ -3,8 +3,14 @@
 #include "ui/Renderer.hpp"
 
 IRenderable::IRenderable()
-	: m_Dirty(false), m_Virtual(false), m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr)
+	: m_Dirty(false), m_Virtual(false), m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr), m_WeakSet(false)
 {
+}
+
+void IRenderable::SetWeak(const std::weak_ptr<IRenderable>&& weak)
+{
+	m_Weak = std::move(weak);
+	m_WeakSet = true;
 }
 
 void IRenderable::SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)())
@@ -12,7 +18,6 @@ void IRenderable::SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(),
 	m_Render = render;
 	m_UpdateBuffers = updateBuffers;
 	m_ReloadSwapChain = reloadSwapChain;
-
 	m_Virtual = true;
 }
 
@@ -62,6 +67,17 @@ bool IRenderable::IsVirtual()
 	if (!m_Virtual)
 	{
 		Logger::Warn("check for IRenderable::IsVirtual(); failed");
+		return false;
+	}
+
+	return true;
+}
+
+bool IRenderable::IsWeak()
+{
+	if (!m_WeakSet)
+	{
+		Logger::Warn("check for IRenderable::IsWeak(); failed");
 		return false;
 	}
 
