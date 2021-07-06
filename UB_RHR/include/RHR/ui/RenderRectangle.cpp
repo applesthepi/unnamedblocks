@@ -9,7 +9,7 @@ vui::RenderRectangle::RenderRectangle()
 	, m_Depth(10)
 	, m_HasColor(false)
 	, m_HasTexture(false)
-	, m_RenderObject(std::make_shared<RenderObject>())
+	, m_RenderObject(std::make_shared<RenderObject>(true))
 	, m_WeakSet(false)
 {
 	m_RenderObject->SetWeak(m_RenderObject);

@@ -60,7 +60,6 @@ target_include_directories(UB_CAPPUCCINO PUBLIC
 
 target_link_libraries(UB_CAPPUCCINO PUBLIC
 	glad::glad
-	glm
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan

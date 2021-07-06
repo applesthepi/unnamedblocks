@@ -106,7 +106,6 @@ target_link_libraries(UB_RHR PUBLIC
 	UB_CAPPUCCINO
 	"${CMAKE_SOURCE_DIR}/tcc/lib/libtcc1-64.a"
 	glad::glad
-	glm
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan
