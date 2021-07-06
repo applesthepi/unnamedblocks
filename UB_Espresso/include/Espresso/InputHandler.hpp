@@ -45,6 +45,7 @@ public:
 	static void FireMouseButton(uint8_t button, uint8_t operation);
 	static void FireMouseMove(glm::vec<2, int32_t> position);
 	static void FireMouseScroll(float scroll);
+	static glm::vec<2, int32_t> GetMousePosition();
 
 	// abstracted inputs
 	// static void RunTextProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev);

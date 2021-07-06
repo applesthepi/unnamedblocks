@@ -2,6 +2,8 @@
 #include "config.h"
 
 #include "stacking/Stack.hpp"
+#include "ui/interfaces/IPositionable.hpp"
+#include "ui/interfaces/ISizeable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
@@ -21,7 +23,7 @@
 
 #define COLLECTION_EMPTY_SPACE 50
 
-class Collection : public ITransformable
+class Collection : public IPositionable<int32_t>, public ISizeable<int32_t>
 {
 public:
 	Collection();

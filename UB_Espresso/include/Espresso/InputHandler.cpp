@@ -922,6 +922,11 @@ void InputHandler::FireMouseScroll(float scroll)
 		callback(m_MousePosition, scroll, MouseOperation::Scroll);
 }
 
+glm::vec<2, int32_t> InputHandler::GetMousePosition()
+{
+	return m_MousePosition;
+}
+
 bool InputHandler::m_MouseWasDown;
 bool InputHandler::m_ShiftDown;
 glm::vec<2, int32_t> InputHandler::m_MousePosition;

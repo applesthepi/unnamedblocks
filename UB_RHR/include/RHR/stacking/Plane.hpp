@@ -1,31 +1,35 @@
 #pragma once
 #include "config.h"
 
-#include "Collection.hpp"
+#include "stacking/Collection.hpp"
+#include "ui/interfaces/IPositionable.hpp"
+#include "ui/interfaces/ISizeable.hpp"
+#include "ui/RenderRectangle.hpp"
+#include "ui/RenderText.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
 #define SNAP_DISTANCE 30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
 
-class RevertWindowView
+//class RevertWindowView
+//{
+//public:
+//	RevertWindowView(sf::RenderWindow* window)
+//		:m_window(window) {}
+//
+//	~RevertWindowView()
+//	{
+//		m_window->setView(m_window->getDefaultView());
+//	}
+//private:
+//	sf::RenderWindow* m_window;
+//};
+
+class Plane : public IPositionable<int32_t>, public ISizeable<int32_t>, public IRenderable
 {
 public:
-	RevertWindowView(sf::RenderWindow* window)
-		:m_window(window) {}
-
-	~RevertWindowView()
-	{
-		m_window->setView(m_window->getDefaultView());
-	}
-private:
-	sf::RenderWindow* m_window;
-};
-
-class Plane : public ITransformable, public IRenderable, public IMouseUpdatable
-{
-public:
-	Plane(bool toolbar, const Plane& plane);
+	//Plane(bool toolbar, const Plane& plane);
 	Plane(bool toolbar);
 
 	~Plane();
@@ -36,10 +40,10 @@ public:
 
 	void DeleteCollection(uint64_t idx, bool dealloc = true);
 
-	//void TranslateInnerPosition(const sf::Vector2i& position);
-	//void SetInnerPosition(sf::Vector2i position);
+	//void TranslateInnerPosition(const glm::vec<2, int32_t>& position);
+	//void SetInnerPosition(glm::vec<2, int32_t> position);
 	
-	//sf::Vector2i GetInnerPosition();
+	//glm::vec<2, int32_t> GetInnerPosition();
 	void DeleteContents(bool dealloc = true);
 
 	// TODO not finished; may not need
@@ -51,42 +55,42 @@ public:
 	void render(sf::RenderWindow& window);
 	void snapRender(sf::RenderWindow& window);
 	void postRender(sf::RenderWindow& window);
-	bool mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override;
+	bool mouseButton(bool down, const glm::vec<2, int32_t>& position, const sf::Mouse::Button& button) override;
 
-	sf::View* GetView();
-	sf::Vector2f CalculateZoom();
-	sf::Vector2f GetCoordsFromPixel(sf::Vector2f pixel, sf::RenderWindow& window);
+	//sf::View* GetView();
+	//sf::Vector2f CalculateZoom();
+	//sf::Vector2f GetCoordsFromPixel(sf::Vector2f pixel, sf::RenderWindow& window);
 
 	static Plane* PrimaryPlane;
 	static Plane* ToolbarPlane;
-protected:
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+//protected:
+	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
-	void Setup(bool toolbar);
-	void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size);
+	//void Setup(bool toolbar);
+	//void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size);
 
 	//////////////////////////////////////////////////////////
 	// Rendering
 	//////////////////////////////////////////////////////////
 
 	// creates a buffer for the collection
-	void CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity);
+	//void CreateBuffer(uint16_t collectionIdx, bool displayCollectionVanity);
 
 	// updates the buffer for a collection
-	void UpdateBuffer(uint16_t bufferIdx);
+	//void UpdateBuffer(uint16_t bufferIdx);
 
 	// parses an array into a nice vertex array that sfml can understand
-	void ParseIndices(std::vector<sf::Vertex>* vao, const float positions[], const uint8_t colors[], const float textureCoords[], const uint8_t indices[], uint8_t indexCount);
-	std::vector<std::vector<sf::Vertex>> m_vertexArrays;
-	std::vector<sf::VertexBuffer> m_vertexBuffers;
-	std::vector<sf::Transform> m_vertexBufferTransform;
-	std::vector<sf::Image> m_textureMapImage;
-	std::vector<sf::Texture> m_textureMapTexture;
-	std::vector<bool> m_textureMapEnabled;
+	//void ParseIndices(std::vector<sf::Vertex>* vao, const float positions[], const uint8_t colors[], const float textureCoords[], const uint8_t indices[], uint8_t indexCount);
+	//std::vector<std::vector<sf::Vertex>> m_vertexArrays;
+	//std::vector<sf::VertexBuffer> m_vertexBuffers;
+	//std::vector<sf::Transform> m_vertexBufferTransform;
+	//std::vector<sf::Image> m_textureMapImage;
+	//std::vector<sf::Texture> m_textureMapTexture;
+	//std::vector<bool> m_textureMapEnabled;
 
-	sf::Shader m_shader;
-	sf::Texture m_textureCollectionOpen;
-	sf::Texture m_textureCollectionClosed;
+	//sf::Shader m_shader;
+	//sf::Texture m_textureCollectionOpen;
+	//sf::Texture m_textureCollectionClosed;
 
 	//////////////////////////////////////////////////////////
 	// Selection & Context
@@ -96,14 +100,14 @@ private:
 	void SelectContext(uint64_t collection, uint64_t stack, uint64_t block);
 	void UnSelect();
 
-	bool m_selected;
-	bool m_selectedContext;
-	Collection* m_selectedCollection;
-	Stack* m_selectedStack;
-	Block* m_selectedBlock;
-	Argument* m_selectedArgument;
+	bool m_Selected;
+	bool m_SelectedContext;
+	Collection* m_SelectedCollection;
+	Stack* m_SelectedStack;
+	Block* m_SelectedBlock;
+	Argument* m_SelectedArgument;
 
-	std::function<void(uint8_t)> m_contextCallback;
+	std::function<void(uint8_t)> m_ContextCallback;
 
 	//////////////////////////////////////////////////////////
 	// Dragging
@@ -111,19 +115,19 @@ private:
 
 	void DragCollection(Collection* collection, bool up);
 	void DragStack(Collection* collection, Stack* stack, bool up);
-	void UnDrag(const sf::Vector2i& position);
+	void UnDrag(const glm::vec<2, int32_t>& position);
 	void DraggingStackUpdate();
 
 	bool DraggingCollection();
 	bool DraggingStack();
 
-	Collection* m_draggingCollection;
-	Stack* m_draggingStack;
+	Collection* m_DraggingCollection;
+	Stack* m_DraggingStack;
 
-	sf::Vector2f m_draggingBeginObject;
-	sf::Vector2i m_draggingBeginMouse;
+	sf::Vector2f m_DraggingBeginObject;
+	glm::vec<2, int32_t> m_DraggingBeginMouse;
 
-	bool m_draggingUp;
+	bool m_DraggingUp;
 
 	//////////////////////////////////////////////////////////
 	// Snapping
@@ -134,33 +138,34 @@ private:
 
 	bool IsSnap();
 
-	sf::RectangleShape m_draggingShape;
+	vui::RenderRectangle m_DraggingShape;
 
-	uint64_t m_draggingSnapCollection;
-	uint64_t m_draggingSnapStackLoc;
-	Stack* m_draggingSnapStack;
+	uint64_t m_DraggingSnapCollection;
+	uint64_t m_DraggingSnapStackLoc;
+	Stack* m_DraggingSnapStack;
 
-	bool m_draggingSnap;
+	bool m_DraggingSnap;
 
 	//////////////////////////////////////////////////////////
 	// Other Data
 	//////////////////////////////////////////////////////////
 
-	std::vector<bool> m_collectionVanity;
-	std::vector<Collection*> m_collections;
+	std::vector<bool> m_CollectionVanity;
+	std::vector<Collection*> m_Collections;
 
-	//sf::Vector2i m_innerPosition;
-	sf::Text m_innerText;
-	bool m_toolbar;
-	sf::View m_view;
-	sf::RenderWindow* m_window;
-	sf::RectangleShape m_background;
+	//glm::vec<2, int32_t> m_innerPosition;
+	//sf::View m_view;
+	//sf::RenderWindow* m_window;
 
-	const sf::Texture& m_fontTexture;
-	sf::Image m_fontEditedImage;
-	sf::Texture m_fontEditedTexture;
+	bool m_Toolbar;
+	vui::RenderText m_InnerText;
+	vui::RenderRectangle m_Background;
 
-	const sf::Texture& m_fontBoldTexture;
-	sf::Image m_fontBoldEditedImage;
-	sf::Texture m_fontBoldEditedTexture;
+	//const sf::Texture& m_fontTexture;
+	//sf::Image m_fontEditedImage;
+	//sf::Texture m_fontEditedTexture;
+
+	//const sf::Texture& m_fontBoldTexture;
+	//sf::Image m_fontBoldEditedImage;
+	//sf::Texture m_fontBoldEditedTexture;
 };

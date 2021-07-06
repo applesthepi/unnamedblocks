@@ -27,11 +27,11 @@ void Collection::AddStack(Stack* stack)
 {
 	m_stacks.push_back(stack);
 
-	if (stack->getPosition().x + stack->GetWidestBlock() > getSize().x)
-		m_size.x = stack->getPosition().x + stack->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
+	if (stack->GetPosition().x + stack->GetWidestBlock() > GetSize().x)
+		m_Size.x = stack->GetPosition().x + stack->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
 
-	if (stack->getPosition().y + (stack->GetBlocks().size() * Global::BlockHeight) > getSize().y)
-		m_size.y = stack->getPosition().y + (stack->GetBlocks().size() * Global::BlockHeight) + COLLECTION_EMPTY_SPACE;
+	if (stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) > GetSize().y)
+		m_Size.y = stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
 }
 
 void Collection::AddStacks(const std::vector<Stack*>& stacks)
@@ -43,11 +43,11 @@ void Collection::AddStacks(const std::vector<Stack*>& stacks)
 	{
 		m_stacks.push_back(stacks[i]);
 
-		if (stacks[i]->getPosition().x + stacks[i]->GetWidestBlock() > getSize().x)
-			m_size.x = stacks[i]->getPosition().x + stacks[i]->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
+		if (stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() > GetSize().x)
+			m_Size.x = stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
 
-		if (stacks[i]->getPosition().y + (stacks[i]->GetBlocks().size() * Global::BlockHeight) > getSize().y)
-			m_size.y = stacks[i]->getPosition().y + (stacks[i]->GetBlocks().size() * Global::BlockHeight) + COLLECTION_EMPTY_SPACE;
+		if (stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) > GetSize().y)
+			m_Size.y = stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
 	}
 }
 
