@@ -9,15 +9,15 @@ ISizeable<T>::ISizeable()
 }
 
 template <typename T>
-void ISizeable<T>::SetSize(const glm::vec<2, T>&& size)
+void ISizeable<T>::SetSize(const glm::vec<2, T>& size)
 {
-	if (OnSizeUpdate(size, m_SuperBounds)) m_Size = std::move(size);
+	if (OnSizeUpdate(size, m_SuperBounds)) m_Size = size;
 }
 
 template <typename T>
-void ISizeable<T>::SetSuperBounds(const glm::vec<2, T>&& bounds)
+void ISizeable<T>::SetSuperBounds(const glm::vec<2, T>& bounds)
 {
-	if (OnSetSize(m_Size, bounds)) m_SuperBounds = std::move(bounds);
+	if (OnSizeUpdate(m_Size, bounds)) m_SuperBounds = bounds;
 }
 
 template <typename T>
@@ -35,7 +35,7 @@ glm::vec<2, T> ISizeable<T>::GetSuperBounds()
 }
 
 template <typename T>
-bool ISizeable<T>::OnSizeUpdate(const glm::vec<2, T>&& size, const glm::vec<2, T>&& bounds)
+bool ISizeable<T>::OnSizeUpdate(const glm::vec<2, T>& size, const glm::vec<2, T>& bounds)
 {
 	return true;
 }
@@ -45,3 +45,16 @@ void ISizeable<T>::OnSizePull()
 {
 
 }
+
+template class ISizeable<int64_t>;
+template class ISizeable<int32_t>;
+template class ISizeable<int16_t>;
+template class ISizeable<int8_t>;
+
+template class ISizeable<uint64_t>;
+template class ISizeable<uint32_t>;
+template class ISizeable<uint16_t>;
+template class ISizeable<uint8_t>;
+
+template class ISizeable<double>;
+template class ISizeable<float>;

@@ -26,8 +26,8 @@ namespace vui
 		void OnUpdateBuffers() override;
 		void OnReloadSwapChain() override;
 
-		bool OnPositionUpdate(const glm::vec<2, int32_t>&& position, const glm::vec<2, int32_t>&& offset) override;
-		bool OnSizeUpdate(const glm::vec<2, int32_t>&& size, const glm::vec<2, int32_t>&& bounds) override;
+		bool OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset) override;
+		bool OnSizeUpdate(const glm::vec<2, int32_t>& size, const glm::vec<2, int32_t>& bounds) override;
 	private:
 		struct ContentPair
 		{

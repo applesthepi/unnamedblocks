@@ -240,7 +240,7 @@ void Renderer::CleanupSwapChain()
 
 	vkFreeCommandBuffers(Device, CommandPool, static_cast<uint32_t>(CommandBuffers.size()), CommandBuffers.data());
 
-	vkDestroyPipeline(Device, BlocksPipeline, nullptr);
+	//vkDestroyPipeline(Device, BlocksPipeline, nullptr);
 	vkDestroyPipeline(Device, UIPipeline, nullptr);
 	vkDestroyPipeline(Device, UITexturePipeline, nullptr);
 
@@ -793,7 +793,7 @@ void Renderer::CreatePipeline(const std::string& shader, VkPipeline* pipeline, V
 
 void Renderer::InitPipelines()
 {
-	CreatePipeline("blocks", &BlocksPipeline, &BlocksPipelineLayout);
+	//CreatePipeline("blocks", &BlocksPipeline, &BlocksPipelineLayout);
 	CreatePipeline("ui", &UIPipeline, &UIPipelineLayout);
 	CreatePipeline("ui_texture", &UITexturePipeline, &UITexturePipelineLayout);
 }
@@ -933,7 +933,7 @@ void Renderer::InitCommandBuffers()
 		renderPassInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(CommandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindPipeline(CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, BlocksPipeline);
+		vkCmdBindPipeline(CommandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, UIPipeline);
 		vkCmdEndRenderPass(CommandBuffers[i]);
 
 		if (vkEndCommandBuffer(CommandBuffers[i]) != VK_SUCCESS)
@@ -1017,7 +1017,7 @@ VkPipelineLayout Renderer::BlocksPipelineLayout;
 VkPipelineLayout Renderer::UIPipelineLayout;
 VkPipelineLayout Renderer::UITexturePipelineLayout;
 
-VkPipeline Renderer::BlocksPipeline;
+//VkPipeline Renderer::BlocksPipeline;
 VkPipeline Renderer::UIPipeline;
 VkPipeline Renderer::UITexturePipeline;
 

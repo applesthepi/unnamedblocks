@@ -15,11 +15,11 @@ public:
 
 	/// Sets size of ISizeable.
 	/// \param Size of ISizeable.
-	void SetSize(const glm::vec<2, T>&& size);
+	void SetSize(const glm::vec<2, T>& size);
 
 	/// Sets super bounds of ISizeable.
 	/// \param Super bounds of ISizeable.
-	void SetSuperBounds(const glm::vec<2, T>&& bounds);
+	void SetSuperBounds(const glm::vec<2, T>& bounds);
 
 	/// Gets size of ISizeable.
 	/// \return Size of ISizeable.
@@ -33,7 +33,7 @@ protected:
 	/// \param Size of ISizeable.
 	/// \param Super bounds of ISizeable.
 	/// \return Condition to allow ISizeable<T>::SetSize(); to run.
-	virtual bool OnSizeUpdate(const glm::vec<2, T>&& size, const glm::vec<2, T>&& bounds);
+	virtual bool OnSizeUpdate(const glm::vec<2, T>& size, const glm::vec<2, T>& bounds);
 
 	/// Event called when ISizeable<T>::GetSize() or ISizeable<T>::GetSuperBounds() gets run.
 	virtual void OnSizePull();

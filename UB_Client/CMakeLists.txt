@@ -50,6 +50,8 @@ target_link_libraries(UB_CLIENT PUBLIC
 
 if(MSVC)
 	target_compile_options(UB_CLIENT PRIVATE "/MP")
+	set_target_properties(UB_CLIENT PROPERTIES
+		VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:UB_CLIENT>)
 endif()
 
 # Copy res folder
@@ -59,11 +61,11 @@ add_custom_command(
 	"${CMAKE_SOURCE_DIR}/res"
 	$<TARGET_FILE_DIR:UB_CLIENT>/res)
 # Copy csfml
-add_custom_command(
-	TARGET UB_CLIENT POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-	"${CMAKE_SOURCE_DIR}/csfml"
-	$<TARGET_FILE_DIR:UB_CLIENT>/csfml)
+#add_custom_command(
+#	TARGET UB_CLIENT POST_BUILD
+#	COMMAND ${CMAKE_COMMAND} -E copy_directory
+#	"${CMAKE_SOURCE_DIR}/csfml"
+#	$<TARGET_FILE_DIR:UB_CLIENT>/csfml)
 # Create mods folder for the mods to copy themselves into later
 add_custom_command(
 	TARGET UB_CLIENT POST_BUILD
@@ -72,16 +74,16 @@ add_custom_command(
 add_custom_command(
 	TARGET UB_CLIENT POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-	"${CMAKE_SOURCE_DIR}/Cappuccino/include"
-	$<TARGET_FILE_DIR:UB_CLIENT>/Cappuccino/include)
+	"${CMAKE_SOURCE_DIR}/UB_Cappuccino/include"
+	$<TARGET_FILE_DIR:UB_CLIENT>/UB_Cappuccino/include)
 add_custom_command(
     TARGET UB_CLIENT POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
-    $<TARGET_FILE_DIR:UB_CLIENT>/Cappuccino/lib/)
+    $<TARGET_FILE_DIR:UB_CLIENT>/UB_Cappuccino/lib/)
 add_custom_command(
     TARGET UB_CLIENT POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy
     $<TARGET_FILE:UB_CAPPUCCINO>
-    $<TARGET_FILE_DIR:UB_CLIENT>/Cappuccino/lib/)
+    $<TARGET_FILE_DIR:UB_CLIENT>/UB_Cappuccino/lib/)
 
 configure_file(config.h.in config.h)

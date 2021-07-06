@@ -1,6 +1,8 @@
 #include "config.h"
 
 #include "ModLoader.hpp"
+#include "ui/Renderer.hpp"
+#include "ui/RenderTools.hpp"
 #include "handlers/CategoryHandler.hpp"
 #include "registries/UIRegistry.hpp"
 // #include "ui/ButtonText.hpp"
@@ -16,6 +18,7 @@
 #include <Espresso/InputHandler.hpp>
 #include <Cappuccino/Logger.hpp>
 #include <Cappuccino/Intrinsics.hpp>
+#include <Cappuccino/Utils.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -51,6 +54,90 @@ void ReturnFinished()
 // 	const sf::Vector2f offsetCoords = beforeCoord - afterCoord;
 // 	view->move(offsetCoords);
 // }
+
+static std::atomic<bool> setupFinished;
+static std::atomic<bool> basicSetupFinished;
+
+static void AsyncSetup()
+{
+	RenderTools::Initialization();
+	Renderer::Initialization();
+
+	//std::shared_ptr<vui::RenderLayer> setupLayer = std::make_shared<vui::RenderLayer>();
+	//std::shared_ptr<vui::RenderFrame> setupFrame = std::make_shared<vui::RenderFrame>();
+	//setupFrame->SetWeak(setupFrame);
+
+	//setupFrame->SetPosition({ 0, 0 });
+	//setupFrame->SetSize(Renderer::WindowSize);
+
+	//std::shared_ptr<vui::RenderRectangle> setupBackground = std::make_shared<vui::RenderRectangle>();
+	//setupBackground->SetWeak(setupBackground);
+
+	//setupBackground->SetColor(COLOR_BACKGROUND_BASE);
+	//setupBackground->SetPosition({ 0, 0 });
+	//setupBackground->SetSize(Renderer::WindowSize);
+	//setupBackground->SetEnabled(true);
+
+	//setupFrame->AddContent(setupBackground);
+
+	//std::shared_ptr<vui::ProgressBar> progressStage = std::make_shared<vui::ProgressBar>(-1, vui::VerticalAlignment::CENTER);
+	//std::shared_ptr<vui::ProgressBar> progressMods = std::make_shared<vui::ProgressBar>(0, vui::VerticalAlignment::CENTER);
+
+	basicSetupFinished = true;
+
+	//{
+	//	progressStage->SetWeak(progressStage);
+	//	progressMods->SetWeak(progressMods);
+
+	//	progressStage->SetEnabled(true);
+	//	progressMods->SetEnabled(true);
+
+	//	setupFrame->AddContent(progressStage);
+	//	setupFrame->AddContent(progressMods);
+
+	//	setupLayer->AddFrame(setupFrame);
+	//	setupLayer->SetEnabled(true);
+
+	//	Renderer::AddLayer(setupLayer);
+
+	//	ModLoaderData* loaderData = new ModLoaderData();
+	//	std::thread threadModLoader(ThreadModLoader, loaderData);
+
+	//	while (!loaderData->GetRunning())
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+	//	while (!loaderData->GetDone())
+	//	{
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(5));
+
+	//		progressStage->SetProgress(static_cast<float>(loaderData->GetStage() + 1) / static_cast<float>(loaderData->GetStageCount()));
+	//		progressMods->SetProgress(static_cast<float>(loaderData->GetMod() + 1) / static_cast<float>(loaderData->GetModCount()));
+	//	}
+
+	//	if (threadModLoader.joinable())
+	//		threadModLoader.join();
+	//}
+
+	//if (a_singleplayer)
+	//{
+	//	Server::Instance->StartSectorManager();
+	//	Server::Instance->StartNetworking();
+	//}
+
+	//Logger::Debug(SIDE::CLIENT, "waiting...");
+	//std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+	//Logger::Debug(SIDE::CLIENT, "starting...");
+	//Client::Instance->StartChunkManager();
+	//Client::Instance->StartNetworking();
+
+	//Logger::Debug(SIDE::CLIENT, "...started");
+	//Client::Instance->TestRequests();
+
+	//Client::Instance->GetDiagnostics()->SetEnabled(true);
+
+	setupFinished = true;
+}
 
 int main()
 {
@@ -260,6 +347,168 @@ int main()
 
 	Plane::PrimaryPlane = new Plane(false);
 	Plane::ToolbarPlane = new Plane(true);
+
+	size_t currentFrame = 0;
+	double deltaTime = 0.0f;
+
+	TIME_POINT capture = std::chrono::high_resolution_clock::now();
+	TIME_POINT last = std::chrono::high_resolution_clock::now();
+	TIME_POINT begin = std::chrono::high_resolution_clock::now();
+	TIME_POINT beginFps = std::chrono::high_resolution_clock::now();
+	TIME_POINT sleepTime = std::chrono::high_resolution_clock::now();
+	TIME_POINT diagnosticsTime = std::chrono::high_resolution_clock::now();
+
+	std::vector<double> fpsAdverage;
+	bool reloadRenderObjects = false;
+
+	Renderer::InitializeWindow();
+
+	// Create Client
+	//Client::Instance = new Client(username, password, a_singleplayer);
+
+	std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
+
+#if DEBUG_ALLOCATIONS
+	LogTotalMemoryConsumedInit();
+#endif
+
+	while (!glfwWindowShouldClose(Renderer::Window) && !basicSetupFinished)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(16 /* 60fps */));
+		glfwPollEvents();
+	}
+
+	while (!glfwWindowShouldClose(Renderer::Window))
+	{
+
+#if DEBUG_ALLOCATIONS
+		LogTotalMemoryConsumed();
+#endif
+
+		if (!Renderer::VsyncEnabled)
+			std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
+
+		glfwPollEvents();
+
+		vkWaitForFences(Renderer::Device, 1, &Renderer::InFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+		vkResetFences(Renderer::Device, 1, &Renderer::InFlightFences[currentFrame]);
+
+		uint32_t imageIndex;
+		VkResult result = vkAcquireNextImageKHR(Renderer::Device, Renderer::SwapChain, UINT64_MAX, Renderer::ImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+		Renderer::ActiveCommandBuffer = Renderer::CommandBuffers[imageIndex];
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR)
+		{
+			Renderer::RecreateSwapChain();
+			currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+			reloadRenderObjects = true;
+			continue;
+		}
+		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+			Logger::Fatal("failed to acquire swap chain image");
+
+		//std::cout << imageIndex << std::endl;
+		// Check if a previous frame is using this image (i.e. there is its fence to wait on)
+		if (Renderer::ImagesInFlight[imageIndex] != VK_NULL_HANDLE)
+			vkWaitForFences(Renderer::Device, 1, &Renderer::ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+
+		// Mark the image as now being in use by this frame
+		Renderer::ImagesInFlight[imageIndex] = Renderer::InFlightFences[currentFrame];
+
+		capture = std::chrono::high_resolution_clock::now();
+		deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(capture - last).count()) / 1000000.0;
+		last = capture;
+
+		if (reloadRenderObjects)
+		{
+			//Client::Instance->GetChunkManager()->ReloadChunks();
+			Renderer::ReloadLayerSwapChains();
+			reloadRenderObjects = false;
+		}
+
+		Renderer::Render(imageIndex, deltaTime, !setupFinished, diagnosticsTime);
+
+		if (std::chrono::duration_cast<std::chrono::milliseconds>(capture - beginFps).count() > 200)
+		{
+			beginFps = capture;
+
+			if (fpsAdverage.size() == 5)
+			{
+				double adverage = 0.0;
+
+				for (uint8_t i = 0; i < fpsAdverage.size(); i++)
+					adverage += fpsAdverage[i];
+
+				adverage /= static_cast<double>(fpsAdverage.size());
+				fpsAdverage.clear();
+
+				// Logger::Info(SIDE::CLIENT, "FPS: " + std::to_string(static_cast<uint64_t>(adverage)));
+			}
+			else
+				fpsAdverage.push_back(1.0 / deltaTime);
+		}
+
+		VkSubmitInfo submitInfo{};
+		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+		VkSemaphore waitSemaphores[] = { Renderer::ImageAvailableSemaphores[currentFrame] };
+		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+		submitInfo.waitSemaphoreCount = 1;
+		submitInfo.pWaitSemaphores = waitSemaphores;
+		submitInfo.pWaitDstStageMask = waitStages;
+
+		submitInfo.commandBufferCount = 1;
+		submitInfo.pCommandBuffers = &Renderer::CommandBuffers[imageIndex];
+
+		VkSemaphore signalSemaphores[] = { Renderer::RenderFinishedSemaphores[currentFrame] };
+		submitInfo.signalSemaphoreCount = 1;
+		submitInfo.pSignalSemaphores = signalSemaphores;
+
+		vkResetFences(Renderer::Device, 1, &Renderer::InFlightFences[currentFrame]);
+
+		if (vkQueueSubmit(Renderer::GraphicsQueue, 1, &submitInfo, Renderer::InFlightFences[currentFrame]) != VK_SUCCESS)
+		{
+			Logger::Error("failed to submit draw call to command buffer");
+			return -1;
+		}
+
+		VkPresentInfoKHR presentInfo{};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = signalSemaphores;
+
+		VkSwapchainKHR swapChains[] = { Renderer::SwapChain };
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = swapChains;
+		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.pResults = nullptr; // Optional
+
+		result = vkQueuePresentKHR(Renderer::PresentQueue, &presentInfo);
+
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || Renderer::FramebufferResized)
+		{
+			Renderer::FramebufferResized = false;
+			Renderer::RecreateSwapChain();
+			currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+			reloadRenderObjects = true;
+			continue;
+		}
+		else if (result != VK_SUCCESS)
+		{
+			Logger::Error("failed to present swap chain image");
+			return -1;
+		}
+
+		vkQueueWaitIdle(Renderer::PresentQueue);
+		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+		//sleepTime = std::chrono::high_resolution_clock::now();
+		//while (std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - sleepTime).count() < (60.0 - deltaTime))
+		//{
+		//	std::this_thread::sleep_for(std::chrono::milliseconds(0));
+		//}
+	}
 
 	// Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
 	// Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));

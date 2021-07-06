@@ -24,6 +24,8 @@
 #include <set>
 #include <memory>
 #include <optional>
+#include <future>
+#include <thread>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -41,7 +43,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#if LINUX
 #define TIME_POINT std::chrono::system_clock::time_point
+#else
+#define TIME_POINT std::chrono::steady_clock::time_point
+#endif
 
 namespace endianness
 {

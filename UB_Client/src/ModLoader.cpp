@@ -50,9 +50,19 @@ ModLoaderStatus run()
 
 	mods = new std::vector<RegMod>();
 
-	std::filesystem::directory_iterator pathMods("mods");
-	for(auto& file : pathMods)
-		registerMod(file.path().stem().string(), file.path().extension().string());
+	std::cout << std::filesystem::current_path() << std::endl;
+
+	try
+	{
+		std::filesystem::directory_iterator pathMods("mods");
+
+		for (auto& file : pathMods)
+			registerMod(file.path().stem().string(), file.path().extension().string());
+	}
+	catch (std::exception* e)
+	{
+		Logger::Warn("no mods folder present; starting base editor");
+	}
 
 	for (uint16_t i = 0; i < mods->size(); i++)
 	{

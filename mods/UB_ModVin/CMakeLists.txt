@@ -249,6 +249,12 @@ add_library(UB_MOD_VIN MODULE
 	${UB_MOD_VIN_SRC}
 )
 
+add_dependencies(UB_CLIENT
+    UB_CAPPUCCINO
+    UB_ESPRESSO
+    UB_RHR
+)
+
 # Preserve folders in visual studio structure
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/ModVin FILES ${UB_MOD_VIN_SRC})
 

@@ -101,6 +101,11 @@ add_library(UB_RHR STATIC
 	${UB_RHR_SRC}
 )
 
+add_dependencies(UB_CLIENT
+    UB_CAPPUCCINO
+    UB_ESPRESSO
+)
+
 target_link_libraries(UB_RHR PUBLIC
 	UB_ESPRESSO
 	UB_CAPPUCCINO

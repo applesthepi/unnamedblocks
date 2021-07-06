@@ -78,7 +78,7 @@ public:
 	static VkPipelineLayout UIPipelineLayout;
 	static VkPipelineLayout UITexturePipelineLayout;
 
-	static VkPipeline BlocksPipeline;
+	//static VkPipeline BlocksPipeline;
 	static VkPipeline UIPipeline;
 	static VkPipeline UITexturePipeline;
 

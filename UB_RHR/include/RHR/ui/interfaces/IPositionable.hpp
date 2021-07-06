@@ -15,11 +15,11 @@ public:
 
 	/// expected only main thread acccess; non-atomic
 	/// \param position of IPositionable
-	void SetPosition(const glm::vec<2, T>&& position);
+	void SetPosition(const glm::vec<2, T>& position);
 
 	/// expected only main thread acccess; non-atomic
 	/// \param super offset of IPositionable
-	void SetSuperOffset(const glm::vec<2, T>&& offset);
+	void SetSuperOffset(const glm::vec<2, T>& offset);
 
 	/// expected only main thread acccess; non-atomic
 	/// \return position of IPositionable
@@ -33,7 +33,7 @@ protected:
 	/// \param position of IPositionable
 	/// \param super offset of IPositionable
 	/// \return condition to allow IPositionable<T>::SetPosition() to run
-	virtual bool OnPositionUpdate(const glm::vec<2, T>&& position, const glm::vec<2, T>&& offset);
+	virtual bool OnPositionUpdate(const glm::vec<2, T>& position, const glm::vec<2, T>& offset);
 
 	/// event called when IPositionable<T>::GetPosition() or IPositionable<T>::GetSuperOffset(); gets run
 	virtual void OnPositionPull();

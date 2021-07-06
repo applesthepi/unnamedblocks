@@ -163,13 +163,13 @@ void vui::RenderFrame::OnReloadSwapChain()
 	}
 }
 
-bool vui::RenderFrame::OnPositionUpdate(const glm::vec<2, int32_t>&& position, const glm::vec<2, int32_t>&& offset)
+bool vui::RenderFrame::OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset)
 {
 	UpdateContentDimentions();
 	return true;
 }
 
-bool vui::RenderFrame::OnSizeUpdate(const glm::vec<2, int32_t>&& size, const glm::vec<2, int32_t>&& bounds)
+bool vui::RenderFrame::OnSizeUpdate(const glm::vec<2, int32_t>& size, const glm::vec<2, int32_t>& bounds)
 {
 	UpdateContentDimentions();
 	return true;
