@@ -3,7 +3,7 @@
 #include "ui/RenderTools.hpp"
 #include "ui/Renderer.hpp"
 
-RenderObject::RenderObject()
+RenderObject::RenderObject(bool ui)
     : m_HasVertexBufferData(false)
     , m_HasIndexBufferData(false)
     , m_VertexCount(0)
@@ -15,6 +15,8 @@ RenderObject::RenderObject()
     , m_Queue(0)
     , m_Dirty(false)
     , m_InitImage(true)
+	, m_HasWeak(false)
+	, m_UI(ui)
     , m_TexturePath("")
     , m_Position({ 0.0, 0.0, 0.0 })
     , m_VertexBuffer(nullptr)
@@ -28,34 +30,16 @@ RenderObject::RenderObject()
 {
 }
 
-RenderObject::RenderObject(const std::string& texturePath)
-    : m_HasVertexBufferData(false)
-    , m_HasIndexBufferData(false)
-    , m_VertexCount(0)
-    , m_IndexCount(0)
-    , m_VertexAllocCount(0)
-    , m_IndexAllocCount(0)
-    , m_Vertices(nullptr)
-    , m_Indices(nullptr)
-    , m_Queue(0)
-    , m_Dirty(false)
-    , m_InitImage(true)
-    , m_TexturePath(texturePath)
-    , m_Position({ 0.0, 0.0, 0.0 })
-    , m_VertexBuffer(nullptr)
-    , m_VertexBufferMemory(nullptr)
-    , m_VertexStagingBuffer(nullptr)
-    , m_VertexStagingBufferMemory(nullptr)
-    , m_IndexBuffer(nullptr)
-    , m_IndexBufferMemory(nullptr)
-    , m_IndexStagingBuffer(nullptr)
-    , m_IndexStagingBufferMemory(nullptr)
+RenderObject::RenderObject(bool ui, const std::string& texturePath)
+    : RenderObject(ui)
 {
+	m_TexturePath = texturePath;
 }
 
-void RenderObject::SetWeak(std::weak_ptr<RenderObject>&& weak)
+void RenderObject::SetWeak(std::weak_ptr<IRenderable>&& weak)
 {
 	m_Weak = std::move(weak);
+	m_HasWeak = true;
 }
 
 void RenderObject::SetPosition(const glm::vec<3, double>& position)
@@ -72,7 +56,7 @@ void RenderObject::UpdateVertices(const std::vector<Vertex>* vertices, const std
 {
 	if (vertices->size() < 3 || indices->size() < 3)
 	{
-		Logger::Error(SIDE::CLIENT, "RenderObject does not support less then 3 vertices or indices");
+		Logger::Error("RenderObject does not support less then 3 vertices or indices");
 		return;
 	}
 
@@ -84,7 +68,7 @@ void RenderObject::UpdateVertices(const std::vector<Vertex>* vertices, const std
 		Vertex* stagedVertices = new Vertex[vertices->size() * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!stagedVertices)
-			Logger::Fatal(SIDE::CLIENT, "out of memory");
+			Logger::Fatal("out of memory");
 
 		memcpy(stagedVertices, vertices->data(), verticesSize);
 
@@ -107,7 +91,7 @@ void RenderObject::UpdateVertices(const std::vector<Vertex>* vertices, const std
 		uint32_t* stagedIndices = new uint32_t[indices->size() * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!stagedIndices)
-			Logger::Fatal(SIDE::CLIENT, "out of memory");
+			Logger::Fatal("out of memory");
 
 		memcpy(stagedIndices, indices->data(), indicesSize);
 
@@ -137,7 +121,7 @@ void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, 
 {
 	if (vertexCount < 3 || indexCount < 3)
 	{
-		Logger::Error(SIDE::CLIENT, "RenderObject does not support less then 3 vertices or indices");
+		Logger::Error("RenderObject does not support less then 3 vertices or indices");
 		return;
 	}
 
@@ -149,7 +133,7 @@ void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, 
 		Vertex* stagedVertices = new Vertex[vertexCount * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!stagedVertices)
-			Logger::Fatal(SIDE::CLIENT, "out of memory");
+			Logger::Fatal("out of memory");
 
 		memcpy(stagedVertices, vertices, verticesSize);
 
@@ -172,7 +156,7 @@ void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, 
 		uint32_t* stagedIndices = new uint32_t[indexCount * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!stagedIndices)
-			Logger::Fatal(SIDE::CLIENT, "out of memory");
+			Logger::Fatal("out of memory");
 
 		memcpy(stagedIndices, indices, indicesSize);
 
@@ -202,7 +186,7 @@ void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, 
 {
 	if (vertexCount < 3)
 	{
-		Logger::Error(SIDE::CLIENT, "RenderObject does not support less then 3 vertices or indices");
+		Logger::Error("RenderObject does not support less then 3 vertices or indices");
 		return;
 	}
 
@@ -213,7 +197,7 @@ void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, 
 		Vertex* stagedVertices = new Vertex[vertexCount * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!stagedVertices)
-			Logger::Fatal(SIDE::CLIENT, "out of memory");
+			Logger::Fatal("out of memory");
 
 		memcpy(stagedVertices, vertices, verticesSize);
 
@@ -239,17 +223,17 @@ void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, 
 		MarkDirty();
 }
 
-void RenderObject::Render(bool ui)
+void RenderObject::OnRender()
 {
 	if (!m_HasVertexBufferData)
 		return;
 
-	UpdateUniforms(ui);
+	UpdateUniforms(m_UI);
 
 	VkBuffer vb[] = { m_VertexBuffer };
 	VkDeviceSize offsets[] = { 0 };
 
-	if (ui)
+	if (m_UI)
 	{
 		if (m_TexturePath.size() > 0)
 			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
@@ -270,7 +254,7 @@ void RenderObject::Render(bool ui)
 		vkCmdDraw(Renderer::ActiveCommandBuffer, static_cast<uint32_t>(m_VertexCount), 1, 0, 0);
 }
 
-void RenderObject::UpdateBuffers()
+void RenderObject::OnUpdateBuffers()
 {
 	m_Dirty = false;
 	m_HasVertexBufferData = true;
@@ -286,7 +270,7 @@ void RenderObject::UpdateBuffers()
 		}
 
 		RenderTools::CreateBuffer(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_UniformBuffer, m_UniformBufferMemory);
-		InitDescriptorSet();
+		OnReloadSwapChain();
 	}
 
 	if (m_HasVertexBufferData)
@@ -344,12 +328,12 @@ void RenderObject::UpdateBuffers()
 	}
 }
 
-void RenderObject::InitDescriptorSet()
+void RenderObject::OnReloadSwapChain()
 {
 	if (m_InitImage)
 		return;
 
-	VkDescriptorSetAllocateInfo allocInfo {};
+	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
 	allocInfo.descriptorPool = Renderer::DescriptorPool;
 	allocInfo.descriptorSetCount = 1;
@@ -357,19 +341,19 @@ void RenderObject::InitDescriptorSet()
 
 	vkAllocateDescriptorSets(Renderer::Device, &allocInfo, &m_DescriptorSet);
 
-	VkDescriptorBufferInfo bufferInfo {};
+	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = m_UniformBuffer;
 	bufferInfo.offset = 0;
 	bufferInfo.range = sizeof(UniformBufferObject);
 
 	if (m_TexturePath.size() > 0)
 	{
-		VkDescriptorImageInfo imageInfo {};
+		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = m_ImageView;
 		imageInfo.sampler = Renderer::TextureSampler;
 
-		std::array<VkWriteDescriptorSet, 2> descriptorWrites {};
+		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_DescriptorSet;
@@ -391,7 +375,7 @@ void RenderObject::InitDescriptorSet()
 	}
 	else
 	{
-		std::array<VkWriteDescriptorSet, 1> descriptorWrites {};
+		std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		descriptorWrites[0].dstSet = m_DescriptorSet;
@@ -443,9 +427,9 @@ void RenderObject::SetQueue(uint8_t queue)
 
 void RenderObject::MarkDirty()
 {
-	if (m_Dirty)
+	if (m_Dirty || !m_HasWeak)
 		return;
 
 	m_Dirty = true;
-	Renderer::AddDirtyObject(m_Weak);
+	Renderer::AddDirty(m_Weak);
 }

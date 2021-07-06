@@ -80,9 +80,9 @@ public:
 	{
 
 		if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-			Logger::Warn(SIDE::CLIENT, pCallbackData->pMessage);
+			Logger::Warn(pCallbackData->pMessage);
 		else if (messageSeverity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-			Logger::Error(SIDE::CLIENT, pCallbackData->pMessage);
+			Logger::Error(pCallbackData->pMessage);
 
 		return VK_FALSE;
 	}

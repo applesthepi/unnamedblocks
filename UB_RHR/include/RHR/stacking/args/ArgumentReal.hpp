@@ -1,6 +1,6 @@
 #pragma once
 #include "config.h"
-
+/*
 #include "stacking/args/Argument.hpp"
 #include "registries/UIRegistry.hpp"
 
@@ -165,3 +165,4 @@ private:
 	bool m_widthNeedsUpdate;
 	std::function<void()> m_tab;
 };
+*/

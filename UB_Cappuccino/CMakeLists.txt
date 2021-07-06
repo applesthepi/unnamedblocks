@@ -34,6 +34,8 @@ set(UB_CAPPUCCINO_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Registration.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Utils.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Utils.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Color.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Color.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/Cappuccino/Export.hpp"
 )
 
@@ -63,6 +65,10 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 	imgui::imgui
 	Vulkan::Vulkan
 )
+
+if(MSVC)
+	target_compile_options(UB_CAPPUCCINO PRIVATE "/MP")
+endif()
 
 set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
 

@@ -14,16 +14,16 @@
 namespace vui
 {
 
-class RenderRectangle : public IUI, public IPositionable<int32_t>, public ISizeable<int32_t>, public IBoundedParent, public IEnableable, public IColorable
+class RenderRectangle : public IRenderable, public IPositionable<int32_t>, public ISizeable<int32_t>, public IEnableable, public IColorable
 {
 public:
-	RenderRectangle(bool disableDirty = false);
+	RenderRectangle();
 
 	/// REQUIRED Sets weak.
 	/// \param Weak ptr of itself.
 	void SetWeak(const std::weak_ptr<RenderRectangle>&& weak);
 
-	/// Sets texture of rectange.
+	/// Sets texture of rectangle.
 	/// \param Texture path.
 	void SetTexture(const std::string& texture);
 
@@ -47,7 +47,7 @@ private:
 	/// Regenerates descriptor sets including uniforms.
 	void OnReloadSwapChain() override;
 
-	/// Abstracted RenderObject to render the rectange.
+	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<RenderObject> m_RenderObject;
 
 	/// Weak reference.
@@ -58,7 +58,6 @@ private:
 
 	bool m_HasColor;
 	bool m_HasTexture;
-	bool m_DisableDirty;
 
 	std::string m_Texture;
 	uint32_t m_Depth;

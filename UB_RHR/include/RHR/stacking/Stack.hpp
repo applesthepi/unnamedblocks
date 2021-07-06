@@ -2,10 +2,11 @@
 #include "config.h"
 
 #include "Block.hpp"
+#include "ui/interfaces/IPositionable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
-class Stack : public ITransformable
+class Stack : public IPositionable<int32_t>
 {
 public:
 	Stack();

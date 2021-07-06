@@ -9,7 +9,7 @@
 #include "Utils.hpp"
 
 #if !LINUX
-#ifdef __CAP
+#ifdef CAPPUCCINO
 #define CAP_DLL __declspec(dllexport)
 #else
 #define CAP_DLL __declspec(dllimport)

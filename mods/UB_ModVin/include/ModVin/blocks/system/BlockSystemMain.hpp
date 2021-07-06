@@ -1,6 +1,6 @@
 #pragma once
-#include "ModVin/ModCategories.h"
-#include <Espresso/Espresso.h>
+#include "ModVin/ModCategories.hpp"
+#include <Espresso/Espresso.hpp>
 
 class BlockSystemMain : public ModBlock
 {

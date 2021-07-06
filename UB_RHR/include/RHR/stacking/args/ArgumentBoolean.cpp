@@ -1,5 +1,5 @@
 #include "ArgumentBoolean.hpp"
-
+/*
 ArgumentBool::ArgumentBool(bool canSwitch)
 	:Argument(), m_field("", canSwitch, FieldType::TEXT)
 {
@@ -335,4 +335,4 @@ void ArgumentBool::OnReloadSwapChain()
 void ArgumentBool::OnFrameUpdate(double deltaTime)
 {
 
-}
+}*/

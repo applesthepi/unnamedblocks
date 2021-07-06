@@ -57,16 +57,18 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderLayer.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderObject.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderObject.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderRectangle.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderRectangle.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderTools.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderTools.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderRectangle.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderRectangle.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderText.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderText.cpp"
 	# "${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderUI.hpp"
 	# "${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderUI.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Vertex.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Vertex.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.cpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.hpp"
+	#"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IPositionable.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IPositionable.cpp"
@@ -117,5 +119,9 @@ target_include_directories(UB_RHR PUBLIC
 	"${CMAKE_SOURCE_DIR}/UB_Cappuccino/include"
 	"${CMAKE_SOURCE_DIR}/tcc/libtcc"
 )
+
+if(MSVC)
+	target_compile_options(UB_RHR PRIVATE "/MP")
+endif()
 
 configure_file(config.h.in config.h)

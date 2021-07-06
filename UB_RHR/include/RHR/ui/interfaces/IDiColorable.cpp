@@ -1,19 +1,19 @@
 #include "IDiColorable.hpp"
 
-IDiColorable::IDiColorable(const Color&& primary, const Color&& secondary)
+IDiColorable::IDiColorable(const Color& primary, const Color& secondary)
 	:m_ColorPrimary(primary), m_ColorSecondary(secondary)
 {
 
 }
 
-void IDiColorable::SetColorPrimary(const Color&& primary)
+void IDiColorable::SetColorPrimary(const Color& primary)
 {
-	m_ColorPrimary = std::move(primary);
+	m_ColorPrimary = primary;
 }
 
-void IDiColorable::SetColorSecondary(const Color&& secondary)
+void IDiColorable::SetColorSecondary(const Color& secondary)
 {
-	m_ColorSecondary = std::move(secondary);
+	m_ColorSecondary = secondary;
 }
 
 const Color& IDiColorable::GetColorPrimary()

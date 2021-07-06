@@ -5,6 +5,7 @@
 #include "stacking/args/ArgumentBoolean.hpp"
 #include "stacking/args/ArgumentString.hpp"
 #include "stacking/args/ArgumentAny.hpp"
+#include "registries/BlockRegistry.hpp"
 
 Block::Block(const std::string& unlocalizedName)
 	:m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName))
@@ -71,6 +72,9 @@ const ModCatagory* Block::GetModCategory()
 	return m_modCategory;
 }
 
+int16_t Block::Padding = 2;
+int16_t Block::Height = 20;
+
 void Block::UpdateArguments()
 {
 	for (uint64_t i = 0; i < m_arguments.size(); i++)
@@ -82,7 +86,7 @@ void Block::UpdateArguments()
 	std::vector<BlockArgumentInitializer> argumentInit = m_modBlock->GetArguments();
 	std::vector<Argument*> args;
 
-	uint32_t width = Global::BlockBorder;
+	uint32_t width = Block::Padding;
 
 	for (uint64_t i = 0; i < argumentInit.size(); i++)
 	{
@@ -90,13 +94,12 @@ void Block::UpdateArguments()
 		{
 			args.push_back(new ArgumentText());
 
-			args.back()->setPosition(width, Global::BlockBorder);
+			args.back()->SetPosition({ width, Block::Padding });
 			args.back()->SetData(argumentInit[i].DefaultValue);
-			args.back()->UpdateData();
 
 			width += args.back()->GetWidth();
 		}
-		else if (argumentInit[i].Type == BlockArgumentType::REAL)
+		/*else if (argumentInit[i].Type == BlockArgumentType::REAL)
 		{
 			args.push_back(new ArgumentReal(argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
 
@@ -138,7 +141,7 @@ void Block::UpdateArguments()
 			args.back()->UpdateData();
 
 			width += args.back()->GetWidth();
-		}
+		}*/
 	}
 
 	AddArguments(args);
@@ -146,11 +149,11 @@ void Block::UpdateArguments()
 
 void Block::UpdateWidth()
 {
-	m_width = Global::BlockBorder;
+	m_width = Block::Padding;
 
 	for (uint64_t i = 0; i < m_arguments.size(); i++)
 	{
 		m_width += m_arguments[i]->GetWidth();
-		m_width += Global::BlockBorder;
+		m_width += Block::Padding;
 	}
 }

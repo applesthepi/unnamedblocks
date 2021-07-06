@@ -3,7 +3,7 @@
 #include "ui/Renderer.hpp"
 
 IRenderable::IRenderable()
-	: m_Dirty(false), m_Virtual(false), m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr), m_WeakSet(false)
+	: m_Dirty(false), m_Virtual(false)/*, m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr)*/, m_WeakSet(false)
 {
 }
 
@@ -13,20 +13,20 @@ void IRenderable::SetWeak(const std::weak_ptr<IRenderable>&& weak)
 	m_WeakSet = true;
 }
 
-void IRenderable::SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)())
-{
-	m_Render = render;
-	m_UpdateBuffers = updateBuffers;
-	m_ReloadSwapChain = reloadSwapChain;
-	m_Virtual = true;
-}
+//void IRenderable::SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)())
+//{
+//	m_Render = render;
+//	m_UpdateBuffers = updateBuffers;
+//	m_ReloadSwapChain = reloadSwapChain;
+//	m_Virtual = true;
+//}
 
 void IRenderable::Render()
 {
 	if (!IsWeak() || !IsVirtual())
 		return;
 
-	m_Render();
+	OnRender();
 }
 
 void IRenderable::UpdateBuffers()
@@ -34,7 +34,7 @@ void IRenderable::UpdateBuffers()
 	if (!IsWeak() || !IsVirtual())
 		return;
 
-	m_UpdateBuffers();
+	OnUpdateBuffers();
 }
 
 void IRenderable::ReloadSwapChain()
@@ -42,7 +42,22 @@ void IRenderable::ReloadSwapChain()
 	if (!IsWeak() || !IsVirtual())
 		return;
 
-	m_ReloadSwapChain();
+	OnReloadSwapChain();
+}
+
+void IRenderable::OnRender()
+{
+
+}
+
+void IRenderable::OnUpdateBuffers()
+{
+
+}
+
+void IRenderable::OnReloadSwapChain()
+{
+
 }
 
 void IRenderable::MarkDirty()
@@ -60,6 +75,11 @@ void IRenderable::ClearDirty()
 		return;
 
 	m_Dirty = false;
+}
+
+std::weak_ptr<IRenderable>& IRenderable::GetWeak()
+{
+	return m_Weak;
 }
 
 bool IRenderable::IsVirtual()

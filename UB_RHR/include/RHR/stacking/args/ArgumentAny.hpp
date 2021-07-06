@@ -1,6 +1,6 @@
 #pragma once
 #include "config.h"
-
+/*
 #include "stacking/args/Argument.hpp"
 #include "registries/UIRegistry.hpp"
 
@@ -143,3 +143,4 @@ private:
 	std::function<void()> m_tab;
 	sf::RenderTexture m_textRendered;
 };
+*/

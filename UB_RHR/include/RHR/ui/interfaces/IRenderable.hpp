@@ -20,7 +20,7 @@ public:
 	void SetWeak(const std::weak_ptr<IRenderable>&& weak);
 
 	/// Setup upstream callbacks.
-	void SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)());
+	//void SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)());
 
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void Render();
@@ -30,6 +30,15 @@ public:
 
 	/// Regenerates descriptor sets including uniforms.
 	void ReloadSwapChain();
+
+	/// Add draw calls to cmd buffer prebound by Renderer.
+	virtual void OnRender();
+
+	/// Updates mesh on cpu side.
+	virtual void OnUpdateBuffers();
+
+	/// Regenerates descriptor sets including uniforms.
+	virtual void OnReloadSwapChain();
 
 	/// Marks IRenderable as dirty. UpdateBuffers will be called next frame. Expected only main thread acccess; non-atomic.
 	void MarkDirty();
@@ -53,14 +62,14 @@ private:
 	/// Garantees upstream callbacks exist.
 	bool m_Virtual;
 
-	/// Render upstream callback.
-	void(*m_Render)();
+	///// Render upstream callback.
+	//void(*m_Render)();
 
-	/// UpdateBuffers upstream callback.
-	void(*m_UpdateBuffers)();
+	///// UpdateBuffers upstream callback.
+	//void(*m_UpdateBuffers)();
 
-	/// ReloadSwapChain upstream callback.
-	void(*m_ReloadSwapChain)();
+	///// ReloadSwapChain upstream callback.
+	//void(*m_ReloadSwapChain)();
 
 	/// Weak reference.
 	std::weak_ptr<IRenderable> m_Weak;

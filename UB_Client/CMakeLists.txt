@@ -49,6 +49,10 @@ target_link_libraries(UB_CLIENT PUBLIC
     UB_RHR
 )
 
+if(MSVC)
+	target_compile_options(UB_CLIENT PRIVATE "/MP")
+endif()
+
 # Copy res folder
 add_custom_command(
 	TARGET UB_CLIENT POST_BUILD

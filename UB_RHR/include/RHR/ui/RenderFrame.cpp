@@ -7,8 +7,9 @@ vui::RenderFrame::RenderFrame()
 	, m_HasSpace(false)
 	, m_HasFrame(false)
 	, m_HasContent(false)
+	, m_Padding(0)
 {
-	((IUI*)this)->SetupVirtualFunctions(this);
+	
 }
 
 void vui::RenderFrame::SetPadding(uint8_t padding)
@@ -64,7 +65,7 @@ void vui::RenderFrame::AddFrame(std::unique_ptr<RenderFrame>& frame, LocalCardin
 		Logger::Error("wrong direction when adding a frame to a RenderFrame");
 }
 
-void vui::RenderFrame::AddContent(std::weak_ptr<IUI>&& content)
+void vui::RenderFrame::AddContent(std::weak_ptr<IRenderable>&& renderable, std::weak_ptr<IUpdatable>&& updatable, std::weak_ptr<IPositionable>&& positionable, std::weak_ptr<ISizeable>&& sizeable)
 {
 	if (m_HasFrame)
 	{
@@ -73,7 +74,7 @@ void vui::RenderFrame::AddContent(std::weak_ptr<IUI>&& content)
 	}
 
 	m_HasContent = true;
-	m_Content.push_back(std::move(content));
+	m_Content.push_back({std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable) });
 	UpdateContentDimentions();
 }
 
@@ -82,7 +83,7 @@ void vui::RenderFrame::OnRender()
 	if (m_HasFrame)
 	{
 		for (auto& frame : m_Frames)
-			((IUI*)frame.get())->GetRenderable()->Render();
+			((IRenderable*)frame.get())->Render();
 	}
 	else if (m_HasContent)
 	{
@@ -96,8 +97,8 @@ void vui::RenderFrame::OnRender()
 				i--;
 			}
 
-			if (auto content = m_Content[i].lock())
-				content->GetRenderable()->Render();
+			if (auto content = m_Content[i].Renderable.lock())
+				content->Render();
 			else
 			{
 				m_Content.erase(m_Content.begin() + i);
@@ -109,7 +110,7 @@ void vui::RenderFrame::OnRender()
 
 void vui::RenderFrame::OnUpdateBuffers()
 {
-	((IUI*)this)->GetRenderable()->ClearDirty();
+	ClearDirty();
 	bool erased = false;
 
 	for (size_t i = 0; i < m_Content.size(); i++)
@@ -120,8 +121,8 @@ void vui::RenderFrame::OnUpdateBuffers()
 			i--;
 		}
 
-		if (auto content = m_Content[i].lock())
-			content->GetRenderable()->UpdateBuffers();
+		if (auto content = m_Content[i].Renderable.lock())
+			content->UpdateBuffers();
 		else
 		{
 			m_Content.erase(m_Content.begin() + i);
@@ -137,7 +138,7 @@ void vui::RenderFrame::OnReloadSwapChain()
 		bool erased = false;
 
 		for (auto& frame : m_Frames)
-			((IUI*)frame.get())->GetRenderable()->ReloadSwapChain();
+			((IRenderable*)frame.get())->ReloadSwapChain();
 	}
 	else if (m_HasContent)
 	{
@@ -151,8 +152,8 @@ void vui::RenderFrame::OnReloadSwapChain()
 				i--;
 			}
 
-			if (auto content = m_Content[i].lock())
-				content->GetRenderable()->ReloadSwapChain();
+			if (auto content = m_Content[i].Renderable.lock())
+				content->ReloadSwapChain();
 			else
 			{
 				m_Content.erase(m_Content.begin() + i);
@@ -162,13 +163,13 @@ void vui::RenderFrame::OnReloadSwapChain()
 	}
 }
 
-bool vui::RenderFrame::OnSetPosition(const glm::vec<2, int32_t>&& position)
+bool vui::RenderFrame::OnPositionUpdate(const glm::vec<2, int32_t>&& position, const glm::vec<2, int32_t>&& offset)
 {
 	UpdateContentDimentions();
 	return true;
 }
 
-bool vui::RenderFrame::OnSetSize(const glm::vec<2, int32_t>&& size)
+bool vui::RenderFrame::OnSizeUpdate(const glm::vec<2, int32_t>&& size, const glm::vec<2, int32_t>&& bounds)
 {
 	UpdateContentDimentions();
 	return true;
@@ -221,8 +222,18 @@ void vui::RenderFrame::UpdateContentDimentions()
 				i--;
 			}
 
-			if (auto content = m_Content[i].lock())
-				content->SetParent({ m_Position.x + m_Padding, m_Position.y + m_Padding }, { m_Size.x - (m_Padding * 2), m_Size.y - (m_Padding * 2) });
+			if (auto content = m_Content[i].Positionable.lock())
+			{
+				content->SetSuperOffset({ m_Position.x + m_Padding, m_Position.y + m_Padding });
+
+				if (auto content = m_Content[i].Sizeable.lock())
+					content->SetSuperBounds({ m_Size.x - (m_Padding * 2), m_Size.y - (m_Padding * 2) });
+				else
+				{
+					m_Content.erase(m_Content.begin() + i);
+					erased = true;
+				}
+			}
 			else
 			{
 				m_Content.erase(m_Content.begin() + i);
@@ -230,6 +241,6 @@ void vui::RenderFrame::UpdateContentDimentions()
 			}
 		}
 
-		((IUI*)this)->GetRenderable()->MarkDirty();
+		MarkDirty();
 	}
 }

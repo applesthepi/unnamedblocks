@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+#include "Utils.hpp"
 
 /// Used to standardize color with glm.
 

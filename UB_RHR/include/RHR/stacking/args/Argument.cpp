@@ -3,12 +3,13 @@
 Argument::Argument()
 	:m_Mode(BlockArgumentVariableMode::RAW)//, m_Next(false)
 {
-	SetupVirtualFunctions(this);
+	
 }
 
 void Argument::SetData(const std::string& data)
 {
 	m_Data = data;
+	OnSetData();
 }
 
 const std::string& Argument::GetData()
@@ -72,6 +73,11 @@ void Argument::OnReloadSwapChain()
 }
 
 void Argument::OnFrameUpdate(double deltaTime)
+{
+
+}
+
+void Argument::OnSetData()
 {
 
 }

@@ -1,9 +1,9 @@
 #include "ArgumentText.hpp"
 
 ArgumentText::ArgumentText()
+	: m_Text(std::make_shared<vui::RenderText>())
 {
-	m_widthNeedsUpdate = false;
-	UpdateVertexArray();
+	m_Text->SetWeak(m_Text);
 }
 
 BlockArgumentType ArgumentText::GetType()
@@ -13,24 +13,35 @@ BlockArgumentType ArgumentText::GetType()
 
 uint32_t ArgumentText::GetWidth()
 {
-	if (m_widthNeedsUpdate)
-	{
-		m_widthNeedsUpdate = false;
-		m_width = 0;
-
-		for (uint32_t i = 0; i < m_text.length(); i++)
-		{
-			Global::FontBold.getGlyph(m_text[i], Global::BlockHeight, false);
-			m_width += Global::Font.getGlyph(m_text[i], Global::BlockHeight, false).advance;
-		}
-
-		return m_width;
-	}
-	else
-		return m_width;
+	return m_Text->GetSize().x;
 }
 
 bool ArgumentText::HasData()
 {
-	return false;
+	return true;
+}
+
+void ArgumentText::OnRender()
+{
+	m_Text->Render();
+}
+
+void ArgumentText::OnUpdateBuffers()
+{
+	m_Text->UpdateBuffers();
+}
+
+void ArgumentText::OnReloadSwapChain()
+{
+	m_Text->ReloadSwapChain();
+}
+
+void ArgumentText::OnFrameUpdate(double deltaTime)
+{
+	
+}
+
+void ArgumentText::OnSetData()
+{
+	m_Text->SetText(m_Data);
 }

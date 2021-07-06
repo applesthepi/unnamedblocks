@@ -2,14 +2,16 @@
 #include "config.h"
 
 #include "ui/Vertex.hpp"
-#include "ui/interfaces/IUI.hpp"
+#include "ui/interfaces/IRenderable.hpp"
+#include "ui/interfaces/IUpdatable.hpp"
+#include "ui/interfaces/IPositionable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 #include <Cappuccino/block/ModBlock.hpp>
 
 /// Base class for visual block arguments.
 
-class Argument : public IUI
+class Argument : public IRenderable, public IUpdatable, public IPositionable<int32_t>
 {
 public:
 	/// TODO
@@ -70,6 +72,9 @@ protected:
 	/// \param Seconds since last frame.
 	virtual void OnFrameUpdate(double deltaTime);
 
+	/// Sets data. Data of the argument is stored as a string.
+	virtual void OnSetData();
+
 	/// Gets pulled when Argument::PullNext(); gets called.
 	// bool m_Next;
 
@@ -80,5 +85,5 @@ protected:
 	BlockArgumentVariableMode m_Mode;
 
 	/// Vector of elements used by the argument.
-	std::vector<IUI> m_Elements;
+	//std::vector<IUI> m_Elements;
 };

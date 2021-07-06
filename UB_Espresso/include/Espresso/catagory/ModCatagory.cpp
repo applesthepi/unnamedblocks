@@ -6,27 +6,27 @@ ModCatagory::ModCatagory(const std::string& modUnlocalizedName, const std::strin
 
 }
 
-const std::string ModCatagory::GetModUnlocalizedName()
+std::string ModCatagory::GetModUnlocalizedName()
 {
 	return m_modUnlocalizedName;
 }
 
-const std::string ModCatagory::GetModDisplayName()
+std::string ModCatagory::GetModDisplayName()
 {
 	return m_modDisplayName;
 }
 
-const glm::vec<3, uint8_t>&& ModCatagory::GetColor() const
+Color ModCatagory::GetColor() const
 {
-	return std::move(glm::vec<3, uint8_t>(255, 0, 255));
+	return Color().FromU8({ 255, 0, 255, 255 });
 }
 
-const std::string ModCatagory::GetUnlocalizedName() const
+std::string ModCatagory::GetUnlocalizedName() const
 {
 	return "NULL";
 }
 
-const std::string ModCatagory::GetDisplayName() const
+std::string ModCatagory::GetDisplayName() const
 {
 	return "NULL";
 }

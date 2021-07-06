@@ -40,4 +40,8 @@ target_link_libraries(UB_ESPRESSO PUBLIC
 	Vulkan::Vulkan
 )
 
+if(MSVC)
+	target_compile_options(UB_ESPRESSO PRIVATE "/MP")
+endif()
+
 configure_file(config.h.in config.h)

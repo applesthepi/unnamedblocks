@@ -3,14 +3,12 @@
 #include "ui/Renderer.hpp"
 #include "ui/Vertex.hpp"
 
-vui::RenderRectangle::RenderRectangle(bool disableDirty)
-	: IBoundedParent(nullptr, nullptr)
-	, IEnableable(false)
+vui::RenderRectangle::RenderRectangle()
+	: IEnableable(false)
 	, IColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
 	, m_Depth(10)
 	, m_HasColor(false)
 	, m_HasTexture(false)
-	, m_DisableDirty(disableDirty)
 	, m_RenderObject(std::make_shared<RenderObject>())
 	, m_WeakSet(false)
 {
@@ -28,13 +26,13 @@ void vui::RenderRectangle::SetTexture(const std::string& texture)
 	m_Texture = texture;
 	m_RenderObject->SetTexture(texture);
 	m_HasTexture = true;
-	GetRenderable()->MarkDirty();
+	MarkDirty();
 }
 
 void vui::RenderRectangle::SetDepth(uint32_t depth)
 {
 	m_Depth = depth;
-	GetRenderable()->MarkDirty();
+	MarkDirty();
 }
 
 std::weak_ptr<vui::RenderRectangle>& vui::RenderRectangle::GetWeak()
@@ -62,13 +60,13 @@ void vui::RenderRectangle::OnRender()
 		else
 			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
 
-		m_RenderObject->Render(true);
+		m_RenderObject->Render();
 	}
 }
 
 void vui::RenderRectangle::OnUpdateBuffers()
 {
-	GetRenderable()->ClearDirty();
+	ClearDirty();
 
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -76,7 +74,7 @@ void vui::RenderRectangle::OnUpdateBuffers()
 	vertices.reserve(4);
 	indices.reserve(6);
 
-	glm::vec<2, int32_t> position = m_Position + m_Positionable->GetPosition();
+	glm::vec<2, int32_t> position = m_Position + m_SuperOffset;
 
 	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 0.0f, 0.0f });
 	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 0.0f });
@@ -100,5 +98,5 @@ void vui::RenderRectangle::OnUpdateBuffers()
 
 void vui::RenderRectangle::OnReloadSwapChain()
 {
-	m_RenderObject->InitDescriptorSet();
+	m_RenderObject->ReloadSwapChain();
 }

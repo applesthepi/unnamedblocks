@@ -3,6 +3,7 @@
 
 #include "stacking/args/Argument.hpp"
 #include "registries/UIRegistry.hpp"
+#include "ui/RenderText.hpp"
 
 #include <Cappuccino/Utils.hpp>
 #include <Espresso/InputHandler.hpp>
@@ -10,7 +11,6 @@
 class ArgumentText : public Argument
 {
 public:
-	/// TODO
 	ArgumentText();
 
 	/// How to interpret the data.
@@ -25,7 +25,22 @@ public:
 	/// \return Has data.
 	bool HasData() override;
 private:
-	std::string m_Text;
-	uint32_t m_Width;
-	bool m_WidthNeedsUpdate;
+	/// Add draw calls to cmd buffer prebound by Renderer.
+	void OnRender() override;
+
+	/// Updates mesh on cpu side.
+	void OnUpdateBuffers() override;
+
+	/// Regenerates descriptor sets including uniforms.
+	void OnReloadSwapChain() override;
+
+	/// Runs every frame before rendering.
+	/// \param Seconds since last frame.
+	void OnFrameUpdate(double deltaTime) override;
+
+	/// Sets data. Data of the argument is stored as a string.
+	void OnSetData() override;
+	
+	/// Renderable text element.
+	std::shared_ptr<vui::RenderText> m_Text;
 };

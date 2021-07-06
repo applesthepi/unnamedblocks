@@ -7,7 +7,7 @@
 #include <Cappuccino/block/ModBlock.hpp>
 #include <Espresso/catagory/ModCatagory.hpp>
 
-class Block// : public ITransformable
+class Block
 {
 public:
 	Block(const std::string& unlocalizedName);
@@ -25,6 +25,9 @@ public:
 
 	const ModBlock* GetModBlock();
 	const ModCatagory* GetModCategory();
+
+	static int16_t Padding;
+	static int16_t Height;
 private:
 	void UpdateArguments();
 	void UpdateWidth();
