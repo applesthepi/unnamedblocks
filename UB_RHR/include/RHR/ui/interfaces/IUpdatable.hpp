@@ -14,18 +14,18 @@ public:
 	IUpdatable();
 
 	/// Setup upstream callbacks.
-	void SetupVirtualFunctions(void(*frameUpdate)(double));
+	//void SetupVirtualFunctions(void(*frameUpdate)(double));
 
 	/// Runs every frame before rendering.
 	/// \param Seconds since last frame.
-	void FrameUpdate(double deltaTime);
+	virtual void FrameUpdate(double deltaTime);
 private:
 	/// Check for virtual
-	bool IsVirtual();
+	//bool IsVirtual();
 
 	/// Garantees upstream callbacks exist
-	bool m_Virtual;
+	//bool m_Virtual;
 
 	/// Render upstream callback
-	void(*m_FrameUpdate)(double);
+	//void(*m_FrameUpdate)(double);
 };

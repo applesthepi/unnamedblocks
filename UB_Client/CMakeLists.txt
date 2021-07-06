@@ -5,7 +5,7 @@ set(UB_CLIENT_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/src/ModLoader.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/ModLoader.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/ModLoader.hpp"
 )
 
 # Preserve folders in visual studio structure
@@ -39,7 +39,6 @@ target_include_directories(UB_CLIENT PUBLIC
 
 target_link_libraries(UB_CLIENT PUBLIC
 	glad::glad
-	glm
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan

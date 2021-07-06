@@ -3,10 +3,6 @@
 #include "registries/ShaderRegistry.hpp"
 #include "handlers/ContextHandler.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <Cappuccino/Intrinsics.hpp>
-#include <Espresso/InputHandler.hpp>
-
 // TODO: remove include (used for testing)
 #include <iostream>
 
@@ -17,6 +13,16 @@
 // TODO add Unix intrinsics
 #endif
 #endif
+
+void PrimaryPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+{
+	Plane::PrimaryPlane->MouseButton(position, scroll, operation);
+}
+
+void ToolbarPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+{
+	Plane::ToolbarPlane->MouseButton(position, scroll, operation);
+}
 
 //Plane::Plane(bool toolbar, const Plane& plane)
 //{
@@ -42,7 +48,10 @@ Plane::Plane(bool toolbar)
 	, m_DraggingSnapCollection(0)
 	, m_DraggingSnapStack(0)
 {
-	InputHandler::RegisterMouseCallback()
+	if (toolbar)
+		InputHandler::RegisterMouseCallback(ToolbarPlaneMouseButton);
+	else
+		InputHandler::RegisterMouseCallback(PrimaryPlaneMouseButton);
 
 	//m_shader.loadFromFile("res/shaders/blocks.vert", "res/shaders/blocks.frag");
 
@@ -99,6 +108,11 @@ Plane::Plane(bool toolbar)
 
 Plane::~Plane()
 {
+	//if (m_Toolbar)
+	//	InputHandler::UnregisterMouseCallback(ToolbarPlaneMouseButton);
+	//else
+	//	InputHandler::UnregisterMouseCallback(PrimaryPlaneMouseButton);
+
 	for (uint64_t i = 0; i < m_Collections.size(); i++)
 		delete m_Collections[i];
 }
@@ -155,8 +169,193 @@ void Plane::DeleteContents(bool dealloc)
 		DeleteCollection(0, dealloc);
 }
 
-void Plane::UpdateVAOPosition(uint64_t idx)
+void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
 {
+	//if (m_window == nullptr)
+	//	return false;
+
+	glm::vec<2, int32_t> mmpos = position;
+
+	uint64_t collectionMax = m_Collections.size();
+
+	if (collectionMax == 0)
+		return;
+
+	if ((this == Plane::ToolbarPlane && Plane::PrimaryPlane->DraggingStack()) ||
+		(this == Plane::PrimaryPlane && Plane::ToolbarPlane->DraggingStack()))
+		return;
+
+	if (DraggingStack() || DraggingCollection())
+		collectionMax--;
+
+	if (DraggingStack())
+	{
+		if (operation == MouseOperation::Release && !m_DraggingUp)
+		{
+			// dragging and mouse released (used when dragging a stack)
+			UnDrag(position);
+		}
+		else if (operation == MouseOperation::Press && m_DraggingUp)
+		{
+			// dragging and mouse pressed (used when duplicating stack)
+			UnDrag(position);
+		}
+	}
+
+	for (int64_t i = collectionMax - 1; i >= 0; i--)
+	{
+		if (!m_Collections[i]->GetEnabled())
+			continue;
+
+		// size
+
+		glm::vec<2, int32_t> collectionSize = glm::vec<2, int32_t>(
+			m_Collections[i]->GetSize().x,
+			m_Collections[i]->GetSize().y
+			);
+
+		// position
+
+		glm::vec<2, int32_t> collectionPosition = glm::vec<2, int32_t>(
+			(m_Collections[i]->GetPosition().x) + GetPosition().x,// - GetInnerPosition().x,
+			(m_Collections[i]->GetPosition().y) + GetPosition().y// - GetInnerPosition().y
+			);
+
+		if (mmpos.x > collectionPosition.x && mmpos.x < collectionPosition.x + collectionSize.x &&
+			mmpos.y > collectionPosition.y && mmpos.y < collectionPosition.y + collectionSize.y)
+		{
+			//for (int64_t a = 0; a < m_Collections[i]->GetStacks().size(); a++)
+			//for (int64_t a = m_Collections[i]->GetStacks().size() - 1; a >= 0; a--)
+			for (int64_t a = m_Collections[i]->GetStacks().size() - 1; a >= 0; a--)
+			{
+				// size
+
+				glm::vec<2, int32_t> stackSize;
+
+				for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
+				{
+					if (m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() > stackSize.x)
+						stackSize.x = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+				}
+
+				stackSize.y = m_Collections[i]->GetStacks()[a]->GetBlocks().size() * Block::Height;
+				stackSize = glm::vec<2, int32_t>(stackSize.x, stackSize.y);
+
+				// position
+
+				glm::vec<2, int32_t> stackPosition = glm::vec<2, int32_t>(
+					m_Collections[i]->GetStacks()[a]->GetPosition().x,
+					m_Collections[i]->GetStacks()[a]->GetPosition().y);
+
+				stackPosition += collectionPosition;
+
+				if (mmpos.x > stackPosition.x && mmpos.x < stackPosition.x + stackSize.x &&
+					mmpos.y > stackPosition.y && mmpos.y < stackPosition.y + stackSize.y)
+				{
+					for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
+					{
+						// size
+
+						glm::vec<2, int32_t> blockSize;
+
+						blockSize.x = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
+						blockSize.y = Block::Height;
+						blockSize = glm::vec<2, int32_t>(blockSize.x, blockSize.y);
+
+						// position
+
+						glm::vec<2, int32_t> blockPosition = glm::vec<2, int32_t>(stackPosition.x, Block::Height * b + stackPosition.y);
+
+						if (mmpos.x >= blockPosition.x && mmpos.x < blockPosition.x + blockSize.x &&
+							mmpos.y >= blockPosition.y && mmpos.y < blockPosition.y + blockSize.y)
+						{
+							if (operation == MouseOperation::Press && !DraggingStack())
+							{
+								// not dragging and mouse down
+
+								if (true/* left or right click */)
+								{
+									// remove context menu
+
+									//ContextHandler::Disable();
+									UnSelect();
+
+									Collection* activeCollection = new Collection();
+									Stack* activeStack = m_Collections[i]->GetStacks()[a];
+
+									if (b > 0)
+									{
+										// create stack that is left behind (no the one picked up)
+
+										Stack* leftStack = new Stack();
+										leftStack->SetPosition(activeStack->GetPosition());
+
+										for (uint64_t c = 0; c < b; c++)
+											leftStack->AddBlock(m_Collections[i]->GetStacks()[a]->GetBlocks()[c]);
+
+										for (uint64_t c = 0; c < b; c++)
+											activeStack->RemoveBlock(0);
+
+										m_Collections[i]->AddStack(leftStack);
+									}
+									activeCollection->SetPosition((m_Collections[i]->GetPosition()) + glm::vec<2, int32_t>(0, b * Block::Height) + ((glm::vec<2, int32_t>)activeStack->GetPosition()));
+									activeCollection->SetSize(glm::vec<2, int32_t>(activeStack->GetWidestBlock(), activeStack->GetBlocks().size() * Block::Height));
+
+									activeStack->SetPosition({ 0, 0 });
+
+									// register stack and collection
+
+									m_Collections[i]->RemoveStack(a);
+									activeCollection->AddStack(activeStack);
+									AddCollection(activeCollection, false);
+
+									// update buffer that was taken from
+
+									if (m_Collections[i]->GetStacks().size() > 0)
+									{
+										//UpdateBuffer(i);
+
+									}
+									else
+										DeleteCollection(i, true);
+
+									// drag the current stack (excludes the stack that was left behind)
+
+									DragStack(activeCollection, activeStack, false);
+								}
+								else if (false/* left or right click */)
+								{
+									Logger::Debug("opening context menu");
+
+									// startup context menu on block
+
+									//ContextHandler::Disable();
+									//ContextHandler::Enable(mmpos + glm::vec<2, int32_t>(5, 5), &m_contextCallback);
+									SelectContext(i, a, b);
+								}
+							}
+
+							// if block was bounded
+
+							return;
+						}
+					}
+
+					// if stack was bounded
+
+					break;
+				}
+			}
+
+			// if collection was bounded
+
+			break;
+		}
+	}
+}
+
+//void Plane::UpdateVAOPosition(uint64_t idx)
+//{
 	/*
 	uint64_t i = 0;
 
@@ -209,14 +408,14 @@ void Plane::UpdateVAOPosition(uint64_t idx)
 
 
 	// TODO not finished; may not need
-}
+//}
 
 //void Plane::UpdateVAO(uint64_t idx)
 //{
 //	UpdateBuffer(idx);
 //}
 
-void Plane::frameUpdate(double deltaTime)
+void Plane::FrameUpdate(double deltaTime)
 {
 	// set innerText to a visual representation of the inner position coordinates
 
@@ -255,193 +454,6 @@ void Plane::frameUpdate(double deltaTime)
 	//	glm::vec<2, int32_t> zoom = Plane::PrimaryPlane->CalculateZoom();
 	//	m_vertexBufferTransform.back().scale(zoom);
 	//}
-}
-
-bool Plane::mouseButton(bool down, const glm::vec<2, int32_t>& position, const sf::Mouse::Button& button)
-{
-	//if (m_window == nullptr)
-	//	return false;
-
-	glm::vec<2, int32_t> mmpos = position;
-
-	uint64_t collectionMax = m_Collections.size();
-
-	if (collectionMax == 0)
-		return false;
-
-	if ((this == Plane::ToolbarPlane && Plane::PrimaryPlane->DraggingStack()) ||
-		(this == Plane::PrimaryPlane && Plane::ToolbarPlane->DraggingStack()))
-		return false;
-
-	if (DraggingStack() || DraggingCollection())
-		collectionMax--;
-
-	if (DraggingStack())
-	{
-		if (!down && !m_DraggingUp)
-		{
-			// dragging and mouse released (used when dragging a stack)
-			UnDrag(position);
-		}
-		else if (down && m_DraggingUp)
-		{
-			// dragging and mouse pressed (used when duplicating stack)
-			UnDrag(position);
-		}
-	}
-
-	for (int64_t i = collectionMax - 1; i >= 0; i--)
-	{
-		if (!m_Collections[i]->GetEnabled())
-			continue;
-
-		// size
-		
-		glm::vec<2, int32_t> collectionSize = glm::vec<2, int32_t>(
-			m_Collections[i]->GetSize().x,
-			m_Collections[i]->GetSize().y
-		);
-		
-		// position
-
-		glm::vec<2, int32_t> collectionPosition = glm::vec<2, int32_t>(
-			(m_Collections[i]->GetPosition().x) + GetPosition().x,// - GetInnerPosition().x,
-			(m_Collections[i]->GetPosition().y) + GetPosition().y// - GetInnerPosition().y
-		);
-
-		if (mmpos.x > collectionPosition.x && mmpos.x < collectionPosition.x + collectionSize.x &&
-			mmpos.y > collectionPosition.y && mmpos.y < collectionPosition.y + collectionSize.y)
-		{
-			//for (int64_t a = 0; a < m_Collections[i]->GetStacks().size(); a++)
-			//for (int64_t a = m_Collections[i]->GetStacks().size() - 1; a >= 0; a--)
-			for (int64_t a = m_Collections[i]->GetStacks().size() - 1; a >= 0; a--)
-			{
-				// size
-
-				glm::vec<2, int32_t> stackSize;
-
-				for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
-				{
-					if (m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() > stackSize.x)
-						stackSize.x = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
-				}
-
-				stackSize.y = m_Collections[i]->GetStacks()[a]->GetBlocks().size() * Block::Height;
-				stackSize = glm::vec<2, int32_t>(stackSize.x, stackSize.y);
-
-				// position
-
-				glm::vec<2, int32_t> stackPosition = glm::vec<2, int32_t>(
-					m_Collections[i]->GetStacks()[a]->GetPosition().x,
-					m_Collections[i]->GetStacks()[a]->GetPosition().y);
-
-				stackPosition += collectionPosition;
-
-				if (mmpos.x > stackPosition.x && mmpos.x < stackPosition.x + stackSize.x &&
-					mmpos.y > stackPosition.y && mmpos.y < stackPosition.y + stackSize.y)
-				{
-					for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
-					{
-						// size
-
-						glm::vec<2, int32_t> blockSize;
-
-						blockSize.x = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
-						blockSize.y = Block::Height;
-						blockSize = glm::vec<2, int32_t>(blockSize.x, blockSize.y);
-
-						// position
-
-						glm::vec<2, int32_t> blockPosition = glm::vec<2, int32_t>(stackPosition.x, Block::Height * b + stackPosition.y);
-
-						if (mmpos.x >= blockPosition.x && mmpos.x < blockPosition.x + blockSize.x &&
-							mmpos.y >= blockPosition.y && mmpos.y < blockPosition.y + blockSize.y)
-						{
-							if (down && !DraggingStack())
-							{
-								// not dragging and mouse down
-
-								if (button == sf::Mouse::Button::Left)
-								{
-									// remove context menu
-
-									//ContextHandler::Disable();
-									UnSelect();
-
-									Collection* activeCollection = new Collection();
-									Stack* activeStack = m_Collections[i]->GetStacks()[a];
-
-									if (b > 0)
-									{
-										// create stack that is left behind (no the one picked up)
-
-										Stack* leftStack = new Stack();
-										leftStack->SetPosition(activeStack->GetPosition());
-										
-										for (uint64_t c = 0; c < b; c++)
-											leftStack->AddBlock(m_Collections[i]->GetStacks()[a]->GetBlocks()[c]);
-
-										for (uint64_t c = 0; c < b; c++)
-											activeStack->RemoveBlock(0);
-
-										m_Collections[i]->AddStack(leftStack);
-									}
-									activeCollection->SetPosition((m_Collections[i]->GetPosition()) + glm::vec<2, int32_t>(0, b * Block::Height) + ((glm::vec<2, int32_t>)activeStack->GetPosition()));
-									activeCollection->SetSize(glm::vec<2, int32_t>(activeStack->GetWidestBlock(), activeStack->GetBlocks().size() * Block::Height));
-
-									activeStack->SetPosition({ 0, 0 });
-
-									// register stack and collection
-
-									m_Collections[i]->RemoveStack(a);
-									activeCollection->AddStack(activeStack);
-									AddCollection(activeCollection, false);
-
-									// update buffer that was taken from
-
-									if (m_Collections[i]->GetStacks().size() > 0)
-									{
-										//UpdateBuffer(i);
-
-									}
-									else
-										DeleteCollection(i, true);
-
-									// drag the current stack (excludes the stack that was left behind)
-
-									DragStack(activeCollection, activeStack, false);
-								}
-								else if (button == sf::Mouse::Button::Right)
-								{
-									Logger::Debug("opening context menu");
-
-									// startup context menu on block
-
-									//ContextHandler::Disable();
-									//ContextHandler::Enable(mmpos + glm::vec<2, int32_t>(5, 5), &m_contextCallback);
-									SelectContext(i, a, b);
-								}
-							}
-
-							// if block was bounded
-
-							return true;
-						}
-					}
-
-					// if stack was bounded
-
-					break;
-				}
-			}
-
-			// if collection was bounded
-
-			break;
-		}
-	}
-
-	return false;
 }
 
 Plane* Plane::PrimaryPlane;

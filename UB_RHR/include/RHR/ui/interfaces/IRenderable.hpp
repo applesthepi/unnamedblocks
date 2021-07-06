@@ -17,7 +17,7 @@ public:
 	IRenderable();
 
 	/// REQUIRED Sets weak.
-	void SetWeak(const std::weak_ptr<IRenderable>&& weak);
+	void SetWeak(std::weak_ptr<IRenderable>&& weak);
 
 	/// Setup upstream callbacks.
 	//void SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)());

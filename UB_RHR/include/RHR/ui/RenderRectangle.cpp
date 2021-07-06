@@ -15,7 +15,7 @@ vui::RenderRectangle::RenderRectangle()
 	m_RenderObject->SetWeak(m_RenderObject);
 }
 
-void vui::RenderRectangle::SetWeak(const std::weak_ptr<RenderRectangle>&& weak)
+void vui::RenderRectangle::SetWeak(std::weak_ptr<RenderRectangle>&& weak)
 {
 	m_Weak = std::move(weak);
 	m_WeakSet = true;

@@ -1,8 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "ui/Color.hpp"
-
+#include <Cappuccino/Color.hpp>
 #include <Cappuccino/Utils.hpp>
 
 /// Interface for setting a color

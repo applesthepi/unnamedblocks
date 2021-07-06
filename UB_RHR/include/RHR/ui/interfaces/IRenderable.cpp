@@ -7,7 +7,7 @@ IRenderable::IRenderable()
 {
 }
 
-void IRenderable::SetWeak(const std::weak_ptr<IRenderable>&& weak)
+void IRenderable::SetWeak(std::weak_ptr<IRenderable>&& weak)
 {
 	m_Weak = std::move(weak);
 	m_WeakSet = true;

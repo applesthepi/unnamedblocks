@@ -21,7 +21,7 @@ public:
 
 	/// REQUIRED Sets weak.
 	/// \param Weak ptr of itself.
-	void SetWeak(const std::weak_ptr<RenderRectangle>&& weak);
+	void SetWeak(std::weak_ptr<RenderRectangle>&& weak);
 
 	/// Sets texture of rectangle.
 	/// \param Texture path.

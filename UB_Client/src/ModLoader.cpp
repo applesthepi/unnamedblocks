@@ -1,4 +1,8 @@
-#include "ModLoader.h"
+#include "ModLoader.hpp"
+
+#include <RHR/handlers/ProjectHandler.hpp>
+#include <RHR/registries/BlockRegistry.hpp>
+
 //TODO temp
 //#include <RHR/config.h>
 #include <iostream>

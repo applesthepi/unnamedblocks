@@ -7,7 +7,6 @@
 #include "ui/interfaces/ISizeable.hpp"
 #include "ui/interfaces/IEnableable.hpp"
 #include "ui/interfaces/IBoundedParent.hpp"
-#include "ui/interfaces/IWeak.hpp"
 #include "ui/RenderRectangle.hpp"
 
 #include <Cappuccino/Utils.hpp>
@@ -29,11 +28,12 @@ enum class VerticalAlignment
 	BOTTOM
 };
 
-class ProgressBar : public IUI, public IBoundedParent, public IDiColorable, public IEnableable, public IWeak<ProgressBar>, public IPositionable<int32_t>, public ISizeable<int32_t>
+class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<int32_t>, public ISizeable<int32_t>
 {
 public:
 	ProgressBar(int32_t stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal = HorizontalAlignment::CENTER, float horizontalSizeOverride = 0.0f);
 
+	void SetWeak(std::weak_ptr<ProgressBar>&& weak);
 	void SetDepth(uint32_t depth);
 	void SetStackOffset(int32_t stackOffset);
 	void SetProgress(float progress);
@@ -66,6 +66,8 @@ private:
 	bool m_UseExtra;
 
 	uint32_t m_Depth;
+
+	std::weak_ptr<ProgressBar> m_Weak;
 };
 
 }

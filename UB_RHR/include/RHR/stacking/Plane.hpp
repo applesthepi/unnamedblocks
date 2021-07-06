@@ -8,6 +8,8 @@
 #include "ui/RenderText.hpp"
 
 #include <Cappuccino/Utils.hpp>
+#include <Cappuccino/Intrinsics.hpp>
+#include <Espresso/InputHandler.hpp>
 
 #define SNAP_DISTANCE 30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
@@ -26,7 +28,7 @@
 //	sf::RenderWindow* m_window;
 //};
 
-class Plane : public IPositionable<int32_t>, public ISizeable<int32_t>, public IRenderable
+class Plane : public IPositionable<int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable
 {
 public:
 	//Plane(bool toolbar, const Plane& plane);
@@ -47,15 +49,16 @@ public:
 	void DeleteContents(bool dealloc = true);
 
 	// TODO not finished; may not need
-	void UpdateVAOPosition(uint64_t idx);
+	//void UpdateVAOPosition(uint64_t idx);
 
-	void UpdateVAO(uint64_t idx);
+	//void UpdateVAO(uint64_t idx);
 
-	void frameUpdate(double deltaTime) override;
-	void render(sf::RenderWindow& window);
-	void snapRender(sf::RenderWindow& window);
-	void postRender(sf::RenderWindow& window);
-	bool mouseButton(bool down, const glm::vec<2, int32_t>& position, const sf::Mouse::Button& button) override;
+	//void frameUpdate(double deltaTime) override;
+	//void render(sf::RenderWindow& window);
+	//void snapRender(sf::RenderWindow& window);
+	//void postRender(sf::RenderWindow& window);
+	void MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation);
+	void FrameUpdate(double deltaTime) override;
 
 	//sf::View* GetView();
 	//sf::Vector2f CalculateZoom();
@@ -124,7 +127,7 @@ private:
 	Collection* m_DraggingCollection;
 	Stack* m_DraggingStack;
 
-	sf::Vector2f m_DraggingBeginObject;
+	glm::vec<2, int32_t> m_DraggingBeginObject;
 	glm::vec<2, int32_t> m_DraggingBeginMouse;
 
 	bool m_DraggingUp;

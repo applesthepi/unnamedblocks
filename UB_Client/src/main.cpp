@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include "ModLoader.h"
+#include "ModLoader.hpp"
 #include "handlers/CategoryHandler.hpp"
 #include "registries/UIRegistry.hpp"
 // #include "ui/ButtonText.hpp"
