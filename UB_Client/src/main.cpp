@@ -342,11 +342,171 @@ int main()
 	// ==============================================================================================================================
 
 	run();
-
+	
 	// Setup
 
-	Plane::PrimaryPlane = new Plane(false);
-	Plane::ToolbarPlane = new Plane(true);
+	Plane::PrimaryPlane = std::make_shared<Plane>(false);
+	Plane::PrimaryPlane->SetWeak(Plane::PrimaryPlane);
+
+	Plane::ToolbarPlane = std::make_shared<Plane>(true);
+	Plane::ToolbarPlane->SetWeak(Plane::ToolbarPlane);
+
+	std::shared_ptr<vui::RenderFrame> frameBase = std::make_shared<vui::RenderFrame>();
+	frameBase->SetWeak(frameBase);
+	frameBase->SetSize({ 1280, 720 });
+	std::shared_ptr<vui::RenderFrame> frameBackground = std::make_shared<vui::RenderFrame>();
+	frameBackground->SetWeak(frameBackground);
+	frameBackground->SetSize({ 1280, 720 });
+	frameBackground->SetPadding(0);
+
+	std::shared_ptr<vui::RenderRectangle> rectBackground = std::make_shared<vui::RenderRectangle>();
+	rectBackground->SetWeak(rectBackground);
+	rectBackground->SetColor(Color().FromU8({128, 128, 128, 255}));
+	rectBackground->SetDepth(11);
+
+	frameBackground->AddContent(rectBackground, std::weak_ptr<IUpdatable>(), rectBackground, rectBackground, vui::LocalCardinal::RIGHT);
+	rectBackground->SetSizeMax();
+
+	std::shared_ptr<vui::RenderLayer> layer = std::make_shared<vui::RenderLayer>();
+	layer->AddFrame(frameBackground);
+	layer->AddFrame(frameBase);
+
+	std::shared_ptr<vui::RenderFrame> frameA0 = std::make_shared<vui::RenderFrame>();
+	frameA0->SetWeak(frameA0);
+	std::shared_ptr<vui::RenderFrame> frameA1 = std::make_shared<vui::RenderFrame>();
+	frameA1->SetWeak(frameA1);
+
+	std::shared_ptr<vui::RenderFrame> frameB0 = std::make_shared<vui::RenderFrame>();
+	frameB0->SetWeak(frameB0);
+	std::shared_ptr<vui::RenderFrame> frameB1 = std::make_shared<vui::RenderFrame>();
+	frameB1->SetWeak(frameB1);
+
+	std::shared_ptr<vui::RenderFrame> frameC0 = std::make_shared<vui::RenderFrame>();
+	frameC0->SetWeak(frameC0);
+	std::shared_ptr<vui::RenderFrame> frameC1 = std::make_shared<vui::RenderFrame>();
+	frameC1->SetWeak(frameC1);
+
+	std::shared_ptr<vui::RenderFrame> frameD0 = std::make_shared<vui::RenderFrame>();
+	frameD0->SetWeak(frameD0);
+	std::shared_ptr<vui::RenderFrame> frameD1 = std::make_shared<vui::RenderFrame>();
+	frameD1->SetWeak(frameD1);
+
+	std::shared_ptr<vui::RenderFrame> frameE0 = std::make_shared<vui::RenderFrame>();
+	frameE0->SetWeak(frameE0);
+	std::shared_ptr<vui::RenderFrame> frameE1 = std::make_shared<vui::RenderFrame>();
+	frameE1->SetWeak(frameE1);
+
+	frameBase->AddFrame(frameA0, vui::LocalCardinal::RIGHT);
+	frameBase->AddFrame(frameA1, vui::LocalCardinal::RIGHT);
+
+	frameA0->SetSizeMax();
+	frameA1->SetSizeMax();
+
+	frameA0->AddFrame(frameB0, vui::LocalCardinal::DOWN);
+	frameA0->AddFrame(frameB1, vui::LocalCardinal::DOWN);
+
+	frameB0->SetSizeMax();
+	frameB1->SetSizeMax();
+
+	frameB1->AddFrame(frameC0, vui::LocalCardinal::RIGHT);
+	frameB1->AddFrame(frameC1, vui::LocalCardinal::RIGHT);
+
+	frameC0->SetSizeMax();
+	frameC1->SetSizeMax();
+
+	frameC1->AddFrame(frameD0, vui::LocalCardinal::DOWN);
+	frameC1->AddFrame(frameD1, vui::LocalCardinal::DOWN);
+
+	frameD0->SetSizeMax();
+	frameD1->SetSizeMax();
+
+	frameD0->AddFrame(frameE0, vui::LocalCardinal::DOWN);
+	frameD0->AddFrame(frameE1, vui::LocalCardinal::DOWN);
+
+	frameE0->SetSizeMax();
+	frameE1->SetSizeMax();
+
+	std::shared_ptr<vui::RenderRectangle> rectA1_1 = std::make_shared<vui::RenderRectangle>();
+	rectA1_1->SetWeak(rectA1_1);
+	std::shared_ptr<vui::RenderRectangle> rectA1_2 = std::make_shared<vui::RenderRectangle>();
+	rectA1_2->SetWeak(rectA1_2);
+
+	std::shared_ptr<vui::RenderRectangle> rectB0_1 = std::make_shared<vui::RenderRectangle>();
+	rectB0_1->SetWeak(rectB0_1);
+	std::shared_ptr<vui::RenderRectangle> rectB0_2 = std::make_shared<vui::RenderRectangle>();
+	rectB0_2->SetWeak(rectB0_2);
+	std::shared_ptr<vui::RenderRectangle> rectB0_3 = std::make_shared<vui::RenderRectangle>();
+	rectB0_3->SetWeak(rectB0_3);
+	std::shared_ptr<vui::RenderRectangle> rectB0_4 = std::make_shared<vui::RenderRectangle>();
+	rectB0_4->SetWeak(rectB0_4);
+
+	std::shared_ptr<vui::RenderRectangle> rectC0_1 = std::make_shared<vui::RenderRectangle>();
+	rectC0_1->SetWeak(rectC0_1);
+	std::shared_ptr<vui::RenderRectangle> rectC0_2 = std::make_shared<vui::RenderRectangle>();
+	rectC0_2->SetWeak(rectC0_2);
+
+	std::shared_ptr<vui::RenderRectangle> rectD1_1 = std::make_shared<vui::RenderRectangle>();
+	rectD1_1->SetWeak(rectD1_1);
+	std::shared_ptr<vui::RenderRectangle> rectD1_2 = std::make_shared<vui::RenderRectangle>();
+	rectD1_2->SetWeak(rectD1_2);
+	std::shared_ptr<vui::RenderRectangle> rectD1_3 = std::make_shared<vui::RenderRectangle>();
+	rectD1_3->SetWeak(rectD1_3);
+
+	std::shared_ptr<vui::RenderRectangle> rectE0_1 = std::make_shared<vui::RenderRectangle>();
+	rectE0_1->SetWeak(rectE0_1);
+
+	std::shared_ptr<vui::RenderRectangle> rectE1_1 = std::make_shared<vui::RenderRectangle>();
+	rectE1_1->SetWeak(rectE1_1);
+	std::shared_ptr<vui::RenderRectangle> rectE1_2 = std::make_shared<vui::RenderRectangle>();
+	rectE1_2->SetWeak(rectE1_2);
+
+	frameA1->AddContent(rectA1_1, std::weak_ptr<IUpdatable>(), rectA1_1, rectA1_1, vui::LocalCardinal::RIGHT);
+	frameA1->AddContent(rectA1_2, std::weak_ptr<IUpdatable>(), rectA1_2, rectA1_2, vui::LocalCardinal::RIGHT);
+
+	frameB0->AddContent(rectB0_1, std::weak_ptr<IUpdatable>(), rectB0_1, rectB0_1, vui::LocalCardinal::DOWN);
+	frameB0->AddContent(rectB0_2, std::weak_ptr<IUpdatable>(), rectB0_2, rectB0_2, vui::LocalCardinal::DOWN);
+	frameB0->AddContent(rectB0_3, std::weak_ptr<IUpdatable>(), rectB0_3, rectB0_3, vui::LocalCardinal::DOWN);
+	frameB0->AddContent(rectB0_4, std::weak_ptr<IUpdatable>(), rectB0_4, rectB0_4, vui::LocalCardinal::DOWN);
+
+	frameC0->AddContent(rectC0_1, std::weak_ptr<IUpdatable>(), rectC0_1, rectC0_1, vui::LocalCardinal::RIGHT);
+	frameC0->AddContent(rectC0_2, std::weak_ptr<IUpdatable>(), rectC0_2, rectC0_2, vui::LocalCardinal::RIGHT);
+
+	frameD1->AddContent(rectD1_1, std::weak_ptr<IUpdatable>(), rectD1_1, rectD1_1, vui::LocalCardinal::RIGHT);
+	frameD1->AddContent(rectD1_2, std::weak_ptr<IUpdatable>(), rectD1_2, rectD1_2, vui::LocalCardinal::RIGHT);
+	frameD1->AddContent(rectD1_3, std::weak_ptr<IUpdatable>(), rectD1_3, rectD1_3, vui::LocalCardinal::RIGHT);
+
+	frameE0->AddContent(rectE0_1, std::weak_ptr<IUpdatable>(), rectE0_1, rectE0_1, vui::LocalCardinal::RIGHT);
+
+	frameE1->AddContent(rectE1_1, std::weak_ptr<IUpdatable>(), rectE1_1, rectE1_1, vui::LocalCardinal::RIGHT);
+	frameE1->AddContent(rectE1_2, std::weak_ptr<IUpdatable>(), rectE1_2, rectE1_2, vui::LocalCardinal::RIGHT);
+
+	rectA1_1->SetSizeMax();
+	rectA1_2->SetSizeMax();
+
+	rectB0_1->SetSizeMax();
+	rectB0_2->SetSizeMax();
+	rectB0_3->SetSizeMax();
+	rectB0_4->SetSizeMax();
+
+	rectC0_1->SetSizeMax();
+	rectC0_2->SetSizeMax();
+
+	rectD1_1->SetSizeMax();
+	rectD1_2->SetSizeMax();
+	rectD1_3->SetSizeMax();
+
+	rectE0_1->SetSizeMax();
+
+	rectE1_1->SetSizeMax();
+	rectE1_2->SetSizeMax();
+
+	Renderer::AddLayer(layer);
+
+	//frame->AddContent(Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, vui::LocalCardinal::RIGHT);
+	//frame->AddContent(Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, vui::LocalCardinal::RIGHT);
+
+	//Plane::PrimaryPlane->SetSizeMax();
+	//Plane::ToolbarPlane->SetSizeMax();
 
 	size_t currentFrame = 0;
 	double deltaTime = 0.0f;
@@ -421,7 +581,9 @@ int main()
 
 		if (reloadRenderObjects)
 		{
-			//Client::Instance->GetChunkManager()->ReloadChunks();
+			Plane::PrimaryPlane->ReloadSwapChain();
+			Plane::ToolbarPlane->ReloadSwapChain();
+
 			Renderer::ReloadLayerSwapChains();
 			reloadRenderObjects = false;
 		}

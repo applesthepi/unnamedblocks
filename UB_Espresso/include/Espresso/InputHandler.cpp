@@ -1,5 +1,8 @@
 #include "InputHandler.hpp"
 
+// TODO: remove include (debugging)
+#include <iostream>
+
 void InputHandler::Initialization()
 {
 	m_MouseWasDown = false;
@@ -907,6 +910,7 @@ void InputHandler::FireMouseButton(uint8_t button, uint8_t operation)
 
 void InputHandler::FireMouseMove(glm::vec<2, int32_t> position)
 {
+	std::cout << position.x << ", " << position.y << std::endl;
 	std::unique_lock lock(m_MouseMutex);
 	m_MousePosition = position;
 

@@ -21,7 +21,7 @@ public:
 
 	/// REQUIRED Sets weak.
 	/// \param Weak ptr of itself.
-	void SetWeak(std::weak_ptr<RenderRectangle>&& weak);
+	//void SetWeak(std::weak_ptr<RenderRectangle>&& weak);
 
 	/// Sets texture of rectangle.
 	/// \param Texture path.
@@ -33,10 +33,10 @@ public:
 
 	/// Gets the weak reference.
 	/// \return Weak reference to itself.
-	std::weak_ptr<RenderRectangle>& GetWeak();
+	//std::weak_ptr<RenderRectangle>& GetWeak();
 private:
 	/// Check for weak.
-	bool IsWeak();
+	//bool IsWeak();
 
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void OnRender() override;
@@ -47,14 +47,16 @@ private:
 	/// Regenerates descriptor sets including uniforms.
 	void OnReloadSwapChain() override;
 
+	bool OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset) override;
+
 	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<RenderObject> m_RenderObject;
 
 	/// Weak reference.
-	std::weak_ptr<RenderRectangle> m_Weak;
+	//std::weak_ptr<RenderRectangle> m_Weak;
 
 	/// Flag if weak is set.
-	bool m_WeakSet;
+	//bool m_WeakSet;
 
 	bool m_HasColor;
 	bool m_HasTexture;

@@ -4,7 +4,8 @@
 #include "ui/Renderer.hpp"
 
 RenderObject::RenderObject(bool ui)
-    : m_HasVertexBufferData(false)
+    : IEnableable(true)
+	, m_HasVertexBufferData(false)
     , m_HasIndexBufferData(false)
     , m_VertexCount(0)
     , m_IndexCount(0)
@@ -15,7 +16,7 @@ RenderObject::RenderObject(bool ui)
     , m_Queue(0)
     , m_Dirty(false)
     , m_InitImage(true)
-	, m_HasWeak(false)
+	//, m_HasWeak(false)
 	, m_UI(ui)
     , m_TexturePath("")
     , m_Position({ 0.0, 0.0, 0.0 })
@@ -36,11 +37,11 @@ RenderObject::RenderObject(bool ui, const std::string& texturePath)
 	m_TexturePath = texturePath;
 }
 
-void RenderObject::SetWeak(std::weak_ptr<IRenderable>&& weak)
-{
-	m_Weak = std::move(weak);
-	m_HasWeak = true;
-}
+//void RenderObject::SetWeak(std::weak_ptr<IRenderable>&& weak)
+//{
+//	m_Weak = std::move(weak);
+//	m_HasWeak = true;
+//}
 
 void RenderObject::SetPosition(const glm::vec<3, double>& position)
 {
@@ -425,11 +426,11 @@ void RenderObject::SetQueue(uint8_t queue)
 	m_Queue = queue;
 }
 
-void RenderObject::MarkDirty()
-{
-	if (m_Dirty || !m_HasWeak)
-		return;
-
-	m_Dirty = true;
-	Renderer::AddDirty(m_Weak);
-}
+//void RenderObject::MarkDirty()
+//{
+//	if (m_Dirty || !IsWeak())
+//		return;
+//
+//	m_Dirty = true;
+//	Renderer::AddDirty(m_Weak);
+//}

@@ -41,6 +41,7 @@ public:
 	const std::vector<Collection*>& GetCollections();
 
 	void DeleteCollection(uint64_t idx, bool dealloc = true);
+	bool IsToolbar();
 
 	//void TranslateInnerPosition(const glm::vec<2, int32_t>& position);
 	//void SetInnerPosition(glm::vec<2, int32_t> position);
@@ -58,17 +59,23 @@ public:
 	//void snapRender(sf::RenderWindow& window);
 	//void postRender(sf::RenderWindow& window);
 	void MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation);
-	void FrameUpdate(double deltaTime) override;
 
 	//sf::View* GetView();
 	//sf::Vector2f CalculateZoom();
 	//sf::Vector2f GetCoordsFromPixel(sf::Vector2f pixel, sf::RenderWindow& window);
 
-	static Plane* PrimaryPlane;
-	static Plane* ToolbarPlane;
+	static std::shared_ptr<Plane> PrimaryPlane;
+	static std::shared_ptr<Plane> ToolbarPlane;
 //protected:
 	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 private:
+	void FrameUpdate(double deltaTime) override;
+	void OnRender() override;
+	void OnUpdateBuffers() override;
+	void OnReloadSwapChain() override;
+	bool OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset) override;
+	bool OnSizeUpdate(const glm::vec<2, int32_t>& size, const glm::vec<2, int32_t>& bounds) override;
+
 	//void Setup(bool toolbar);
 	//void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size);
 
@@ -162,7 +169,7 @@ private:
 
 	bool m_Toolbar;
 	vui::RenderText m_InnerText;
-	vui::RenderRectangle m_Background;
+	std::shared_ptr<vui::RenderRectangle> m_Background;
 
 	//const sf::Texture& m_fontTexture;
 	//sf::Image m_fontEditedImage;

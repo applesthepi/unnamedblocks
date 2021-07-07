@@ -15,6 +15,12 @@ void ISizeable<T>::SetSize(const glm::vec<2, T>& size)
 }
 
 template <typename T>
+void ISizeable<T>::SetSizeMax()
+{
+	if (OnSizeUpdate(m_SuperBounds, m_SuperBounds)) m_Size = m_SuperBounds;
+}
+
+template <typename T>
 void ISizeable<T>::SetSuperBounds(const glm::vec<2, T>& bounds)
 {
 	if (OnSizeUpdate(m_Size, bounds)) m_SuperBounds = bounds;

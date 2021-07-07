@@ -47,11 +47,17 @@ Plane::Plane(bool toolbar)
 	, m_DraggingSnap(false)
 	, m_DraggingSnapCollection(0)
 	, m_DraggingSnapStack(0)
+	, m_Background(std::make_shared<vui::RenderRectangle>())
 {
 	if (toolbar)
 		InputHandler::RegisterMouseCallback(ToolbarPlaneMouseButton);
 	else
 		InputHandler::RegisterMouseCallback(PrimaryPlaneMouseButton);
+
+	m_Background->SetWeak(m_Background);
+	m_Background->SetPosition(m_Position + m_SuperOffset);
+	m_Background->SetSize(m_Size);
+	m_Background->SetColor(Color().FromU8({ 255, 255, 255, 255 }));
 
 	//m_shader.loadFromFile("res/shaders/blocks.vert", "res/shaders/blocks.frag");
 
@@ -146,6 +152,11 @@ void Plane::DeleteCollection(uint64_t idx, bool dealloc)
 	m_Collections.erase(m_Collections.begin() + idx);
 }
 
+bool Plane::IsToolbar()
+{
+	return m_Toolbar;
+}
+
 //void Plane::TranslateInnerPosition(const glm::vec<2, int32_t>& position)
 //{
 //	//m_innerPosition += position;
@@ -181,8 +192,8 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 	if (collectionMax == 0)
 		return;
 
-	if ((this == Plane::ToolbarPlane && Plane::PrimaryPlane->DraggingStack()) ||
-		(this == Plane::PrimaryPlane && Plane::ToolbarPlane->DraggingStack()))
+	if ((m_Toolbar && Plane::PrimaryPlane->DraggingStack()) ||
+		(!m_Toolbar && Plane::ToolbarPlane->DraggingStack()))
 		return;
 
 	if (DraggingStack() || DraggingCollection())
@@ -456,8 +467,35 @@ void Plane::FrameUpdate(double deltaTime)
 	//}
 }
 
-Plane* Plane::PrimaryPlane;
-Plane* Plane::ToolbarPlane;
+void Plane::OnRender()
+{
+	m_Background->Render();
+}
+
+void Plane::OnUpdateBuffers()
+{
+	m_Background->UpdateBuffers();
+}
+
+void Plane::OnReloadSwapChain()
+{
+	m_Background->ReloadSwapChain();
+}
+
+bool Plane::OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset)
+{
+	m_Background->SetPosition(position + offset);
+	return true;
+}
+
+bool Plane::OnSizeUpdate(const glm::vec<2, int32_t>& size, const glm::vec<2, int32_t>& bounds)
+{
+	m_Background->SetSize(size);
+	return true;
+}
+
+std::shared_ptr<Plane> Plane::PrimaryPlane;
+std::shared_ptr<Plane> Plane::ToolbarPlane;
 
 //void Plane::render(sf::RenderWindow& window)
 //{
@@ -1255,7 +1293,7 @@ void Plane::DraggingStackUpdate()
 		pixelPosition.y >= Plane::PrimaryPlane->GetPosition().y && pixelPosition.y < Plane::PrimaryPlane->GetSize().y + Plane::PrimaryPlane->GetPosition().y))
 		return;
 
-	Plane* usePlane = Plane::PrimaryPlane;
+	std::shared_ptr<Plane> usePlane = Plane::PrimaryPlane;
 	const std::vector<Collection*>& useCollections = usePlane->GetCollections();
 
 	uint64_t collectionMax = useCollections.size();
@@ -1263,7 +1301,7 @@ void Plane::DraggingStackUpdate()
 	if (collectionMax == 0)
 		return;
 
-	if (usePlane == this && (DraggingStack() || DraggingCollection()))
+	if (usePlane->IsToolbar() == m_Toolbar && (DraggingStack() || DraggingCollection()))
 		collectionMax--;
 
 	for (uint64_t i = 0; i < collectionMax; i++)

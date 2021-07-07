@@ -3,18 +3,19 @@
 
 #include "ui/Vertex.hpp"
 #include "ui/interfaces/IRenderable.hpp"
+#include "ui/interfaces/IEnableable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
 #define RENDER_OBJECT_ALLOC_FACTOR static_cast<size_t>(2)
 
-class RenderObject : public IRenderable
+class RenderObject : public IRenderable, public IEnableable
 {
 public:
 	RenderObject(bool ui);
 	RenderObject(bool ui, const std::string& texturePath);
 
-	void SetWeak(std::weak_ptr<IRenderable>&& weak);
+	//void SetWeak(std::weak_ptr<IRenderable>&& weak);
 	void SetPosition(const glm::vec<3, double>& position);
 	void SetTexture(const std::string& texture);
 	void UpdateVertices(const std::vector<Vertex>* vertices, const std::vector<uint32_t>* indices, bool updateBuffersNow = false);
@@ -34,7 +35,7 @@ public:
 
 private:
 	void UpdateUniforms(bool ui);
-	void MarkDirty();
+	//void MarkDirty();
 
 	bool m_HasVertexBufferData;
 	bool m_HasIndexBufferData;
@@ -73,8 +74,8 @@ private:
 	bool m_Dirty;
 	bool m_InitImage;
 	bool m_UI;
-	bool m_HasWeak;
+	//bool m_HasWeak;
 	std::string m_TexturePath;
 	glm::vec<3, double> m_Position;
-	std::weak_ptr<IRenderable> m_Weak;
+	//std::weak_ptr<IRenderable> m_Weak;
 };

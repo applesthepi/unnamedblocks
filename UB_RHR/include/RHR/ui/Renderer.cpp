@@ -4,6 +4,7 @@
 #include "ui/RenderObject.hpp"
 #include "ui/RenderRectangle.hpp"
 #include "ui/Vertex.hpp"
+#include "stacking/Plane.hpp"
 
 #include <Espresso/InputHandler.hpp>
 
@@ -71,7 +72,11 @@ void Renderer::InitializeWindow()
 	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
-	Window = glfwCreateWindow(windowSize.x, windowSize.y, "MCC", NULL, NULL);
+	char windowTitle[100];
+	memset(windowTitle, 0, 100);
+	sprintf(windowTitle, "Unnamed Blocks %s", VER_CLIENT);
+
+	Window = glfwCreateWindow(windowSize.x, windowSize.y, windowTitle, NULL, NULL);
 
 	if (Window == NULL)
 		Logger::Fatal("Failed to create GLFW window");
@@ -201,6 +206,9 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 	// 	Client::Instance->GetDispatcher()->UpdateDiagnosticData();
 	// 	Client::Instance->GetDiagnostics()->UpdateProgressBars();
 	// }
+
+	Plane::PrimaryPlane->Render();
+	Plane::ToolbarPlane->Render();
 
 	bool erased = false;
 

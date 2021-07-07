@@ -4,22 +4,22 @@
 #include "ui/Vertex.hpp"
 
 vui::RenderRectangle::RenderRectangle()
-	: IEnableable(false)
+	: IEnableable(true)
 	, IColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
 	, m_Depth(10)
 	, m_HasColor(false)
 	, m_HasTexture(false)
 	, m_RenderObject(std::make_shared<RenderObject>(true))
-	, m_WeakSet(false)
+	//, m_WeakSet(false)
 {
 	m_RenderObject->SetWeak(m_RenderObject);
 }
 
-void vui::RenderRectangle::SetWeak(std::weak_ptr<RenderRectangle>&& weak)
-{
-	m_Weak = std::move(weak);
-	m_WeakSet = true;
-}
+//void vui::RenderRectangle::SetWeak(std::weak_ptr<RenderRectangle>&& weak)
+//{
+//	m_Weak = std::move(weak);
+//	m_WeakSet = true;
+//}
 
 void vui::RenderRectangle::SetTexture(const std::string& texture)
 {
@@ -35,21 +35,21 @@ void vui::RenderRectangle::SetDepth(uint32_t depth)
 	MarkDirty();
 }
 
-std::weak_ptr<vui::RenderRectangle>& vui::RenderRectangle::GetWeak()
-{
-	return m_Weak;
-}
+//std::weak_ptr<vui::RenderRectangle>& vui::RenderRectangle::GetWeak()
+//{
+//	return m_Weak;
+//}
 
-bool vui::RenderRectangle::IsWeak()
-{
-	if (!m_WeakSet)
-	{
-		Logger::Warn("check for vui::RenderRectangle::IsWeak(); failed");
-		return false;
-	}
-
-	return true;
-}
+//bool vui::RenderRectangle::IsWeak()
+//{
+//	if (!m_WeakSet)
+//	{
+//		Logger::Warn("check for vui::RenderRectangle::IsWeak(); failed");
+//		return false;
+//	}
+//
+//	return true;
+//}
 
 void vui::RenderRectangle::OnRender()
 {
@@ -99,4 +99,10 @@ void vui::RenderRectangle::OnUpdateBuffers()
 void vui::RenderRectangle::OnReloadSwapChain()
 {
 	m_RenderObject->ReloadSwapChain();
+}
+
+bool vui::RenderRectangle::OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset)
+{
+	MarkDirty();
+	return true;
 }

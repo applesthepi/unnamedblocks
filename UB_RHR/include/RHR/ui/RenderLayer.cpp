@@ -1,14 +1,9 @@
 #include "RenderLayer.hpp"
 
 vui::RenderLayer::RenderLayer()
-	: m_Enabled(false)
+	: IEnableable(true)
 {
 	m_Frames.reserve(16);
-}
-
-void vui::RenderLayer::SetEnabled(bool enabled)
-{
-	m_Enabled = enabled;
 }
 
 void vui::RenderLayer::AddFrame(std::weak_ptr<RenderFrame>&& frame)

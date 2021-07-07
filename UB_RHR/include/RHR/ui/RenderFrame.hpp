@@ -18,9 +18,12 @@ namespace vui
 
 		void SetPadding(uint8_t padding);
 
-		void SetFrame(std::unique_ptr<RenderFrame>& frame);
-		void AddFrame(std::unique_ptr<RenderFrame>& frame, LocalCardinal cardinal);
-		void AddContent(std::weak_ptr<IRenderable>&& renderable, std::weak_ptr<IUpdatable>&& updatable, std::weak_ptr<IPositionable>&& positionable, std::weak_ptr<ISizeable>&& sizeable);
+		void SetFrame(std::shared_ptr<RenderFrame>& frame);
+		void AddFrame(std::shared_ptr<RenderFrame>& frame, LocalCardinal cardinal);
+		void AddContent(std::weak_ptr<IRenderable>&& renderable, std::weak_ptr<IUpdatable>&& updatable, std::weak_ptr<IPositionable>&& positionable, std::weak_ptr<ISizeable>&& sizeable, LocalCardinal cardinal);
+		void Link(LocalCardinal cardinal);
+		void Unlink(LocalCardinal cardinal);
+		void UpdateLinks();
 	protected:
 		void OnRender() override;
 		void OnUpdateBuffers() override;
@@ -38,14 +41,19 @@ namespace vui
 		};
 
 		void UpdateContentDimentions();
+		void SubmitNewBarPosition(LocalCardinal cardinal);
+		void EqualizeBars();
+		void PushLinks(std::shared_ptr<RenderFrame>& frame);
 
 		bool m_HasFrame;
 		bool m_HasSpace;
 		bool m_HasContent;
+		bool m_LinkUp, m_LinkDown, m_LinkLeft, m_LinkRight;
 
 		PlaneSpace m_Space;
-		std::vector<std::unique_ptr<RenderFrame>> m_Frames;
+		std::vector<std::shared_ptr<RenderFrame>> m_Frames;
 		std::vector<ContentPair> m_Content;
+		std::vector<int32_t> m_BarOffsets;
 
 		uint8_t m_Padding;
 	};

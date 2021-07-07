@@ -3,7 +3,7 @@
 #include "ui/Renderer.hpp"
 
 IRenderable::IRenderable()
-	: m_Dirty(false), m_Virtual(false)/*, m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr)*/, m_WeakSet(false)
+	: m_Dirty(false)/*, m_Virtual(false), m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr)*/ , m_WeakSet(false)
 {
 }
 
@@ -23,7 +23,7 @@ void IRenderable::SetWeak(std::weak_ptr<IRenderable>&& weak)
 
 void IRenderable::Render()
 {
-	if (!IsWeak() || !IsVirtual())
+	if (!IsWeak()/* || !IsVirtual()*/)
 		return;
 
 	OnRender();
@@ -31,7 +31,7 @@ void IRenderable::Render()
 
 void IRenderable::UpdateBuffers()
 {
-	if (!IsWeak() || !IsVirtual())
+	if (!IsWeak()/* || !IsVirtual()*/)
 		return;
 
 	OnUpdateBuffers();
@@ -39,7 +39,7 @@ void IRenderable::UpdateBuffers()
 
 void IRenderable::ReloadSwapChain()
 {
-	if (!IsWeak() || !IsVirtual())
+	if (!IsWeak()/* || !IsVirtual()*/)
 		return;
 
 	OnReloadSwapChain();
@@ -62,7 +62,7 @@ void IRenderable::OnReloadSwapChain()
 
 void IRenderable::MarkDirty()
 {
-	if (!IsWeak() || !IsVirtual() || m_Dirty)
+	if (!IsWeak()/* || !IsVirtual()*/ || m_Dirty)
 		return;
 
 	m_Dirty = true;
@@ -71,7 +71,7 @@ void IRenderable::MarkDirty()
 
 void IRenderable::ClearDirty()
 {
-	if (!IsWeak() || !IsVirtual())
+	if (!IsWeak()/* || !IsVirtual()*/)
 		return;
 
 	m_Dirty = false;
@@ -82,16 +82,16 @@ std::weak_ptr<IRenderable>& IRenderable::GetWeak()
 	return m_Weak;
 }
 
-bool IRenderable::IsVirtual()
-{
-	if (!m_Virtual)
-	{
-		Logger::Warn("check for IRenderable::IsVirtual(); failed");
-		return false;
-	}
-
-	return true;
-}
+//bool IRenderable::IsVirtual()
+//{
+//	if (!m_Virtual)
+//	{
+//		Logger::Warn("check for IRenderable::IsVirtual(); failed");
+//		return false;
+//	}
+//
+//	return true;
+//}
 
 bool IRenderable::IsWeak()
 {

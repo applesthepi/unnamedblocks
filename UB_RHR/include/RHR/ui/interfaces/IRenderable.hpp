@@ -49,18 +49,18 @@ public:
 	/// Gets the weak reference.
 	/// \return Weak reference to itself.
 	std::weak_ptr<IRenderable>& GetWeak();
-private:
 	/// Check for virtual.
-	bool IsVirtual();
+	//bool IsVirtual();
 
 	/// Check for weak.
 	bool IsWeak();
 
+protected:
 	/// Guarantees only one IRenderable::MarkDirty(); call.
 	bool m_Dirty;
 
 	/// Garantees upstream callbacks exist.
-	bool m_Virtual;
+	//bool m_Virtual;
 
 	///// Render upstream callback.
 	//void(*m_Render)();

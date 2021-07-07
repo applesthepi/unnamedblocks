@@ -17,6 +17,9 @@ public:
 	/// \param Size of ISizeable.
 	void SetSize(const glm::vec<2, T>& size);
 
+	/// Sets size of ISizeable to the maximum allowed by the super bounds.
+	void SetSizeMax();
+
 	/// Sets super bounds of ISizeable.
 	/// \param Super bounds of ISizeable.
 	void SetSuperBounds(const glm::vec<2, T>& bounds);
