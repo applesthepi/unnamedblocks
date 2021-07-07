@@ -3,6 +3,9 @@
 #include "ui/Renderer.hpp"
 #include "ui/Vertex.hpp"
 
+// TODO: remove include testing
+#include <iostream>
+
 vui::RenderRectangle::RenderRectangle()
 	: IEnableable(true)
 	, IColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
@@ -76,6 +79,9 @@ void vui::RenderRectangle::OnUpdateBuffers()
 
 	glm::vec<2, int32_t> position = m_Position + m_SuperOffset;
 
+	// TODO: remove
+	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
+
 	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 0.0f, 0.0f });
 	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 0.0f });
 	Vertex v2 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 1.0f });
@@ -101,8 +107,8 @@ void vui::RenderRectangle::OnReloadSwapChain()
 	m_RenderObject->ReloadSwapChain();
 }
 
-bool vui::RenderRectangle::OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset)
+void vui::RenderRectangle::PostPositionUpdate()
 {
+	SetSizeMax();// TODO: remove testing
 	MarkDirty();
-	return true;
 }

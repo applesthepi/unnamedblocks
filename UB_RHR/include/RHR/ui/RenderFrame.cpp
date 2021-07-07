@@ -2,6 +2,9 @@
 
 #include "ui/Renderer.hpp"
 
+// TODO: remove testing
+#include <iostream>
+
 vui::RenderFrame::RenderFrame()
 	: m_Space(vui::PlaneSpace::HORIZONTAL)
 	, m_HasSpace(false)
@@ -11,7 +14,13 @@ vui::RenderFrame::RenderFrame()
 	, m_LinkDown(false)
 	, m_LinkLeft(false)
 	, m_LinkRight(false)
-	, m_Padding(6)
+	, m_MouseButtonRegistered(false)
+	, m_Dragging(false)
+	, m_DraggingBarIdx(0)
+	, m_DraggingMouseBegin({ 0, 0 })
+	, m_DraggingObjectBegin({ 0, 0 })
+	, m_Padding(10)
+	, m_MouseButtonData(new RenderFrameMouseButtonData())
 {
 	
 }
@@ -30,11 +39,13 @@ void vui::RenderFrame::SetFrame(std::shared_ptr<RenderFrame>& frame)
 		return;
 	}
 
+	ResetDrag();
+
 	m_HasSpace = false;
 	m_HasFrame = true;
 
 	m_Frames.clear();
-	m_Frames.push_back(std::move(frame));
+	m_Frames.push_back(frame);
 }
 
 void vui::RenderFrame::AddFrame(std::shared_ptr<RenderFrame>& frame, LocalCardinal cardinal)
@@ -44,6 +55,8 @@ void vui::RenderFrame::AddFrame(std::shared_ptr<RenderFrame>& frame, LocalCardin
 		Logger::Error("can not add frame to RenderFrame that has content");
 		return;
 	}
+
+	ResetDrag();
 
 	m_HasFrame = true;
 
@@ -86,6 +99,8 @@ void vui::RenderFrame::AddContent(std::weak_ptr<IRenderable>&& renderable, std::
 		return;
 	}
 
+	ResetDrag();
+
 	m_HasContent = true;
 
 	if (!m_HasSpace)
@@ -116,6 +131,50 @@ void vui::RenderFrame::AddContent(std::weak_ptr<IRenderable>&& renderable, std::
 	}
 
 	UpdateContentDimentions();
+}
+
+void vui::RenderFrame::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+{
+	if (operation == MouseOperation::Press)
+	{
+		for (size_t i = 0; i < m_Bars.size(); i++)
+		{
+			if (position.x >= m_Bars[i].AbsolutePosition.x && position.x < m_Bars[i].AbsolutePosition.x + m_Bars[i].Size.x &&
+				position.y >= m_Bars[i].AbsolutePosition.y && position.y < m_Bars[i].AbsolutePosition.y + m_Bars[i].Size.y)
+			{
+				//Logger::Debug("dragging" + std::to_string(i));
+
+				m_Dragging = true;
+				m_DraggingBarIdx = i;
+				m_DraggingMouseBegin = position;
+				m_DraggingObjectBegin = m_Bars[i].AbsolutePosition;
+
+				break;
+			}
+		}
+	}
+	else if (operation == MouseOperation::Release)
+	{
+		if (m_Dragging)
+		{
+			//Logger::Debug("releasing" + std::to_string(m_DraggingBarIdx));
+
+			m_Dragging = false;
+			m_DraggingBarIdx = -1;
+			m_DraggingMouseBegin = { 0, 0 };
+			m_DraggingObjectBegin = { 0, 0 };
+		}
+	}
+	else if (operation == MouseOperation::Move)
+	{
+		if (m_Dragging)
+		{
+			//Logger::Debug("moving");
+			m_Bars[m_DraggingBarIdx].AbsolutePosition = m_DraggingObjectBegin + (position - m_DraggingMouseBegin);
+			UpdateBarsFromAbsolute();
+			UpdateContentDimentions();
+		}
+	}
 }
 
 void vui::RenderFrame::Link(LocalCardinal cardinal)
@@ -210,6 +269,13 @@ void vui::RenderFrame::UpdateLinks()
 	}
 }
 
+void vui::RenderFrame::SetBar(size_t idx, int32_t offset)
+{
+	m_Bars[idx].Offset = offset;
+	UpdateBarsFromRelative();
+	UpdateContentDimentions();
+}
+
 void vui::RenderFrame::OnRender()
 {
 	if (m_HasFrame)
@@ -295,55 +361,36 @@ void vui::RenderFrame::OnReloadSwapChain()
 	}
 }
 
-bool vui::RenderFrame::OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset)
+void vui::RenderFrame::OnSetWeak()
 {
-	UpdateContentDimentions();
-	return true;
+	m_MouseButtonData->Weak = m_Weak;
+	m_MouseButtonData->Ptr = this;
 }
 
-bool vui::RenderFrame::OnSizeUpdate(const glm::vec<2, int32_t>& size, const glm::vec<2, int32_t>& bounds)
+void vui::RenderFrame::PostPositionUpdate()
+{
+	SetSizeMax();
+	UpdateContentDimentions();
+}
+
+void vui::RenderFrame::PostSizeUpdate()
 {
 	UpdateContentDimentions();
-	return true;
+}
+
+void vui::RenderFrame::RenderFrameMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)
+{
+	RenderFrameMouseButtonData* system = (RenderFrameMouseButtonData*)data;
+	if (auto frame = system->Weak.lock())
+		system->Ptr->MouseButton(position, scroll, operation);
+	else
+		delete system;
 }
 
 void vui::RenderFrame::UpdateContentDimentions()
 {
 	if (m_HasFrame)
 	{
-		//if (m_Space == vui::PlaneSpace::HORIZONTAL)
-		//{
-		//	int32_t padding = m_Padding;
-		//	int32_t absOffset = m_Position.x + padding;
-		//	int32_t totalContentWidth = m_Size.x - (padding * 2);
-		//	int32_t totalContentHeight = m_Size.y - (padding * 2);
-		//	int32_t singleContentWidth = totalContentWidth / static_cast<int32_t>(m_Frames.size());
-		//	int32_t singleCompleteWidth = singleContentWidth + padding;
-
-		//	for (size_t i = 0; i < m_Frames.size(); i++)
-		//	{
-		//		m_Frames[i]->SetPosition({ absOffset + (i * singleCompleteWidth), padding });
-		//		m_Frames[i]->SetSize({ singleContentWidth, totalContentHeight });
-		//		m_Frames[i]->SetSuperBounds({ singleContentWidth, totalContentHeight });
-		//	}
-		//}
-		//else if (m_Space == vui::PlaneSpace::VERTICAL)
-		//{
-		//	int32_t padding = m_Padding;
-		//	int32_t absOffset = m_Position.y + padding;
-		//	int32_t totalContentHeight = m_Size.y - (padding * 2);
-		//	int32_t totalContentWidth = m_Size.x - (padding * 2);
-		//	int32_t singleContentHeight = totalContentHeight / static_cast<int32_t>(m_Frames.size());
-		//	int32_t singleCompleteHeight = singleContentHeight + padding;
-
-		//	for (size_t i = 0; i < m_Frames.size(); i++)
-		//	{
-		//		m_Frames[i]->SetPosition({ padding, absOffset + (i * singleCompleteHeight) });
-		//		m_Frames[i]->SetSize({ totalContentWidth, singleContentHeight });
-		//		m_Frames[i]->SetSuperBounds({ totalContentWidth, singleContentHeight });
-		//	}
-		//}
-
 		glm::vec<2, int32_t> runningPosition = m_Position + m_SuperOffset;
 		glm::vec<2, int32_t> runningSize;
 
@@ -352,9 +399,9 @@ void vui::RenderFrame::UpdateContentDimentions()
 			if (i > 0)
 			{
 				if (m_Space == PlaneSpace::HORIZONTAL)
-					runningPosition.x = m_Position.x + m_SuperOffset.x + m_BarOffsets[i - 1];
+					runningPosition.x = m_Position.x + m_SuperOffset.x + m_Bars[i - 1].Offset;
 				else if (m_Space == PlaneSpace::VERTICAL)
-					runningPosition.y = m_Position.y + m_SuperOffset.y + m_BarOffsets[i - 1];
+					runningPosition.y = m_Position.y + m_SuperOffset.y + m_Bars[i - 1].Offset;
 			}
 
 			if (m_Frames.size() > 1)
@@ -364,22 +411,22 @@ void vui::RenderFrame::UpdateContentDimentions()
 				if (m_Space == PlaneSpace::HORIZONTAL)
 				{
 					if (i == m_Frames.size() - 1)
-						offset = m_Size.x - m_BarOffsets[i - 1];
+						offset = m_Size.x - m_Bars[i - 1].Offset;
 					else if (i == 0)
-						offset = m_BarOffsets[i];
+						offset = m_Bars[i].Offset;
 					else
-						offset = m_BarOffsets[i] - m_BarOffsets[i - 1];
+						offset = m_Bars[i].Offset - m_Bars[i - 1].Offset;
 
 					runningSize = { offset - static_cast<int32_t>(static_cast<float>(0) * 1.5), m_Size.y - (static_cast<int32_t>(0) * 2) };
 				}
 				else if (m_Space == PlaneSpace::VERTICAL)
 				{
 					if (i == m_Frames.size() - 1)
-						offset = m_Size.y - m_BarOffsets[i - 1];
+						offset = m_Size.y - m_Bars[i - 1].Offset;
 					else if (i == 0)
-						offset = m_BarOffsets[i];
+						offset = m_Bars[i].Offset;
 					else
-						offset = m_BarOffsets[i] - m_BarOffsets[i - 1];
+						offset = m_Bars[i].Offset - m_Bars[i - 1].Offset;
 
 					runningSize = { m_Size.x - (static_cast<int32_t>(0) * 2), offset - static_cast<int32_t>(static_cast<float>(0) * 1.5) };
 				}
@@ -433,10 +480,6 @@ void vui::RenderFrame::UpdateContentDimentions()
 					runningPosition.x += runningSize.x + static_cast<int32_t>(m_Padding);
 				else if (m_Space == PlaneSpace::VERTICAL)
 					runningPosition.y += runningSize.y + static_cast<int32_t>(m_Padding);
-				//if (m_Space == PlaneSpace::HORIZONTAL)
-				//	runningPosition = { m_Position.x + m_SuperOffset.x + m_BarOffsets[i - 1], m_Position.y + m_SuperOffset.y };
-				//else if (m_Space == PlaneSpace::VERTICAL)
-				//	runningPosition = { m_Position.x + m_SuperOffset.x, m_Position.y + m_SuperOffset.y + m_BarOffsets[i - 1] };
 			}
 			
 			if (m_Content.size() > 1)
@@ -446,9 +489,9 @@ void vui::RenderFrame::UpdateContentDimentions()
 					if (i == m_Content.size() - 1)
 						runningSize.x = (m_Size.x + m_Position.x + m_SuperOffset.x) - runningPosition.x;
 					else if (i == 0)
-						runningSize.x = (m_BarOffsets[i] + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+						runningSize.x = (m_Bars[i].Offset + m_Position.x + m_SuperOffset.x) - runningPosition.x;
 					else
-						runningSize.x = (m_BarOffsets[i] + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+						runningSize.x = (m_Bars[i].Offset + m_Position.x + m_SuperOffset.x) - runningPosition.x;
 
 					if (i < m_Content.size() - 1)
 						runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
@@ -472,9 +515,9 @@ void vui::RenderFrame::UpdateContentDimentions()
 					if (i == m_Content.size() - 1)
 						runningSize.y = (m_Size.y + m_Position.y + m_SuperOffset.y) - runningPosition.y;
 					else if (i == 0)
-						runningSize.y = (m_BarOffsets[i] + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+						runningSize.y = (m_Bars[i].Offset + m_Position.y + m_SuperOffset.y) - runningPosition.y;
 					else
-						runningSize.y = (m_BarOffsets[i] + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+						runningSize.y = (m_Bars[i].Offset + m_Position.y + m_SuperOffset.y) - runningPosition.y;
 
 					if (i < m_Content.size() - 1)
 						runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
@@ -492,41 +535,6 @@ void vui::RenderFrame::UpdateContentDimentions()
 						runningSize.x += static_cast<int32_t>(m_Padding) / 2;
 					if (m_LinkRight)
 						runningSize.x += static_cast<int32_t>(m_Padding) / 2;
-
-					//if (i == m_Content.size() - 1)
-					//	offset = m_Size.y - m_BarOffsets[i - 1];
-					//else if (i == 0)
-					//	offset = m_BarOffsets[i];
-					//else
-					//	offset = m_BarOffsets[i] - m_BarOffsets[i - 1];
-
-					//if (m_LinkDown)
-					//	runningSize = { m_Size.x - (static_cast<int32_t>(m_Padding) * 2), offset - static_cast<int32_t>(static_cast<float>(m_Padding) * 2.0) };
-					//else
-					//	runningSize = { m_Size.x - (static_cast<int32_t>(m_Padding) * 2), offset - static_cast<int32_t>(static_cast<float>(m_Padding) * 1.0) };
-
-					//if (i == m_Content.size() - 1)
-					//	offset.y = m_Size.y - m_BarOffsets[i - 1];
-					//else if (i == 0)
-					//	offset.y = m_BarOffsets[i];
-					//else
-					//	offset.y = m_BarOffsets[i] - m_BarOffsets[i - 1];
-
-					//offset.y -= static_cast<int32_t>(m_Padding) * 2;
-
-					//if (m_LinkUp)
-					//	offset.y += static_cast<int32_t>(m_Padding) / 2;
-					//if (m_LinkDown)
-					//	offset.y += static_cast<int32_t>(m_Padding) / 2;
-
-					//offset.x = m_Size.x - static_cast<int32_t>(m_Padding) * 2;
-
-					//if (m_LinkLeft)
-					//	offset.x += static_cast<int32_t>(m_Padding) / 2;
-					//if (m_LinkRight)
-					//	offset.x += static_cast<int32_t>(m_Padding) / 2;
-
-					//runningSize = offset;
 				}
 			}
 			else
@@ -558,74 +566,7 @@ void vui::RenderFrame::UpdateContentDimentions()
 
 			if (auto content = m_Content[i].Positionable.lock())
 			{
-				if (i == 0)
-				{
-					//if (m_Space == PlaneSpace::HORIZONTAL)
-					//{
-					//	if (m_LinkLeft)
-					//		content->SetSuperOffset(runningPosition + glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding) / 2, static_cast<int32_t>(m_Padding)));
-					//	else
-					//		content->SetSuperOffset(runningPosition + static_cast<int32_t>(m_Padding));
-					//}
-					//else if (m_Space == PlaneSpace::VERTICAL)
-					//{
-					//	if (m_LinkUp)
-					//		content->SetSuperOffset(runningPosition + glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding), static_cast<int32_t>(m_Padding) / 2));
-					//	else
-					//		content->SetSuperOffset(runningPosition + static_cast<int32_t>(m_Padding));
-					//}
-
-
-					//if (m_LinkLeft)
-					//	runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding) / 2, 0);
-					//else
-					//	runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding), 0);
-
-					//if (m_LinkUp)
-					//	runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding) / 2);
-					//else
-					//	runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding));
-
-					content->SetSuperOffset(runningPosition);
-				}
-				else
-				{
-					//if (m_Space == PlaneSpace::HORIZONTAL)
-					//	content->SetSuperOffset(runningPosition + glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding) / 2, static_cast<int32_t>(m_Padding)));
-					//else if (m_Space == PlaneSpace::VERTICAL)
-					//	content->SetSuperOffset(runningPosition + glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding), static_cast<int32_t>(m_Padding) / 2));
-
-					//if (m_Space == PlaneSpace::HORIZONTAL)
-					//{
-					//	runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding), 0);
-
-					//	if (m_LinkUp)
-					//		runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding) / 2);
-					//	else
-					//		runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding));
-					//}
-					//else if (m_Space == PlaneSpace::VERTICAL)
-					//{
-					//	if (m_LinkLeft)
-					//		runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding) / 2, 0);
-					//	else
-					//		runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding), 0);
-
-					//	runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding));
-					//}
-
-					//if (m_LinkLeft)
-					//	runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding) / 2, 0);
-					//else
-					//	runningPosition += glm::vec<2, int32_t>(static_cast<int32_t>(m_Padding), 0);
-
-					//if (m_LinkUp)
-					//	runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding) / 2);
-					//else
-					//	runningPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(m_Padding));
-
-					content->SetSuperOffset(runningPosition);
-				}
+				content->SetSuperOffset(runningPosition);
 
 				if (auto content = m_Content[i].Sizeable.lock())
 					content->SetSuperBounds(runningSize);
@@ -650,38 +591,43 @@ void vui::RenderFrame::UpdateContentDimentions()
 
 void vui::RenderFrame::SubmitNewBarPosition(LocalCardinal cardinal)
 {
-	if (m_BarOffsets.size() == 0)
+	if (m_Bars.size() == 0)
 	{
 		if (cardinal == LocalCardinal::LEFT || cardinal == LocalCardinal::RIGHT)
-			m_BarOffsets.push_back(m_Size.x / 2);
+			m_Bars.push_back(Bar(m_Size.x / 2));
 		else if (cardinal == LocalCardinal::DOWN || cardinal == LocalCardinal::UP)
-			m_BarOffsets.push_back(m_Size.y / 2);
+			m_Bars.push_back(Bar(m_Size.y / 2));
 	}
 	else
 	{
 		if (cardinal == LocalCardinal::RIGHT)
-			m_BarOffsets.insert(m_BarOffsets.end(), (m_Size.x - m_BarOffsets.back()) / 2 + m_BarOffsets.back());
+			m_Bars.insert(m_Bars.end(), (m_Size.x - m_Bars.back().Offset) / 2 + m_Bars.back().Offset);
 		else if (cardinal == LocalCardinal::LEFT)
-			m_BarOffsets.insert(m_BarOffsets.begin(), m_BarOffsets.front() / 2);
+			m_Bars.insert(m_Bars.begin(), m_Bars.front().Offset / 2);
 		else if (cardinal == LocalCardinal::DOWN)
-			m_BarOffsets.insert(m_BarOffsets.end(), (m_Size.y - m_BarOffsets.back()) / 2 + m_BarOffsets.back());
+			m_Bars.insert(m_Bars.end(), (m_Size.y - m_Bars.back().Offset) / 2 + m_Bars.back().Offset);
 		else if (cardinal == LocalCardinal::UP)
-			m_BarOffsets.insert(m_BarOffsets.begin(), m_BarOffsets.front() / 2);
+			m_Bars.insert(m_Bars.begin(), m_Bars.front().Offset / 2);
 	}
+
+	UpdateBarsFromRelative();
+	UpdateMouseButtonStatus(true);
 }
 
 void vui::RenderFrame::EqualizeBars()
 {
 	if (m_Space == PlaneSpace::HORIZONTAL)
 	{
-		for (size_t i = 0; i < m_BarOffsets.size(); i++)
-			m_BarOffsets[i] = (static_cast<float>(i + 1) / static_cast<float>(m_BarOffsets.size() + 1)) * m_Size.x;
+		for (size_t i = 0; i < m_Bars.size(); i++)
+			m_Bars[i].Offset = (static_cast<float>(i + 1) / static_cast<float>(m_Bars.size() + 1)) * m_Size.x;
 	}
 	else if (m_Space == PlaneSpace::VERTICAL)
 	{
-		for (size_t i = 0; i < m_BarOffsets.size(); i++)
-			m_BarOffsets[i] = (static_cast<float>(i + 1) / static_cast<float>(m_BarOffsets.size() + 1)) * m_Size.y;
+		for (size_t i = 0; i < m_Bars.size(); i++)
+			m_Bars[i].Offset = (static_cast<float>(i + 1) / static_cast<float>(m_Bars.size() + 1)) * m_Size.y;
 	}
+
+	UpdateBarsFromRelative();
 }
 
 void vui::RenderFrame::PushLinks(std::shared_ptr<RenderFrame>& frame)
@@ -694,4 +640,85 @@ void vui::RenderFrame::PushLinks(std::shared_ptr<RenderFrame>& frame)
 		frame->Link(LocalCardinal::LEFT);
 	if (m_LinkRight)
 		frame->Link(LocalCardinal::RIGHT);
+}
+
+void vui::RenderFrame::UpdateMouseButtonStatus(bool enabled)
+{
+	if (!IsWeak())
+		return;
+
+	if (enabled && !m_MouseButtonRegistered)
+	{
+		m_MouseButtonRegistered = true;
+		InputHandler::RegisterMouseCallback(RenderFrameMouseButton, m_MouseButtonData);
+	}
+	else if (!enabled && m_MouseButtonRegistered)
+	{
+		m_MouseButtonRegistered = false;
+		InputHandler::UnregisterMouseCallback(RenderFrameMouseButton);
+	}
+}
+
+void vui::RenderFrame::UpdateBarsFromRelative()
+{
+	for (auto& bar : m_Bars)
+	{
+		bar.AbsolutePosition = m_Position + m_SuperOffset;
+
+		if (m_Space == PlaneSpace::HORIZONTAL)
+		{
+			bar.AbsolutePosition.x += bar.Offset;
+			bar.AbsolutePosition.x -= static_cast<int32_t>(m_Padding) / 2;
+
+			bar.Size = { static_cast<int32_t>(m_Padding), m_Size.y };
+
+			if (m_LinkUp)
+				bar.Size.y -= static_cast<int32_t>(m_Padding) / 2;
+			else
+				bar.Size.y -= static_cast<int32_t>(m_Padding);
+
+			if (m_LinkDown)
+				bar.Size.y -= static_cast<int32_t>(m_Padding) / 2;
+			else
+				bar.Size.y -= static_cast<int32_t>(m_Padding);
+
+			//std::cout << bar.AbsolutePosition.x << ", " << bar.AbsolutePosition.y << " | " << bar.Size.x << "x" << bar.Size.y << std::endl;
+		}
+		else if (m_Space == PlaneSpace::VERTICAL)
+		{
+			bar.AbsolutePosition.y += bar.Offset;
+			bar.AbsolutePosition.y -= static_cast<int32_t>(m_Padding) / 2;
+
+			bar.Size = { m_Size.x, static_cast<int32_t>(m_Padding) };
+
+			if (m_LinkLeft)
+				bar.Size.x -= static_cast<int32_t>(m_Padding) / 2;
+			else
+				bar.Size.x -= static_cast<int32_t>(m_Padding);
+
+			if (m_LinkRight)
+				bar.Size.x -= static_cast<int32_t>(m_Padding) / 2;
+			else
+				bar.Size.x -= static_cast<int32_t>(m_Padding);
+		}
+	}
+}
+
+void vui::RenderFrame::UpdateBarsFromAbsolute()
+{
+	for (auto& bar : m_Bars)
+	{
+		if (m_Space == PlaneSpace::HORIZONTAL)
+			bar.Offset = bar.AbsolutePosition.x - m_Position.x - m_SuperOffset.x + (static_cast<int32_t>(m_Padding) / 2);
+		else if (m_Space == PlaneSpace::VERTICAL)
+			bar.Offset = bar.AbsolutePosition.y - m_Position.y - m_SuperOffset.y + (static_cast<int32_t>(m_Padding) / 2);
+	}
+}
+
+void vui::RenderFrame::ResetDrag()
+{
+	m_Dragging = false;
+	m_DraggingBarIdx = -1;
+	m_DraggingMouseBegin = { 0 ,0 };
+	m_DraggingObjectBegin = { 0, 0 };
 }

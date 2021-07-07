@@ -36,10 +36,13 @@ protected:
 	/// \param Size of ISizeable.
 	/// \param Super bounds of ISizeable.
 	/// \return Condition to allow ISizeable<T>::SetSize(); to run.
-	virtual bool OnSizeUpdate(const glm::vec<2, T>& size, const glm::vec<2, T>& bounds);
+	virtual bool PreSizeUpdate(const glm::vec<2, T>& size, const glm::vec<2, T>& bounds);
+
+	/// Event called AFTER ISizeable<T>::SetSize() or ISizeable<T>::SetSuperBounds() gets run.
+	virtual void PostSizeUpdate();
 
 	/// Event called when ISizeable<T>::GetSize() or ISizeable<T>::GetSuperBounds() gets run.
-	virtual void OnSizePull();
+	virtual void PreSizePull();
 
 	/// Size of ISizeable.
 	glm::vec<2, T> m_Size;

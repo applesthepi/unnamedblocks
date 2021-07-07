@@ -14,12 +14,12 @@
 #endif
 #endif
 
-void PrimaryPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+static void PrimaryPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)
 {
 	Plane::PrimaryPlane->MouseButton(position, scroll, operation);
 }
 
-void ToolbarPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+static void ToolbarPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)
 {
 	Plane::ToolbarPlane->MouseButton(position, scroll, operation);
 }
@@ -50,9 +50,9 @@ Plane::Plane(bool toolbar)
 	, m_Background(std::make_shared<vui::RenderRectangle>())
 {
 	if (toolbar)
-		InputHandler::RegisterMouseCallback(ToolbarPlaneMouseButton);
+		InputHandler::RegisterMouseCallback(ToolbarPlaneMouseButton, nullptr);
 	else
-		InputHandler::RegisterMouseCallback(PrimaryPlaneMouseButton);
+		InputHandler::RegisterMouseCallback(PrimaryPlaneMouseButton, nullptr);
 
 	m_Background->SetWeak(m_Background);
 	m_Background->SetPosition(m_Position + m_SuperOffset);
@@ -482,16 +482,15 @@ void Plane::OnReloadSwapChain()
 	m_Background->ReloadSwapChain();
 }
 
-bool Plane::OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset)
+void Plane::PostPositionUpdate()
 {
-	m_Background->SetPosition(position + offset);
-	return true;
+	SetSizeMax();
+	m_Background->SetPosition(m_Position + m_SuperOffset);
 }
 
-bool Plane::OnSizeUpdate(const glm::vec<2, int32_t>& size, const glm::vec<2, int32_t>& bounds)
+void Plane::PostSizeUpdate()
 {
-	m_Background->SetSize(size);
-	return true;
+	m_Background->SetSize(m_Size);
 }
 
 std::shared_ptr<Plane> Plane::PrimaryPlane;

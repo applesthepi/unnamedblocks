@@ -33,10 +33,13 @@ protected:
 	/// \param position of IPositionable
 	/// \param super offset of IPositionable
 	/// \return condition to allow IPositionable<T>::SetPosition() to run
-	virtual bool OnPositionUpdate(const glm::vec<2, T>& position, const glm::vec<2, T>& offset);
+	virtual bool PrePositionUpdate(const glm::vec<2, T>& position, const glm::vec<2, T>& offset);
+
+	/// event called AFTER IPositionable<T>::SetPosition() or IPositionable<T>::SetSuperOffset() gets run
+	virtual void PostPositionUpdate();
 
 	/// event called when IPositionable<T>::GetPosition() or IPositionable<T>::GetSuperOffset(); gets run
-	virtual void OnPositionPull();
+	virtual void PrePositionPull();
 
 	/// expected only main thread acccess; non-atomic
 	glm::vec<2, T> m_Position;

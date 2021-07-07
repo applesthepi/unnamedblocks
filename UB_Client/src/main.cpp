@@ -351,6 +351,8 @@ int main()
 	Plane::ToolbarPlane = std::make_shared<Plane>(true);
 	Plane::ToolbarPlane->SetWeak(Plane::ToolbarPlane);
 
+
+#if 0
 	std::shared_ptr<vui::RenderFrame> frameBase = std::make_shared<vui::RenderFrame>();
 	frameBase->SetWeak(frameBase);
 	frameBase->SetSize({ 1280, 720 });
@@ -501,12 +503,89 @@ int main()
 	rectE1_2->SetSizeMax();
 
 	Renderer::AddLayer(layer);
+#endif
 
-	//frame->AddContent(Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, vui::LocalCardinal::RIGHT);
-	//frame->AddContent(Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, vui::LocalCardinal::RIGHT);
+	std::shared_ptr<vui::RenderFrame> frameBase = std::make_shared<vui::RenderFrame>();
+	frameBase->SetWeak(frameBase);
+	frameBase->SetSize({ 1280, 720 });
 
-	//Plane::PrimaryPlane->SetSizeMax();
-	//Plane::ToolbarPlane->SetSizeMax();
+	std::shared_ptr<vui::RenderFrame> frameBackground = std::make_shared<vui::RenderFrame>();
+	frameBackground->SetWeak(frameBackground);
+	frameBackground->SetSize({ 1280, 720 });
+	frameBackground->SetPadding(0);
+
+	std::shared_ptr<vui::RenderRectangle> rectBackground = std::make_shared<vui::RenderRectangle>();
+	rectBackground->SetWeak(rectBackground);
+	rectBackground->SetColor(Color().FromU8({ 128, 128, 128, 255 }));
+	rectBackground->SetDepth(11);
+
+	frameBackground->AddContent(rectBackground, std::weak_ptr<IUpdatable>(), rectBackground, rectBackground, vui::LocalCardinal::RIGHT);
+	rectBackground->SetSizeMax();
+
+	std::shared_ptr<vui::RenderLayer> layer = std::make_shared<vui::RenderLayer>();
+	layer->AddFrame(frameBackground);
+	layer->AddFrame(frameBase);
+
+	std::shared_ptr<vui::RenderFrame> frameOptionsContent = std::make_shared<vui::RenderFrame>();
+	frameOptionsContent->SetWeak(frameOptionsContent);
+	std::shared_ptr<vui::RenderFrame> frameSidebarPrimary = std::make_shared<vui::RenderFrame>();
+	frameSidebarPrimary->SetWeak(frameSidebarPrimary);
+	std::shared_ptr<vui::RenderFrame> frameSidebarCategories = std::make_shared<vui::RenderFrame>();
+	frameSidebarCategories->SetWeak(frameSidebarCategories);
+
+	std::shared_ptr<vui::RenderFrame> frameOptions = std::make_shared<vui::RenderFrame>();
+	frameOptions->SetWeak(frameOptions);
+	std::shared_ptr<vui::RenderFrame> frameCategories = std::make_shared<vui::RenderFrame>();
+	frameCategories->SetWeak(frameCategories);
+	std::shared_ptr<vui::RenderFrame> frameToolbar = std::make_shared<vui::RenderFrame>();
+	frameToolbar->SetWeak(frameToolbar);
+	std::shared_ptr<vui::RenderFrame> framePrimary = std::make_shared<vui::RenderFrame>();
+	framePrimary->SetWeak(framePrimary);
+
+	std::shared_ptr<vui::RenderRectangle> rectOptions = std::make_shared<vui::RenderRectangle>();
+	rectOptions->SetWeak(rectOptions);
+	std::shared_ptr<vui::RenderRectangle> rectCategories = std::make_shared<vui::RenderRectangle>();
+	rectCategories->SetWeak(rectCategories);
+
+	//frameBase->AddContent(rectOptions, std::weak_ptr<IUpdatable>(), rectOptions, rectOptions, vui::LocalCardinal::RIGHT);
+	//rectOptions->SetSizeMax();
+
+	frameBase->AddFrame(frameOptionsContent, vui::LocalCardinal::RIGHT);
+	frameOptionsContent->SetSizeMax();
+
+	frameOptionsContent->AddFrame(frameOptions, vui::LocalCardinal::DOWN);
+	frameOptionsContent->AddFrame(frameSidebarPrimary, vui::LocalCardinal::DOWN);
+	frameOptionsContent->SetBar(0, 50);
+
+	frameOptions->SetSizeMax();
+	frameSidebarPrimary->SetSizeMax();
+
+	frameSidebarPrimary->AddFrame(frameSidebarCategories, vui::LocalCardinal::RIGHT);
+	frameSidebarPrimary->AddFrame(framePrimary, vui::LocalCardinal::RIGHT);
+	frameSidebarPrimary->SetBar(0, 200);
+
+	frameSidebarCategories->SetSizeMax();
+	framePrimary->SetSizeMax();
+
+	frameSidebarCategories->AddFrame(frameCategories, vui::LocalCardinal::DOWN);
+	frameSidebarCategories->AddFrame(frameToolbar, vui::LocalCardinal::DOWN);
+	frameSidebarCategories->SetBar(0, 200);
+
+	frameCategories->SetSizeMax();
+	frameToolbar->SetSizeMax();
+
+	frameOptions->AddContent(rectOptions, std::weak_ptr<IUpdatable>(), rectOptions, rectOptions, vui::LocalCardinal::RIGHT);
+	rectOptions->SetSizeMax();
+	
+	frameCategories->AddContent(rectCategories, std::weak_ptr<IUpdatable>(), rectCategories, rectCategories, vui::LocalCardinal::RIGHT);
+	rectCategories->SetSizeMax();
+
+	framePrimary->AddContent(Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, vui::LocalCardinal::RIGHT);
+	Plane::PrimaryPlane->SetSizeMax();
+	frameToolbar->AddContent(Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, vui::LocalCardinal::RIGHT);
+	Plane::ToolbarPlane->SetSizeMax();
+
+	Renderer::AddLayer(layer);
 
 	size_t currentFrame = 0;
 	double deltaTime = 0.0f;

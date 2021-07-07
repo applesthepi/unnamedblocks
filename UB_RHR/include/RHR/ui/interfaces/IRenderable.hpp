@@ -31,21 +31,6 @@ public:
 	/// Regenerates descriptor sets including uniforms.
 	void ReloadSwapChain();
 
-	/// Add draw calls to cmd buffer prebound by Renderer.
-	virtual void OnRender();
-
-	/// Updates mesh on cpu side.
-	virtual void OnUpdateBuffers();
-
-	/// Regenerates descriptor sets including uniforms.
-	virtual void OnReloadSwapChain();
-
-	/// Marks IRenderable as dirty. UpdateBuffers will be called next frame. Expected only main thread acccess; non-atomic.
-	void MarkDirty();
-
-	/// Clears IRenderable's dirty tag.
-	void ClearDirty();
-
 	/// Gets the weak reference.
 	/// \return Weak reference to itself.
 	std::weak_ptr<IRenderable>& GetWeak();
@@ -56,6 +41,24 @@ public:
 	bool IsWeak();
 
 protected:
+	/// Add draw calls to cmd buffer prebound by Renderer.
+	virtual void OnRender();
+
+	/// Updates mesh on cpu side.
+	virtual void OnUpdateBuffers();
+
+	/// Regenerates descriptor sets including uniforms.
+	virtual void OnReloadSwapChain();
+
+	/// Called when IRenderable::SetWeak is called
+	virtual void OnSetWeak();
+
+	/// Marks IRenderable as dirty. UpdateBuffers will be called next frame. Expected only main thread acccess; non-atomic.
+	void MarkDirty();
+
+	/// Clears IRenderable's dirty tag.
+	void ClearDirty();
+
 	/// Guarantees only one IRenderable::MarkDirty(); call.
 	bool m_Dirty;
 

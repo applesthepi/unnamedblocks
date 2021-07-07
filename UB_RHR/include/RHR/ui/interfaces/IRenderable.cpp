@@ -11,6 +11,8 @@ void IRenderable::SetWeak(std::weak_ptr<IRenderable>&& weak)
 {
 	m_Weak = std::move(weak);
 	m_WeakSet = true;
+
+	OnSetWeak();
 }
 
 //void IRenderable::SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)())
@@ -56,6 +58,11 @@ void IRenderable::OnUpdateBuffers()
 }
 
 void IRenderable::OnReloadSwapChain()
+{
+
+}
+
+void IRenderable::OnSetWeak()
 {
 
 }

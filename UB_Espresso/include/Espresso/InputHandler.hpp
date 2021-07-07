@@ -31,14 +31,14 @@ class InputHandler
 public:
 	static void Initialization();
 
-	static void RegisterKeyCallback(void(*callback)(int16_t key, bool down, bool shift));
-	static void UnregisterKeyCallback(void(*callback)(int16_t key, bool down, bool shift));
+	static void RegisterKeyCallback(void(*callback)(int16_t key, bool down, bool shift, void* data), void* data);
+	static void UnregisterKeyCallback(void(*callback)(int16_t key, bool down, bool shift, void* data));
 
-	static void RegisterTextCallback(void(*callback)(int16_t key, bool shift));
-	static void UnregisterTextCallback(void(*callback)(int16_t key, bool shift));
+	static void RegisterTextCallback(void(*callback)(int16_t key, bool shift, void* data), void* data);
+	static void UnregisterTextCallback(void(*callback)(int16_t key, bool shift, void* data));
 
-	static void RegisterMouseCallback(void(*callback)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation));
-	static void UnregisterMouseCallback(void(*callback)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation));
+	static void RegisterMouseCallback(void(*callback)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data), void* data);
+	static void UnregisterMouseCallback(void(*callback)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data));
 
 	// run events though window
 	static void FireKey(int16_t key, uint8_t operation);
@@ -63,8 +63,12 @@ private:
 	static bool m_ShiftDown;
 	static glm::vec<2, int32_t> m_MousePosition;
 	static std::shared_mutex m_KeyTextMutex;
-	static std::vector<void(*)(int16_t key, bool down, bool shift)> m_KeyCallbacks;
-	static std::vector<void(*)(int16_t key, bool shift)> m_TextCallbacks;
 	static std::shared_mutex m_MouseMutex;
-	static std::vector<void(*)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)> m_MouseCallbacks;
+
+	static std::vector<void(*)(int16_t key, bool down, bool shift, void* data)> m_KeyCallbacks;
+	static std::vector<void*> m_KeyDatas;
+	static std::vector<void(*)(int16_t key, bool shift, void* data)> m_TextCallbacks;
+	static std::vector<void*> m_TextDatas;
+	static std::vector<void(*)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)> m_MouseCallbacks;
+	static std::vector<void*> m_MouseDatas;
 };

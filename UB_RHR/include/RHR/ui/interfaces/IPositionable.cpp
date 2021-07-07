@@ -11,37 +11,51 @@ IPositionable<T>::IPositionable()
 template <typename T>
 void IPositionable<T>::SetPosition(const glm::vec<2, T>& position)
 {
-	if (OnPositionUpdate(position, m_SuperOffset)) m_Position = position;
+	if (PrePositionUpdate(position, m_SuperOffset))
+	{
+		m_Position = position;
+		PostPositionUpdate();
+	}
 }
 
 template <typename T>
 void IPositionable<T>::SetSuperOffset(const glm::vec<2, T>& offset)
 {
-	if (OnPositionUpdate(m_Position, offset)) m_SuperOffset = offset;
+	if (PrePositionUpdate(m_Position, offset))
+	{
+		m_SuperOffset = offset;
+		PostPositionUpdate();
+	}
 }
 
 template <typename T>
 glm::vec<2, T> IPositionable<T>::GetPosition()
 {
-	OnPositionPull();
+	PrePositionPull();
 	return m_Position;
 }
 
 template <typename T>
 glm::vec<2, T> IPositionable<T>::GetSuperOffset()
 {
-	OnPositionPull();
+	PrePositionPull();
 	return m_Position;
 }
 
 template <typename T>
-bool IPositionable<T>::OnPositionUpdate(const glm::vec<2, T>& position, const glm::vec<2, T>& offset)
+bool IPositionable<T>::PrePositionUpdate(const glm::vec<2, T>& position, const glm::vec<2, T>& offset)
 {
 	return true;
 }
 
 template <typename T>
-void IPositionable<T>::OnPositionPull()
+void IPositionable<T>::PostPositionUpdate()
+{
+	
+}
+
+template <typename T>
+void IPositionable<T>::PrePositionPull()
 {
 
 }

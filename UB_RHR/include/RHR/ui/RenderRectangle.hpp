@@ -30,33 +30,17 @@ public:
 	/// Sets Z depth.
 	/// \param Z depth.
 	void SetDepth(uint32_t depth);
-
-	/// Gets the weak reference.
-	/// \return Weak reference to itself.
-	//std::weak_ptr<RenderRectangle>& GetWeak();
 private:
-	/// Check for weak.
-	//bool IsWeak();
-
-	/// Add draw calls to cmd buffer prebound by Renderer.
 	void OnRender() override;
 
-	/// Updates mesh on cpu side.
 	void OnUpdateBuffers() override;
 
-	/// Regenerates descriptor sets including uniforms.
 	void OnReloadSwapChain() override;
 
-	bool OnPositionUpdate(const glm::vec<2, int32_t>& position, const glm::vec<2, int32_t>& offset) override;
+	void PostPositionUpdate() override;
 
 	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<RenderObject> m_RenderObject;
-
-	/// Weak reference.
-	//std::weak_ptr<RenderRectangle> m_Weak;
-
-	/// Flag if weak is set.
-	//bool m_WeakSet;
 
 	bool m_HasColor;
 	bool m_HasTexture;
