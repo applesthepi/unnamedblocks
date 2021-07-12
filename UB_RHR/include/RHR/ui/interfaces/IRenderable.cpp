@@ -36,6 +36,7 @@ void IRenderable::UpdateBuffers()
 	if (!IsWeak()/* || !IsVirtual()*/)
 		return;
 
+	m_Dirty = false;
 	OnUpdateBuffers();
 }
 

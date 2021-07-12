@@ -4,6 +4,9 @@
 #include "stacking/Stack.hpp"
 #include "ui/interfaces/IPositionable.hpp"
 #include "ui/interfaces/ISizeable.hpp"
+#include "ui/interfaces/IRenderable.hpp"
+#include "ui/interfaces/IUpdatable.hpp"
+#include "ui/interfaces/IEnableable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
@@ -23,25 +26,27 @@
 
 #define COLLECTION_EMPTY_SPACE 50
 
-class Collection : public IPositionable<int32_t>, public ISizeable<int32_t>
+class Collection : public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable, public IEnableable
 {
 public:
 	Collection();
-	Collection(const Collection& collection);
+	//Collection(const Collection& collection);
 
 	~Collection();
 
-	void AddStack(Stack* stack);
-	void AddStacks(const std::vector<Stack*>& stacks);
+	void AddStack(std::shared_ptr<Stack> stack);
+	void AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks);
 
 	void RemoveStack(uint64_t idx);
-	void RemoveAll(bool dealloc);
+	void RemoveAll();
 
-	const std::vector<Stack*>& GetStacks();
-
-	void SetEnabled(bool enabled);
-	bool GetEnabled();
+	const std::vector<std::shared_ptr<Stack>>& GetStacks();
+	void FrameUpdate(double deltaTime) override;
 private:
-	std::vector<Stack*> m_stacks;
-	bool m_enabled;
+	void OnRender() override;
+	void OnUpdateBuffers() override;
+	void OnReloadSwapChain() override;
+	void PostPositionUpdate() override;
+
+	std::vector<std::shared_ptr<Stack>> m_stacks;
 };

@@ -6,7 +6,7 @@
 /// Interface for sizing ui.
 
 /// Template interface used for elements that have a size. Can not be abstracted into a joint interface; must be direct extention.
-
+// TODO: standardize with IPositionable
 template <typename T>
 class ISizeable
 {

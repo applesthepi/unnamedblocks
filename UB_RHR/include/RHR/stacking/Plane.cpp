@@ -2,6 +2,7 @@
 
 #include "registries/ShaderRegistry.hpp"
 #include "handlers/ContextHandler.hpp"
+#include "ui/Renderer.hpp"
 
 // TODO: remove include (used for testing)
 #include <iostream>
@@ -57,7 +58,8 @@ Plane::Plane(bool toolbar)
 	m_Background->SetWeak(m_Background);
 	m_Background->SetPosition(m_Position + m_SuperOffset);
 	m_Background->SetSize(m_Size);
-	m_Background->SetColor(Color().FromU8({ 255, 255, 255, 255 }));
+	m_Background->SetColor(Color().FromU8({ 0, 0, 0, 255 }));
+	m_Background->SetDepth(Renderer::DepthPlane);
 
 	//m_shader.loadFromFile("res/shaders/blocks.vert", "res/shaders/blocks.frag");
 
@@ -119,24 +121,25 @@ Plane::~Plane()
 	//else
 	//	InputHandler::UnregisterMouseCallback(PrimaryPlaneMouseButton);
 
-	for (uint64_t i = 0; i < m_Collections.size(); i++)
-		delete m_Collections[i];
+	//for (uint64_t i = 0; i < m_Collections.size(); i++)
+	//	delete m_Collections[i];
 }
 
-void Plane::AddCollection(Collection* collection, bool displayCollectionVanity)
+void Plane::AddCollection(std::shared_ptr<Collection>& collection, bool displayCollectionVanity)
 {
+	collection->SetSuperOffset(m_Position + m_SuperOffset);
 	m_Collections.push_back(collection);
 	m_CollectionVanity.push_back(displayCollectionVanity);
 
 	//CreateBuffer(m_Collections.size() - 1, displayCollectionVanity);
 }
 
-const std::vector<Collection*>& Plane::GetCollections()
+const std::vector<std::shared_ptr<Collection>>& Plane::GetCollections()
 {
 	return m_Collections;
 }
 
-void Plane::DeleteCollection(uint64_t idx, bool dealloc)
+void Plane::DeleteCollection(uint64_t idx)
 {
 	//m_VertexArrays.erase(m_vertexArrays.begin() + idx);
 	//m_VertexBuffers.erase(m_vertexBuffers.begin() + idx);
@@ -146,8 +149,8 @@ void Plane::DeleteCollection(uint64_t idx, bool dealloc)
 	//m_TextureMapEnabled.erase(m_textureMapEnabled.begin() + idx);
 	m_CollectionVanity.erase(m_CollectionVanity.begin() + idx);
 
-	if (dealloc)
-		delete m_Collections[idx];
+	//if (dealloc)
+	//	delete m_Collections[idx];
 
 	m_Collections.erase(m_Collections.begin() + idx);
 }
@@ -174,10 +177,10 @@ bool Plane::IsToolbar()
 //	return glm::vec<2, int32_t>();
 //}
 
-void Plane::DeleteContents(bool dealloc)
+void Plane::DeleteContents()
 {
 	for (uint64_t i = 0; i < m_Collections.size(); i++)
-		DeleteCollection(0, dealloc);
+		DeleteCollection(0);
 }
 
 void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
@@ -241,7 +244,7 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 			{
 				// size
 
-				glm::vec<2, int32_t> stackSize;
+				glm::vec<2, int32_t> stackSize = { 0, 0 };
 
 				for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
 				{
@@ -291,14 +294,14 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 									//ContextHandler::Disable();
 									UnSelect();
 
-									Collection* activeCollection = new Collection();
-									Stack* activeStack = m_Collections[i]->GetStacks()[a];
+									std::shared_ptr<Collection> activeCollection = std::make_shared<Collection>();
+									std::shared_ptr<Stack> activeStack = m_Collections[i]->GetStacks()[a];
 
 									if (b > 0)
 									{
 										// create stack that is left behind (no the one picked up)
 
-										Stack* leftStack = new Stack();
+										std::shared_ptr<Stack> leftStack = std::make_shared<Stack>();
 										leftStack->SetPosition(activeStack->GetPosition());
 
 										for (uint64_t c = 0; c < b; c++)
@@ -328,7 +331,7 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 
 									}
 									else
-										DeleteCollection(i, true);
+										DeleteCollection(i);
 
 									// drag the current stack (excludes the stack that was left behind)
 
@@ -469,23 +472,35 @@ void Plane::FrameUpdate(double deltaTime)
 
 void Plane::OnRender()
 {
-	m_Background->Render();
+	//m_Background->Render();
+
+	for (auto& collection : m_Collections)
+		collection->Render();
 }
 
 void Plane::OnUpdateBuffers()
 {
 	m_Background->UpdateBuffers();
+
+	for (auto& collection : m_Collections)
+		collection->UpdateBuffers();
 }
 
 void Plane::OnReloadSwapChain()
 {
 	m_Background->ReloadSwapChain();
+
+	for (auto& collection : m_Collections)
+		collection->ReloadSwapChain();
 }
 
 void Plane::PostPositionUpdate()
 {
 	SetSizeMax();
 	m_Background->SetPosition(m_Position + m_SuperOffset);
+
+	for (auto& collection : m_Collections)
+		collection->SetSuperOffset(m_Position + m_SuperOffset);
 }
 
 void Plane::PostSizeUpdate()
@@ -1134,7 +1149,7 @@ void Plane::UnSelect()
 	m_SelectedArgument = nullptr;
 }
 
-void Plane::DragCollection(Collection* collection, bool up)
+void Plane::DragCollection(std::shared_ptr<Collection>& collection, bool up)
 {
 	if (m_DraggingStack != nullptr || m_DraggingCollection != nullptr)
 		return;
@@ -1148,7 +1163,7 @@ void Plane::DragCollection(Collection* collection, bool up)
 	m_DraggingBeginObject = m_DraggingCollection->GetPosition();
 }
 
-void Plane::DragStack(Collection* collection, Stack* stack, bool up)
+void Plane::DragStack(std::shared_ptr<Collection>& collection, std::shared_ptr<Stack>& stack, bool up)
 {
 	if (m_DraggingStack != nullptr || m_DraggingCollection != nullptr)
 		return;
@@ -1203,9 +1218,9 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 		if (IsSnap())
 		{
 			m_DraggingSnapStack->InsertBlocks(m_DraggingStack->GetBlocks(), m_DraggingSnapStackLoc);
-			m_DraggingCollection->RemoveAll(false);
+			m_DraggingCollection->RemoveAll();
 
-			DeleteCollection(m_Collections.size() - 1, true);
+			DeleteCollection(m_Collections.size() - 1);
 			//Plane::PrimaryPlane->UpdateBuffer(m_DraggingSnapCollection);
 		}
 		else
@@ -1213,7 +1228,7 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 			if (pixelPosition.x > Plane::ToolbarPlane->GetPosition().x && pixelPosition.x < Plane::ToolbarPlane->GetPosition().x + Plane::ToolbarPlane->GetSize().x &&
 				pixelPosition.y > Plane::ToolbarPlane->GetPosition().y && pixelPosition.y < Plane::ToolbarPlane->GetPosition().y + Plane::ToolbarPlane->GetSize().y)
 			{
-				DeleteCollection(m_Collections.size() - 1, true);
+				DeleteCollection(m_Collections.size() - 1);
 			}
 			else if (pixelPosition.x > Plane::PrimaryPlane->GetPosition().x && pixelPosition.x < Plane::PrimaryPlane->GetPosition().x + Plane::PrimaryPlane->GetSize().x &&
 					 pixelPosition.y > Plane::PrimaryPlane->GetPosition().y && pixelPosition.y < Plane::PrimaryPlane->GetPosition().y + Plane::PrimaryPlane->GetSize().y)
@@ -1247,8 +1262,8 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 
 						//Plane::PrimaryPlane->UpdateBuffer(i);
 
-						m_DraggingCollection->RemoveAll(false);
-						DeleteCollection(m_Collections.size() - 1, true);
+						m_DraggingCollection->RemoveAll();
+						DeleteCollection(m_Collections.size() - 1);
 
 						found = true;
 						break;
@@ -1268,7 +1283,7 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 					m_DraggingCollection->SetSize((glm::vec<2, int32_t>)m_DraggingCollection->GetSize() + glm::vec<2, int32_t>(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
 					m_DraggingStack->SetPosition({ COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE });
 
-					DeleteCollection(m_Collections.size() - 1, false);
+					DeleteCollection(m_Collections.size() - 1);
 					Plane::PrimaryPlane->AddCollection(m_DraggingCollection, true);
 				}
 			}
@@ -1293,7 +1308,7 @@ void Plane::DraggingStackUpdate()
 		return;
 
 	std::shared_ptr<Plane> usePlane = Plane::PrimaryPlane;
-	const std::vector<Collection*>& useCollections = usePlane->GetCollections();
+	const std::vector<std::shared_ptr<Collection>>& useCollections = usePlane->GetCollections();
 
 	uint64_t collectionMax = useCollections.size();
 
@@ -1415,7 +1430,7 @@ bool Plane::DraggingStack()
 	return m_DraggingCollection != nullptr && m_DraggingStack != nullptr;
 }
 
-void Plane::SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack)
+void Plane::SetSnap(uint64_t collection, uint64_t stackLoc, std::shared_ptr<Stack> stack)
 {
 	m_DraggingSnap = true;
 

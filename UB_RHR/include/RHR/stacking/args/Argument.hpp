@@ -8,14 +8,15 @@
 
 #include <Cappuccino/Utils.hpp>
 #include <Cappuccino/block/ModBlock.hpp>
+#include <Cappuccino/Color.hpp>
 
 /// Base class for visual block arguments.
 
-class Argument : public IRenderable, public IUpdatable, public IPositionable<int32_t>
+class Argument : public IRenderable, public IUpdatable, public IPositionable<2, int32_t>
 {
 public:
 	/// TODO
-	Argument();
+	Argument(const Color& blockColor);
 
 	/// Sets data. Data of the argument is stored as a string.
 	/// \param Data to set the argument to.
@@ -86,4 +87,7 @@ protected:
 
 	/// Vector of elements used by the argument.
 	//std::vector<IUI> m_Elements;
+
+	// TODO: doc
+	Color m_BlockColor;
 };

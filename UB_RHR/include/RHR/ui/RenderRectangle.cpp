@@ -57,20 +57,11 @@ void vui::RenderRectangle::SetDepth(uint32_t depth)
 void vui::RenderRectangle::OnRender()
 {
 	if (m_Enabled)
-	{
-		if (m_HasTexture)
-			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
-		else
-			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
-
 		m_RenderObject->Render();
-	}
 }
 
 void vui::RenderRectangle::OnUpdateBuffers()
 {
-	ClearDirty();
-
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
 
@@ -109,6 +100,6 @@ void vui::RenderRectangle::OnReloadSwapChain()
 
 void vui::RenderRectangle::PostPositionUpdate()
 {
-	SetSizeMax();// TODO: remove testing
+	//SetSizeMax();// TODO: remove testing
 	MarkDirty();
 }

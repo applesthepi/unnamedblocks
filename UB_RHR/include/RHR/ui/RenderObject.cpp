@@ -19,7 +19,7 @@ RenderObject::RenderObject(bool ui)
 	//, m_HasWeak(false)
 	, m_UI(ui)
     , m_TexturePath("")
-    , m_Position({ 0.0, 0.0, 0.0 })
+    //, m_Position({ 0.0, 0.0, 0.0 })
     , m_VertexBuffer(nullptr)
     , m_VertexBufferMemory(nullptr)
     , m_VertexStagingBuffer(nullptr)
@@ -43,10 +43,10 @@ RenderObject::RenderObject(bool ui, const std::string& texturePath)
 //	m_HasWeak = true;
 //}
 
-void RenderObject::SetPosition(const glm::vec<3, double>& position)
-{
-	m_Position = position;
-}
+//void RenderObject::SetPosition(const glm::vec<3, double>& position)
+//{
+//	m_Position = position;
+//}
 
 void RenderObject::SetTexture(const std::string& texture)
 {
@@ -237,12 +237,21 @@ void RenderObject::OnRender()
 	if (m_UI)
 	{
 		if (m_TexturePath.size() > 0)
+		{
 			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
+		}
 		else
+		{
 			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
+		}
 	}
 	else
+	{
 		vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::BlocksPipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+		vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
+	}
 
 	vkCmdBindVertexBuffers(Renderer::ActiveCommandBuffer, 0, 1, vb, offsets);
 
@@ -398,7 +407,7 @@ void RenderObject::UpdateUniforms(bool ui)
 	//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 	UniformBufferObject ubo {};
-	ubo.Model = glm::translate(glm::mat4(1.0f), { static_cast<float>(m_Position.x), static_cast<float>(m_Position.y), static_cast<float>(m_Position.z) });
+	ubo.Model = glm::translate(glm::mat4(1.0f), { static_cast<float>(m_Position.x + m_SuperOffset.x), static_cast<float>(m_Position.y + m_SuperOffset.y), static_cast<float>(m_Position.z + m_SuperOffset.z) });
 	//ubo.Model = glm::rotate(ubo.Model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//ubo.Projection = glm::perspective(glm::radians(45.0f), Renderer::SwapChainExtent.width / (float)Renderer::SwapChainExtent.height, 0.1f, 10.0f);

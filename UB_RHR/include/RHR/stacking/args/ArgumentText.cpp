@@ -1,9 +1,14 @@
 #include "ArgumentText.hpp"
 
-ArgumentText::ArgumentText()
-	: m_Text(std::make_shared<vui::RenderText>())
+#include "ui/Renderer.hpp"
+
+ArgumentText::ArgumentText(const Color& color)
+	: Argument(color)
+	, m_Text(std::make_shared<vui::RenderText>())
 {
 	m_Text->SetWeak(m_Text);
+	m_Text->SetDepth(Renderer::DepthArgumentText);
+	m_Text->SetColorSecondary(color);
 }
 
 BlockArgumentType ArgumentText::GetType()
@@ -39,6 +44,11 @@ void ArgumentText::OnReloadSwapChain()
 void ArgumentText::OnFrameUpdate(double deltaTime)
 {
 	
+}
+
+void ArgumentText::PostPositionUpdate()
+{
+	m_Text->SetSuperOffset(m_Position + m_SuperOffset);
 }
 
 void ArgumentText::OnSetData()

@@ -1,28 +1,22 @@
-#include "RenderText.hpp"
+﻿#include "RenderText.hpp"
 
 #include "ui/Renderer.hpp"
 #include "ui/Vertex.hpp"
+#include "stacking/Block.hpp"
 
 vui::RenderText::RenderText()
-	: IDiColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }), Color().FromNormalized({ 1.0f, 1.0f, 1.0f, 1.0f }))
+	: IDiColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }), Color().FromU8({ 25, 25, 25, 255 }))
 	, IEnableable(true)
 	, m_Depth(10)
 	, m_RenderObject(std::make_shared<RenderObject>(true))
-	, m_WeakSet(false)
 {
 	m_RenderObject->SetWeak(m_RenderObject);
-}
-
-void vui::RenderText::SetWeak(const std::weak_ptr<RenderText>&& weak)
-{
-	m_Weak = std::move(weak);
-	m_WeakSet = true;
 }
 
 void vui::RenderText::SetText(const std::string& text)
 {
 	m_Text = text;
-	m_Size = { 50, 10 };
+	m_Size = { text.size() * 20, Block::Height - (Block::Padding * 2) };
 	MarkDirty();
 }
 
@@ -30,22 +24,6 @@ void vui::RenderText::SetDepth(uint32_t depth)
 {
 	m_Depth = depth;
 	MarkDirty();
-}
-
-std::weak_ptr<vui::RenderText>& vui::RenderText::GetWeak()
-{
-	return m_Weak;
-}
-
-bool vui::RenderText::IsWeak()
-{
-	if (!m_WeakSet)
-	{
-		Logger::Warn("check for vui::RenderText::IsWeak(); failed");
-		return false;
-	}
-
-	return true;
 }
 
 void vui::RenderText::OnRender()
@@ -92,4 +70,14 @@ void vui::RenderText::OnUpdateBuffers()
 void vui::RenderText::OnReloadSwapChain()
 {
 	m_RenderObject->ReloadSwapChain();
+}
+
+void vui::RenderText::PostPositionUpdate()
+{
+	MarkDirty();
+}
+
+void vui::RenderText::PostSizeUpdate()
+{
+	MarkDirty();
 }

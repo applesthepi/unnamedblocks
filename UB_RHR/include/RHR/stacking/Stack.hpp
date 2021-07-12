@@ -3,26 +3,34 @@
 
 #include "Block.hpp"
 #include "ui/interfaces/IPositionable.hpp"
+#include "ui/interfaces/IRenderable.hpp"
+#include "ui/interfaces/IUpdatable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
-class Stack : public IPositionable<int32_t>
+class Stack : public IPositionable<2, int32_t>, public IRenderable, public IUpdatable
 {
 public:
 	Stack();
-	Stack(const Stack& stack);
+	//Stack(const Stack& stack);
 
 	~Stack();
 
-	void AddBlock(Block* block);
-	void AddBlocks(const std::vector<Block*>& blocks);
-	void InsertBlocks(const std::vector<Block*>& blocks, uint64_t idx);
+	void AddBlock(std::shared_ptr<Block> block);
+	void AddBlocks(const std::vector<std::shared_ptr<Block>>& blocks);
+	void InsertBlocks(const std::vector<std::shared_ptr<Block>>& blocks, uint64_t idx);
 
 	uint64_t GetWidestBlock();
 
 	void RemoveBlock(uint64_t idx);
 
-	const std::vector<Block*>& GetBlocks();
+	const std::vector<std::shared_ptr<Block>>& GetBlocks();
+	void FrameUpdate(double deltaTime) override;
 private:
-	std::vector<Block*> m_blocks;
+	void OnRender() override;
+	void OnUpdateBuffers() override;
+	void OnReloadSwapChain() override;
+	void PostPositionUpdate() override;
+
+	std::vector<std::shared_ptr<Block>> m_blocks;
 };

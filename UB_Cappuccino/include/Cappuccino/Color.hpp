@@ -14,12 +14,12 @@ public:
 	/// Sets color to normalized 4 component normalized (0.0 - 1.0) vector.
 	/// \param Color.
 	/// \return Color instance.
-	Color& FromNormalized(const glm::vec<4, float>&& color);
+	Color& FromNormalized(const glm::vec<4, float>& color);
 
 	/// Sets color to 4 component uint8_t (0 - 255) vector.
 	/// \param Color.
 	/// \return Color instance.
-	Color& FromU8(const glm::vec<4, uint8_t>&& color);
+	Color& FromU8(const glm::vec<4, uint8_t>& color);
 
 	/// Gets color as float (0.0 - 1.0).
 	/// \return Color.
@@ -27,7 +27,7 @@ public:
 
 	/// Gets color as a 4 component uint8_t (0 - 255) vector.
 	/// \return Color.
-	const glm::vec<4, uint8_t>&& GetU8();
+	glm::vec<4, uint8_t> GetU8();
 private:
 	/// Color stored as a 4 component normalized (0.0 - 1.0) vector.
 	glm::vec<4, float> m_Color;

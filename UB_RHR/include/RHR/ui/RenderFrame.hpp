@@ -12,7 +12,7 @@
 
 namespace vui
 {
-	class RenderFrame : public IRenderable, public IUpdatable, public IPositionable<int32_t>, public ISizeable<int32_t>
+	class RenderFrame : public IRenderable, public IUpdatable, public IPositionable<2, int32_t>, public ISizeable<int32_t>
 	{
 	public:
 		RenderFrame();

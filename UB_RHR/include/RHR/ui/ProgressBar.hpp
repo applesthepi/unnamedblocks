@@ -28,7 +28,7 @@ enum class VerticalAlignment
 	BOTTOM
 };
 
-class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<int32_t>, public ISizeable<int32_t>
+class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<2, int32_t>, public ISizeable<int32_t>
 {
 public:
 	ProgressBar(int32_t stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal = HorizontalAlignment::CENTER, float horizontalSizeOverride = 0.0f);

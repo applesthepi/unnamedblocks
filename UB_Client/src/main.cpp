@@ -516,8 +516,8 @@ int main()
 
 	std::shared_ptr<vui::RenderRectangle> rectBackground = std::make_shared<vui::RenderRectangle>();
 	rectBackground->SetWeak(rectBackground);
-	rectBackground->SetColor(Color().FromU8({ 128, 128, 128, 255 }));
-	rectBackground->SetDepth(11);
+	rectBackground->SetColor(Color().FromU8({ 30, 30, 30, 255 }));
+	rectBackground->SetDepth(Renderer::DepthBackground);
 
 	frameBackground->AddContent(rectBackground, std::weak_ptr<IUpdatable>(), rectBackground, rectBackground, vui::LocalCardinal::RIGHT);
 	rectBackground->SetSizeMax();
@@ -586,6 +586,17 @@ int main()
 	Plane::ToolbarPlane->SetSizeMax();
 
 	Renderer::AddLayer(layer);
+
+	std::shared_ptr<Collection> testCollection = std::make_shared<Collection>();
+	testCollection->SetWeak(testCollection);
+	std::shared_ptr<Stack> testStack = std::make_shared<Stack>();
+	testStack->SetWeak(testStack);
+	std::shared_ptr<Block> testBlock = std::make_shared<Block>("vin_main");
+	testBlock->SetWeak(testBlock);
+
+	testStack->AddBlock(testBlock);
+	testCollection->AddStack(testStack);
+	Plane::PrimaryPlane->AddCollection(testCollection, true);
 
 	size_t currentFrame = 0;
 	double deltaTime = 0.0f;

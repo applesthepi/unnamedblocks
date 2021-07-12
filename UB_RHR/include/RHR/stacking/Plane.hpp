@@ -28,7 +28,7 @@
 //	sf::RenderWindow* m_window;
 //};
 
-class Plane : public IPositionable<int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable
+class Plane : public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable
 {
 public:
 	//Plane(bool toolbar, const Plane& plane);
@@ -37,17 +37,17 @@ public:
 	~Plane();
 	
 	// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
-	void AddCollection(Collection* collection, bool displayCollectionVanity);
-	const std::vector<Collection*>& GetCollections();
+	void AddCollection(std::shared_ptr<Collection>& collection, bool displayCollectionVanity);
+	const std::vector<std::shared_ptr<Collection>>& GetCollections();
 
-	void DeleteCollection(uint64_t idx, bool dealloc = true);
+	void DeleteCollection(uint64_t idx);
 	bool IsToolbar();
 
 	//void TranslateInnerPosition(const glm::vec<2, int32_t>& position);
 	//void SetInnerPosition(glm::vec<2, int32_t> position);
 	
 	//glm::vec<2, int32_t> GetInnerPosition();
-	void DeleteContents(bool dealloc = true);
+	void DeleteContents();
 
 	// TODO not finished; may not need
 	//void UpdateVAOPosition(uint64_t idx);
@@ -112,10 +112,10 @@ private:
 
 	bool m_Selected;
 	bool m_SelectedContext;
-	Collection* m_SelectedCollection;
-	Stack* m_SelectedStack;
-	Block* m_SelectedBlock;
-	Argument* m_SelectedArgument;
+	std::shared_ptr<Collection> m_SelectedCollection;
+	std::shared_ptr<Stack> m_SelectedStack;
+	std::shared_ptr<Block> m_SelectedBlock;
+	std::shared_ptr<Argument> m_SelectedArgument;
 
 	std::function<void(uint8_t)> m_ContextCallback;
 
@@ -123,16 +123,16 @@ private:
 	// Dragging
 	//////////////////////////////////////////////////////////
 
-	void DragCollection(Collection* collection, bool up);
-	void DragStack(Collection* collection, Stack* stack, bool up);
+	void DragCollection(std::shared_ptr<Collection>& collection, bool up);
+	void DragStack(std::shared_ptr<Collection>& collection, std::shared_ptr<Stack>& stack, bool up);
 	void UnDrag(const glm::vec<2, int32_t>& position);
 	void DraggingStackUpdate();
 
 	bool DraggingCollection();
 	bool DraggingStack();
 
-	Collection* m_DraggingCollection;
-	Stack* m_DraggingStack;
+	std::shared_ptr<Collection> m_DraggingCollection;
+	std::shared_ptr<Stack> m_DraggingStack;
 
 	glm::vec<2, int32_t> m_DraggingBeginObject;
 	glm::vec<2, int32_t> m_DraggingBeginMouse;
@@ -143,7 +143,7 @@ private:
 	// Snapping
 	//////////////////////////////////////////////////////////
 
-	void SetSnap(uint64_t collection, uint64_t stackLoc, Stack* stack);
+	void SetSnap(uint64_t collection, uint64_t stackLoc, std::shared_ptr<Stack> stack);
 	void ClearSnap();
 
 	bool IsSnap();
@@ -152,7 +152,7 @@ private:
 
 	uint64_t m_DraggingSnapCollection;
 	uint64_t m_DraggingSnapStackLoc;
-	Stack* m_DraggingSnapStack;
+	std::shared_ptr<Stack> m_DraggingSnapStack;
 
 	bool m_DraggingSnap;
 
@@ -161,7 +161,7 @@ private:
 	//////////////////////////////////////////////////////////
 
 	std::vector<bool> m_CollectionVanity;
-	std::vector<Collection*> m_Collections;
+	std::vector<std::shared_ptr<Collection>> m_Collections;
 
 	//glm::vec<2, int32_t> m_innerPosition;
 	//sf::View m_view;

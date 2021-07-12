@@ -12,11 +12,11 @@ class IBoundedParent
 {
 public:
 	/// Sets default bounds.
-	IBoundedParent(IPositionable<int32_t>* positionable, ISizeable<int32_t>* sizeable);
+	IBoundedParent(IPositionable<2, int32_t>* positionable, ISizeable<int32_t>* sizeable);
 
 	/// Sets positionable.
 	/// \param Positionable of parent.
-	void SetPositionable(IPositionable<int32_t>* positionable);
+	void SetPositionable(IPositionable<2, int32_t>* positionable);
 
 	/// Sets sizeable.
 	/// \param Sizeable of parent.
@@ -24,14 +24,14 @@ public:
 
 	/// Gets positionable.
 	/// \return Positionable of parent.
-	IPositionable<int32_t>* GetPositionable();
+	IPositionable<2, int32_t>* GetPositionable();
 
 	/// Gets sizeable.
 	/// \return Sizeable of parent.
 	ISizeable<int32_t>* GetSizeable();
 protected:
 	/// Parent positionable.
-	IPositionable<int32_t>* m_Positionable;
+	IPositionable<2, int32_t>* m_Positionable;
 
 	/// Parent sizeable.
 	ISizeable<int32_t>* m_Sizeable;

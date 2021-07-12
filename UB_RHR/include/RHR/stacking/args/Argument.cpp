@@ -1,7 +1,8 @@
 #include "Argument.hpp"
 
-Argument::Argument()
-	:m_Mode(BlockArgumentVariableMode::RAW)//, m_Next(false)
+Argument::Argument(const Color& blockColor)
+	: m_Mode(BlockArgumentVariableMode::RAW)//, m_Next(false)
+	, m_BlockColor(blockColor)
 {
 	
 }

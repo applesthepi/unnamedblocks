@@ -44,11 +44,11 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	uint64_t functionMain = 0;
 	bool functionMainFound = false;
 
-	std::vector<Stack*> stacks;
+	std::vector<std::shared_ptr<Stack>> stacks;
 
 	for (uint64_t i = 0; i < PreProcessor::GetPlaneCopy()->GetCollections().size(); i++)
 	{
-		const std::vector<Stack*>& colStacks = PreProcessor::GetPlaneCopy()->GetCollections()[i]->GetStacks();
+		const std::vector<std::shared_ptr<Stack>>& colStacks = PreProcessor::GetPlaneCopy()->GetCollections()[i]->GetStacks();
 
 		for (uint64_t a = 0; a < colStacks.size(); a++)
 			stacks.push_back(colStacks[a]);

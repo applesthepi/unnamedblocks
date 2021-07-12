@@ -11,7 +11,7 @@
 class ArgumentText : public Argument
 {
 public:
-	ArgumentText();
+	ArgumentText(const Color& color);
 
 	/// How to interpret the data.
 	/// \return Type of argument.
@@ -37,6 +37,8 @@ private:
 	/// Runs every frame before rendering.
 	/// \param Seconds since last frame.
 	void OnFrameUpdate(double deltaTime) override;
+
+	void PostPositionUpdate() override;
 
 	/// Sets data. Data of the argument is stored as a string.
 	void OnSetData() override;

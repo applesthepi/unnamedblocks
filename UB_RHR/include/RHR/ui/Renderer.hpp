@@ -82,6 +82,14 @@ public:
 	static VkPipeline UIPipeline;
 	static VkPipeline UITexturePipeline;
 
+	static uint32_t DepthBackground;
+	static uint32_t DepthPlane;
+	static uint32_t DepthCollection;
+	static uint32_t DepthStack;
+	static uint32_t DepthBlock;
+	static uint32_t DepthArgument;
+	static uint32_t DepthArgumentText;
+
 #ifdef NDEBUG
 	static const bool EnableValidationLayers = false;
 #else

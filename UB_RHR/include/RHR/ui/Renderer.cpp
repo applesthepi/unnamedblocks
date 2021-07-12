@@ -1029,6 +1029,14 @@ VkPipelineLayout Renderer::UITexturePipelineLayout;
 VkPipeline Renderer::UIPipeline;
 VkPipeline Renderer::UITexturePipeline;
 
+uint32_t Renderer::DepthBackground = 100;
+uint32_t Renderer::DepthPlane = 95;
+uint32_t Renderer::DepthCollection = 90;
+uint32_t Renderer::DepthStack = 85;
+uint32_t Renderer::DepthBlock = 80;
+uint32_t Renderer::DepthArgument = 75;
+uint32_t Renderer::DepthArgumentText = 70;
+
 std::vector<std::weak_ptr<IRenderable>> Renderer::m_DirtyRenderable;
 std::vector<std::weak_ptr<vui::RenderLayer>> Renderer::m_Layers;
 std::shared_mutex Renderer::m_DirtyMutex;

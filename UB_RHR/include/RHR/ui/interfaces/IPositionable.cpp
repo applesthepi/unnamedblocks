@@ -1,15 +1,15 @@
 #include "IPositionable.hpp"
 
-template <typename T>
-IPositionable<T>::IPositionable()
-	: m_Position(glm::vec<2, T>())
-	, m_SuperOffset(glm::vec<2, T>())
+template <size_t S, typename T>
+IPositionable<S, T>::IPositionable()
+	: m_Position(glm::vec<S, T>())
+	, m_SuperOffset(glm::vec<S, T>())
 {
 
 }
 
-template <typename T>
-void IPositionable<T>::SetPosition(const glm::vec<2, T>& position)
+template <size_t S, typename T>
+void IPositionable<S, T>::SetPosition(const glm::vec<S, T>& position)
 {
 	if (PrePositionUpdate(position, m_SuperOffset))
 	{
@@ -18,8 +18,8 @@ void IPositionable<T>::SetPosition(const glm::vec<2, T>& position)
 	}
 }
 
-template <typename T>
-void IPositionable<T>::SetSuperOffset(const glm::vec<2, T>& offset)
+template <size_t S, typename T>
+void IPositionable<S, T>::SetSuperOffset(const glm::vec<S, T>& offset)
 {
 	if (PrePositionUpdate(m_Position, offset))
 	{
@@ -28,47 +28,50 @@ void IPositionable<T>::SetSuperOffset(const glm::vec<2, T>& offset)
 	}
 }
 
-template <typename T>
-glm::vec<2, T> IPositionable<T>::GetPosition()
+template <size_t S, typename T>
+glm::vec<S, T> IPositionable<S, T>::GetPosition()
 {
 	PrePositionPull();
 	return m_Position;
 }
 
-template <typename T>
-glm::vec<2, T> IPositionable<T>::GetSuperOffset()
+template <size_t S, typename T>
+glm::vec<S, T> IPositionable<S, T>::GetSuperOffset()
 {
 	PrePositionPull();
 	return m_Position;
 }
 
-template <typename T>
-bool IPositionable<T>::PrePositionUpdate(const glm::vec<2, T>& position, const glm::vec<2, T>& offset)
+template <size_t S, typename T>
+bool IPositionable<S, T>::PrePositionUpdate(const glm::vec<S, T>& position, const glm::vec<S, T>& offset)
 {
 	return true;
 }
 
-template <typename T>
-void IPositionable<T>::PostPositionUpdate()
+template <size_t S, typename T>
+void IPositionable<S, T>::PostPositionUpdate()
 {
 	
 }
 
-template <typename T>
-void IPositionable<T>::PrePositionPull()
+template <size_t S, typename T>
+void IPositionable<S, T>::PrePositionPull()
 {
 
 }
 
-template class IPositionable<int64_t>;
-template class IPositionable<int32_t>;
-template class IPositionable<int16_t>;
-template class IPositionable<int8_t>;
+template class IPositionable<2, int64_t>;
+template class IPositionable<2, int32_t>;
+template class IPositionable<2, int16_t>;
+template class IPositionable<2, int8_t>;
 
-template class IPositionable<uint64_t>;
-template class IPositionable<uint32_t>;
-template class IPositionable<uint16_t>;
-template class IPositionable<uint8_t>;
+template class IPositionable<2, uint64_t>;
+template class IPositionable<2, uint32_t>;
+template class IPositionable<2, uint16_t>;
+template class IPositionable<2, uint8_t>;
 
-template class IPositionable<double>;
-template class IPositionable<float>;
+template class IPositionable<2, double>;
+template class IPositionable<2, float>;
+
+template class IPositionable<3, double>;
+template class IPositionable<3, float>;

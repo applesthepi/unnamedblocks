@@ -14,7 +14,7 @@
 namespace vui
 {
 
-class RenderRectangle : public IRenderable, public IPositionable<int32_t>, public ISizeable<int32_t>, public IEnableable, public IColorable
+class RenderRectangle : public IRenderable, public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IEnableable, public IColorable
 {
 public:
 	RenderRectangle();
