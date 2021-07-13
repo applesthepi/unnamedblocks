@@ -39,7 +39,7 @@ template <size_t S, typename T>
 glm::vec<S, T> IPositionable<S, T>::GetSuperOffset()
 {
 	PrePositionPull();
-	return m_Position;
+	return m_SuperOffset;
 }
 
 template <size_t S, typename T>

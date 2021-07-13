@@ -27,6 +27,8 @@ void Stack::AddBlock(std::shared_ptr<Block> block)
 	block->SetPosition({ 0, Block::Height * m_blocks.size() });
 	block->SetSuperOffset(m_Position + m_SuperOffset);
 	m_blocks.push_back(block);
+
+	UpdateSize();
 }
 
 void Stack::AddBlocks(const std::vector<std::shared_ptr<Block>>& blocks)
@@ -40,6 +42,8 @@ void Stack::AddBlocks(const std::vector<std::shared_ptr<Block>>& blocks)
 		blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
 		m_blocks.push_back(blocks[i]);
 	}
+
+	UpdateSize();
 }
 
 void Stack::InsertBlocks(const std::vector<std::shared_ptr<Block>>& blocks, uint64_t idx)
@@ -52,6 +56,7 @@ void Stack::InsertBlocks(const std::vector<std::shared_ptr<Block>>& blocks, uint
 	}
 
 	m_blocks.insert(m_blocks.begin() + idx, blocks.begin(), blocks.end());
+	UpdateSize();
 }
 
 uint64_t Stack::GetWidestBlock()
@@ -76,6 +81,13 @@ void Stack::RemoveBlock(uint64_t idx)
 		m_blocks[i]->SetPosition({ 0, Block::Height * i });
 		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
 	}
+
+	UpdateSize();
+}
+
+void Stack::UpdateSize()
+{
+	SetSize({ GetWidestBlock(), m_blocks.size() * Block::Height });
 }
 
 const std::vector<std::shared_ptr<Block>>& Stack::GetBlocks()

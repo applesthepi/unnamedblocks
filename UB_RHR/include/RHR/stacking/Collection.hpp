@@ -47,6 +47,9 @@ private:
 	void OnUpdateBuffers() override;
 	void OnReloadSwapChain() override;
 	void PostPositionUpdate() override;
+	void PostSizeUpdate() override;
 
 	std::vector<std::shared_ptr<Stack>> m_stacks;
+
+	std::shared_ptr<vui::RenderRectangle> m_Background;
 };

@@ -113,6 +113,9 @@ void vui::RenderFrame::AddContent(std::weak_ptr<IRenderable>&& renderable, std::
 			m_Space = PlaneSpace::HORIZONTAL;
 	}
 
+	if (auto weak = positionable.lock())
+		weak->SetSuperOffset(m_Position + m_SuperOffset);
+
 	if (cardinal == LocalCardinal::UP && m_Space == PlaneSpace::VERTICAL)
 		m_Content.insert(m_Content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable) });
 	else if (cardinal == LocalCardinal::DOWN && m_Space == PlaneSpace::VERTICAL)

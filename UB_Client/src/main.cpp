@@ -589,13 +589,33 @@ int main()
 
 	std::shared_ptr<Collection> testCollection = std::make_shared<Collection>();
 	testCollection->SetWeak(testCollection);
-	std::shared_ptr<Stack> testStack = std::make_shared<Stack>();
-	testStack->SetWeak(testStack);
-	std::shared_ptr<Block> testBlock = std::make_shared<Block>("vin_main");
-	testBlock->SetWeak(testBlock);
+	testCollection->SetPosition({ 200, 200 });
+	testCollection->SetSize({ 500, 300 });
 
-	testStack->AddBlock(testBlock);
-	testCollection->AddStack(testStack);
+	std::shared_ptr<Stack> testStack1 = std::make_shared<Stack>();
+	testStack1->SetWeak(testStack1);
+	testStack1->SetPosition({ 0, 0 });
+	
+	std::shared_ptr<Stack> testStack2 = std::make_shared<Stack>();
+	testStack2->SetWeak(testStack2);
+	testStack2->SetPosition({ 300, 300 });
+
+	for (uint8_t i = 0; i < 5; i++)
+	{
+		std::shared_ptr<Block> testBlock = std::make_shared<Block>("vin_main");
+		testBlock->SetWeak(testBlock);
+		testStack1->AddBlock(testBlock);
+	}
+
+	for (uint8_t i = 0; i < 5; i++)
+	{
+		std::shared_ptr<Block> testBlock = std::make_shared<Block>("vin_main");
+		testBlock->SetWeak(testBlock);
+		testStack2->AddBlock(testBlock);
+	}
+
+	testCollection->AddStack(testStack1);
+	testCollection->AddStack(testStack2);
 	Plane::PrimaryPlane->AddCollection(testCollection, true);
 
 	size_t currentFrame = 0;

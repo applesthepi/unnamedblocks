@@ -5,15 +5,14 @@
 #include "ui/interfaces/IPositionable.hpp"
 #include "ui/interfaces/IRenderable.hpp"
 #include "ui/interfaces/IUpdatable.hpp"
+#include "ui/interfaces/ISizeable.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
-class Stack : public IPositionable<2, int32_t>, public IRenderable, public IUpdatable
+class Stack : public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable
 {
 public:
 	Stack();
-	//Stack(const Stack& stack);
-
 	~Stack();
 
 	void AddBlock(std::shared_ptr<Block> block);
@@ -23,7 +22,7 @@ public:
 	uint64_t GetWidestBlock();
 
 	void RemoveBlock(uint64_t idx);
-
+	void UpdateSize();
 	const std::vector<std::shared_ptr<Block>>& GetBlocks();
 	void FrameUpdate(double deltaTime) override;
 private:
