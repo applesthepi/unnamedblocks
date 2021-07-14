@@ -68,8 +68,8 @@ public:
 	static std::shared_ptr<Plane> ToolbarPlane;
 //protected:
 	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-private:
 	void FrameUpdate(double deltaTime) override;
+private:
 	void OnRender() override;
 	void OnUpdateBuffers() override;
 	void OnReloadSwapChain() override;
@@ -143,14 +143,14 @@ private:
 	// Snapping
 	//////////////////////////////////////////////////////////
 
-	void SetSnap(uint64_t collection, uint64_t stackLoc, std::shared_ptr<Stack> stack);
+	void SetSnap(std::shared_ptr<Collection> collection, uint64_t stackLoc, std::shared_ptr<Stack> stack);
 	void ClearSnap();
 
 	bool IsSnap();
 
 	vui::RenderRectangle m_DraggingShape;
 
-	uint64_t m_DraggingSnapCollection;
+	std::shared_ptr<Collection> m_DraggingSnapCollection;
 	uint64_t m_DraggingSnapStackLoc;
 	std::shared_ptr<Stack> m_DraggingSnapStack;
 

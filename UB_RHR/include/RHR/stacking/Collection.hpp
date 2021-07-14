@@ -34,8 +34,10 @@ public:
 
 	~Collection();
 
-	void AddStack(std::shared_ptr<Stack> stack);
-	void AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks);
+	void AddStack(std::shared_ptr<Stack> stack, bool autoSize = true);
+	void AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks, bool autoSize = true);
+	void SizeToStacks(bool offsetStacks = true, bool usePadding = true);
+	void CheckBounds();
 
 	void RemoveStack(uint64_t idx);
 	void RemoveAll();

@@ -28,44 +28,47 @@ Collection::~Collection()
 	//	delete m_stacks[i];
 }
 
-void Collection::AddStack(std::shared_ptr<Stack> stack)
+void Collection::AddStack(std::shared_ptr<Stack> stack, bool autoSize)
 {
 	stack->SetSuperOffset(m_Position + m_SuperOffset);
 	m_stacks.push_back(stack);
 
-	glm::vec<2, int32_t> size = GetSize();
-	glm::vec<2, int32_t> position = GetPosition();
-
-	if (size.x < COLLECTION_EMPTY_SPACE)
-		size.x = COLLECTION_EMPTY_SPACE;
-
-	if (size.y < COLLECTION_EMPTY_SPACE)
-		size.y = COLLECTION_EMPTY_SPACE;
-
-	if (stack->GetPosition().x + stack->GetWidestBlock() > size.x - COLLECTION_EMPTY_SPACE)
-		size.x = stack->GetPosition().x + stack->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
-
-	if (stack->GetPosition().x < COLLECTION_EMPTY_SPACE)
+	if (autoSize)
 	{
-		int32_t diff = COLLECTION_EMPTY_SPACE - stack->GetPosition().x;
-		position.x -= diff;
-		size.x += diff;
-		stack->SetPosition(stack->GetPosition() + glm::vec<2, int32_t>(diff, 0));
+		glm::vec<2, int32_t> size = GetSize();
+		glm::vec<2, int32_t> position = GetPosition();
+
+		if (size.x < COLLECTION_EMPTY_SPACE)
+			size.x = COLLECTION_EMPTY_SPACE;
+
+		if (size.y < COLLECTION_EMPTY_SPACE)
+			size.y = COLLECTION_EMPTY_SPACE;
+
+		if (stack->GetPosition().x + stack->GetWidestBlock() > size.x - COLLECTION_EMPTY_SPACE)
+			size.x = stack->GetPosition().x + stack->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
+
+		if (stack->GetPosition().x < COLLECTION_EMPTY_SPACE)
+		{
+			int32_t diff = COLLECTION_EMPTY_SPACE - stack->GetPosition().x;
+			position.x -= diff;
+			size.x += diff;
+			stack->SetPosition(stack->GetPosition() + glm::vec<2, int32_t>(diff, 0));
+		}
+
+		if (stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) > size.y - COLLECTION_EMPTY_SPACE)
+			size.y = stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
+
+		if (stack->GetPosition().y < COLLECTION_EMPTY_SPACE)
+		{
+			int32_t diff = COLLECTION_EMPTY_SPACE - stack->GetPosition().y;
+			position.y -= diff;
+			size.y += diff;
+			stack->SetPosition(stack->GetPosition() + glm::vec<2, int32_t>(0, diff));
+		}
+
+		SetSize(size);
+		SetPosition(position);
 	}
-
-	if (stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) > size.y - COLLECTION_EMPTY_SPACE)
-		size.y = stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
-
-	if (stack->GetPosition().y < COLLECTION_EMPTY_SPACE)
-	{
-		int32_t diff = COLLECTION_EMPTY_SPACE - stack->GetPosition().y;
-		position.y -= diff;
-		size.y += diff;
-		stack->SetPosition(stack->GetPosition() + glm::vec<2, int32_t>(0, diff));
-	}
-
-	SetSize(size);
-	SetPosition(position);
 
 	//glm::vec<2, int32_t> maxBounds = /*m_Position + m_SuperOffset + */m_Size;
 	//glm::vec<2, int32_t> queryPosition = stack->GetPosition()/* + stack->GetSuperOffset()*/;
@@ -76,7 +79,7 @@ void Collection::AddStack(std::shared_ptr<Stack> stack)
 	//	SetSize(queryPosition - m_Position - m_SuperOffset + 100);
 }
 
-void Collection::AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks)
+void Collection::AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks, bool autoSize)
 {
 	if (m_stacks.size() + stacks.size() >= m_stacks.capacity())
 		m_stacks.reserve((uint64_t)std::ceil((float)(m_stacks.size() + stacks.size()) * 1.5f + 10.0f));
@@ -86,31 +89,34 @@ void Collection::AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks)
 		stacks[i]->SetSuperOffset(m_Position + m_SuperOffset);
 		m_stacks.push_back(stacks[i]);
 
-		glm::vec<2, int32_t> size = GetSize();
-		glm::vec<2, int32_t> position = GetPosition();
-
-		if (stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() > size.x - COLLECTION_EMPTY_SPACE)
-			size.x = stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
-		
-		if (stacks[i]->GetPosition().x < COLLECTION_EMPTY_SPACE)
+		if (autoSize)
 		{
-			int32_t diff = COLLECTION_EMPTY_SPACE - stacks[i]->GetPosition().x;
-			position.x -= diff;
-			size.x += diff;
-		}
+			glm::vec<2, int32_t> size = GetSize();
+			glm::vec<2, int32_t> position = GetPosition();
 
-		if (stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) > size.y - COLLECTION_EMPTY_SPACE)
-			size.y = stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
-		
-		if (stacks[i]->GetPosition().y < COLLECTION_EMPTY_SPACE)
-		{
-			int32_t diff = COLLECTION_EMPTY_SPACE - stacks[i]->GetPosition().y;
-			position.y -= diff;
-			size.y += diff;
-		}
+			if (stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() > size.x - COLLECTION_EMPTY_SPACE)
+				size.x = stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
 
-		SetSize(size);
-		SetPosition(position);
+			if (stacks[i]->GetPosition().x < COLLECTION_EMPTY_SPACE)
+			{
+				int32_t diff = COLLECTION_EMPTY_SPACE - stacks[i]->GetPosition().x;
+				position.x -= diff;
+				size.x += diff;
+			}
+
+			if (stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) > size.y - COLLECTION_EMPTY_SPACE)
+				size.y = stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
+
+			if (stacks[i]->GetPosition().y < COLLECTION_EMPTY_SPACE)
+			{
+				int32_t diff = COLLECTION_EMPTY_SPACE - stacks[i]->GetPosition().y;
+				position.y -= diff;
+				size.y += diff;
+			}
+
+			SetSize(size);
+			SetPosition(position);
+		}
 
 		//glm::vec<2, int32_t> maxBounds = m_Position + m_SuperOffset + m_Size;
 		//glm::vec<2, int32_t> queryPosition = stacks[i]->GetPosition();
@@ -119,6 +125,102 @@ void Collection::AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks)
 
 		//if (queryPosition.x > maxBounds.x || queryPosition.y > maxBounds.y)
 		//	SetSize(queryPosition - m_Position - m_SuperOffset + 100);
+	}
+}
+
+void Collection::SizeToStacks(bool offsetStacks, bool usePadding)
+{
+	// Config
+
+	if (m_stacks.size() == 0)
+		return;
+
+	int32_t padding = 0;
+
+	if (usePadding)
+		padding = COLLECTION_EMPTY_SPACE;
+
+	glm::vec<2, int32_t> earliestPosition = m_stacks.front()->GetPosition();
+
+	for (auto& stack : m_stacks)
+	{
+		if (stack->GetPosition().x < earliestPosition.x)
+			earliestPosition.x = stack->GetPosition().x;
+
+		if (stack->GetPosition().y < earliestPosition.y)
+			earliestPosition.y = stack->GetPosition().y;
+	}
+
+	// Position
+
+	if (offsetStacks)
+	{
+		glm::vec<2, int32_t> shift = glm::vec<2, int32_t>(padding, padding) - earliestPosition;
+
+		for (auto& stack : m_stacks)
+		{
+			stack->SetPosition(stack->GetPosition() + shift);
+		}
+	}
+	else
+	{
+		glm::vec<2, int32_t> shift = earliestPosition - glm::vec<2, int32_t>(padding, padding);
+		SetPosition(GetPosition() + shift);
+
+		for (auto& stack : m_stacks)
+		{
+			stack->SetPosition(stack->GetPosition() - shift);
+		}
+	}
+
+	glm::vec<2, int32_t> latestPosition = m_stacks.front()->GetPosition();
+
+	for (auto& stack : m_stacks)
+	{
+		glm::vec<2, int32_t> stackLastBounds = stack->GetPosition() + stack->GetSize();
+
+		if (stackLastBounds.x > latestPosition.x)
+			latestPosition.x = stackLastBounds.x;
+
+		if (stackLastBounds.y > latestPosition.y)
+			latestPosition.y = stackLastBounds.y;
+	}
+
+	// Size
+
+	glm::vec<2, int32_t> size = latestPosition + glm::vec<2, int32_t>(padding, padding);
+	SetSize(size);
+}
+
+void Collection::CheckBounds()
+{
+	for (size_t i = 0; i < m_stacks.size(); i++)
+	{
+		glm::vec<2, int32_t> size = GetSize();
+		glm::vec<2, int32_t> position = GetPosition();
+
+		if (m_stacks[i]->GetPosition().x + m_stacks[i]->GetWidestBlock() > size.x - COLLECTION_EMPTY_SPACE)
+			size.x = m_stacks[i]->GetPosition().x + m_stacks[i]->GetWidestBlock() + COLLECTION_EMPTY_SPACE;
+
+		if (m_stacks[i]->GetPosition().x < COLLECTION_EMPTY_SPACE)
+		{
+			int32_t diff = COLLECTION_EMPTY_SPACE - m_stacks[i]->GetPosition().x;
+			position.x -= diff;
+			size.x += diff;
+		}
+
+		if (m_stacks[i]->GetPosition().y + (m_stacks[i]->GetBlocks().size() * Block::Height) > size.y - COLLECTION_EMPTY_SPACE)
+			size.y = m_stacks[i]->GetPosition().y + (m_stacks[i]->GetBlocks().size() * Block::Height) + COLLECTION_EMPTY_SPACE;
+
+		if (m_stacks[i]->GetPosition().y < COLLECTION_EMPTY_SPACE)
+		{
+			int32_t diff = COLLECTION_EMPTY_SPACE - m_stacks[i]->GetPosition().y;
+			position.y -= diff;
+			size.y += diff;
+		}
+
+		SetSize(size);
+		SetPosition(position);
 	}
 }
 

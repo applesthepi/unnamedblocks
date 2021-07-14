@@ -631,6 +631,11 @@ int main()
 	std::vector<double> fpsAdverage;
 	bool reloadRenderObjects = false;
 
+	//for (auto block : BlockRegistry::GetRegistry().GetBlocks())
+	//{
+	//	Plane::ToolbarPlane
+	//}
+
 	Renderer::InitializeWindow();
 
 	// Create Client

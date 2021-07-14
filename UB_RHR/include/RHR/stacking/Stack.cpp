@@ -48,14 +48,19 @@ void Stack::AddBlocks(const std::vector<std::shared_ptr<Block>>& blocks)
 
 void Stack::InsertBlocks(const std::vector<std::shared_ptr<Block>>& blocks, uint64_t idx)
 {
-	for (uint64_t i = 0; i < blocks.size(); i++)
+	for (size_t i = 0; i < blocks.size(); i++)
 	{
-		blocks[i]->SetPosition({ 0, Block::Height * (m_blocks.size() + i) });
+		blocks[i]->SetPosition({ 0, Block::Height * (idx + i) });
 		blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
-		m_blocks.push_back(blocks[i]);
+		m_blocks.insert(m_blocks.begin() + idx + i, blocks[i]);
 	}
 
-	m_blocks.insert(m_blocks.begin() + idx, blocks.begin(), blocks.end());
+	for (size_t i = idx + blocks.size(); i < m_blocks.size(); i++)
+	{
+		m_blocks[i]->SetPosition({ 0, Block::Height * i });
+		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+	}
+
 	UpdateSize();
 }
 
@@ -76,7 +81,7 @@ void Stack::RemoveBlock(uint64_t idx)
 {
 	m_blocks.erase(m_blocks.begin() + idx);
 
-	for (size_t i = idx; i < m_blocks.size(); i++)
+	for (size_t i = 0; i < m_blocks.size(); i++)
 	{
 		m_blocks[i]->SetPosition({ 0, Block::Height * i });
 		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
@@ -121,6 +126,9 @@ void Stack::OnReloadSwapChain()
 
 void Stack::PostPositionUpdate()
 {
-	for (auto& block : m_blocks)
-		block->SetSuperOffset(m_Position + m_SuperOffset);
+	for (size_t i = 0; i < m_blocks.size(); i++)
+	{
+		m_blocks[i]->SetPosition({ 0, Block::Height * i });
+		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+	}
 }

@@ -193,6 +193,9 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 
 	// Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
 	// diagnosticsTime = std::chrono::high_resolution_clock::now();
+	Plane::PrimaryPlane->FrameUpdate(deltaTime);
+	Plane::ToolbarPlane->FrameUpdate(deltaTime);
+
 	ProcessDirty();
 	// Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
 	// diagnosticsTime = std::chrono::high_resolution_clock::now();
