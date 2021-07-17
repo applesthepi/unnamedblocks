@@ -22,4 +22,7 @@ public:
 protected:
 	/// Color.
 	Color m_Color;
+
+	/// Gets called when the color is changed.
+	virtual void PostColorUpdate();
 };

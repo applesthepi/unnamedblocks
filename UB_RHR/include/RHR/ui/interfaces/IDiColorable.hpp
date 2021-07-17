@@ -28,6 +28,9 @@ public:
 	/// \return Secondary color.
 	const Color& GetColorSecondary();
 protected:
+	/// Gets called when the color is changed.
+	virtual void PostColorUpdate();
+
 	/// Color.
 	Color m_ColorPrimary;
 	Color m_ColorSecondary;

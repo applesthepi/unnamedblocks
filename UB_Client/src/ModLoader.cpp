@@ -118,7 +118,7 @@ ModLoaderStatus run()
 		ModDataBaked baked = (*mods)[i].Data->Bake();
 
 		for (uint32_t j = 0; j < baked.CategoriesLength; j++)
-			BlockRegistry::GetRegistry().RegisterCatagory(baked.Categories[j]);
+			BlockRegistry::GetRegistry().RegisterCatagory(baked.Categories[j], mods->at(i).Data->ModUnlocalizedName);
 
 		for (uint32_t j = 0; j < baked.BlocksLength; j++)
 			BlockRegistry::GetRegistry().RegisterBlock(baked.Blocks[j], mods->at(i).Data->ModUnlocalizedName);

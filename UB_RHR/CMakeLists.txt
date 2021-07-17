@@ -69,6 +69,8 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Vertex.cpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.hpp"
 	#"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/Color.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderButton.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/RenderButton.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IPositionable.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/RHR/ui/interfaces/IPositionable.cpp"

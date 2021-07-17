@@ -28,6 +28,12 @@ public:
 	/// Gets color as a 4 component uint8_t (0 - 255) vector.
 	/// \return Color.
 	glm::vec<4, uint8_t> GetU8();
+
+	static Color BackgroundColor1;
+	static Color BackgroundColor2;
+	static Color BackgroundColor3;
+	static Color TextPrimaryColor;
+	static Color TextSecondaryColor;
 private:
 	/// Color stored as a 4 component normalized (0.0 - 1.0) vector.
 	glm::vec<4, float> m_Color;

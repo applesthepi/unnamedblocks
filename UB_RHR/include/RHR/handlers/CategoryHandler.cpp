@@ -10,6 +10,9 @@
 #include <windows.h>
 #include <shellapi.h>
 #endif
+
+
+
 /*
 CategoryHandler::CategoryHandler()
 {
@@ -505,3 +508,83 @@ void CategoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) co
 
 CategoryHandler* CategoryHandler::m_handler;
 */
+
+void CategoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
+{
+	m_RenderFrame = renderFrame;
+	m_RenderFrame->SetPadding(50);
+	const std::vector<CatagoryInfo>& infos = BlockRegistry::GetRegistry().GetCategories();
+
+	std::vector<std::string> binnedMods;
+	std::vector<std::vector<ModCatagory*>> binnedCatagories;
+
+	bool found = false;
+
+	for (auto& info : infos)
+	{
+		for (size_t i = 0; i < binnedMods.size(); i++)
+		{
+			if (info.CatagoryModUnlocalizedName == binnedMods[i])
+			{
+				binnedCatagories[i].push_back(info.CatagoryModCatagory);
+				found = true;
+			}
+		}
+
+		if (!found)
+		{
+			binnedMods.push_back(info.CatagoryModUnlocalizedName);
+			binnedCatagories.push_back(std::vector<ModCatagory*>());
+			binnedCatagories.back().push_back(info.CatagoryModCatagory);
+		}
+		else
+			found = false;
+	}
+
+	m_ModGroups.reserve(binnedMods.size());
+
+	int32_t offset = Block::Padding / 2;
+
+	for (size_t i = 0; i < binnedMods.size(); i++)
+	{
+		offset += Block::Padding / 2;
+
+ 		ModGroup group = ModGroup(Color::TextPrimaryColor, Color::BackgroundColor3);
+		group.ModCategories.reserve(binnedCatagories[i].size());
+		group.ModButton->SetPosition({ Block::Padding, offset });
+		m_RenderFrame->AddContent(group.ModButton, std::weak_ptr<IUpdatable>(), group.ModButton, group.ModButton, vui::LocalCardinal::DOWN);
+
+		offset += Block::Padding / 2;
+ 		
+		for (auto& catagory : binnedCatagories[i])
+		{
+			std::shared_ptr<vui::RenderButton> button = std::make_shared<vui::RenderButton>(Color::TextPrimaryColor, Color::BackgroundColor3);
+			button->SetWeak(button);
+			//button->SetPosition({ Block::Padding / 2, offset });
+			button->SetPosition({ 0, 0 });
+			button->SetSize({ 200, 30 });
+			button->SetColorSecondary(catagory->GetColor());
+			m_RenderFrame->AddContent(button, std::weak_ptr<IUpdatable>(), button, button, vui::LocalCardinal::DOWN);
+
+			offset += Block::Padding / 2 + button->GetSize().y;
+			group.ModCategories.push_back(std::move(button));
+		}
+
+		m_ModGroups.push_back(std::move(group));
+	}
+}
+
+void CategoryHandler::Render()
+{
+	for (auto& group : m_ModGroups)
+	{
+		group.ModButton->Render();
+
+		for (auto& catagory : group.ModCategories)
+			catagory->Render();
+	}
+}
+
+std::vector<CategoryHandler::ModGroup> CategoryHandler::m_ModGroups;
+
+std::shared_ptr<vui::RenderFrame> CategoryHandler::m_RenderFrame;

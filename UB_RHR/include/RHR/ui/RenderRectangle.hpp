@@ -19,10 +19,6 @@ class RenderRectangle : public IRenderable, public IPositionable<2, int32_t>, pu
 public:
 	RenderRectangle();
 
-	/// REQUIRED Sets weak.
-	/// \param Weak ptr of itself.
-	//void SetWeak(std::weak_ptr<RenderRectangle>&& weak);
-
 	/// Sets texture of rectangle.
 	/// \param Texture path.
 	void SetTexture(const std::string& texture);
@@ -38,6 +34,8 @@ private:
 	void OnReloadSwapChain() override;
 
 	void PostPositionUpdate() override;
+
+	void PostColorUpdate() override;
 
 	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<RenderObject> m_RenderObject;

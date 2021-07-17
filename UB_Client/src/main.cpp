@@ -141,216 +141,35 @@ static void AsyncSetup()
 
 int main()
 {
-	// ==============================================================================================================================
-	// ============== Initialization
-	// ==============================================================================================================================
+	//Color testColor = Color().FromU8({ 10, 10, 10, 255 });
+	//auto testColorN = testColor.GetNormalized();
+	//std::cout << testColorN.r << ", " << testColorN.g << ", " << testColorN.b << ", " << testColorN.a << std::endl;
 
 	// Logger::Info("CLIENT  - " std::string(VER_CLIENT));
 	// Logger::Info("SERVER  - " std::string(VER_SERVER));
 
-#if MODS
-	Logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
-#endif
+// #if MODS
+// 	Logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
+// #endif
 
-#if BETA
-	Logger::Warn("this is a beta build! There is likely tons of bugs and some critical bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
-#endif
+// #if BETA
+// 	Logger::Warn("this is a beta build! There is likely bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
+// #endif
 
 #if LINUX
 	// TODO: Proper wayland support
 	XInitThreads();
 #endif
+
 	Logger::Info("all unsaved progress will be lost if this window is closed");
-
-	//ShaderRegistry::ReloadAllShaders();
-
-	// Window Setup
-
-	// sf::RenderWindow window;
-	// window.create(sf::VideoMode(1280, 720, 32), UnnamedBlocksVersion, sf::Style::Default, sf::ContextSettings(0, 0, 4));
-	// window.setFramerateLimit(60);
-
-	// Initialization
-
-	// Global::LoadDefaults(); //must be first
-	// MessageHandler::Initialize();
-	InputHandler::Initialization();
-	// PreProcessor::Initialize();
-	// Intrinsics::Initialize();
-
-	// ==============================================================================================================================
-	// ============== Intro Animation
-	// ==============================================================================================================================
-	// #if TRUE
-	// 	{
-	// 		sf::Http http("kikoho.ddns.net");
-	// 		sf::Http::Response responseApple = http.sendRequest(sf::Http::Request("applesthepi.png"), sf::milliseconds(200));
-
-	// 		sf::Image imgApples;
-	// 		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
-	// 		{
-	// 			const std::string &bodyApple = responseApple.getBody(); // expecting 128
-	// 			imgApples.loadFromMemory(bodyApple.c_str(), bodyApple.length());
-	// 			imgApples.saveToFile("res/applesthepi.png");
-	// 		}
-	// 		else
-	// 			imgApples.loadFromFile("res/applesthepi.png");
-
-	// 		sf::Http::Response responseEmp = http.sendRequest(sf::Http::Request("The-Emperor10.png"), sf::milliseconds(200));
-
-	// 		sf::Image imgEmp;
-	// 		if (responseApple.getStatus() == sf::Http::Response::Status::Ok)
-	// 		{
-	// 			const std::string &bodyEmp = responseEmp.getBody(); // expecting 128
-	// 			imgEmp.loadFromMemory(bodyEmp.c_str(), bodyEmp.length());
-	// 			imgEmp.saveToFile("res/emp.png");
-	// 		}
-	// 		else
-	// 			imgEmp.loadFromFile("res/emp.png");
-
-	// 		sf::Texture txApples;
-	// 		txApples.loadFromImage(imgApples);
-
-	// 		sf::Texture txEmp;
-	// 		txEmp.loadFromImage(imgEmp);
-
-	// 		sf::Text title("Unnamed Blocks", Global::Font, 48);
-	// 		title.setPosition((window.getSize().x / 2.0) - (title.getLocalBounds().width / 2.0), 40);
-	// 		title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
-
-	// 		sf::Sprite spApples(txApples);
-	// 		spApples.setPosition((window.getSize().x / 3.0) - 64, (window.getSize().y / 2.0) - 64);
-
-	// 		sf::Sprite spEmp(txEmp);
-	// 		spEmp.setPosition(((window.getSize().x * 2.0) / 3.0) - 64, (window.getSize().y / 2.0) - 64);
-
-	// 		double txtStartHeight = (window.getSize().y / 2.0) + 200;
-	// 		double txtEndHeight = (window.getSize().y / 2.0) + 70;
-
-	// 		sf::Text txtApples("applesthepi", Global::Font, 24);
-	// 		int32_t xposApples = (window.getSize().x / 3.0) - (txtApples.getLocalBounds().width / 2.0);
-	// 		txtApples.setPosition(xposApples, (window.getSize().y / 2.0) + 70);
-	// 		txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
-
-	// 		sf::Text txtEmp("The-Emperor10", Global::Font, 24);
-	// 		int32_t xposEmp = ((window.getSize().x * 2) / 3.0) - (txtEmp.getLocalBounds().width / 2.0);
-	// 		txtEmp.setPosition(xposEmp, (window.getSize().y / 2.0) + 70);
-	// 		txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
-
-	// 		sf::Text titleGit("github.com/applesthepi/unnamedblocks", Global::Font, 24);
-	// 		titleGit.setPosition((window.getSize().x / 2.0) - (titleGit.getLocalBounds().width / 2.0), window.getSize().y - 50);
-	// 		titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG));
-
-	// 		std::chrono::high_resolution_clock::time_point begin = std::chrono::high_resolution_clock::now();
-
-	// 		bool fading = false;
-	// 		double endTime = 1200;
-	// 		double fadeOffset = 1000;
-
-	// 		while (true)
-	// 		{
-	// 			sf::Event ev;
-
-	// 			while (window.pollEvent(ev))
-	// 			{
-	// 			}
-
-	// 			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
-
-	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
-	// 				break;
-
-	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
-	// 				fading = true;
-
-	// 			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
-
-	// 			// update
-
-	// 			if (fading)
-	// 			{
-	// 				uint8_t alpha = (1.0 - t) * 253;
-
-	// 				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-	// 				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-
-	// 				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-	// 				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-
-	// 				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-	// 				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-	// 			}
-
-	// 			// render
-
-	// 			window.clear(MOD_BACKGROUND_LOW);
-
-	// 			window.draw(title);
-	// 			window.draw(spApples);
-	// 			window.draw(spEmp);
-	// 			window.draw(txtApples);
-	// 			window.draw(txtEmp);
-	// 			window.draw(titleGit);
-
-	// 			window.display();
-	// 		}
-
-	// 		while (true)
-	// 		{
-	// 			sf::Event ev;
-
-	// 			while (window.pollEvent(ev))
-	// 			{
-	// 			}
-
-	// 			std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
-
-	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= endTime)
-	// 				break;
-
-	// 			if (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() >= fadeOffset)
-	// 				fading = true;
-
-	// 			double t = (std::chrono::duration_cast<std::chrono::milliseconds>(now - begin).count() - fadeOffset) / (endTime - fadeOffset);
-
-	// 			// update
-
-	// 			if (fading)
-	// 			{
-	// 				uint8_t alpha = (1.0 - t) * 253;
-
-	// 				title.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-	// 				titleGit.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-
-	// 				txtApples.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-	// 				txtEmp.setFillColor(sf::Color(MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, MOD_BUTTON_TEXT_FG_C, alpha));
-
-	// 				spApples.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-	// 				spEmp.setColor(sf::Color(255, 255, 255, (1.0 - t) * 255));
-	// 			}
-
-	// 			// render
-
-	// 			window.clear(MOD_BACKGROUND_LOW);
-
-	// 			window.display();
-	// 		}
-	// 	}
-	// #endif
-	// ==============================================================================================================================
-	// ============== Program Initialization
-	// ==============================================================================================================================
-
-	run();
 	
-	// Setup
+	// Frames and Layers
 
 	Plane::PrimaryPlane = std::make_shared<Plane>(false);
 	Plane::PrimaryPlane->SetWeak(Plane::PrimaryPlane);
 
 	Plane::ToolbarPlane = std::make_shared<Plane>(true);
 	Plane::ToolbarPlane->SetWeak(Plane::ToolbarPlane);
-
 
 #if 0
 	std::shared_ptr<vui::RenderFrame> frameBase = std::make_shared<vui::RenderFrame>();
@@ -516,7 +335,7 @@ int main()
 
 	std::shared_ptr<vui::RenderRectangle> rectBackground = std::make_shared<vui::RenderRectangle>();
 	rectBackground->SetWeak(rectBackground);
-	rectBackground->SetColor(Color().FromU8({ 30, 30, 30, 255 }));
+	rectBackground->SetColor(Color::BackgroundColor1);
 	rectBackground->SetDepth(Renderer::DepthBackground);
 
 	frameBackground->AddContent(rectBackground, std::weak_ptr<IUpdatable>(), rectBackground, rectBackground, vui::LocalCardinal::RIGHT);
@@ -577,8 +396,8 @@ int main()
 	frameOptions->AddContent(rectOptions, std::weak_ptr<IUpdatable>(), rectOptions, rectOptions, vui::LocalCardinal::RIGHT);
 	rectOptions->SetSizeMax();
 	
-	frameCategories->AddContent(rectCategories, std::weak_ptr<IUpdatable>(), rectCategories, rectCategories, vui::LocalCardinal::RIGHT);
-	rectCategories->SetSizeMax();
+	//frameCategories->AddContent(rectCategories, std::weak_ptr<IUpdatable>(), rectCategories, rectCategories, vui::LocalCardinal::RIGHT);
+	//rectCategories->SetSizeMax();
 
 	framePrimary->AddContent(Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, vui::LocalCardinal::RIGHT);
 	Plane::PrimaryPlane->SetSizeMax();
@@ -586,6 +405,16 @@ int main()
 	Plane::ToolbarPlane->SetSizeMax();
 
 	Renderer::AddLayer(layer);
+
+	// Critical Setup
+
+	InputHandler::Initialization();
+	BlockRegistry::CreateBlockRegistry();
+
+	run();
+	CategoryHandler::Populate(frameCategories);
+
+	// Debug
 
 	std::shared_ptr<Collection> testCollection = std::make_shared<Collection>();
 	testCollection->SetWeak(testCollection);

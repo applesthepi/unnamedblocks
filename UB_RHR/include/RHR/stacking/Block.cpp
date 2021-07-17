@@ -9,11 +9,11 @@
 #include "ui/Renderer.hpp"
 
 Block::Block(const std::string& unlocalizedName)
-	: m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName))
+	: m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName)->BlockModBlock)
 	, m_Background(std::make_shared<vui::RenderRectangle>())
 {
 	m_Size = { 100, Block::Height };
-	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory());
+	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory())->CatagoryModCatagory;
 	m_Background->SetWeak(m_Background);
 	m_Background->SetColor(m_modCategory->GetColor());
 	m_Background->SetDepth(Renderer::DepthBlock);
@@ -133,7 +133,7 @@ void Block::UpdateArguments()
 	std::vector<std::shared_ptr<Argument>> args;
 
 	uint32_t width = Block::Padding;
-	Color argColor = Color().FromNormalized(m_modCategory->GetColor().GetNormalized() * 0.1f);
+	Color argColor = Color().FromNormalized(m_modCategory->GetColor().GetNormalized() * 0.25f);
 
 	for (uint64_t i = 0; i < argumentInit.size(); i++)
 	{

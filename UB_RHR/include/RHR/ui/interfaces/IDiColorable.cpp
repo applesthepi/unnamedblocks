@@ -9,11 +9,13 @@ IDiColorable::IDiColorable(const Color& primary, const Color& secondary)
 void IDiColorable::SetColorPrimary(const Color& primary)
 {
 	m_ColorPrimary = primary;
+	PostColorUpdate();
 }
 
 void IDiColorable::SetColorSecondary(const Color& secondary)
 {
 	m_ColorSecondary = secondary;
+	PostColorUpdate();
 }
 
 const Color& IDiColorable::GetColorPrimary()
@@ -24,4 +26,9 @@ const Color& IDiColorable::GetColorPrimary()
 const Color& IDiColorable::GetColorSecondary()
 {
 	return m_ColorSecondary;
+}
+
+void IDiColorable::PostColorUpdate()
+{
+
 }

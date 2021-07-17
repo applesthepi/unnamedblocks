@@ -69,14 +69,15 @@ void vui::RenderRectangle::OnUpdateBuffers()
 	indices.reserve(6);
 
 	glm::vec<2, int32_t> position = m_Position + m_SuperOffset;
+	glm::vec<3, float> color = { m_Color.GetNormalized().r, m_Color.GetNormalized().g, m_Color.GetNormalized().b };
 
 	// TODO: remove
 	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
 
-	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 0.0f, 0.0f });
-	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 0.0f });
-	Vertex v2 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 1.0f, 1.0f });
-	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, m_Color.GetNormalized(), { 0.0f, 1.0f });
+	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 0.0f });
+	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 0.0f });
+	Vertex v2 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 1.0f });
+	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 1.0f });
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);
@@ -101,5 +102,10 @@ void vui::RenderRectangle::OnReloadSwapChain()
 void vui::RenderRectangle::PostPositionUpdate()
 {
 	//SetSizeMax();// TODO: remove testing
+	MarkDirty();
+}
+
+void vui::RenderRectangle::PostColorUpdate()
+{
 	MarkDirty();
 }

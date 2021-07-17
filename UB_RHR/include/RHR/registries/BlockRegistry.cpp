@@ -1,71 +1,63 @@
 #include "BlockRegistry.hpp"
 
-void BlockRegistry::RegisterCatagory(ModCatagory* catagory)
+void BlockRegistry::RegisterBlock(ModBlock* block, const std::string& modUnlocalizedName)
 {
-	m_catagories.push_back(catagory);
+	m_Blocks.push_back({ block, modUnlocalizedName });
 }
 
-void BlockRegistry::RegisterBlock(ModBlock* block, const std::string& mod)
+void BlockRegistry::RegisterCatagory(ModCatagory* catagory, const std::string& modUnlocalizedName)
 {
-	m_blocks.push_back(block);
-	m_blockMods.push_back(mod);
+	m_Catagories.push_back({ catagory, modUnlocalizedName });
 }
 
-const ModBlock* BlockRegistry::GetBlock(const std::string& unlocalizedName)
+const BlockInfo* BlockRegistry::GetBlock(const std::string& unlocalizedName)
 {
-	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	for (auto& info : m_Blocks)
 	{
-		if (m_blocks[i]->GetUnlocalizedName() == unlocalizedName)
-			return m_blocks[i];
+		if (info.BlockModBlock->GetUnlocalizedName() == unlocalizedName)
+			return &info;
 	}
 
-	for (unsigned int i = 0; i < m_blocks.size(); i++)
+	for (auto& info : m_Blocks)
 	{
-		if (m_blocks[i]->GetUnlocalizedName() == std::string("vin_null"))
-			return m_blocks[i];
+		if (info.BlockModBlock->GetUnlocalizedName() == "vin_null")
+			return &info;
 	}
 
-	Logger::Error("unexpected failure to receive vin_null block. Mod loading error?");
-	return new ModBlock();
+	Logger::Error("Unexpected failure to receive vin_null block. Mod loading error?");
+	return nullptr;
 }
 
-const ModCatagory* BlockRegistry::GetCategory(const std::string& unlocalizedName)
+const CatagoryInfo* BlockRegistry::GetCategory(const std::string& unlocalizedName)
 {
-	for (unsigned int i = 0; i < m_catagories.size(); i++)
+	for (auto& info : m_Catagories)
 	{
-		if (m_catagories[i]->GetUnlocalizedName() == unlocalizedName)
-			return m_catagories[i];
+		if (info.CatagoryModCatagory->GetUnlocalizedName() == unlocalizedName)
+			return &info;
 	}
 
-	Logger::Error("unexpected failure to get a catagory. Mod loading error?");
-	return new ModCatagory("", "");
+	Logger::Error("Unexpected failure to get a catagory. Mod loading error?");
+	return nullptr;
 }
 
-const std::vector<ModBlock*>& BlockRegistry::GetBlocks()
+const std::vector<BlockInfo>& BlockRegistry::GetBlocks()
 {
-	return m_blocks;
+	return m_Blocks;
 }
 
-const std::vector<ModCatagory*>& BlockRegistry::GetCategories()
+const std::vector<CatagoryInfo>& BlockRegistry::GetCategories()
 {
-	return m_catagories;
+	return m_Catagories;
 }
 
-const std::string& BlockRegistry::GetBlockMod(const ModBlock* modBlock)
+void BlockRegistry::CreateBlockRegistry()
 {
-	for (uint64_t i = 0; i < m_blocks.size(); i++)
-	{
-		if (m_blocks[i] == modBlock)
-			return m_blockMods[i];
-	}
-
-	Logger::Error("failed to get mod of block \"" + std::string(modBlock->GetUnlocalizedName()) + "\"");
-	return m_blockMods.front();
+	m_Registry = new BlockRegistry();
 }
 
 BlockRegistry& BlockRegistry::GetRegistry()
 {
-	return m_registry;
+	return *m_Registry;
 }
 
-BlockRegistry BlockRegistry::m_registry;
+BlockRegistry* BlockRegistry::m_Registry;

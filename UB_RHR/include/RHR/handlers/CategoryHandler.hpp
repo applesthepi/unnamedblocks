@@ -3,54 +3,29 @@
 
 #include "registries/BlockRegistry.hpp"
 #include "stacking/Plane.hpp"
+#include "ui/RenderButton.hpp"
+#include "ui/RenderFrame.hpp"
 
 #include <Cappuccino/Utils.hpp>
-/*
-class CategoryHandler : public IRenderable
+
+static class CategoryHandler
 {
 public:
-	CategoryHandler();
-
-	void ToggleMod(uint16_t modIdx, uint64_t catIdx);
-	void UpdateBlocks(uint64_t catIdx);
-	void RegisterHeader();
-	uint32_t UpdateButtons();
-	uint16_t GetToolbarWidth();
-
-	void frameUpdate(double deltaTime) override;
-
-	static void CreateHandler();
-	static CategoryHandler& GetHandler();
-
-	void PostRender(sf::RenderWindow* window);
-protected:
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	static void Populate(std::shared_ptr<vui::RenderFrame>& renderFrame);
+	static void Render();
 private:
-	static CategoryHandler* m_handler;
+	struct ModGroup
+	{
+		ModGroup(const Color& primaryColor, const Color& secondaryColor)
+			: ModButton(std::make_shared<vui::RenderButton>(primaryColor, secondaryColor))
+		{
+			ModButton->SetWeak(ModButton);
+		}
 
-	std::vector<ButtonText*> m_modCategoryButtons;
-	std::vector<std::vector<ButtonText*>> m_buttons;
+		std::shared_ptr<vui::RenderButton> ModButton;
+		std::vector<std::shared_ptr<vui::RenderButton>> ModCategories;
+	};
 
-	std::vector<std::function<void()>*> m_modCategoryCallbacks;
-	std::vector<std::vector<std::function<void()>*>> m_buttonCallbacks;
-
-	std::vector<bool> m_modOpen;
-	std::vector<sf::Sprite> m_modIco;
-	sf::Texture m_textureOpen;
-	sf::Texture m_textureClose;
-
-	sf::RectangleShape m_background;
-	sf::RectangleShape m_backgroundOptions;
-	uint64_t m_toolbarStackCount;
-	uint64_t m_selectedCategory;
-
-	bool m_running;
-	bool m_fullBreak;
-	bool m_needsUpdate;
-
-	std::vector<ButtonImage*> m_editorButtons;
-	std::vector<ButtonImage*> m_runtimeButtons;
-
-	uint16_t m_toolbarWidth;
+	static std::vector<ModGroup> m_ModGroups;
+	static std::shared_ptr<vui::RenderFrame> m_RenderFrame;
 };
-*/

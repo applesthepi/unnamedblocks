@@ -16,25 +16,37 @@ public:
 	std::string Value;
 };
 
+struct BlockInfo
+{
+	ModBlock* BlockModBlock;
+	std::string BlockModUnlocalizedName;
+};
+
+struct CatagoryInfo
+{
+	ModCatagory* CatagoryModCatagory;
+	std::string CatagoryModUnlocalizedName;
+};
+
 class BlockRegistry
 {
 public:
-	void RegisterBlock(ModBlock* block, const std::string& mod);
-	void RegisterCatagory(ModCatagory* catagory);
+	void RegisterBlock(ModBlock* block, const std::string& modUnlocalizedName);
+	void RegisterCatagory(ModCatagory* catagory, const std::string& modUnlocalizedName);
 
-	const ModBlock* GetBlock(const std::string& unlocalizedName);
-	const ModCatagory* GetCategory(const std::string& unlocalizedName);
+	const BlockInfo* GetBlock(const std::string& unlocalizedName);
+	const CatagoryInfo* GetCategory(const std::string& unlocalizedName);
 
-	const std::vector<ModBlock*>& GetBlocks();
-	const std::vector<ModCatagory*>& GetCategories();
+	const std::vector<BlockInfo>& GetBlocks();
+	const std::vector<CatagoryInfo>& GetCategories();
 
-	const std::string& GetBlockMod(const ModBlock* modBlock);
+	//const std::string& GetBlockMod(const ModBlock* modBlock);
 
+	static void CreateBlockRegistry();
 	static BlockRegistry& GetRegistry();
 private:
-	static BlockRegistry m_registry;
+	static BlockRegistry* m_Registry;
 
-	std::vector<std::string> m_blockMods;
-	std::vector<ModBlock*> m_blocks;
-	std::vector<ModCatagory*> m_catagories;
+	std::vector<BlockInfo> m_Blocks;
+	std::vector<CatagoryInfo> m_Catagories;
 };
