@@ -1,4 +1,4 @@
-#include "CatagoryHandler.hpp"
+#include "CategoryHandler.hpp"
 
 #include "registries/UIRegistry.hpp"
 #include "handlers/ProjectHandler.hpp"
