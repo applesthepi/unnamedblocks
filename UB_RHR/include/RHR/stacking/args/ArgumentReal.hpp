@@ -44,11 +44,11 @@ private:
 	/// Sets data. Data of the argument is stored as a string.
 	void OnSetData() override;
 
-	/// Left decoration.
-	std::shared_ptr<RenderObject> m_DecorLeft;
-
-	/// Right decoration.
-	std::shared_ptr<RenderObject> m_DecorRight;
+	/// Decoration.
+	std::shared_ptr<RenderObject> m_DecorLeftTop;
+	std::shared_ptr<RenderObject> m_DecorLeftBottom;
+	std::shared_ptr<RenderObject> m_DecorRightTop;
+	std::shared_ptr<RenderObject> m_DecorRightBottom;
 
 	/// Renderable text element.
 	std::shared_ptr<vui::RenderText> m_Text;

@@ -12,6 +12,7 @@ vui::RenderButton::RenderButton(const Color& primaryColor, const Color& secondar
 	, m_RenderRectangle(std::make_shared<RenderRectangle>())
 	, m_Callback(nullptr)
 	, m_CallbackData(nullptr)
+	, m_EnableFillWidth(false)
 {
 	m_RenderRectangle->SetWeak(m_RenderRectangle);
 	m_RenderRectangle->SetColor(m_ColorSecondary);
@@ -55,6 +56,11 @@ void vui::RenderButton::MouseUpdate(glm::vec<2, int32_t> position, float scroll,
 	}
 }
 
+void vui::RenderButton::EnableFillWidth()
+{
+	m_EnableFillWidth = true;
+}
+
 void vui::RenderButton::OnRender()
 {
 	m_RenderRectangle->Render();
@@ -77,6 +83,9 @@ void vui::RenderButton::PostPositionUpdate()
 
 void vui::RenderButton::PostSizeUpdate()
 {
+	if (m_EnableFillWidth)
+		m_Size.x = m_SuperBounds.x - m_Position.x;
+
 	m_RenderRectangle->SetSize(m_Size);
 }
 

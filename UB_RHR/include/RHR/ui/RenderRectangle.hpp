@@ -37,14 +37,19 @@ private:
 
 	void PostColorUpdate() override;
 
+	void PostSizeUpdate() override;
+
 	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<RenderObject> m_RenderObject;
 
 	bool m_HasColor;
 	bool m_HasTexture;
+	bool m_InBounds;
 
 	std::string m_Texture;
 	uint32_t m_Depth;
+
+	glm::vec<2, int32_t> m_UseSize;
 };
 
 }

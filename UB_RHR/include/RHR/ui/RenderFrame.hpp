@@ -6,6 +6,7 @@
 #include "ui/interfaces/IUpdatable.hpp"
 #include "ui/interfaces/IPositionable.hpp"
 #include "ui/interfaces/ISizeable.hpp"
+#include "ui/RenderRectangle.hpp"
 
 #include <Cappuccino/Utils.hpp>
 #include <Espresso/InputHandler.hpp>
@@ -27,6 +28,8 @@ namespace vui
 		void Unlink(LocalCardinal cardinal);
 		void UpdateLinks();
 		void SetBar(size_t idx, int32_t offset);
+		void EnableBackground(const Color& color);
+		void DisableBarMovement();
 	protected:
 		void OnRender() override;
 		void OnUpdateBuffers() override;
@@ -71,12 +74,13 @@ namespace vui
 		static void RenderFrameMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data);
 		void UpdateContentDimentions();
 		void SubmitNewBarPosition(LocalCardinal cardinal);
-		void EqualizeBars();
+		void EqualizeBars(bool sizeToContent);
 		void PushLinks(std::shared_ptr<RenderFrame>& frame);
 		void UpdateMouseButtonStatus(bool enabled);
 		void UpdateBarsFromRelative();
 		void UpdateBarsFromAbsolute();
 		void ResetDrag();
+		void UpdateBackground();
 
 		bool m_HasFrame;
 		bool m_HasSpace;
@@ -95,5 +99,8 @@ namespace vui
 
 		uint8_t m_Padding;
 		RenderFrameMouseButtonData* m_MouseButtonData;
+		bool m_BackgroundEnabled;
+		bool m_DisableBarMovement;
+		std::shared_ptr<vui::RenderRectangle> m_Background;
 	};
 }

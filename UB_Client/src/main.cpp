@@ -3,7 +3,7 @@
 #include "ModLoader.hpp"
 #include "ui/Renderer.hpp"
 #include "ui/RenderTools.hpp"
-#include "handlers/CategoryHandler.hpp"
+#include "handlers/CatagoryHandler.hpp"
 #include "registries/UIRegistry.hpp"
 // #include "ui/ButtonText.hpp"
 #include "imgui/imgui.h"
@@ -412,7 +412,7 @@ int main()
 	BlockRegistry::CreateBlockRegistry();
 
 	run();
-	CategoryHandler::Populate(frameCategories);
+	CatagoryHandler::Populate(frameCategories);
 
 	// Debug
 

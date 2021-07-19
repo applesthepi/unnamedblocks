@@ -41,6 +41,7 @@ public:
 
 	void RemoveStack(uint64_t idx);
 	void RemoveAll();
+	void DisplayVanity(bool enabled);
 
 	const std::vector<std::shared_ptr<Stack>>& GetStacks();
 	void FrameUpdate(double deltaTime) override;
@@ -54,4 +55,6 @@ private:
 	std::vector<std::shared_ptr<Stack>> m_stacks;
 
 	std::shared_ptr<vui::RenderRectangle> m_Background;
+
+	bool m_DisplayVanity;
 };

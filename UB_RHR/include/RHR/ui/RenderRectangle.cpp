@@ -12,8 +12,9 @@ vui::RenderRectangle::RenderRectangle()
 	, m_Depth(10)
 	, m_HasColor(false)
 	, m_HasTexture(false)
+	, m_InBounds(false)
 	, m_RenderObject(std::make_shared<RenderObject>(true))
-	//, m_WeakSet(false)
+	, m_UseSize({ 0, 0 })
 {
 	m_RenderObject->SetWeak(m_RenderObject);
 }
@@ -56,7 +57,7 @@ void vui::RenderRectangle::SetDepth(uint32_t depth)
 
 void vui::RenderRectangle::OnRender()
 {
-	if (m_Enabled)
+	if (m_Enabled && m_InBounds)
 		m_RenderObject->Render();
 }
 
@@ -75,9 +76,9 @@ void vui::RenderRectangle::OnUpdateBuffers()
 	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
 
 	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 0.0f });
-	Vertex v1 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 0.0f });
-	Vertex v2 = Vertex({ static_cast<float>(position.x + m_Size.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 1.0f });
-	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_Size.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 1.0f });
+	Vertex v1 = Vertex({ static_cast<float>(position.x + m_UseSize.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 0.0f });
+	Vertex v2 = Vertex({ static_cast<float>(position.x + m_UseSize.x), static_cast<float>(position.y + m_UseSize.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 1.0f });
+	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_UseSize.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 1.0f });
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);
@@ -108,4 +109,37 @@ void vui::RenderRectangle::PostPositionUpdate()
 void vui::RenderRectangle::PostColorUpdate()
 {
 	MarkDirty();
+}
+
+void vui::RenderRectangle::PostSizeUpdate()
+{
+	if (m_SuperBounds.x == 0 && m_SuperBounds.y == 0)
+	{
+		m_UseSize = m_Size;
+		m_InBounds = true;
+
+		MarkDirty();
+	}
+	else
+	{
+		if (m_Position.x > m_SuperBounds.x ||
+			m_Position.y > m_SuperBounds.y)
+		{
+			m_UseSize = { 0, 0 };
+			m_InBounds = false;
+		}
+		else
+		{
+			m_UseSize = m_Size;
+			m_InBounds = true;
+
+			if (m_Position.x + m_Size.x > m_SuperBounds.x)
+				m_UseSize.x = m_SuperBounds.x - m_Position.x;
+
+			if (m_Position.y + m_Size.y > m_SuperBounds.y)
+				m_UseSize.y = m_SuperBounds.y - m_Position.y;
+
+			MarkDirty();
+		}
+	}
 }

@@ -131,6 +131,8 @@ void Plane::AddCollection(std::shared_ptr<Collection>& collection, bool displayC
 	m_Collections.push_back(collection);
 	m_CollectionVanity.push_back(displayCollectionVanity);
 
+	collection->DisplayVanity(displayCollectionVanity);
+
 	//CreateBuffer(m_Collections.size() - 1, displayCollectionVanity);
 }
 
@@ -264,8 +266,34 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 
 									std::shared_ptr<Stack> activeStack = m_Collections[i]->GetStacks()[a];
 
+									if (m_Toolbar)
+									{
+										std::shared_ptr<Stack> dragging_stack = std::make_shared<Stack>();
+										dragging_stack->SetWeak(dragging_stack);
+
+										const std::vector<std::shared_ptr<Block>>& blocks = activeStack->GetBlocks();
+										std::vector<std::shared_ptr<Block>> cloned_blocks;
+
+										for (auto block : blocks)
+										{
+											std::shared_ptr<Block> cloned_block = std::make_shared<Block>(block->GetModBlock()->GetUnlocalizedName());
+											cloned_block->SetWeak(cloned_block);
+
+											cloned_blocks.push_back(std::move(cloned_block));
+										}
+
+										dragging_stack->AddBlocks(cloned_blocks);
+										activeStack = dragging_stack;
+									}
+
 									if (b > 0)
 									{
+										if (m_Toolbar)
+										{
+											Logger::Error("splitting stacks inside toolbar is not supported");
+											return;
+										}
+
 										// create stack that is left behind (no the one picked up)
 
 										std::shared_ptr<Stack> leftStack = std::make_shared<Stack>();
@@ -289,7 +317,9 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 
 									// register stack and collection
 
-									m_Collections[i]->RemoveStack(a);
+									if (!m_Toolbar)
+										m_Collections[i]->RemoveStack(a);
+
 									activeCollection->AddStack(activeStack, false);
 									activeCollection->SizeToStacks(true, false);
 									//AddCollection(activeCollection, false);
@@ -493,6 +523,9 @@ void Plane::PostPositionUpdate()
 void Plane::PostSizeUpdate()
 {
 	m_Background->SetSize(m_Size);
+
+	//for (auto collection : m_Collections)
+	//	collection->SetSuperBounds(m_Size);
 }
 
 std::shared_ptr<Plane> Plane::PrimaryPlane;
@@ -1157,39 +1190,11 @@ void Plane::DragStack(std::shared_ptr<Collection>& collection, std::shared_ptr<S
 
 	m_DraggingUp = up;
 
-	m_DraggingCollection = collection;
-	m_DraggingStack = stack;
-	//collection->SetPosition(collection->GetPosition() - (glm::vec<2, int32_t>)GetInnerPosition());
-	//collection->SetPosition(
-	//	(glm::vec<2, int32_t>)m_window->mapPixelToCoords((glm::vec<2, int32_t>)collection->GetPosition(), m_view)// get coords
-	//);
-	//collection->SetPosition(collection->GetPosition().x * CalculateZoom().x, collection->GetPosition().y * CalculateZoom().y);
 	m_DraggingBeginMouse = InputHandler::GetMousePosition();
 	m_DraggingBeginObject = collection->GetPosition();
-	//m_DraggingBeginObject = (glm::vec<2, int32_t>)m_window->mapCoordsToPixel(collection->GetPosition()/*(collection->GetPosition() + stack->GetPosition()) * CalculateZoom().x*/ 
-	//	//- (glm::vec<2, int32_t>)((glm::vec<2, int32_t>(1.0f, 1.0f) - Plane::PrimaryPlane->CalculateZoom()) * Plane::PrimaryPlane->GetPosition())
-	//	+ GetPosition()
-	//	, m_view);
-	//std::cout << "mapped: " << m_window->mapCoordsToPixel(collection->GetPosition(), m_view).x << std::endl;
-	//std::cout << "col pos: " << collection->GetPosition().x << std::endl;
 
-	// + ((glm::vec<2, int32_t>(1.0f, 1.0f) - CalculateZoom()) * Plane::PrimaryPlane->GetPosition())
-	
-	//m_draggingCollection->SetPosition(
-	//	m_window->mapPixelToCoords((glm::vec<2, int32_t>)(((glm::vec<2, int32_t>)position - (glm::vec<2, int32_t>)Plane::PrimaryPlane->GetPosition()))
-	//		- (glm::vec<2, int32_t>)(((glm::vec<2, int32_t>)m_draggingBeginMouse - m_draggingBeginObject))
-	//		+ (glm::vec<2, int32_t>)((glm::vec<2, int32_t>(1.0f, 1.0f) - CalculateZoom()) * Plane::PrimaryPlane->GetPosition())
-	//		, *Plane::PrimaryPlane->GetView())
-	//	- glm::vec<2, int32_t>(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
-	//);
-	
-
-	//std::cout << "bObject " << m_DraggingBeginObject.x << ", " << m_DraggingBeginObject.y << std::endl;
-	//std::cout << "bMouse " << m_DraggingBeginMouse.x << ", " << m_DraggingBeginMouse.y << std::endl;
-
-	//m_draggingBeginMouse += (glm::vec<2, int32_t>)(((glm::vec<2, int32_t>)m_draggingBeginMouse - m_draggingBeginObject) * (CalculateZoom() - glm::vec<2, int32_t>(1.0f, 1.0f)));// add offset because of the blocks scales down
-
-	//std::cout << "center " << m_view.getCenter().x << std::endl;
+	m_DraggingCollection = collection;
+	m_DraggingStack = stack;
 }
 
 void Plane::UnDrag(const glm::vec<2, int32_t>& position)
@@ -1272,7 +1277,7 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 				if (!found)
 				{
 					glm::vec<2, int32_t> collectionPosition = m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
-					AddCollection(m_DraggingCollection, true);
+					Plane::PrimaryPlane->AddCollection(m_DraggingCollection, true);
 					m_DraggingCollection->SetPosition(collectionPosition - planePrimaryPosition);
 					m_DraggingCollection->SizeToStacks(false, true);
 
@@ -1396,7 +1401,7 @@ void Plane::DraggingStackUpdate()
 							draggingCollectionPosition.y >= boundingPos.y && draggingCollectionPosition.y < boundingPos.y + boundingSize.y)
 						{
 							std::cout << "snapping " << b << std::endl;
-							SetSnap(m_Collections[i], b, useCollections[i]->GetStacks()[a]);
+							SetSnap(useCollections[i], b, useCollections[i]->GetStacks()[a]);
 
 							// if block was bounded
 

@@ -5,6 +5,7 @@
 Collection::Collection()
 	: IEnableable(true)
 	, m_Background(std::make_shared<vui::RenderRectangle>())
+	, m_DisplayVanity(true)
 {
 	m_Background->SetWeak(m_Background);
 	m_Background->SetDepth(Renderer::DepthCollection);
@@ -234,6 +235,11 @@ void Collection::RemoveAll()
 	m_stacks.clear();
 }
 
+void Collection::DisplayVanity(bool enabled)
+{
+	m_DisplayVanity = enabled;
+}
+
 const std::vector<std::shared_ptr<Stack>>& Collection::GetStacks()
 {
 	return m_stacks;
@@ -250,7 +256,8 @@ void Collection::OnRender()
 	for (auto& stack : m_stacks)
 		stack->Render();
 
-	m_Background->Render();
+	if (m_DisplayVanity)
+		m_Background->Render();
 }
 
 void Collection::OnUpdateBuffers()

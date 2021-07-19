@@ -21,6 +21,8 @@ vui::RenderFrame::RenderFrame()
 	, m_DraggingObjectBegin({ 0, 0 })
 	, m_Padding(10)
 	, m_MouseButtonData(new RenderFrameMouseButtonData())
+	, m_BackgroundEnabled(false)
+	, m_DisableBarMovement(false)
 {
 	
 }
@@ -84,7 +86,7 @@ void vui::RenderFrame::AddFrame(std::shared_ptr<RenderFrame>& frame, LocalCardin
 	if (m_Frames.size() > 1)
 	{
 		SubmitNewBarPosition(cardinal);
-		EqualizeBars();
+		EqualizeBars(false);
 	}
 
 	UpdateLinks();
@@ -130,7 +132,7 @@ void vui::RenderFrame::AddContent(std::weak_ptr<IRenderable>&& renderable, std::
 	if (m_Content.size() > 1)
 	{
 		SubmitNewBarPosition(cardinal);
-		EqualizeBars();
+		EqualizeBars(true);
 	}
 
 	UpdateContentDimentions();
@@ -138,6 +140,9 @@ void vui::RenderFrame::AddContent(std::weak_ptr<IRenderable>&& renderable, std::
 
 void vui::RenderFrame::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
 {
+	if (m_DisableBarMovement)
+		return;
+
 	if (operation == MouseOperation::Press)
 	{
 		for (size_t i = 0; i < m_Bars.size(); i++)
@@ -145,8 +150,6 @@ void vui::RenderFrame::MouseButton(glm::vec<2, int32_t> position, float scroll, 
 			if (position.x >= m_Bars[i].AbsolutePosition.x && position.x < m_Bars[i].AbsolutePosition.x + m_Bars[i].Size.x &&
 				position.y >= m_Bars[i].AbsolutePosition.y && position.y < m_Bars[i].AbsolutePosition.y + m_Bars[i].Size.y)
 			{
-				//Logger::Debug("dragging" + std::to_string(i));
-
 				m_Dragging = true;
 				m_DraggingBarIdx = i;
 				m_DraggingMouseBegin = position;
@@ -160,8 +163,6 @@ void vui::RenderFrame::MouseButton(glm::vec<2, int32_t> position, float scroll, 
 	{
 		if (m_Dragging)
 		{
-			//Logger::Debug("releasing" + std::to_string(m_DraggingBarIdx));
-
 			m_Dragging = false;
 			m_DraggingBarIdx = -1;
 			m_DraggingMouseBegin = { 0, 0 };
@@ -172,7 +173,6 @@ void vui::RenderFrame::MouseButton(glm::vec<2, int32_t> position, float scroll, 
 	{
 		if (m_Dragging)
 		{
-			//Logger::Debug("moving");
 			m_Bars[m_DraggingBarIdx].AbsolutePosition = m_DraggingObjectBegin + (position - m_DraggingMouseBegin);
 			UpdateBarsFromAbsolute();
 			UpdateContentDimentions();
@@ -279,6 +279,22 @@ void vui::RenderFrame::SetBar(size_t idx, int32_t offset)
 	UpdateContentDimentions();
 }
 
+void vui::RenderFrame::EnableBackground(const Color& color)
+{
+	m_BackgroundEnabled = true;
+
+	m_Background = std::make_shared<vui::RenderRectangle>();
+	m_Background->SetWeak(m_Background);
+	m_Background->SetColor(color);
+
+	UpdateBackground();
+}
+
+void vui::RenderFrame::DisableBarMovement()
+{
+	m_DisableBarMovement = true;
+}
+
 void vui::RenderFrame::OnRender()
 {
 	if (m_HasFrame)
@@ -307,6 +323,9 @@ void vui::RenderFrame::OnRender()
 			}
 		}
 	}
+
+	if (m_BackgroundEnabled)
+		m_Background->Render();
 }
 
 void vui::RenderFrame::OnUpdateBuffers()
@@ -330,6 +349,9 @@ void vui::RenderFrame::OnUpdateBuffers()
 			erased = true;
 		}
 	}
+
+	if (m_BackgroundEnabled)
+		m_Background->UpdateBuffers();
 }
 
 void vui::RenderFrame::OnReloadSwapChain()
@@ -362,6 +384,9 @@ void vui::RenderFrame::OnReloadSwapChain()
 			}
 		}
 	}
+
+	if (m_BackgroundEnabled)
+		m_Background->ReloadSwapChain();
 }
 
 void vui::RenderFrame::OnSetWeak()
@@ -456,18 +481,8 @@ void vui::RenderFrame::UpdateContentDimentions()
 	{
 		bool erased = false;
 
-		glm::vec<2, int32_t> runningPosition = m_Position + m_SuperOffset;
-		glm::vec<2, int32_t> runningSize = { 0, 0 };
-
-		if (m_LinkUp)
-			runningPosition.y += static_cast<int32_t>(m_Padding) / 2;
-		else
-			runningPosition.y += static_cast<int32_t>(m_Padding);
-
-		if (m_LinkLeft)
-			runningPosition.x += static_cast<int32_t>(m_Padding) / 2;
-		else
-			runningPosition.x += static_cast<int32_t>(m_Padding);
+		glm::vec<2, int32_t> runningPosition = m_Position + m_SuperOffset + (static_cast<int32_t>(m_Padding) * 2);
+		glm::vec<2, int32_t> runningSize;
 
 		for (size_t i = 0; i < m_Content.size(); i++)
 		{
@@ -480,116 +495,209 @@ void vui::RenderFrame::UpdateContentDimentions()
 			if (i > 0)
 			{
 				if (m_Space == PlaneSpace::HORIZONTAL)
-					runningPosition.x += runningSize.x + static_cast<int32_t>(m_Padding);
+					runningPosition.x = m_Position.x + m_SuperOffset.x + m_Bars[i - 1].Offset + (static_cast<int32_t>(m_Padding) * (2));
 				else if (m_Space == PlaneSpace::VERTICAL)
-					runningPosition.y += runningSize.y + static_cast<int32_t>(m_Padding);
+					runningPosition.y = m_Position.y + m_SuperOffset.y + m_Bars[i - 1].Offset + (static_cast<int32_t>(m_Padding) * (2));
 			}
-			
+			else
+			{
+				if (m_Space == PlaneSpace::HORIZONTAL)
+					runningPosition.x = m_Position.x + m_SuperOffset.x + (static_cast<int32_t>(m_Padding) * 2);
+				else if (m_Space == PlaneSpace::VERTICAL)
+					runningPosition.y = m_Position.y + m_SuperOffset.y + (static_cast<int32_t>(m_Padding) * 2);
+			}
+
 			if (m_Content.size() > 1)
 			{
+				int32_t offset = 0;
+
 				if (m_Space == PlaneSpace::HORIZONTAL)
 				{
 					if (i == m_Content.size() - 1)
-						runningSize.x = (m_Size.x + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+						offset = m_Size.x - m_Bars[i - 1].Offset;
 					else if (i == 0)
-						runningSize.x = (m_Bars[i].Offset + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+						offset = m_Bars[i].Offset;
 					else
-						runningSize.x = (m_Bars[i].Offset + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+						offset = m_Bars[i].Offset - m_Bars[i - 1].Offset;
 
-					if (i < m_Content.size() - 1)
-						runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
-					else
-					{
-						if (m_LinkRight)
-							runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
-						else
-							runningSize.x -= static_cast<int32_t>(m_Padding);
-					}
-
-					runningSize.y = m_Size.y - static_cast<int32_t>(m_Padding) * 2;
-
-					if (m_LinkUp)
-						runningSize.y += static_cast<int32_t>(m_Padding) / 2;
-					if (m_LinkDown)
-						runningSize.y += static_cast<int32_t>(m_Padding) / 2;
+					runningSize = { offset, m_Size.y };
 				}
 				else if (m_Space == PlaneSpace::VERTICAL)
 				{
 					if (i == m_Content.size() - 1)
-						runningSize.y = (m_Size.y + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+						offset = m_Size.y - m_Bars[i - 1].Offset;
 					else if (i == 0)
-						runningSize.y = (m_Bars[i].Offset + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+						offset = m_Bars[i].Offset;
 					else
-						runningSize.y = (m_Bars[i].Offset + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+						offset = m_Bars[i].Offset - m_Bars[i - 1].Offset;
 
-					if (i < m_Content.size() - 1)
-						runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
-					else
-					{
-						if (m_LinkDown)
-							runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
-						else
-							runningSize.y -= static_cast<int32_t>(m_Padding);
-					}
-
-					runningSize.x = m_Size.x - static_cast<int32_t>(m_Padding) * 2;
-
-					if (m_LinkLeft)
-						runningSize.x += static_cast<int32_t>(m_Padding) / 2;
-					if (m_LinkRight)
-						runningSize.x += static_cast<int32_t>(m_Padding) / 2;
+					runningSize = { m_Size.x, offset };
 				}
 			}
 			else
 			{
 				runningSize = m_Size;
-
-				if (m_LinkUp)
-					runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
-				else
-					runningSize.y -= static_cast<int32_t>(m_Padding);
-
-				if (m_LinkDown)
-					runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
-				else
-					runningSize.y -= static_cast<int32_t>(m_Padding);
-
-				if (m_LinkLeft)
-					runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
-				else
-					runningSize.x -= static_cast<int32_t>(m_Padding);
-
-				if (m_LinkRight)
-					runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
-				else
-					runningSize.x -= static_cast<int32_t>(m_Padding);
-
-				//runningSize = m_Size - (static_cast<int32_t>(m_Padding) * 2);
 			}
 
-			if (auto content = m_Content[i].Positionable.lock())
-			{
-				content->SetSuperOffset(runningPosition);
+			runningSize -= static_cast<int32_t>(m_Padding) * 4;
 
-				if (auto content = m_Content[i].Sizeable.lock())
-					content->SetSuperBounds(runningSize);
-				else
-				{
-					m_Content.erase(m_Content.begin() + i);
-					erased = true;
-				}
-			}
+			if (auto lock = m_Content[i].Positionable.lock())
+				lock->SetSuperOffset(runningPosition);
 			else
 			{
 				m_Content.erase(m_Content.begin() + i);
 				erased = true;
 			}
 
-
+			if (auto lock = m_Content[i].Sizeable.lock())
+				lock->SetSuperBounds(runningSize);
+			else
+			{
+				m_Content.erase(m_Content.begin() + i);
+				erased = true;
+			}
 		}
 
-		MarkDirty();
+		//bool erased = false;
+
+		//glm::vec<2, int32_t> runningPosition = m_Position + m_SuperOffset;
+		//glm::vec<2, int32_t> runningSize = { 0, 0 };
+
+		//if (m_LinkUp)
+		//	runningPosition.y += static_cast<int32_t>(m_Padding) / 2;
+		//else
+		//	runningPosition.y += static_cast<int32_t>(m_Padding);
+
+		//if (m_LinkLeft)
+		//	runningPosition.x += static_cast<int32_t>(m_Padding) / 2;
+		//else
+		//	runningPosition.x += static_cast<int32_t>(m_Padding);
+
+		//for (size_t i = 0; i < m_Content.size(); i++)
+		//{
+		//	if (erased)
+		//	{
+		//		erased = false;
+		//		i--;
+		//	}
+
+		//	if (i > 0)
+		//	{
+		//		if (m_Space == PlaneSpace::HORIZONTAL)
+		//			runningPosition.x += runningSize.x;// +static_cast<int32_t>(m_Padding);
+		//		else if (m_Space == PlaneSpace::VERTICAL)
+		//			runningPosition.y += runningSize.y;// +static_cast<int32_t>(m_Padding);
+		//	}
+		//	
+		//	if (m_Content.size() > 1)
+		//	{
+		//		if (m_Space == PlaneSpace::HORIZONTAL)
+		//		{
+		//			if (i == m_Content.size() - 1)
+		//				runningSize.x = (m_Size.x + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+		//			else if (i == 0)
+		//				runningSize.x = (m_Bars[i].Offset + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+		//			else
+		//				runningSize.x = (m_Bars[i].Offset + m_Position.x + m_SuperOffset.x) - runningPosition.x;
+
+		//			if (i < m_Content.size() - 1)
+		//				runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
+		//			else
+		//			{
+		//				if (m_LinkRight)
+		//					runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
+		//				else
+		//					runningSize.x -= static_cast<int32_t>(m_Padding);
+		//			}
+
+		//			runningSize.y = m_Size.y - static_cast<int32_t>(m_Padding) * 2;
+
+		//			if (m_LinkUp)
+		//				runningSize.y += static_cast<int32_t>(m_Padding) / 2;
+		//			if (m_LinkDown)
+		//				runningSize.y += static_cast<int32_t>(m_Padding) / 2;
+		//		}
+		//		else if (m_Space == PlaneSpace::VERTICAL)
+		//		{
+		//			if (i == m_Content.size() - 1)
+		//				runningSize.y = (m_Size.y + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+		//			else if (i == 0)
+		//				runningSize.y = (m_Bars[i].Offset + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+		//			else
+		//				runningSize.y = (m_Bars[i].Offset + m_Position.y + m_SuperOffset.y) - runningPosition.y;
+
+		//			if (i < m_Content.size() - 1)
+		//				// runningSize.y += static_cast<int32_t>(m_Padding) / 2;
+		//				runningSize.y += static_cast<int32_t>(m_Padding) * i;// +(static_cast<int32_t>(m_Padding) * 2);
+		//			else
+		//			{
+		//				if (m_LinkDown)
+		//					runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
+		//				else
+		//					runningSize.y -= static_cast<int32_t>(m_Padding);
+		//			}
+
+		//			runningSize.x = m_Size.x - static_cast<int32_t>(m_Padding) * 2;
+
+		//			if (m_LinkLeft)
+		//				runningSize.x += static_cast<int32_t>(m_Padding) / 2;
+		//			if (m_LinkRight)
+		//				runningSize.x += static_cast<int32_t>(m_Padding) / 2;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		runningSize = m_Size;
+
+		//		if (m_LinkUp)
+		//			runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
+		//		else
+		//			runningSize.y -= static_cast<int32_t>(m_Padding);
+
+		//		if (m_LinkDown)
+		//			runningSize.y -= static_cast<int32_t>(m_Padding) / 2;
+		//		else
+		//			runningSize.y -= static_cast<int32_t>(m_Padding);
+
+		//		if (m_LinkLeft)
+		//			runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
+		//		else
+		//			runningSize.x -= static_cast<int32_t>(m_Padding);
+
+		//		if (m_LinkRight)
+		//			runningSize.x -= static_cast<int32_t>(m_Padding) / 2;
+		//		else
+		//			runningSize.x -= static_cast<int32_t>(m_Padding);
+
+		//		//runningSize = m_Size - (static_cast<int32_t>(m_Padding) * 2);
+		//	}
+
+		//	if (auto content = m_Content[i].Positionable.lock())
+		//	{
+		//		content->SetSuperOffset(runningPosition);
+
+		//		if (auto content = m_Content[i].Sizeable.lock())
+		//			content->SetSuperBounds(runningSize);
+		//		else
+		//		{
+		//			m_Content.erase(m_Content.begin() + i);
+		//			erased = true;
+		//		}
+		//	}
+		//	else
+		//	{
+		//		m_Content.erase(m_Content.begin() + i);
+		//		erased = true;
+		//	}
+
+
+		//}
+
+		//MarkDirty();
 	}
+
+	if (m_BackgroundEnabled)
+		UpdateBackground();
 }
 
 void vui::RenderFrame::SubmitNewBarPosition(LocalCardinal cardinal)
@@ -617,17 +725,45 @@ void vui::RenderFrame::SubmitNewBarPosition(LocalCardinal cardinal)
 	UpdateMouseButtonStatus(true);
 }
 
-void vui::RenderFrame::EqualizeBars()
+void vui::RenderFrame::EqualizeBars(bool sizeToContent)
 {
-	if (m_Space == PlaneSpace::HORIZONTAL)
+	if (sizeToContent)
 	{
-		for (size_t i = 0; i < m_Bars.size(); i++)
-			m_Bars[i].Offset = (static_cast<float>(i + 1) / static_cast<float>(m_Bars.size() + 1)) * m_Size.x;
+		int32_t offset = 0;
+
+		if (m_Space == PlaneSpace::HORIZONTAL)
+		{
+			for (size_t i = 0; i < m_Bars.size(); i++)
+			{
+				if (auto lock = m_Content[i].Sizeable.lock())
+					offset += lock->GetSize().x + static_cast<int32_t>(m_Padding);
+
+				m_Bars[i].Offset = offset;
+			}
+		}
+		else if (m_Space == PlaneSpace::VERTICAL)
+		{
+			for (size_t i = 0; i < m_Bars.size(); i++)
+			{
+				if (auto lock = m_Content[i].Sizeable.lock())
+					offset += lock->GetSize().y + static_cast<int32_t>(m_Padding);
+
+				m_Bars[i].Offset = offset;
+			}
+		}
 	}
-	else if (m_Space == PlaneSpace::VERTICAL)
+	else if (m_HasContent)
 	{
-		for (size_t i = 0; i < m_Bars.size(); i++)
-			m_Bars[i].Offset = (static_cast<float>(i + 1) / static_cast<float>(m_Bars.size() + 1)) * m_Size.y;
+		if (m_Space == PlaneSpace::HORIZONTAL)
+		{
+			for (size_t i = 0; i < m_Bars.size(); i++)
+				m_Bars[i].Offset = (static_cast<float>(i + 1) / static_cast<float>(m_Bars.size() + 1)) * m_Size.x;
+		}
+		else if (m_Space == PlaneSpace::VERTICAL)
+		{
+			for (size_t i = 0; i < m_Bars.size(); i++)
+				m_Bars[i].Offset = (static_cast<float>(i + 1) / static_cast<float>(m_Bars.size() + 1)) * m_Size.y;
+		}
 	}
 
 	UpdateBarsFromRelative();
@@ -724,4 +860,10 @@ void vui::RenderFrame::ResetDrag()
 	m_DraggingBarIdx = -1;
 	m_DraggingMouseBegin = { 0 ,0 };
 	m_DraggingObjectBegin = { 0, 0 };
+}
+
+void vui::RenderFrame::UpdateBackground()
+{
+	m_Background->SetSuperOffset(m_Position + m_SuperOffset + static_cast<int32_t>(m_Padding));
+	m_Background->SetSize(m_Size - (static_cast<int32_t>(m_Padding) * 2));
 }

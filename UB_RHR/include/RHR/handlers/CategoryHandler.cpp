@@ -1,4 +1,4 @@
-#include "CategoryHandler.hpp"
+#include "CatagoryHandler.hpp"
 
 #include "registries/UIRegistry.hpp"
 #include "handlers/ProjectHandler.hpp"
@@ -509,72 +509,159 @@ void CategoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) co
 CategoryHandler* CategoryHandler::m_handler;
 */
 
-void CategoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
+static void ButtonCatagoryCallback(void* data)
+{
+	CatagoryHandler::ActiveCatagory* activeCatagory = (CatagoryHandler::ActiveCatagory*)data;
+	CatagoryHandler::SelectCatagory(*activeCatagory);
+}
+
+void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 {
 	m_RenderFrame = renderFrame;
-	m_RenderFrame->SetPadding(50);
-	const std::vector<CatagoryInfo>& infos = BlockRegistry::GetRegistry().GetCategories();
+	m_RenderFrame->SetPadding(4);
+	m_RenderFrame->EnableBackground(Color::BackgroundColor2);
+	m_RenderFrame->DisableBarMovement();
 
-	std::vector<std::string> binnedMods;
+	const std::vector<CatagoryInfo>& categoryInfos = BlockRegistry::GetRegistry().GetCategories();
+	const std::vector<BlockInfo>& blockInfos = BlockRegistry::GetRegistry().GetBlocks();
+
+	//std::vector<std::string> binnedMods;
 	std::vector<std::vector<ModCatagory*>> binnedCatagories;
+	std::vector<std::vector<std::vector<ModBlock*>>> binnedBlocks;
 
 	bool found = false;
 
-	for (auto& info : infos)
+	// TODO: this modularization should be done in BlockRegistry
+
+	for (size_t i = 0; i < ProjectHandler::Mods.size(); i++)
 	{
-		for (size_t i = 0; i < binnedMods.size(); i++)
+		binnedCatagories.push_back(std::vector<ModCatagory*>());
+		binnedBlocks.push_back(std::vector<std::vector<ModBlock*>>());
+
+		for (size_t a = 0; a < categoryInfos.size(); a++)
 		{
-			if (info.CatagoryModUnlocalizedName == binnedMods[i])
+			if (categoryInfos[a].CatagoryModUnlocalizedName == ProjectHandler::Mods[i])
 			{
-				binnedCatagories[i].push_back(info.CatagoryModCatagory);
-				found = true;
+				binnedCatagories[i].push_back(categoryInfos[a].CatagoryModCatagory);
+				binnedBlocks[i].push_back(std::vector<ModBlock*>());
+
+				for (size_t b = 0; b < blockInfos.size(); b++)
+				{
+					if (blockInfos[b].BlockModUnlocalizedName == ProjectHandler::Mods[i] &&
+						blockInfos[b].BlockModBlock->GetCategory() == categoryInfos[a].CatagoryModCatagory->GetUnlocalizedName())
+					{
+						binnedBlocks[i][a].push_back(blockInfos[b].BlockModBlock);
+					}
+				}
 			}
 		}
-
-		if (!found)
-		{
-			binnedMods.push_back(info.CatagoryModUnlocalizedName);
-			binnedCatagories.push_back(std::vector<ModCatagory*>());
-			binnedCatagories.back().push_back(info.CatagoryModCatagory);
-		}
-		else
-			found = false;
 	}
 
-	m_ModGroups.reserve(binnedMods.size());
+	//for (auto& info : catagoryInfos)
+	//{
+	//	for (size_t i = 0; i < binnedMods.size(); i++)
+	//	{
+	//		if (info.CatagoryModUnlocalizedName == binnedMods[i])
+	//		{
+	//			binnedCatagories[i].push_back(info.CatagoryModCatagory);
+	//			binnedBlocks[i].push_back(std::vector<ModBlock*>());
+
+	//			for (auto& blockInfo : blockInfos)
+	//			{
+	//				if (blockInfo.BlockModUnlocalizedName == binnedMods[i] &&
+	//					blockInfo.BlockModBlock->GetCategory() == info.CatagoryModCatagory->GetUnlocalizedName())
+	//					binnedBlocks[i].back().push_back(blockInfo.BlockModBlock);
+	//			}
+
+	//			found = true;
+	//		}
+	//	}
+
+	//	if (!found)
+	//	{
+	//		binnedMods.push_back(info.CatagoryModUnlocalizedName);
+	//		binnedCatagories.push_back(std::vector<ModCatagory*>());
+	//		binnedBlocks.push_back(std::vector<std::vector<ModBlock*>>());
+
+	//		binnedCatagories.back().push_back(info.CatagoryModCatagory);
+
+	//		for (auto& blockInfo : blockInfos)
+	//		{
+	//			if (blockInfo.BlockModUnlocalizedName == binnedMods.back() &&
+	//				blockInfo.BlockModBlock->GetCategory() == info.CatagoryModCatagory->GetUnlocalizedName())
+	//				binnedBlocks.back().back().push_back(blockInfo.BlockModBlock);
+	//		}
+	//	}
+	//	else
+	//		found = false;
+	//}
+
+	m_ModGroups.reserve(ProjectHandler::Mods.size());
 
 	int32_t offset = Block::Padding / 2;
 
-	for (size_t i = 0; i < binnedMods.size(); i++)
+	for (size_t i = 0; i < ProjectHandler::Mods.size(); i++)
 	{
 		offset += Block::Padding / 2;
 
  		ModGroup group = ModGroup(Color::TextPrimaryColor, Color::BackgroundColor3);
 		group.ModCategories.reserve(binnedCatagories[i].size());
-		group.ModButton->SetPosition({ Block::Padding, offset });
+		group.ModButton->SetSize({ 200, 16 });
+		group.ModButton->EnableFillWidth();
 		m_RenderFrame->AddContent(group.ModButton, std::weak_ptr<IUpdatable>(), group.ModButton, group.ModButton, vui::LocalCardinal::DOWN);
 
 		offset += Block::Padding / 2;
  		
-		for (auto& catagory : binnedCatagories[i])
+		ActiveCatagory* activeCatagories = new ActiveCatagory[binnedCatagories[i].size()];
+
+		for (size_t a = 0; a < binnedCatagories[i].size(); a++)
 		{
+			activeCatagories[a].ActiveModGroup = static_cast<uint16_t>(i);
+			activeCatagories[a].ActiveModGroupCatagory = static_cast<uint16_t>(a);
+
 			std::shared_ptr<vui::RenderButton> button = std::make_shared<vui::RenderButton>(Color::TextPrimaryColor, Color::BackgroundColor3);
 			button->SetWeak(button);
-			//button->SetPosition({ Block::Padding / 2, offset });
-			button->SetPosition({ 0, 0 });
-			button->SetSize({ 200, 30 });
-			button->SetColorSecondary(catagory->GetColor());
+			button->SetSize({ 200, 16 });
+			button->SetPosition({ 16, 0 });
+			button->SetColorSecondary(binnedCatagories[i][a]->GetColor());
+			button->EnableFillWidth();
+			button->SetCallback(ButtonCatagoryCallback, activeCatagories + a);
 			m_RenderFrame->AddContent(button, std::weak_ptr<IUpdatable>(), button, button, vui::LocalCardinal::DOWN);
 
 			offset += Block::Padding / 2 + button->GetSize().y;
 			group.ModCategories.push_back(std::move(button));
+
+			group.ModCategoryCollections.push_back(std::vector<std::shared_ptr<Collection>>());
+			group.ModCategoryStacks.push_back(std::vector<std::shared_ptr<Stack>>());
+			group.ModCategoryBlocks.push_back(std::vector<std::shared_ptr<Block>>());
+
+			for (auto binnedBlock : binnedBlocks[i][a])
+			{
+				std::shared_ptr<Collection> collection = std::make_shared<Collection>();
+				collection->SetWeak(collection);
+
+				std::shared_ptr<Stack> stack = std::make_shared<Stack>();
+				stack->SetWeak(stack);
+
+				std::shared_ptr<Block> block = std::make_shared<Block>(binnedBlock->GetUnlocalizedName());
+				block->SetWeak(block);
+				
+				stack->AddBlock(block);
+				collection->AddStack(stack);
+
+				group.ModCategoryCollections.back().push_back(collection);
+				group.ModCategoryStacks.back().push_back(stack);
+				group.ModCategoryBlocks.back().push_back(block);
+			}
 		}
 
 		m_ModGroups.push_back(std::move(group));
 	}
+
+	SelectCatagory(m_ActiveCatagory);
 }
 
-void CategoryHandler::Render()
+void CatagoryHandler::Render()
 {
 	for (auto& group : m_ModGroups)
 	{
@@ -585,6 +672,30 @@ void CategoryHandler::Render()
 	}
 }
 
-std::vector<CategoryHandler::ModGroup> CategoryHandler::m_ModGroups;
+void CatagoryHandler::SelectCatagory(ActiveCatagory activeCatagory)
+{
+	m_ActiveCatagory = activeCatagory;
 
-std::shared_ptr<vui::RenderFrame> CategoryHandler::m_RenderFrame;
+	if (m_ActiveCatagory.ActiveModGroup >= m_ModGroups.size())
+	{
+		Logger::Warn("Failed to load catagory. Mod idx out of range (" + std::to_string(m_ActiveCatagory.ActiveModGroup) + " >= " + std::to_string(m_ModGroups.size()) + ")");
+		return;
+	}
+
+	if (m_ActiveCatagory.ActiveModGroupCatagory >= m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategories.size())
+	{
+		Logger::Warn("Failed to load catagory. Category idx out of range (" + std::to_string(m_ActiveCatagory.ActiveModGroupCatagory) + " >= " + std::to_string(m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategories.size()) + ")");
+		return;
+	}
+
+	Plane::ToolbarPlane->DeleteContents();
+
+	for (auto collection : m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategoryCollections[m_ActiveCatagory.ActiveModGroupCatagory])
+		Plane::ToolbarPlane->AddCollection(collection, false);
+}
+
+std::vector<CatagoryHandler::ModGroup> CatagoryHandler::m_ModGroups;
+
+std::shared_ptr<vui::RenderFrame> CatagoryHandler::m_RenderFrame;
+
+CatagoryHandler::ActiveCatagory CatagoryHandler::m_ActiveCatagory = { 0, 0 };

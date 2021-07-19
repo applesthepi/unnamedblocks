@@ -30,6 +30,8 @@ namespace vui
 		void SetCallback(void(*callback)(void*), void* data);
 
 		void MouseUpdate(glm::vec<2, int32_t> position, float scroll, MouseOperation operation);
+
+		void EnableFillWidth();
 	private:
 		void OnRender() override;
 
@@ -49,6 +51,8 @@ namespace vui
 		/// Callback information.
 		void(*m_Callback)(void*);
 		void* m_CallbackData;
+
+		bool m_EnableFillWidth;
 	};
 
 }

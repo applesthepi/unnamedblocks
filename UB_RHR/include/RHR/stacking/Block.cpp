@@ -79,8 +79,8 @@ const ModCatagory* Block::GetModCategory()
 	return m_modCategory;
 }
 
-int16_t Block::Padding = 4;
-int16_t Block::Height = 30;
+int16_t Block::Padding = 2;
+int16_t Block::Height = 20;
 int16_t Block::HeightContent = Height - (Padding * 2);
 
 void Block::FrameUpdate(double deltaTime)
@@ -161,29 +161,31 @@ void Block::UpdateArguments()
 
 			width += arg->GetWidth() + Block::Padding;
 		}
-		/*else if (argumentInit[i].Type == BlockArgumentType::STRING)
+		else if (argumentInit[i].Type == BlockArgumentType::STRING)
 		{
-			args.push_back(new ArgumentString(argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+			std::shared_ptr<ArgumentString> arg = std::make_shared<ArgumentString>(argColor);
+			arg->SetWeak(arg);
+			args.push_back(arg);
 
-			args.back()->setPosition(width, Global::BlockBorder);
-			args.back()->SetMode(argumentInit[i].Mode);
-			args.back()->SetData(argumentInit[i].DefaultValue);
-			args.back()->UpdateData();
+			arg->SetPosition({ width, Block::Padding });
+			arg->SetSuperOffset(m_Position + m_SuperOffset);
+			arg->SetData(argumentInit[i].DefaultValue);
 
-			width += args.back()->GetWidth();
+			width += arg->GetWidth() + Block::Padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
 		{
-			args.push_back(new ArgumentBool(argumentInit[i].Restriction == BlockArgumentVariableModeRestriction::NONE));
+			std::shared_ptr<ArgumentBoolean> arg = std::make_shared<ArgumentBoolean>(argColor);
+			arg->SetWeak(arg);
+			args.push_back(arg);
 
-			args.back()->setPosition(width, Global::BlockBorder);
-			args.back()->SetMode(argumentInit[i].Mode);
-			args.back()->SetData(argumentInit[i].DefaultValue);
-			args.back()->UpdateData();
+			arg->SetPosition({ width, Block::Padding });
+			arg->SetSuperOffset(m_Position + m_SuperOffset);
+			arg->SetData(argumentInit[i].DefaultValue);
 
-			width += args.back()->GetWidth();
+			width += arg->GetWidth() + Block::Padding;
 		}
-		else if (argumentInit[i].Type == BlockArgumentType::ANY)
+		/*else if (argumentInit[i].Type == BlockArgumentType::ANY)
 		{
 			args.push_back(new ArgumentAny());
 
