@@ -1,4 +1,4 @@
-#include "BlockRealTan.h"
+#include "BlockRealTan.hpp"
 #include <cmath>
 
 static void ExecuteRelease(ModBlockPass* pass)

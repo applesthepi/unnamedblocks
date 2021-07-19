@@ -1,4 +1,4 @@
-#include "BlockRealLogarithmic.h"
+#include "BlockRealLogarithmic.hpp"
 #include <string>
 #include <cmath>
 

@@ -1,4 +1,4 @@
-#include "BlockStringFind.h"
+#include "BlockStringFind.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

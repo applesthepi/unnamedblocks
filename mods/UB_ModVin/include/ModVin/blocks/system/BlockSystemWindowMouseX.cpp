@@ -1,5 +1,5 @@
-#include "BlockSystemWindowMouseX.h"
-#include "BlockSystemCreateWindow.h"
+#include "BlockSystemWindowMouseX.hpp"
+#include "BlockSystemCreateWindow.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -7,8 +7,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
-	pass->GetReal(1) = sf::Mouse::getPosition(*handler->GetWindow()).x;
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//pass->GetReal(1) = sf::Mouse::getPosition(*handler->GetWindow()).x;
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

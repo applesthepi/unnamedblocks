@@ -1,15 +1,15 @@
-#include "BlockSystemWindowRender.h"
-#include "BlockSystemCreateWindow.h"
+#include "BlockSystemWindowRender.hpp"
+#include "BlockSystemCreateWindow.hpp"
 
 #include <SFML/Graphics.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {	
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
 
-	handler->GetWindow()->clear(sf::Color(30, 30, 40));
-	handler->DrawAll();
-	handler->GetWindow()->display();
+	//handler->GetWindow()->clear(sf::Color(30, 30, 40));
+	//handler->DrawAll();
+	//handler->GetWindow()->display();
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

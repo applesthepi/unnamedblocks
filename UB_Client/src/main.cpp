@@ -3,7 +3,7 @@
 #include "ModLoader.hpp"
 #include "ui/Renderer.hpp"
 #include "ui/RenderTools.hpp"
-#include "handlers/CatagoryHandler.hpp"
+#include "handlers/CategoryHandler.hpp"
 #include "registries/UIRegistry.hpp"
 // #include "ui/ButtonText.hpp"
 #include "imgui/imgui.h"

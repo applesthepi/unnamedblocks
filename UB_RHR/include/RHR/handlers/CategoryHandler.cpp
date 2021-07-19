@@ -635,15 +635,16 @@ void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 			group.ModCategoryStacks.push_back(std::vector<std::shared_ptr<Stack>>());
 			group.ModCategoryBlocks.push_back(std::vector<std::shared_ptr<Block>>());
 
-			for (auto binnedBlock : binnedBlocks[i][a])
+			for (size_t b = 0; b < binnedBlocks[i][a].size(); b++)
 			{
 				std::shared_ptr<Collection> collection = std::make_shared<Collection>();
 				collection->SetWeak(collection);
+				collection->SetPosition({ 0, (Block::Height + (Block::Padding * 2)) * b });
 
 				std::shared_ptr<Stack> stack = std::make_shared<Stack>();
 				stack->SetWeak(stack);
 
-				std::shared_ptr<Block> block = std::make_shared<Block>(binnedBlock->GetUnlocalizedName());
+				std::shared_ptr<Block> block = std::make_shared<Block>(binnedBlocks[i][a][b]->GetUnlocalizedName());
 				block->SetWeak(block);
 				
 				stack->AddBlock(block);

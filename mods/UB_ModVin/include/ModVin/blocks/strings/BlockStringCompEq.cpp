@@ -1,4 +1,4 @@
-#include "BlockStringCompEq.h"
+#include "BlockStringCompEq.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

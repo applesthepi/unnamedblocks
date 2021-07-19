@@ -1,6 +1,6 @@
-#include "BlockUtilityListDestroy.h"
+#include "BlockUtilityListDestroy.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

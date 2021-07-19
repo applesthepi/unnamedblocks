@@ -1,4 +1,4 @@
-#include "BlockBooleanOr.h"
+#include "BlockBooleanOr.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

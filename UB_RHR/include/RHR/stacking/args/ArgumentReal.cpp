@@ -3,7 +3,7 @@
 #include "ui/Renderer.hpp"
 #include "stacking/Block.hpp"
 
-#define ARG_REAL_DECORE_WIDTH 10
+#define ARG_REAL_DECORE_WIDTH 6
 
 ArgumentReal::ArgumentReal(const Color& color)
 	: Argument(color)
@@ -55,7 +55,7 @@ void ArgumentReal::OnUpdateBuffers()
 	int32_t fullWidth = GetWidth();
 
 	Vertex* vertices = (Vertex*)alloca(sizeof(Vertex) * 3 * 4);
-	float otherSide = ARG_REAL_DECORE_WIDTH + GetWidth();
+	float otherSide = ARG_REAL_DECORE_WIDTH + m_Text->GetSize().x;
 
 	vertices[0] = Vertex({ static_cast<float>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
 	vertices[1] = Vertex({ 0, 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
@@ -70,7 +70,7 @@ void ArgumentReal::OnUpdateBuffers()
 	vertices[8] = Vertex({ otherSide, static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
 
 	vertices[9] = Vertex({ otherSide, static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[10] = Vertex({ otherSide + static_cast<float>(ARG_REAL_DECORE_WIDTH), static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[10] = Vertex({ otherSide + static_cast<float>(ARG_REAL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
 	vertices[11] = Vertex({ otherSide, static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
 
 	m_DecorLeftTop->UpdateVertices(vertices + 0, 3, true);

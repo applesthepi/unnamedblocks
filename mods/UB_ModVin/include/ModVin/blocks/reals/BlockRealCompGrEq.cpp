@@ -1,4 +1,4 @@
-#include "BlockRealCompGrEq.h"
+#include "BlockRealCompGrEq.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

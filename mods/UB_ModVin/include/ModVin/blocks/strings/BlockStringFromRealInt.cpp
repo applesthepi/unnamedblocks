@@ -1,4 +1,4 @@
-#include "BlockStringFromRealInt.h"
+#include "BlockStringFromRealInt.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

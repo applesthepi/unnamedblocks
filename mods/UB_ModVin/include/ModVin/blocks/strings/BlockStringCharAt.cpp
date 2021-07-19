@@ -1,4 +1,4 @@
-#include "BlockStringCharAt.h"
+#include "BlockStringCharAt.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

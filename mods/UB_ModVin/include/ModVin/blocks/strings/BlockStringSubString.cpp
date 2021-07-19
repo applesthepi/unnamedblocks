@@ -1,4 +1,4 @@
-#include "BlockStringSubString.h"
+#include "BlockStringSubString.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

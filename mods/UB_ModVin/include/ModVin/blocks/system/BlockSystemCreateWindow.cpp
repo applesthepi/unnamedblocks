@@ -1,20 +1,20 @@
-#include "BlockSystemCreateWindow.h"
+#include "BlockSystemCreateWindow.hpp"
 
 #include <SFML/Graphics.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {	
-	sf::RenderWindow* window = new sf::RenderWindow();
+	//sf::RenderWindow* window = new sf::RenderWindow();
 
-	window->create(sf::VideoMode(1920, 1080), "Unnamed Blocks Runtime Environment");
-	window->setFramerateLimit(60);
-	window->setVerticalSyncEnabled(true);
+	//window->create(sf::VideoMode(1920, 1080), "Unnamed Blocks Runtime Environment");
+	//window->setFramerateLimit(60);
+	//window->setVerticalSyncEnabled(true);
 
-	window->clear(sf::Color(30, 30, 40));
-	window->display();
+	//window->clear(sf::Color(30, 30, 40));
+	//window->display();
 
-	WindowHandler* handler = new WindowHandler(pass, window);
-	pass->GetReal(0) = pass->CustomPut(handler);
+	//WindowHandler* handler = new WindowHandler(pass, window);
+	//pass->GetReal(0) = pass->CustomPut(handler);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -24,7 +24,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 static bool RuntimeGlobalPreinit(PreProcessorData&)
 {
-	InputHandler::Initialization();
+	//InputHandler::Initialization();
 	return true;
 }
 

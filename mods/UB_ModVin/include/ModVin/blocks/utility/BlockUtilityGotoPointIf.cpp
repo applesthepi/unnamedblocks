@@ -1,5 +1,5 @@
-#include "BlockUtilityGotoPointIf.h"
-#include "BlockUtilityMarkPoint.h"
+#include "BlockUtilityGotoPointIf.hpp"
+#include "BlockUtilityMarkPoint.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <chrono>

@@ -1,6 +1,6 @@
-#include "BlockUtilityGetMicro.h"
+#include "BlockUtilityGetMicro.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 #include <chrono>
 
 static void ExecuteRelease(ModBlockPass* pass)

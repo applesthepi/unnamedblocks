@@ -1,4 +1,4 @@
-#include "BlockStringLength.h"
+#include "BlockStringLength.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

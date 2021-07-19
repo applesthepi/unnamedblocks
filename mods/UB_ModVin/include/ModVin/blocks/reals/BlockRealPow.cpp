@@ -1,4 +1,4 @@
-#include "BlockRealPow.h"
+#include "BlockRealPow.hpp"
 #include <cmath>
 
 static void ExecuteRelease(ModBlockPass* pass)

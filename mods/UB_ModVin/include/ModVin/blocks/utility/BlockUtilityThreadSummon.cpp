@@ -1,7 +1,7 @@
-#include "BlockUtilityThreadSummon.h"
-#include "BlockUtilityFunctionDefine.h"
+#include "BlockUtilityThreadSummon.hpp"
+#include "BlockUtilityFunctionDefine.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

@@ -1,5 +1,5 @@
-#include "BlockUtilityFunctionCall.h"
-#include "BlockUtilityFunctionDefine.h"
+#include "BlockUtilityFunctionCall.hpp"
+#include "BlockUtilityFunctionDefine.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

@@ -1,4 +1,4 @@
-#include "BlockRealMultiply.h"
+#include "BlockRealMultiply.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

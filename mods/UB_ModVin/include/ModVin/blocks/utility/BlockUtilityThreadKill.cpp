@@ -1,6 +1,6 @@
-#include "BlockUtilityThreadKill.h"
+#include "BlockUtilityThreadKill.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

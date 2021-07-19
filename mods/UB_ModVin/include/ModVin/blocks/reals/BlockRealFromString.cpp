@@ -1,4 +1,4 @@
-#include "BlockRealFromString.h"
+#include "BlockRealFromString.hpp"
 #include <string>
 
 static void ExecuteRelease(ModBlockPass* pass)

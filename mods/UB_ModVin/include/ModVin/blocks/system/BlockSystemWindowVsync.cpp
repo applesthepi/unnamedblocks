@@ -1,5 +1,5 @@
-#include "BlockSystemWindowVsync.h"
-#include "BlockSystemCreateWindow.h"
+#include "BlockSystemWindowVsync.hpp"
+#include "BlockSystemCreateWindow.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -7,8 +7,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
-	handler->GetWindow()->setVerticalSyncEnabled(pass->GetBool(1));
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//handler->GetWindow()->setVerticalSyncEnabled(pass->GetBool(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

@@ -1,4 +1,4 @@
-#include "BlockBooleanForce.h"
+#include "BlockBooleanForce.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

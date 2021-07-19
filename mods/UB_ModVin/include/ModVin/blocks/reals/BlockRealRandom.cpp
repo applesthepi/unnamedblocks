@@ -1,4 +1,4 @@
-#include "BlockRealRandom.h"
+#include "BlockRealRandom.hpp"
 #include <cmath>
 
 static void ExecuteRelease(ModBlockPass* pass)

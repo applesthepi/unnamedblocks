@@ -1,7 +1,7 @@
-#include "BlockUtilityGlobalSetReal.h"
-#include "aid/UtilityGlobalReal.h"
+#include "BlockUtilityGlobalSetReal.hpp"
+#include "aid/UtilityGlobalReal.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

@@ -1,4 +1,4 @@
-#include "BlockRealMod.h"
+#include "BlockRealMod.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

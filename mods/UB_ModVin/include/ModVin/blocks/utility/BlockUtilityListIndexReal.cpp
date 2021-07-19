@@ -1,6 +1,6 @@
-#include "BlockUtilityListIndexReal.h"
+#include "BlockUtilityListIndexReal.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

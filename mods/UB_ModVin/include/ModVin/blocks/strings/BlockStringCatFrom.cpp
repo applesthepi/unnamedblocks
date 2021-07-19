@@ -1,4 +1,4 @@
-#include "BlockStringCatFrom.h"
+#include "BlockStringCatFrom.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

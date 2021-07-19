@@ -1,5 +1,5 @@
-#include "BlockSystemPullEvents.h"
-#include "BlockSystemCreateWindow.h"
+#include "BlockSystemPullEvents.hpp"
+#include "BlockSystemCreateWindow.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -7,24 +7,24 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
-	sf::RenderWindow* window = handler->GetWindow();
-	
-	sf::Event ev;
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//sf::RenderWindow* window = handler->GetWindow();
+	//
+	//sf::Event ev;
 
-	while (window->pollEvent(ev))
-	{
-		if (ev.type == sf::Event::Closed)
-		{
-			window->close();
-			pass->Stop();
-			return;
-		}
-		else if (ev.type == sf::Event::MouseWheelScrolled)
-		{
-			handler->AddScroll(ev.mouseWheelScroll.delta);
-		}
-	}
+	//while (window->pollEvent(ev))
+	//{
+	//	if (ev.type == sf::Event::Closed)
+	//	{
+	//		window->close();
+	//		pass->Stop();
+	//		return;
+	//	}
+	//	else if (ev.type == sf::Event::MouseWheelScrolled)
+	//	{
+	//		handler->AddScroll(ev.mouseWheelScroll.delta);
+	//	}
+	//}
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

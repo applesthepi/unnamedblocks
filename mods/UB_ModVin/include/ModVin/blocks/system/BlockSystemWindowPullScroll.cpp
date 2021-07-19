@@ -1,5 +1,5 @@
-#include "BlockSystemWindowPullScroll.h"
-#include "BlockSystemCreateWindow.h"
+#include "BlockSystemWindowPullScroll.hpp"
+#include "BlockSystemCreateWindow.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <chrono>
@@ -7,8 +7,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
-	pass->GetReal(1) = handler->PullScroll();
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//pass->GetReal(1) = handler->PullScroll();
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

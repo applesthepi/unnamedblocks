@@ -1,12 +1,12 @@
-#include "BlockSystemWindowMouseLeft.h"
+#include "BlockSystemWindowMouseLeft.hpp"
 
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
 #include <chrono>
 #include <thread>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
+	//pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

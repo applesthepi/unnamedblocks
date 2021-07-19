@@ -1,4 +1,4 @@
-#include "BlockStringLog.h"
+#include "BlockStringLog.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

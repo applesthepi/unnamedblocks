@@ -1,12 +1,12 @@
-#include "BlockSystemWindowMouseMiddle.h"
+#include "BlockSystemWindowMouseMiddle.hpp"
 
-#include <SFML/Graphics.hpp>
+//#include <SFML/Graphics.hpp>
 #include <chrono>
 #include <thread>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
+	//pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Middle);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

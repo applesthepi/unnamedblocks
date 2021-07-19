@@ -1,5 +1,5 @@
-#include "UtilityGlobalReal.h"
-#include <Cappuccino/Logger.h>
+#include "UtilityGlobalReal.hpp"
+#include <Cappuccino/Logger.hpp>
 
 UtilityGlobalReal::UtilityGlobalReal()
 {

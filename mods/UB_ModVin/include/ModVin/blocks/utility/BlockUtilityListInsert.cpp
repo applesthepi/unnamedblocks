@@ -1,7 +1,7 @@
-#include "BlockUtilityListInsert.h"
-#include "aid/UtilityList.h"
+#include "BlockUtilityListInsert.hpp"
+#include "aid/UtilityList.hpp"
 
-#include <Cappuccino/Registration.h>
+#include <Cappuccino/Registration.hpp>
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

@@ -1,4 +1,4 @@
-#include "BlockRealMinus.h"
+#include "BlockRealMinus.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
