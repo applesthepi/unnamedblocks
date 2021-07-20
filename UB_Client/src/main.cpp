@@ -5,6 +5,7 @@
 #include "ui/RenderTools.hpp"
 #include "handlers/CategoryHandler.hpp"
 #include "registries/UIRegistry.hpp"
+#include "registries/UIRegistry.hpp"
 // #include "ui/ButtonText.hpp"
 #include "imgui/imgui.h"
 
@@ -408,6 +409,7 @@ int main()
 
 	// Critical Setup
 
+	UIRegistry::Initialize();
 	InputHandler::Initialization();
 	BlockRegistry::CreateBlockRegistry();
 

@@ -16,7 +16,7 @@ vui::RenderText::RenderText()
 void vui::RenderText::SetText(const std::string& text)
 {
 	m_Text = text;
-	m_Size = { text.size() * 20, Block::Height - (Block::Padding * 2) };
+	m_Size = { text.size() * 10, Block::Height - (Block::Padding * 2) };
 	MarkDirty();
 }
 

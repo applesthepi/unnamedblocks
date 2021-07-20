@@ -639,6 +639,7 @@ void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 			{
 				std::shared_ptr<Collection> collection = std::make_shared<Collection>();
 				collection->SetWeak(collection);
+				collection->DisplayVanity(false);
 				collection->SetPosition({ 0, (Block::Height + (Block::Padding * 2)) * b });
 
 				std::shared_ptr<Stack> stack = std::make_shared<Stack>();

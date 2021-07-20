@@ -48,19 +48,18 @@ void ArgumentBoolean::OnUpdateBuffers()
 
 	int32_t fullWidth = GetWidth();
 
-	Vertex* verticesLeft = (Vertex*)alloca(sizeof(Vertex) * 3);
-	Vertex* verticesRight = (Vertex*)alloca(sizeof(Vertex) * 3);
+	Vertex vertices[6];
 
-	verticesLeft[0] = Vertex({ static_cast<float>(ARG_BOOL_DECORE_WIDTH), 0.0f, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	verticesLeft[1] = Vertex({ static_cast<float>(0.0f), 0.0f/*static_cast<float>(Block::HeightContent / 2)*/, 0 }, m_BlockColor.GetNormalized(), { 1.0f, 0.0f });
-	verticesLeft[2] = Vertex({ static_cast<float>(ARG_BOOL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 1.0f, 1.0f });
+	vertices[0] = Vertex({ static_cast<float>(ARG_BOOL_DECORE_WIDTH), 0.0f, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[1] = Vertex({ static_cast<float>(0.0f), 0.0f/*static_cast<float>(Block::HeightContent / 2)*/, 0 }, m_BlockColor.GetNormalized(), { 1.0f, 0.0f });
+	vertices[2] = Vertex({ static_cast<float>(ARG_BOOL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 1.0f, 1.0f });
 
-	verticesRight[0] = Vertex({ static_cast<float>(fullWidth - ARG_BOOL_DECORE_WIDTH), 0.0f, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	verticesRight[1] = Vertex({ static_cast<float>(fullWidth), static_cast<float>(Block::HeightContent/* / 2*/), 0 }, m_BlockColor.GetNormalized(), { 1.0f, 0.0f });
-	verticesRight[2] = Vertex({ static_cast<float>(fullWidth - ARG_BOOL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 1.0f, 1.0f });
+	vertices[3] = Vertex({ static_cast<float>(fullWidth - ARG_BOOL_DECORE_WIDTH), 0.0f, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[4] = Vertex({ static_cast<float>(fullWidth), static_cast<float>(Block::HeightContent/* / 2*/), 0 }, m_BlockColor.GetNormalized(), { 1.0f, 0.0f });
+	vertices[5] = Vertex({ static_cast<float>(fullWidth - ARG_BOOL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 1.0f, 1.0f });
 
-	m_DecorLeft->UpdateVertices(verticesLeft, 3, true);
-	m_DecorRight->UpdateVertices(verticesRight, 3, true);
+	m_DecorLeft->UpdateVertices(vertices + 0, 3, true);
+	m_DecorRight->UpdateVertices(vertices + 3, 3, true);
 }
 
 void ArgumentBoolean::OnReloadSwapChain()

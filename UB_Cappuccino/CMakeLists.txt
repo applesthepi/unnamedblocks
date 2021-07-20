@@ -63,6 +63,7 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan
+	freetype
 )
 
 if(MSVC)

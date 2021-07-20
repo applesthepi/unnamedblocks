@@ -181,8 +181,7 @@ bool Plane::IsToolbar()
 
 void Plane::DeleteContents()
 {
-	for (uint64_t i = 0; i < m_Collections.size(); i++)
-		DeleteCollection(0);
+	m_Collections.clear();
 }
 
 void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
@@ -204,8 +203,15 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 		(!m_Toolbar && Plane::ToolbarPlane->DraggingStack()))
 		return;
 
+	//if (position.x < m_Position.x + m_SuperOffset.x ||
+	//	position.x > m_Position.x + m_SuperOffset.x + m_Size.x ||
+	//	position.y < m_Position.y + m_SuperOffset.y ||
+	//	position.y > m_Position.y + m_SuperOffset.y + m_Size.y)
+	//	return;
+
 	//if (DraggingStack() || DraggingCollection())
 	//	collectionMax--;
+
 
 	if (DraggingStack())
 	{
@@ -1233,6 +1239,7 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 			else if (pixelPosition.x > planePrimaryPosition.x && pixelPosition.x < planePrimaryPosition.x + planePrimarySize.x &&
 					 pixelPosition.y > planePrimaryPosition.y && pixelPosition.y < planePrimaryPosition.y + planePrimarySize.y)
 			{
+				Logger::Debug("dropping over primary plane");
 				bool found = false;
 
 				for (uint64_t i = 0; i < Plane::PrimaryPlane->GetCollections().size(); i++)

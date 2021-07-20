@@ -42,6 +42,7 @@ target_link_libraries(UB_CLIENT PUBLIC
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan
+	freetype
 	
     UB_CAPPUCCINO
     UB_ESPRESSO

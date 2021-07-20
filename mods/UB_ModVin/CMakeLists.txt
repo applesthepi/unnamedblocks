@@ -275,6 +275,10 @@ target_link_libraries(UB_MOD_VIN PUBLIC
 	UB_CAPPUCCINO
 )
 
+if(MSVC)
+	target_compile_options(UB_MOD_VIN PRIVATE "/MP")
+endif()
+
 add_custom_command(
 	TARGET UB_MOD_VIN POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy

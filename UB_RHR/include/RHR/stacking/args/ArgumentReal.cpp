@@ -54,7 +54,7 @@ void ArgumentReal::OnUpdateBuffers()
 
 	int32_t fullWidth = GetWidth();
 
-	Vertex* vertices = (Vertex*)alloca(sizeof(Vertex) * 3 * 4);
+	Vertex vertices[12];
 	float otherSide = ARG_REAL_DECORE_WIDTH + m_Text->GetSize().x;
 
 	vertices[0] = Vertex({ static_cast<float>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });

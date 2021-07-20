@@ -116,6 +116,7 @@ target_link_libraries(UB_RHR PUBLIC
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan
+	freetype
 )
 
 target_include_directories(UB_RHR PUBLIC

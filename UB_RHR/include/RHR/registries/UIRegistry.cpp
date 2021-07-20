@@ -1,50 +1,58 @@
 #include "UIRegistry.hpp"
 
-// void UIRegistry::AddComponent(IUI* ui)
-// {
-// 	m_ui.push_back(ui);
-// }
+void UIRegistry::Initialize()
+{
+	FT_Error error;
 
-// void UIRegistry::RemoveComponent(IUI* ui)
-// {
-// 	for (uint64_t i = 0; i < m_ui.size(); i++)
-// 	{
-// 		if (m_ui[i] == ui)
-// 		{
-// 			m_ui.erase(m_ui.begin() + i);
-// 			return;
-// 		}
-// 	}
+	error = FT_Init_FreeType(&m_ft_library);
+	if (error)
+	{
+		Logger::Error("failed to init freetype \"" + std::to_string(error) + "\"");
+		return;
+	}
 
-// 	Logger::Error("failed to remove ui component from UIRegistry");
-// }
+	error = FT_New_Face(m_ft_library, "res/CascadiaMono-Regular.ttf", 0, &m_ft_face);
+	if (error)
+	{
+		Logger::Error("failed to init freetype font \"" + std::to_string(error) + "\"");
+		return;
+	}
 
-// UIRegistry& UIRegistry::GetRegistry()
-// {
-// 	return m_registry;
-// }
+	error = FT_Set_Pixel_Sizes(m_ft_face, 0, 50);
+	if (error)
+	{
+		Logger::Error("failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
+		return;
+	}
 
-// void UIRegistry::frameUpdate(double deltaTime)
-// {
-// 	for (uint64_t i = 0; i < m_ui.size(); i++)
-// 		m_ui[i]->frameUpdate(deltaTime);
-// }
+	int pen_x = 0;
+	int pen_y = 0;
 
-// bool UIRegistry::mouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button)
-// {
-// 	for (uint64_t i = 0; i < m_ui.size(); i++)
-// 	{
-// 		if (m_ui[i]->mouseButton(down, position, button))
-// 			return true;
-// 	}
+	std::string test = "test";
 
-// 	return false;
-// }
+	for (int i = 0; i < test.size(); i++)
+	{
+		FT_UInt glyph_index = FT_Get_Char_Index(m_ft_face, test[i]);
 
-// void UIRegistry::draw(sf::RenderTarget& target, sf::RenderStates states) const
-// {
-// 	for (uint64_t i = 0; i < m_ui.size(); i++)
-// 		target.draw(*m_ui[i]);
-// }
+		error = FT_Load_Glyph(m_ft_face, glyph_index, FT_LOAD_DEFAULT);
+		if (error)
+		{
+			Logger::Error("failed load glyph \"" + std::to_string(error) + "\"");
+			continue;
+		}
 
-// UIRegistry UIRegistry::m_registry;
+		error = FT_Render_Glyph(m_ft_face->glyph, FT_RENDER_MODE_NORMAL);
+		if (error)
+		{
+			Logger::Error("failed render glyph \"" + std::to_string(error) + "\"");
+			continue;
+		}
+
+		FT_Bitmap map = m_ft_face->glyph->bitmap;
+
+	}
+}
+
+FT_Library UIRegistry::m_ft_library;
+
+FT_Face UIRegistry::m_ft_face;

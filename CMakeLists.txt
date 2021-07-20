@@ -32,6 +32,7 @@ find_package(imgui CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(zstd CONFIG REQUIRED)
+find_package(freetype CONFIG REQUIRED)
 
 # find_library(TCC_LIBRARY NAMES libtcc1-64 PATHS "${CMAKE_SOURCE_DIR}/tcc")
 # find_path(TCC_INCLUDE NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}/tcc")

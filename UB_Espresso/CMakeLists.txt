@@ -37,6 +37,7 @@ target_link_libraries(UB_ESPRESSO PUBLIC
 	glfw
 	imgui::imgui
 	Vulkan::Vulkan
+	freetype
 )
 
 if(MSVC)
