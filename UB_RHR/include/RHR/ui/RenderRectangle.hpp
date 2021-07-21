@@ -23,6 +23,10 @@ public:
 	/// \param Texture path.
 	void SetTexture(const std::string& texture);
 
+	/// Sets internal texture of rectangle.
+	/// \param Internal texture.
+	void SetTexture(RenderObject::TextureType type);
+
 	/// Sets Z depth.
 	/// \param Z depth.
 	void SetDepth(uint32_t depth);
@@ -47,6 +51,7 @@ private:
 	bool m_InBounds;
 
 	std::string m_Texture;
+	RenderObject::TextureType m_TextureType;
 	uint32_t m_Depth;
 
 	glm::vec<2, int32_t> m_UseSize;

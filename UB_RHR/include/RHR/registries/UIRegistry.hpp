@@ -10,7 +10,10 @@ class UIRegistry
 {
 public:
 	static void Initialize();
+	static VkImage& GetTextureSheetImage();
 private:
 	static FT_Library m_ft_library;
 	static FT_Face m_ft_face;
+	static VkImage m_texture_sheet_image;
+	static VkDeviceMemory m_texture_sheet_memory;
 };

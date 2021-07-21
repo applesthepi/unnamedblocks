@@ -2,6 +2,7 @@
 
 #include "ui/RenderTools.hpp"
 #include "ui/Renderer.hpp"
+#include "registries/UIRegistry.hpp"
 
 RenderObject::RenderObject(bool ui)
     : IEnableable(true)
@@ -18,6 +19,7 @@ RenderObject::RenderObject(bool ui)
     , m_InitImage(true)
 	//, m_HasWeak(false)
 	, m_UI(ui)
+	, m_HasTexture(false)
     , m_TexturePath("")
     //, m_Position({ 0.0, 0.0, 0.0 })
     , m_VertexBuffer(nullptr)
@@ -28,6 +30,7 @@ RenderObject::RenderObject(bool ui)
     , m_IndexBufferMemory(nullptr)
     , m_IndexStagingBuffer(nullptr)
     , m_IndexStagingBufferMemory(nullptr)
+	, m_TextureType(TextureType::CUSTOM)
 {
 }
 
@@ -50,7 +53,16 @@ RenderObject::RenderObject(bool ui, const std::string& texturePath)
 
 void RenderObject::SetTexture(const std::string& texture)
 {
+	m_HasTexture = true;
 	m_TexturePath = texture;
+	m_TextureType = TextureType::CUSTOM;
+}
+
+void RenderObject::SetTexture(TextureType type)
+{
+	m_HasTexture = true;
+	m_TexturePath.clear();
+	m_TextureType = type;
 }
 
 void RenderObject::UpdateVertices(const std::vector<Vertex>* vertices, const std::vector<uint32_t>* indices, bool updateBuffersNow)
@@ -236,7 +248,7 @@ void RenderObject::OnRender()
 
 	if (m_UI)
 	{
-		if (m_TexturePath.size() > 0)
+		if (m_HasTexture)
 		{
 			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
 			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
@@ -273,10 +285,18 @@ void RenderObject::OnUpdateBuffers()
 	{
 		m_InitImage = false;
 
-		if (m_TexturePath.size() > 0)
+		if (m_HasTexture)
 		{
-			m_Image = RenderTools::CreateTextureImage(m_TexturePath, &m_ImageMemory);
-			m_ImageView = RenderTools::CreateImageView(m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+			if (m_TextureType == TextureType::CUSTOM)
+			{
+				m_Image = RenderTools::CreateTextureImage(m_TexturePath, &m_ImageMemory);
+				m_ImageView = RenderTools::CreateImageView(m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+			}
+			else if (m_TextureType == TextureType::TEXT_SHEET)
+			{
+				m_Image = UIRegistry::GetTextureSheetImage();
+				m_ImageView = RenderTools::CreateImageView(m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+			}
 		}
 
 		RenderTools::CreateBuffer(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_UniformBuffer, m_UniformBufferMemory);
@@ -356,7 +376,7 @@ void RenderObject::OnReloadSwapChain()
 	bufferInfo.offset = 0;
 	bufferInfo.range = sizeof(UniformBufferObject);
 
-	if (m_TexturePath.size() > 0)
+	if (m_HasTexture)
 	{
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

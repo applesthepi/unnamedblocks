@@ -436,49 +436,75 @@ void RenderTools::CreateImage(uint32_t width, uint32_t height, VkFormat format, 
 
 VkImage RenderTools::CreateTextureImage(const std::string& texturePath, VkDeviceMemory* textureImageMemory)
 {
-	Logger::Fatal("RenderTools::CreateTextureImage NOT IMPLEMENTED");
-	return VkImage();
+	int texWidth, texHeight, texChannels;
+	uint8_t* pixels;
 
-	//int texWidth, texHeight, texChannels;
-	//stbi_uc* pixels;
+	pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, 4);
 
-	//if (texturePath == "@blocks")
-	//{
-	//	pixels = Client::Instance->GetTextureRegistry()->GetTextures()->at(0);
-	//	glm::vec2 textureSize = Client::Instance->GetTextureRegistry()->GetTextureDataSize();
-	//	
-	//	texWidth = textureSize.x;
-	//	texHeight = textureSize.y;
-	//	texChannels = 4;
-	//}
-	//else
-	//	pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, 4);
+	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
-	//VkDeviceSize imageSize = texWidth * texHeight * 4;
+	if (!pixels)
+		Logger::Fatal("failed to load texture \"" + texturePath + "\"");
 
-	//if (!pixels)
-	//	Logger::Fatal("failed to load texture \"" + texturePath + "\"");
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+	CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-	//VkBuffer stagingBuffer;
-	//VkDeviceMemory stagingBufferMemory;
-	//CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+	void* data;
+	vkMapMemory(Renderer::Device, stagingBufferMemory, 0, imageSize, 0, &data);
+	memcpy(data, pixels, static_cast<size_t>(imageSize));
+	vkUnmapMemory(Renderer::Device, stagingBufferMemory);
 
-	//void* data;
-	//vkMapMemory(Renderer::Device, stagingBufferMemory, 0, imageSize, 0, &data);
-	//memcpy(data, pixels, static_cast<size_t>(imageSize));
-	//vkUnmapMemory(Renderer::Device, stagingBufferMemory);
+	VkImage image;
+	CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *textureImageMemory);
 
-	//VkImage image;
-	//CreateImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *textureImageMemory);
+	TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	CopyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	//TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-	//CopyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	//TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	vkDestroyBuffer(Renderer::Device, stagingBuffer, nullptr);
+	vkFreeMemory(Renderer::Device, stagingBufferMemory, nullptr);
 
-	//vkDestroyBuffer(Renderer::Device, stagingBuffer, nullptr);
-	//vkFreeMemory(Renderer::Device, stagingBufferMemory, nullptr);
+	return image;
+}
 
-	//return image;
+VkImage RenderTools::CreateTextureImage(glm::vec<2, uint32_t> size, uint8_t* pixels, VkDeviceMemory* textureImageMemory)
+{
+// 	uint8_t* pixels = (uint8_t*)malloc(size.x * size.y * 4);
+
+// 	if (pixels == nullptr)
+// 		Logger::Fatal("failed to allocate texture in ram.");
+
+// 	glm::vec<4, uint8_t> fill_color = color.GetU8();
+// 	
+// 	for (uint32_t y = 0; y < size.y; y++)
+// 	{
+// 		for (uint32_t x = 0; x < size.x; x++)
+// 			memcpy(pixels + (y * (size.x * 4)) + (x * 4), &fill_color, 4);
+// 	}
+
+	VkDeviceSize imageSize = size.x * size.y * 4;
+
+	VkBuffer stagingBuffer;
+	VkDeviceMemory stagingBufferMemory;
+	CreateBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+	void* data;
+	vkMapMemory(Renderer::Device, stagingBufferMemory, 0, imageSize, 0, &data);
+	memcpy(data, pixels, static_cast<size_t>(imageSize));
+	vkUnmapMemory(Renderer::Device, stagingBufferMemory);
+
+	VkImage image;
+	CreateImage(size.x, size.y, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *textureImageMemory);
+
+	TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	CopyBufferToImage(stagingBuffer, image, size.x, size.y);
+	TransitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+	vkDestroyBuffer(Renderer::Device, stagingBuffer, nullptr);
+	vkFreeMemory(Renderer::Device, stagingBufferMemory, nullptr);
+
+	return image;
 }
 
 std::vector<const char*> RenderTools::GetRequiredExtensions()

@@ -125,6 +125,7 @@ target_include_directories(UB_RHR PUBLIC
 	"${CMAKE_SOURCE_DIR}/UB_Espresso/include"
 	"${CMAKE_SOURCE_DIR}/UB_Cappuccino/include"
 	"${CMAKE_SOURCE_DIR}/tcc/libtcc"
+	${STB_INCLUDE_DIRS}
 )
 
 if(MSVC)

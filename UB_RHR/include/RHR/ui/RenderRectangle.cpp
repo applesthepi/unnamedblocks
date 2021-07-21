@@ -15,6 +15,7 @@ vui::RenderRectangle::RenderRectangle()
 	, m_InBounds(false)
 	, m_RenderObject(std::make_shared<RenderObject>(true))
 	, m_UseSize({ 0, 0 })
+	, m_TextureType(RenderObject::TextureType::CUSTOM)
 {
 	m_RenderObject->SetWeak(m_RenderObject);
 }
@@ -27,9 +28,21 @@ vui::RenderRectangle::RenderRectangle()
 
 void vui::RenderRectangle::SetTexture(const std::string& texture)
 {
-	m_Texture = texture;
-	m_RenderObject->SetTexture(texture);
 	m_HasTexture = true;
+	m_Texture = texture;
+	m_TextureType = RenderObject::TextureType::CUSTOM;
+	m_RenderObject->SetTexture(texture);
+
+	MarkDirty();
+}
+
+void vui::RenderRectangle::SetTexture(RenderObject::TextureType type)
+{
+	m_HasTexture = true;
+	m_Texture.clear();
+	m_TextureType = RenderObject::TextureType::TEXT_SHEET;
+	m_RenderObject->SetTexture(type);
+
 	MarkDirty();
 }
 

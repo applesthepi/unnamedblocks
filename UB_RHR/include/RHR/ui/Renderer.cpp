@@ -8,6 +8,9 @@
 
 #include <Espresso/InputHandler.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 const std::vector<Vertex> testVertices = {
 	{ { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
 	{ { 0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
@@ -95,8 +98,16 @@ void Renderer::InitializeWindow()
 		Logger::Fatal(std::to_string(glfwWindowResult));
 }
 
+static std::shared_ptr<vui::RenderRectangle> testObject = std::make_shared<vui::RenderRectangle>();
+
 void Renderer::Initialization()
 {
+	testObject->SetWeak(testObject);
+	testObject->SetPosition({ 0, 0 });
+	testObject->SetSize({ 256, 256 });
+	testObject->SetColor(Color::White);
+	testObject->SetTexture(RenderObject::TextureType::TEXT_SHEET);
+
 	InitDebug();
 	InitDevice();
 
@@ -212,6 +223,8 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 
 	Plane::PrimaryPlane->Render();
 	Plane::ToolbarPlane->Render();
+
+	testObject->Render();
 
 	bool erased = false;
 

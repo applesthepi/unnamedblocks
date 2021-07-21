@@ -2,6 +2,7 @@
 #include "config.h"
 
 #include <Cappuccino/Utils.hpp>
+#include <Cappuccino/Color.hpp>
 
 #define MAX_FRAMES_IN_FLIGHT 2
 
@@ -57,6 +58,7 @@ public:
 	static bool CheckDeviceExtensionSupport(VkPhysicalDevice* device);
 	static void CreateImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
 	static VkImage CreateTextureImage(const std::string& texturePath, VkDeviceMemory* textureImageMemory);
+	static VkImage CreateTextureImage(glm::vec<2, uint32_t> size, uint8_t* pixels, VkDeviceMemory* textureImageMemory);
 	static std::vector<const char*> GetRequiredExtensions();
 	static VkResult CreateDebugUtilsMessengerEXT(VkInstance* instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 	static void DestroyDebugUtilsMessengerEXT(VkInstance* instance, VkDebugUtilsMessengerEXT* debugMessenger, const VkAllocationCallbacks* pAllocator);

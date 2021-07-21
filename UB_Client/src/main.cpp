@@ -56,13 +56,14 @@ void ReturnFinished()
 // 	view->move(offsetCoords);
 // }
 
-static std::atomic<bool> setupFinished;
-static std::atomic<bool> basicSetupFinished;
+//static std::atomic<bool> setupFinished;
+//static std::atomic<bool> basicSetupFinished;
 
 static void AsyncSetup()
 {
 	RenderTools::Initialization();
 	Renderer::Initialization();
+	UIRegistry::Initialize();
 
 	//std::shared_ptr<vui::RenderLayer> setupLayer = std::make_shared<vui::RenderLayer>();
 	//std::shared_ptr<vui::RenderFrame> setupFrame = std::make_shared<vui::RenderFrame>();
@@ -84,7 +85,7 @@ static void AsyncSetup()
 	//std::shared_ptr<vui::ProgressBar> progressStage = std::make_shared<vui::ProgressBar>(-1, vui::VerticalAlignment::CENTER);
 	//std::shared_ptr<vui::ProgressBar> progressMods = std::make_shared<vui::ProgressBar>(0, vui::VerticalAlignment::CENTER);
 
-	basicSetupFinished = true;
+	//basicSetupFinished = true;
 
 	//{
 	//	progressStage->SetWeak(progressStage);
@@ -137,7 +138,7 @@ static void AsyncSetup()
 
 	//Client::Instance->GetDiagnostics()->SetEnabled(true);
 
-	setupFinished = true;
+	//setupFinished = true;
 }
 
 int main()
@@ -409,7 +410,10 @@ int main()
 
 	// Critical Setup
 
-	UIRegistry::Initialize();
+	Renderer::InitializeWindow();
+	AsyncSetup();
+	//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
+
 	InputHandler::Initialization();
 	BlockRegistry::CreateBlockRegistry();
 
@@ -467,22 +471,19 @@ int main()
 	//	Plane::ToolbarPlane
 	//}
 
-	Renderer::InitializeWindow();
 
 	// Create Client
 	//Client::Instance = new Client(username, password, a_singleplayer);
-
-	std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
 
 #if DEBUG_ALLOCATIONS
 	LogTotalMemoryConsumedInit();
 #endif
 
-	while (!glfwWindowShouldClose(Renderer::Window) && !basicSetupFinished)
-	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(16 /* 60fps */));
-		glfwPollEvents();
-	}
+	//while (!glfwWindowShouldClose(Renderer::Window) && !basicSetupFinished)
+	//{
+	//	std::this_thread::sleep_for(std::chrono::milliseconds(16 /* 60fps */));
+	//	glfwPollEvents();
+	//}
 
 	while (!glfwWindowShouldClose(Renderer::Window))
 	{
@@ -534,7 +535,7 @@ int main()
 			reloadRenderObjects = false;
 		}
 
-		Renderer::Render(imageIndex, deltaTime, !setupFinished, diagnosticsTime);
+		Renderer::Render(imageIndex, deltaTime, /*!setupFinished*/ false, diagnosticsTime);
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(capture - beginFps).count() > 200)
 		{
