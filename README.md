@@ -41,6 +41,10 @@ cpp
 ```
 
 ### File Structure
+- If inside the class, you can reference objects without using the absolute namespace.
+- You may use `using namespace` in a cpp file for namespaces that you dont want to type out, though it is still recommended you type it out so its clear. That way you can easily do `handler::project` instead of `project_handler`.
+- Use the absolute paths for including files unless your including the hpp file of a class from the class's cpp file.
+
 hpp
 ```cpp
 namespace rhr::same::as::path
