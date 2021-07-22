@@ -11,7 +11,7 @@ rhr::render::interfaces::i_positionable<S, T>::i_positionable()
 template <size_t S, typename T>
 void rhr::render::interfaces::i_positionable<S, T>::set_position(const glm::vec<S, T>& position)
 {
-	if (pre_position_update(position, super_position))
+	if (pre_position_update(position, m_super_position))
 	{
 		m_position = position;
 		post_position_update();

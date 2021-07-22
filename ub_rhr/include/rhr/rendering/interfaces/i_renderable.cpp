@@ -1,111 +1,93 @@
-#include "IRenderable.hpp"
+#include "i_renderable.hpp"
 
-#include "ui/Renderer.hpp"
+#include "rhr/rendering/renderer.hpp"
 
-IRenderable::IRenderable()
-	: m_Dirty(false)/*, m_Virtual(false), m_Render(nullptr), m_UpdateBuffers(nullptr), m_ReloadSwapChain(nullptr)*/ , m_WeakSet(false)
+rhr::render::interfaces::i_renderable::i_renderable()
+	: m_dirty(false)
+	, m_weak_set(false)
 {
 }
 
-void IRenderable::SetWeak(std::weak_ptr<IRenderable>&& weak)
+void rhr::render::interfaces::i_renderable::set_weak(std::weak_ptr<i_renderable>&& weak)
 {
-	m_Weak = std::move(weak);
-	m_WeakSet = true;
+	m_weak = std::move(weak);
+	m_weak_set = true;
 
-	OnSetWeak();
+	on_set_weak();
 }
 
-//void IRenderable::SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)())
-//{
-//	m_Render = render;
-//	m_UpdateBuffers = updateBuffers;
-//	m_ReloadSwapChain = reloadSwapChain;
-//	m_Virtual = true;
-//}
-
-void IRenderable::Render()
+void rhr::render::interfaces::i_renderable::render()
 {
-	if (!IsWeak()/* || !IsVirtual()*/)
+	if (!is_weak())
 		return;
 
-	OnRender();
+	on_render();
 }
 
-void IRenderable::UpdateBuffers()
+void rhr::render::interfaces::i_renderable::update_buffers()
 {
-	if (!IsWeak()/* || !IsVirtual()*/)
+	if (!is_weak())
 		return;
 
-	m_Dirty = false;
-	OnUpdateBuffers();
+	m_dirty = false;
+	on_update_buffers();
 }
 
-void IRenderable::ReloadSwapChain()
+void rhr::render::interfaces::i_renderable::reload_swap_chain()
 {
-	if (!IsWeak()/* || !IsVirtual()*/)
+	if (!is_weak())
 		return;
 
-	OnReloadSwapChain();
+	on_reload_swap_chain();
 }
 
-void IRenderable::OnRender()
+void rhr::render::interfaces::i_renderable::on_render()
 {
 
 }
 
-void IRenderable::OnUpdateBuffers()
+void rhr::render::interfaces::i_renderable::on_update_buffers()
 {
 
 }
 
-void IRenderable::OnReloadSwapChain()
+void rhr::render::interfaces::i_renderable::on_reload_swap_chain()
 {
 
 }
 
-void IRenderable::OnSetWeak()
+void rhr::render::interfaces::i_renderable::on_set_weak()
 {
 
 }
 
-void IRenderable::MarkDirty()
+void rhr::render::interfaces::i_renderable::mark_dirty()
 {
-	if (!IsWeak()/* || !IsVirtual()*/ || m_Dirty)
+	if (!is_weak() || m_dirty)
 		return;
 
-	m_Dirty = true;
-	Renderer::AddDirty(m_Weak);
+	m_dirty = true;
+	rhr::render::renderer::add_dirty(m_weak);
 }
 
-void IRenderable::ClearDirty()
+void rhr::render::interfaces::i_renderable::clear_dirty()
 {
-	if (!IsWeak()/* || !IsVirtual()*/)
+	if (!is_weak())
 		return;
 
-	m_Dirty = false;
+	m_dirty = false;
 }
 
-std::weak_ptr<IRenderable>& IRenderable::GetWeak()
+std::weak_ptr<rhr::render::interfaces::i_renderable>& rhr::render::interfaces::i_renderable::get_weak()
 {
-	return m_Weak;
+	return m_weak;
 }
 
-//bool IRenderable::IsVirtual()
-//{
-//	if (!m_Virtual)
-//	{
-//		Logger::Warn("check for IRenderable::IsVirtual(); failed");
-//		return false;
-//	}
-//
-//	return true;
-//}
-
-bool IRenderable::IsWeak()
+bool rhr::render::interfaces::i_renderable::is_weak()
 {
-	if (!m_WeakSet)
+	if (!m_weak_set)
 	{
-		Logger::Warn("check for IRenderable::IsWeak(); failed");
+		Logger::Warn("check for i_renderable::is_weak() failed");
 		return false;
 	}
 

@@ -1,84 +1,79 @@
-#include "ISizeable.hpp"
+#include "i_sizeable.hpp"
 
-template <typename T>
-ISizeable<T>::ISizeable()
-	: m_Size(glm::vec<2, T>())
-	, m_SuperBounds(glm::vec<2, T>())
+template <size_t S, typename T>
+rhr::render::interfaces::i_sizeable<S, T>::i_sizeable()
+	: m_position(glm::vec<S, T>())
+	, m_super_position(glm::vec<S, T>())
 {
 
 }
 
-template <typename T>
-void ISizeable<T>::SetSize(const glm::vec<2, T>& size)
+template <size_t S, typename T>
+void rhr::render::interfaces::i_sizeable<S, T>::set_size(const glm::vec<S, T>& size)
 {
-	if (PreSizeUpdate(size, m_SuperBounds))
+	if (pre_size_update(size, m_super_bounds))
 	{
-		m_Size = size;
-		PostSizeUpdate();
+		m_size = size;
+		post_size_update();
 	}
 }
 
-template <typename T>
-void ISizeable<T>::SetSizeMax()
+template <size_t S, typename T>
+void rhr::render::interfaces::i_sizeable<S, T>::set_super_bounds(const glm::vec<S, T>& super_bounds)
 {
-	if (PreSizeUpdate(m_SuperBounds, m_SuperBounds))
+	if (pre_position_update(m_size, super_bounds))
 	{
-		m_Size = m_SuperBounds;
-		PostSizeUpdate();
+		m_super_bounds = super_bounds;
+		post_size_update();
 	}
 }
 
-template <typename T>
-void ISizeable<T>::SetSuperBounds(const glm::vec<2, T>& bounds)
+template <size_t S, typename T>
+glm::vec<S, T> rhr::render::interfaces::i_sizeable<S, T>::get_size()
 {
-	if (PreSizeUpdate(m_Size, bounds))
-	{
-		m_SuperBounds = bounds;
-		PostSizeUpdate();
-	}
+	return m_size;
 }
 
-template <typename T>
-glm::vec<2, T> ISizeable<T>::GetSize()
+template <size_t S, typename T>
+glm::vec<S, T> rhr::render::interfaces::i_sizeable<S, T>::get_super_bounds()
 {
-	PreSizePull();
-	return m_Size;
+	return m_super_bounds;
 }
 
-template <typename T>
-glm::vec<2, T> ISizeable<T>::GetSuperBounds()
-{
-	PreSizePull();
-	return m_SuperBounds;
-}
-
-template <typename T>
-bool ISizeable<T>::PreSizeUpdate(const glm::vec<2, T>& size, const glm::vec<2, T>& bounds)
+template <size_t S, typename T>
+bool rhr::render::interfaces::i_sizeable<S, T>::pre_size_update(const glm::vec<S, T>& size, const glm::vec<S, T>& super_bounds)
 {
 	return true;
 }
 
-template <typename T>
-void ISizeable<T>::PostSizeUpdate()
-{
-	
-}
-
-template <typename T>
-void ISizeable<T>::PreSizePull()
+template <size_t S, typename T>
+void rhr::render::interfaces::i_sizeable<S, T>::post_size_update()
 {
 
 }
 
-template class ISizeable<int64_t>;
-template class ISizeable<int32_t>;
-template class ISizeable<int16_t>;
-template class ISizeable<int8_t>;
+template class rhr::render::interfaces::i_sizeable<2, i64>;
+template class rhr::render::interfaces::i_sizeable<2, i32>;
+template class rhr::render::interfaces::i_sizeable<2, i16>;
+template class rhr::render::interfaces::i_sizeable<2, i8>;
 
-template class ISizeable<uint64_t>;
-template class ISizeable<uint32_t>;
-template class ISizeable<uint16_t>;
-template class ISizeable<uint8_t>;
+template class rhr::render::interfaces::i_sizeable<2, u64>;
+template class rhr::render::interfaces::i_sizeable<2, u32>;
+template class rhr::render::interfaces::i_sizeable<2, u16>;
+template class rhr::render::interfaces::i_sizeable<2, u8>;
 
-template class ISizeable<double>;
-template class ISizeable<float>;
+template class rhr::render::interfaces::i_sizeable<2, f64>;
+template class rhr::render::interfaces::i_sizeable<2, f32>;
+
+template class rhr::render::interfaces::i_sizeable<3, i64>;
+template class rhr::render::interfaces::i_sizeable<3, i32>;
+template class rhr::render::interfaces::i_sizeable<3, i16>;
+template class rhr::render::interfaces::i_sizeable<3, i8>;
+
+template class rhr::render::interfaces::i_sizeable<3, u64>;
+template class rhr::render::interfaces::i_sizeable<3, u32>;
+template class rhr::render::interfaces::i_sizeable<3, u16>;
+template class rhr::render::interfaces::i_sizeable<3, u8>;
+
+template class rhr::render::interfaces::i_sizeable<3, f64>;
+template class rhr::render::interfaces::i_sizeable<3, f32>;

@@ -1,82 +1,62 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
+namespace rhr::render::interfaces
+{
 /// Interface for renderable objects.
-
-/// Parent interface with virtual functions RECOMMENDED.
-/// Upstream extenders can access the std::shared_ptr<IRenderable>
-/// that can then call upstream callbacks once external
-/// calls to the public functions are preformed.
-
-class IRenderable
+class i_renderable
 {
 public:
-	/// Runs initializer list.
-	IRenderable();
+	///
+	i_renderable();
 
-	/// REQUIRED Sets weak.
-	void SetWeak(std::weak_ptr<IRenderable>&& weak);
-
-	/// Setup upstream callbacks.
-	//void SetupVirtualFunctions(void(*render)(), void(*updateBuffers)(), void(*reloadSwapChain)());
+	/// Required to operate.
+	void set_weak(std::weak_ptr<i_renderable>&& weak);
 
 	/// Add draw calls to cmd buffer prebound by Renderer.
-	void Render();
+	void render();
 
 	/// Updates mesh on cpu side.
-	void UpdateBuffers();
+	void update_buffers();
 
 	/// Regenerates descriptor sets including uniforms.
-	void ReloadSwapChain();
+	void reload_swap_chain();
 
 	/// Gets the weak reference.
 	/// \return Weak reference to itself.
-	std::weak_ptr<IRenderable>& GetWeak();
-	/// Check for virtual.
-	//bool IsVirtual();
-
-	/// Check for weak.
-	bool IsWeak();
+	std::weak_ptr<i_renderable>& get_weak();
+	
+	/// If i_renderable::set_weak() was run then this returns true.
+	bool is_weak();
 
 protected:
 	/// Add draw calls to cmd buffer prebound by Renderer.
-	virtual void OnRender();
+	virtual void on_render();
 
 	/// Updates mesh on cpu side.
-	virtual void OnUpdateBuffers();
+	virtual void on_update_buffers();
 
 	/// Regenerates descriptor sets including uniforms.
-	virtual void OnReloadSwapChain();
+	virtual void on_reload_swap_chain();
 
-	/// Called when IRenderable::SetWeak is called
-	virtual void OnSetWeak();
+	/// Called when i_renderable::set_weak is called.
+	virtual void on_set_weak();
 
-	/// Marks IRenderable as dirty. UpdateBuffers will be called next frame. Expected only main thread acccess; non-atomic.
-	void MarkDirty();
+	/// Marks i_renderable as dirty. UpdateBuffers will be called next frame.
+	void mark_dirty();
 
-	/// Clears IRenderable's dirty tag.
-	void ClearDirty();
+	/// Clears i_renderable's dirty tag.
+	void clear_dirty();
 
-	/// Guarantees only one IRenderable::MarkDirty(); call.
-	bool m_Dirty;
-
-	/// Garantees upstream callbacks exist.
-	//bool m_Virtual;
-
-	///// Render upstream callback.
-	//void(*m_Render)();
-
-	///// UpdateBuffers upstream callback.
-	//void(*m_UpdateBuffers)();
-
-	///// ReloadSwapChain upstream callback.
-	//void(*m_ReloadSwapChain)();
-
-	/// Weak reference.
-	std::weak_ptr<IRenderable> m_Weak;
+	/// Guarantees only one i_renderable::mark_dirty(); call.
+	bool m_dirty;
 
 	/// Flag if weak is set.
-	bool m_WeakSet;
+	bool m_weak_set;
+
+	/// Weak reference to itself.
+	std::weak_ptr<i_renderable> m_weak;
 };
+}
