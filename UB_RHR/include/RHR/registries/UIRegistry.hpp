@@ -14,6 +14,8 @@ public:
 		glm::vec<2, float> First;
 		glm::vec<2, float> Second;
 		glm::vec<2, uint16_t> Size;
+		glm::vec<2, uint16_t> Offset;
+		glm::vec<2, uint16_t> Advance;
 	};
 	static void Initialize();
 	static VkImage& GetTextureSheetImage();

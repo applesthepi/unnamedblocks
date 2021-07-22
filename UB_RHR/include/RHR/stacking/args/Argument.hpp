@@ -56,9 +56,7 @@ public:
 	/// When the focus turns off of the argument.
 	virtual void UnSelect();
 
-	/// Gets all elements used by the argument.
-	/// \return Vector of elements subject to change.
-	// std::vector<IUI>& GetElements();
+	static int32_t Padding;
 protected:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	virtual void OnRender();

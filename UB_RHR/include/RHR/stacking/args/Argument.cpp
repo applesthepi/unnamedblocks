@@ -1,5 +1,7 @@
 #include "Argument.hpp"
 
+#include "stacking/Block.hpp"
+
 Argument::Argument(const Color& blockColor)
 	: m_Mode(BlockArgumentVariableMode::RAW)//, m_Next(false)
 	, m_BlockColor(blockColor)
@@ -57,6 +59,8 @@ void Argument::UnSelect()
 {
 
 }
+
+int32_t Argument::Padding = Block::Padding * 4;
 
 void Argument::OnRender()
 {

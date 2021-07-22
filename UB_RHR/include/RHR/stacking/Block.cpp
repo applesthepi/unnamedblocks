@@ -91,34 +91,34 @@ void Block::FrameUpdate(double deltaTime)
 
 void Block::OnRender()
 {
+	m_Background->Render();
+
 	for (auto& arg : m_arguments)
 		arg->Render();
-
-	m_Background->Render();
 }
 
 void Block::OnUpdateBuffers()
 {
+	m_Background->UpdateBuffers();
+
 	for (auto& arg : m_arguments)
 		arg->UpdateBuffers();
-
-	m_Background->UpdateBuffers();
 }
 
 void Block::OnReloadSwapChain()
 {
+	m_Background->ReloadSwapChain();
+
 	for (auto& arg : m_arguments)
 		arg->ReloadSwapChain();
-
-	m_Background->ReloadSwapChain();
 }
 
 void Block::PostPositionUpdate()
 {
+	m_Background->SetSuperOffset(m_Position + m_SuperOffset);
+
 	for (auto& arg : m_arguments)
 		arg->SetSuperOffset(m_Position + m_SuperOffset);
-
-	m_Background->SetSuperOffset(m_Position + m_SuperOffset);
 }
 
 void Block::UpdateArguments()

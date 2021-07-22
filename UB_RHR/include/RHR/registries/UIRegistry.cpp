@@ -1,6 +1,7 @@
 #include "UIRegistry.hpp"
 
 #include "ui/RenderTools.hpp"
+#include "stacking/Block.hpp"
 
 #include <Cappuccino/Color.hpp>
 // TODO: remove debug
@@ -17,14 +18,14 @@ void UIRegistry::Initialize()
 		return;
 	}
 
-	error = FT_New_Face(m_ft_library, "res/CascadiaMono-Regular.ttf", 0, &m_ft_face);
+	error = FT_New_Face(m_ft_library, "res/CascadiaMono-Light.ttf", 0, &m_ft_face);
 	if (error)
 	{
 		Logger::Error("failed to init freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
-	error = FT_Set_Pixel_Sizes(m_ft_face, 0, 50);
+	error = FT_Set_Pixel_Sizes(m_ft_face, 0, Block::Height - (Block::Padding * 2));
 	if (error)
 	{
 		Logger::Error("failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
@@ -34,6 +35,8 @@ void UIRegistry::Initialize()
 	std::vector<uint8_t*> char_images;
 	std::vector<glm::vec<2, uint16_t>> char_sizes;
 	std::vector<char> chars;
+	std::vector<glm::vec<2, uint16_t>> char_offsets;
+	std::vector<glm::vec<2, uint16_t>> char_advances;
 
 	std::string test = "abcdefghijklmnopqrstuvwxyz1234567890";
 
@@ -85,6 +88,8 @@ void UIRegistry::Initialize()
 		char_images.push_back(char_image);
 		char_sizes.push_back({map.width, map.rows});
 		chars.push_back(i);
+		char_offsets.push_back({ m_ft_face->glyph->bitmap_left, m_ft_face->glyph->bitmap_top });
+		char_advances.push_back({ m_ft_face->glyph->advance.x, m_ft_face->glyph->advance.y });
 	}
 
 	uint16_t highest_width = 0;
@@ -115,8 +120,8 @@ void UIRegistry::Initialize()
 				continue;
 
 			glm::vec<2, float> first = { static_cast<float>(x * highest_width) / static_cast<float>(image_side_length * highest_width), static_cast<float>(y * highest_height) / static_cast<float>(image_side_length * highest_height) };
-			glm::vec<2, float> second = { static_cast<float>((x + 1) * highest_width) / static_cast<float>(image_side_length * highest_width), static_cast<float>((y + 1) * highest_height) / static_cast<float>(image_side_length * highest_height) };
-			m_char_coords[chars[char_idx]] = { first, second, char_sizes[char_idx] };
+			glm::vec<2, float> second = { static_cast<float>(x * highest_width + char_sizes[char_idx].x) / static_cast<float>(image_side_length * highest_width), static_cast<float>(y * highest_height + char_sizes[char_idx].y) / static_cast<float>(image_side_length * highest_height) };
+			m_char_coords[chars[char_idx]] = { first, second, char_sizes[char_idx], char_offsets[char_idx], char_advances[char_idx] };
 
 			for (uint16_t cy = 0; cy < char_sizes[char_idx].y; cy++)
 				memcpy(texture_sheet_char + (cy * image_side_length * highest_width * 4), char_images[char_idx] + (cy * char_sizes[char_idx].x * 4), char_sizes[char_idx].x * 4);

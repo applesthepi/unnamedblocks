@@ -245,7 +245,7 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 		}
 	}
 
-	testObject->Render();
+	//testObject->Render();
 
 	vkCmdEndRenderPass(ActiveCommandBuffer);
 

@@ -13,7 +13,6 @@ vui::RenderText::RenderText()
 	, m_RenderObjectText(std::make_shared<RenderObject>(true))
 {
 	m_RenderObjectBackground->SetWeak(m_RenderObjectBackground);
-	m_RenderObjectBackground->SetTexture(RenderObject::TextureType::TEXT_SHEET);
 	m_RenderObjectText->SetWeak(m_RenderObjectText);
 	m_RenderObjectText->SetTexture(RenderObject::TextureType::TEXT_SHEET);
 }
@@ -30,6 +29,7 @@ void vui::RenderText::SetText(const std::string& text)
 	{
 		m_Text = text;
 		m_RenderObjectText->SetEnabled(true);
+		UpdateSize();
 	}
 
 	MarkDirty();
@@ -39,6 +39,23 @@ void vui::RenderText::SetDepth(uint32_t depth)
 {
 	m_Depth = depth;
 	MarkDirty();
+}
+
+void vui::RenderText::SetPadding(int32_t padding)
+{
+	m_Padding = padding;
+	UpdateSize();
+	MarkDirty();
+}
+
+void vui::RenderText::UpdateSize()
+{
+	int32_t running_x = m_Padding;
+
+	for (size_t i = 0; i < m_Text.size(); i++)
+		running_x += UIRegistry::GetCharTextureCoords(m_Text[i]).Advance.x >> 6;
+	
+	m_Size = { running_x + m_Padding, Block::Height - (Block::Padding * 2) };
 }
 
 void vui::RenderText::OnRender()
@@ -81,16 +98,17 @@ void vui::RenderText::OnUpdateBuffers()
 		Vertex* vertices = (Vertex*)alloca(sizeof(Vertex) * m_Text.size() * 4);
 		uint32_t* indices = (uint32_t*)alloca(sizeof(uint32_t) * m_Text.size() * 6);
 
-		int32_t running_x = 0;
+		int32_t running_x = m_Padding;
 
 		for (size_t i = 0; i < m_Text.size(); i++)
 		{
 			UIRegistry::CharTextureData char_data = UIRegistry::GetCharTextureCoords(m_Text[i]);
+			float y_offset = static_cast<float>(Block::HeightContent) + (-1.0f * static_cast<float>(char_data.Offset.y)) - static_cast<float>(Block::Padding);
 
-			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x), 0.0f, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.First.y });
-			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.Size.x), 0.0f, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.First.y });
-			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.Size.x), static_cast<float>(char_data.Size.y), 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.First.y });
-			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x), static_cast<float>(char_data.Size.y), 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.First.y });
+			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.First.y });
+			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.Second.x, char_data.First.y });
+			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.Second.x, char_data.Second.y });
+			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.Second.y });
 
 			indices[i * 6 + 0] = i * 4 + 1;
 			indices[i * 6 + 1] = i * 4 + 0;
@@ -99,11 +117,11 @@ void vui::RenderText::OnUpdateBuffers()
 			indices[i * 6 + 4] = i * 4 + 0;
 			indices[i * 6 + 5] = i * 4 + 3;
 
-			running_x += char_data.Size.x + 2;
+			running_x += char_data.Advance.x >> 6;
 		}
 
 		m_RenderObjectText->UpdateVertices(vertices, m_Text.size() * 4, indices, m_Text.size() * 6, true);
-		m_Size = { running_x, Block::Height - (Block::Padding * 2) };
+		m_Size = { running_x + m_Padding, Block::Height - (Block::Padding * 2) };
 	}
 }
 

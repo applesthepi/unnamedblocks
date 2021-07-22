@@ -25,7 +25,11 @@ namespace vui
 		/// Sets Z depth.
 		/// \param Z depth.
 		void SetDepth(uint32_t depth);
+
+		void SetPadding(int32_t padding);
 	private:
+		void UpdateSize();
+
 		/// Add draw calls to cmd buffer prebound by Renderer.
 		void OnRender() override;
 
@@ -36,6 +40,7 @@ namespace vui
 		void OnReloadSwapChain() override;
 
 		void PostPositionUpdate() override;
+
 		void PostSizeUpdate() override;
 
 		/// RenderObject to render the background rectangle.
@@ -46,6 +51,7 @@ namespace vui
 
 		std::string m_Text;
 		uint32_t m_Depth;
+		int32_t m_Padding;
 	};
 
 }
