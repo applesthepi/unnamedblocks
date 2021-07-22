@@ -38,8 +38,11 @@ namespace vui
 		void PostPositionUpdate() override;
 		void PostSizeUpdate() override;
 
-		/// Abstracted RenderObject to render the rectangle.
-		std::shared_ptr<RenderObject> m_RenderObject;
+		/// RenderObject to render the background rectangle.
+		std::shared_ptr<RenderObject> m_RenderObjectBackground;
+
+		/// RenderObject to render the actual text.
+		std::shared_ptr<RenderObject> m_RenderObjectText;
 
 		std::string m_Text;
 		uint32_t m_Depth;

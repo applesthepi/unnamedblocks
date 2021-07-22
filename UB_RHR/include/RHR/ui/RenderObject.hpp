@@ -41,6 +41,8 @@ public:
 	/// Regenerates descriptor sets including uniforms.
 	void OnReloadSwapChain() override;
 
+	void PostPositionUpdate() override;
+
 private:
 	void UpdateUniforms(bool ui);
 	//void MarkDirty();

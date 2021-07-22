@@ -103,10 +103,11 @@ static std::shared_ptr<vui::RenderRectangle> testObject = std::make_shared<vui::
 void Renderer::Initialization()
 {
 	testObject->SetWeak(testObject);
-	testObject->SetPosition({ 0, 0 });
+	testObject->SetPosition({ 100, 100 });
 	testObject->SetSize({ 256, 256 });
 	testObject->SetColor(Color::White);
 	testObject->SetTexture(RenderObject::TextureType::TEXT_SHEET);
+	testObject->SetDepth(0);
 
 	InitDebug();
 	InitDevice();
@@ -224,7 +225,6 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 	Plane::PrimaryPlane->Render();
 	Plane::ToolbarPlane->Render();
 
-	testObject->Render();
 
 	bool erased = false;
 
@@ -244,6 +244,8 @@ void Renderer::Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diag
 			erased = true;
 		}
 	}
+
+	testObject->Render();
 
 	vkCmdEndRenderPass(ActiveCommandBuffer);
 

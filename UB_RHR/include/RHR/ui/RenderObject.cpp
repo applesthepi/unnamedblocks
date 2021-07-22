@@ -419,6 +419,11 @@ void RenderObject::OnReloadSwapChain()
 	}
 }
 
+void RenderObject::PostPositionUpdate()
+{
+	//MarkDirty();
+}
+
 void RenderObject::UpdateUniforms(bool ui)
 {
 	//static auto startTime = std::chrono::high_resolution_clock::now();
@@ -427,7 +432,7 @@ void RenderObject::UpdateUniforms(bool ui)
 	//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 	UniformBufferObject ubo {};
-	ubo.Model = glm::translate(glm::mat4(1.0f), { static_cast<float>(m_Position.x + m_SuperOffset.x), static_cast<float>(m_Position.y + m_SuperOffset.y), static_cast<float>(m_Position.z + m_SuperOffset.z) });
+	ubo.Model = glm::translate(glm::mat4(1.0f), { static_cast<float>(m_Position.x + m_SuperOffset.x), static_cast<float>(m_Position.y + m_SuperOffset.y), -1.0f * static_cast<float>(m_Position.z + m_SuperOffset.z) });
 	//ubo.Model = glm::rotate(ubo.Model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//ubo.Projection = glm::perspective(glm::radians(45.0f), Renderer::SwapChainExtent.width / (float)Renderer::SwapChainExtent.height, 0.1f, 10.0f);
