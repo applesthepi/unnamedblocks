@@ -1,34 +1,33 @@
-#include "IDiColorable.hpp"
+#include "i_dicolorable.hpp"
 
-IDiColorable::IDiColorable(const Color& primary, const Color& secondary)
-	:m_ColorPrimary(primary), m_ColorSecondary(secondary)
+rhr::render::interfaces::i_dicolorable::i_dicolorable(const cap::color& primary_color, const cap::color& secondary_color)
+	: m_color_primary(primary_color)
+	, m_color_secondary(secondary_color)
 {
 
 }
 
-void IDiColorable::SetColorPrimary(const Color& primary)
+void rhr::render::interfaces::i_dicolorable::set_color_primary(const cap::color& primary)
 {
-	m_ColorPrimary = primary;
-	PostColorUpdate();
+	m_color_primary = primary;
 }
 
-void IDiColorable::SetColorSecondary(const Color& secondary)
+void rhr::render::interfaces::i_dicolorable::set_color_secondary(const cap::color& secondary)
 {
-	m_ColorSecondary = secondary;
-	PostColorUpdate();
+	m_color_secondary = secondary;
 }
 
-const Color& IDiColorable::GetColorPrimary()
+const cap::color& rhr::render::interfaces::i_dicolorable::get_color_primary()
 {
-	return m_ColorPrimary;
+	return m_color_primary;
 }
 
-const Color& IDiColorable::GetColorSecondary()
+const cap::color& rhr::render::interfaces::i_dicolorable::get_color_secondary()
 {
-	return m_ColorSecondary;
+	return m_color_secondary;
 }
 
-void IDiColorable::PostColorUpdate()
+void rhr::render::interfaces::i_dicolorable::post_color_update()
 {
-
+	
 }

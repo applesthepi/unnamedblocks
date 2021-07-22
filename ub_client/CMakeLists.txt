@@ -4,8 +4,8 @@ project(UB_CLIENT)
 set(UB_CLIENT_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/ModLoader.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/ModLoader.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/mod_loader.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/src/mod_loader.hpp"
 )
 
 set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})

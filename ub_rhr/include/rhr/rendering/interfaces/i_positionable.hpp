@@ -1,49 +1,43 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-/// Interface for positioning ui.
-
+namespace rhr::render::interfaces
+{
 /// Template interface used for elements that have a position offset from a parent. Can not be abstracted into a joint interface; must be direct extention.
-
 template <size_t S, typename T>
-class IPositionable
+class i_positionable
 {
 public:
-	IPositionable();
+	///
+	i_positionable();
 
-	/// expected only main thread acccess; non-atomic
-	/// \param position of IPositionable
-	void SetPosition(const glm::vec<S, T>& position);
+	///
+	void set_position(const glm::vec<S, T>& position);
 
-	/// expected only main thread acccess; non-atomic
-	/// \param super offset of IPositionable
-	void SetSuperOffset(const glm::vec<S, T>& offset);
+	///
+	void set_super_position(const glm::vec<S, T>& offset);
 
-	/// expected only main thread acccess; non-atomic
-	/// \return position of IPositionable
-	glm::vec<S, T> GetPosition();
+	///
+	glm::vec<S, T> get_position();
 
-	/// expected only main thread acccess; non-atomic
-	/// \return super offset of IPositionable
-	glm::vec<S, T> GetSuperOffset();
+	///
+	glm::vec<S, T> get_super_position();
 protected:
-	/// Event called when IPositionable<T>::SetPosition() or IPositionable<T>::SetSuperOffset() gets run.
-	/// \param Position of IPositionable.
-	/// \param Super offset of IPositionable.
-	/// \return Condition to allow IPositionable<T>::SetPosition() to run.
-	virtual bool PrePositionUpdate(const glm::vec<S, T>& position, const glm::vec<S, T>& offset);
+	/// Event called when i_positionable<T>::set_position() or i_positionable<T>::set_super_position() gets involked.
+	/// \param Position of i_positionable.
+	/// \param Super position of i_positionable.
+	/// \return Condition to allow i_positionable<T>::set_position() to run.
+	virtual bool pre_position_update(const glm::vec<S, T>& position, const glm::vec<S, T>& super_position);
 
-	/// event called AFTER IPositionable<T>::SetPosition() or IPositionable<T>::SetSuperOffset() gets run
-	virtual void PostPositionUpdate();
+	/// Event called after i_positionable<T>::set_position() or i_positionable<T>::set_super_position() gets run.
+	virtual void post_position_update();
 
-	/// event called when IPositionable<T>::GetPosition() or IPositionable<T>::GetSuperOffset(); gets run
-	virtual void PrePositionPull();
+	///
+	glm::vec<S, T> m_position;
 
-	/// expected only main thread acccess; non-atomic
-	glm::vec<S, T> m_Position;
-
-	/// expected only main thread acccess; non-atomic
-	glm::vec<S, T> m_SuperOffset;
+	///
+	glm::vec<S, T> m_super_position;
 };
+}

@@ -1,42 +1,44 @@
 #pragma once
 #include "config.h"
 
-#include "Utils.hpp"
+#include <cappuccino/utils.hpp>
 
+namespace cap
+{
 /// Used to standardize color with glm.
-
-class Color
+class color
 {
 public:
-	/// Initializes color to opaque black (0.0, 0.0, 0.0, 1.0).
-	Color();
+	/// Initializes color to opaque black (0.0f, 0.0f, 0.0f, 1.0f).
+	color();
 
 	/// Sets color to normalized 4 component normalized (0.0 - 1.0) vector.
 	/// \param Color.
 	/// \return Color instance.
-	Color& FromNormalized(const glm::vec<4, float>& color);
+	color& from_normalized(const glm::vec<4, f32>& color);
 
-	/// Sets color to 4 component uint8_t (0 - 255) vector.
+	/// Sets color to 4 component u8 (0 - 255) vector.
 	/// \param Color.
 	/// \return Color instance.
-	Color& FromU8(const glm::vec<4, uint8_t>& color);
+	color& from_u8(const glm::vec<4, u8>& color);
 
-	/// Gets color as float (0.0 - 1.0).
+	/// Gets color as an f32 (0.0 - 1.0).
 	/// \return Color.
-	const glm::vec<4, float>& GetNormalized() const;
+	const glm::vec<4, f32>& get_normalized() const;
 
-	/// Gets color as a 4 component uint8_t (0 - 255) vector.
+	/// Gets color as a 4 component u8 (0 - 255) vector.
 	/// \return Color.
-	glm::vec<4, uint8_t> GetU8() const;
+	glm::vec<4, u8> get_u8() const;
 
-	static Color BackgroundColor1;
-	static Color BackgroundColor2;
-	static Color BackgroundColor3;
-	static Color TextPrimaryColor;
-	static Color TextSecondaryColor;
-	static Color White;
-	static Color Black;
+	static color background_color_1;
+	static color background_color_2;
+	static color background_color_3;
+	static color text_primary_color;
+	static color text_secondary_color;
+	static color white;
+	static color black;
 private:
 	/// Color stored as a 4 component normalized (0.0 - 1.0) vector.
-	glm::vec<4, float> m_Color;
+	glm::vec<4, f32> m_color;
 };
+}

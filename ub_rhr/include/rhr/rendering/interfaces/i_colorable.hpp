@@ -1,28 +1,28 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Color.hpp>
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/color.hpp>
 
-/// Interface for setting a color
-
-class IColorable
+namespace rhr::render::interfaces
+{
+/// Interface for setting a color.
+class i_colorable
 {
 public:
-	/// Sets default color
-	IColorable(const Color& color);
+	///
+	i_colorable(const cap::color& color);
 
-	/// Sets color.
-	/// \param Color.
-	void SetColor(const Color& color);
+	///
+	void set_color(const cap::color& color);
 
-	/// Gets color.
-	/// \return Color.
-	const Color& GetColor();
+	///
+	const cap::color& get_color();
 protected:
-	/// Color.
-	Color m_Color;
+	///
+	cap::color m_color;
 
-	/// Gets called when the color is changed.
-	virtual void PostColorUpdate();
+	/// Gets called after the color is changed.
+	virtual void post_color_update();
 };
+}

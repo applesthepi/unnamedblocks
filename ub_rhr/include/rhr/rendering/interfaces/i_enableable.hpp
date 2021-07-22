@@ -1,25 +1,24 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-/// Interface for enabling and disabling objects
-
-class IEnableable
+namespace rhr::render::interfaces
+{
+/// Interface for enabling and disabling objects.
+class i_enableable
 {
 public:
-	/// Sets default enable state during initializer.
-	/// \param Enabled state.
-	IEnableable(bool enabled);
+	/// Sets default enabled state.
+	i_enableable(bool enabled);
 
-	/// Sets enabled state.
-	/// \param Enabled state.
-	void SetEnabled(bool enabled);
+	///
+	void set_enabled(bool enabled);
 
-	/// Get enabled state.
-	/// \return Enabled state.
-	bool GetEnabled();
+	///
+	bool get_enabled();
 protected:
-	/// Enabled state.
-	bool m_Enabled;
+	///
+	bool m_enabled;
 };
+}

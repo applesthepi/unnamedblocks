@@ -1,23 +1,23 @@
-#include "IColorable.hpp"
+#include "i_colorable.hpp"
 
-IColorable::IColorable(const Color& color)
-	:m_Color(color)
+rhr::render::interfaces::i_colorable::i_colorable(const cap::color& color)
+	:m_color(color)
 {
 
 }
 
-void IColorable::SetColor(const Color& color)
+void rhr::render::interfaces::i_colorable::set_color(const cap::color& color)
 {
-	m_Color = color;
-	PostColorUpdate();
+	m_color = color;
+	post_color_update();
 }
 
-const Color& IColorable::GetColor()
+const cap::color& rhr::render::interfaces::i_colorable::get_color()
 {
-	return m_Color;
+	return m_color;
 }
 
-void IColorable::PostColorUpdate()
+void rhr::render::interfaces::i_colorable::post_color_update()
 {
 
 }

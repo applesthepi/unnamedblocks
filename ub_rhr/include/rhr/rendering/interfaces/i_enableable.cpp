@@ -1,17 +1,17 @@
-#include "IEnableable.hpp"
+#include "i_enableable.hpp"
 
-IEnableable::IEnableable(bool enabled)
-	:m_Enabled(enabled)
+rhr::render::interfaces::i_enableable::i_enableable(bool enabled)
+	: m_enabled(enabled)
 {
 
 }
 
-void IEnableable::SetEnabled(bool enabled)
+void rhr::render::interfaces::i_enableable::set_enabled(bool enabled)
 {
-	m_Enabled = enabled;
+	m_enabled = enabled;
 }
 
-bool IEnableable::GetEnabled()
+bool rhr::render::interfaces::i_enableable::get_enabled()
 {
-	return m_Enabled;
+	return m_enabled;
 }

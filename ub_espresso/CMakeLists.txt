@@ -2,15 +2,13 @@ cmake_minimum_required(VERSION 3.10)
 project(UB_ESPRESSO)
 
 set(UB_ESPRESSO_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/catagory/ModCatagory.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/catagory/ModCatagory.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/category.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/category.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/data.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/data.cpp"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/ModData.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/ModData.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/InputHandler.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/InputHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/espresso.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/input_handler.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/input_handler.cpp"
 )
 
 add_library(UB_ESPRESSO STATIC

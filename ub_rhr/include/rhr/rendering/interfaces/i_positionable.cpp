@@ -1,77 +1,79 @@
-#include "IPositionable.hpp"
+#include "i_positionable.hpp"
 
 template <size_t S, typename T>
-IPositionable<S, T>::IPositionable()
-	: m_Position(glm::vec<S, T>())
-	, m_SuperOffset(glm::vec<S, T>())
+rhr::render::interfaces::i_positionable<S, T>::i_positionable()
+	: m_position(glm::vec<S, T>())
+	, m_super_position(glm::vec<S, T>())
 {
 
 }
 
 template <size_t S, typename T>
-void IPositionable<S, T>::SetPosition(const glm::vec<S, T>& position)
+void rhr::render::interfaces::i_positionable<S, T>::set_position(const glm::vec<S, T>& position)
 {
-	if (PrePositionUpdate(position, m_SuperOffset))
+	if (pre_position_update(position, super_position))
 	{
-		m_Position = position;
-		PostPositionUpdate();
+		m_position = position;
+		post_position_update();
 	}
 }
 
 template <size_t S, typename T>
-void IPositionable<S, T>::SetSuperOffset(const glm::vec<S, T>& offset)
+void rhr::render::interfaces::i_positionable<S, T>::set_super_position(const glm::vec<S, T>& super_position)
 {
-	if (PrePositionUpdate(m_Position, offset))
+	if (pre_position_update(m_position, super_position))
 	{
-		m_SuperOffset = offset;
-		PostPositionUpdate();
+		m_super_position = super_position;
+		post_position_update();
 	}
 }
 
 template <size_t S, typename T>
-glm::vec<S, T> IPositionable<S, T>::GetPosition()
+glm::vec<S, T> rhr::render::interfaces::i_positionable<S, T>::get_position()
 {
-	PrePositionPull();
-	return m_Position;
+	return m_position;
 }
 
 template <size_t S, typename T>
-glm::vec<S, T> IPositionable<S, T>::GetSuperOffset()
+glm::vec<S, T> rhr::render::interfaces::i_positionable<S, T>::get_super_position()
 {
-	PrePositionPull();
-	return m_SuperOffset;
+	return m_super_position;
 }
 
 template <size_t S, typename T>
-bool IPositionable<S, T>::PrePositionUpdate(const glm::vec<S, T>& position, const glm::vec<S, T>& offset)
+bool rhr::render::interfaces::i_positionable<S, T>::pre_position_update(const glm::vec<S, T>& position, const glm::vec<S, T>& super_position)
 {
 	return true;
 }
 
 template <size_t S, typename T>
-void IPositionable<S, T>::PostPositionUpdate()
+void rhr::render::interfaces::i_positionable<S, T>::post_position_update()
 {
 	
 }
 
-template <size_t S, typename T>
-void IPositionable<S, T>::PrePositionPull()
-{
+template class rhr::render::interfaces::i_positionable<2, i64>;
+template class rhr::render::interfaces::i_positionable<2, i32>;
+template class rhr::render::interfaces::i_positionable<2, i16>;
+template class rhr::render::interfaces::i_positionable<2, i8>;
 
-}
+template class rhr::render::interfaces::i_positionable<2, u64>;
+template class rhr::render::interfaces::i_positionable<2, u32>;
+template class rhr::render::interfaces::i_positionable<2, u16>;
+template class rhr::render::interfaces::i_positionable<2, u8>;
 
-template class IPositionable<2, int64_t>;
-template class IPositionable<2, int32_t>;
-template class IPositionable<2, int16_t>;
-template class IPositionable<2, int8_t>;
+template class rhr::render::interfaces::i_positionable<2, f64>;
+template class rhr::render::interfaces::i_positionable<2, f32>;
 
-template class IPositionable<2, uint64_t>;
-template class IPositionable<2, uint32_t>;
-template class IPositionable<2, uint16_t>;
-template class IPositionable<2, uint8_t>;
+template class rhr::render::interfaces::i_positionable<3, i64>;
+template class rhr::render::interfaces::i_positionable<3, i32>;
+template class rhr::render::interfaces::i_positionable<3, i16>;
+template class rhr::render::interfaces::i_positionable<3, i8>;
 
-template class IPositionable<2, double>;
-template class IPositionable<2, float>;
+template class rhr::render::interfaces::i_positionable<3, u64>;
+template class rhr::render::interfaces::i_positionable<3, u32>;
+template class rhr::render::interfaces::i_positionable<3, u16>;
+template class rhr::render::interfaces::i_positionable<3, u8>;
 
-template class IPositionable<3, double>;
-template class IPositionable<3, float>;
+template class rhr::render::interfaces::i_positionable<3, f64>;
+template class rhr::render::interfaces::i_positionable<3, f32>;

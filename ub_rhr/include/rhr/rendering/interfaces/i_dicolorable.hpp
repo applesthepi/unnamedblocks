@@ -1,37 +1,37 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Color.hpp>
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/color.hpp>
 
+namespace rhr::render::interfaces
+{
 /// Interface for setting two colors.
-
-class IDiColorable
+class i_dicolorable
 {
 public:
 	/// Sets default colors.
-	IDiColorable(const Color& primary, const Color& secondary);
+	i_dicolorable(const cap::color& primary_color, const cap::color& secondary_color);
 
-	/// Sets primary color.
-	/// \param Primary color.
-	void SetColorPrimary(const Color& primary);
+	///
+	void set_color_primary(const cap::color& primary);
 
-	/// Sets secondary color.
-	/// \param Secondary color.
-	void SetColorSecondary(const Color& secondary);
+	///
+	void set_color_secondary(const cap::color& secondary);
 
-	/// Gets primary color.
-	/// \return Primary color.
-	const Color& GetColorPrimary();
+	///
+	const cap::color& get_color_primary();
 
-	/// Gets secondary color.
-	/// \return Secondary color.
-	const Color& GetColorSecondary();
+	///
+	const cap::color& get_color_secondary();
 protected:
-	/// Gets called when the color is changed.
-	virtual void PostColorUpdate();
+	/// Gets called after the color is changed.
+	virtual void post_color_update();
 
-	/// Color.
-	Color m_ColorPrimary;
-	Color m_ColorSecondary;
+	///
+	cap::color m_color_primary;
+
+	///
+	cap::color m_color_secondary;
 };
+}
