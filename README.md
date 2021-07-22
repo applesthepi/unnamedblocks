@@ -11,7 +11,8 @@ TODO
 This describes the code style that everyone should use throughout UB and in mods. While the style might not be what people are used to, it would be very helpful if everyone used the same style. Nothing will happen if you don't follow these, it's just a strong recommendation to follow these standards.
 
 ### Filename
-`snake_case_only_please.hpp``snake_case_only_please.cpp`
+`snake_case_only_please.hpp`
+`snake_case_only_please.cpp`
 
 ### Includes
 hpp
