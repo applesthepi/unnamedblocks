@@ -11,8 +11,7 @@ TODO
 This describes the code style that everyone should use throughout UB and in mods. While the style might not be what people are used to, it would be very helpful if everyone used the same style. Nothing will happen if you don't follow these, it's just a strong recommendation to follow these standards.
 
 ### Filename
-`snake_case_only_please.hpp`
-`snake_case_only_please.cpp`
+`snake_case_only_please.hpp``snake_case_only_please.cpp`
 
 ### Includes
 hpp
@@ -37,10 +36,7 @@ cpp
 /* current lib  */ #include "rhr/stacking/arguments/argument_text.hpp"
 /* current lib  */ #include "rhr/registries/char_texture.hpp"
 
-/* required     */ #include <cappuccino/utils.hpp>
-/* external lib */ #include <cappuccino/mod_block_pass.hpp>
-/* external lib */ #include <cappuccino/preprocessor_data.hpp>
-/* external lib */ #include <cappuccino/registration.hpp>
+/* external lib */ #include <cappuccino/color.hpp>
 ```
 
 ### File Structure
