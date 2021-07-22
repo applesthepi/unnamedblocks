@@ -50,7 +50,6 @@ hpp
 ```cpp
 namespace rhr::same::as::path
 {
-
 ///
 class example_use_snake_case
 {
@@ -83,7 +82,7 @@ private:
 	///
 	f32 m_use_this_convention;
 };
-}
+};
 ```
 cpp
 ```cpp
