@@ -1,0 +1,4 @@
+#define ModVinVersion "@VERSION_MOD_VIN@"
+#cmakedefine LINUX
+#cmakedefine POSIX
+#cmakedefine ENABLE_AVX2
