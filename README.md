@@ -15,7 +15,7 @@ This describes the code style that everyone should use throughout UB and in mods
 `snake_case_only_please.cpp`
 
 ### Includes
-**hpp**
+hpp
 ```cpp
 /* required     */ #pragma once
 /* required     */ #include "config.h"
@@ -29,7 +29,7 @@ This describes the code style that everyone should use throughout UB and in mods
 /* external lib */ #include <cappuccino/preprocessor_data.hpp>
 /* external lib */ #include <cappuccino/registration.hpp>
 ```
-**cpp**
+cpp
 ```cpp
 /* req if class */ #include "example_class.hpp"
 
