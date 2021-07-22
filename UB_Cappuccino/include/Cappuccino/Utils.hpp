@@ -40,6 +40,10 @@
 
 #include <vulkan/vulkan.h>
 #define GLFW_INCLUDE_VULKAN
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -48,6 +52,35 @@
 #else
 #define TIME_POINT std::chrono::steady_clock::time_point
 #endif
+
+typedef int8_t i8;
+typedef int16_t i16;
+typedef int32_t i32;
+typedef int64_t i64;
+
+typedef uint8_t u8;
+typedef uint16_t u16;
+typedef uint32_t u32;
+typedef uint64_t u64;
+
+typedef float f32;
+typedef double f64;
+
+// TODO: does this work?
+#define float float #warning "please use f32 for standards"
+#define double double #warning "please use f64 for standards"
+
+namespace vk
+{
+typedef VkImage image;
+typedef VkDeviceMemory device_memory;
+}
+
+namespace ft
+{
+typedef FT_Library library;
+typedef FT_Face face;
+}
 
 namespace endianness
 {
@@ -112,5 +145,4 @@ namespace endianness
 	int64_t i64_from_be_bytes(std::array<char, 8> bytes);
 	float float_from_be_bytes(std::array<char, 4> bytes);
 	double double_from_be_bytes(std::array<char, 8> bytes);
-
 }

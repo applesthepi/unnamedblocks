@@ -29,10 +29,10 @@ public:
 	/// \return super offset of IPositionable
 	glm::vec<S, T> GetSuperOffset();
 protected:
-	/// event called when IPositionable<T>::SetPosition() or IPositionable<T>::SetSuperOffset() gets run
-	/// \param position of IPositionable
-	/// \param super offset of IPositionable
-	/// \return condition to allow IPositionable<T>::SetPosition() to run
+	/// Event called when IPositionable<T>::SetPosition() or IPositionable<T>::SetSuperOffset() gets run.
+	/// \param Position of IPositionable.
+	/// \param Super offset of IPositionable.
+	/// \return Condition to allow IPositionable<T>::SetPosition() to run.
 	virtual bool PrePositionUpdate(const glm::vec<S, T>& position, const glm::vec<S, T>& offset);
 
 	/// event called AFTER IPositionable<T>::SetPosition() or IPositionable<T>::SetSuperOffset() gets run

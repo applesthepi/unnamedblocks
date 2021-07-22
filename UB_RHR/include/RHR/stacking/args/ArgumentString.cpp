@@ -9,6 +9,7 @@ ArgumentString::ArgumentString(const Color& color)
 {
 	m_Text->SetWeak(m_Text);
 	m_Text->SetDepth(Renderer::DepthArgumentText);
+	m_Text->SetColorPrimary(Color::TextPrimaryColor);
 	m_Text->SetColorSecondary(color);
 	m_Text->SetPadding(Argument::Padding);
 }

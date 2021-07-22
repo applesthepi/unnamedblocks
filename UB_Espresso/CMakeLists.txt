@@ -2,37 +2,33 @@ cmake_minimum_required(VERSION 3.10)
 project(UB_ESPRESSO)
 
 set(UB_ESPRESSO_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/catagory/ModCatagory.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/catagory/ModCatagory.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/catagory/ModCatagory.cpp"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/mod/ModData.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/ModData.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/ModData.cpp"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/InputHandler.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso/Espresso.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/InputHandler.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/InputHandler.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/espresso.hpp"
 )
-
-# Preserve folders in visual studio structure
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso FILES ${UB_ESPRESSO_SRC})
 
 add_library(UB_ESPRESSO STATIC
 	${UB_ESPRESSO_SRC}
 )
 
+if(MSVC)
+	source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/espresso FILES ${UB_ESPRESSO_SRC})
+	target_compile_options(UB_ESPRESSO PRIVATE "/MP")
+endif()
+
 add_dependencies(UB_ESPRESSO
 	UB_CAPPUCCINO
 )
 
-target_include_directories(UB_ESPRESSO PUBLIC
-	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_SOURCE_DIR}/UB_Cappuccino/include"
-	"${CMAKE_CURRENT_SOURCE_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/Espresso"
-)
-
 target_link_libraries(UB_ESPRESSO PUBLIC
 	UB_CAPPUCCINO
+	
 	glad::glad
 	glfw
 	imgui::imgui
@@ -40,8 +36,14 @@ target_link_libraries(UB_ESPRESSO PUBLIC
 	freetype
 )
 
-if(MSVC)
-	target_compile_options(UB_ESPRESSO PRIVATE "/MP")
-endif()
+target_include_directories(UB_ESPRESSO PUBLIC
+	"${PROJECT_BINARY_DIR}"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+
+    ${STB_INCLUDE_DIRS}
+	${RAPIDJSON_INCLUDE_DIRS}
+	${VULKAN_INCLUDE_DIRS}
+)
 
 configure_file(config.h.in config.h)

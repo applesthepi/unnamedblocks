@@ -11,6 +11,7 @@ vui::RenderText::RenderText()
 	, m_Depth(10)
 	, m_RenderObjectBackground(std::make_shared<RenderObject>(true))
 	, m_RenderObjectText(std::make_shared<RenderObject>(true))
+	, m_EnableBackground(true)
 {
 	m_RenderObjectBackground->SetWeak(m_RenderObjectBackground);
 	m_RenderObjectText->SetWeak(m_RenderObjectText);
@@ -48,6 +49,11 @@ void vui::RenderText::SetPadding(int32_t padding)
 	MarkDirty();
 }
 
+void vui::RenderText::EnableBackground(bool enable)
+{
+	m_EnableBackground = enable;
+}
+
 void vui::RenderText::UpdateSize()
 {
 	int32_t running_x = m_Padding;
@@ -62,8 +68,11 @@ void vui::RenderText::OnRender()
 {
 	if (m_Enabled)
 	{
-		vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
-		m_RenderObjectBackground->Render();
+		if (m_EnableBackground)
+		{
+			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
+			m_RenderObjectBackground->Render();
+		}
 
 		vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
 		m_RenderObjectText->Render();
@@ -99,16 +108,17 @@ void vui::RenderText::OnUpdateBuffers()
 		uint32_t* indices = (uint32_t*)alloca(sizeof(uint32_t) * m_Text.size() * 6);
 
 		int32_t running_x = m_Padding;
+		glm::vec<3, float> primary_color = { m_ColorPrimary.GetNormalized().r, m_ColorPrimary.GetNormalized().g, m_ColorPrimary.GetNormalized().b };
 
 		for (size_t i = 0; i < m_Text.size(); i++)
 		{
 			UIRegistry::CharTextureData char_data = UIRegistry::GetCharTextureCoords(m_Text[i]);
 			float y_offset = static_cast<float>(Block::HeightContent) + (-1.0f * static_cast<float>(char_data.Offset.y)) - static_cast<float>(Block::Padding);
 
-			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.First.y });
-			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.Second.x, char_data.First.y });
-			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.Second.x, char_data.Second.y });
-			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, { 1.0f, 1.0f , 1.0f }, { char_data.First.x, char_data.Second.y });
+			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), y_offset, 0.0f }, primary_color, { char_data.First.x, char_data.First.y });
+			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), y_offset, 0.0f }, primary_color, { char_data.Second.x, char_data.First.y });
+			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, primary_color, { char_data.Second.x, char_data.Second.y });
+			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, primary_color, { char_data.First.x, char_data.Second.y });
 
 			indices[i * 6 + 0] = i * 4 + 1;
 			indices[i * 6 + 1] = i * 4 + 0;

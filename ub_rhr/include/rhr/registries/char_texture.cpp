@@ -1,4 +1,4 @@
-#include "UIRegistry.hpp"
+#include "char_texture.hpp"
 
 #include "ui/RenderTools.hpp"
 #include "stacking/Block.hpp"

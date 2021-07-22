@@ -53,13 +53,13 @@ option(BETA "Enable beta features" OFF)
 option(AVX "Enable AVX2 support. This is supported on Intel Haswell processors or newer and AMD Excavator processors and all Zen processors or newer" OFF)
 option(MODS "Build mods" ON)
 
-add_subdirectory("UB_Client")
-add_subdirectory("UB_Cappuccino")
-add_subdirectory("UB_Espresso")
-add_subdirectory("UB_RHR")
+add_subdirectory("ub_client")
+add_subdirectory("ub_cappuccino")
+add_subdirectory("ub_espresso")
+add_subdirectory("ub_rhr")
 
 if (MODS)
-	add_subdirectory("mods/UB_ModVin")
+	add_subdirectory("mods/ub_mod_vin")
 endif()
 
 # # Options

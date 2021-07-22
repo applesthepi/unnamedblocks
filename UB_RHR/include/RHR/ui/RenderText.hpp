@@ -27,6 +27,8 @@ namespace vui
 		void SetDepth(uint32_t depth);
 
 		void SetPadding(int32_t padding);
+
+		void EnableBackground(bool enable);
 	private:
 		void UpdateSize();
 
@@ -52,6 +54,7 @@ namespace vui
 		std::string m_Text;
 		uint32_t m_Depth;
 		int32_t m_Padding;
+		bool m_EnableBackground;
 	};
 
 }
