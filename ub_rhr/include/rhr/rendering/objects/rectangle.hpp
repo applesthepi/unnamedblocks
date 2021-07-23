@@ -1,60 +1,58 @@
 #pragma once
 #include "config.h"
 
-#include "ui/interfaces/IUI.hpp"
-#include "ui/interfaces/IPositionable.hpp"
-#include "ui/interfaces/ISizeable.hpp"
-#include "ui/interfaces/IBoundedParent.hpp"
-#include "ui/interfaces/IEnableable.hpp"
-#include "ui/interfaces/IColorable.hpp"
-#include "ui/RenderObject.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
+#include "rhr/rendering/interfaces/i_colorable.hpp"
+#include "rhr/rendering/objects/object.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-namespace vui
+namespace rhr::render::object
 {
-
-class RenderRectangle : public IRenderable, public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IEnableable, public IColorable
+///
+class rectangle : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_colorable
 {
 public:
-	RenderRectangle();
+	///
+	rectangle();
 
 	/// Sets texture of rectangle.
 	/// \param Texture path.
-	void SetTexture(const std::string& texture);
+	void set_texture(const std::string& texture);
 
 	/// Sets internal texture of rectangle.
 	/// \param Internal texture.
-	void SetTexture(RenderObject::TextureType type);
+	void set_texture(rhr::render::object::object::texture_type type);
 
 	/// Sets Z depth.
 	/// \param Z depth.
-	void SetDepth(uint32_t depth);
+	void set_depth(i32 depth);
 private:
-	void OnRender() override;
+	void on_render() override;
 
-	void OnUpdateBuffers() override;
+	void on_update_buffers() override;
 
-	void OnReloadSwapChain() override;
+	void on_reload_swap_chain() override;
 
-	void PostPositionUpdate() override;
+	void post_position_update() override;
 
-	void PostColorUpdate() override;
+	void post_color_update() override;
 
-	void PostSizeUpdate() override;
+	void post_size_update() override;
 
 	/// Abstracted RenderObject to render the rectangle.
-	std::shared_ptr<RenderObject> m_RenderObject;
+	std::shared_ptr<rhr::render::object::object> m_render_object;
 
-	bool m_HasColor;
-	bool m_HasTexture;
-	bool m_InBounds;
+	bool m_has_color;
+	bool m_has_texture;
+	bool m_in_bounds;
 
-	std::string m_Texture;
-	RenderObject::TextureType m_TextureType;
-	uint32_t m_Depth;
+	std::string m_texture;
+	rhr::render::object::object::texture_type m_texture_type;
+	i32 m_depth;
 
-	glm::vec<2, int32_t> m_UseSize;
+	glm::vec<2, i32> m_use_size;
 };
-
 }

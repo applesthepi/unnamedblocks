@@ -1,58 +1,71 @@
 #pragma once
 #include "config.h"
 
-#include "ui/interfaces/IUI.hpp"
-#include "ui/interfaces/IPositionable.hpp"
-#include "ui/interfaces/ISizeable.hpp"
-#include "ui/interfaces/IBoundedParent.hpp"
-#include "ui/interfaces/IEnableable.hpp"
-#include "ui/interfaces/IDiColorable.hpp"
-#include "ui/RenderRectangle.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
+#include "rhr/rendering/interfaces/i_dicolorable.hpp"
+#include "rhr/rendering/objects/rectangle.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <Espresso/InputHandler.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/color.hpp>
+#include <espresso/input_handler.hpp>
 
-namespace vui
+namespace rhr::render::object
 {
+///
+class button : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_dicolorable
+{
+public:
+	///
+	button(const cap::color& primary_color, const cap::color& secondary_color);
 
-	class RenderButton : public IRenderable, public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IEnableable, public IDiColorable
-	{
-	public:
-		RenderButton(const Color& primaryColor, const Color& secondaryColor);
-		~RenderButton();
+	///
+	~button();
 
-		/// Sets Z depth.
-		/// \param Z depth.
-		void SetDepth(uint32_t depth);
+	///
+	void set_depth(i32 depth);
 
-		/// Callback called when button is clicked.
-		/// \param Callback.
-		void SetCallback(void(*callback)(void*), void* data);
+	/// Callback called when button is clicked.
+	/// \param Callback.
+	/// \param Data is passed as a parameter in the callback.
+	void set_callback(void(*callback)(void*), void* data);
 
-		void MouseUpdate(glm::vec<2, int32_t> position, float scroll, MouseOperation operation);
+	///
+	void mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
 
-		void EnableFillWidth();
-	private:
-		void OnRender() override;
+	///
+	void enable_fill_width(bool enable);
+private:
+	///
+	void on_render() override;
 
-		void OnUpdateBuffers() override;
+	///
+	void on_update_buffers() override;
 
-		void OnReloadSwapChain() override;
+	///
+	void on_reload_swap_chain() override;
 
-		void PostPositionUpdate() override;
+	///
+	void post_position_update() override;
 
-		void PostSizeUpdate() override;
+	///
+	void post_size_update() override;
 
-		void PostColorUpdate() override;
+	///
+	void post_color_update() override;
 
-		/// Rectangle.
-		std::shared_ptr<RenderRectangle> m_RenderRectangle;
+	///
+	std::shared_ptr<rhr::render::object::rectangle> m_background;
 
-		/// Callback information.
-		void(*m_Callback)(void*);
-		void* m_CallbackData;
+	/// Callback called when button is clicked.
+	void(*m_callback)(void*);
 
-		bool m_EnableFillWidth;
-	};
+	/// Callback data is passed by a parameter in the callback when the button is pressed.
+	void* m_callback_data;
 
+	///
+	bool m_enable_fill_width;
+};
 }

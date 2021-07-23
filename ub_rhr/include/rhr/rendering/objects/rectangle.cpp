@@ -1,97 +1,72 @@
-#include "RenderRectangle.hpp"
+#include "rectangle.hpp"
 
-#include "ui/Renderer.hpp"
-#include "ui/Vertex.hpp"
+#include "rhr/rendering/renderer.hpp"
+#include "rhr/rendering/vertex.hpp"
 
-// TODO: remove include testing
-#include <iostream>
-
-vui::RenderRectangle::RenderRectangle()
-	: IEnableable(true)
-	, IColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
-	, m_Depth(10)
-	, m_HasColor(false)
-	, m_HasTexture(false)
-	, m_InBounds(false)
-	, m_RenderObject(std::make_shared<RenderObject>(true))
-	, m_UseSize({ 0, 0 })
-	, m_TextureType(RenderObject::TextureType::CUSTOM)
+rhr::render::object::rectangle::rectangle()
+	: i_enableable(true)
+	, i_colorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
+	, m_depth(10)
+	, m_has_color(false)
+	, m_has_texture(false)
+	, m_in_bounds(false)
+	, m_render_object(std::make_shared<rhr::render::object::object>(true))
+	, m_use_size({ 0, 0 })
+	, m_texture_type(rhr::render::object::object::texture_type::CUSTOM)
 {
-	m_RenderObject->SetWeak(m_RenderObject);
+	m_render_object->set_weak(m_render_object);
 }
 
-//void vui::RenderRectangle::SetWeak(std::weak_ptr<RenderRectangle>&& weak)
-//{
-//	m_Weak = std::move(weak);
-//	m_WeakSet = true;
-//}
-
-void vui::RenderRectangle::SetTexture(const std::string& texture)
+void rhr::render::object::rectangle::set_texture(const std::string& texture)
 {
-	m_HasTexture = true;
-	m_Texture = texture;
-	m_TextureType = RenderObject::TextureType::CUSTOM;
-	m_RenderObject->SetTexture(texture);
+	m_has_texture = true;
+	m_texture = texture;
+	m_texture_type = rhr::render::object::object::texture_type::CUSTOM;
+	m_render_object->set_texture(texture);
 
-	MarkDirty();
+	mark_dirty();
 }
 
-void vui::RenderRectangle::SetTexture(RenderObject::TextureType type)
+void rhr::render::object::rectangle::set_texture(rhr::render::object::object::texture_type type)
 {
-	m_HasTexture = true;
-	m_Texture.clear();
-	m_TextureType = RenderObject::TextureType::TEXT_SHEET;
-	m_RenderObject->SetTexture(type);
+	m_has_texture = true;
+	m_texture.clear();
+	m_texture_type = rhr::render::object::object::texture_type::TEXT_SHEET;
+	m_render_object->set_texture(type);
 
-	MarkDirty();
+	mark_dirty();
 }
 
-void vui::RenderRectangle::SetDepth(uint32_t depth)
+void rhr::render::object::rectangle::set_depth(i32 depth)
 {
-	m_Depth = depth;
-	MarkDirty();
+	m_depth = depth;
+	mark_dirty();
 }
 
-//std::weak_ptr<vui::RenderRectangle>& vui::RenderRectangle::GetWeak()
-//{
-//	return m_Weak;
-//}
-
-//bool vui::RenderRectangle::IsWeak()
-//{
-//	if (!m_WeakSet)
-//	{
-//		Logger::Warn("check for vui::RenderRectangle::IsWeak(); failed");
-//		return false;
-//	}
-//
-//	return true;
-//}
-
-void vui::RenderRectangle::OnRender()
+void rhr::render::object::rectangle::on_render()
 {
-	if (m_Enabled && m_InBounds)
-		m_RenderObject->Render();
+	if (m_enabled && m_in_bounds)
+		m_render_object->render();
 }
 
-void vui::RenderRectangle::OnUpdateBuffers()
+void rhr::render::object::rectangle::on_update_buffers()
 {
 	std::vector<Vertex> vertices;
-	std::vector<uint32_t> indices;
+	std::vector<u32> indices;
 
 	vertices.reserve(4);
 	indices.reserve(6);
 
-	glm::vec<2, int32_t> position = m_Position + m_SuperOffset;
-	glm::vec<3, float> color = { m_Color.GetNormalized().r, m_Color.GetNormalized().g, m_Color.GetNormalized().b };
+	glm::vec<2, i32> position = m_position + m_super_position;
+	glm::vec<3, f32> color = { m_color.get_normalized().r, m_color.get_normalized().g, m_color.get_normalized().b };
 
 	// TODO: remove
 	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
 
-	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 0.0f });
-	Vertex v1 = Vertex({ static_cast<float>(position.x + m_UseSize.x), static_cast<float>(position.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 0.0f });
-	Vertex v2 = Vertex({ static_cast<float>(position.x + m_UseSize.x), static_cast<float>(position.y + m_UseSize.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 1.0f, 1.0f });
-	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_UseSize.y), static_cast<int32_t>(m_Depth) * -1 }, color, { 0.0f, 1.0f });
+	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<i32>(m_depth) * -1 }, color, { 0.0f, 0.0f });
+	Vertex v1 = Vertex({ static_cast<float>(position.x + m_use_size.x), static_cast<float>(position.y), static_cast<i32>(m_depth) * -1 }, color, { 1.0f, 0.0f });
+	Vertex v2 = Vertex({ static_cast<float>(position.x + m_use_size.x), static_cast<float>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, color, { 1.0f, 1.0f });
+	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, color, { 0.0f, 1.0f });
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);
@@ -105,54 +80,53 @@ void vui::RenderRectangle::OnUpdateBuffers()
 	indices.push_back(0);
 	indices.push_back(3);
 
-	m_RenderObject->UpdateVertices(&vertices, &indices, true);
+	m_render_object->update_vertices(&vertices, &indices, true);
 }
 
-void vui::RenderRectangle::OnReloadSwapChain()
+void rhr::render::object::rectangle::on_reload_swap_chain()
 {
-	m_RenderObject->ReloadSwapChain();
+	m_render_object->reload_swap_chain();
 }
 
-void vui::RenderRectangle::PostPositionUpdate()
+void rhr::render::object::rectangle::post_position_update()
 {
-	//SetSizeMax();// TODO: remove testing
-	MarkDirty();
+	mark_dirty();
 }
 
-void vui::RenderRectangle::PostColorUpdate()
+void rhr::render::object::rectangle::post_color_update()
 {
-	MarkDirty();
+	mark_dirty();
 }
 
-void vui::RenderRectangle::PostSizeUpdate()
+void rhr::render::object::rectangle::post_size_update()
 {
-	if (m_SuperBounds.x == 0 && m_SuperBounds.y == 0)
+	if (m_super_bounds.x == 0 && m_super_bounds.y == 0)
 	{
-		m_UseSize = m_Size;
-		m_InBounds = true;
+		m_use_size = m_size;
+		m_in_bounds = true;
 
-		MarkDirty();
+		mark_dirty();
 	}
 	else
 	{
-		if (m_Position.x > m_SuperBounds.x ||
-			m_Position.y > m_SuperBounds.y)
+		if (m_position.x > m_super_bounds.x ||
+			m_position.y > m_super_bounds.y)
 		{
-			m_UseSize = { 0, 0 };
-			m_InBounds = false;
+			m_use_size = { 0, 0 };
+			m_in_bounds = false;
 		}
 		else
 		{
-			m_UseSize = m_Size;
-			m_InBounds = true;
+			m_use_size = m_size;
+			m_in_bounds = true;
 
-			if (m_Position.x + m_Size.x > m_SuperBounds.x)
-				m_UseSize.x = m_SuperBounds.x - m_Position.x;
+			if (m_position.x + m_size.x > m_super_bounds.x)
+				m_use_size.x = m_super_bounds.x - m_position.x;
 
-			if (m_Position.y + m_Size.y > m_SuperBounds.y)
-				m_UseSize.y = m_SuperBounds.y - m_Position.y;
+			if (m_position.y + m_size.y > m_super_bounds.y)
+				m_use_size.y = m_super_bounds.y - m_position.y;
 
-			MarkDirty();
+			mark_dirty();
 		}
 	}
 }

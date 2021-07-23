@@ -1,101 +1,115 @@
 #include "char_texture.hpp"
 
-#include "ui/RenderTools.hpp"
-#include "stacking/Block.hpp"
+#include "rhr/rendering/tools.hpp"
+#include "rhr/stacking/block.hpp"
 
-#include <Cappuccino/Color.hpp>
-// TODO: remove debug
-#include <iostream>
+#include <cappuccino/color.hpp>
 
-void UIRegistry::Initialize()
+void rhr::registries::char_texture::process_fonts()
 {
-	FT_Error error;
+	ft::error error;
 
-	error = FT_Init_FreeType(&m_ft_library);
+	error = FT_Init_FreeType(&m_library);
 	if (error)
 	{
 		Logger::Error("failed to init freetype \"" + std::to_string(error) + "\"");
 		return;
 	}
 
-	error = FT_New_Face(m_ft_library, "res/CascadiaMono-Light.ttf", 0, &m_ft_face);
+	process_font("res/CascadiaMono-Light.ttf", texture_type::LIGHT_NORMAL);
+	process_font("res/CascadiaMono-Bold.ttf", texture_type::BOLD_NORMAL);
+	process_font("res/CascadiaMonoItalic-LightItalic.ttf", texture_type::LIGHT_ITALIC);
+	process_font("res/CascadiaMonoItalic-BoldItalic.ttf", texture_type::BOLD_ITALIC);
+}
+
+void rhr::registries::char_texture::process_font(const std::string& font_path, texture_type type)
+{
+	texture_data font_texture_data;
+	ft::error error;
+
+	error = FT_Init_FreeType(&m_library);
+	if (error)
+	{
+		Logger::Error("failed to init freetype \"" + std::to_string(error) + "\"");
+		return;
+	}
+
+	error = FT_New_Face(m_library, font_path.c_str(), 0, &font_texture_data.face);
 	if (error)
 	{
 		Logger::Error("failed to init freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
-	error = FT_Set_Pixel_Sizes(m_ft_face, 0, Block::Height - (Block::Padding * 2));
+	error = FT_Set_Pixel_Sizes(font_texture_data.face, 0, Block::Height - (Block::Padding * 2));
 	if (error)
 	{
 		Logger::Error("failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
-	std::vector<uint8_t*> char_images;
-	std::vector<glm::vec<2, uint16_t>> char_sizes;
+	std::vector<u8*> char_images;
+	std::vector<glm::vec<2, u16>> char_sizes;
 	std::vector<char> chars;
-	std::vector<glm::vec<2, uint16_t>> char_offsets;
-	std::vector<glm::vec<2, uint16_t>> char_advances;
-
-	std::string test = "abcdefghijklmnopqrstuvwxyz1234567890";
+	std::vector<glm::vec<2, u16>> char_offsets;
+	std::vector<glm::vec<2, u16>> char_advances;
 
 	for (char i = 32; i <= 126; i++)
 	{
-		FT_UInt glyph_index = FT_Get_Char_Index(m_ft_face, i);
+		FT_UInt glyph_index = FT_Get_Char_Index(font_texture_data.face, i);
 
-		error = FT_Load_Glyph(m_ft_face, glyph_index, FT_LOAD_DEFAULT);
+		error = FT_Load_Glyph(font_texture_data.face, glyph_index, FT_LOAD_DEFAULT);
 		if (error)
 		{
 			Logger::Error("failed load glyph \"" + std::to_string(error) + "\"");
 			continue;
 		}
 
-		error = FT_Render_Glyph(m_ft_face->glyph, FT_RENDER_MODE_NORMAL);
+		error = FT_Render_Glyph(font_texture_data.face->glyph, FT_RENDER_MODE_NORMAL);
 		if (error)
 		{
 			Logger::Error("failed render glyph \"" + std::to_string(error) + "\"");
 			continue;
 		}
 
-		FT_Bitmap map = m_ft_face->glyph->bitmap;
-		
+		FT_Bitmap map = font_texture_data.face->glyph->bitmap;
+
 #if 0
 		for (size_t y = 0; y < map.rows; y++)
 		{
 			for (size_t x = 0; x < map.width; x++)
-				std::cout << static_cast<uint16_t>(map.buffer[y * map.width + x]) << ", ";
+				std::cout << static_cast<u16>(map.buffer[y * map.width + x]) << ", ";
 
 			std::cout << '\n';
 		}
-		
+
 		std::cout << std::flush;
 #endif
 
-		uint8_t* char_image = (uint8_t*)malloc(map.width * map.rows * 4);
-		glm::vec<4, uint8_t> fill_color_bytes;
+		u8* char_image = (u8*)malloc(map.width * map.rows * 4);
+		glm::vec<4, u8> fill_color_bytes;
 
-		for (uint16_t y = 0; y < map.rows; y++)
+		for (u16 y = 0; y < map.rows; y++)
 		{
-			for (uint16_t x = 0; x < map.width; x++)
+			for (u16 x = 0; x < map.width; x++)
 			{
-				uint8_t pixel = map.buffer[y * map.width + x];
+				u8 pixel = map.buffer[y * map.width + x];
 				fill_color_bytes = { 255, 255, 255, pixel };
 				memcpy(char_image + (y * map.width * 4) + (x * 4), &fill_color_bytes, 4);
 			}
 		}
 
 		char_images.push_back(char_image);
-		char_sizes.push_back({map.width, map.rows});
+		char_sizes.push_back({ map.width, map.rows });
 		chars.push_back(i);
-		char_offsets.push_back({ m_ft_face->glyph->bitmap_left, m_ft_face->glyph->bitmap_top });
-		char_advances.push_back({ m_ft_face->glyph->advance.x, m_ft_face->glyph->advance.y });
+		char_offsets.push_back({ font_texture_data.face->glyph->bitmap_left, font_texture_data.face->glyph->bitmap_top });
+		char_advances.push_back({ font_texture_data.face->glyph->advance.x, font_texture_data.face->glyph->advance.y });
 	}
 
-	uint16_t highest_width = 0;
-	uint16_t highest_height = 0;
+	u16 highest_width = 0;
+	u16 highest_height = 0;
 
-	for (size_t i = 0; i < char_sizes.size(); i++)
+	for (usize i = 0; i < char_sizes.size(); i++)
 	{
 		if (char_sizes[i].x > highest_width)
 			highest_width = char_sizes[i].x;
@@ -104,26 +118,26 @@ void UIRegistry::Initialize()
 			highest_height = char_sizes[i].y;
 	}
 
-	uint16_t image_side_length = glm::ceil(glm::sqrt(static_cast<double>(char_images.size())));
-	size_t texture_sheet_total_size = glm::pow(image_side_length, 2) * highest_width * highest_height * 4;
-	uint8_t* texture_sheet = (uint8_t*)malloc(texture_sheet_total_size);
+	u16 image_side_length = glm::ceil(glm::sqrt(static_cast<double>(char_images.size())));
+	usize texture_sheet_total_size = glm::pow(image_side_length, 2) * highest_width * highest_height * 4;
+	u8* texture_sheet = (u8*)malloc(texture_sheet_total_size);
 	memset(texture_sheet, 0x0, texture_sheet_total_size);
 
-	for (uint16_t y = 0; y < image_side_length; y++)
+	for (u16 y = 0; y < image_side_length; y++)
 	{
-		for (uint16_t x = 0; x < image_side_length; x++)
+		for (u16 x = 0; x < image_side_length; x++)
 		{
-			uint8_t* texture_sheet_char = texture_sheet + (x * highest_width * 4) + (y * image_side_length * highest_width * highest_height * 4);
-			uint16_t char_idx = y * image_side_length + x;
-			
+			u8* texture_sheet_char = texture_sheet + (x * highest_width * 4) + (y * image_side_length * highest_width * highest_height * 4);
+			u16 char_idx = y * image_side_length + x;
+
 			if (char_idx >= char_sizes.size())
 				continue;
 
 			glm::vec<2, float> first = { static_cast<float>(x * highest_width) / static_cast<float>(image_side_length * highest_width), static_cast<float>(y * highest_height) / static_cast<float>(image_side_length * highest_height) };
 			glm::vec<2, float> second = { static_cast<float>(x * highest_width + char_sizes[char_idx].x) / static_cast<float>(image_side_length * highest_width), static_cast<float>(y * highest_height + char_sizes[char_idx].y) / static_cast<float>(image_side_length * highest_height) };
-			m_char_coords[chars[char_idx]] = { first, second, char_sizes[char_idx], char_offsets[char_idx], char_advances[char_idx] };
+			font_texture_data.char_map[chars[char_idx]] = { first, second, char_sizes[char_idx], char_offsets[char_idx], char_advances[char_idx] };
 
-			for (uint16_t cy = 0; cy < char_sizes[char_idx].y; cy++)
+			for (u16 cy = 0; cy < char_sizes[char_idx].y; cy++)
 				memcpy(texture_sheet_char + (cy * image_side_length * highest_width * 4), char_images[char_idx] + (cy * char_sizes[char_idx].x * 4), char_sizes[char_idx].x * 4);
 		}
 	}
@@ -146,25 +160,10 @@ void UIRegistry::Initialize()
 	std::cout << std::flush;
 #endif
 
-	m_texture_sheet_image = RenderTools::CreateTextureImage({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &m_texture_sheet_memory);
+	font_texture_data.image = RenderTools::CreateTextureImage({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &font_texture_data.memory);
+	texture_map[type] = font_texture_data;
 }
 
-VkImage& UIRegistry::GetTextureSheetImage()
-{
-	return m_texture_sheet_image;
-}
+ft::library rhr::registries::char_texture::m_library;
 
-UIRegistry::CharTextureData UIRegistry::GetCharTextureCoords(char character)
-{
-	return { m_char_coords[character] };
-}
-
-FT_Library UIRegistry::m_ft_library;
-
-FT_Face UIRegistry::m_ft_face;
-
-VkImage UIRegistry::m_texture_sheet_image;
-
-VkDeviceMemory UIRegistry::m_texture_sheet_memory;
-
-std::unordered_map<char, UIRegistry::CharTextureData> UIRegistry::m_char_coords;
+std::unordered_map<rhr::registries::char_texture::texture_type, rhr::registries::char_texture::texture_data> rhr::registries::char_texture::texture_map;

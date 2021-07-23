@@ -1,95 +1,95 @@
-#include "RenderButton.hpp"
+#include "button.hpp"
 
-static void RenderButtonMouseUpdate(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)
+static void mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
 {
-	vui::RenderButton* button = (vui::RenderButton*)data;
-	button->MouseUpdate(position, scroll, operation);
+	rhr::render::object::button* button = (rhr::render::object::button*)data;
+	button->mouse_update(position, scroll, operation);
 }
 
-vui::RenderButton::RenderButton(const Color& primaryColor, const Color& secondaryColor)
-	: IEnableable(true)
-	, IDiColorable(primaryColor, secondaryColor)
-	, m_RenderRectangle(std::make_shared<RenderRectangle>())
-	, m_Callback(nullptr)
-	, m_CallbackData(nullptr)
-	, m_EnableFillWidth(false)
+rhr::render::object::button::button(const cap::color& primary_color, const cap::color& secondary_color)
+	: i_enableable(true)
+	, i_dicolorable(primary_color, secondary_color)
+	, m_background(std::make_shared<rhr::render::object::rectangle>())
+	, m_callback(nullptr)
+	, m_callback_data(nullptr)
+	, m_enable_fill_width(false)
 {
-	m_RenderRectangle->SetWeak(m_RenderRectangle);
-	m_RenderRectangle->SetColor(m_ColorSecondary);
+	m_background->set_weak(m_background);
+	m_background->set_color(m_color_secondary);
 
-	SetPosition({ 0, 0 });
-	SetSize({ 100, 20 });
+	set_position({ 0, 0 });
+	set_size({ 100, 20 });
 
-	InputHandler::RegisterMouseCallback(RenderButtonMouseUpdate, this);
+	InputHandler::RegisterMouseCallback(mouse_update, this);
 }
 
-vui::RenderButton::~RenderButton()
+rhr::render::object::button::~button()
 {
-	InputHandler::UnregisterMouseCallback(RenderButtonMouseUpdate);
+	InputHandler::UnregisterMouseCallback(mouse_update);
 }
 
-void vui::RenderButton::SetDepth(uint32_t depth)
+void rhr::render::object::button::set_depth(u32 depth)
 {
-	m_RenderRectangle->SetDepth(depth);
+	m_background->set_depth(depth);
 }
 
-void vui::RenderButton::SetCallback(void(*callback)(void*), void* data)
+void rhr::render::object::button::set_callback(void(*callback)(void*), void* data)
 {
-	m_Callback = callback;
-	m_CallbackData = data;
+	m_callback = callback;
+	m_callback_data = data;
 }
 
-void vui::RenderButton::MouseUpdate(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation)
 {
 	if (operation == MouseOperation::Click)
 	{
-		glm::vec<2, int32_t> buttonPosition = m_Position + m_SuperOffset;
+		glm::vec<2, i32> button_position = m_position + m_super_position;
 
-		if (position.x >= buttonPosition.x && position.x < buttonPosition.x + m_Size.x &&
-			position.y >= buttonPosition.y && position.y < buttonPosition.y + m_Size.y)
+		if (position.x >= button_position.x && position.x < button_position.x + m_size.x &&
+			position.y >= button_position.y && position.y < button_position.y + m_size.y)
 		{
-			if (m_Callback == nullptr)
+			if (m_callback == nullptr)
 				Logger::Warn("button callback is nullptr");
 			else
-				m_Callback(m_CallbackData);
+				m_callback(m_callback_data);
 		}
 	}
 }
 
-void vui::RenderButton::EnableFillWidth()
+void rhr::render::object::button::enable_fill_width(bool enable)
 {
-	m_EnableFillWidth = true;
+	m_enable_fill_width = enable;
 }
 
-void vui::RenderButton::OnRender()
+void rhr::render::object::button::on_render()
 {
-	m_RenderRectangle->Render();
+	m_background->on_render();
 }
 
-void vui::RenderButton::OnUpdateBuffers()
+void rhr::render::object::button::on_update_buffers()
 {
-	m_RenderRectangle->UpdateBuffers();
+	m_background->on_update_buffers();
 }
 
-void vui::RenderButton::OnReloadSwapChain()
+void rhr::render::object::button::on_reload_swap_chain()
 {
-	m_RenderRectangle->ReloadSwapChain();
+	m_background->on_reload_swap_chain();
 }
 
-void vui::RenderButton::PostPositionUpdate()
+void rhr::render::object::button::post_position_update()
 {
-	m_RenderRectangle->SetSuperOffset(m_Position + m_SuperOffset);
+	m_background->set_super_position(m_position + m_super_position);
 }
 
-void vui::RenderButton::PostSizeUpdate()
+void rhr::render::object::button::post_size_update()
 {
-	if (m_EnableFillWidth)
-		m_Size.x = m_SuperBounds.x - m_Position.x;
+	if (m_enable_fill_width)
+		m_size.x = m_super_bounds.x - m_position.x;
 
-	m_RenderRectangle->SetSize(m_Size);
+	m_background->set_size(m_size);
 }
 
-void vui::RenderButton::PostColorUpdate()
+void rhr::render::object::button::post_color_update()
 {
-	m_RenderRectangle->SetColor(m_ColorSecondary);
+	m_background->set_color(m_color_secondary);
 }

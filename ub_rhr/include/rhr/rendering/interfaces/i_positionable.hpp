@@ -6,7 +6,7 @@
 namespace rhr::render::interfaces
 {
 /// Template interface used for elements that have a position offset from a parent.
-template <size_t S, typename T>
+template <usize S, typename T>
 class i_positionable
 {
 public:

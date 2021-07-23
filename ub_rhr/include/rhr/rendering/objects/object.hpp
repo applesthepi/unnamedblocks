@@ -1,93 +1,128 @@
 #pragma once
 #include "config.h"
 
-#include "ui/Vertex.hpp"
-#include "ui/interfaces/IRenderable.hpp"
-#include "ui/interfaces/IEnableable.hpp"
-#include "ui/interfaces/IPositionable.hpp"
+#include "rhr/rendering/vertex.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-#define RENDER_OBJECT_ALLOC_FACTOR static_cast<size_t>(2)
+#define RENDER_OBJECT_ALLOC_FACTOR 2
 
-class RenderObject : public IRenderable, public IEnableable, public IPositionable<3, double>
+namespace rhr::render::object
+{
+/// Basic object class for rendering custom geometry.
+class object : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_positionable<3, f64>
 {
 public:
-	enum class TextureType
+	///
+	enum class texture_type
 	{
 		CUSTOM,
 		TEXT_SHEET
 	};
 
-	RenderObject(bool ui);
-	RenderObject(bool ui, const std::string& texturePath);
+	///
+	object(bool ui);
 
-	//void SetWeak(std::weak_ptr<IRenderable>&& weak);
-	//void SetPosition(const glm::vec<3, double>& position);
-	void SetTexture(const std::string& texture);
-	void SetTexture(TextureType type);
-	void UpdateVertices(const std::vector<Vertex>* vertices, const std::vector<uint32_t>* indices, bool updateBuffersNow = false);
-	void UpdateVertices(const Vertex* vertices, uint32_t vertexCount, const uint32_t* indices, uint32_t indexCount, bool updateBuffersNow = false);
-	void UpdateVertices(const Vertex* vertices, uint32_t vertexCount, bool updateBuffersNow = false);
+	///
+	object(bool ui, const std::string& texture_path);
 
-	void SetQueue(uint8_t queue);
-	
+	///
+	void set_texture(const std::string& texture);
+
+	///
+	void set_texture(texture_type type);
+
+	///
+	void update_vertices(const std::vector<Vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now = false);
+
+	///
+	void update_vertices(const Vertex* vertices, u32 vertex_count, const u32* indices, u32 index_count, bool update_buffers_now = false);
+
+	///
+	void update_vertices(const Vertex* vertices, u32 vertex_count, bool update_buffers_now = false);
+
+	///
+	void set_queue(u8 queue);
+
 	/// Add draw calls to cmd buffer prebound by Renderer.
-	void OnRender() override;
+	void on_render() override;
 
 	/// Updates mesh on cpu side.
-	void OnUpdateBuffers() override;
+	void on_update_buffers() override;
 
 	/// Regenerates descriptor sets including uniforms.
-	void OnReloadSwapChain() override;
+	void on_reload_swap_chain() override;
 
-	void PostPositionUpdate() override;
-
+	///
+	void post_position_update() override;
 private:
-	void UpdateUniforms(bool ui);
-	//void MarkDirty();
+	///
+	void update_uniforms(bool ui);
+	
+	///
+	bool m_has_vertices;
+	
+	///
+	bool m_has_indices;
 
-	bool m_HasVertexBufferData;
-	bool m_HasIndexBufferData;
+	///
+	usize m_vertex_count;
+	usize m_index_count;
 
-	size_t m_VertexCount;
-	size_t m_IndexCount;
+	///
+	usize m_vertex_alloc_count;
+	usize m_index_alloc_count;
 
-	size_t m_VertexAllocCount;
-	size_t m_IndexAllocCount;
+	/// Arrays of data in ram.
+	Vertex* m_vertices;
+	u32* m_indices;
 
-	Vertex* m_Vertices;
-	uint32_t* m_Indices;
+	/// Vertex buffer data.
+	vk::buffer m_vertex_buffer;
+	vk::device_memory m_vertex_buffer_memory;
+	vk::buffer m_vertex_staging_buffer;
+	vk::device_memory m_vertex_staging_buffer_memory;
 
-	VkBuffer m_VertexBuffer;
-	VkDeviceMemory m_VertexBufferMemory;
+	/// Index buffer data.
+	vk::buffer m_index_buffer;
+	vk::device_memory m_index_buffer_memory;
+	vk::buffer m_index_staging_buffer;
+	vk::device_memory m_index_staging_buffer_memory;
 
-	VkBuffer m_VertexStagingBuffer;
-	VkDeviceMemory m_VertexStagingBufferMemory;
+	/// Uniform buffer data.
+	vk::buffer m_uniform_buffer;
+	vk::device_memory m_uniform_buffer_memory;
 
-	VkBuffer m_IndexBuffer;
-	VkDeviceMemory m_IndexBufferMemory;
+	/// Image buffer data.
+	vk::image m_image;
+	vk::image_view m_image_view;
+	vk::device_memory m_image_memory;
 
-	VkBuffer m_IndexStagingBuffer;
-	VkDeviceMemory m_IndexStagingBufferMemory;
+	///
+	vk::descriptor_set m_descriptor_set;
+	
+	///
+	u8 m_queue;
 
-	VkBuffer m_UniformBuffer;
-	VkDeviceMemory m_UniformBufferMemory;
+	///
+	bool m_dirty;
 
-	VkImage m_Image;
-	VkImageView m_ImageView;
-	VkDeviceMemory m_ImageMemory;
+	///
+	bool m_init_image;
 
-	VkDescriptorSet m_DescriptorSet;
-	uint8_t m_Queue;
+	///
+	bool m_ui;
 
-	bool m_Dirty;
-	bool m_InitImage;
-	bool m_UI;
-	bool m_HasTexture;
-	//bool m_HasWeak;
-	std::string m_TexturePath;
-	TextureType m_TextureType;
-	//glm::vec<3, double> m_Position;
-	//std::weak_ptr<IRenderable> m_Weak;
+	///
+	bool m_has_texture;
+
+	///
+	std::string m_texture_path;
+
+	///
+	texture_type m_texture_type;
 };
+}

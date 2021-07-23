@@ -1,366 +1,363 @@
-#include "RenderObject.hpp"
+#include "object.hpp"
 
-#include "ui/RenderTools.hpp"
-#include "ui/Renderer.hpp"
-#include "registries/UIRegistry.hpp"
+#include "rhr/rendering/tools.hpp"
+#include "rhr/rendering/renderer.hpp"
+#include "rhr/registries/char_texture.hpp"
 
-RenderObject::RenderObject(bool ui)
-    : IEnableable(true)
-	, m_HasVertexBufferData(false)
-    , m_HasIndexBufferData(false)
-    , m_VertexCount(0)
-    , m_IndexCount(0)
-    , m_VertexAllocCount(0)
-    , m_IndexAllocCount(0)
-    , m_Vertices(nullptr)
-    , m_Indices(nullptr)
-    , m_Queue(0)
-    , m_Dirty(false)
-    , m_InitImage(true)
-	//, m_HasWeak(false)
-	, m_UI(ui)
-	, m_HasTexture(false)
-    , m_TexturePath("")
-    //, m_Position({ 0.0, 0.0, 0.0 })
-    , m_VertexBuffer(nullptr)
-    , m_VertexBufferMemory(nullptr)
-    , m_VertexStagingBuffer(nullptr)
-    , m_VertexStagingBufferMemory(nullptr)
-    , m_IndexBuffer(nullptr)
-    , m_IndexBufferMemory(nullptr)
-    , m_IndexStagingBuffer(nullptr)
-    , m_IndexStagingBufferMemory(nullptr)
-	, m_TextureType(TextureType::CUSTOM)
+rhr::render::object::object::object(bool ui)
+    : i_enableable(true)
+	, m_has_vertices(false)
+    , m_has_indices(false)
+    , m_vertex_count(0)
+    , m_index_count(0)
+    , m_vertex_alloc_count(0)
+    , m_index_alloc_count(0)
+    , m_vertices(nullptr)
+    , m_indices(nullptr)
+    , m_queue(0)
+    , m_dirty(false)
+    , m_init_image(true)
+	, m_ui(ui)
+	, m_has_texture(false)
+    , m_vertex_buffer(nullptr)
+    , m_vertex_buffer_memory(nullptr)
+    , m_vertex_staging_buffer(nullptr)
+    , m_vertex_staging_buffer_memory(nullptr)
+    , m_index_buffer(nullptr)
+    , m_index_buffer_memory(nullptr)
+    , m_index_staging_buffer(nullptr)
+    , m_index_staging_buffer_memory(nullptr)
+	, m_texture_type(texture_type::CUSTOM)
 {
 }
 
-RenderObject::RenderObject(bool ui, const std::string& texturePath)
-    : RenderObject(ui)
+rhr::render::object::object::object(bool ui, const std::string& texture_path)
+    : object(ui)
 {
-	m_TexturePath = texturePath;
+	m_texture_path = texture_path;
 }
 
-//void RenderObject::SetWeak(std::weak_ptr<IRenderable>&& weak)
+//void object::SetWeak(std::weak_ptr<IRenderable>&& weak)
 //{
 //	m_Weak = std::move(weak);
 //	m_HasWeak = true;
 //}
 
-//void RenderObject::SetPosition(const glm::vec<3, double>& position)
+//void object::SetPosition(const glm::vec<3, double>& position)
 //{
 //	m_Position = position;
 //}
 
-void RenderObject::SetTexture(const std::string& texture)
+void rhr::render::object::object::set_texture(const std::string& texture)
 {
-	m_HasTexture = true;
-	m_TexturePath = texture;
-	m_TextureType = TextureType::CUSTOM;
+	m_has_texture = true;
+	m_texture_path = texture;
+	m_texture_type = texture_type::CUSTOM;
 }
 
-void RenderObject::SetTexture(TextureType type)
+void rhr::render::object::object::set_texture(texture_type type)
 {
-	m_HasTexture = true;
-	m_TexturePath.clear();
-	m_TextureType = type;
+	m_has_texture = true;
+	m_texture_path.clear();
+	m_texture_type = type;
 }
 
-void RenderObject::UpdateVertices(const std::vector<Vertex>* vertices, const std::vector<uint32_t>* indices, bool updateBuffersNow)
+void rhr::render::object::object::update_vertices(const std::vector<Vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now)
 {
 	if (vertices->size() < 3 || indices->size() < 3)
 	{
-		Logger::Error("RenderObject does not support less then 3 vertices or indices");
+		Logger::Error("object does not support less then 3 vertices or indices");
 		return;
 	}
 
-	size_t verticesSize = sizeof(Vertex) * vertices->size();
-	size_t indicesSize = sizeof(uint32_t) * indices->size();
+	usize vertices_size = sizeof(Vertex) * vertices->size();
+	usize indices_size = sizeof(u32) * indices->size();
 
-	if (vertices->size() > m_VertexAllocCount)
+	if (vertices->size() > m_vertex_alloc_count)
 	{
-		Vertex* stagedVertices = new Vertex[vertices->size() * RENDER_OBJECT_ALLOC_FACTOR];
+		Vertex* staged_vertices = new Vertex[vertices->size() * RENDER_OBJECT_ALLOC_FACTOR];
 
-		if (!stagedVertices)
+		if (!staged_vertices)
 			Logger::Fatal("out of memory");
 
-		memcpy(stagedVertices, vertices->data(), verticesSize);
+		memcpy(staged_vertices, vertices->data(), vertices_size);
 
-		m_VertexCount = vertices->size();
-		m_VertexAllocCount = vertices->size() * RENDER_OBJECT_ALLOC_FACTOR;
+		m_vertex_count = vertices->size();
+		m_vertex_alloc_count = vertices->size() * RENDER_OBJECT_ALLOC_FACTOR;
 
-		if (m_Vertices != nullptr)
-			delete[] m_Vertices;
+		if (m_vertices != nullptr)
+			delete[] m_vertices;
 
-		m_Vertices = stagedVertices;
+		m_vertices = staged_vertices;
 	}
 	else
 	{
-		memcpy(m_Vertices, vertices->data(), verticesSize);
-		m_VertexCount = vertices->size();
+		memcpy(m_vertices, vertices->data(), vertices_size);
+		m_vertex_count = vertices->size();
 	}
 
-	if (indices->size() > m_IndexAllocCount)
+	if (indices->size() > m_index_alloc_count)
 	{
-		uint32_t* stagedIndices = new uint32_t[indices->size() * RENDER_OBJECT_ALLOC_FACTOR];
+		u32* staged_indices = new u32[indices->size() * RENDER_OBJECT_ALLOC_FACTOR];
 
-		if (!stagedIndices)
+		if (!staged_indices)
 			Logger::Fatal("out of memory");
 
-		memcpy(stagedIndices, indices->data(), indicesSize);
+		memcpy(staged_indices, indices->data(), indices_size);
 
-		m_IndexCount = indices->size();
-		m_IndexAllocCount = indices->size() * RENDER_OBJECT_ALLOC_FACTOR;
+		m_index_count = indices->size();
+		m_index_alloc_count = indices->size() * RENDER_OBJECT_ALLOC_FACTOR;
 
-		if (m_Indices != nullptr)
-			delete[] m_Indices;
+		if (m_indices != nullptr)
+			delete[] m_indices;
 
-		m_Indices = stagedIndices;
+		m_indices = staged_indices;
 	}
 	else
 	{
-		memcpy(m_Indices, indices->data(), indicesSize);
-		m_IndexCount = indices->size();
+		memcpy(m_indices, indices->data(), indices_size);
+		m_index_count = indices->size();
 	}
 
-	m_HasIndexBufferData = true;
+	m_has_indices = true;
 
-	if (updateBuffersNow)
-		UpdateBuffers();
+	if (update_buffers_now)
+		update_buffers();
 	else
-		MarkDirty();
+		mark_dirty();
 }
 
-void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, const uint32_t* indices, uint32_t indexCount, bool updateBuffersNow)
+void rhr::render::object::object::update_vertices(const Vertex* vertices, u32 vertex_count, const u32* indices, u32 index_count, bool update_buffers_now)
 {
-	if (vertexCount < 3 || indexCount < 3)
+	if (vertex_count < 3 || index_count < 3)
 	{
-		Logger::Error("RenderObject does not support less then 3 vertices or indices");
+		Logger::Error("object does not support less then 3 vertices or indices");
 		return;
 	}
 
-	size_t verticesSize = sizeof(Vertex) * vertexCount;
-	size_t indicesSize = sizeof(uint32_t) * indexCount;
+	usize vertices_size = sizeof(Vertex) * vertex_count;
+	usize indices_size = sizeof(u32) * index_count;
 
-	if (vertexCount > m_VertexAllocCount)
+	if (vertex_count > m_vertex_alloc_count)
 	{
-		Vertex* stagedVertices = new Vertex[vertexCount * RENDER_OBJECT_ALLOC_FACTOR];
+		Vertex* staged_vertices = new Vertex[vertex_count * RENDER_OBJECT_ALLOC_FACTOR];
 
-		if (!stagedVertices)
+		if (!staged_vertices)
 			Logger::Fatal("out of memory");
 
-		memcpy(stagedVertices, vertices, verticesSize);
+		memcpy(staged_vertices, vertices, vertices_size);
 
-		m_VertexCount = vertexCount;
-		m_VertexAllocCount = vertexCount * RENDER_OBJECT_ALLOC_FACTOR;
+		m_vertex_count = vertex_count;
+		m_vertex_alloc_count = vertex_count * RENDER_OBJECT_ALLOC_FACTOR;
 
-		if (m_Vertices != nullptr)
-			delete[] m_Vertices;
+		if (m_vertices != nullptr)
+			delete[] m_vertices;
 
-		m_Vertices = stagedVertices;
+		m_vertices = staged_vertices;
 	}
 	else
 	{
-		memcpy(m_Vertices, vertices, verticesSize);
-		m_VertexCount = vertexCount;
+		memcpy(m_vertices, vertices, vertices_size);
+		m_vertex_count = vertex_count;
 	}
 
-	if (indexCount > m_IndexAllocCount)
+	if (index_count > m_index_alloc_count)
 	{
-		uint32_t* stagedIndices = new uint32_t[indexCount * RENDER_OBJECT_ALLOC_FACTOR];
+		u32* staged_indices = new u32[index_count * RENDER_OBJECT_ALLOC_FACTOR];
 
-		if (!stagedIndices)
+		if (!staged_indices)
 			Logger::Fatal("out of memory");
 
-		memcpy(stagedIndices, indices, indicesSize);
+		memcpy(staged_indices, indices, indices_size);
 
-		m_IndexCount = indexCount;
-		m_IndexAllocCount = indexCount * RENDER_OBJECT_ALLOC_FACTOR;
+		m_index_count = index_count;
+		m_index_alloc_count = index_count * RENDER_OBJECT_ALLOC_FACTOR;
 
-		if (m_Indices != nullptr)
-			delete[] m_Indices;
+		if (m_indices != nullptr)
+			delete[] m_indices;
 
-		m_Indices = stagedIndices;
+		m_indices = staged_indices;
 	}
 	else
 	{
-		memcpy(m_Indices, indices, indicesSize);
-		m_IndexCount = indexCount;
+		memcpy(m_indices, indices, indices_size);
+		m_index_count = index_count;
 	}
 
-	m_HasIndexBufferData = true;
+	m_has_indices = true;
 
-	if (updateBuffersNow)
-		UpdateBuffers();
+	if (update_buffers_now)
+		update_buffers();
 	else
-		MarkDirty();
+		mark_dirty();
 }
 
-void RenderObject::UpdateVertices(const Vertex* vertices, uint32_t vertexCount, bool updateBuffersNow)
+void rhr::render::object::object::update_vertices(const Vertex* vertices, u32 vertex_count, bool update_buffers_now)
 {
-	if (vertexCount < 3)
+	if (vertex_count < 3)
 	{
-		Logger::Error("RenderObject does not support less then 3 vertices or indices");
+		Logger::Error("object does not support less then 3 vertices or indices");
 		return;
 	}
 
-	size_t verticesSize = sizeof(Vertex) * vertexCount;
+	usize vertices_size = sizeof(Vertex) * vertex_count;
 
-	if (vertexCount > m_VertexAllocCount)
+	if (vertex_count > m_vertex_alloc_count)
 	{
-		Vertex* stagedVertices = new Vertex[vertexCount * RENDER_OBJECT_ALLOC_FACTOR];
+		Vertex* staged_vertices = new Vertex[vertex_count * RENDER_OBJECT_ALLOC_FACTOR];
 
-		if (!stagedVertices)
+		if (!staged_vertices)
 			Logger::Fatal("out of memory");
 
-		memcpy(stagedVertices, vertices, verticesSize);
+		memcpy(staged_vertices, vertices, vertices_size);
 
-		m_VertexCount = vertexCount;
-		m_VertexAllocCount = vertexCount * RENDER_OBJECT_ALLOC_FACTOR;
+		m_vertex_count = vertex_count;
+		m_vertex_alloc_count = vertex_count * RENDER_OBJECT_ALLOC_FACTOR;
 
-		if (m_Vertices != nullptr)
-			delete[] m_Vertices;
+		if (m_vertices != nullptr)
+			delete[] m_vertices;
 
-		m_Vertices = stagedVertices;
+		m_vertices = staged_vertices;
 	}
 	else
 	{
-		memcpy(m_Vertices, vertices, verticesSize);
-		m_VertexCount = vertexCount;
+		memcpy(m_vertices, vertices, vertices_size);
+		m_vertex_count = vertex_count;
 	}
 
-	m_HasIndexBufferData = false;
+	m_has_indices = false;
 
-	if (updateBuffersNow)
-		UpdateBuffers();
+	if (update_buffers_now)
+		update_buffers();
 	else
-		MarkDirty();
+		mark_dirty();
 }
 
-void RenderObject::OnRender()
+void rhr::render::object::object::on_render()
 {
-	if (!m_HasVertexBufferData)
+	if (!m_has_vertices)
 		return;
 
-	UpdateUniforms(m_UI);
+	update_uniforms(m_ui);
 
-	VkBuffer vb[] = { m_VertexBuffer };
-	VkDeviceSize offsets[] = { 0 };
+	vk::buffer vb[] = { m_vertex_buffer };
+	vk::device_size offsets[] = { 0 };
 
-	if (m_UI)
+	if (m_ui)
 	{
-		if (m_HasTexture)
+		if (m_has_texture)
 		{
-			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipelineLayout, 0, 1, &m_descriptor_set, 0, nullptr);
 			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
 		}
 		else
 		{
-			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+			vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipelineLayout, 0, 1, &m_descriptor_set, 0, nullptr);
 			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
 		}
 	}
 	else
 	{
-		vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::BlocksPipelineLayout, 0, 1, &m_DescriptorSet, 0, nullptr);
+		vkCmdBindDescriptorSets(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::BlocksPipelineLayout, 0, 1, &m_descriptor_set, 0, nullptr);
 		vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
 	}
 
 	vkCmdBindVertexBuffers(Renderer::ActiveCommandBuffer, 0, 1, vb, offsets);
 
-	if (m_HasIndexBufferData)
+	if (m_has_indices)
 	{
-		vkCmdBindIndexBuffer(Renderer::ActiveCommandBuffer, m_IndexBuffer, 0, VK_INDEX_TYPE_UINT32);
-		vkCmdDrawIndexed(Renderer::ActiveCommandBuffer, static_cast<uint32_t>(m_IndexCount), 1, 0, 0, 0);
+		vkCmdBindIndexBuffer(Renderer::ActiveCommandBuffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdDrawIndexed(Renderer::ActiveCommandBuffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
 	}
 	else
-		vkCmdDraw(Renderer::ActiveCommandBuffer, static_cast<uint32_t>(m_VertexCount), 1, 0, 0);
+		vkCmdDraw(Renderer::ActiveCommandBuffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
 }
 
-void RenderObject::OnUpdateBuffers()
+void rhr::render::object::object::on_update_buffers()
 {
-	m_Dirty = false;
-	m_HasVertexBufferData = true;
+	m_dirty = false;
+	m_has_vertices = true;
 
-	if (m_InitImage)
+	if (m_init_image)
 	{
-		m_InitImage = false;
+		m_init_image = false;
 
-		if (m_HasTexture)
+		if (m_has_texture)
 		{
-			if (m_TextureType == TextureType::CUSTOM)
+			if (m_texture_type == texture_type::CUSTOM)
 			{
-				m_Image = RenderTools::CreateTextureImage(m_TexturePath, &m_ImageMemory);
-				m_ImageView = RenderTools::CreateImageView(m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_image = RenderTools::CreateTextureImage(m_texture_path, &m_image_memory);
+				m_image_view = RenderTools::CreateImageView(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
-			else if (m_TextureType == TextureType::TEXT_SHEET)
+			else if (m_texture_type == texture_type::TEXT_SHEET)
 			{
-				m_Image = UIRegistry::GetTextureSheetImage();
-				m_ImageView = RenderTools::CreateImageView(m_Image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_image = rhr::registries::char_texture::texture_map[rhr::registries::char_texture::texture_type::LIGHT_NORMAL].image;
+				m_image_view = RenderTools::CreateImageView(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 		}
 
-		RenderTools::CreateBuffer(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_UniformBuffer, m_UniformBufferMemory);
-		OnReloadSwapChain();
+		RenderTools::CreateBuffer(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_uniform_buffer, m_uniform_buffer_memory);
+		on_reload_swap_chain();
 	}
 
-	if (m_HasVertexBufferData)
+	if (m_has_vertices)
 	{
-		if (m_VertexBuffer)
+		if (m_vertex_buffer)
 		{
-			RenderTools::DeleteBuffer(m_VertexBuffer, m_VertexBufferMemory);
-			RenderTools::DeleteBuffer(m_VertexStagingBuffer, m_VertexStagingBufferMemory);
+			RenderTools::DeleteBuffer(m_vertex_buffer, m_vertex_buffer_memory);
+			RenderTools::DeleteBuffer(m_vertex_staging_buffer, m_vertex_staging_buffer_memory);
 
-			m_VertexBuffer = nullptr;
-			m_VertexBufferMemory = nullptr;
+			m_vertex_buffer = nullptr;
+			m_vertex_buffer_memory = nullptr;
 
-			m_VertexStagingBuffer = nullptr;
-			m_VertexStagingBufferMemory = nullptr;
+			m_vertex_staging_buffer = nullptr;
+			m_vertex_staging_buffer_memory = nullptr;
 		}
 
-		VkDeviceSize bufferSize = sizeof(Vertex) * m_VertexCount;
+		VkDeviceSize buffer_size = sizeof(Vertex) * m_vertex_count;
 
-		RenderTools::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_VertexStagingBuffer, m_VertexStagingBufferMemory);
+		RenderTools::CreateBuffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vertex_staging_buffer, m_vertex_staging_buffer_memory);
 
 		void* data;
-		vkMapMemory(Renderer::Device, m_VertexStagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, m_Vertices, (size_t)bufferSize);
-		vkUnmapMemory(Renderer::Device, m_VertexStagingBufferMemory);
+		vkMapMemory(Renderer::Device, m_vertex_staging_buffer_memory, 0, buffer_size, 0, &data);
+		memcpy(data, m_vertices, (usize)buffer_size);
+		vkUnmapMemory(Renderer::Device, m_vertex_staging_buffer_memory);
 
-		RenderTools::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_VertexBuffer, m_VertexBufferMemory);
-		RenderTools::CopyBuffer(m_VertexStagingBufferMemory, m_VertexStagingBuffer, m_VertexBuffer, bufferSize);
+		RenderTools::CreateBuffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertex_buffer, m_vertex_buffer_memory);
+		RenderTools::CopyBuffer(m_vertex_staging_buffer_memory, m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
 	}
 
-	if (m_HasIndexBufferData)
+	if (m_has_indices)
 	{
-		if (m_IndexBuffer)
+		if (m_index_buffer)
 		{
-			RenderTools::DeleteBuffer(m_IndexBuffer, m_IndexBufferMemory);
-			RenderTools::DeleteBuffer(m_IndexStagingBuffer, m_IndexStagingBufferMemory);
+			RenderTools::DeleteBuffer(m_index_buffer, m_index_buffer_memory);
+			RenderTools::DeleteBuffer(m_index_staging_buffer, m_index_staging_buffer_memory);
 
-			m_IndexBuffer = nullptr;
-			m_IndexBufferMemory = nullptr;
+			m_index_buffer = nullptr;
+			m_index_buffer_memory = nullptr;
 
-			m_IndexStagingBuffer = nullptr;
-			m_IndexStagingBufferMemory = nullptr;
+			m_index_staging_buffer = nullptr;
+			m_index_staging_buffer_memory = nullptr;
 		}
 
-		VkDeviceSize bufferSize = sizeof(uint32_t) * m_IndexCount;
+		VkDeviceSize buffer_size = sizeof(u32) * m_index_count;
 
-		RenderTools::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_IndexStagingBuffer, m_IndexStagingBufferMemory);
+		RenderTools::CreateBuffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_index_staging_buffer, m_index_staging_buffer_memory);
 
 		void* data;
-		vkMapMemory(Renderer::Device, m_IndexStagingBufferMemory, 0, bufferSize, 0, &data);
-		memcpy(data, m_Indices, (size_t)bufferSize);
-		vkUnmapMemory(Renderer::Device, m_IndexStagingBufferMemory);
+		vkMapMemory(Renderer::Device, m_index_staging_buffer_memory, 0, buffer_size, 0, &data);
+		memcpy(data, m_indices, (usize)buffer_size);
+		vkUnmapMemory(Renderer::Device, m_index_staging_buffer_memory);
 
-		RenderTools::CreateBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_IndexBuffer, m_IndexBufferMemory);
-		RenderTools::CopyBuffer(m_IndexStagingBufferMemory, m_IndexStagingBuffer, m_IndexBuffer, bufferSize);
+		RenderTools::CreateBuffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_index_buffer, m_index_buffer_memory);
+		RenderTools::CopyBuffer(m_index_staging_buffer_memory, m_index_staging_buffer, m_index_buffer, buffer_size);
 	}
 }
 
-void RenderObject::OnReloadSwapChain()
+void rhr::render::object::object::on_reload_swap_chain()
 {
-	if (m_InitImage)
+	if (m_init_image)
 		return;
 
 	VkDescriptorSetAllocateInfo allocInfo{};
@@ -369,24 +366,24 @@ void RenderObject::OnReloadSwapChain()
 	allocInfo.descriptorSetCount = 1;
 	allocInfo.pSetLayouts = &Renderer::DescriptorSetLayout;
 
-	vkAllocateDescriptorSets(Renderer::Device, &allocInfo, &m_DescriptorSet);
+	vkAllocateDescriptorSets(Renderer::Device, &allocInfo, &m_descriptor_set);
 
 	VkDescriptorBufferInfo bufferInfo{};
-	bufferInfo.buffer = m_UniformBuffer;
+	bufferInfo.buffer = m_uniform_buffer;
 	bufferInfo.offset = 0;
 	bufferInfo.range = sizeof(UniformBufferObject);
 
-	if (m_HasTexture)
+	if (m_has_texture)
 	{
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = m_ImageView;
+		imageInfo.imageView = m_image_view;
 		imageInfo.sampler = Renderer::TextureSampler;
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_DescriptorSet;
+		descriptorWrites[0].dstSet = m_descriptor_set;
 		descriptorWrites[0].dstBinding = 0;
 		descriptorWrites[0].dstArrayElement = 0;
 		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -394,37 +391,37 @@ void RenderObject::OnReloadSwapChain()
 		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
 		descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[1].dstSet = m_DescriptorSet;
+		descriptorWrites[1].dstSet = m_descriptor_set;
 		descriptorWrites[1].dstBinding = 1;
 		descriptorWrites[1].dstArrayElement = 0;
 		descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptorWrites[1].descriptorCount = 1;
 		descriptorWrites[1].pImageInfo = &imageInfo;
 
-		vkUpdateDescriptorSets(Renderer::Device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(Renderer::Device, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 	else
 	{
 		std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
 
 		descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		descriptorWrites[0].dstSet = m_DescriptorSet;
+		descriptorWrites[0].dstSet = m_descriptor_set;
 		descriptorWrites[0].dstBinding = 0;
 		descriptorWrites[0].dstArrayElement = 0;
 		descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		descriptorWrites[0].descriptorCount = 1;
 		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-		vkUpdateDescriptorSets(Renderer::Device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(Renderer::Device, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 }
 
-void RenderObject::PostPositionUpdate()
+void rhr::render::object::object::post_position_update()
 {
-	//MarkDirty();
+	//mark_dirty();
 }
 
-void RenderObject::UpdateUniforms(bool ui)
+void rhr::render::object::object::update_uniforms(bool ui)
 {
 	//static auto startTime = std::chrono::high_resolution_clock::now();
 	//
@@ -432,7 +429,7 @@ void RenderObject::UpdateUniforms(bool ui)
 	//float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
 	UniformBufferObject ubo {};
-	ubo.Model = glm::translate(glm::mat4(1.0f), { static_cast<float>(m_Position.x + m_SuperOffset.x), static_cast<float>(m_Position.y + m_SuperOffset.y), -1.0f * static_cast<float>(m_Position.z + m_SuperOffset.z) });
+	ubo.Model = glm::translate(glm::mat4(1.0f), { static_cast<float>(m_position.x + m_super_position.x), static_cast<float>(m_position.y + m_super_position.y), -1.0f * static_cast<float>(m_position.z + m_super_position.z) });
 	//ubo.Model = glm::rotate(ubo.Model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//ubo.Projection = glm::perspective(glm::radians(45.0f), Renderer::SwapChainExtent.width / (float)Renderer::SwapChainExtent.height, 0.1f, 10.0f);
@@ -450,21 +447,12 @@ void RenderObject::UpdateUniforms(bool ui)
 	ubo.Color = { 1.0f, 1.0f, 1.0f };
 
 	void* data;
-	vkMapMemory(Renderer::Device, m_UniformBufferMemory, 0, sizeof(ubo), 0, &data);
+	vkMapMemory(Renderer::Device, m_uniform_buffer_memory, 0, sizeof(ubo), 0, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(Renderer::Device, m_UniformBufferMemory);
+	vkUnmapMemory(Renderer::Device, m_uniform_buffer_memory);
 }
 
-void RenderObject::SetQueue(uint8_t queue)
+void rhr::render::object::object::set_queue(u8 queue)
 {
-	m_Queue = queue;
+	m_queue = queue;
 }
-
-//void RenderObject::MarkDirty()
-//{
-//	if (m_Dirty || !IsWeak())
-//		return;
-//
-//	m_Dirty = true;
-//	Renderer::AddDirty(m_Weak);
-//}

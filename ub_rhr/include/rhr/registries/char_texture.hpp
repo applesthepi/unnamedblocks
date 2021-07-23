@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace rhr::registries
 {
@@ -39,6 +39,8 @@ public:
 	/// Map of font texture's data.
 	static std::unordered_map<texture_type, texture_data> texture_map;
 private:
+	static void process_font(const std::string& font_path, texture_type type);
+
 	/// Used to load ttf fonts.
 	static ft::library m_library;
 };

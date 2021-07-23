@@ -53,92 +53,124 @@
 #define TIME_POINT std::chrono::steady_clock::time_point
 #endif
 
-typedef int8_t i8;
-typedef int16_t i16;
-typedef int32_t i32;
-typedef int64_t i64;
+typedef char i8;
+typedef short i16;
+typedef int i32;
+typedef long long i64;
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
-typedef uint64_t u64;
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64;
 
 typedef float f32;
 typedef double f64;
 
+typedef unsigned long long usize;
+
+// Change to 0 if you want to keep
+// access to the internal types.
+#if 1
+// (keep char)
+#define short
+#define int
+#define long
+#define unsigned
+
+#define int8_t;
+#define int16_t;
+#define int32_t;
+#define int64_t;
+#define uint8_t;
+#define uint16_t;
+#define uint32_t;
+#define uint64_t;
+#define size_t;
+#endif
+
+// TODO: add vulkan functions
+// Maintain code style standards.
 namespace vk
 {
-typedef VkImage image;
+typedef VkBuffer buffer;
 typedef VkDeviceMemory device_memory;
+typedef VkImage image;
+typedef VkImageView image_view;
+typedef VkDescriptorSet descriptor_set;
+typedef VkDeviceSize device_size;
 }
 
+// TODO: add FT functions
+// Maintain code style standards.
 namespace ft
 {
 typedef FT_Library library;
 typedef FT_Face face;
+typedef FT_Error error;
 }
 
-namespace endianness
+namespace cap::endianness
 {
 	constexpr bool is_le = std::endian::native == std::endian::little;
-	template <size_t T>
+	template <usize T>
 	std::array<char, T> reverse(std::array<char, T> bytes);
-	std::array<char, 2> to_ne_bytes(uint16_t x);
-	std::array<char, 4> to_ne_bytes(uint32_t x);
-	std::array<char, 8> to_ne_bytes(uint64_t x);
+	std::array<char, 2> to_ne_bytes(u16 x);
+	std::array<char, 4> to_ne_bytes(u32 x);
+	std::array<char, 8> to_ne_bytes(u64 x);
 
-	std::array<char, 2> to_le_bytes(uint16_t x);
-	std::array<char, 4> to_le_bytes(uint32_t x);
-	std::array<char, 8> to_le_bytes(uint64_t x);
+	std::array<char, 2> to_le_bytes(u16 x);
+	std::array<char, 4> to_le_bytes(u32 x);
+	std::array<char, 8> to_le_bytes(u64 x);
 
-	std::array<char, 2> to_be_bytes(uint16_t x);
-	std::array<char, 4> to_be_bytes(uint32_t x);
-	std::array<char, 8> to_be_bytes(uint64_t x);
+	std::array<char, 2> to_be_bytes(u16 x);
+	std::array<char, 4> to_be_bytes(u32 x);
+	std::array<char, 8> to_be_bytes(u64 x);
 
-	std::array<char, 4> to_ne_bytes(float x);
-	std::array<char, 8> to_ne_bytes(double x);
-	std::array<char, 2> to_ne_bytes(int16_t x);
-	std::array<char, 4> to_ne_bytes(int32_t x);
-	std::array<char, 8> to_ne_bytes(int64_t x);
+	std::array<char, 4> to_ne_bytes(f32 x);
+	std::array<char, 8> to_ne_bytes(f64 x);
+	std::array<char, 2> to_ne_bytes(i16 x);
+	std::array<char, 4> to_ne_bytes(i32 x);
+	std::array<char, 8> to_ne_bytes(i64 x);
 
-	std::array<char, 4> to_le_bytes(float x);
-	std::array<char, 8> to_le_bytes(double x);
-	std::array<char, 2> to_le_bytes(int16_t x);
-	std::array<char, 4> to_le_bytes(int32_t x);
-	std::array<char, 8> to_le_bytes(int64_t x);
+	std::array<char, 4> to_le_bytes(f32 x);
+	std::array<char, 8> to_le_bytes(f64 x);
+	std::array<char, 2> to_le_bytes(i16 x);
+	std::array<char, 4> to_le_bytes(i32 x);
+	std::array<char, 8> to_le_bytes(i64 x);
 
-	std::array<char, 4> to_be_bytes(float x);
-	std::array<char, 8> to_be_bytes(double x);
-	std::array<char, 2> to_be_bytes(int16_t x);
-	std::array<char, 4> to_be_bytes(int32_t x);
-	std::array<char, 8> to_be_bytes(int64_t x);
-	uint16_t u16_from_ne_bytes(std::array<char, 2> bytes);
-	uint32_t u32_from_ne_bytes(std::array<char, 4> bytes);
-	uint64_t u64_from_ne_bytes(std::array<char, 8> bytes);
+	std::array<char, 4> to_be_bytes(f32 x);
+	std::array<char, 8> to_be_bytes(f64 x);
+	std::array<char, 2> to_be_bytes(i16 x);
+	std::array<char, 4> to_be_bytes(i32 x);
+	std::array<char, 8> to_be_bytes(i64 x);
 
-	uint16_t u16_from_le_bytes(std::array<char, 2> bytes);
-	uint32_t u32_from_le_bytes(std::array<char, 4> bytes);
-	uint64_t u64_from_le_bytes(std::array<char, 8> bytes);
+	u16 u16_from_ne_bytes(std::array<char, 2> bytes);
+	u32 u32_from_ne_bytes(std::array<char, 4> bytes);
+	u64 u64_from_ne_bytes(std::array<char, 8> bytes);
 
-	uint16_t u16_from_be_bytes(std::array<char, 2> bytes);
-	uint32_t u32_from_be_bytes(std::array<char, 4> bytes);
-	uint64_t u64_from_be_bytes(std::array<char, 8> bytes);
+	u16 u16_from_le_bytes(std::array<char, 2> bytes);
+	u32 u32_from_le_bytes(std::array<char, 4> bytes);
+	u64 u64_from_le_bytes(std::array<char, 8> bytes);
 
-	int16_t i16_from_ne_bytes(std::array<char, 2> bytes);
-	int32_t i32_from_ne_bytes(std::array<char, 4> bytes);
-	int64_t i64_from_ne_bytes(std::array<char, 8> bytes);
-	float float_from_ne_bytes(std::array<char, 4> bytes);
-	double double_from_ne_bytes(std::array<char, 8> bytes);
+	u16 u16_from_be_bytes(std::array<char, 2> bytes);
+	u32 u32_from_be_bytes(std::array<char, 4> bytes);
+	u64 u64_from_be_bytes(std::array<char, 8> bytes);
 
-	int16_t i16_from_le_bytes(std::array<char, 2> bytes);
-	int32_t i32_from_le_bytes(std::array<char, 4> bytes);
-	int64_t i64_from_le_bytes(std::array<char, 8> bytes);
-	float float_from_le_bytes(std::array<char, 4> bytes);
-	double double_from_le_bytes(std::array<char, 8> bytes);
+	i16 i16_from_ne_bytes(std::array<char, 2> bytes);
+	i32 i32_from_ne_bytes(std::array<char, 4> bytes);
+	i64 i64_from_ne_bytes(std::array<char, 8> bytes);
+	f32 float_from_ne_bytes(std::array<char, 4> bytes);
+	f64 double_from_ne_bytes(std::array<char, 8> bytes);
 
-	int16_t i16_from_be_bytes(std::array<char, 2> bytes);
-	int32_t i32_from_be_bytes(std::array<char, 4> bytes);
-	int64_t i64_from_be_bytes(std::array<char, 8> bytes);
-	float float_from_be_bytes(std::array<char, 4> bytes);
-	double double_from_be_bytes(std::array<char, 8> bytes);
+	i16 i16_from_le_bytes(std::array<char, 2> bytes);
+	i32 i32_from_le_bytes(std::array<char, 4> bytes);
+	i64 i64_from_le_bytes(std::array<char, 8> bytes);
+	f32 float_from_le_bytes(std::array<char, 4> bytes);
+	f64 double_from_le_bytes(std::array<char, 8> bytes);
+
+	i16 i16_from_be_bytes(std::array<char, 2> bytes);
+	i32 i32_from_be_bytes(std::array<char, 4> bytes);
+	i64 i64_from_be_bytes(std::array<char, 8> bytes);
+	f32 float_from_be_bytes(std::array<char, 4> bytes);
+	f64 double_from_be_bytes(std::array<char, 8> bytes);
 }

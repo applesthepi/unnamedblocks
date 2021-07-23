@@ -1,96 +1,96 @@
-﻿#include "RenderText.hpp"
+﻿#include "text.hpp"
 
-#include "ui/Renderer.hpp"
-#include "ui/Vertex.hpp"
-#include "stacking/Block.hpp"
-#include "registries/UIRegistry.hpp"
+#include "rhr/rendering/renderer.hpp"
+#include "rhr/rendering/vertex.hpp"
+#include "rhr/stacking/block.hpp"
+#include "rhr/registries/char_texture.hpp"
 
-vui::RenderText::RenderText()
-	: IDiColorable(Color().FromNormalized({ 0.0f, 0.0f, 0.0f, 1.0f }), Color().FromU8({ 25, 25, 25, 255 }))
-	, IEnableable(true)
-	, m_Depth(10)
-	, m_RenderObjectBackground(std::make_shared<RenderObject>(true))
-	, m_RenderObjectText(std::make_shared<RenderObject>(true))
-	, m_EnableBackground(true)
+rhr::render::object::text::text()
+	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
+	, i_enableable(true)
+	, m_depth(10)
+	, m_render_object_background(std::make_shared<rhr::render::object::object>(true))
+	, m_render_object_text(std::make_shared<rhr::render::object::object>(true))
+	, m_enable_background(true)
 {
-	m_RenderObjectBackground->SetWeak(m_RenderObjectBackground);
-	m_RenderObjectText->SetWeak(m_RenderObjectText);
-	m_RenderObjectText->SetTexture(RenderObject::TextureType::TEXT_SHEET);
+	m_render_object_background->set_weak(m_render_object_background);
+	m_render_object_text->set_weak(m_render_object_text);
+	m_render_object_text->set_texture(rhr::render::object::object::texture_type::TEXT_SHEET);
 }
 
-void vui::RenderText::SetText(const std::string& text)
+void rhr::render::object::text::set_text(const std::string& text)
 {
 	if (text.size() == 0)
 	{
-		m_Text.clear();
-		m_RenderObjectText->SetEnabled(false);
-		m_Size = { 10, Block::Height - (Block::Padding * 2) };
+		m_text.clear();
+		m_render_object_text->set_enabled(false);
+		m_size = { 10, Block::Height - (Block::Padding * 2) };
 	}
 	else
 	{
-		m_Text = text;
-		m_RenderObjectText->SetEnabled(true);
-		UpdateSize();
+		m_text = text;
+		m_render_object_text->set_enabled(true);
+		update_size();
 	}
 
-	MarkDirty();
+	mark_dirty();
 }
 
-void vui::RenderText::SetDepth(uint32_t depth)
+void rhr::render::object::text::set_depth(i32 depth)
 {
-	m_Depth = depth;
-	MarkDirty();
+	m_depth = depth;
+	mark_dirty();
 }
 
-void vui::RenderText::SetPadding(int32_t padding)
+void rhr::render::object::text::set_padding(i32 padding)
 {
-	m_Padding = padding;
-	UpdateSize();
-	MarkDirty();
+	m_padding = padding;
+	update_size();
+	mark_dirty();
 }
 
-void vui::RenderText::EnableBackground(bool enable)
+void rhr::render::object::text::enable_background(bool enable)
 {
-	m_EnableBackground = enable;
+	m_enable_background = enable;
 }
 
-void vui::RenderText::UpdateSize()
+void rhr::render::object::text::update_size()
 {
-	int32_t running_x = m_Padding;
+	i32 running_x = m_padding;
 
-	for (size_t i = 0; i < m_Text.size(); i++)
-		running_x += UIRegistry::GetCharTextureCoords(m_Text[i]).Advance.x >> 6;
+	for (usize i = 0; i < m_text.size(); i++)
+		running_x += rhr::registries::char_texture::GetCharTextureCoords(m_text[i]).Advance.x >> 6;
 	
-	m_Size = { running_x + m_Padding, Block::Height - (Block::Padding * 2) };
+	m_size = { running_x + m_padding, Block::Height - (Block::Padding * 2) };
 }
 
-void vui::RenderText::OnRender()
+void rhr::render::object::text::on_render()
 {
-	if (m_Enabled)
+	if (m_enabled)
 	{
-		if (m_EnableBackground)
+		if (m_enable_background)
 		{
 			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
-			m_RenderObjectBackground->Render();
+			m_render_object_background->render();
 		}
 
 		vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
-		m_RenderObjectText->Render();
+		m_render_object_text->render();
 	}
 }
 
-void vui::RenderText::OnUpdateBuffers()
+void rhr::render::object::text::on_update_buffers()
 {
-	ClearDirty();
+	clear_dirty();
 
 	{
 		Vertex vertices[4];
-		uint32_t indices[6];
+		u32 indices[6];
 
-		vertices[0] = Vertex({ 0.0f, 0.0f, 0.0f }, m_ColorSecondary.GetNormalized(), { 0.0f, 0.0f });
-		vertices[1] = Vertex({ static_cast<float>(m_Size.x), 0.0f, 0.0f }, m_ColorSecondary.GetNormalized(), { 1.0f, 0.0f });
-		vertices[2] = Vertex({ static_cast<float>(m_Size.x), static_cast<float>(m_Size.y), 0.0f }, m_ColorSecondary.GetNormalized(), { 1.0f, 1.0f });
-		vertices[3] = Vertex({ 0.0f, static_cast<float>(m_Size.y), 0.0f }, m_ColorSecondary.GetNormalized(), { 0.0f, 1.0f });
+		vertices[0] = Vertex({ 0.0f, 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 0.0f });
+		vertices[1] = Vertex({ static_cast<float>(m_size.x), 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 0.0f });
+		vertices[2] = Vertex({ static_cast<float>(m_size.x), static_cast<float>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 1.0f });
+		vertices[3] = Vertex({ 0.0f, static_cast<float>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 1.0f });
 
 		indices[0] = 1;
 		indices[1] = 0;
@@ -99,20 +99,20 @@ void vui::RenderText::OnUpdateBuffers()
 		indices[4] = 0;
 		indices[5] = 3;
 
-		m_RenderObjectBackground->UpdateVertices(vertices, 4, indices, 6, true);
+		m_render_object_background->update_vertices(vertices, 4, indices, 6, true);
 	}
 
-	if (m_RenderObjectText->GetEnabled())
+	if (m_render_object_text->get_enabled())
 	{
-		Vertex* vertices = (Vertex*)alloca(sizeof(Vertex) * m_Text.size() * 4);
-		uint32_t* indices = (uint32_t*)alloca(sizeof(uint32_t) * m_Text.size() * 6);
+		Vertex* vertices = (Vertex*)alloca(sizeof(Vertex) * m_text.size() * 4);
+		u32* indices = (u32*)alloca(sizeof(u32) * m_text.size() * 6);
 
-		int32_t running_x = m_Padding;
-		glm::vec<3, float> primary_color = { m_ColorPrimary.GetNormalized().r, m_ColorPrimary.GetNormalized().g, m_ColorPrimary.GetNormalized().b };
+		int32_t running_x = m_padding;
+		glm::vec<3, float> primary_color = { m_color_primary.get_normalized().r, m_color_primary.get_normalized().g, m_color_primary.get_normalized().b };
 
-		for (size_t i = 0; i < m_Text.size(); i++)
+		for (size_t i = 0; i < m_text.size(); i++)
 		{
-			UIRegistry::CharTextureData char_data = UIRegistry::GetCharTextureCoords(m_Text[i]);
+			rhr::registries::char_texture::CharTextureData char_data = rhr::registries::char_texture::GetCharTextureCoords(m_text[i]);
 			float y_offset = static_cast<float>(Block::HeightContent) + (-1.0f * static_cast<float>(char_data.Offset.y)) - static_cast<float>(Block::Padding);
 
 			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), y_offset, 0.0f }, primary_color, { char_data.First.x, char_data.First.y });
@@ -130,27 +130,27 @@ void vui::RenderText::OnUpdateBuffers()
 			running_x += char_data.Advance.x >> 6;
 		}
 
-		m_RenderObjectText->UpdateVertices(vertices, m_Text.size() * 4, indices, m_Text.size() * 6, true);
-		m_Size = { running_x + m_Padding, Block::Height - (Block::Padding * 2) };
+		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);
+		m_size = { running_x + m_padding, Block::Height - (Block::Padding * 2) };
 	}
 }
 
-void vui::RenderText::OnReloadSwapChain()
+void rhr::render::object::text::on_reload_swap_chain()
 {
-	m_RenderObjectBackground->ReloadSwapChain();
-	m_RenderObjectText->ReloadSwapChain();
+	m_render_object_background->reload_swap_chain();
+	m_render_object_text->reload_swap_chain();
 }
 
-void vui::RenderText::PostPositionUpdate()
+void rhr::render::object::text::post_position_update()
 {
-	glm::vec<2, int32_t> position = m_Position + m_SuperOffset;
-	m_RenderObjectBackground->SetSuperOffset({static_cast<double>(position.x), static_cast<double>(position.y), static_cast<double>(m_Depth) });
-	m_RenderObjectText->SetSuperOffset({ static_cast<double>(position.x), static_cast<double>(position.y), static_cast<double>(m_Depth) - 0.1 });
+	glm::vec<2, i32> position = m_position + m_super_position;
+	m_render_object_background->set_super_position({static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) });
+	m_render_object_text->set_super_position({ static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) - 0.1 });
 
-	MarkDirty();
+	mark_dirty();
 }
 
-void vui::RenderText::PostSizeUpdate()
+void rhr::render::object::text::post_size_update()
 {
-	MarkDirty();
+	mark_dirty();
 }

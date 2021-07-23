@@ -1,60 +1,72 @@
 #pragma once
 #include "config.h"
 
-#include "ui/interfaces/IUI.hpp"
-#include "ui/interfaces/IPositionable.hpp"
-#include "ui/interfaces/ISizeable.hpp"
-#include "ui/interfaces/IBoundedParent.hpp"
-#include "ui/interfaces/IEnableable.hpp"
-#include "ui/interfaces/IDiColorable.hpp"
-#include "ui/RenderObject.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
+#include "rhr/rendering/interfaces/i_dicolorable.hpp"
+#include "rhr/rendering/objects/object.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-namespace vui
+namespace rhr::render::object
 {
-	class RenderText : public IRenderable, public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IDiColorable, public IEnableable
-	{
-	public:
-		RenderText();
+///
+class text : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_dicolorable, public rhr::render::interfaces::i_enableable
+{
+public:
+	///
+	text();
 
-		/// Sets text.
-		/// \param Text.
-		void SetText(const std::string& text);
+	/// Sets text.
+	/// \param Text.
+	void set_text(const std::string& text);
 
-		/// Sets Z depth.
-		/// \param Z depth.
-		void SetDepth(uint32_t depth);
+	/// Sets Z depth.
+	/// \param Z depth.
+	void set_depth(i32 depth);
 
-		void SetPadding(int32_t padding);
+	///
+	void set_padding(i32 padding);
 
-		void EnableBackground(bool enable);
-	private:
-		void UpdateSize();
+	///
+	void enable_background(bool enable);
+private:
+	///
+	void update_size();
 
-		/// Add draw calls to cmd buffer prebound by Renderer.
-		void OnRender() override;
+	/// Add draw calls to cmd buffer prebound by Renderer.
+	void on_render() override;
 
-		/// Updates mesh on cpu side.
-		void OnUpdateBuffers() override;
+	/// Updates mesh on cpu side.
+	void on_update_buffers() override;
 
-		/// Regenerates descriptor sets including uniforms.
-		void OnReloadSwapChain() override;
+	/// Regenerates descriptor sets including uniforms.
+	void on_reload_swap_chain() override;
 
-		void PostPositionUpdate() override;
+	///
+	void post_position_update() override;
 
-		void PostSizeUpdate() override;
+	///
+	void post_size_update() override;
 
-		/// RenderObject to render the background rectangle.
-		std::shared_ptr<RenderObject> m_RenderObjectBackground;
+	/// Object to render the background rectangle.
+	std::shared_ptr<rhr::render::object::object> m_render_object_background;
 
-		/// RenderObject to render the actual text.
-		std::shared_ptr<RenderObject> m_RenderObjectText;
+	/// Object to render the actual text.
+	std::shared_ptr<rhr::render::object::object> m_render_object_text;
 
-		std::string m_Text;
-		uint32_t m_Depth;
-		int32_t m_Padding;
-		bool m_EnableBackground;
-	};
+	///
+	std::string m_text;
 
+	///
+	i32 m_depth;
+
+	///
+	i32 m_padding;
+
+	///
+	bool m_enable_background;
+};
 }
