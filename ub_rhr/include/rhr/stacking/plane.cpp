@@ -1,8 +1,8 @@
-#include "Plane.hpp"
+#include "plane.hpp"
 
-#include "registries/ShaderRegistry.hpp"
-#include "handlers/ContextHandler.hpp"
-#include "ui/Renderer.hpp"
+// #include "rhr/registries/ShaderRegistry.hpp"
+#include "rhr/handlers/context.hpp"
+#include "rhr/rendering/renderer.hpp"
 
 // TODO: remove include (used for testing)
 #include <iostream>
@@ -15,12 +15,12 @@
 #endif
 #endif
 
-static void PrimaryPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)
+static void PrimaryPlaneMouseButton(glm::vec<2, i32> position, float scroll, MouseOperation operation, void* data)
 {
 	Plane::PrimaryPlane->MouseButton(position, scroll, operation);
 }
 
-static void ToolbarPlaneMouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)
+static void ToolbarPlaneMouseButton(glm::vec<2, i32> position, float scroll, MouseOperation operation, void* data)
 {
 	Plane::ToolbarPlane->MouseButton(position, scroll, operation);
 }
@@ -48,7 +48,7 @@ Plane::Plane(bool toolbar)
 	, m_DraggingSnap(false)
 	, m_DraggingSnapCollection(0)
 	, m_DraggingSnapStack(0)
-	, m_Background(std::make_shared<vui::RenderRectangle>())
+	, m_Background(std::make_shared<rhr::render::object::rectangle>())
 {
 	if (toolbar)
 		InputHandler::RegisterMouseCallback(ToolbarPlaneMouseButton, nullptr);
@@ -162,21 +162,21 @@ bool Plane::IsToolbar()
 	return m_Toolbar;
 }
 
-//void Plane::TranslateInnerPosition(const glm::vec<2, int32_t>& position)
+//void Plane::TranslateInnerPosition(const glm::vec<2, i32>& position)
 //{
 //	//m_innerPosition += position;
-//	m_view.setCenter(m_view.getCenter() + (glm::vec<2, int32_t>)position);
+//	m_view.setCenter(m_view.getCenter() + (glm::vec<2, i32>)position);
 //}
 //
-//void Plane::SetInnerPosition(glm::vec<2, int32_t> position)
+//void Plane::SetInnerPosition(glm::vec<2, i32> position)
 //{
 //	//m_innerPosition = position;
-//	m_view.setCenter((glm::vec<2, int32_t>)position);
+//	m_view.setCenter((glm::vec<2, i32>)position);
 //}
 //
-//glm::vec<2, int32_t> Plane::GetInnerPosition()
+//glm::vec<2, i32> Plane::GetInnerPosition()
 //{
-//	return glm::vec<2, int32_t>();
+//	return glm::vec<2, i32>();
 //}
 
 void Plane::DeleteContents()
@@ -184,12 +184,12 @@ void Plane::DeleteContents()
 	m_Collections.clear();
 }
 
-void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation)
+void Plane::MouseButton(glm::vec<2, i32> position, float scroll, MouseOperation operation)
 {
 	//if (m_window == nullptr)
 	//	return false;
 
-	//glm::vec<2, int32_t> mmpos = position;
+	//glm::vec<2, i32> mmpos = position;
 
 	//uint64_t collectionMax = m_Collections.size();
 
@@ -232,16 +232,16 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 		if (!m_Collections[i]->GetEnabled())
 			continue;
 
-		glm::vec<2, int32_t> collectionSize = m_Collections[i]->GetSize();
-		glm::vec<2, int32_t> collectionPosition = m_Collections[i]->GetPosition() + m_Collections[i]->GetSuperOffset();
+		glm::vec<2, i32> collectionSize = m_Collections[i]->GetSize();
+		glm::vec<2, i32> collectionPosition = m_Collections[i]->GetPosition() + m_Collections[i]->GetSuperOffset();
 
 		if (position.x > collectionPosition.x && position.x < collectionPosition.x + collectionSize.x &&
 			position.y > collectionPosition.y && position.y < collectionPosition.y + collectionSize.y)
 		{
 			for (int64_t a = m_Collections[i]->GetStacks().size() - 1; a >= 0; a--)
 			{
-				glm::vec<2, int32_t> stackSize = m_Collections[i]->GetStacks()[a]->GetSize();
-				glm::vec<2, int32_t> stackPosition = m_Collections[i]->GetStacks()[a]->GetPosition() + m_Collections[i]->GetStacks()[a]->GetSuperOffset();
+				glm::vec<2, i32> stackSize = m_Collections[i]->GetStacks()[a]->GetSize();
+				glm::vec<2, i32> stackPosition = m_Collections[i]->GetStacks()[a]->GetPosition() + m_Collections[i]->GetStacks()[a]->GetSuperOffset();
 
 				//stackPosition += collectionPosition;
 
@@ -250,8 +250,8 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 				{
 					for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
 					{
-						glm::vec<2, int32_t> blockSize = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetSize();
-						glm::vec<2, int32_t> blockPosition = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetPosition() + m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetSuperOffset();
+						glm::vec<2, i32> blockSize = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetSize();
+						glm::vec<2, i32> blockPosition = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetPosition() + m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetSuperOffset();
 
 						if (position.x >= blockPosition.x && position.x < blockPosition.x + blockSize.x &&
 							position.y >= blockPosition.y && position.y < blockPosition.y + blockSize.y)
@@ -313,7 +313,7 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 											activeStack->RemoveBlock(0);
 
 										m_Collections[i]->AddStack(leftStack, false);
-										stackPosition += glm::vec<2, int32_t>(0, static_cast<int32_t>(b) * static_cast<int32_t>(Block::Height));
+										stackPosition += glm::vec<2, i32>(0, static_cast<i32>(b) * static_cast<i32>(Block::Height));
 									}
 
 									activeCollection->SetPosition(stackPosition);
@@ -358,7 +358,7 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 									// startup context menu on block
 
 									//ContextHandler::Disable();
-									//ContextHandler::Enable(mmpos + glm::vec<2, int32_t>(5, 5), &m_contextCallback);
+									//ContextHandler::Enable(mmpos + glm::vec<2, i32>(5, 5), &m_contextCallback);
 									//SelectContext(i, a, b);
 								}
 							}
@@ -389,48 +389,48 @@ void Plane::MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperat
 
 	if (m_CollectionVanity[idx])
 	{
-		//const glm::vec<2, int32_t> pos = m_Collections[idx]->GetPosition() + GetPosition();
-		const glm::vec<2, int32_t> size = (glm::vec<2, int32_t>)m_Collections[idx]->GetSize();
+		//const glm::vec<2, i32> pos = m_Collections[idx]->GetPosition() + GetPosition();
+		const glm::vec<2, i32> size = (glm::vec<2, i32>)m_Collections[idx]->GetSize();
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>();
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(0, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>();
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(0, COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, 0);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>();
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>();
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, 0);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, 0);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(0, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(0, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(0, size.y + COLLECTION_OUTLINE_WIDTH + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
 
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
-		m_vertexArrays[idx][i++].position = glm::vec<2, int32_t>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(size.x + COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
+		m_vertexArrays[idx][i++].position = glm::vec<2, i32>(COLLECTION_OUTLINE_WIDTH, size.y + COLLECTION_OUTLINE_WIDTH);
 	}
 	*/
 
@@ -462,7 +462,7 @@ void Plane::FrameUpdate(double deltaTime)
 
 	if (DraggingStack() || DraggingCollection())
 	{
-		m_DraggingCollection->SetPosition(m_DraggingBeginObject + glm::vec<2, int32_t>(
+		m_DraggingCollection->SetPosition(m_DraggingBeginObject + glm::vec<2, i32>(
 			(InputHandler::GetMousePosition().x - m_DraggingBeginMouse.x)/* / CalculateZoom().x*/,
 			(InputHandler::GetMousePosition().y - m_DraggingBeginMouse.y)/* / CalculateZoom().y*/) - GetPosition());
 	}
@@ -475,11 +475,11 @@ void Plane::FrameUpdate(double deltaTime)
 	// transform applies offset to the vertex buffers
 
 	//for (uint64_t i = 0; i < m_vertexBufferTransform.size(); i++)
-	//	m_vertexBufferTransform[i] = sf::Transform().translate((glm::vec<2, int32_t>)GetPosition()).translate(m_Collections[i]->GetPosition());
+	//	m_vertexBufferTransform[i] = sf::Transform().translate((glm::vec<2, i32>)GetPosition()).translate(m_Collections[i]->GetPosition());
 
 	//if (DraggingStack() || DraggingCollection())
 	//{
-	//	glm::vec<2, int32_t> zoom = Plane::PrimaryPlane->CalculateZoom();
+	//	glm::vec<2, i32> zoom = Plane::PrimaryPlane->CalculateZoom();
 	//	m_vertexBufferTransform.back().scale(zoom);
 	//}
 }
@@ -541,7 +541,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //{
 	//m_background.setFillColor(MOD_BACKGROUND_LOW);
 	//m_background.SetPosition(GetPosition());
-	//m_background.SetSize((glm::vec<2, int32_t>)GetSize());
+	//m_background.SetSize((glm::vec<2, i32>)GetSize());
 
 	//window.setView(window.getDefaultView());
 	//window.draw(m_background);
@@ -567,7 +567,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 
 	//	sf::RenderStates states;
 	//	states.transform = m_vertexBufferTransform[i];
-	//	//states.transform.scale(glm::vec<2, int32_t>(Global::BlockZoom, Global::BlockZoom), GetPosition());//, /*glm::vec<2, int32_t>(GetSize().x / 2.0f, GetSize().y / 2.0f) - */-(m_Collections[i]->GetPosition() * Global::BlockZoom));
+	//	//states.transform.scale(glm::vec<2, i32>(Global::BlockZoom, Global::BlockZoom), GetPosition());//, /*glm::vec<2, i32>(GetSize().x / 2.0f, GetSize().y / 2.0f) - */-(m_Collections[i]->GetPosition() * Global::BlockZoom));
 	//	//sf::Texture re;
 	//	//re.loadFromFile("res/grade.png");
 	//	//if (m_textureMapEnabled[i])
@@ -603,8 +603,8 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 	//		Plane::PrimaryPlane->GetPosition() +
 	//		Plane::PrimaryPlane->GetCollections()[m_draggingSnapCollection]->GetPosition() +
 	//		m_draggingSnapStack->GetPosition() +
-	//		glm::vec<2, int32_t>(0, m_draggingSnapStackLoc * Block::Height)// -
-	//		//(glm::vec<2, int32_t>)Plane::PrimaryPlane->GetInnerPosition()
+	//		glm::vec<2, i32>(0, m_draggingSnapStackLoc * Block::Height)// -
+	//		//(glm::vec<2, i32>)Plane::PrimaryPlane->GetInnerPosition()
 	//	);
 
 	//	uint64_t refIdx = 0;
@@ -612,7 +612,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 	//	if (m_draggingSnapStackLoc > 0)
 	//		refIdx = m_draggingSnapStackLoc - 1;
 
-	//	m_draggingShape.SetSize(glm::vec<2, int32_t>(m_draggingSnapStack->GetBlocks()[refIdx]->GetWidth(), SNAP_GRAPHIC_HEIGHT));
+	//	m_draggingShape.SetSize(glm::vec<2, i32>(m_draggingSnapStack->GetBlocks()[refIdx]->GetWidth(), SNAP_GRAPHIC_HEIGHT));
 
 	//	window.draw(m_draggingShape);
 	//}
@@ -628,7 +628,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 	//{
 	//	sf::RenderStates states;
 	//	states.transform = m_vertexBufferTransform.back();
-	//	//states.transform.translate((glm::vec<2, int32_t>)GetInnerPosition());
+	//	//states.transform.translate((glm::vec<2, i32>)GetInnerPosition());
 
 	//	if (m_textureMapEnabled.back())
 	//		m_shader.setUniform("texture", m_textureMapTexture.back());
@@ -675,7 +675,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //	m_window = nullptr;
 //}
 
-//void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, glm::vec<2, int32_t> size)
+//void Plane::UpdateCollectionVAO(std::vector<sf::Vertex>* vao, glm::vec<2, i32> size)
 //{
 //	// ====================================================================================================================================================
 //	// =============== add vao; see "dev/collection_geometry.png"
@@ -984,17 +984,17 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //
 //			float blockWidth = static_cast<float>(Block::Padding);
 //
-//			glm::vec<2, int32_t> blockPos = m_Collections[bufferIdx]->GetStacks()[a]->GetPosition() + glm::vec<2, int32_t>(0, b * Block::Height);
+//			glm::vec<2, i32> blockPos = m_Collections[bufferIdx]->GetStacks()[a]->GetPosition() + glm::vec<2, i32>(0, b * Block::Height);
 //			uint32_t blockShellWidth = m_Collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetWidth();
 //			const sf::Color blockColor = m_Collections[bufferIdx]->GetStacks()[a]->GetBlocks()[b]->GetModCategory()->GetColor();
 //
-//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, int32_t>(0, 0), blockColor, glm::vec<2, int32_t>(0, 0)));
-//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, int32_t>(blockShellWidth, 0), blockColor, glm::vec<2, int32_t>(0, 0)));
-//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, int32_t>(blockShellWidth, Block::Height), blockColor, glm::vec<2, int32_t>(0, 0)));
+//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, i32>(0, 0), blockColor, glm::vec<2, i32>(0, 0)));
+//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, i32>(blockShellWidth, 0), blockColor, glm::vec<2, i32>(0, 0)));
+//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, i32>(blockShellWidth, Block::Height), blockColor, glm::vec<2, i32>(0, 0)));
 //
-//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, int32_t>(0, 0), blockColor, glm::vec<2, int32_t>(0, 0)));
-//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, int32_t>(blockShellWidth, Block::Height), blockColor, glm::vec<2, int32_t>(0, 0)));
-//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, int32_t>(0, Block::Height), blockColor, glm::vec<2, int32_t>(0, 0)));
+//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, i32>(0, 0), blockColor, glm::vec<2, i32>(0, 0)));
+//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, i32>(blockShellWidth, Block::Height), blockColor, glm::vec<2, i32>(0, 0)));
+//			vaBox.back().push_back(sf::Vertex(blockPos + glm::vec<2, i32>(0, Block::Height), blockColor, glm::vec<2, i32>(0, 0)));
 //
 //			// get argument information
 //			
@@ -1016,14 +1016,14 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //						
 //						// make char texture coordinate match the charsheet
 //
-//						va.back()[d + 0].texCoords = glm::vec<2, int32_t>(gl.textureRect.left, gl.textureRect.top);
-//						va.back()[d + 1].texCoords = glm::vec<2, int32_t>(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top);
-//						va.back()[d + 2].texCoords = glm::vec<2, int32_t>(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
-//						va.back()[d + 3].texCoords = glm::vec<2, int32_t>(gl.textureRect.left, gl.textureRect.top);
-//						va.back()[d + 4].texCoords = glm::vec<2, int32_t>(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
-//						va.back()[d + 5].texCoords = glm::vec<2, int32_t>(gl.textureRect.left, gl.textureRect.top + gl.textureRect.height);
+//						va.back()[d + 0].texCoords = glm::vec<2, i32>(gl.textureRect.left, gl.textureRect.top);
+//						va.back()[d + 1].texCoords = glm::vec<2, i32>(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top);
+//						va.back()[d + 2].texCoords = glm::vec<2, i32>(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
+//						va.back()[d + 3].texCoords = glm::vec<2, i32>(gl.textureRect.left, gl.textureRect.top);
+//						va.back()[d + 4].texCoords = glm::vec<2, i32>(gl.textureRect.left + gl.textureRect.width, gl.textureRect.top + gl.textureRect.height);
+//						va.back()[d + 5].texCoords = glm::vec<2, i32>(gl.textureRect.left, gl.textureRect.top + gl.textureRect.height);
 //
-//						va.back()[d].position += glm::vec<2, int32_t>(
+//						va.back()[d].position += glm::vec<2, i32>(
 //							static_cast<float>(blockWidth) + blockPos.x,
 //							blockPos.y + ((float)Block::Padding / 2.0f)
 //						);
@@ -1031,7 +1031,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //					else
 //					{
 //						// make VAO absolute
-//						va.back()[d].position += glm::vec<2, int32_t>(
+//						va.back()[d].position += glm::vec<2, i32>(
 //							static_cast<float>(blockWidth) + blockPos.x,
 //							blockPos.y + ((float)Block::Padding / 2.0f)
 //						);
@@ -1059,7 +1059,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //
 //		for (uint8_t a = 0; a < 22 * 3; a++)
 //		{
-//			m_vertexArrays[bufferIdx][a].texCoords = glm::vec<2, int32_t>(
+//			m_vertexArrays[bufferIdx][a].texCoords = glm::vec<2, i32>(
 //				m_vertexArrays[bufferIdx][a].texCoords.x / static_cast<float>(m_fontEditedImage.GetSize().x),
 //				m_vertexArrays[bufferIdx][a].texCoords.y / static_cast<float>(m_fontEditedImage.GetSize().y)
 //			);
@@ -1072,7 +1072,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //	{
 //		for (uint64_t b = 0; b < va[a].getVertexCount(); b++)
 //		{
-//			va[a][b].texCoords = glm::vec<2, int32_t>(
+//			va[a][b].texCoords = glm::vec<2, i32>(
 //				va[a][b].texCoords.x / static_cast<float>(m_fontEditedImage.GetSize().x),
 //				va[a][b].texCoords.y / static_cast<float>(m_fontEditedImage.GetSize().y)
 //			);
@@ -1085,7 +1085,7 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //	{
 //		for (uint8_t b = 0; b < 6; b++)
 //		{
-//			vaBox[a][b].texCoords = glm::vec<2, int32_t>(
+//			vaBox[a][b].texCoords = glm::vec<2, i32>(
 //				vaBox[a][b].texCoords.x / static_cast<float>(m_fontEditedImage.GetSize().x),
 //				vaBox[a][b].texCoords.y / static_cast<float>(m_fontEditedImage.GetSize().y)
 //			);
@@ -1127,25 +1127,25 @@ std::shared_ptr<Plane> Plane::ToolbarPlane;
 //	{
 //		uint8_t idx0 = indices[i * 3];
 //
-//		vao->push_back(sf::Vertex(glm::vec<2, int32_t>(positions[idx0 * 2], positions[idx0 * 2 + 1]),
+//		vao->push_back(sf::Vertex(glm::vec<2, i32>(positions[idx0 * 2], positions[idx0 * 2 + 1]),
 //			sf::Color(colors[idx0 * 3], colors[idx0 * 3 + 1], colors[idx0 * 3 + 2]),
-//			glm::vec<2, int32_t>(textureCoords[idx0 * 2], textureCoords[idx0 * 2 + 1])));
+//			glm::vec<2, i32>(textureCoords[idx0 * 2], textureCoords[idx0 * 2 + 1])));
 //
 //		uint8_t idx1 = indices[i * 3 + 1];
 //
-//		vao->push_back(sf::Vertex(glm::vec<2, int32_t>(positions[idx1 * 2], positions[idx1 * 2 + 1]),
+//		vao->push_back(sf::Vertex(glm::vec<2, i32>(positions[idx1 * 2], positions[idx1 * 2 + 1]),
 //			sf::Color(colors[idx1 * 3], colors[idx1 * 3 + 1], colors[idx1 * 3 + 2]),
-//			glm::vec<2, int32_t>(textureCoords[idx1 * 2], textureCoords[idx1 * 2 + 1])));
+//			glm::vec<2, i32>(textureCoords[idx1 * 2], textureCoords[idx1 * 2 + 1])));
 //
 //		uint8_t idx2 = indices[i * 3 + 2];
 //
-//		vao->push_back(sf::Vertex(glm::vec<2, int32_t>(positions[idx2 * 2], positions[idx2 * 2 + 1]),
+//		vao->push_back(sf::Vertex(glm::vec<2, i32>(positions[idx2 * 2], positions[idx2 * 2 + 1]),
 //			sf::Color(colors[idx2 * 3], colors[idx2 * 3 + 1], colors[idx2 * 3 + 2]),
-//			glm::vec<2, int32_t>(textureCoords[idx2 * 2], textureCoords[idx2 * 2 + 1])));
+//			glm::vec<2, i32>(textureCoords[idx2 * 2], textureCoords[idx2 * 2 + 1])));
 //	}
 //}
 
-void Plane::Select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument)
+void Plane::select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument)
 {
 	m_Selected = true;
 
@@ -1203,11 +1203,11 @@ void Plane::DragStack(std::shared_ptr<Collection>& collection, std::shared_ptr<S
 	m_DraggingStack = stack;
 }
 
-void Plane::UnDrag(const glm::vec<2, int32_t>& position)
+void Plane::UnDrag(const glm::vec<2, i32>& position)
 {
 	if (DraggingStack())
 	{
-		glm::vec<2, int32_t> pixelPosition = m_DraggingCollection->GetPosition();
+		glm::vec<2, i32> pixelPosition = m_DraggingCollection->GetPosition();
 
 		if (!(pixelPosition.x >= Plane::PrimaryPlane->GetPosition().x && pixelPosition.x < Plane::PrimaryPlane->GetSize().x + Plane::PrimaryPlane->GetPosition().x &&
 			pixelPosition.y >= Plane::PrimaryPlane->GetPosition().y && pixelPosition.y < Plane::PrimaryPlane->GetSize().y + Plane::PrimaryPlane->GetPosition().y))
@@ -1224,11 +1224,11 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 		}
 		else
 		{
-			glm::vec<2, int32_t> planePrimaryPosition = Plane::PrimaryPlane->GetPosition() + Plane::PrimaryPlane->GetSuperOffset();
-			glm::vec<2, int32_t> planePrimarySize = Plane::PrimaryPlane->GetSize();
+			glm::vec<2, i32> planePrimaryPosition = Plane::PrimaryPlane->GetPosition() + Plane::PrimaryPlane->GetSuperOffset();
+			glm::vec<2, i32> planePrimarySize = Plane::PrimaryPlane->GetSize();
 
-			glm::vec<2, int32_t> planeToolbarPosition = Plane::ToolbarPlane->GetPosition() + Plane::ToolbarPlane->GetSuperOffset();
-			glm::vec<2, int32_t> planeToolbarSize = Plane::ToolbarPlane->GetSize();
+			glm::vec<2, i32> planeToolbarPosition = Plane::ToolbarPlane->GetPosition() + Plane::ToolbarPlane->GetSuperOffset();
+			glm::vec<2, i32> planeToolbarSize = Plane::ToolbarPlane->GetSize();
 
 			if (pixelPosition.x > planeToolbarPosition.x && pixelPosition.x < planeToolbarPosition.x + planeToolbarSize.x &&
 				pixelPosition.y > planeToolbarPosition.y && pixelPosition.y < planeToolbarPosition.y + planeToolbarSize.y)
@@ -1247,19 +1247,19 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 					//if (Plane::PrimaryPlane->GetCollections()[i] == m_DraggingCollection)
 					//	continue;
 
-					//glm::vec<2, int32_t> colPos = (glm::vec<2, int32_t>)m_window->mapCoordsToPixel(
+					//glm::vec<2, i32> colPos = (glm::vec<2, i32>)m_window->mapCoordsToPixel(
 					//	Plane::PrimaryPlane->GetCollections()[i]->GetPosition(),
 					//	*Plane::PrimaryPlane->GetView()) + Plane::PrimaryPlane->GetPosition();
 
-					//glm::vec<2, int32_t> colPos = Plane::PrimaryPlane->GetCollections()[i]->GetPosition() + Plane::PrimaryPlane->GetPosition();
+					//glm::vec<2, i32> colPos = Plane::PrimaryPlane->GetCollections()[i]->GetPosition() + Plane::PrimaryPlane->GetPosition();
 
-					//glm::vec<2, int32_t> colSize = glm::vec<2, int32_t>(
+					//glm::vec<2, i32> colSize = glm::vec<2, i32>(
 					//	Plane::PrimaryPlane->GetCollections()[i]->GetSize().x,
 					//	Plane::PrimaryPlane->GetCollections()[i]->GetSize().y
 					//);
 
-					glm::vec<2, int32_t> collectionPosition = Plane::PrimaryPlane->GetCollections()[i]->GetPosition() + Plane::PrimaryPlane->GetCollections()[i]->GetSuperOffset();
-					glm::vec<2, int32_t> collectionSize = Plane::PrimaryPlane->GetCollections()[i]->GetSize();
+					glm::vec<2, i32> collectionPosition = Plane::PrimaryPlane->GetCollections()[i]->GetPosition() + Plane::PrimaryPlane->GetCollections()[i]->GetSuperOffset();
+					glm::vec<2, i32> collectionSize = Plane::PrimaryPlane->GetCollections()[i]->GetSize();
 
 					//colSize = colSize * CalculateZoom();
 
@@ -1283,20 +1283,20 @@ void Plane::UnDrag(const glm::vec<2, int32_t>& position)
 
 				if (!found)
 				{
-					glm::vec<2, int32_t> collectionPosition = m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
+					glm::vec<2, i32> collectionPosition = m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
 					Plane::PrimaryPlane->AddCollection(m_DraggingCollection, true);
 					m_DraggingCollection->SetPosition(collectionPosition - planePrimaryPosition);
 					m_DraggingCollection->SizeToStacks(false, true);
 
-					//m_DraggingCollection->SetPosition((glm::vec<2, int32_t>)(((glm::vec<2, int32_t>)position - (glm::vec<2, int32_t>)Plane::PrimaryPlane->GetPosition()))
-					//		  - (glm::vec<2, int32_t>)(((glm::vec<2, int32_t>)m_DraggingBeginMouse - m_DraggingBeginObject))
-					//		  + (glm::vec<2, int32_t>)(glm::vec<2, int32_t>(1.0f, 1.0f) - /*Plane::PrimaryPlane->CalculateZoom() **/ Plane::PrimaryPlane->GetPosition())
-					//	 - glm::vec<2, int32_t>(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
+					//m_DraggingCollection->SetPosition((glm::vec<2, i32>)(((glm::vec<2, i32>)position - (glm::vec<2, i32>)Plane::PrimaryPlane->GetPosition()))
+					//		  - (glm::vec<2, i32>)(((glm::vec<2, i32>)m_DraggingBeginMouse - m_DraggingBeginObject))
+					//		  + (glm::vec<2, i32>)(glm::vec<2, i32>(1.0f, 1.0f) - /*Plane::PrimaryPlane->CalculateZoom() **/ Plane::PrimaryPlane->GetPosition())
+					//	 - glm::vec<2, i32>(COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE)
 					//);
 
 					////std::cout << Plane::PrimaryPlane->CalculateZoom().x << " || " << Plane::PrimaryPlane->CalculateZoom().y << std::endl;
 
-					//m_DraggingCollection->SetSize((glm::vec<2, int32_t>)m_DraggingCollection->GetSize() + glm::vec<2, int32_t>(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
+					//m_DraggingCollection->SetSize((glm::vec<2, i32>)m_DraggingCollection->GetSize() + glm::vec<2, i32>(COLLECTION_EMPTY_SPACE * 2, COLLECTION_EMPTY_SPACE * 2));
 					//m_DraggingStack->SetPosition({ COLLECTION_EMPTY_SPACE, COLLECTION_EMPTY_SPACE });
 
 					//DeleteCollection(m_Collections.size() - 1);
@@ -1318,7 +1318,7 @@ void Plane::DraggingStackUpdate()
 	ClearSnap();
 
 
-	glm::vec<2, int32_t> pixelPosition = /*m_DraggingCollection->GetPosition() + GetPosition()*/ /*InputHandler::GetMousePosition()*/ m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
+	glm::vec<2, i32> pixelPosition = /*m_DraggingCollection->GetPosition() + GetPosition()*/ /*InputHandler::GetMousePosition()*/ m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
 	m_DraggingCollection->SetPosition(InputHandler::GetMousePosition() - m_DraggingBeginMouse + m_DraggingBeginObject);
 
 	if (!(pixelPosition.x >= Plane::PrimaryPlane->GetPosition().x && pixelPosition.x < Plane::PrimaryPlane->GetSize().x + Plane::PrimaryPlane->GetPosition().x &&
@@ -1341,17 +1341,17 @@ void Plane::DraggingStackUpdate()
 		// size
 
 		// TODO: consolidate these
-		/*glm::vec<2, int32_t> collectionSize = glm::vec<2, int32_t>(
+		/*glm::vec<2, i32> collectionSize = glm::vec<2, i32>(
 			((SNAP_DISTANCE * 2.0f * CalculateZoom().x) + useCollections[i]->GetSize().x),
 			((SNAP_DISTANCE * 2.0f * CalculateZoom().y) + useCollections[i]->GetSize().y)
 		);*/
 
-		glm::vec<2, int32_t> collectionSize = useCollections[i]->GetSize();
-		glm::vec<2, int32_t> collectionPosition = useCollections[i]->GetPosition() + useCollections[i]->GetSuperOffset();
+		glm::vec<2, i32> collectionSize = useCollections[i]->GetSize();
+		glm::vec<2, i32> collectionPosition = useCollections[i]->GetPosition() + useCollections[i]->GetSuperOffset();
 
 		//collectionPosition += usePlane->GetPosition();
-		collectionPosition -= glm::vec<2, int32_t>(SNAP_DISTANCE, SNAP_DISTANCE);
-		collectionSize += glm::vec<2, int32_t>(SNAP_DISTANCE, SNAP_DISTANCE) * 2;
+		collectionPosition -= glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE);
+		collectionSize += glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE) * 2;
 
 		if (pixelPosition.x > collectionPosition.x && pixelPosition.x < collectionPosition.x + collectionSize.x &&
 			pixelPosition.y > collectionPosition.y && pixelPosition.y < collectionPosition.y + collectionSize.y)
@@ -1360,12 +1360,12 @@ void Plane::DraggingStackUpdate()
 
 			for (int64_t a = useCollections[i]->GetStacks().size() - 1; a >= 0; a--)
 			{
-				glm::vec<2, int32_t> stackSize = useCollections[i]->GetStacks()[a]->GetSize();
-				glm::vec<2, int32_t> stackPosition = useCollections[i]->GetStacks()[a]->GetPosition() + useCollections[i]->GetStacks()[a]->GetSuperOffset();
+				glm::vec<2, i32> stackSize = useCollections[i]->GetStacks()[a]->GetSize();
+				glm::vec<2, i32> stackPosition = useCollections[i]->GetStacks()[a]->GetPosition() + useCollections[i]->GetStacks()[a]->GetSuperOffset();
 
 
-				stackPosition -= glm::vec<2, int32_t>(SNAP_DISTANCE, SNAP_DISTANCE);
-				stackSize += glm::vec<2, int32_t>(SNAP_DISTANCE, SNAP_DISTANCE) * 2;
+				stackPosition -= glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE);
+				stackSize += glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE) * 2;
 				//for (uint64_t b = 0; b < useCollections[i]->GetStacks()[a]->GetBlocks().size(); b++)
 				//{
 				//	if (useCollections[i]->GetStacks()[a]->GetBlocks()[b]->GetWidth() > stackSize.x)
@@ -1373,12 +1373,12 @@ void Plane::DraggingStackUpdate()
 				//}
 
 				//stackSize.y = useCollections[i]->GetStacks()[a]->GetBlocks().size() * Block::Height;// *CalculateZoom().y;
-				//stackSize += glm::vec<2, int32_t>(SNAP_DISTANCE * 2.0f/* * CalculateZoom().x*/, SNAP_DISTANCE * 2.0f/* * CalculateZoom().y*/);
+				//stackSize += glm::vec<2, i32>(SNAP_DISTANCE * 2.0f/* * CalculateZoom().x*/, SNAP_DISTANCE * 2.0f/* * CalculateZoom().y*/);
 
 				// position
 
 				//stackPosition += usePlane->GetPosition();
-				//stackPosition -= glm::vec<2, int32_t>(SNAP_DISTANCE/* * CalculateZoom().x*/, SNAP_DISTANCE/* * CalculateZoom().y*/);
+				//stackPosition -= glm::vec<2, i32>(SNAP_DISTANCE/* * CalculateZoom().x*/, SNAP_DISTANCE/* * CalculateZoom().y*/);
 
 				//stackPosition += collectionPosition;
 
@@ -1394,15 +1394,15 @@ void Plane::DraggingStackUpdate()
 						if (b > 0)
 							refIdx = b - 1;
 
-						glm::vec<2, int32_t> boundingSize = { useCollections[i]->GetStacks()[a]->GetBlocks()[refIdx]->GetWidth() + (SNAP_DISTANCE * 2), Block::Height };
-						glm::vec<2, int32_t> boundingPos = useCollections[i]->GetStacks()[a]->GetPosition() + useCollections[i]->GetStacks()[a]->GetSuperOffset();
+						glm::vec<2, i32> boundingSize = { useCollections[i]->GetStacks()[a]->GetBlocks()[refIdx]->GetWidth() + (SNAP_DISTANCE * 2), Block::Height };
+						glm::vec<2, i32> boundingPos = useCollections[i]->GetStacks()[a]->GetPosition() + useCollections[i]->GetStacks()[a]->GetSuperOffset();
 
 						boundingPos.x -= SNAP_DISTANCE;
 
-						boundingPos.y += static_cast<int32_t>(Block::Height) * b;
+						boundingPos.y += static_cast<i32>(Block::Height) * b;
 						boundingPos.y -= static_cast<float>(Block::Height) / 2.0f;
 
-						glm::vec<2, int32_t> draggingCollectionPosition = m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
+						glm::vec<2, i32> draggingCollectionPosition = m_DraggingCollection->GetPosition() + m_DraggingCollection->GetSuperOffset();
 
 						if (draggingCollectionPosition.x >= boundingPos.x && draggingCollectionPosition.x < boundingPos.x + boundingSize.x &&
 							draggingCollectionPosition.y >= boundingPos.y && draggingCollectionPosition.y < boundingPos.y + boundingSize.y)
@@ -1467,17 +1467,17 @@ bool Plane::IsSnap()
 //	return &m_view;
 //}
 
-//glm::vec<2, int32_t> Plane::CalculateZoom()
+//glm::vec<2, i32> Plane::CalculateZoom()
 //{
-//	return glm::vec<2, int32_t>(
+//	return glm::vec<2, i32>(
 //		static_cast<float>(Global::WindowSize.x) / m_view.GetSize().x,
 //		static_cast<float>(Global::WindowSize.y) / m_view.GetSize().y
 //	);
 //}
 
-//glm::vec<2, int32_t> Plane::GetCoordsFromPixel(glm::vec<2, int32_t> pixel, sf::RenderWindow& window)
+//glm::vec<2, i32> Plane::GetCoordsFromPixel(glm::vec<2, i32> pixel, sf::RenderWindow& window)
 //{
-//	return window.mapPixelToCoords((glm::vec<2, int32_t>)pixel, m_view);
+//	return window.mapPixelToCoords((glm::vec<2, i32>)pixel, m_view);
 //}
 
 //void Plane::draw(sf::RenderTarget& target, sf::RenderStates states) const

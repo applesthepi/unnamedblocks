@@ -1,15 +1,17 @@
 #pragma once
 #include "config.h"
 
-#include "stacking/Collection.hpp"
-#include "ui/interfaces/IPositionable.hpp"
-#include "ui/interfaces/ISizeable.hpp"
-#include "ui/RenderRectangle.hpp"
-#include "ui/RenderText.hpp"
+#include "rhr/stacking/collection.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_updateable.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/objects/rectangle.hpp"
+#include "rhr/rendering/objects/text.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <Cappuccino/Intrinsics.hpp>
-#include <Espresso/InputHandler.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/intrinsics.hpp>
+#include <espresso/input_handler.hpp>
 
 #define SNAP_DISTANCE 30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
@@ -28,7 +30,7 @@
 //	sf::RenderWindow* m_window;
 //};
 
-class Plane : public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable
+class Plane : public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable
 {
 public:
 	//Plane(bool toolbar, const Plane& plane);
@@ -37,28 +39,28 @@ public:
 	~Plane();
 	
 	// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
-	void AddCollection(std::shared_ptr<Collection>& collection, bool displayCollectionVanity);
-	const std::vector<std::shared_ptr<Collection>>& GetCollections();
+	void AddCollection(std::shared_ptr<rhr::stack::collection>& collection, bool displayCollectionVanity);
+	const std::vector<std::shared_ptr<rhr::stack::collection>>& GetCollections();
 
-	void DeleteCollection(uint64_t idx);
+	void DeleteCollection(u64 idx);
 	bool IsToolbar();
 
-	//void TranslateInnerPosition(const glm::vec<2, int32_t>& position);
-	//void SetInnerPosition(glm::vec<2, int32_t> position);
+	//void TranslateInnerPosition(const glm::vec<2, i32>& position);
+	//void SetInnerPosition(glm::vec<2, i32> position);
 	
-	//glm::vec<2, int32_t> GetInnerPosition();
+	//glm::vec<2, i32> GetInnerPosition();
 	void DeleteContents();
 
 	// TODO not finished; may not need
-	//void UpdateVAOPosition(uint64_t idx);
+	//void UpdateVAOPosition(u64 idx);
 
-	//void UpdateVAO(uint64_t idx);
+	//void UpdateVAO(u64 idx);
 
-	//void frameUpdate(double deltaTime) override;
+	//void frameUpdate(f64 deltaTime) override;
 	//void render(sf::RenderWindow& window);
 	//void snapRender(sf::RenderWindow& window);
 	//void postRender(sf::RenderWindow& window);
-	void MouseButton(glm::vec<2, int32_t> position, float scroll, MouseOperation operation);
+	void MouseButton(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
 
 	//sf::View* GetView();
 	//sf::Vector2f CalculateZoom();
@@ -68,7 +70,7 @@ public:
 	static std::shared_ptr<Plane> ToolbarPlane;
 //protected:
 	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-	void FrameUpdate(double deltaTime) override;
+	void FrameUpdate(f64 deltaTime) override;
 private:
 	void OnRender() override;
 	void OnUpdateBuffers() override;
@@ -90,7 +92,7 @@ private:
 	//void UpdateBuffer(uint16_t bufferIdx);
 
 	// parses an array into a nice vertex array that sfml can understand
-	//void ParseIndices(std::vector<sf::Vertex>* vao, const float positions[], const uint8_t colors[], const float textureCoords[], const uint8_t indices[], uint8_t indexCount);
+	//void ParseIndices(std::vector<sf::Vertex>* vao, const f32 positions[], const uint8_t colors[], const f32 textureCoords[], const uint8_t indices[], uint8_t indexCount);
 	//std::vector<std::vector<sf::Vertex>> m_vertexArrays;
 	//std::vector<sf::VertexBuffer> m_vertexBuffers;
 	//std::vector<sf::Transform> m_vertexBufferTransform;
@@ -106,16 +108,16 @@ private:
 	// Selection & Context
 	//////////////////////////////////////////////////////////
 
-	void Select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t argument);
-	void SelectContext(uint64_t collection, uint64_t stack, uint64_t block);
+	void select(u64 collection, u64 stack, u64 block, u64 argument);
+	void SelectContext(u64 collection, u64 stack, u64 block);
 	void UnSelect();
 
 	bool m_Selected;
 	bool m_SelectedContext;
-	std::shared_ptr<Collection> m_SelectedCollection;
-	std::shared_ptr<Stack> m_SelectedStack;
-	std::shared_ptr<Block> m_SelectedBlock;
-	std::shared_ptr<Argument> m_SelectedArgument;
+	std::shared_ptr<rhr::stack::collection> m_SelectedCollection;
+	std::shared_ptr<rhr::stack::stack> m_SelectedStack;
+	std::shared_ptr<rhr::stack::block> m_SelectedBlock;
+	std::shared_ptr<rhr::stack::argument::argument> m_SelectedArgument;
 
 	std::function<void(uint8_t)> m_ContextCallback;
 
@@ -123,19 +125,19 @@ private:
 	// Dragging
 	//////////////////////////////////////////////////////////
 
-	void DragCollection(std::shared_ptr<Collection>& collection, bool up);
-	void DragStack(std::shared_ptr<Collection>& collection, std::shared_ptr<Stack>& stack, bool up);
-	void UnDrag(const glm::vec<2, int32_t>& position);
+	void DragCollection(std::shared_ptr<rhr::stack::collection>& collection, bool up);
+	void DragStack(std::shared_ptr<rhr::stack::collection>& collection, std::shared_ptr<rhr::stack::stack>& stack, bool up);
+	void UnDrag(const glm::vec<2, i32>& position);
 	void DraggingStackUpdate();
 
 	bool DraggingCollection();
 	bool DraggingStack();
 
-	std::shared_ptr<Collection> m_DraggingCollection;
-	std::shared_ptr<Stack> m_DraggingStack;
+	std::shared_ptr<rhr::stack::collection> m_DraggingCollection;
+	std::shared_ptr<rhr::stack::stack> m_DraggingStack;
 
-	glm::vec<2, int32_t> m_DraggingBeginObject;
-	glm::vec<2, int32_t> m_DraggingBeginMouse;
+	glm::vec<2, i32> m_DraggingBeginObject;
+	glm::vec<2, i32> m_DraggingBeginMouse;
 
 	bool m_DraggingUp;
 
@@ -143,16 +145,16 @@ private:
 	// Snapping
 	//////////////////////////////////////////////////////////
 
-	void SetSnap(std::shared_ptr<Collection> collection, uint64_t stackLoc, std::shared_ptr<Stack> stack);
+	void SetSnap(std::shared_ptr<rhr::stack::collection> collection, u64 stackLoc, std::shared_ptr<rhr::stack::stack> stack);
 	void ClearSnap();
 
 	bool IsSnap();
 
 	vui::RenderRectangle m_DraggingShape;
 
-	std::shared_ptr<Collection> m_DraggingSnapCollection;
-	uint64_t m_DraggingSnapStackLoc;
-	std::shared_ptr<Stack> m_DraggingSnapStack;
+	std::shared_ptr<rhr::stack::collection> m_DraggingSnapCollection;
+	u64 m_DraggingSnapStackLoc;
+	std::shared_ptr<rhr::stack::stack> m_DraggingSnapStack;
 
 	bool m_DraggingSnap;
 
@@ -161,9 +163,9 @@ private:
 	//////////////////////////////////////////////////////////
 
 	std::vector<bool> m_CollectionVanity;
-	std::vector<std::shared_ptr<Collection>> m_Collections;
+	std::vector<std::shared_ptr<rhr::stack::collection>> m_Collections;
 
-	//glm::vec<2, int32_t> m_innerPosition;
+	//glm::vec<2, i32> m_innerPosition;
 	//sf::View m_view;
 	//sf::RenderWindow* m_window;
 

@@ -1,60 +1,60 @@
-#include "ArgumentString.hpp"
+#include "string.hpp"
 
-#include "ui/Renderer.hpp"
-#include "stacking/Block.hpp"
+#include "rhr/rendering/renderer.hpp"
+#include "rhr/stacking/block.hpp"
 
-ArgumentString::ArgumentString(const Color& color)
-	: Argument(color)
-	, m_Text(std::make_shared<vui::RenderText>())
+rhr::stack::argument::string::string(const cap::color& color)
+	: rhr::stack::argument::argument(color)
+	, m_text(std::make_shared<rhr::render::object::text>())
 {
-	m_Text->SetWeak(m_Text);
-	m_Text->SetDepth(Renderer::depth_argument_text);
-	m_Text->SetColorPrimary(Color::TextPrimaryColor);
-	m_Text->SetColorSecondary(color);
-	m_Text->SetPadding(Argument::Padding);
+	m_text->set_weak(m_text);
+	m_text->set_depth(rhr::render::renderer::depth_argument_text);
+	m_text->set_color_primary(cap::color::text_primary_color);
+	m_text->set_color_secondary(color);
+	m_text->set_padding(rhr::stack::argument::argument::padding);
 }
 
-BlockArgumentType ArgumentString::GetType()
+BlockArgumentType rhr::stack::argument::string::get_type()
 {
 	return BlockArgumentType::STRING;
 }
 
-uint32_t ArgumentString::GetWidth()
+u32 rhr::stack::argument::string::get_width()
 {
-	return m_Text->GetSize().x;
+	return m_text->get_size().x;
 }
 
-bool ArgumentString::HasData()
+bool rhr::stack::argument::string::has_data()
 {
 	return true;
 }
 
-void ArgumentString::OnRender()
+void rhr::stack::argument::string::on_render()
 {
-	m_Text->Render();
+	m_text->render();
 }
 
-void ArgumentString::OnUpdateBuffers()
+void rhr::stack::argument::string::on_update_buffers()
 {
-	m_Text->UpdateBuffers();
+	m_text->update_buffers();
 }
 
-void ArgumentString::OnReloadSwapChain()
+void rhr::stack::argument::string::on_reload_swap_chain()
 {
-	m_Text->ReloadSwapChain();
+	m_text->reload_swap_chain();
 }
 
-void ArgumentString::OnFrameUpdate(double deltaTime)
+void rhr::stack::argument::string::on_frame_update(f64 delta_time)
 {
 
 }
 
-void ArgumentString::PostPositionUpdate()
+void rhr::stack::argument::string::post_position_update()
 {
-	m_Text->SetSuperOffset(m_Position + m_SuperOffset);
+	m_text->set_super_position(m_position + m_super_position);
 }
 
-void ArgumentString::OnSetData()
+void rhr::stack::argument::string::on_set_data()
 {
-	m_Text->SetText(m_Data);
+	m_text->set_text(m_data);
 }

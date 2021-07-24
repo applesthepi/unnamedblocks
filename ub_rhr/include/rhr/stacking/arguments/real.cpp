@@ -1,116 +1,116 @@
-#include "ArgumentReal.hpp"
+#include "real.hpp"
 
-#include "ui/Renderer.hpp"
-#include "stacking/Block.hpp"
+#include "rhr/rendering/renderer.hpp"
+#include "rhr/stacking/block.hpp"
 
 #define ARG_REAL_DECORE_WIDTH 6
 
-ArgumentReal::ArgumentReal(const Color& color)
-	: Argument(color)
-	, m_Text(std::make_shared<vui::RenderText>())
-	, m_DecorLeftTop(std::make_shared<RenderObject>(true))
-	, m_DecorLeftBottom(std::make_shared<RenderObject>(true))
-	, m_DecorRightTop(std::make_shared<RenderObject>(true))
-	, m_DecorRightBottom(std::make_shared<RenderObject>(true))
+rhr::stack::argument::real::real(const cap::color& color)
+	: rhr::stack::argument::argument(color)
+	, m_text(std::make_shared<rhr::render::object::text>())
+	, m_decor_left_top(std::make_shared<rhr::render::object::object>(true))
+	, m_decor_left_bottom(std::make_shared<rhr::render::object::object>(true))
+	, m_decor_right_top(std::make_shared<rhr::render::object::object>(true))
+	, m_decor_right_bottom(std::make_shared<rhr::render::object::object>(true))
 {
-	m_DecorLeftTop->SetWeak(m_DecorLeftTop);
-	m_DecorLeftBottom->SetWeak(m_DecorLeftBottom);
-	m_DecorRightTop->SetWeak(m_DecorRightTop);
-	m_DecorRightBottom->SetWeak(m_DecorRightBottom);
+	m_decor_left_top->set_weak(m_decor_left_top);
+	m_decor_left_bottom->set_weak(m_decor_left_bottom);
+	m_decor_right_top->set_weak(m_decor_right_top);
+	m_decor_right_bottom->set_weak(m_decor_right_bottom);
 
-	m_Text->SetWeak(m_Text);
-	m_Text->SetDepth(Renderer::depth_argument_text);
-	m_Text->SetColorPrimary(Color::TextPrimaryColor);
-	m_Text->SetColorSecondary(color);
-	m_Text->SetPadding(Argument::Padding);
+	m_text->set_weak(m_text);
+	m_text->set_depth(rhr::render::renderer::depth_argument_text);
+	m_text->set_color_primary(cap::color::text_primary_color);
+	m_text->set_color_secondary(color);
+	m_text->set_padding(rhr::stack::argument::argument::padding);
 }
 
-BlockArgumentType ArgumentReal::GetType()
+BlockArgumentType rhr::stack::argument::real::get_type()
 {
 	return BlockArgumentType::REAL;
 }
 
-uint32_t ArgumentReal::GetWidth()
+u32 rhr::stack::argument::real::get_width()
 {
-	return m_Text->GetSize().x + (2 * ARG_REAL_DECORE_WIDTH);
+	return m_text->get_size().x + (2 * ARG_REAL_DECORE_WIDTH);
 }
 
-bool ArgumentReal::HasData()
+bool rhr::stack::argument::real::has_data()
 {
 	return true;
 }
 
-void ArgumentReal::OnRender()
+void rhr::stack::argument::real::on_render()
 {
-	m_Text->Render();
+	m_text->render();
 
-	m_DecorLeftTop->Render();
-	m_DecorLeftBottom->Render();
-	m_DecorRightTop->Render();
-	m_DecorRightBottom->Render();
+	m_decor_left_top->render();
+	m_decor_left_bottom->render();
+	m_decor_right_top->render();
+	m_decor_right_bottom->render();
 }
 
-void ArgumentReal::OnUpdateBuffers()
+void rhr::stack::argument::real::on_update_buffers()
 {
-	m_Text->UpdateBuffers();
+	m_text->update_buffers();
 
-	int32_t fullWidth = GetWidth();
+	i32 full_width = get_width();
 
-	Vertex vertices[12];
-	float otherSide = ARG_REAL_DECORE_WIDTH + m_Text->GetSize().x;
+	rhr::render::vertex vertices[12];
+	f32 other_side = ARG_REAL_DECORE_WIDTH + m_text->get_size().x;
 
-	vertices[0] = Vertex({ static_cast<float>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[1] = Vertex({ 0, 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[2] = Vertex({ static_cast<float>(ARG_REAL_DECORE_WIDTH), static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[0] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[1] = rhr::render::vertex({ 0, 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[2] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[3] = Vertex({ static_cast<float>(ARG_REAL_DECORE_WIDTH), static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[4] = Vertex({ 0, static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[5] = Vertex({ static_cast<float>(ARG_REAL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[3] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[4] = rhr::render::vertex({ 0, static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[5] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[6] = Vertex({ otherSide, 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[7] = Vertex({ otherSide + static_cast<float>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[8] = Vertex({ otherSide, static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[6] = rhr::render::vertex({ other_side, 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[7] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[8] = rhr::render::vertex({ other_side, static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[9] = Vertex({ otherSide, static_cast<float>(Block::HeightContent / 2), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[10] = Vertex({ otherSide + static_cast<float>(ARG_REAL_DECORE_WIDTH), static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
-	vertices[11] = Vertex({ otherSide, static_cast<float>(Block::HeightContent), 0 }, m_BlockColor.GetNormalized(), { 0.0f, 0.0f });
+	vertices[9] = rhr::render::vertex({ other_side, static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[10] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[11] = rhr::render::vertex({ other_side, static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
-	m_DecorLeftTop->UpdateVertices(vertices + 0, 3, true);
-	m_DecorLeftBottom->UpdateVertices(vertices + 3, 3, true);
-	m_DecorRightTop->UpdateVertices(vertices + 6, 3, true);
-	m_DecorRightBottom->UpdateVertices(vertices + 9, 3, true);
+	m_decor_left_top->update_vertices(vertices + 0, 3, true);
+	m_decor_left_bottom->update_vertices(vertices + 3, 3, true);
+	m_decor_right_top->update_vertices(vertices + 6, 3, true);
+	m_decor_right_bottom->update_vertices(vertices + 9, 3, true);
 }
 
-void ArgumentReal::OnReloadSwapChain()
+void rhr::stack::argument::real::on_reload_swap_chain()
 {
-	m_Text->ReloadSwapChain();
+	m_text->reload_swap_chain();
 
-	m_DecorLeftTop->ReloadSwapChain();
-	m_DecorLeftBottom->ReloadSwapChain();
-	m_DecorRightTop->ReloadSwapChain();
-	m_DecorRightBottom->ReloadSwapChain();
+	m_decor_left_top->reload_swap_chain();
+	m_decor_left_bottom->reload_swap_chain();
+	m_decor_right_top->reload_swap_chain();
+	m_decor_right_bottom->reload_swap_chain();
 }
 
-void ArgumentReal::OnFrameUpdate(double deltaTime)
+void rhr::stack::argument::real::on_frame_update(f64 delta_time)
 {
 
 }
 
-void ArgumentReal::PostPositionUpdate()
+void rhr::stack::argument::real::post_position_update()
 {
-	m_Text->SetSuperOffset(m_Position + m_SuperOffset);
-	m_Text->SetPosition({ ARG_REAL_DECORE_WIDTH, 0 });
+	m_text->set_super_position(m_position + m_super_position);
+	m_text->set_position({ ARG_REAL_DECORE_WIDTH, 0 });
 
-	glm::vec<2, double> pos = m_Position + m_SuperOffset;
-	m_DecorLeftTop->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
-	m_DecorLeftBottom->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
-	m_DecorRightTop->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
-	m_DecorRightBottom->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
+	glm::vec<2, f64> pos = m_position + m_super_position;
+	m_decor_left_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_left_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_right_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_right_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
 
-	MarkDirty();
+	mark_dirty();
 }
 
-void ArgumentReal::OnSetData()
+void rhr::stack::argument::real::on_set_data()
 {
-	m_Text->SetText(m_Data);
+	m_text->set_text(m_data);
 }

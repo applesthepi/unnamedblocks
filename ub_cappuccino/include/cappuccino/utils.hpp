@@ -92,6 +92,7 @@ typedef unsigned long long usize;
 #endif
 
 // TODO: add vulkan functions
+// TODO: add rest of typdefs used in rhr::render::renderer
 // Maintain code style standards.
 namespace vk
 {

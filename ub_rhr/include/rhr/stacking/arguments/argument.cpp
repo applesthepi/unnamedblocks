@@ -1,88 +1,83 @@
-#include "Argument.hpp"
+#include "argument.hpp"
 
-#include "stacking/Block.hpp"
+#include "rhr/stacking/block.hpp"
 
-Argument::Argument(const Color& blockColor)
-	: m_Mode(BlockArgumentVariableMode::RAW)//, m_Next(false)
-	, m_BlockColor(blockColor)
+rhr::stack::argument::argument::argument(const cap::color& block_color)
+	: m_mode(BlockArgumentVariableMode::RAW)
+	, m_block_color(block_color)
 {
 	
 }
 
-void Argument::SetData(const std::string& data)
+void rhr::stack::argument::argument::set_data(const std::string& data)
 {
-	m_Data = data;
-	OnSetData();
+	m_data = data;
+	on_set_data();
 }
 
-const std::string& Argument::GetData()
+const std::string& rhr::stack::argument::argument::get_data()
 {
-	return m_Data;
+	return m_data;
 }
 
-void Argument::SetMode(BlockArgumentVariableMode mode)
+void rhr::stack::argument::argument::set_mode(BlockArgumentVariableMode mode)
 {
-	m_Mode = mode;
+	m_mode = mode;
 }
 
-BlockArgumentVariableMode Argument::GetMode()
+BlockArgumentVariableMode rhr::stack::argument::argument::get_mode()
 {
-	return m_Mode;
+	return m_mode;
 }
 
-// bool Argument::PullNext()
-// {
-// 	return m_Next;
-// }
-
-BlockArgumentType Argument::GetType()
+BlockArgumentType rhr::stack::argument::argument::get_type()
 {
 	return BlockArgumentType::TEXT;
 }
 
-uint32_t Argument::GetWidth()
+u32 rhr::stack::argument::argument::get_width()
 {
 	return 50;
 }
 
-bool Argument::HasData()
+bool rhr::stack::argument::argument::has_data()
 {
 	return false;
 }
 
-void Argument::Select()
+void rhr::stack::argument::argument::select()
 {
 
 }
 
-void Argument::UnSelect()
+void rhr::stack::argument::argument::unselect()
 {
 
 }
 
-int32_t Argument::Padding = Block::Padding * 4;
+i32 rhr::stack::argument::argument::padding = Block::padding * 4;
 
-void Argument::OnRender()
+void rhr::stack::argument::argument::on_render()
 {
 
 }
 
-void Argument::OnUpdateBuffers()
+void rhr::stack::argument::argument::on_update_buffers()
 {
 
 }
 
-void Argument::OnReloadSwapChain()
+void rhr::stack::argument::argument::on_reload_swap_chain()
 {
 
 }
 
-void Argument::OnFrameUpdate(double deltaTime)
+void rhr::stack::argument::argument::on_frame_update(f64 delta_time)
 {
 
 }
 
-void Argument::OnSetData()
+void rhr::stack::argument::argument::on_set_data()
 {
 
 }

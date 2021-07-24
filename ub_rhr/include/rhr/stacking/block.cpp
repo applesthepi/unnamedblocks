@@ -1,18 +1,18 @@
 #include "Block.hpp"
 
-#include "stacking/args/ArgumentText.hpp"
-#include "stacking/args/ArgumentReal.hpp"
-#include "stacking/args/ArgumentBoolean.hpp"
-#include "stacking/args/ArgumentString.hpp"
-#include "stacking/args/ArgumentAny.hpp"
-#include "registries/BlockRegistry.hpp"
-#include "ui/Renderer.hpp"
+#include "rhr/stacking/arguments/text.hpp"
+#include "rhr/stacking/arguments/real.hpp"
+#include "rhr/stacking/arguments/boolean.hpp"
+#include "rhr/stacking/arguments/string.hpp"
+#include "rhr/stacking/arguments/any.hpp"
+#include "rhr/registries/block.hpp"
+#include "rhr/rendering/renderer.hpp"
 
-Block::Block(const std::string& unlocalizedName)
-	: m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalizedName)->BlockModBlock)
+rhr::stack::block::block(const std::string& unlocalized_name)
+	: m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalized_name)->BlockModBlock)
 	, m_Background(std::make_shared<vui::RenderRectangle>())
 {
-	m_Size = { 100, Block::Height };
+	m_Size = { 100, rhr::stack::block::Height };
 	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory())->CatagoryModCatagory;
 	m_Background->SetWeak(m_Background);
 	m_Background->SetColor(m_modCategory->GetColor());
@@ -21,7 +21,7 @@ Block::Block(const std::string& unlocalizedName)
 	UpdateArguments();
 }
 
-//Block::Block(const Block& block)
+//rhr::stack::block::Block(const Block& block)
 //	:m_modBlock(block.m_modBlock)
 //{
 //	m_modCategory = block.m_modCategory;
@@ -32,23 +32,23 @@ Block::Block(const std::string& unlocalizedName)
 //	m_arguments.clear();
 //
 //	for (uint64_t i = 0; i < block.m_arguments.size(); i++)
-//		m_arguments.push_back(new Argument(*block.m_arguments[i]));
+//		m_arguments.push_back(new rhr::stack::argument::argument(*block.m_arguments[i]));
 //}
 
-Block::~Block()
+rhr::stack::block::~Block()
 {
 	//for (uint64_t i = 0; i < m_arguments.size(); i++)
 	//	delete m_arguments[i];
 }
 
-void Block::AddArgument(std::shared_ptr<Argument> argument)
+void rhr::stack::block::AddArgument(std::shared_ptr<rhr::stack::argument::argument> argument)
 {
 	m_arguments.push_back(argument);
 
 	UpdateWidth();
 }
 
-void Block::AddArguments(const std::vector<std::shared_ptr<Argument>>& arguments)
+void rhr::stack::block::AddArguments(const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& arguments)
 {
 	if (m_arguments.size() + arguments.size() >= m_arguments.capacity())
 		m_arguments.reserve((uint64_t)std::ceil((float)(m_arguments.size() + arguments.size()) * 1.5f + 10.0f));
@@ -59,37 +59,37 @@ void Block::AddArguments(const std::vector<std::shared_ptr<Argument>>& arguments
 	UpdateWidth();
 }
 
-const std::vector<std::shared_ptr<Argument>>& Block::GetArguments()
+const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::GetArguments()
 {
 	return m_arguments;
 }
 
-uint32_t Block::GetWidth()
+uint32_t rhr::stack::block::get_width()
 {
 	return m_width;
 }
 
-const ModBlock* Block::GetModBlock()
+const ModBlock* rhr::stack::block::GetModBlock()
 {
 	return m_modBlock;
 }
 
-const ModCatagory* Block::GetModCategory()
+const ModCatagory* rhr::stack::block::GetModCategory()
 {
 	return m_modCategory;
 }
 
-int16_t Block::Padding = 2;
-int16_t Block::Height = 20;
-int16_t Block::HeightContent = Height - (Padding * 2);
+i16 rhr::stack::block::Padding = 2;
+i16 rhr::stack::block::Height = 20;
+i16 rhr::stack::block::HeightContent = Height - (Padding * 2);
 
-void Block::FrameUpdate(double deltaTime)
+void rhr::stack::block::FrameUpdate(double deltaTime)
 {
 	for (auto& arg : m_arguments)
 		arg->FrameUpdate(deltaTime);
 }
 
-void Block::OnRender()
+void rhr::stack::block::OnRender()
 {
 	m_Background->Render();
 
@@ -97,7 +97,7 @@ void Block::OnRender()
 		arg->Render();
 }
 
-void Block::OnUpdateBuffers()
+void rhr::stack::block::OnUpdateBuffers()
 {
 	m_Background->UpdateBuffers();
 
@@ -105,7 +105,7 @@ void Block::OnUpdateBuffers()
 		arg->UpdateBuffers();
 }
 
-void Block::OnReloadSwapChain()
+void rhr::stack::block::OnReloadSwapChain()
 {
 	m_Background->ReloadSwapChain();
 
@@ -113,7 +113,7 @@ void Block::OnReloadSwapChain()
 		arg->ReloadSwapChain();
 }
 
-void Block::PostPositionUpdate()
+void rhr::stack::block::PostPositionUpdate()
 {
 	m_Background->SetSuperOffset(m_Position + m_SuperOffset);
 
@@ -121,7 +121,7 @@ void Block::PostPositionUpdate()
 		arg->SetSuperOffset(m_Position + m_SuperOffset);
 }
 
-void Block::UpdateArguments()
+void rhr::stack::block::UpdateArguments()
 {
 	//for (uint64_t i = 0; i < m_arguments.size(); i++)
 	//	delete m_arguments[i];
@@ -130,9 +130,9 @@ void Block::UpdateArguments()
 	m_arguments.reserve(m_modBlock->GetArguments().size());
 
 	std::vector<BlockArgumentInitializer> argumentInit = m_modBlock->GetArguments();
-	std::vector<std::shared_ptr<Argument>> args;
+	std::vector<std::shared_ptr<rhr::stack::argument::argument>> args;
 
-	uint32_t width = Block::Padding;
+	uint32_t width = rhr::stack::block::Padding;
 	Color argColor = Color().FromNormalized(m_modCategory->GetColor().GetNormalized() * 0.25f);
 
 	for (uint64_t i = 0; i < argumentInit.size(); i++)
@@ -143,11 +143,11 @@ void Block::UpdateArguments()
 			arg->SetWeak(arg);
 			args.push_back(arg);
 
-			arg->SetPosition({ width, Block::Padding });
+			arg->SetPosition({ width, rhr::stack::block::Padding });
 			arg->SetSuperOffset(m_Position + m_SuperOffset);
-			arg->SetData(argumentInit[i].DefaultValue);
+			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->GetWidth() + Block::Padding;
+			width += arg->get_width() + rhr::stack::block::Padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::REAL)
 		{
@@ -155,11 +155,11 @@ void Block::UpdateArguments()
 			arg->SetWeak(arg);
 			args.push_back(arg);
 
-			arg->SetPosition({ width, Block::Padding });
+			arg->SetPosition({ width, rhr::stack::block::Padding });
 			arg->SetSuperOffset(m_Position + m_SuperOffset);
-			arg->SetData(argumentInit[i].DefaultValue);
+			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->GetWidth() + Block::Padding;
+			width += arg->get_width() + rhr::stack::block::Padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::STRING)
 		{
@@ -167,11 +167,11 @@ void Block::UpdateArguments()
 			arg->SetWeak(arg);
 			args.push_back(arg);
 
-			arg->SetPosition({ width, Block::Padding });
+			arg->SetPosition({ width, rhr::stack::block::Padding });
 			arg->SetSuperOffset(m_Position + m_SuperOffset);
-			arg->SetData(argumentInit[i].DefaultValue);
+			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->GetWidth() + Block::Padding;
+			width += arg->get_width() + rhr::stack::block::Padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
 		{
@@ -179,11 +179,11 @@ void Block::UpdateArguments()
 			arg->SetWeak(arg);
 			args.push_back(arg);
 
-			arg->SetPosition({ width, Block::Padding });
+			arg->SetPosition({ width, rhr::stack::block::Padding });
 			arg->SetSuperOffset(m_Position + m_SuperOffset);
-			arg->SetData(argumentInit[i].DefaultValue);
+			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->GetWidth() + Block::Padding;
+			width += arg->get_width() + rhr::stack::block::Padding;
 		}
 		/*else if (argumentInit[i].Type == BlockArgumentType::ANY)
 		{
@@ -200,14 +200,14 @@ void Block::UpdateArguments()
 	AddArguments(args);
 }
 
-void Block::UpdateWidth()
+void rhr::stack::block::UpdateWidth()
 {
-	m_width = Block::Padding;
+	m_width = rhr::stack::block::Padding;
 
 	for (uint64_t i = 0; i < m_arguments.size(); i++)
 	{
-		m_width += m_arguments[i]->GetWidth();
-		m_width += Block::Padding;
+		m_width += m_arguments[i]->get_width();
+		m_width += rhr::stack::block::Padding;
 	}
 
 	m_Size.x = m_width;

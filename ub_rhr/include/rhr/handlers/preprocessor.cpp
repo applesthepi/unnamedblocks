@@ -98,15 +98,15 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 			for (uint64_t b = 0; b < stacks[i]->GetBlocks()[a]->GetArguments().size(); b++)
 			{
-				BlockArgumentType type = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetType();
+				BlockArgumentType type = stacks[i]->GetBlocks()[a]->GetArguments()[b]->get_type();
 
-				if (stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetMode() == BlockArgumentVariableMode::VAR)
+				if (stacks[i]->GetBlocks()[a]->GetArguments()[b]->get_mode() == BlockArgumentVariableMode::VAR)
 				{
 					std::string* dt = new std::string();
 
 					try
 					{
-						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData();
+						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->get_data();
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -134,7 +134,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 					
 					try
 					{
-						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData();
+						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->get_data();
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -152,7 +152,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 					try
 					{
-						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData() == "1";
+						*dt = stacks[i]->GetBlocks()[a]->GetArguments()[b]->get_data() == "1";
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -170,7 +170,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 					
 					try
 					{
-						*dt = std::stod(stacks[i]->GetBlocks()[a]->GetArguments()[b]->GetData());
+						*dt = std::stod(stacks[i]->GetBlocks()[a]->GetArguments()[b]->get_data());
 					}
 					catch (const std::invalid_argument&)
 					{

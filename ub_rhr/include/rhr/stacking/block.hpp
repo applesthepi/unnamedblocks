@@ -1,53 +1,81 @@
 #pragma once
 #include "config.h"
 
-#include "stacking/args/Argument.hpp"
-#include "ui/interfaces/IRenderable.hpp"
-#include "ui/interfaces/IUpdatable.hpp"
-#include "ui/interfaces/IPositionable.hpp"
-#include "ui/interfaces/ISizeable.hpp"
-#include "ui/RenderRectangle.hpp"
+#include "rhr/stacking/arguments/argument.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_updateable.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/objects/rectangle.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <Cappuccino/block/ModBlock.hpp>
-#include <Espresso/catagory/ModCatagory.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/mod_block/block.hpp>
+#include <espresso/mod/category.hpp>
 
-class Block : public IRenderable, public IUpdatable, public IPositionable<2, int32_t>, public ISizeable<int32_t>
+namespace rhr::stack
+{
+///
+class block : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>
 {
 public:
-	Block(const std::string& unlocalizedName);
-	//Block(const Block& block);
+	///
+	block(const std::string& unlocalized_name);
 
-	~Block();
+	///
+	const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& GetArguments();
 
-	// would not recommend calling these
+	///
+	u32 GetWidth();
 
-	void AddArgument(std::shared_ptr<Argument> argument);
-	void AddArguments(const std::vector<std::shared_ptr<Argument>>& arguments);
-
-	const std::vector<std::shared_ptr<Argument>>& GetArguments();
-	uint32_t GetWidth();
-
+	///
 	const ModBlock* GetModBlock();
+
+	///
 	const ModCatagory* GetModCategory();
+
+	///
 	void FrameUpdate(double deltaTime) override;
 
-	static int16_t Padding;
-	static int16_t Height;
-	static int16_t HeightContent;
+	///
+	static i16 Padding;
+
+	///
+	static i16 Height;
+
+	///
+	static i16 HeightContent;
 private:
+	///
 	void OnRender() override;
+
+	///
 	void OnUpdateBuffers() override;
+
+	///
 	void OnReloadSwapChain() override;
+
+	///
 	void PostPositionUpdate() override;
 
+	///
 	void UpdateArguments();
+
+	///
 	void UpdateWidth();
 
+	///
 	uint32_t m_width;
 
-	std::vector<std::shared_ptr<Argument>> m_arguments;
+	///
+	std::vector<std::shared_ptr<rhr::stack::argument::argument>> m_arguments;
+
+	///
 	const ModBlock* m_modBlock;
+
+	///
 	const ModCatagory* m_modCategory;
-	std::shared_ptr<vui::RenderRectangle> m_Background;
+
+	///
+	std::shared_ptr<rhr::render::object::rectangle> m_Background;
 };
+}

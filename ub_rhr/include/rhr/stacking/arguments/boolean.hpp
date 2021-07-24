@@ -1,55 +1,58 @@
 #pragma once
 #include "config.h"
 
-#include "stacking/args/Argument.hpp"
-#include "registries/UIRegistry.hpp"
-#include "ui/RenderText.hpp"
-#include "ui/RenderObject.hpp"
+#include "rhr/stacking/arguments/argument.hpp"
+#include "rhr/registries/char_texture.hpp"
+#include "rhr/rendering/objects/text.hpp"
+#include "rhr/rendering/objects/object.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <Espresso/InputHandler.hpp>
+#include <cappuccino/utils.hpp>
+#include <espresso/input_handler.hpp>
 
-class ArgumentBoolean : public Argument
+namespace rhr::stack::argument
+{
+class boolean : public rhr::stack::argument::argument
 {
 public:
-	ArgumentBoolean(const Color& color);
+	boolean(const cap::color& color);
 
 	/// How to interpret the data.
 	/// \return Type of argument.
-	BlockArgumentType GetType() override;
+	BlockArgumentType get_type() override;
 
 	/// Get width for surrounding argument spacing.
 	/// \return Width of argument.
-	uint32_t GetWidth() override;
+	u32 get_width() override;
 
 	/// Whether or not the argument contains data for storing.
 	/// \return Has data.
-	bool HasData() override;
+	bool has_data() override;
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
-	void OnRender() override;
+	void on_render() override;
 
 	/// Updates mesh on cpu side.
-	void OnUpdateBuffers() override;
+	void on_update_buffers() override;
 
 	/// Regenerates descriptor sets including uniforms.
-	void OnReloadSwapChain() override;
+	void on_reload_swap_chain() override;
 
 	/// Runs every frame before rendering.
 	/// \param Seconds since last frame.
-	void OnFrameUpdate(double deltaTime) override;
+	void on_frame_update(f64 delta_time) override;
 
-	void PostPositionUpdate() override;
+	void post_position_update() override;
 
 	/// Sets data. Data of the argument is stored as a string.
-	void OnSetData() override;
+	void on_set_data() override;
 
 	/// Left decoration.
-	std::shared_ptr<RenderObject> m_DecorLeft;
+	std::shared_ptr<rhr::render::object::object> m_decor_left;
 
 	/// Right decoration.
-	std::shared_ptr<RenderObject> m_DecorRight;
+	std::shared_ptr<rhr::render::object::object> m_decor_right;
 
 	/// Renderable text element.
-	std::shared_ptr<vui::RenderText> m_Text;
+	std::shared_ptr<rhr::render::object::text> m_text;
 };
+}
