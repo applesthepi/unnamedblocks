@@ -1,5 +1,5 @@
-#include "ProgressBar.hpp"
-
+#include "progress_bar.hpp"
+/*
 #include "ui/Renderer.hpp"
 
 vui::ProgressBar::ProgressBar(int32_t stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge, HorizontalAlignment horizontal, float horizontalSizeOverride)
@@ -220,4 +220,4 @@ void vui::ProgressBar::OnReloadSwapChain()
 //
 //	m_Dirty = true;
 //	Renderer::AddDirtyUI(m_Weak);
-//}
+//}*/

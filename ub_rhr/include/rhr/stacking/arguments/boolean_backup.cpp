@@ -15,7 +15,7 @@ ArgumentBoolean::ArgumentBoolean(const Color& color)
 	m_DecorRight->SetWeak(m_DecorRight);
 
 	m_Text->SetWeak(m_Text);
-	m_Text->SetDepth(Renderer::depth_argument_text);
+	m_Text->SetDepth(Renderer::DepthArgumentText);
 	m_Text->SetColorPrimary(Color::TextPrimaryColor);
 	m_Text->SetColorSecondary(color);
 	m_Text->SetPadding(Argument::Padding);
@@ -83,8 +83,8 @@ void ArgumentBoolean::PostPositionUpdate()
 	m_Text->SetPosition({ ARG_BOOL_DECORE_WIDTH, 0 });
 
 	glm::vec<2, double> pos = m_Position + m_SuperOffset;
-	m_DecorLeft->SetSuperOffset({ pos.x, pos.y, Renderer::DepthArgument });
-	m_DecorRight->SetSuperOffset({ pos.x, pos.y, Renderer::DepthArgument });
+	m_DecorLeft->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
+	m_DecorRight->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
 
 	MarkDirty();
 }

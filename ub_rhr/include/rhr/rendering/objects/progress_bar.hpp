@@ -1,6 +1,6 @@
 #pragma once
 #include "config.h"
-
+/*
 #include "ui/RenderObject.hpp"
 #include "ui/interfaces/IDiColorable.hpp"
 #include "ui/interfaces/IPositionable.hpp"
@@ -71,3 +71,4 @@ private:
 };
 
 }
+*/

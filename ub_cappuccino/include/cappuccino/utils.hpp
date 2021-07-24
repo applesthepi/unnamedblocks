@@ -77,6 +77,9 @@ typedef unsigned long long usize;
 #define long
 #define unsigned
 
+#define float;
+#define double;
+
 #define int8_t;
 #define int16_t;
 #define int32_t;
@@ -92,12 +95,63 @@ typedef unsigned long long usize;
 // Maintain code style standards.
 namespace vk
 {
-typedef VkBuffer buffer;
+typedef VkBool32 bool32;
+typedef VkClearValue clear_value;
+typedef VkApplicationInfo application_info;
+typedef VkInstanceCreateInfo instance_create_info;
+
+typedef VkDevice device;
+typedef VkDeviceQueueCreateInfo device_queue_create_info;
 typedef VkDeviceMemory device_memory;
+typedef VkDeviceCreateInfo device_create_info;
+typedef VkDeviceSize device_size;
+
+typedef VkBuffer buffer;
+typedef VkBufferImageCopy buffer_image_copy;
+typedef VkBufferCreateInfo buffer_create_info;
+typedef VkBufferCopy buffer_copy;
+
+typedef VkMemoryRequirements memory_requirements;
+typedef VkMemoryPropertyFlags memory_property_flags;
+typedef VkMemoryAllocateInfo memory_allocate_info;
+
 typedef VkImage image;
 typedef VkImageView image_view;
+typedef VkImageTiling image_tiling;
+typedef VkImageLayout image_layout;
+typedef VkImageUsageFlags image_usage_flags;
+typedef VkImageAspectFlags image_aspect_flags;
+typedef VkImageViewCreateInfo image_view_create_info;
+typedef VkImageMemoryBarrier image_memory_barrier;
+
+typedef VkCommandBuffer command_buffer;
+typedef VkCommandBufferAllocateInfo command_buffer_allocate_info;
+typedef VkCommandBufferBeginInfo command_buffer_begin_info;
+
+typedef VkFormat format;
+typedef VkFormatFeatureFlags format_feature_flags;
+
 typedef VkDescriptorSet descriptor_set;
-typedef VkDeviceSize device_size;
+
+typedef VkPhysicalDeviceMemoryProperties physical_device_memory_properties;
+typedef VkPhysicalDevice physical_device;
+typedef VkPhysicalDeviceFeatures physical_device_features;
+
+typedef VkSurfaceCapabilitiesKHR surface_capabilities_khr;
+typedef VkSurfaceFormatKHR surface_format_khr;
+typedef VkSurfaceKHR surface_khr;
+typedef VkPresentModeKHR present_mode_khr;
+
+typedef VkSwapchainCreateInfoKHR swap_chain_create_info_khr;
+
+typedef VkLayerProperties layer_properties;
+typedef VkSubmitInfo submit_info;
+typedef VkPipelineStageFlags pipeline_stage_flags;
+typedef VkExtensionProperties extension_properties;
+typedef VkQueueFamilyProperties queue_family_properties;
+typedef VkExtent2D extent_2d;
+typedef VkShaderModule shader_module;
+typedef VkRenderPassBeginInfo render_pass_begin_info;
 }
 
 // TODO: add FT functions

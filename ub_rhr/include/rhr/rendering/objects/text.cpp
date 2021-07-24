@@ -59,7 +59,7 @@ void rhr::render::object::text::update_size()
 	i32 running_x = m_padding;
 
 	for (usize i = 0; i < m_text.size(); i++)
-		running_x += rhr::registries::char_texture::GetCharTextureCoords(m_text[i]).Advance.x >> 6;
+		running_x += rhr::registries::char_texture::texture_map[rhr::registries::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
 	
 	m_size = { running_x + m_padding, Block::Height - (Block::Padding * 2) };
 }
@@ -70,11 +70,11 @@ void rhr::render::object::text::on_render()
 	{
 		if (m_enable_background)
 		{
-			vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UIPipeline);
+			vkCmdBindPipeline(Renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::ui_pipeline);
 			m_render_object_background->render();
 		}
 
-		vkCmdBindPipeline(Renderer::ActiveCommandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::UITexturePipeline);
+		vkCmdBindPipeline(Renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::ui_texture_pipeline);
 		m_render_object_text->render();
 	}
 }
@@ -112,13 +112,13 @@ void rhr::render::object::text::on_update_buffers()
 
 		for (size_t i = 0; i < m_text.size(); i++)
 		{
-			rhr::registries::char_texture::CharTextureData char_data = rhr::registries::char_texture::GetCharTextureCoords(m_text[i]);
-			float y_offset = static_cast<float>(Block::HeightContent) + (-1.0f * static_cast<float>(char_data.Offset.y)) - static_cast<float>(Block::Padding);
+			rhr::registries::char_texture::char_data char_data = rhr::registries::char_texture::texture_map[rhr::registries::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]];
+			float y_offset = static_cast<float>(Block::HeightContent) + (-1.0f * static_cast<float>(char_data.offset.y)) - static_cast<float>(Block::Padding);
 
-			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), y_offset, 0.0f }, primary_color, { char_data.First.x, char_data.First.y });
-			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), y_offset, 0.0f }, primary_color, { char_data.Second.x, char_data.First.y });
-			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.Offset.x + char_data.Size.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, primary_color, { char_data.Second.x, char_data.Second.y });
-			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x + char_data.Offset.x), static_cast<float>(char_data.Size.y) + y_offset, 0.0f }, primary_color, { char_data.First.x, char_data.Second.y });
+			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.offset.x), y_offset, 0.0f }, primary_color, { char_data.first.x, char_data.first.y });
+			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.offset.x + char_data.size.x), y_offset, 0.0f }, primary_color, { char_data.second.x, char_data.first.y });
+			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.offset.x + char_data.size.x), static_cast<float>(char_data.size.y) + y_offset, 0.0f }, primary_color, { char_data.second.x, char_data.second.y });
+			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x + char_data.offset.x), static_cast<float>(char_data.size.y) + y_offset, 0.0f }, primary_color, { char_data.first.x, char_data.second.y });
 
 			indices[i * 6 + 0] = i * 4 + 1;
 			indices[i * 6 + 1] = i * 4 + 0;
@@ -127,7 +127,7 @@ void rhr::render::object::text::on_update_buffers()
 			indices[i * 6 + 4] = i * 4 + 0;
 			indices[i * 6 + 5] = i * 4 + 3;
 
-			running_x += char_data.Advance.x >> 6;
+			running_x += char_data.advance.x >> 6;
 		}
 
 		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);

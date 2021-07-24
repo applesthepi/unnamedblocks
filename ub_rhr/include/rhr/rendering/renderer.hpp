@@ -1,12 +1,11 @@
 #pragma once
 #include "config.h"
 
-#include "ui/RenderLayer.hpp"
-#include "ui/RenderObject.hpp"
-#include "ui/interfaces/IRenderable.hpp"
+#include "rhr/rendering/layer.hpp"
+#include "rhr/rendering/objects/object.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <vulkan/vulkan.h>
+#include <cappuccino/utils.hpp>
 
 /*
 
@@ -17,105 +16,229 @@ To make a new pipeline:
 
 */
 
-class Renderer
+namespace rhr::render
+{
+///
+class renderer
 {
 public:
-	static void InitializeWindow();
-	static void Initialization();
-	static void AddDirty(std::weak_ptr<IRenderable> renderable);
-	static void ProcessDirty();
-	static void Render(size_t idx, double deltaTime, bool setup, TIME_POINT& diagnosticsTime);
-	static void CleanupSwapChain();
-	static void Cleanup();
-	static void RecreateSwapChain();
-	static void AddLayer(std::weak_ptr<vui::RenderLayer> layer);
-	static void ReloadLayerSwapChains();
+	///
+	static void initialize_window();
 
-	static VkInstance Instance;
-	static VkDebugUtilsMessengerEXT DebugMessenger;
-	static VkPhysicalDevice PhysicalDevice;
-	static VkDevice Device;
-	static VkQueue GraphicsQueue;
-	static VkQueue PresentQueue;
-	static VkSurfaceKHR Surface;
-	static VkSwapchainKHR SwapChain;
+	///
+	static void initialize();
 
-	static GLFWwindow* Window;
+	///
+	static void add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable);
 
-	static std::vector<VkImage> SwapChainImages;
-	static std::vector<VkImageView> SwapChainImageViews;
-	static VkFormat SwapChainImageFormat;
-	static VkExtent2D SwapChainExtent;
-	static std::vector<VkFramebuffer> SwapChainFramebuffers;
-	static std::vector<VkCommandBuffer> CommandBuffers;
-	static VkCommandBuffer ActiveCommandBuffer;
-	//static VkCommandBuffer AuxCommandBuffer;
-	//static std::vector<VkBuffer> AuxBufferMemory;
-	//static std::vector<VkDeviceMemory> AuxDeviceMemory;
-	//static std::shared_mutex AuxCommandBufferMutex;
-	static std::vector<VkDeviceQueueCreateInfo> QueueCreateInfos;
+	///
+	static void process_dirty();
 
-	static VkRenderPass RenderPass;
-	static VkDescriptorSetLayout DescriptorSetLayout;
-	static VkCommandPool CommandPool;
-	static VkDescriptorPool DescriptorPool;
-	static VkSampler TextureSampler;
-	static VkImageView DepthImageView;
+	///
+	static void render(usize idx, f64 deltaTime, bool setup, TIME_POINT& diagnosticsTime);
 
-	static std::vector<VkSemaphore> ImageAvailableSemaphores;
-	static std::vector<VkSemaphore> RenderFinishedSemaphores;
-	static std::vector<VkFence> InFlightFences;
-	static std::vector<VkFence> ImagesInFlight;
-	static bool FramebufferResized;
-	static glm::mat4 ViewMatrix;
-	static glm::mat4 ProjectionMatrix;
-	static glm::mat4 UIProjectionMatrix;
-	static bool VsyncEnabled;
-	static glm::vec<2, uint32_t> WindowSize;
-	static std::shared_ptr<vui::RenderFrame> DebugFrame;
+	///
+	static void clean_up_swap_chain();
 
-	static VkPipelineLayout BlocksPipelineLayout;
-	static VkPipelineLayout UIPipelineLayout;
-	static VkPipelineLayout UITexturePipelineLayout;
+	///
+	static void clean_up();
 
+	///
+	static void recreate_swap_chain();
+
+	///
+	static void add_layer(std::weak_ptr<rhr::render::layer> layer);
+
+	///
+	static void reload_layer_swap_chains();
+
+	///
+	static VkInstance instance;
+
+	///
+	static VkDebugUtilsMessengerEXT debug_messenger;
+
+	///
+	static VkPhysicalDevice physical_device;
+
+	///
+	static VkDevice device;
+
+	///
+	static VkQueue graphics_queue;
+
+	///
+	static VkQueue present_queue;
+	
+	///
+	static VkSurfaceKHR surface;
+
+	///
+	static VkSwapchainKHR swap_chain;
+
+	///
+	static GLFWwindow* window;
+
+	///
+	static std::vector<VkImage> swap_chain_images;
+
+	///
+	static std::vector<VkImageView> swap_chain_image_views;
+
+	///
+	static VkFormat swap_chain_image_format;
+
+	///
+	static VkExtent2D swap_chain_extent;
+
+	///
+	static std::vector<VkFramebuffer> swap_chain_frame_buffers;
+
+	///
+	static std::vector<VkCommandBuffer> command_buffers;
+
+	///
+	static VkCommandBuffer active_command_buffer;
+
+	///
+	static std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
+
+	///
+	static VkRenderPass render_pass;
+
+	///
+	static VkDescriptorSetLayout descriptor_set_layout;
+
+	///
+	static VkCommandPool command_pool;
+
+	///
+	static VkDescriptorPool descriptor_pool;
+
+	///
+	static VkSampler texture_sampler;
+
+	///
+	static VkImageView depth_image_view;
+
+	///
+	static std::vector<VkSemaphore> image_available_semaphores;
+
+	///
+	static std::vector<VkSemaphore> render_finished_semaphores;
+
+	///
+	static std::vector<VkFence> in_flight_fences;
+
+	///
+	static std::vector<VkFence> images_in_flight;
+
+	///
+	static bool frame_buffer_resized;
+
+	///
+	static glm::mat4 view_matrix;
+
+	///
+	static glm::mat4 projection_matrix;
+
+	///
+	static glm::mat4 ui_projection_matrix;
+
+	///
+	static bool vsync_enabled;
+
+	///
+	static glm::vec<2, u32> window_size;
+
+	///
+	static std::shared_ptr<rhr::render::frame> debug_frame;
+
+	///
+	static VkPipelineLayout blocks_pipeline_layout;
+	static VkPipelineLayout ui_pipeline_layout;
+	static VkPipelineLayout ui_texture_pipeline_layout;
+
+	///
 	//static VkPipeline BlocksPipeline;
-	static VkPipeline UIPipeline;
-	static VkPipeline UITexturePipeline;
+	static VkPipeline ui_pipeline;
+	static VkPipeline ui_texture_pipeline;
 
-	static uint32_t DepthBackground;
-	static uint32_t DepthPlane;
-	static uint32_t DepthCollection;
-	static uint32_t DepthStack;
-	static uint32_t DepthBlock;
-	static uint32_t DepthArgument;
-	static uint32_t DepthArgumentText;
+	///
+	static u32 depth_background;
+	static u32 depth_plane;
+	static u32 depth_collection;
+	static u32 depth_stack;
+	static u32 depth_block;
+	static u32 depth_argument;
+	static u32 depth_argument_text;
 
+	///
 #ifdef NDEBUG
-	static const bool EnableValidationLayers = false;
+	static const bool enable_validation_layers = false;
 #else
-	static const bool EnableValidationLayers = true;
+	static const bool enable_validation_layers = true;
 #endif
 
 private:
-	static void InitInstance();
-	static void InitDebug();
-	static void InitDevice();
-	static void InitLogicalDevice();
-	static void InitSwapChain();
-	static void InitImageViews();
-	static void InitRenderPass();
-	static void InitDescriptorSetLayout();
-	static void CreatePipeline(const std::string& shader, VkPipeline* pipeline, VkPipelineLayout* layout);
-	static void InitPipelines();
-	static void InitCommandPool();
-	static void InitFrameBuffers();
-	static void InitDepthResources();
-	static void InitTextureSampler();
-	static void InitDescriptorPool();
-	static void InitCommandBuffers();
-	static void InitSyncObjects();
+	///
+	static void init_instance();
 
-	static std::vector<std::weak_ptr<IRenderable>> m_DirtyRenderable;
-	static std::vector<std::weak_ptr<vui::RenderLayer>> m_Layers;
-	static std::shared_mutex m_DirtyMutex;
+	///
+	static void init_debug();
+
+	///
+	static void init_device();
+
+	///
+	static void init_logical_device();
+
+	///
+	static void init_swap_chain();
+
+	///
+	static void init_image_views();
+
+	///
+	static void init_render_pass();
+
+	///
+	static void init_descriptor_set_layout();
+
+	///
+	static void create_pipeline(const std::string& shader, VkPipeline* pipeline, VkPipelineLayout* layout);
+
+	///
+	static void init_pipelines();
+
+	///
+	static void init_command_pool();
+
+	///
+	static void init_frame_buffers();
+
+	///
+	static void init_depth_resources();
+
+	///
+	static void init_texture_sampler();
+
+	///
+	static void init_descriptor_pool();
+
+	///
+	static void init_command_buffers();
+
+	///
+	static void init_sync_objects();
+
+	///
+	static std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> m_dirty_renderable;
+
+	///
+	static std::vector<std::weak_ptr<rhr::render::layer>> m_layers;
+
+	///
+	static std::shared_mutex m_dirty_mutex;
 };
+}

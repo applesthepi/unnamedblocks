@@ -19,7 +19,7 @@ ArgumentReal::ArgumentReal(const Color& color)
 	m_DecorRightBottom->SetWeak(m_DecorRightBottom);
 
 	m_Text->SetWeak(m_Text);
-	m_Text->SetDepth(Renderer::DepthArgumentText);
+	m_Text->SetDepth(Renderer::depth_argument_text);
 	m_Text->SetColorPrimary(Color::TextPrimaryColor);
 	m_Text->SetColorSecondary(color);
 	m_Text->SetPadding(Argument::Padding);
@@ -102,10 +102,10 @@ void ArgumentReal::PostPositionUpdate()
 	m_Text->SetPosition({ ARG_REAL_DECORE_WIDTH, 0 });
 
 	glm::vec<2, double> pos = m_Position + m_SuperOffset;
-	m_DecorLeftTop->SetSuperOffset({ pos.x, pos.y, Renderer::DepthArgument });
-	m_DecorLeftBottom->SetSuperOffset({ pos.x, pos.y, Renderer::DepthArgument });
-	m_DecorRightTop->SetSuperOffset({ pos.x, pos.y, Renderer::DepthArgument });
-	m_DecorRightBottom->SetSuperOffset({ pos.x, pos.y, Renderer::DepthArgument });
+	m_DecorLeftTop->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
+	m_DecorLeftBottom->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
+	m_DecorRightTop->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
+	m_DecorRightBottom->SetSuperOffset({ pos.x, pos.y, Renderer::depth_argument });
 
 	MarkDirty();
 }

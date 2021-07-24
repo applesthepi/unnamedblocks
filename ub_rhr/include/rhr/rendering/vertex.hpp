@@ -3,36 +3,37 @@
 
 #include <Cappuccino/Utils.hpp>
 
-/*
-typedef glm::vec<3, float> VertexPosition;
-typedef glm::vec<2, float> VertexTextureCoords;
-
-class Vertex
+namespace rhr::render
+{
+///
+class vertex
 {
 public:
-	Vertex();
-	Vertex(VertexPosition position, VertexTextureCoords textureCoords, uint8_t texturePage);
+	///
+	vertex();
 
-	VertexPosition Position;
-	VertexTextureCoords TextureCoords;
-	uint8_t TexturePage;
+	///
+	vertex(glm::vec<3, f32> position, glm::vec<4, f32> color);
+
+	///
+	vertex(glm::vec<3, f32> position, glm::vec<2, f32> texture_coordinate);
+
+	///
+	vertex(glm::vec<3, f32> position, glm::vec<4, f32> color, glm::vec<2, f32> texture_coordinate);
+
+	///
+	glm::vec<3, f32> position;
+
+	///
+	glm::vec<4, f32> color;
+
+	///
+	glm::vec<2, f32> texture_coordinate;
+
+	///
+	static VkVertexInputBindingDescription get_binding_description();
+
+	///
+	static std::array<VkVertexInputAttributeDescription, 3> get_attribute_description();
 };
-*/
-
-typedef glm::vec<3, float> VertexPosition;
-typedef glm::vec<2, float> VertexTextureCoords;
-
-class Vertex
-{
-public:
-	Vertex();
-	Vertex(VertexPosition position, VertexTextureCoords textureCoords, uint8_t texturePage);
-	Vertex(VertexPosition position, glm::vec3 color, VertexTextureCoords textureCoords);
-
-	VertexPosition Position;
-	glm::vec3 Color;
-	VertexTextureCoords TextureCoord;
-
-	static VkVertexInputBindingDescription GetBindingDescription();
-	static std::array<VkVertexInputAttributeDescription, 3> GetAttributeDescriptions();
-};
+}

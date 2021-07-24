@@ -1,21 +1,22 @@
 #pragma once
+#include "config.h"
 
-namespace vui
-{
+#include <cappuccino/utils.hpp>
 
-enum class LocalCardinal
+namespace rhr::render::cardinal
 {
-    UP, DOWN, LEFT, RIGHT
+enum class local
+{
+	UP, DOWN, LEFT, RIGHT
 };
 
-enum class GlobalCardinal
+enum class global
 {
-    NORTH, SOUTH, WEST, EAST
+	NORTH, SOUTH, WEST, EAST
 };
 
-enum class PlaneSpace
+enum class plane
 {
-    HORIZONTAL, VERTICAL
+	HORIZONTAL, VERTICAL
 };
-
 }

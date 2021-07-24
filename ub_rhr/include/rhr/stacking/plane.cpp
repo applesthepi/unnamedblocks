@@ -59,7 +59,7 @@ Plane::Plane(bool toolbar)
 	m_Background->SetPosition(m_Position + m_SuperOffset);
 	m_Background->SetSize(m_Size);
 	m_Background->SetColor(Color().FromU8({ 0, 0, 0, 255 }));
-	m_Background->SetDepth(Renderer::DepthPlane);
+	m_Background->SetDepth(Renderer::depth_plane);
 
 	//m_shader.loadFromFile("res/shaders/blocks.vert", "res/shaders/blocks.frag");
 

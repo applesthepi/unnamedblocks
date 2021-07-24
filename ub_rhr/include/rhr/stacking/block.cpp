@@ -16,7 +16,7 @@ Block::Block(const std::string& unlocalizedName)
 	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory())->CatagoryModCatagory;
 	m_Background->SetWeak(m_Background);
 	m_Background->SetColor(m_modCategory->GetColor());
-	m_Background->SetDepth(Renderer::DepthBlock);
+	m_Background->SetDepth(Renderer::depth_block);
 
 	UpdateArguments();
 }

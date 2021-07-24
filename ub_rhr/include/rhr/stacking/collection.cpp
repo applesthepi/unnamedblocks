@@ -8,7 +8,7 @@ Collection::Collection()
 	, m_DisplayVanity(true)
 {
 	m_Background->SetWeak(m_Background);
-	m_Background->SetDepth(Renderer::DepthCollection);
+	m_Background->SetDepth(Renderer::depth_collection);
 	m_stacks.reserve(5);
 }
 

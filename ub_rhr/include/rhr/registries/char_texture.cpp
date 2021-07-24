@@ -160,7 +160,7 @@ void rhr::registries::char_texture::process_font(const std::string& font_path, t
 	std::cout << std::flush;
 #endif
 
-	font_texture_data.image = RenderTools::CreateTextureImage({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &font_texture_data.memory);
+	font_texture_data.image = RenderTools::create_texture_image({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &font_texture_data.memory);
 	texture_map[type] = font_texture_data;
 }
 

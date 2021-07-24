@@ -1,26 +1,26 @@
-#include "RenderLayer.hpp"
+#include "layer.hpp"
 
-vui::RenderLayer::RenderLayer()
-	: IEnableable(true)
+rhr::render::layer::layer()
+	: rhr::render::interfaces::i_enableable(true)
 {
-	m_Frames.reserve(16);
+	m_frames.reserve(16);
 }
 
-void vui::RenderLayer::AddFrame(std::weak_ptr<RenderFrame>&& frame)
+void rhr::render::layer::add_frame(std::weak_ptr<rhr::render::frame>&& frame)
 {
-	std::unique_lock lock(m_Mutex);
-	m_Frames.push_back(frame);
+	std::unique_lock lock(m_mutex);
+	m_frames.push_back(std::move(frame));
 }
 
-void vui::RenderLayer::Render()
+void rhr::render::layer::render()
 {
-	if (!m_Enabled)
+	if (!m_enabled)
 		return;
 
-	std::unique_lock lock(m_Mutex);
+	std::unique_lock lock(m_mutex);
 	bool erased = false;
 
-	for (size_t i = 0; i < m_Frames.size(); i++)
+	for (usize i = 0; i < m_frames.size(); i++)
 	{
 		if (erased)
 		{
@@ -28,22 +28,22 @@ void vui::RenderLayer::Render()
 			i--;
 		}
 
-		if (auto f = m_Frames[i].lock())
-			f->Render();
+		if (auto f = m_frames[i].lock())
+			f->render();
 		else
 		{
-			m_Frames.erase(m_Frames.begin() + i);
+			m_frames.erase(m_frames.begin() + i);
 			erased = true;
 		}
 	}
 }
 
-void vui::RenderLayer::ReloadSwapChain()
+void rhr::render::layer::reload_swap_chain()
 {
-	std::unique_lock lock(m_Mutex);
+	std::unique_lock lock(m_mutex);
 	bool erased = false;
 
-	for (size_t i = 0; i < m_Frames.size(); i++)
+	for (usize i = 0; i < m_frames.size(); i++)
 	{
 		if (erased)
 		{
@@ -51,11 +51,11 @@ void vui::RenderLayer::ReloadSwapChain()
 			i--;
 		}
 
-		if (auto f = m_Frames[i].lock())
-			f->ReloadSwapChain();
+		if (auto f = m_frames[i].lock())
+			f->reload_swap_chain();
 		else
 		{
-			m_Frames.erase(m_Frames.begin() + i);
+			m_frames.erase(m_frames.begin() + i);
 			erased = true;
 		}
 	}

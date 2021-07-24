@@ -1,27 +1,33 @@
 #pragma once
 #include "config.h"
 
-#include "ui/RenderFrame.hpp"
-#include "ui/interfaces/IEnableable.hpp"
+#include "rhr/rendering/frame.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-namespace vui
+namespace rhr::render
 {
+///
+class layer : public rhr::render::interfaces::i_enableable
+{
+public:
+	///
+	layer();
 
-	class RenderLayer : public IEnableable
-	{
-	public:
-		RenderLayer();
+	///
+	void add_frame(std::weak_ptr<rhr::render::frame>&& frame);
 
-		void AddFrame(std::weak_ptr<RenderFrame>&& frame);
+	///
+	void render();
 
-		void Render();
-		void ReloadSwapChain();
+	///
+	void reload_swap_chain();
+private:
+	///
+	std::shared_mutex m_mutex;
 
-	private:
-		std::shared_mutex m_Mutex;
-		std::vector<std::weak_ptr<RenderFrame>> m_Frames;
-	};
-
+	///
+	std::vector<std::weak_ptr<rhr::render::frame>> m_frames;
+};
 }
