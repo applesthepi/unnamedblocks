@@ -46,9 +46,9 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	std::vector<std::shared_ptr<Stack>> stacks;
 
-	for (uint64_t i = 0; i < PreProcessor::GetPlaneCopy()->GetCollections().size(); i++)
+	for (uint64_t i = 0; i < PreProcessor::GetPlaneCopy()->get_collections().size(); i++)
 	{
-		const std::vector<std::shared_ptr<Stack>>& colStacks = PreProcessor::GetPlaneCopy()->GetCollections()[i]->get_stacks();
+		const std::vector<std::shared_ptr<Stack>>& colStacks = PreProcessor::GetPlaneCopy()->get_collections()[i]->get_stacks();
 
 		for (uint64_t a = 0; a < colStacks.size(); a++)
 			stacks.push_back(colStacks[a]);

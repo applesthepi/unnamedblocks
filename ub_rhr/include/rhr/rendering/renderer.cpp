@@ -188,8 +188,8 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 
 	// Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
 	// diagnosticsTime = std::chrono::high_resolution_clock::now();
-	Plane::PrimaryPlane->frame_update(deltaTime);
-	Plane::ToolbarPlane->frame_update(deltaTime);
+	Plane::primary_plane->frame_update(deltaTime);
+	Plane::toolbar_plane->frame_update(deltaTime);
 
 	process_dirty();
 	// Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
@@ -205,8 +205,8 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 	// 	Client::Instance->GetDiagnostics()->UpdateProgressBars();
 	// }
 
-	Plane::PrimaryPlane->render();
-	Plane::ToolbarPlane->render();
+	Plane::primary_plane->render();
+	Plane::toolbar_plane->render();
 
 
 	bool erased = false;

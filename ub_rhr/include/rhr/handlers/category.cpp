@@ -690,10 +690,10 @@ void CatagoryHandler::SelectCatagory(ActiveCatagory activeCatagory)
 		return;
 	}
 
-	Plane::ToolbarPlane->DeleteContents();
+	Plane::toolbar_plane->delete_contents();
 
 	for (auto collection : m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategoryCollections[m_ActiveCatagory.ActiveModGroupCatagory])
-		Plane::ToolbarPlane->AddCollection(collection, false);
+		Plane::toolbar_plane->add_collection(collection, false);
 }
 
 std::vector<CatagoryHandler::ModGroup> CatagoryHandler::m_ModGroups;
