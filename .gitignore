@@ -1,7 +1,6 @@
 Espresso/INT
 RHR/INT
 VanillaMods/*
-mods
 !/VanillaMods/ub-ModVin
 !/VanillaMods/CMakeLists.txt
 **.o
@@ -26,3 +25,7 @@ build
 !cmake/**
 .clangd
 compile_commands.json
+\#*\#
+*.user
+html
+latex
