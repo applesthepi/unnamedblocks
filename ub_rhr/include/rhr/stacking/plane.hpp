@@ -30,15 +30,19 @@
 //	sf::RenderWindow* m_window;
 //};
 
-class Plane : public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable
+namespace rhr::stack
+{
+///
+class plane : public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable
 {
 public:
-	//Plane(bool toolbar, const Plane& plane);
-	Plane(bool toolbar);
+	///
+	plane(bool toolbar);
 
-	~Plane();
-	
-	// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
+	///
+	~plane();
+
+	/// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
 	void AddCollection(std::shared_ptr<rhr::stack::collection>& collection, bool displayCollectionVanity);
 	const std::vector<std::shared_ptr<rhr::stack::collection>>& GetCollections();
 
@@ -47,7 +51,7 @@ public:
 
 	//void TranslateInnerPosition(const glm::vec<2, i32>& position);
 	//void SetInnerPosition(glm::vec<2, i32> position);
-	
+
 	//glm::vec<2, i32> GetInnerPosition();
 	void DeleteContents();
 
@@ -68,15 +72,15 @@ public:
 
 	static std::shared_ptr<Plane> PrimaryPlane;
 	static std::shared_ptr<Plane> ToolbarPlane;
-//protected:
-	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-	void FrameUpdate(f64 deltaTime) override;
+	//protected:
+		//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	void frame_update(f64 deltaTime) override;
 private:
-	void OnRender() override;
-	void OnUpdateBuffers() override;
-	void OnReloadSwapChain() override;
-	void PostPositionUpdate() override;
-	void PostSizeUpdate() override;
+	void on_render() override;
+	void on_update_buffers() override;
+	void on_reload_swap_chain() override;
+	void post_position_update() override;
+	void post_size_update() override;
 
 	//void Setup(bool toolbar);
 	//void UpdateCollectionVAO(std::vector<sf::Vertex>* vao, sf::Vector2u size);
@@ -171,7 +175,7 @@ private:
 
 	bool m_Toolbar;
 	vui::RenderText m_InnerText;
-	std::shared_ptr<vui::RenderRectangle> m_Background;
+	std::shared_ptr<vui::RenderRectangle> m_background;
 
 	//const sf::Texture& m_fontTexture;
 	//sf::Image m_fontEditedImage;
@@ -181,3 +185,4 @@ private:
 	//sf::Image m_fontBoldEditedImage;
 	//sf::Texture m_fontBoldEditedTexture;
 };
+}

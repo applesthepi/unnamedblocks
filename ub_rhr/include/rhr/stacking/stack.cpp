@@ -1,134 +1,117 @@
-#include "Stack.hpp"
+#include "stack.hpp"
 
-Stack::Stack()
+rhr::stack::stack::stack()
 {
 	m_blocks.reserve(10);
 }
 
-//Stack::Stack(const Stack& stack)
-//{
-//	for (uint64_t i = 0; i < m_blocks.size(); i++)
-//		delete m_blocks[i];
-//
-//	m_blocks.clear();
-//
-//	for (uint64_t i = 0; i < stack.m_blocks.size(); i++)
-//		m_blocks.push_back(new Block(*stack.m_blocks[i]));
-//}
-
-Stack::~Stack()
+void rhr::stack::stack::add_block(std::shared_ptr<rhr::stack::block> block)
 {
-	//for (uint64_t i = 0; i < m_blocks.size(); i++)
-	//	delete m_blocks[i];
-}
-
-void Stack::AddBlock(std::shared_ptr<Block> block)
-{
-	block->SetPosition({ 0, Block::Height * m_blocks.size() });
-	block->SetSuperOffset(m_Position + m_SuperOffset);
+	block->set_position({ 0, rhr::stack::block::height * m_blocks.size() });
+	block->set_super_position(m_position + m_super_position);
 	m_blocks.push_back(block);
 
-	UpdateSize();
+	update_size();
 }
 
-void Stack::AddBlocks(const std::vector<std::shared_ptr<Block>>& blocks)
+void rhr::stack::stack::add_blocks(const std::vector<std::shared_ptr<rhr::stack::block>>& blocks)
 {
 	if (m_blocks.size() + blocks.size() >= m_blocks.capacity())
-		m_blocks.reserve((uint64_t)std::ceil((float)(m_blocks.size() + blocks.size()) * 1.5f + 10.0f));
+		m_blocks.reserve((u64)std::ceil((f32)(m_blocks.size() + blocks.size()) * 1.5f + 10.0f));
 
-	for (uint64_t i = 0; i < blocks.size(); i++)
+	for (u64 i = 0; i < blocks.size(); i++)
 	{
-		blocks[i]->SetPosition({ 0, Block::Height * (m_blocks.size() + i) });
-		blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+		blocks[i]->set_position({ 0, rhr::stack::block::height * (m_blocks.size() + i) });
+		blocks[i]->set_super_position(m_position + m_super_position);
 		m_blocks.push_back(blocks[i]);
 	}
 
-	UpdateSize();
+	update_size();
 }
 
-void Stack::InsertBlocks(const std::vector<std::shared_ptr<Block>>& blocks, uint64_t idx)
+void rhr::stack::stack::insert_blocks(const std::vector<std::shared_ptr<rhr::stack::block>>& blocks, u64 idx)
 {
-	for (size_t i = 0; i < blocks.size(); i++)
+	for (usize i = 0; i < blocks.size(); i++)
 	{
-		blocks[i]->SetPosition({ 0, Block::Height * (idx + i) });
-		blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+		blocks[i]->set_position({ 0, rhr::stack::block::height * (idx + i) });
+		blocks[i]->set_super_position(m_position + m_super_position);
 		m_blocks.insert(m_blocks.begin() + idx + i, blocks[i]);
 	}
 
-	for (size_t i = idx + blocks.size(); i < m_blocks.size(); i++)
+	for (usize i = idx + blocks.size(); i < m_blocks.size(); i++)
 	{
-		m_blocks[i]->SetPosition({ 0, Block::Height * i });
-		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+		m_blocks[i]->set_position({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_super_position(m_position + m_super_position);
 	}
 
-	UpdateSize();
+	update_size();
 }
 
-uint64_t Stack::GetWidestBlock()
+u64 rhr::stack::stack::get_widest_block()
 {
-	uint64_t widest = 0;
+	u64 widest = 0;
 
-	for (uint64_t i = 0; i < m_blocks.size(); i++)
+	for (u64 i = 0; i < m_blocks.size(); i++)
 	{
-		if (m_blocks[i]->GetWidth() > widest)
-			widest = m_blocks[i]->GetWidth();
+		if (m_blocks[i]->get_width() > widest)
+			widest = m_blocks[i]->get_width();
 	}
 
 	return widest;
 }
 
-void Stack::RemoveBlock(uint64_t idx)
+void rhr::stack::stack::remove_block(u64 idx)
 {
 	m_blocks.erase(m_blocks.begin() + idx);
 
-	for (size_t i = 0; i < m_blocks.size(); i++)
+	for (usize i = 0; i < m_blocks.size(); i++)
 	{
-		m_blocks[i]->SetPosition({ 0, Block::Height * i });
-		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+		m_blocks[i]->set_position({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_super_position(m_position + m_super_position);
 	}
 
-	UpdateSize();
+	update_size();
 }
 
-void Stack::UpdateSize()
+void rhr::stack::stack::update_size()
 {
-	SetSize({ GetWidestBlock(), m_blocks.size() * Block::Height });
+	set_size({ get_widest_block(), m_blocks.size() * rhr::stack::block::height });
 }
 
-const std::vector<std::shared_ptr<Block>>& Stack::GetBlocks()
+const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks()
 {
 	return m_blocks;
 }
 
-void Stack::FrameUpdate(double deltaTime)
+void rhr::stack::stack::frame_update(f64 delta_time)
 {
 	for (auto& block : m_blocks)
-		block->FrameUpdate(deltaTime);
+		block->frame_update(delta_time);
 }
 
-void Stack::OnRender()
+void rhr::stack::stack::on_render()
 {
 	for (auto& block : m_blocks)
-		block->Render();
+		block->render();
 }
 
-void Stack::OnUpdateBuffers()
+void rhr::stack::stack::on_update_buffers()
 {
 	for (auto& block : m_blocks)
-		block->UpdateBuffers();
+		block->update_buffers();
 }
 
-void Stack::OnReloadSwapChain()
+void rhr::stack::stack::on_reload_swap_chain()
 {
 	for (auto& block : m_blocks)
-		block->ReloadSwapChain();
+		block->reload_swap_chain();
 }
 
-void Stack::PostPositionUpdate()
+void rhr::stack::stack::post_position_update()
 {
-	for (size_t i = 0; i < m_blocks.size(); i++)
+	for (usize i = 0; i < m_blocks.size(); i++)
 	{
-		m_blocks[i]->SetPosition({ 0, Block::Height * i });
-		m_blocks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+		m_blocks[i]->set_position({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_super_position(m_position + m_super_position);
 	}
 }

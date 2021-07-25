@@ -9,181 +9,139 @@
 #include "rhr/rendering/renderer.hpp"
 
 rhr::stack::block::block(const std::string& unlocalized_name)
-	: m_modBlock(BlockRegistry::GetRegistry().GetBlock(unlocalized_name)->BlockModBlock)
-	, m_Background(std::make_shared<vui::RenderRectangle>())
+	: m_mod_block(BlockRegistry::GetRegistry().GetBlock(unlocalized_name)->BlockModBlock)
+	, m_background(std::make_shared<rhr::render::object::rectangle>())
 {
-	m_Size = { 100, rhr::stack::block::Height };
-	m_modCategory = BlockRegistry::GetRegistry().GetCategory(m_modBlock->GetCategory())->CatagoryModCatagory;
-	m_Background->SetWeak(m_Background);
-	m_Background->SetColor(m_modCategory->GetColor());
-	m_Background->SetDepth(Renderer::depth_block);
+	m_size = { 100, rhr::stack::block::height };
+	m_mod_category = BlockRegistry::GetRegistry().GetCategory(m_mod_block->GetCategory())->CatagoryModCatagory;
+	m_background->set_weak(m_background);
+	m_background->set_color(m_mod_category->GetColor());
+	m_background->set_depth(rhr::render::renderer::depth_block);
 
-	UpdateArguments();
+	update_arguments();
 }
 
-//rhr::stack::block::Block(const Block& block)
-//	:m_modBlock(block.m_modBlock)
-//{
-//	m_modCategory = block.m_modCategory;
-//
-//	//for (uint64_t i = 0; i < m_arguments.size(); i++)
-//	//	delete m_arguments[i];
-//
-//	m_arguments.clear();
-//
-//	for (uint64_t i = 0; i < block.m_arguments.size(); i++)
-//		m_arguments.push_back(new rhr::stack::argument::argument(*block.m_arguments[i]));
-//}
-
-rhr::stack::block::~Block()
-{
-	//for (uint64_t i = 0; i < m_arguments.size(); i++)
-	//	delete m_arguments[i];
-}
-
-void rhr::stack::block::AddArgument(std::shared_ptr<rhr::stack::argument::argument> argument)
-{
-	m_arguments.push_back(argument);
-
-	UpdateWidth();
-}
-
-void rhr::stack::block::AddArguments(const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& arguments)
-{
-	if (m_arguments.size() + arguments.size() >= m_arguments.capacity())
-		m_arguments.reserve((uint64_t)std::ceil((float)(m_arguments.size() + arguments.size()) * 1.5f + 10.0f));
-
-	for (uint64_t i = 0; i < arguments.size(); i++)
-		m_arguments.push_back(arguments[i]);
-
-	UpdateWidth();
-}
-
-const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::GetArguments()
+const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::get_arguments()
 {
 	return m_arguments;
 }
 
-uint32_t rhr::stack::block::get_width()
+u32 rhr::stack::block::get_width()
 {
 	return m_width;
 }
 
-const ModBlock* rhr::stack::block::GetModBlock()
+const ModBlock* rhr::stack::block::get_mod_block()
 {
-	return m_modBlock;
+	return m_mod_block;
 }
 
-const ModCatagory* rhr::stack::block::GetModCategory()
+const ModCatagory* rhr::stack::block::get_mod_category()
 {
-	return m_modCategory;
+	return m_mod_category;
 }
 
-i16 rhr::stack::block::Padding = 2;
-i16 rhr::stack::block::Height = 20;
-i16 rhr::stack::block::HeightContent = Height - (Padding * 2);
+i16 rhr::stack::block::padding = 2;
+i16 rhr::stack::block::height = 20;
+i16 rhr::stack::block::height_content = height - (padding * 2);
 
-void rhr::stack::block::FrameUpdate(double deltaTime)
+void rhr::stack::block::frame_update(f64 delta_time)
 {
 	for (auto& arg : m_arguments)
-		arg->FrameUpdate(deltaTime);
+		arg->frame_update(delta_time);
 }
 
-void rhr::stack::block::OnRender()
+void rhr::stack::block::on_render()
 {
-	m_Background->Render();
+	m_background->render();
 
 	for (auto& arg : m_arguments)
-		arg->Render();
+		arg->render();
 }
 
-void rhr::stack::block::OnUpdateBuffers()
+void rhr::stack::block::on_update_buffers()
 {
-	m_Background->UpdateBuffers();
+	m_background->update_buffers();
 
 	for (auto& arg : m_arguments)
-		arg->UpdateBuffers();
+		arg->update_buffers();
 }
 
-void rhr::stack::block::OnReloadSwapChain()
+void rhr::stack::block::on_reload_swap_chain()
 {
-	m_Background->ReloadSwapChain();
+	m_background->reload_swap_chain();
 
 	for (auto& arg : m_arguments)
-		arg->ReloadSwapChain();
+		arg->reload_swap_chain();
 }
 
-void rhr::stack::block::PostPositionUpdate()
+void rhr::stack::block::post_position_update()
 {
-	m_Background->SetSuperOffset(m_Position + m_SuperOffset);
+	m_background->set_super_position(m_position + m_super_position);
 
 	for (auto& arg : m_arguments)
-		arg->SetSuperOffset(m_Position + m_SuperOffset);
+		arg->set_super_position(m_position + m_super_position);
 }
 
-void rhr::stack::block::UpdateArguments()
+void rhr::stack::block::update_arguments()
 {
-	//for (uint64_t i = 0; i < m_arguments.size(); i++)
-	//	delete m_arguments[i];
-
 	m_arguments.clear();
-	m_arguments.reserve(m_modBlock->GetArguments().size());
+	m_arguments.reserve(m_mod_block->GetArguments().size());
 
-	std::vector<BlockArgumentInitializer> argumentInit = m_modBlock->GetArguments();
-	std::vector<std::shared_ptr<rhr::stack::argument::argument>> args;
+	std::vector<BlockArgumentInitializer> argumentInit = m_mod_block->GetArguments();
 
-	uint32_t width = rhr::stack::block::Padding;
-	Color argColor = Color().FromNormalized(m_modCategory->GetColor().GetNormalized() * 0.25f);
+	u32 width = rhr::stack::block::padding;
+	cap::color argColor = cap::color().from_normalized(m_mod_category->GetColor().get_normalized() * 0.25f);
 
-	for (uint64_t i = 0; i < argumentInit.size(); i++)
+	for (usize i = 0; i < argumentInit.size(); i++)
 	{
 		if (argumentInit[i].Type == BlockArgumentType::TEXT)
 		{
-			std::shared_ptr<ArgumentText> arg = std::make_shared<ArgumentText>(argColor);
-			arg->SetWeak(arg);
-			args.push_back(arg);
+			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor);
+			arg->set_weak(arg);
+			m_arguments.push_back(arg);
 
-			arg->SetPosition({ width, rhr::stack::block::Padding });
-			arg->SetSuperOffset(m_Position + m_SuperOffset);
+			arg->set_position({ width, rhr::stack::block::padding });
+			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->get_width() + rhr::stack::block::Padding;
+			width += arg->get_width() + rhr::stack::block::padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::REAL)
 		{
-			std::shared_ptr<ArgumentReal> arg = std::make_shared<ArgumentReal>(argColor);
-			arg->SetWeak(arg);
-			args.push_back(arg);
+			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor);
+			arg->set_weak(arg);
+			m_arguments.push_back(arg);
 
-			arg->SetPosition({ width, rhr::stack::block::Padding });
-			arg->SetSuperOffset(m_Position + m_SuperOffset);
+			arg->set_position({ width, rhr::stack::block::padding });
+			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->get_width() + rhr::stack::block::Padding;
+			width += arg->get_width() + rhr::stack::block::padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::STRING)
 		{
-			std::shared_ptr<ArgumentString> arg = std::make_shared<ArgumentString>(argColor);
-			arg->SetWeak(arg);
-			args.push_back(arg);
+			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor);
+			arg->set_weak(arg);
+			m_arguments.push_back(arg);
 
-			arg->SetPosition({ width, rhr::stack::block::Padding });
-			arg->SetSuperOffset(m_Position + m_SuperOffset);
+			arg->set_position({ width, rhr::stack::block::padding });
+			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->get_width() + rhr::stack::block::Padding;
+			width += arg->get_width() + rhr::stack::block::padding;
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
 		{
-			std::shared_ptr<ArgumentBoolean> arg = std::make_shared<ArgumentBoolean>(argColor);
-			arg->SetWeak(arg);
-			args.push_back(arg);
+			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor);
+			arg->set_weak(arg);
+			m_arguments.push_back(arg);
 
-			arg->SetPosition({ width, rhr::stack::block::Padding });
-			arg->SetSuperOffset(m_Position + m_SuperOffset);
+			arg->set_position({ width, rhr::stack::block::padding });
+			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
 
-			width += arg->get_width() + rhr::stack::block::Padding;
+			width += arg->get_width() + rhr::stack::block::padding;
 		}
 		/*else if (argumentInit[i].Type == BlockArgumentType::ANY)
 		{
@@ -196,21 +154,19 @@ void rhr::stack::block::UpdateArguments()
 			width += args.back()->GetWidth();
 		}*/
 	}
-
-	AddArguments(args);
 }
 
-void rhr::stack::block::UpdateWidth()
+void rhr::stack::block::update_width()
 {
-	m_width = rhr::stack::block::Padding;
+	m_width = rhr::stack::block::padding;
 
-	for (uint64_t i = 0; i < m_arguments.size(); i++)
+	for (usize i = 0; i < m_arguments.size(); i++)
 	{
 		m_width += m_arguments[i]->get_width();
-		m_width += rhr::stack::block::Padding;
+		m_width += rhr::stack::block::padding;
 	}
 
-	m_Size.x = m_width;
+	m_size.x = m_width;
 
-	m_Background->SetSize(m_Size);
+	m_background->set_size(m_size);
 }

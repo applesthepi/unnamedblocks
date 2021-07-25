@@ -22,60 +22,60 @@ public:
 	block(const std::string& unlocalized_name);
 
 	///
-	const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& GetArguments();
+	const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& get_arguments();
 
 	///
-	u32 GetWidth();
+	u32 get_width();
 
 	///
-	const ModBlock* GetModBlock();
+	const ModBlock* get_mod_block();
 
 	///
-	const ModCatagory* GetModCategory();
+	const ModCatagory* get_mod_category();
 
 	///
-	void FrameUpdate(double deltaTime) override;
+	void frame_update(f64 delta_time) override;
 
 	///
-	static i16 Padding;
+	static i16 padding;
 
 	///
-	static i16 Height;
+	static i16 height;
 
 	///
-	static i16 HeightContent;
+	static i16 height_content;
 private:
 	///
-	void OnRender() override;
+	void on_render() override;
 
 	///
-	void OnUpdateBuffers() override;
+	void on_update_buffers() override;
 
 	///
-	void OnReloadSwapChain() override;
+	void on_reload_swap_chain() override;
 
 	///
-	void PostPositionUpdate() override;
+	void post_position_update() override;
 
 	///
-	void UpdateArguments();
+	void update_arguments();
 
 	///
-	void UpdateWidth();
+	void update_width();
 
 	///
-	uint32_t m_width;
+	u32 m_width;
 
 	///
 	std::vector<std::shared_ptr<rhr::stack::argument::argument>> m_arguments;
 
 	///
-	const ModBlock* m_modBlock;
+	const ModBlock* m_mod_block;
 
 	///
-	const ModCatagory* m_modCategory;
+	const ModCatagory* m_mod_category;
 
 	///
-	std::shared_ptr<rhr::render::object::rectangle> m_Background;
+	std::shared_ptr<rhr::render::object::rectangle> m_background;
 };
 }

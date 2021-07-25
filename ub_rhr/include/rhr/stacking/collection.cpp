@@ -1,306 +1,289 @@
-#include "Collection.hpp"
+#include "collection.hpp"
 
-#include "ui/Renderer.hpp"
+#include "rhr/rendering/renderer.hpp"
 
-Collection::Collection()
-	: IEnableable(true)
-	, m_Background(std::make_shared<vui::RenderRectangle>())
-	, m_DisplayVanity(true)
+rhr::stack::collection::collection()
+	: rhr::render::interfaces::i_enableable(true)
+	, m_background(std::make_shared<rhr::render::object::rectangle>())
+	, m_display_vanity(true)
 {
-	m_Background->SetWeak(m_Background);
-	m_Background->SetDepth(Renderer::depth_collection);
+	m_background->set_weak(m_background);
+	m_background->set_depth(rhr::render::renderer::depth_collection);
 	m_stacks.reserve(5);
 }
 
-//Collection::Collection(const Collection& collection)
-//{
-//	//for (uint64_t i = 0; i < m_stacks.size(); i++)
-//	//	delete m_stacks[i];
-//
-//	m_stacks.clear();
-//
-//	for (uint64_t i = 0; i < collection.m_stacks.size(); i++)
-//		m_stacks.push_back(new Stack(*collection.m_stacks[i]));
-//}
-
-Collection::~Collection()
+void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size)
 {
-	//for (uint64_t i = 0; i < m_stacks.size(); i++)
-	//	delete m_stacks[i];
-}
-
-void Collection::AddStack(std::shared_ptr<Stack> stack, bool autoSize)
-{
-	stack->SetSuperOffset(m_Position + m_SuperOffset);
+	stack->set_super_position(m_position + m_super_position);
 	m_stacks.push_back(stack);
 
-	if (autoSize)
+	if (auto_size)
 	{
-		int32_t emptySpace = COLLECTION_EMPTY_SPACE;
+		i32 empty_space = COLLECTION_EMPTY_SPACE;
 
-		if (!m_DisplayVanity)
-			emptySpace = 0;
+		if (!m_display_vanity)
+			empty_space = 0;
 
-		glm::vec<2, int32_t> size = GetSize();
-		glm::vec<2, int32_t> position = GetPosition();
+		glm::vec<2, i32> size = get_size();
+		glm::vec<2, i32> position = get_position();
 
-		if (size.x < emptySpace)
-			size.x = emptySpace;
+		if (size.x < empty_space)
+			size.x = empty_space;
 
-		if (size.y < emptySpace)
-			size.y = emptySpace;
+		if (size.y < empty_space)
+			size.y = empty_space;
 
-		if (stack->GetPosition().x + stack->GetWidestBlock() > size.x - emptySpace)
-			size.x = stack->GetPosition().x + stack->GetWidestBlock() + emptySpace;
+		if (stack->get_position().x + stack->get_widest_block() > size.x - empty_space)
+			size.x = stack->get_position().x + stack->get_widest_block() + empty_space;
 
-		if (stack->GetPosition().x < emptySpace)
+		if (stack->get_position().x < empty_space)
 		{
-			int32_t diff = emptySpace - stack->GetPosition().x;
+			i32 diff = empty_space - stack->get_position().x;
 			position.x -= diff;
 			size.x += diff;
-			stack->SetPosition(stack->GetPosition() + glm::vec<2, int32_t>(diff, 0));
+			stack->set_position(stack->get_position() + glm::vec<2, i32>(diff, 0));
 		}
 
-		if (stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) > size.y - emptySpace)
-			size.y = stack->GetPosition().y + (stack->GetBlocks().size() * Block::Height) + emptySpace;
+		if (stack->get_position().y + (stack->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
+			size.y = stack->get_position().y + (stack->get_blocks().size() * rhr::stack::block::height) + empty_space;
 
-		if (stack->GetPosition().y < emptySpace)
+		if (stack->get_position().y < empty_space)
 		{
-			int32_t diff = emptySpace - stack->GetPosition().y;
+			i32 diff = empty_space - stack->get_position().y;
 			position.y -= diff;
 			size.y += diff;
-			stack->SetPosition(stack->GetPosition() + glm::vec<2, int32_t>(0, diff));
+			stack->set_position(stack->get_position() + glm::vec<2, i32>(0, diff));
 		}
 
-		SetSize(size);
-		SetPosition(position);
+		set_size(size);
+		set_position(position);
 	}
 
-	//glm::vec<2, int32_t> maxBounds = /*m_Position + m_SuperOffset + */m_Size;
-	//glm::vec<2, int32_t> queryPosition = stack->GetPosition()/* + stack->GetSuperOffset()*/;
-	//queryPosition.x += stack->GetWidestBlock();
-	//queryPosition.y += stack->GetBlocks().size() * Block::Height;
+	//glm::vec<2, i32> maxBounds = /*m_position + m_super_position + */m_Size;
+	//glm::vec<2, i32> queryPosition = stack->get_position()/* + stack->GetSuperOffset()*/;
+	//queryPosition.x += stack->get_widest_block();
+	//queryPosition.y += stack->get_blocks().size() * rhr::stack::block::height;
 
 	//if (queryPosition.x > maxBounds.x || queryPosition.y > maxBounds.y)
-	//	SetSize(queryPosition - m_Position - m_SuperOffset + 100);
+	//	set_size(queryPosition - m_position - m_super_position + 100);
 }
 
-void Collection::AddStacks(const std::vector<std::shared_ptr<Stack>>& stacks, bool autoSize)
+void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::stack::stack>>& stacks, bool auto_size)
 {
 	if (m_stacks.size() + stacks.size() >= m_stacks.capacity())
-		m_stacks.reserve((uint64_t)std::ceil((float)(m_stacks.size() + stacks.size()) * 1.5f + 10.0f));
+		m_stacks.reserve((u64)std::ceil((f32)(m_stacks.size() + stacks.size()) * 1.5f + 10.0f));
 
-	int32_t emptySpace = COLLECTION_EMPTY_SPACE;
+	i32 empty_space = COLLECTION_EMPTY_SPACE;
 
-	if (!m_DisplayVanity)
-		emptySpace = 0;
+	if (!m_display_vanity)
+		empty_space = 0;
 
-	for (uint64_t i = 0; i < stacks.size(); i++)
+	for (u64 i = 0; i < stacks.size(); i++)
 	{
-		stacks[i]->SetSuperOffset(m_Position + m_SuperOffset);
+		stacks[i]->set_super_position(m_position + m_super_position);
 		m_stacks.push_back(stacks[i]);
 
-		if (autoSize)
+		if (auto_size)
 		{
-			glm::vec<2, int32_t> size = GetSize();
-			glm::vec<2, int32_t> position = GetPosition();
+			glm::vec<2, i32> size = get_size();
+			glm::vec<2, i32> position = get_position();
 
-			if (stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() > size.x - emptySpace)
-				size.x = stacks[i]->GetPosition().x + stacks[i]->GetWidestBlock() + emptySpace;
+			if (stacks[i]->get_position().x + stacks[i]->get_widest_block() > size.x - empty_space)
+				size.x = stacks[i]->get_position().x + stacks[i]->get_widest_block() + empty_space;
 
-			if (stacks[i]->GetPosition().x < emptySpace)
+			if (stacks[i]->get_position().x < empty_space)
 			{
-				int32_t diff = emptySpace - stacks[i]->GetPosition().x;
+				i32 diff = empty_space - stacks[i]->get_position().x;
 				position.x -= diff;
 				size.x += diff;
 			}
 
-			if (stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) > size.y - emptySpace)
-				size.y = stacks[i]->GetPosition().y + (stacks[i]->GetBlocks().size() * Block::Height) + emptySpace;
+			if (stacks[i]->get_position().y + (stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
+				size.y = stacks[i]->get_position().y + (stacks[i]->get_blocks().size() * rhr::stack::block::height) + empty_space;
 
-			if (stacks[i]->GetPosition().y < emptySpace)
+			if (stacks[i]->get_position().y < empty_space)
 			{
-				int32_t diff = emptySpace - stacks[i]->GetPosition().y;
+				i32 diff = empty_space - stacks[i]->get_position().y;
 				position.y -= diff;
 				size.y += diff;
 			}
 
-			SetSize(size);
-			SetPosition(position);
+			set_size(size);
+			set_position(position);
 		}
 
-		//glm::vec<2, int32_t> maxBounds = m_Position + m_SuperOffset + m_Size;
-		//glm::vec<2, int32_t> queryPosition = stacks[i]->GetPosition();
-		//queryPosition.x += stacks[i]->GetWidestBlock();
-		//queryPosition.y += stacks[i]->GetBlocks().size() * Block::Height;
+		//glm::vec<2, i32> maxBounds = m_position + m_super_position + m_Size;
+		//glm::vec<2, i32> queryPosition = stacks[i]->get_position();
+		//queryPosition.x += stacks[i]->get_widest_block();
+		//queryPosition.y += stacks[i]->get_blocks().size() * rhr::stack::block::height;
 
 		//if (queryPosition.x > maxBounds.x || queryPosition.y > maxBounds.y)
-		//	SetSize(queryPosition - m_Position - m_SuperOffset + 100);
+		//	set_size(queryPosition - m_position - m_super_position + 100);
 	}
 }
 
-void Collection::SizeToStacks(bool offsetStacks, bool usePadding)
+void rhr::stack::collection::size_to_stacks(bool offset_stacks, bool use_padding)
 {
 	// Config
 
 	if (m_stacks.size() == 0)
 		return;
 
-	int32_t padding = 0;
+	i32 padding = 0;
 
-	if (usePadding && m_DisplayVanity)
+	if (use_padding && m_display_vanity)
 		padding = COLLECTION_EMPTY_SPACE;
 
-	glm::vec<2, int32_t> earliestPosition = m_stacks.front()->GetPosition();
+	glm::vec<2, i32> earliest_position = m_stacks.front()->get_position();
 
 	for (auto& stack : m_stacks)
 	{
-		if (stack->GetPosition().x < earliestPosition.x)
-			earliestPosition.x = stack->GetPosition().x;
+		if (stack->get_position().x < earliest_position.x)
+			earliest_position.x = stack->get_position().x;
 
-		if (stack->GetPosition().y < earliestPosition.y)
-			earliestPosition.y = stack->GetPosition().y;
+		if (stack->get_position().y < earliest_position.y)
+			earliest_position.y = stack->get_position().y;
 	}
 
 	// Position
 
-	if (offsetStacks)
+	if (offset_stacks)
 	{
-		glm::vec<2, int32_t> shift = glm::vec<2, int32_t>(padding, padding) - earliestPosition;
+		glm::vec<2, i32> shift = glm::vec<2, i32>(padding, padding) - earliest_position;
 
 		for (auto& stack : m_stacks)
 		{
-			stack->SetPosition(stack->GetPosition() + shift);
+			stack->set_position(stack->get_position() + shift);
 		}
 	}
 	else
 	{
-		glm::vec<2, int32_t> shift = earliestPosition - glm::vec<2, int32_t>(padding, padding);
-		SetPosition(GetPosition() + shift);
+		glm::vec<2, i32> shift = earliest_position - glm::vec<2, i32>(padding, padding);
+		set_position(get_position() + shift);
 
 		for (auto& stack : m_stacks)
 		{
-			stack->SetPosition(stack->GetPosition() - shift);
+			stack->set_position(stack->get_position() - shift);
 		}
 	}
 
-	glm::vec<2, int32_t> latestPosition = m_stacks.front()->GetPosition();
+	glm::vec<2, i32> latest_position = m_stacks.front()->get_position();
 
 	for (auto& stack : m_stacks)
 	{
-		glm::vec<2, int32_t> stackLastBounds = stack->GetPosition() + stack->GetSize();
+		glm::vec<2, i32> stack_last_bounds = stack->get_position() + stack->get_size();
 
-		if (stackLastBounds.x > latestPosition.x)
-			latestPosition.x = stackLastBounds.x;
+		if (stack_last_bounds.x > latest_position.x)
+			latest_position.x = stack_last_bounds.x;
 
-		if (stackLastBounds.y > latestPosition.y)
-			latestPosition.y = stackLastBounds.y;
+		if (stack_last_bounds.y > latest_position.y)
+			latest_position.y = stack_last_bounds.y;
 	}
 
 	// Size
 
-	glm::vec<2, int32_t> size = latestPosition + glm::vec<2, int32_t>(padding, padding);
-	SetSize(size);
+	glm::vec<2, i32> size = latest_position + glm::vec<2, i32>(padding, padding);
+	set_size(size);
 }
 
-void Collection::CheckBounds()
+void rhr::stack::collection::check_bounds()
 {
-	int32_t emptySpace = COLLECTION_EMPTY_SPACE;
+	i32 empty_space = COLLECTION_EMPTY_SPACE;
 
-	if (!m_DisplayVanity)
-		emptySpace = 0;
+	if (!m_display_vanity)
+		empty_space = 0;
 
-	for (size_t i = 0; i < m_stacks.size(); i++)
+	for (usize i = 0; i < m_stacks.size(); i++)
 	{
-		glm::vec<2, int32_t> size = GetSize();
-		glm::vec<2, int32_t> position = GetPosition();
+		glm::vec<2, i32> size = get_size();
+		glm::vec<2, i32> position = get_position();
 
-		if (m_stacks[i]->GetPosition().x + m_stacks[i]->GetWidestBlock() > size.x - emptySpace)
-			size.x = m_stacks[i]->GetPosition().x + m_stacks[i]->GetWidestBlock() + emptySpace;
+		if (m_stacks[i]->get_position().x + m_stacks[i]->get_widest_block() > size.x - empty_space)
+			size.x = m_stacks[i]->get_position().x + m_stacks[i]->get_widest_block() + empty_space;
 
-		if (m_stacks[i]->GetPosition().x < emptySpace)
+		if (m_stacks[i]->get_position().x < empty_space)
 		{
-			int32_t diff = emptySpace - m_stacks[i]->GetPosition().x;
+			i32 diff = empty_space - m_stacks[i]->get_position().x;
 			position.x -= diff;
 			size.x += diff;
 		}
 
-		if (m_stacks[i]->GetPosition().y + (m_stacks[i]->GetBlocks().size() * Block::Height) > size.y - emptySpace)
-			size.y = m_stacks[i]->GetPosition().y + (m_stacks[i]->GetBlocks().size() * Block::Height) + emptySpace;
+		if (m_stacks[i]->get_position().y + (m_stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
+			size.y = m_stacks[i]->get_position().y + (m_stacks[i]->get_blocks().size() * rhr::stack::block::height) + empty_space;
 
-		if (m_stacks[i]->GetPosition().y < emptySpace)
+		if (m_stacks[i]->get_position().y < empty_space)
 		{
-			int32_t diff = emptySpace - m_stacks[i]->GetPosition().y;
+			i32 diff = empty_space - m_stacks[i]->get_position().y;
 			position.y -= diff;
 			size.y += diff;
 		}
 
-		SetSize(size);
-		SetPosition(position);
+		set_size(size);
+		set_position(position);
 	}
 }
 
-void Collection::RemoveStack(uint64_t idx)
+void rhr::stack::collection::remove_stack(u64 idx)
 {
 	m_stacks.erase(m_stacks.begin() + idx);
 }
 
-void Collection::RemoveAll()
+void rhr::stack::collection::remove_all()
 {
 	m_stacks.clear();
 }
 
-void Collection::DisplayVanity(bool enabled)
+void rhr::stack::collection::display_vanity(bool enabled)
 {
-	m_DisplayVanity = enabled;
+	m_display_vanity = enabled;
 }
 
-const std::vector<std::shared_ptr<Stack>>& Collection::GetStacks()
+const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::get_stacks()
 {
 	return m_stacks;
 }
 
-void Collection::FrameUpdate(double deltaTime)
+void rhr::stack::collection::frame_update(f64 delta_time)
 {
 	for (auto& stack : m_stacks)
-		stack->FrameUpdate(deltaTime);
+		stack->frame_update(delta_time);
 }
 
-void Collection::OnRender()
+void rhr::stack::collection::on_render()
 {
 	for (auto& stack : m_stacks)
-		stack->Render();
+		stack->render();
 
-	if (m_DisplayVanity)
-		m_Background->Render();
+	if (m_display_vanity)
+		m_background->render();
 }
 
-void Collection::OnUpdateBuffers()
+void rhr::stack::collection::on_update_buffers()
 {
 	for (auto& stack : m_stacks)
-		stack->UpdateBuffers();
+		stack->update_buffers();
 
-	m_Background->UpdateBuffers();
+	m_background->update_buffers();
 }
 
-void Collection::OnReloadSwapChain()
+void rhr::stack::collection::on_reload_swap_chain()
 {
 	for (auto& stack : m_stacks)
-		stack->ReloadSwapChain();
+		stack->reload_swap_chain();
 
-	m_Background->ReloadSwapChain();
+	m_background->reload_swap_chain();
 }
 
-void Collection::PostPositionUpdate()
+void rhr::stack::collection::post_position_update()
 {
 	for (auto& stack : m_stacks)
-		stack->SetSuperOffset(m_Position + m_SuperOffset);
+		stack->set_super_position(m_position + m_super_position);
 
-	m_Background->SetSuperOffset(m_Position + m_SuperOffset);
+	m_background->set_super_position(m_position + m_super_position);
 }
 
-void Collection::PostSizeUpdate()
+void rhr::stack::collection::post_size_update()
 {
-	m_Background->SetSuperBounds(m_Size);
-	m_Background->SetSizeMax();
+	m_background->set_super_bounds(m_size);
+	m_background->set_size_max();
 }

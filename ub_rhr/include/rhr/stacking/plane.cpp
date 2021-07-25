@@ -48,18 +48,18 @@ Plane::Plane(bool toolbar)
 	, m_DraggingSnap(false)
 	, m_DraggingSnapCollection(0)
 	, m_DraggingSnapStack(0)
-	, m_Background(std::make_shared<rhr::render::object::rectangle>())
+	, m_background(std::make_shared<rhr::render::object::rectangle>())
 {
 	if (toolbar)
 		InputHandler::RegisterMouseCallback(ToolbarPlaneMouseButton, nullptr);
 	else
 		InputHandler::RegisterMouseCallback(PrimaryPlaneMouseButton, nullptr);
 
-	m_Background->SetWeak(m_Background);
-	m_Background->SetPosition(m_Position + m_SuperOffset);
-	m_Background->SetSize(m_Size);
-	m_Background->SetColor(Color().FromU8({ 0, 0, 0, 255 }));
-	m_Background->SetDepth(Renderer::depth_plane);
+	m_background->SetWeak(m_background);
+	m_background->SetPosition(m_Position + m_SuperOffset);
+	m_background->SetSize(m_Size);
+	m_background->SetColor(Color().FromU8({ 0, 0, 0, 255 }));
+	m_background->SetDepth(Renderer::depth_plane);
 
 	//m_shader.loadFromFile("res/shaders/blocks.vert", "res/shaders/blocks.frag");
 
@@ -131,7 +131,7 @@ void Plane::AddCollection(std::shared_ptr<Collection>& collection, bool displayC
 	m_Collections.push_back(collection);
 	m_CollectionVanity.push_back(displayCollectionVanity);
 
-	collection->DisplayVanity(displayCollectionVanity);
+	collection->display_vanity(displayCollectionVanity);
 
 	//CreateBuffer(m_Collections.size() - 1, displayCollectionVanity);
 }
@@ -238,20 +238,20 @@ void Plane::MouseButton(glm::vec<2, i32> position, float scroll, MouseOperation 
 		if (position.x > collectionPosition.x && position.x < collectionPosition.x + collectionSize.x &&
 			position.y > collectionPosition.y && position.y < collectionPosition.y + collectionSize.y)
 		{
-			for (int64_t a = m_Collections[i]->GetStacks().size() - 1; a >= 0; a--)
+			for (int64_t a = m_Collections[i]->get_stacks().size() - 1; a >= 0; a--)
 			{
-				glm::vec<2, i32> stackSize = m_Collections[i]->GetStacks()[a]->GetSize();
-				glm::vec<2, i32> stackPosition = m_Collections[i]->GetStacks()[a]->GetPosition() + m_Collections[i]->GetStacks()[a]->GetSuperOffset();
+				glm::vec<2, i32> stackSize = m_Collections[i]->get_stacks()[a]->GetSize();
+				glm::vec<2, i32> stackPosition = m_Collections[i]->get_stacks()[a]->GetPosition() + m_Collections[i]->get_stacks()[a]->GetSuperOffset();
 
 				//stackPosition += collectionPosition;
 
 				if (position.x > stackPosition.x && position.x < stackPosition.x + stackSize.x &&
 					position.y > stackPosition.y && position.y < stackPosition.y + stackSize.y)
 				{
-					for (uint64_t b = 0; b < m_Collections[i]->GetStacks()[a]->GetBlocks().size(); b++)
+					for (uint64_t b = 0; b < m_Collections[i]->get_stacks()[a]->GetBlocks().size(); b++)
 					{
-						glm::vec<2, i32> blockSize = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetSize();
-						glm::vec<2, i32> blockPosition = m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetPosition() + m_Collections[i]->GetStacks()[a]->GetBlocks()[b]->GetSuperOffset();
+						glm::vec<2, i32> blockSize = m_Collections[i]->get_stacks()[a]->GetBlocks()[b]->GetSize();
+						glm::vec<2, i32> blockPosition = m_Collections[i]->get_stacks()[a]->GetBlocks()[b]->GetPosition() + m_Collections[i]->get_stacks()[a]->GetBlocks()[b]->GetSuperOffset();
 
 						if (position.x >= blockPosition.x && position.x < blockPosition.x + blockSize.x &&
 							position.y >= blockPosition.y && position.y < blockPosition.y + blockSize.y)
@@ -270,7 +270,7 @@ void Plane::MouseButton(glm::vec<2, i32> position, float scroll, MouseOperation 
 									std::shared_ptr<Collection> activeCollection = std::make_shared<Collection>();
 									activeCollection->SetWeak(activeCollection);
 
-									std::shared_ptr<Stack> activeStack = m_Collections[i]->GetStacks()[a];
+									std::shared_ptr<Stack> activeStack = m_Collections[i]->get_stacks()[a];
 
 									if (m_Toolbar)
 									{
@@ -307,7 +307,7 @@ void Plane::MouseButton(glm::vec<2, i32> position, float scroll, MouseOperation 
 										leftStack->SetPosition(activeStack->GetPosition());
 
 										for (uint64_t c = 0; c < b; c++)
-											leftStack->AddBlock(m_Collections[i]->GetStacks()[a]->GetBlocks()[c]);
+											leftStack->AddBlock(m_Collections[i]->get_stacks()[a]->GetBlocks()[c]);
 
 										for (uint64_t c = 0; c < b; c++)
 											activeStack->RemoveBlock(0);
@@ -346,7 +346,7 @@ void Plane::MouseButton(glm::vec<2, i32> position, float scroll, MouseOperation 
 
 									DragStack(activeCollection, activeStack, false);
 
-									if (m_Collections[i]->GetStacks().size() == 0)
+									if (m_Collections[i]->get_stacks().size() == 0)
 										DeleteCollection(i);
 
 									return;
@@ -443,7 +443,7 @@ void Plane::MouseButton(glm::vec<2, i32> position, float scroll, MouseOperation 
 //	UpdateBuffer(idx);
 //}
 
-void Plane::FrameUpdate(double deltaTime)
+void Plane::frame_update(double deltaTime)
 {
 	// set innerText to a visual representation of the inner position coordinates
 
@@ -484,7 +484,7 @@ void Plane::FrameUpdate(double deltaTime)
 	//}
 }
 
-void Plane::OnRender()
+void Plane::on_render()
 {
 	//m_Background->Render();
 
@@ -495,9 +495,9 @@ void Plane::OnRender()
 		m_DraggingCollection->Render();
 }
 
-void Plane::OnUpdateBuffers()
+void Plane::on_update_buffers()
 {
-	m_Background->UpdateBuffers();
+	m_background->UpdateBuffers();
 
 	for (auto& collection : m_Collections)
 		collection->UpdateBuffers();
@@ -506,9 +506,9 @@ void Plane::OnUpdateBuffers()
 		m_DraggingCollection->UpdateBuffers();
 }
 
-void Plane::OnReloadSwapChain()
+void Plane::on_reload_swap_chain()
 {
-	m_Background->ReloadSwapChain();
+	m_background->ReloadSwapChain();
 
 	for (auto& collection : m_Collections)
 		collection->ReloadSwapChain();
@@ -517,18 +517,18 @@ void Plane::OnReloadSwapChain()
 		m_DraggingCollection->ReloadSwapChain();
 }
 
-void Plane::PostPositionUpdate()
+void Plane::post_position_update()
 {
 	SetSizeMax();
-	m_Background->SetPosition(m_Position + m_SuperOffset);
+	m_background->SetPosition(m_Position + m_SuperOffset);
 
 	for (auto& collection : m_Collections)
 		collection->SetSuperOffset(m_Position + m_SuperOffset);
 }
 
-void Plane::PostSizeUpdate()
+void Plane::post_size_update()
 {
-	m_Background->SetSize(m_Size);
+	m_background->SetSize(m_Size);
 
 	//for (auto collection : m_Collections)
 	//	collection->SetSuperBounds(m_Size);
@@ -1150,9 +1150,9 @@ void Plane::select(uint64_t collection, uint64_t stack, uint64_t block, uint64_t
 	m_Selected = true;
 
 	m_SelectedCollection = m_Collections[collection];
-	m_SelectedStack = m_Collections[collection]->GetStacks()[stack];
-	m_SelectedBlock = m_Collections[collection]->GetStacks()[stack]->GetBlocks()[block];
-	m_SelectedArgument = m_Collections[collection]->GetStacks()[stack]->GetBlocks()[block]->GetArguments()[argument];
+	m_SelectedStack = m_Collections[collection]->get_stacks()[stack];
+	m_SelectedBlock = m_Collections[collection]->get_stacks()[stack]->GetBlocks()[block];
+	m_SelectedArgument = m_Collections[collection]->get_stacks()[stack]->GetBlocks()[block]->GetArguments()[argument];
 }
 
 void Plane::SelectContext(uint64_t collection, uint64_t stack, uint64_t block)
@@ -1160,8 +1160,8 @@ void Plane::SelectContext(uint64_t collection, uint64_t stack, uint64_t block)
 	m_Selected = true;
 
 	m_SelectedCollection = m_Collections[collection];
-	m_SelectedStack = m_Collections[collection]->GetStacks()[stack];
-	m_SelectedBlock = m_Collections[collection]->GetStacks()[stack]->GetBlocks()[block];
+	m_SelectedStack = m_Collections[collection]->get_stacks()[stack];
+	m_SelectedBlock = m_Collections[collection]->get_stacks()[stack]->GetBlocks()[block];
 	m_SelectedArgument = nullptr;
 }
 
@@ -1358,10 +1358,10 @@ void Plane::DraggingStackUpdate()
 		{
 			//std::cout << "collection " << i << std::endl;
 
-			for (int64_t a = useCollections[i]->GetStacks().size() - 1; a >= 0; a--)
+			for (int64_t a = useCollections[i]->get_stacks().size() - 1; a >= 0; a--)
 			{
-				glm::vec<2, i32> stackSize = useCollections[i]->GetStacks()[a]->GetSize();
-				glm::vec<2, i32> stackPosition = useCollections[i]->GetStacks()[a]->GetPosition() + useCollections[i]->GetStacks()[a]->GetSuperOffset();
+				glm::vec<2, i32> stackSize = useCollections[i]->get_stacks()[a]->GetSize();
+				glm::vec<2, i32> stackPosition = useCollections[i]->get_stacks()[a]->GetPosition() + useCollections[i]->get_stacks()[a]->GetSuperOffset();
 
 
 				stackPosition -= glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE);
@@ -1387,15 +1387,15 @@ void Plane::DraggingStackUpdate()
 				{
 					//std::cout << "stack " << a << std::endl;
 
-					for (uint64_t b = 0; b < useCollections[i]->GetStacks()[a]->GetBlocks().size() + 1; b++)
+					for (uint64_t b = 0; b < useCollections[i]->get_stacks()[a]->GetBlocks().size() + 1; b++)
 					{
 						uint64_t refIdx = 0;
 
 						if (b > 0)
 							refIdx = b - 1;
 
-						glm::vec<2, i32> boundingSize = { useCollections[i]->GetStacks()[a]->GetBlocks()[refIdx]->GetWidth() + (SNAP_DISTANCE * 2), Block::Height };
-						glm::vec<2, i32> boundingPos = useCollections[i]->GetStacks()[a]->GetPosition() + useCollections[i]->GetStacks()[a]->GetSuperOffset();
+						glm::vec<2, i32> boundingSize = { useCollections[i]->get_stacks()[a]->GetBlocks()[refIdx]->GetWidth() + (SNAP_DISTANCE * 2), Block::Height };
+						glm::vec<2, i32> boundingPos = useCollections[i]->get_stacks()[a]->GetPosition() + useCollections[i]->get_stacks()[a]->GetSuperOffset();
 
 						boundingPos.x -= SNAP_DISTANCE;
 
@@ -1408,7 +1408,7 @@ void Plane::DraggingStackUpdate()
 							draggingCollectionPosition.y >= boundingPos.y && draggingCollectionPosition.y < boundingPos.y + boundingSize.y)
 						{
 							std::cout << "snapping " << b << std::endl;
-							SetSnap(useCollections[i], b, useCollections[i]->GetStacks()[a]);
+							SetSnap(useCollections[i], b, useCollections[i]->get_stacks()[a]);
 
 							// if block was bounded
 

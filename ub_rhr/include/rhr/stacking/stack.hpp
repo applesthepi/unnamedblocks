@@ -1,35 +1,60 @@
 #pragma once
 #include "config.h"
 
-#include "Block.hpp"
-#include "ui/interfaces/IPositionable.hpp"
-#include "ui/interfaces/IRenderable.hpp"
-#include "ui/interfaces/IUpdatable.hpp"
-#include "ui/interfaces/ISizeable.hpp"
+#include "rhr/stacking/block.hpp"
+#include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_updateable.hpp"
+#include "rhr/rendering/interfaces/i_sizeable.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-class Stack : public IPositionable<2, int32_t>, public ISizeable<int32_t>, public IRenderable, public IUpdatable
+namespace rhr::stack
+{
+///
+class stack : public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable
 {
 public:
-	Stack();
-	~Stack();
+	///
+	stack();
 
-	void AddBlock(std::shared_ptr<Block> block);
-	void AddBlocks(const std::vector<std::shared_ptr<Block>>& blocks);
-	void InsertBlocks(const std::vector<std::shared_ptr<Block>>& blocks, uint64_t idx);
+	///
+	void add_block(std::shared_ptr<rhr::stack::block> block);
 
-	uint64_t GetWidestBlock();
+	///
+	void add_blocks(const std::vector<std::shared_ptr<rhr::stack::block>>& blocks);
 
-	void RemoveBlock(uint64_t idx);
-	void UpdateSize();
-	const std::vector<std::shared_ptr<Block>>& GetBlocks();
-	void FrameUpdate(double deltaTime) override;
+	///
+	void insert_blocks(const std::vector<std::shared_ptr<rhr::stack::block>>& blocks, u64 idx);
+
+	///
+	u64 get_widest_block();
+
+	///
+	void remove_block(u64 idx);
+
+	///
+	void update_size();
+
+	///
+	const std::vector<std::shared_ptr<rhr::stack::block>>& get_blocks();
+
+	///
+	void frame_update(f64 delta_time) override;
 private:
-	void OnRender() override;
-	void OnUpdateBuffers() override;
-	void OnReloadSwapChain() override;
-	void PostPositionUpdate() override;
+	///
+	void on_render() override;
+	
+	///
+	void on_update_buffers() override;
 
-	std::vector<std::shared_ptr<Block>> m_blocks;
+	///
+	void on_reload_swap_chain() override;
+
+	///
+	void post_position_update() override;
+
+	///
+	std::vector<std::shared_ptr<rhr::stack::block>> m_blocks;
 };
+}

@@ -188,8 +188,8 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 
 	// Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
 	// diagnosticsTime = std::chrono::high_resolution_clock::now();
-	Plane::PrimaryPlane->FrameUpdate(deltaTime);
-	Plane::ToolbarPlane->FrameUpdate(deltaTime);
+	Plane::PrimaryPlane->frame_update(deltaTime);
+	Plane::ToolbarPlane->frame_update(deltaTime);
 
 	process_dirty();
 	// Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
