@@ -1,12 +1,12 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+//#include <Cappuccino/Utils.hpp>
 
-#define CONTEXT_COLOR 180, 180, 180, 200
+//#define CONTEXT_COLOR 180, 180, 180, 200
 
-class ContextHandler
-{
+//class ContextHandler
+//{
 // public:
 // 	static const std::atomic<bool>& IsEnabled();
 
@@ -20,4 +20,4 @@ class ContextHandler
 // 	static std::vector<std::function<void()>*> m_buttonCallbacks;
 // 	static std::function<void(uint8_t)>* m_contextCallback;
 // 	static std::vector<ButtonText*> m_buttons;
-};
+//};

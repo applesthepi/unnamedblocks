@@ -1,45 +1,74 @@
 #pragma once
 #include "config.h"
 
-#include "registries/BlockRegistry.hpp"
-#include "stacking/Plane.hpp"
-#include "stacking/Collection.hpp"
-#include "stacking/Stack.hpp"
-#include "stacking/Block.hpp"
-#include "ui/RenderButton.hpp"
-#include "ui/RenderFrame.hpp"
+#include "rhr/registries/block.hpp"
+#include "rhr/stacking/Plane.hpp"
+#include "rhr/stacking/Collection.hpp"
+#include "rhr/stacking/Stack.hpp"
+#include "rhr/stacking/Block.hpp"
+#include "rhr/rendering/objects/button.hpp"
+#include "rhr/rendering/frame.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
-static class CatagoryHandler
+namespace rhr::handler
+{
+///
+static class category
 {
 public:
-	struct ActiveCatagory
+	///
+	struct active
 	{
-		uint16_t ActiveModGroup;
-		uint16_t ActiveModGroupCatagory;
+		///
+		u16 mod_group;
+
+		///
+		u16 mod_group_category;
 	};
 
-	static void Populate(std::shared_ptr<vui::RenderFrame>& renderFrame);
-	static void Render();
-	static void SelectCatagory(ActiveCatagory activeCatagory);
+	///
+	static void populate(std::shared_ptr<rhr::render::frame>& render_frame);
+
+	///
+	static void render();
+
+	///
+	static void select_category(active active_category);
 private:
-	struct ModGroup
+	///
+	struct mod_group
 	{
-		ModGroup(const Color& primaryColor, const Color& secondaryColor)
-			: ModButton(std::make_shared<vui::RenderButton>(primaryColor, secondaryColor))
+		///
+		mod_group(const cap::color& primary_color, const cap::color& secondary_color)
+			: mod_button(std::make_shared<rhr::render::object::button>(primary_color, secondary_color))
 		{
-			ModButton->SetWeak(ModButton);
+			mod_button->set_weak(mod_button);
 		}
 
-		std::shared_ptr<vui::RenderButton> ModButton;
-		std::vector<std::shared_ptr<vui::RenderButton>> ModCategories;
-		std::vector<std::vector<std::shared_ptr<Collection>>> ModCategoryCollections;
-		std::vector<std::vector<std::shared_ptr<Stack>>> ModCategoryStacks;
-		std::vector<std::vector<std::shared_ptr<Block>>> ModCategoryBlocks;
+		///
+		std::shared_ptr<rhr::render::object::button> mod_button;
+
+		///
+		std::vector<std::shared_ptr<rhr::render::object::button>> mod_category;
+
+		///
+		std::vector<std::vector<std::shared_ptr<rhr::stack::collection>>> mod_category_collections;
+
+		///
+		std::vector<std::vector<std::shared_ptr<rhr::stack::stack>>> mod_category_stacks;
+
+		///
+		std::vector<std::vector<std::shared_ptr<rhr::stack::block>>> mod_category_blocks;
 	};
 
-	static std::vector<ModGroup> m_ModGroups;
-	static std::shared_ptr<vui::RenderFrame> m_RenderFrame;
-	static ActiveCatagory m_ActiveCatagory;
+	///
+	static std::vector<mod_group> m_mod_groups;
+
+	///
+	static std::shared_ptr<rhr::render::frame> m_render_frame;
+
+	///
+	static active m_active_category;
 };
+}

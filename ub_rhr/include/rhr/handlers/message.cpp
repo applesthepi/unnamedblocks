@@ -1,6 +1,6 @@
-#include "MessageHandler.hpp"
+#include "message.hpp"
 
-#include "registries/UIRegistry.hpp"
+//#include "registries/UIRegistry.hpp"
 
 // void ThreadMessage()
 // {

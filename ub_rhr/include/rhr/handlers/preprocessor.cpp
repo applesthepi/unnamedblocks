@@ -1,10 +1,11 @@
-#include "PreProcessor.hpp"
+#include "preprocessor.hpp"
 
-#include "handlers/ProjectHandler.hpp"
+//#include "handlers/ProjectHandler.hpp"
 
-#include <Cappuccino/runtime/ModBlockData.hpp>
-#include <libtcc.h>
+//#include <Cappuccino/runtime/ModBlockData.hpp>
+//#include <libtcc.h>
 
+/*
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)
 {
@@ -248,23 +249,20 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	[[maybe_unused]] int r9004 = tcc_add_symbol(state, "superMutex", (void**)&superMutex);
 
 	// libs
-
-	/*
-	tcc_add_library_path(state, "mods/");
-
-	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
-	{
-		if (ProjectHandler::Mods[i] == "")
-		{
-			Logger::Warn("failed to register unknown mod into static build");
-			continue;
-		}
-
-		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
-			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
-	}
-
-	*/
+	
+// 	tcc_add_library_path(state, "mods/");
+// 
+// 	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
+// 	{
+// 		if (ProjectHandler::Mods[i] == "")
+// 		{
+// 			Logger::Warn("failed to register unknown mod into static build");
+// 			continue;
+// 		}
+// 
+// 		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
+// 			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
+// 	}
 
 	tcc_add_library_path(state, "Cappuccino/lib");
 	[[maybe_unused]] int re = tcc_add_library(state, "Cappuccino");
@@ -395,3 +393,4 @@ uint8_t* PreProcessor::m_super;
 int64_t* PreProcessor::m_superData;
 
 std::mutex* PreProcessor::m_superMutex;
+*/

@@ -1,15 +1,15 @@
-#include "CategoryHandler.hpp"
+#include "category.hpp"
 
-#include "registries/UIRegistry.hpp"
-#include "handlers/ProjectHandler.hpp"
-#include "handlers/MessageHandler.hpp"
-#include "handlers/runtime/PreProcessor.hpp"
-#include "stacking/Plane.hpp"
+#include "rhr/registries/char_texture.hpp"
+#include "rhr/handlers/project.hpp"
+#include "rhr/handlers/message.hpp"
+#include "rhr/handlers/preprocessor.hpp"
+#include "rhr/stacking/plane.hpp"
 
-#if !LINUX
-#include <windows.h>
-#include <shellapi.h>
-#endif
+//#if !LINUX
+//#include <windows.h>
+//#include <shellapi.h>
+//#endif
 
 
 
@@ -26,7 +26,7 @@ CategoryHandler::CategoryHandler()
 	m_textureOpen.loadFromFile("res/dir_open.png");
 	m_textureClose.loadFromFile("res/dir_close.png");
 
-	const std::vector<ModCatagory*>& categories = BlockRegistry::GetRegistry().GetCategories();
+	const std::vector<ModCatagory*>& categories = rhr::registry::block::GetRegistry().GetCategories();
 
 	if (categories.size() == 0)
 	{
@@ -43,7 +43,7 @@ CategoryHandler::CategoryHandler()
 		{
 			lastCategoryMod = categories[i]->GetModUnlocalizedName();
 
-			const uint16_t modIdx = m_modCategoryButtons.size();
+			const u16 modIdx = m_modCategoryButtons.size();
 
 			m_modCategoryCallbacks.push_back(new std::function<void()>());
 			*m_modCategoryCallbacks.back() = [this, modIdx]()
@@ -65,7 +65,7 @@ CategoryHandler::CategoryHandler()
 			m_buttonCallbacks.push_back(std::vector<std::function<void()>*>());
 		}
 
-		const uint16_t catIdx = i;
+		const u16 catIdx = i;
 
 		m_buttonCallbacks.back().push_back(new std::function<void()>());
 		*m_buttonCallbacks.back().back() = [this, catIdx]()
@@ -73,25 +73,25 @@ CategoryHandler::CategoryHandler()
 			UpdateBlocks(catIdx);
 		};
 
-		m_buttons.back().push_back(new ButtonText(m_buttonCallbacks.back().back(), categories[i]->GetDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), categories[i]->GetColor(), sf::Color::Black));
+		m_buttons.back().push_back(new ButtonText(m_buttonCallbacks.back().back(), categories[i]->GetDisplayName(), 12, sf::Vector2f(m_toolbarWidth - 25, 16), categories[i]->GetColor(), sf::cap::color::Black));
 		m_buttons.back().back()->setPosition(20, offset);
 		UIRegistry::GetRegistry().AddComponent(m_buttons.back().back());
 
-		Collection* collection = new Collection();
+		rhr::stack::collection* collection = new rhr::stack::collection();
 		collection->SetEnabled(false);
 
 		uint64_t idx = 0;
 
-		for (unsigned int a = 0; a < BlockRegistry::GetRegistry().GetBlocks().size(); a++)
+		for (unsigned int a = 0; a < rhr::registry::block::GetRegistry().GetBlocks().size(); a++)
 		{
-			if (BlockRegistry::GetRegistry().GetBlocks()[a]->GetCategory() == BlockRegistry::GetRegistry().GetCategories()[i]->GetUnlocalizedName())
+			if (rhr::registry::block::GetRegistry().GetBlocks()[a]->GetCategory() == rhr::registry::block::GetRegistry().GetCategories()[i]->GetUnlocalizedName())
 			{
-				Stack* stack = new Stack();
-				Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());
+				rhr::stack::stack* stack = new rhr::stack::stack();
+				rhr::stack::block* block = new rhr::stack::block(rhr::registry::block::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());
 
-				stack->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
+				stack->setPosition(5, static_cast<i32>(5 + (idx * (Global::BlockHeight + 5))));
 
-				stack->AddBlock(block);
+				stack->add_block(block);
 				collection->AddStack(stack);
 
 				idx++;
@@ -111,7 +111,7 @@ CategoryHandler::CategoryHandler()
 	m_backgroundOptions.setPosition(sf::Vector2f(0, 0));
 }
 
-void CategoryHandler::ToggleMod(uint16_t modIdx, uint64_t catIdx)
+void CategoryHandler::ToggleMod(u16 modIdx, uint64_t catIdx)
 {
 	m_modOpen[modIdx] = !m_modOpen[modIdx];
 	UpdateBlocks(catIdx);
@@ -128,16 +128,16 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 		uint64_t idx = 0;
 		Plane::ToolbarPlane->GetCollections()[catIdx]->RemoveAll(true);
 
-		for (unsigned int a = 0; a < BlockRegistry::GetRegistry().GetBlocks().size(); a++)
+		for (unsigned int a = 0; a < rhr::registry::block::GetRegistry().GetBlocks().size(); a++)
 		{
-			if (BlockRegistry::GetRegistry().GetBlocks()[a]->GetCategory() == BlockRegistry::GetRegistry().GetCategories()[catIdx]->GetUnlocalizedName())
+			if (rhr::registry::block::GetRegistry().GetBlocks()[a]->GetCategory() == rhr::registry::block::GetRegistry().GetCategories()[catIdx]->GetUnlocalizedName())
 			{
-				Stack* stack = new Stack();
-				Block* block = new Block(BlockRegistry::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());
+				rhr::stack::stack* stack = new rhr::stack::stack();
+				rhr::stack::block* block = new rhr::stack::block(rhr::registry::block::GetRegistry().GetBlocks()[a]->GetUnlocalizedName());
 
-				stack->setPosition(5, static_cast<int32_t>(5 + (idx * (Global::BlockHeight + 5))));
+				stack->setPosition(5, static_cast<i32>(5 + (idx * (Global::BlockHeight + 5))));
 
-				stack->AddBlock(block);
+				stack->add_block(block);
 				Plane::ToolbarPlane->GetCollections()[catIdx]->AddStack(stack);
 
 				idx++;
@@ -437,7 +437,7 @@ uint32_t CategoryHandler::UpdateButtons()
 	return offset;
 }
 
-uint16_t CategoryHandler::GetToolbarWidth()
+u16 CategoryHandler::GetToolbarWidth()
 {
 	return m_toolbarWidth;
 }
@@ -449,7 +449,7 @@ CategoryHandler& CategoryHandler::GetHandler()
 
 void CategoryHandler::PostRender(sf::RenderWindow* window)
 {
-	for (uint16_t i = 0; i < m_modIco.size(); i++)
+	for (u16 i = 0; i < m_modIco.size(); i++)
 		window->draw(m_modIco[i]);
 }
 
@@ -464,10 +464,10 @@ void CategoryHandler::frameUpdate(double deltaTime)
 
 		m_running = false;
 
-		for (uint16_t i = 0; i < m_runtimeButtons.size(); i++)
+		for (u16 i = 0; i < m_runtimeButtons.size(); i++)
 			UIRegistry::GetRegistry().RemoveComponent(m_runtimeButtons[i]);
 
-		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
+		for (u16 i = 0; i < m_editorButtons.size(); i++)
 			UIRegistry::GetRegistry().AddComponent(m_editorButtons[i]);
 	}
 	else if (!PreProcessor::IsFinished() && !m_running)
@@ -476,10 +476,10 @@ void CategoryHandler::frameUpdate(double deltaTime)
 
 		m_running = true;
 
-		for (uint16_t i = 0; i < m_runtimeButtons.size(); i++)
+		for (u16 i = 0; i < m_runtimeButtons.size(); i++)
 			UIRegistry::GetRegistry().AddComponent(m_runtimeButtons[i]);
 
-		for (uint16_t i = 0; i < m_editorButtons.size(); i++)
+		for (u16 i = 0; i < m_editorButtons.size(); i++)
 			UIRegistry::GetRegistry().RemoveComponent(m_editorButtons[i]);
 	}
 
@@ -509,48 +509,48 @@ void CategoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) co
 CategoryHandler* CategoryHandler::m_handler;
 */
 
-static void ButtonCatagoryCallback(void* data)
+static void button_callback_category(void* data)
 {
-	CatagoryHandler::ActiveCatagory* activeCatagory = (CatagoryHandler::ActiveCatagory*)data;
-	CatagoryHandler::SelectCatagory(*activeCatagory);
+	rhr::handler::category::active* active_catagory = (rhr::handler::category::active*)data;
+	rhr::handler::category::select_category(*active_catagory);
 }
 
-void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
+void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& render_frame)
 {
-	m_RenderFrame = renderFrame;
-	m_RenderFrame->SetPadding(4);
-	m_RenderFrame->EnableBackground(Color::BackgroundColor2);
-	m_RenderFrame->DisableBarMovement();
+	m_render_frame = render_frame;
+	m_render_frame->set_padding(4);
+	m_render_frame->enable_background(cap::color::background_color_2);
+	m_render_frame->disable_bar_movement();
 
-	const std::vector<CatagoryInfo>& categoryInfos = BlockRegistry::get_registry().get_categories();
-	const std::vector<BlockInfo>& blockInfos = BlockRegistry::get_registry().get_blocks();
+	const std::vector<rhr::registry::block::CatagoryInfo>& category_infos = rhr::registry::block::get_registry().get_categories();
+	const std::vector<rhr::registry::block::BlockInfo>& block_infos = rhr::registry::block::get_registry().get_blocks();
 
 	//std::vector<std::string> binnedMods;
-	std::vector<std::vector<ModCatagory*>> binnedCatagories;
-	std::vector<std::vector<std::vector<ModBlock*>>> binnedBlocks;
+	std::vector<std::vector<ModCatagory*>> binned_catagories;
+	std::vector<std::vector<std::vector<ModBlock*>>> binned_blocks;
 
 	bool found = false;
 
-	// TODO: this modularization should be done in BlockRegistry
+	// TODO: this modularization should be done in rhr::registry::block
 
-	for (size_t i = 0; i < ProjectHandler::Mods.size(); i++)
+	for (usize i = 0; i < ProjectHandler::mods.size(); i++)
 	{
-		binnedCatagories.push_back(std::vector<ModCatagory*>());
-		binnedBlocks.push_back(std::vector<std::vector<ModBlock*>>());
+		binned_catagories.push_back(std::vector<ModCatagory*>());
+		binned_blocks.push_back(std::vector<std::vector<ModBlock*>>());
 
-		for (size_t a = 0; a < categoryInfos.size(); a++)
+		for (usize a = 0; a < category_infos.size(); a++)
 		{
-			if (categoryInfos[a].CatagoryModUnlocalizedName == ProjectHandler::Mods[i])
+			if (category_infos[a].CatagoryModUnlocalizedName == ProjectHandler::mods[i])
 			{
-				binnedCatagories[i].push_back(categoryInfos[a].CatagoryModCatagory);
-				binnedBlocks[i].push_back(std::vector<ModBlock*>());
+				binned_catagories[i].push_back(category_infos[a].CatagoryModCatagory);
+				binned_blocks[i].push_back(std::vector<ModBlock*>());
 
-				for (size_t b = 0; b < blockInfos.size(); b++)
+				for (usize b = 0; b < block_infos.size(); b++)
 				{
-					if (blockInfos[b].BlockModUnlocalizedName == ProjectHandler::Mods[i] &&
-						blockInfos[b].BlockModBlock->get_categories() == categoryInfos[a].CatagoryModCatagory->GetUnlocalizedName())
+					if (block_infos[b].BlockModUnlocalizedName == ProjectHandler::mods[i] &&
+						block_infos[b].BlockModBlock->get_categories() == category_infos[a].CatagoryModCatagory->GetUnlocalizedName())
 					{
-						binnedBlocks[i][a].push_back(blockInfos[b].BlockModBlock);
+						binned_blocks[i][a].push_back(block_infos[b].BlockModBlock);
 					}
 				}
 			}
@@ -559,7 +559,7 @@ void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 
 	//for (auto& info : catagoryInfos)
 	//{
-	//	for (size_t i = 0; i < binnedMods.size(); i++)
+	//	for (usize i = 0; i < binnedMods.size(); i++)
 	//	{
 	//		if (info.CatagoryModUnlocalizedName == binnedMods[i])
 	//		{
@@ -596,108 +596,108 @@ void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 	//		found = false;
 	//}
 
-	m_ModGroups.reserve(ProjectHandler::Mods.size());
+	m_mod_groups.reserve(ProjectHandler::mods.size());
 
-	int32_t offset = Block::Padding / 2;
+	i32 offset = rhr::stack::block::padding / 2;
 
-	for (size_t i = 0; i < ProjectHandler::Mods.size(); i++)
+	for (usize i = 0; i < ProjectHandler::mods.size(); i++)
 	{
-		offset += Block::Padding / 2;
+		offset += rhr::stack::block::padding / 2;
 
- 		ModGroup group = ModGroup(Color::TextPrimaryColor, Color::BackgroundColor3);
-		group.ModCategories.reserve(binnedCatagories[i].size());
-		group.ModButton->SetSize({ 200, 16 });
-		group.ModButton->EnableFillWidth();
-		m_RenderFrame->AddContent(group.ModButton, std::weak_ptr<IUpdatable>(), group.ModButton, group.ModButton, vui::LocalCardinal::DOWN);
+ 		mod_group group = mod_group(cap::color::text_primary_color, cap::color::background_color_3);
+		group.mod_category.reserve(binned_catagories[i].size());
+		group.mod_button->set_size({ 200, 16 });
+		group.mod_button->enable_fill_width(true);
+		m_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
 
-		offset += Block::Padding / 2;
+		offset += rhr::stack::block::padding / 2;
  		
-		ActiveCatagory* activeCatagories = new ActiveCatagory[binnedCatagories[i].size()];
+		active* active_catagories = new active[binned_catagories[i].size()];
 
-		for (size_t a = 0; a < binnedCatagories[i].size(); a++)
+		for (usize a = 0; a < binned_catagories[i].size(); a++)
 		{
-			activeCatagories[a].ActiveModGroup = static_cast<uint16_t>(i);
-			activeCatagories[a].ActiveModGroupCatagory = static_cast<uint16_t>(a);
+			active_catagories[a].mod_group = static_cast<u16>(i);
+			active_catagories[a].mod_group_category = static_cast<u16>(a);
 
-			std::shared_ptr<vui::RenderButton> button = std::make_shared<vui::RenderButton>(Color::TextPrimaryColor, Color::BackgroundColor3);
-			button->SetWeak(button);
-			button->SetSize({ 200, 16 });
-			button->SetPosition({ 16, 0 });
-			button->SetColorSecondary(binnedCatagories[i][a]->GetColor());
-			button->EnableFillWidth();
-			button->SetCallback(ButtonCatagoryCallback, activeCatagories + a);
-			m_RenderFrame->AddContent(button, std::weak_ptr<IUpdatable>(), button, button, vui::LocalCardinal::DOWN);
+			std::shared_ptr<rhr::render::object::button> button = std::make_shared<rhr::render::object::button>(cap::color::text_primary_color, cap::color::background_color_3);
+			button->set_weak(button);
+			button->set_size({ 200, 16 });
+			button->set_position({ 16, 0 });
+			button->set_color_secondary(binned_catagories[i][a]->GetColor());
+			button->enable_fill_width(true);
+			button->set_callback(button_callback_category, active_catagories + a);
+			m_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, rhr::render::cardinal::local::DOWN);
 
-			offset += Block::Padding / 2 + button->GetSize().y;
-			group.ModCategories.push_back(std::move(button));
+			offset += rhr::stack::block::padding / 2 + button->get_size().y;
+			group.mod_category.push_back(std::move(button));
 
-			group.ModCategoryCollections.push_back(std::vector<std::shared_ptr<Collection>>());
-			group.ModCategoryStacks.push_back(std::vector<std::shared_ptr<Stack>>());
-			group.ModCategoryBlocks.push_back(std::vector<std::shared_ptr<Block>>());
+			group.mod_category_collections.push_back(std::vector<std::shared_ptr<rhr::stack::collection>>());
+			group.mod_category_stacks.push_back(std::vector<std::shared_ptr<rhr::stack::stack>>());
+			group.mod_category_blocks.push_back(std::vector<std::shared_ptr<rhr::stack::block>>());
 
-			for (size_t b = 0; b < binnedBlocks[i][a].size(); b++)
+			for (usize b = 0; b < binned_blocks[i][a].size(); b++)
 			{
-				std::shared_ptr<Collection> collection = std::make_shared<Collection>();
-				collection->SetWeak(collection);
+				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>();
+				collection->set_weak(collection);
 				collection->display_vanity(false);
-				collection->SetPosition({ 0, (Block::Height + (Block::Padding * 2)) * b });
+				collection->set_position({ 0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b });
 
-				std::shared_ptr<Stack> stack = std::make_shared<Stack>();
-				stack->SetWeak(stack);
+				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>();
+				stack->set_weak(stack);
 
-				std::shared_ptr<Block> block = std::make_shared<Block>(binnedBlocks[i][a][b]->GetUnlocalizedName());
-				block->SetWeak(block);
+				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(binned_blocks[i][a][b]->GetUnlocalizedName());
+				block->set_weak(block);
 				
-				stack->AddBlock(block);
-				collection->AddStack(stack);
+				stack->add_block(block);
+				collection->add_stack(stack);
 
-				group.ModCategoryCollections.back().push_back(collection);
-				group.ModCategoryStacks.back().push_back(stack);
-				group.ModCategoryBlocks.back().push_back(block);
+				group.mod_category_collections.back().push_back(collection);
+				group.mod_category_stacks.back().push_back(stack);
+				group.mod_category_blocks.back().push_back(block);
 			}
 		}
 
-		m_ModGroups.push_back(std::move(group));
+		m_mod_groups.push_back(std::move(group));
 	}
 
-	SelectCatagory(m_ActiveCatagory);
+	select_category(m_active_category);
 }
 
-void CatagoryHandler::Render()
+void rhr::handler::category::render()
 {
-	for (auto& group : m_ModGroups)
+	for (auto& group : m_mod_groups)
 	{
-		group.ModButton->Render();
+		group.mod_button->render();
 
-		for (auto& catagory : group.ModCategories)
-			catagory->Render();
+		for (auto& catagory : group.mod_category)
+			catagory->render();
 	}
 }
 
-void CatagoryHandler::SelectCatagory(ActiveCatagory activeCatagory)
+void rhr::handler::category::select_category(active active_category)
 {
-	m_ActiveCatagory = activeCatagory;
+	m_active_category = active_category;
 
-	if (m_ActiveCatagory.ActiveModGroup >= m_ModGroups.size())
+	if (m_active_category.mod_group >= m_mod_groups.size())
 	{
-		Logger::Warn("Failed to load catagory. Mod idx out of range (" + std::to_string(m_ActiveCatagory.ActiveModGroup) + " >= " + std::to_string(m_ModGroups.size()) + ")");
+		Logger::Warn("Failed to load catagory. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " + std::to_string(m_mod_groups.size()) + ")");
 		return;
 	}
 
-	if (m_ActiveCatagory.ActiveModGroupCatagory >= m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategories.size())
+	if (m_active_category.mod_group_category >= m_mod_groups[m_active_category.mod_group].mod_category.size())
 	{
-		Logger::Warn("Failed to load catagory. Category idx out of range (" + std::to_string(m_ActiveCatagory.ActiveModGroupCatagory) + " >= " + std::to_string(m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategories.size()) + ")");
+		Logger::Warn("Failed to load catagory. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) + " >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category.size()) + ")");
 		return;
 	}
 
-	Plane::toolbar_plane->delete_contents();
+	rhr::stack::plane::toolbar_plane->delete_contents();
 
-	for (auto collection : m_ModGroups[m_ActiveCatagory.ActiveModGroup].ModCategoryCollections[m_ActiveCatagory.ActiveModGroupCatagory])
-		Plane::toolbar_plane->add_collection(collection, false);
+	for (auto collection : m_mod_groups[m_active_category.mod_group].mod_category_collections[m_active_category.mod_group_category])
+		rhr::stack::plane::toolbar_plane->add_collection(collection, false);
 }
 
-std::vector<CatagoryHandler::ModGroup> CatagoryHandler::m_ModGroups;
+std::vector<rhr::handler::category::mod_group> rhr::handler::category::m_mod_groups;
 
-std::shared_ptr<vui::RenderFrame> CatagoryHandler::m_RenderFrame;
+std::shared_ptr<rhr::render::frame> rhr::handler::category::m_render_frame;
 
-CatagoryHandler::ActiveCatagory CatagoryHandler::m_ActiveCatagory = { 0, 0 };
+rhr::handler::category::active rhr::handler::category::m_active_category = { 0, 0 };

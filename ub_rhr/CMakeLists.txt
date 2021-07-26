@@ -6,8 +6,8 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/message.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/project.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/project.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/statment.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/statment.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/statement.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/statement.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/context.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/context.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/category.hpp"
@@ -46,6 +46,7 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/stacking/arguments/text.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/stacking/arguments/text.cpp"
 	
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/cardinal.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/renderer.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/renderer.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/frame.hpp"

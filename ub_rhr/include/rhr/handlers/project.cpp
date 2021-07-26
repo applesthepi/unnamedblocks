@@ -1,30 +1,30 @@
-#include "ProjectHandler.hpp"
+#include "project.hpp"
 
-#include "registries/BlockRegistry.hpp"
-#include "stacking/Collection.hpp"
-#include "stacking/Stack.hpp"
+#include "rhr/registries/block.hpp"
+#include "rhr/stacking/collection.hpp"
+#include "rhr/stacking/stack.hpp"
 
-using namespace endianness;
+using namespace cap::endianness;
 
-inline void push(std::vector<char> &vec, uint32_t value) {
+inline void push(std::vector<char> &vec, u32 value) {
 	auto bytes = to_le_bytes(value);
 	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, float value) {
+inline void push(std::vector<char> &vec, f32 value) {
 	auto bytes = to_le_bytes(value);
 	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, int32_t value) {
+inline void push(std::vector<char> &vec, i32 value) {
 	auto bytes = to_le_bytes(value);
 	for(char i : bytes) {
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, uint16_t value) {
+inline void push(std::vector<char> &vec, u16 value) {
 	auto bytes = to_le_bytes(value);
 	for(char i : bytes) {
 		vec.push_back(i);
@@ -291,6 +291,6 @@ void ProjectHandler::LoadProject(const std::string& path)
 	}
 }
 */
-std::string ProjectHandler::CurrentPath;
+std::string rhr::handler::project::current_path;
 
-std::vector<std::string> ProjectHandler::Mods;
+std::vector<std::string> rhr::handler::project::mods;

@@ -1,16 +1,26 @@
 #pragma once
 #include "config.h"
 
-#include "stacking/Plane.hpp"
+#include "rhr/stacking/Plane.hpp"
 
 #include <Cappuccino/Utils.hpp>
 
-class ProjectHandler
+namespace rhr::handler
+{
+///
+class project
 {
 public:
-	static void LoadProject(const std::string& path);
-	static void SaveProject(const std::string& path);
+	///
+	//static void LoadProject(const std::string& path);
 
-	static std::string CurrentPath;
-	static std::vector<std::string> Mods;
+	///
+	//static void SaveProject(const std::string& path);
+
+	///
+	static std::string current_path;
+
+	///
+	static std::vector<std::string> mods;
 };
+}
