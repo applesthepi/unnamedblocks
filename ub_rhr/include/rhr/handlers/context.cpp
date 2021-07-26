@@ -7,7 +7,7 @@
 // 	return m_enabled;
 // }
 
-// void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(uint8_t)>* callback)
+// void ContextHandler::Enable(const sf::Vector2f& position, std::function<void(u8)>* callback)
 // {
 // 	if (m_enabled)
 // 		return;
@@ -71,7 +71,7 @@
 
 // 	m_enabled = false;
 
-// 	for (uint8_t i = 0; i < m_buttons.size(); i++)
+// 	for (u8 i = 0; i < m_buttons.size(); i++)
 // 	{
 // 		UIRegistry::GetRegistry().RemoveComponent(m_buttons[i]);
 
@@ -90,6 +90,6 @@
 
 // std::vector<std::function<void()>*> ContextHandler::m_buttonCallbacks;
 
-// std::function<void(uint8_t)>* ContextHandler::m_contextCallback;
+// std::function<void(u8)>* ContextHandler::m_contextCallback;
 
 // std::vector<ButtonText*> ContextHandler::m_buttons;

@@ -1,6 +1,6 @@
-#include "PreProcessorData.hpp"
+#include "preprocessor_data.hpp"
 
-#include "Registration.hpp"
+#include "cappuccino/registration.hpp"
 
 PreProcessorData::PreProcessorData(std::vector<void*>& vCustom)
 	:m_vReal(Registration::GetRealTemplate()), m_vBool(Registration::GetBoolTemplate()), m_vString(Registration::GetStringTemplate()), m_vCustom(vCustom)
@@ -17,7 +17,7 @@ void PreProcessorData::AddStructure(const std::string& name, void* structure)
 
 void* PreProcessorData::GetStructure(const std::string& name)
 {
-	for (uint64_t i = 0; i < m_names.size(); i++)
+	for (u64 i = 0; i < m_names.size(); i++)
 	{
 		if (m_names[i] == name)
 			return m_structures[i];
@@ -27,22 +27,22 @@ void* PreProcessorData::GetStructure(const std::string& name)
 	return nullptr;
 }
 /*
-CAP_DLL double& PreProcessorData::GetReal(uint64_t idx)
+CAP_DLL f64& PreProcessorData::GetReal(u64 idx)
 {
 	return m_vReal[idx];
 }
 
-CAP_DLL bool& PreProcessorData::GetBool(uint64_t idx)
+CAP_DLL bool& PreProcessorData::GetBool(u64 idx)
 {
 	return m_vBool[idx];
 }
 
-CAP_DLL std::string& PreProcessorData::GetString(uint64_t idx)
+CAP_DLL std::string& PreProcessorData::GetString(u64 idx)
 {
 	return m_vString[idx];
 }
 */
-CAP_DLL uint64_t PreProcessorData::CustomPut(void* mem)
+CAP_DLL u64 PreProcessorData::CustomPut(void* mem)
 {
 	m_vCustom.push_back(mem);
 	return m_vCustom.size() - 1;

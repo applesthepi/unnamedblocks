@@ -28,7 +28,7 @@ public:
 		return BlockArgumentType::STRING;
 	}
 
-	uint32_t GetWidth() override
+	u32 GetWidth() override
 	{
 		return m_field.GetWidth();
 	}
@@ -59,22 +59,22 @@ public:
 	void UpdateVertexArray() override
 	{
 
-		uint16_t height = Global::BlockHeight - Global::BlockBorder;
-		const uint32_t width = m_field.GetWidth();
+		u16 height = Global::BlockHeight - Global::BlockBorder;
+		const u32 width = m_field.GetWidth();
 
 		sf::Color col(MOD_BUTTON_TEXT_BG_ACCENT_STRONG);
 		const std::string& text = m_field.GetText();
 
 		// ===================================================================================================
-		// =============== Prepare Vertex Buffer Texture
+		// =============== Prepare rhr::render::vertex Buffer Texture
 		// ===================================================================================================
 
 		//sf::Text textRecreation = sf::Text(text, Global::Font, height);
 		//textRecreation.setFillColor(MOD_BUTTON_TEXT_FG);
 		//textRecreation.setPosition(4, -1);
 
-		uint32_t textWidth = width;
-		uint32_t textHeight = Global::BlockHeight;
+		u32 textWidth = width;
+		u32 textHeight = Global::BlockHeight;
 
 		if (textWidth == 0 || textHeight == 0)
 		{
@@ -88,7 +88,7 @@ public:
 		//m_vertexArrayImage = m_textRendered.getTexture().copyToImage();
 
 		// ===================================================================================================
-		// =============== Update Vertex Array; see "dev/string_geometry.png"
+		// =============== Update rhr::render::vertex Array; see "dev/string_geometry.png"
 		// ===================================================================================================
 
 		//ResetVertices(6);
@@ -124,7 +124,7 @@ public:
 		//AddTriangle(vertices0, textureCoords0);
 		//AddTriangle(vertices1, textureCoords1);
 
-		//for (uint32_t i = 0; i < text.length(); i++)
+		//for (u32 i = 0; i < text.length(); i++)
 		//	GetVAO().AddChar(sf::FloatRect(i * Global::BlockHeight, 0, Global::BlockHeight, Global::BlockHeight), text[i]);
 	}
 

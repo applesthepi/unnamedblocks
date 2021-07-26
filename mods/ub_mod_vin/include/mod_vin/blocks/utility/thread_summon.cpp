@@ -22,10 +22,10 @@ static void ExecuteRelease(ModBlockPass* pass)
 	ModBlockPass* np = new ModBlockPass(init);
 	Registration::RegisterPass(np);
 
-	ExecutionThread* thr = new ExecutionThread(*(uint64_t*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
+	ExecutionThread* thr = new ExecutionThread(*(u64*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
-	uint64_t putIdx = pass->CustomPut(thr);
+	u64 putIdx = pass->CustomPut(thr);
 	pass->GetReal(0) = putIdx;
 
 	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
@@ -56,10 +56,10 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ModBlockPass* np = new ModBlockPass(init);
 	Registration::RegisterPass(np);
 
-	ExecutionThread* thr = new ExecutionThread(*(uint64_t*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
+	ExecutionThread* thr = new ExecutionThread(*(u64*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
-	uint64_t putIdx = pass->CustomPut(thr);
+	u64 putIdx = pass->CustomPut(thr);
 	pass->GetReal(0) = putIdx;
 
 	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
@@ -74,7 +74,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
 	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
-	uint64_t* loc = new uint64_t;
+	u64* loc = new u64;
 	std::string* str = (std::string*)(blockData.GetData()[1]);
 
 	*loc = finder->GetFunctionStackIdx(*str);
@@ -103,9 +103,9 @@ blockExecution BlockUtilityThreadSummon::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
-std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityThreadSummon::GetRuntimeStages() const
+std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityThreadSummon::GetRuntimeStages() const
 {
-	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	std::vector<std::pair<blockDataInitialization, u16>> stages;
 	stages.push_back(std::make_pair(RuntimeInit, 1));
 	return stages;
 }

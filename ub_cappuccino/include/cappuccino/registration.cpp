@@ -1,6 +1,6 @@
-#include "Registration.hpp"
+#include "registration.hpp"
 
-#include "PreProcessorData.hpp"
+#include "cappuccino/preprocessor_data.hpp"
 
 static void ThreadUtilRelease()
 {
@@ -76,7 +76,7 @@ void Registration::UnRegisterPass(ModBlockPass* pass)
 {
 	std::unique_lock<std::mutex> lock(m_passesMutex);
 
-	for (uint64_t i = 0; i < m_passes.size(); i++)
+	for (u64 i = 0; i < m_passes.size(); i++)
 	{
 		if (m_passes[i] == pass)
 		{
@@ -99,7 +99,7 @@ void Registration::UnRegisterExecutionThread(ExecutionThread* thr, bool join)
 {
 	std::unique_lock<std::mutex> lock(m_executionMutex);
 
-	for (uint64_t i = 0; i < m_execution.size(); i++)
+	for (u64 i = 0; i < m_execution.size(); i++)
 	{
 		if (m_execution[i] == thr)
 		{
@@ -110,17 +110,17 @@ void Registration::UnRegisterExecutionThread(ExecutionThread* thr, bool join)
 	}
 }
 
-void Registration::SetFunctionMain(uint64_t main)
+void Registration::SetFunctionMain(u64 main)
 {
 	m_functionMain = main;
 }
 
-void Registration::SetFunctionCallCount(uint64_t* functionCallCount)
+void Registration::SetFunctionCallCount(u64* functionCallCount)
 {
 	m_functionCallCount = functionCallCount;
 }
 
-void Registration::SetFunctionTotalCount(uint64_t functionTotalCount)
+void Registration::SetFunctionTotalCount(u64 functionTotalCount)
 {
 	m_functionTotalCount = functionTotalCount;
 }
@@ -145,7 +145,7 @@ void Registration::SetDebug(bool debugBuild)
 	m_debugBuild = debugBuild;
 }
 
-void Registration::SetSuper(uint8_t* super, int64_t* superData, void* superMutex)
+void Registration::SetSuper(u8* super, i64* superData, void* superMutex)
 {
 	m_super = super;
 	m_superData = superData;
@@ -158,18 +158,18 @@ void Registration::EndAll(ModBlockPass* whitelist)
 
 	if (whitelist == nullptr)
 	{
-		for (uint64_t i = 0; i < m_execution.size(); i++)
+		for (u64 i = 0; i < m_execution.size(); i++)
 		{
 			m_execution[i]->End();
 			m_executionFlagged[i] = true;
 		}
 
-		for (uint64_t i = 0; i < m_passes.size(); i++)
+		for (u64 i = 0; i < m_passes.size(); i++)
 			m_passesFlagged[i] = true;
 	}
 	else
 	{
-		for (uint64_t i = 0; i < m_execution.size(); i++)
+		for (u64 i = 0; i < m_execution.size(); i++)
 		{
 			if (m_passes[i] != whitelist)
 			{
@@ -178,7 +178,7 @@ void Registration::EndAll(ModBlockPass* whitelist)
 			}
 		}
 
-		for (uint64_t i = 0; i < m_passes.size(); i++)
+		for (u64 i = 0; i < m_passes.size(); i++)
 			m_passesFlagged[i] = true;
 	}
 }
@@ -198,12 +198,12 @@ std::atomic<bool>& Registration::GetStop()
 	return m_stop;
 }
 
-uint64_t* Registration::GetFunctionCallCount()
+u64* Registration::GetFunctionCallCount()
 {
 	return m_functionCallCount;
 }
 
-CAP_DLL uint64_t Registration::GetFunctionTotalCount()
+CAP_DLL u64 Registration::GetFunctionTotalCount()
 {
 	return m_functionTotalCount;
 }
@@ -223,18 +223,18 @@ void Registration::RunUtilityTick()
 	std::unique_lock<std::mutex> lock1(m_passesMutex);
 	std::unique_lock<std::mutex> lock2(m_executionMutex);
 
-	for (uint64_t i = 0; i < m_passes.size(); i++)
+	for (u64 i = 0; i < m_passes.size(); i++)
 	{
 		const std::vector<std::string>& messages = m_passes[i]->PullMessages();
 
-		uint64_t amount = messages.size();
+		u64 amount = messages.size();
 		if (amount > 256)
 		{
 			amount = 256;
 			printf("restricting to 256 messages per tick...\n");
 		}
 
-		for (uint64_t a = 0; a < amount; a++)
+		for (u64 a = 0; a < amount; a++)
 			printf("%s\n", (messages[a]).c_str());
 
 		m_passes[i]->ReturnMessages();
@@ -242,7 +242,7 @@ void Registration::RunUtilityTick()
 
 	// cleanup passes
 
-	for (uint64_t i = 0; i < m_passes.size(); i++)
+	for (u64 i = 0; i < m_passes.size(); i++)
 	{
 		if (m_passesFlagged[i])
 		{
@@ -257,7 +257,7 @@ void Registration::RunUtilityTick()
 
 	// cleanup threads
 
-	for (uint64_t i = 0; i < m_execution.size(); i++)
+	for (u64 i = 0; i < m_execution.size(); i++)
 	{
 		if (m_executionFlagged[i])
 		{
@@ -357,19 +357,19 @@ void Registration::Run()
 
 	printf("finished execution; deallocating...\n");
 
-	for (uint64_t i = 0; i < m_customRegister.size(); i++)
+	for (u64 i = 0; i < m_customRegister.size(); i++)
 	{
 		if (m_customRegister[i] != nullptr)
 			delete m_customRegister[i];
 	}
 
-	for (uint64_t i = 0; i < m_variableRealTemplate.size(); i++)
+	for (u64 i = 0; i < m_variableRealTemplate.size(); i++)
 		delete[] m_variableRealTemplate[i];
 
-	for (uint64_t i = 0; i < m_variableBoolTemplate.size(); i++)
+	for (u64 i = 0; i < m_variableBoolTemplate.size(); i++)
 		delete[] m_variableBoolTemplate[i];
 
-	for (uint64_t i = 0; i < m_variableStringTemplate.size(); i++)
+	for (u64 i = 0; i < m_variableStringTemplate.size(); i++)
 		delete[] m_variableStringTemplate[i];
 
 	m_variableRealTemplate.clear();
@@ -388,7 +388,7 @@ bool Registration::IsAllDone()
 	// dont lock execution mutex because it is already locked
 	return m_execution.size() == 0;
 	/*
-	for (uint64_t i = 0; i < m_execution.size(); i++)
+	for (u64 i = 0; i < m_execution.size(); i++)
 	{
 		if (!m_execution[i]->GetFinished())
 			return false;
@@ -398,7 +398,7 @@ bool Registration::IsAllDone()
 	*/
 }
 
-const std::vector<double*>& Registration::GetRealTemplate()
+const std::vector<f64*>& Registration::GetRealTemplate()
 {
 	return m_variableRealTemplate;
 }
@@ -413,17 +413,17 @@ const std::vector<std::string*>& Registration::GetStringTemplate()
 	return m_variableStringTemplate;
 }
 
-CAP_DLL const std::vector<uint64_t>* Registration::GetRealCount()
+CAP_DLL const std::vector<u64>* Registration::GetRealCount()
 {
 	return &m_variableRealCount;
 }
 
-CAP_DLL const std::vector<uint64_t>* Registration::GetBoolCount()
+CAP_DLL const std::vector<u64>* Registration::GetBoolCount()
 {
 	return &m_variableBoolCount;
 }
 
-CAP_DLL const std::vector<uint64_t>* Registration::GetStringCount()
+CAP_DLL const std::vector<u64>* Registration::GetStringCount()
 {
 	return &m_variableStringCount;
 }
@@ -447,13 +447,13 @@ bool Registration::GlobalPre(PreProcessorData& data)
 {
 	std::vector<ModBlock*> singleBlocks;
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			bool found = false;
 
-			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			for (u64 b = 0; b < singleBlocks.size(); b++)
 			{
 				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
 				{
@@ -467,7 +467,7 @@ bool Registration::GlobalPre(PreProcessorData& data)
 		}
 	}
 
-	for (uint64_t i = 0; i < singleBlocks.size(); i++)
+	for (u64 i = 0; i < singleBlocks.size(); i++)
 	{
 		if (!singleBlocks[i]->GetRuntimeGlobalPreInit()(data))
 		{
@@ -483,13 +483,13 @@ bool Registration::GlobalPost(PreProcessorData& data)
 {
 	std::vector<ModBlock*> singleBlocks;
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			bool found = false;
 
-			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			for (u64 b = 0; b < singleBlocks.size(); b++)
 			{
 				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
 				{
@@ -503,7 +503,7 @@ bool Registration::GlobalPost(PreProcessorData& data)
 		}
 	}
 
-	for (uint64_t i = 0; i < singleBlocks.size(); i++)
+	for (u64 i = 0; i < singleBlocks.size(); i++)
 	{
 		if (!singleBlocks[i]->GetRuntimeGlobalPostInit()(data))
 		{
@@ -517,15 +517,15 @@ bool Registration::GlobalPost(PreProcessorData& data)
 
 bool Registration::LocalPre(PreProcessorData& data)
 {
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
 		std::vector<ModBlock*> singleBlocks;
 
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			bool found = false;
 
-			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			for (u64 b = 0; b < singleBlocks.size(); b++)
 			{
 				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
 				{
@@ -540,7 +540,7 @@ bool Registration::LocalPre(PreProcessorData& data)
 
 		data.StackIdx = i;
 
-		for (uint64_t a = 0; a < singleBlocks.size(); a++)
+		for (u64 a = 0; a < singleBlocks.size(); a++)
 		{
 			if (!singleBlocks[a]->GetRuntimeLocalPreInit()(data))
 			{
@@ -555,15 +555,15 @@ bool Registration::LocalPre(PreProcessorData& data)
 
 bool Registration::LocalPost(PreProcessorData& data)
 {
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
 		std::vector<ModBlock*> singleBlocks;
 
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			bool found = false;
 
-			for (uint64_t b = 0; b < singleBlocks.size(); b++)
+			for (u64 b = 0; b < singleBlocks.size(); b++)
 			{
 				if (singleBlocks[b]->GetUnlocalizedName() == m_blocks[i][a]->GetUnlocalizedName())
 				{
@@ -578,7 +578,7 @@ bool Registration::LocalPost(PreProcessorData& data)
 
 		data.StackIdx = i;
 
-		for (uint64_t a = 0; a < singleBlocks.size(); a++)
+		for (u64 a = 0; a < singleBlocks.size(); a++)
 		{
 			if (!singleBlocks[a]->GetRuntimeLocalPostInit()(data))
 			{
@@ -594,26 +594,26 @@ bool Registration::LocalPost(PreProcessorData& data)
 bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
 {
 	std::vector<std::vector<blockDataInitialization>> stages;
-	std::vector<std::vector<uint64_t>> stageStackIdx;
-	std::vector<std::vector<uint64_t>> stageBlockIdx;
+	std::vector<std::vector<u64>> stageStackIdx;
+	std::vector<std::vector<u64>> stageBlockIdx;
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
-			std::vector<std::pair<blockDataInitialization, uint16_t>> initStages = m_blocks[i][a]->GetRuntimeStages();
+			std::vector<std::pair<blockDataInitialization, u16>> initStages = m_blocks[i][a]->GetRuntimeStages();
 
-			for (uint64_t b = 0; b < initStages.size(); b++)
+			for (u64 b = 0; b < initStages.size(); b++)
 			{
 				if (initStages[b].second >= stages.size())
 				{
-					uint64_t stagesSize = stages.size();
+					u64 stagesSize = stages.size();
 
-					for (uint64_t c = 0; c < (initStages[b].second - stagesSize) + 1; c++)
+					for (u64 c = 0; c < (initStages[b].second - stagesSize) + 1; c++)
 					{
 						stages.push_back(std::vector<blockDataInitialization>());
-						stageStackIdx.push_back(std::vector<uint64_t>());
-						stageBlockIdx.push_back(std::vector<uint64_t>());
+						stageStackIdx.push_back(std::vector<u64>());
+						stageBlockIdx.push_back(std::vector<u64>());
 					}
 				}
 
@@ -624,9 +624,9 @@ bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
 		}
 	}
 
-	for (uint64_t i = 0; i < stages.size(); i++)
+	for (u64 i = 0; i < stages.size(); i++)
 	{
-		for (uint64_t a = 0; a < stages[i].size(); a++)
+		for (u64 a = 0; a < stages[i].size(); a++)
 		{
 			preData.StackIdx = stageStackIdx[i][a];
 			preData.BlockIdx = stageBlockIdx[i][a];
@@ -674,7 +674,7 @@ bool Registration::TestSuperBase()
 
 		std::unique_lock<std::mutex> lock(m_executionMutex);
 
-		for (uint64_t i = 0; i < m_execution.size(); i++)
+		for (u64 i = 0; i < m_execution.size(); i++)
 			m_execution[i]->Break(&m_breakFullResume);
 
 		return true;
@@ -718,7 +718,7 @@ bool Registration::TestSuperDebug()
 		m_breakSingleResume = false;
 
 		std::unique_lock<std::mutex> lock(m_executionMutex);
-		m_execution[reinterpret_cast<uint64_t>(m_superData)]->Break(&m_breakSingleResume);
+		m_execution[reinterpret_cast<u64>(m_superData)]->Break(&m_breakSingleResume);
 		
 		return true;
 	}
@@ -752,7 +752,7 @@ bool Registration::TestSuperDebug()
 		printf("stepping single execution...\n");
 
 		std::unique_lock<std::mutex> lock(m_executionMutex);
-		m_execution[reinterpret_cast<uint64_t>(m_superData)]->Step();
+		m_execution[reinterpret_cast<u64>(m_superData)]->Step();
 
 		return true;
 	}
@@ -762,14 +762,14 @@ bool Registration::TestSuperDebug()
 
 void Registration::CompileDataDebug()
 {
-	uint64_t tempTotal = 0;
-	uint64_t variableIdx = 0;
+	u64 tempTotal = 0;
+	u64 variableIdx = 0;
 	std::vector<std::vector<ModBlockDataInterpretation>> tempRegsitryTypes;
 	std::vector<std::vector<void*>> tempRegsitryValues;
 
-	auto addToRegistry = [&](const std::string& name, uint64_t idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
+	auto addToRegistry = [&](const std::string& name, u64 idx, const ModBlockDataInterpretation& interp, void* use = nullptr)
 	{
-		for (uint64_t i = 0; i < m_variableRegistry[idx].size(); i++)
+		for (u64 i = 0; i < m_variableRegistry[idx].size(); i++)
 		{
 			if (m_variableRegistry[idx][i] == name)
 			{
@@ -787,28 +787,28 @@ void Registration::CompileDataDebug()
 		return true;
 	};
 
-	std::vector<std::vector<std::vector<uint64_t>*>*> hauledVariablesPlane;
+	std::vector<std::vector<std::vector<u64>*>*> hauledVariablesPlane;
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
 		m_variableRegistry.push_back(std::vector<std::string>());
 		tempRegsitryTypes.push_back(std::vector<ModBlockDataInterpretation>());
 		tempRegsitryValues.push_back(std::vector<void*>());
 		m_variableRegistryOffsets.push_back(tempTotal);
 
-		std::vector<std::vector<uint64_t>*>* hauledVariablesStack = new std::vector<std::vector<uint64_t>*>();
+		std::vector<std::vector<u64>*>* hauledVariablesStack = new std::vector<std::vector<u64>*>();
 
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			const std::vector<void*>& data = m_data[i][a].GetData();
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			std::vector<uint64_t>* hauledVariablesBlock = new std::vector<uint64_t>();
+			std::vector<u64>* hauledVariablesBlock = new std::vector<u64>();
 
-			for (uint64_t b = 0; b < data.size(); b++)
+			for (u64 b = 0; b < data.size(); b++)
 			{
-				const uint64_t countTotal = tempTotal - m_variableRegistry[i].size();
+				const u64 countTotal = tempTotal - m_variableRegistry[i].size();
 
 				if (types[b] == ModBlockDataType::VAR)
 				{
@@ -816,7 +816,7 @@ void Registration::CompileDataDebug()
 					{
 						bool found = false;
 
-						for (uint64_t c = 0; c < m_variableRegistry[i].size(); c++)
+						for (u64 c = 0; c < m_variableRegistry[i].size(); c++)
 						{
 							if (m_variableRegistry[i][c] == "_L_" + *(std::string*)data[b])
 							{
@@ -843,7 +843,7 @@ void Registration::CompileDataDebug()
 					sprintf(buffer, "_R_%lu_%lu_%lu", i, a, b);
 					
 					if (interpretations[b] == ModBlockDataInterpretation::REAL)
-						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::REAL, new double(*(double*)data[b]));
+						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::REAL, new f64(*(f64*)data[b]));
 					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
 						addToRegistry(std::string(buffer), i, ModBlockDataInterpretation::BOOL, new bool(*(bool*)data[b]));
 					else if (interpretations[b] == ModBlockDataInterpretation::STRING)
@@ -859,38 +859,38 @@ void Registration::CompileDataDebug()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
 		m_variableRealCount.push_back(m_variableRegistry[i].size());
 		m_variableBoolCount.push_back(m_variableRegistry[i].size());
 		m_variableStringCount.push_back(m_variableRegistry[i].size());
 	}
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
-		m_variableRealTemplate.push_back(new double[m_variableRealCount[i]]);
+		m_variableRealTemplate.push_back(new f64[m_variableRealCount[i]]);
 		m_variableBoolTemplate.push_back(new bool[m_variableBoolCount[i]]);
 		m_variableStringTemplate.push_back(new std::string[m_variableStringCount[i]]);
 
-		for (uint64_t a = 0; a < m_variableRealCount[i]; a++)
+		for (u64 a = 0; a < m_variableRealCount[i]; a++)
 		{
 			if (tempRegsitryValues[i][a] != nullptr && tempRegsitryTypes[i][a] == ModBlockDataInterpretation::REAL)
-				m_variableRealTemplate.back()[a] = *(double*)tempRegsitryValues[i][a];
+				m_variableRealTemplate.back()[a] = *(f64*)tempRegsitryValues[i][a];
 		}
 
-		for (uint64_t a = 0; a < m_variableBoolCount[i]; a++)
+		for (u64 a = 0; a < m_variableBoolCount[i]; a++)
 		{
 			if (tempRegsitryValues[i][a] != nullptr && tempRegsitryTypes[i][a] == ModBlockDataInterpretation::BOOL)
 				m_variableBoolTemplate.back()[a] = *(bool*)tempRegsitryValues[i][a];
 		}
 
-		for (uint64_t a = 0; a < m_variableStringCount[i]; a++)
+		for (u64 a = 0; a < m_variableStringCount[i]; a++)
 		{
 			if (tempRegsitryValues[i][a] != nullptr && tempRegsitryTypes[i][a] == ModBlockDataInterpretation::STRING)
 				m_variableStringTemplate.back()[a] = *(std::string*)tempRegsitryValues[i][a];
 		}
 
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			m_data[i][a].ClearData();
 			m_data[i][a].SetRuntimeData(*hauledVariablesPlane[i]->at(a));
@@ -901,26 +901,26 @@ void Registration::CompileDataDebug()
 
 void Registration::CompileDataRelease()
 {
-	uint64_t variableIdx = 0;
+	u64 variableIdx = 0;
 
 	std::vector<std::vector<std::string>> tempRegistryReal;
-	std::vector<std::vector<double*>> tempRegsitryValueReal;
-	std::vector<uint64_t> tempOffsetReal;
-	uint64_t tempTotalReal = 0;
+	std::vector<std::vector<f64*>> tempRegsitryValueReal;
+	std::vector<u64> tempOffsetReal;
+	u64 tempTotalReal = 0;
 
 	std::vector<std::vector<std::string>> tempRegistryBool;
 	std::vector<std::vector<bool*>> tempRegsitryValueBool;
-	std::vector<uint64_t> tempOffsetBool;
-	uint64_t tempTotalBool = 0;
+	std::vector<u64> tempOffsetBool;
+	u64 tempTotalBool = 0;
 
 	std::vector<std::vector<std::string>> tempRegistryString;
 	std::vector<std::vector<std::string*>> tempRegsitryValueString;
-	std::vector<uint64_t> tempOffsetString;
-	uint64_t tempTotalString = 0;
+	std::vector<u64> tempOffsetString;
+	u64 tempTotalString = 0;
 
-	auto addToRegistryReal = [&](const std::string& name, uint64_t idx, double* use = nullptr)
+	auto addToRegistryReal = [&](const std::string& name, u64 idx, f64* use = nullptr)
 	{
-		for (uint64_t i = 0; i < tempRegistryReal[idx].size(); i++)
+		for (u64 i = 0; i < tempRegistryReal[idx].size(); i++)
 		{
 			if (tempRegistryReal[idx][i] == name)
 			{
@@ -937,9 +937,9 @@ void Registration::CompileDataRelease()
 		return true;
 	};
 
-	auto addToRegistryBool = [&](const std::string& name, uint64_t idx, bool* use = nullptr)
+	auto addToRegistryBool = [&](const std::string& name, u64 idx, bool* use = nullptr)
 	{
-		for (uint64_t i = 0; i < tempRegistryBool[idx].size(); i++)
+		for (u64 i = 0; i < tempRegistryBool[idx].size(); i++)
 		{
 			if (tempRegistryBool[idx][i] == name)
 			{
@@ -956,9 +956,9 @@ void Registration::CompileDataRelease()
 		return true;
 	};
 
-	auto addToRegistryString = [&](const std::string& name, uint64_t idx, std::string* use = nullptr)
+	auto addToRegistryString = [&](const std::string& name, u64 idx, std::string* use = nullptr)
 	{
-		for (uint64_t i = 0; i < tempRegistryString[idx].size(); i++)
+		for (u64 i = 0; i < tempRegistryString[idx].size(); i++)
 		{
 			if (tempRegistryString[idx][i] == name)
 			{
@@ -975,15 +975,15 @@ void Registration::CompileDataRelease()
 		return true;
 	};
 
-	std::vector<std::vector<std::vector<uint64_t>*>*> hauledVariablesPlane;
+	std::vector<std::vector<std::vector<u64>*>*> hauledVariablesPlane;
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
 		tempRegistryReal.push_back(std::vector<std::string>());
 		tempRegistryBool.push_back(std::vector<std::string>());
 		tempRegistryString.push_back(std::vector<std::string>());
 
-		tempRegsitryValueReal.push_back(std::vector<double*>());
+		tempRegsitryValueReal.push_back(std::vector<f64*>());
 		tempRegsitryValueBool.push_back(std::vector<bool*>());
 		tempRegsitryValueString.push_back(std::vector<std::string*>());
 
@@ -991,17 +991,17 @@ void Registration::CompileDataRelease()
 		tempOffsetBool.push_back(tempTotalBool);
 		tempOffsetString.push_back(tempTotalString);
 
-		std::vector<std::vector<uint64_t>*>* hauledVariablesStack = new std::vector<std::vector<uint64_t>*>();
+		std::vector<std::vector<u64>*>* hauledVariablesStack = new std::vector<std::vector<u64>*>();
 
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			const std::vector<void*>& data = m_data[i][a].GetData();
 			const std::vector<ModBlockDataType>& types = m_data[i][a].GetTypes();
 			const std::vector<ModBlockDataInterpretation>& interpretations = m_data[i][a].GetInterpretations();
 
-			std::vector<uint64_t>* hauledVariablesBlock = new std::vector<uint64_t>();
+			std::vector<u64>* hauledVariablesBlock = new std::vector<u64>();
 
-			for (uint64_t b = 0; b < data.size(); b++)
+			for (u64 b = 0; b < data.size(); b++)
 			{
 				if (types[b] == ModBlockDataType::VAR)
 				{
@@ -1011,9 +1011,9 @@ void Registration::CompileDataRelease()
 
 						if (!found)
 						{
-							for (uint64_t c = 0; c < tempRegistryReal.size(); c++)
+							for (u64 c = 0; c < tempRegistryReal.size(); c++)
 							{
-								for (uint64_t d = 0; d < tempRegistryReal[c].size(); d++)
+								for (u64 d = 0; d < tempRegistryReal[c].size(); d++)
 								{
 									if (tempRegistryReal[c][d] == "_L_" + *(std::string*)data[b])
 									{
@@ -1032,9 +1032,9 @@ void Registration::CompileDataRelease()
 
 						if (!found)
 						{
-							for (uint64_t c = 0; c < tempRegistryBool.size(); c++)
+							for (u64 c = 0; c < tempRegistryBool.size(); c++)
 							{
-								for (uint64_t d = 0; d < tempRegistryBool[c].size(); d++)
+								for (u64 d = 0; d < tempRegistryBool[c].size(); d++)
 								{
 									if (tempRegistryBool[c][d] == "_L_" + *(std::string*)data[b])
 									{
@@ -1053,9 +1053,9 @@ void Registration::CompileDataRelease()
 
 						if (!found)
 						{
-							for (uint64_t c = 0; c < tempRegistryString.size(); c++)
+							for (u64 c = 0; c < tempRegistryString.size(); c++)
 							{
-								for (uint64_t d = 0; d < tempRegistryString[c].size(); d++)
+								for (u64 d = 0; d < tempRegistryString[c].size(); d++)
 								{
 									if (tempRegistryString[c][d] == "_L_" + *(std::string*)data[b])
 									{
@@ -1101,7 +1101,7 @@ void Registration::CompileDataRelease()
 
 					if (interpretations[b] == ModBlockDataInterpretation::REAL)
 					{
-						addToRegistryReal(std::string(buffer), i, new double(*(double*)data[b]));
+						addToRegistryReal(std::string(buffer), i, new f64(*(f64*)data[b]));
 						hauledVariablesBlock->push_back(variableIdx);
 					}
 					else if (interpretations[b] == ModBlockDataInterpretation::BOOL)
@@ -1123,38 +1123,38 @@ void Registration::CompileDataRelease()
 		hauledVariablesPlane.push_back(hauledVariablesStack);
 	}
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
 		m_variableRealCount.push_back(tempRegistryReal[i].size());
 		m_variableBoolCount.push_back(tempRegistryBool[i].size());
 		m_variableStringCount.push_back(tempRegistryString[i].size());
 	}
 
-	for (uint64_t i = 0; i < m_functionTotalCount; i++)
+	for (u64 i = 0; i < m_functionTotalCount; i++)
 	{
-		m_variableRealTemplate.push_back(new double[m_variableRealCount[i]]);
+		m_variableRealTemplate.push_back(new f64[m_variableRealCount[i]]);
 		m_variableBoolTemplate.push_back(new bool[m_variableBoolCount[i]]);
 		m_variableStringTemplate.push_back(new std::string[m_variableStringCount[i]]);
 
-		for (uint64_t a = 0; a < m_variableRealCount[i]; a++)
+		for (u64 a = 0; a < m_variableRealCount[i]; a++)
 		{
 			if (tempRegsitryValueReal[i][a] != nullptr)
-				m_variableRealTemplate.back()[a] = *(double*)tempRegsitryValueReal[i][a];
+				m_variableRealTemplate.back()[a] = *(f64*)tempRegsitryValueReal[i][a];
 		}
 
-		for (uint64_t a = 0; a < m_variableBoolCount[i]; a++)
+		for (u64 a = 0; a < m_variableBoolCount[i]; a++)
 		{
 			if (tempRegsitryValueBool[i][a] != nullptr)
 				m_variableBoolTemplate.back()[a] = *(bool*)tempRegsitryValueBool[i][a];
 		}
 
-		for (uint64_t a = 0; a < m_variableStringCount[i]; a++)
+		for (u64 a = 0; a < m_variableStringCount[i]; a++)
 		{
 			if (tempRegsitryValueString[i][a] != nullptr)
 				m_variableStringTemplate.back()[a] = *(std::string*)tempRegsitryValueString[i][a];
 		}
 
-		for (uint64_t a = 0; a < m_functionCallCount[i]; a++)
+		for (u64 a = 0; a < m_functionCallCount[i]; a++)
 		{
 			m_data[i][a].ClearData();
 			m_data[i][a].SetRuntimeData(*hauledVariablesPlane[i]->at(a));
@@ -1211,11 +1211,11 @@ std::vector<bool> Registration::m_executionFlagged;
 
 std::vector<bool> Registration::m_executionJoin;
 
-uint64_t Registration::m_functionMain;
+u64 Registration::m_functionMain;
 
-uint64_t* Registration::m_functionCallCount;
+u64* Registration::m_functionCallCount;
 
-uint64_t Registration::m_functionTotalCount;
+u64 Registration::m_functionTotalCount;
 
 executionFunctionStackList Registration::m_calls;
 
@@ -1223,13 +1223,13 @@ ModBlockData** Registration::m_data;
 
 ModBlock*** Registration::m_blocks;
 
-std::vector<uint64_t> Registration::m_variableRealCount;
+std::vector<u64> Registration::m_variableRealCount;
 
-std::vector<uint64_t> Registration::m_variableBoolCount;
+std::vector<u64> Registration::m_variableBoolCount;
 
-std::vector<uint64_t> Registration::m_variableStringCount;
+std::vector<u64> Registration::m_variableStringCount;
 
-std::vector<double*> Registration::m_variableRealTemplate;
+std::vector<f64*> Registration::m_variableRealTemplate;
 
 std::vector<bool*> Registration::m_variableBoolTemplate;
 
@@ -1251,9 +1251,9 @@ std::thread Registration::m_utilThread;
 
 bool Registration::m_debugBuild;
 
-uint8_t* Registration::m_super;
+u8* Registration::m_super;
 
-int64_t* Registration::m_superData;
+i64* Registration::m_superData;
 
 std::mutex* Registration::m_superMutex;
 
@@ -1263,7 +1263,7 @@ bool Registration::m_breakFull;
 
 bool Registration::m_breakSingle;
 
-int64_t Registration::m_breakSingleData;
+i64 Registration::m_breakSingleData;
 
 std::atomic<bool> Registration::m_breakFullResume;
 
@@ -1271,4 +1271,4 @@ std::atomic<bool> Registration::m_breakSingleResume;
 
 std::vector<std::vector<std::string>> Registration::m_variableRegistry;
 
-std::vector<uint64_t> Registration::m_variableRegistryOffsets;
+std::vector<u64> Registration::m_variableRegistryOffsets;

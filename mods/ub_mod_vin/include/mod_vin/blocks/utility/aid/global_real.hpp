@@ -13,10 +13,10 @@ public:
 	~UtilityGlobalReal();
 
 	void Bake();
-	double& Get(uint64_t idx);
+	f64& Get(u64 idx);
 	void Put(const std::string& name);
-	uint64_t GetIdx(const std::string& name);
+	u64 GetIdx(const std::string& name);
 private:
 	std::vector<std::string> m_varNames;
-	double* m_variables;
+	f64* m_variables;
 };

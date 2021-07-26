@@ -2,7 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetString(0) = std::to_string((int64_t)pass->GetReal(1));
+	pass->GetString(0) = std::to_string((i64)pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)

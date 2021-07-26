@@ -2,6 +2,9 @@
 
 #include "rhr/rendering/renderer.hpp"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 void rhr::render::tools::initialize()
 {
 	validation_layers.push_back("VK_LAYER_KHRONOS_validation");
@@ -70,7 +73,7 @@ vk::image_view rhr::render::tools::create_image_view(vk::image image, vk::format
 
 	vk::image_view image_view;
 
-	if (vkCreateImageView(Renderer::device, &view_info, nullptr, &image_view) != VK_SUCCESS)
+	if (vkCreateImageView(rhr::render::renderer::device, &view_info, nullptr, &image_view) != VK_SUCCESS)
 		Logger::Fatal("failed to create image view");
 
 	return image_view;
@@ -79,57 +82,57 @@ vk::image_view rhr::render::tools::create_image_view(vk::image image, vk::format
 void rhr::render::tools::create_aux_command_buffer()
 {
 	return;
-	//std::unique_lock<SHARED_MUTEX> lock(Renderer::AuxCommandBufferMutex);
+	//std::unique_lock<SHARED_MUTEX> lock(rhr::render::renderer::AuxCommandBufferMutex);
 	//
 	//vk::command_buffer_allocate_info allocInfo {};
 	//allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	//allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	//allocInfo.commandPool = Renderer::CommandPool;
+	//allocInfo.commandPool = rhr::render::renderer::CommandPool;
 	//allocInfo.commandBufferCount = 1;
 	//
-	//vkAllocateCommandBuffers(Renderer::Device, &allocInfo, &Renderer::AuxCommandBuffer);
+	//vkAllocateCommandBuffers(rhr::render::renderer::Device, &allocInfo, &rhr::render::renderer::AuxCommandBuffer);
 	//
 	//vk::command_buffer_begin_info beginInfo {};
 	//beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	//beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 	//
-	//vkBeginCommandBuffer(Renderer::AuxCommandBuffer, &beginInfo);
+	//vkBeginCommandBuffer(rhr::render::renderer::AuxCommandBuffer, &beginInfo);
 }
 
 void rhr::render::tools::reset_aux_command_buffer()
 {
 	return;
-	//std::unique_lock<SHARED_MUTEX> lock(Renderer::AuxCommandBufferMutex);
+	//std::unique_lock<SHARED_MUTEX> lock(rhr::render::renderer::AuxCommandBufferMutex);
 	//
-	//vkEndCommandBuffer(Renderer::AuxCommandBuffer);
+	//vkEndCommandBuffer(rhr::render::renderer::AuxCommandBuffer);
 	//
 	//vk::submit_info submitInfo {};
 	//submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 	//submitInfo.commandBufferCount = 1;
-	//submitInfo.pCommandBuffers = &Renderer::AuxCommandBuffer;
+	//submitInfo.pCommandBuffers = &rhr::render::renderer::AuxCommandBuffer;
 	//
-	//vkQueueSubmit(Renderer::GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
-	//vkQueueWaitIdle(Renderer::GraphicsQueue);
+	//vkQueueSubmit(rhr::render::renderer::GraphicsQueue, 1, &submitInfo, VK_NULL_HANDLE);
+	//vkQueueWaitIdle(rhr::render::renderer::GraphicsQueue);
 	//CleanAuxCommandBuffer();
 	//
 	//vk::command_buffer_begin_info beginInfo {};
 	//beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	//beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 	//
-	//vkBeginCommandBuffer(Renderer::AuxCommandBuffer, &beginInfo);
+	//vkBeginCommandBuffer(rhr::render::renderer::AuxCommandBuffer, &beginInfo);
 }
 
 void rhr::render::tools::clean_aux_command_buffer()
 {
 	return;
-	//for (u32 i = 0; i < Renderer::AuxBufferMemory.size(); i++)
-	//	vkDestroyBuffer(Renderer::Device, Renderer::AuxBufferMemory[i], nullptr);
+	//for (u32 i = 0; i < rhr::render::renderer::AuxBufferMemory.size(); i++)
+	//	vkDestroyBuffer(rhr::render::renderer::Device, rhr::render::renderer::AuxBufferMemory[i], nullptr);
 	//
-	//for (u32 i = 0; i < Renderer::AuxDeviceMemory.size(); i++)
-	//	vkFreeMemory(Renderer::Device, Renderer::AuxDeviceMemory[i], nullptr);
+	//for (u32 i = 0; i < rhr::render::renderer::AuxDeviceMemory.size(); i++)
+	//	vkFreeMemory(rhr::render::renderer::Device, rhr::render::renderer::AuxDeviceMemory[i], nullptr);
 	//
-	//Renderer::AuxBufferMemory.clear();
-	//Renderer::AuxDeviceMemory.clear();
+	//rhr::render::renderer::AuxBufferMemory.clear();
+	//rhr::render::renderer::AuxDeviceMemory.clear();
 }
 
 vk::command_buffer rhr::render::tools::begin_single_time_command()
@@ -139,10 +142,10 @@ vk::command_buffer rhr::render::tools::begin_single_time_command()
 	vk::command_buffer_allocate_info allocate_info {};
 	allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocate_info.commandPool = Renderer::command_pool;
+	allocate_info.commandPool = rhr::render::renderer::command_pool;
 	allocate_info.commandBufferCount = 1;
 
-	vkAllocateCommandBuffers(Renderer::device, &allocate_info, &command_buffer);
+	vkAllocateCommandBuffers(rhr::render::renderer::device, &allocate_info, &command_buffer);
 
 	vk::command_buffer_begin_info begin_info {};
 	begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -161,9 +164,9 @@ void rhr::render::tools::end_single_time_command(vk::command_buffer command_buff
 	submit_info.commandBufferCount = 1;
 	submit_info.pCommandBuffers = &command_buffer;
 
-	vkQueueSubmit(Renderer::graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
-	vkQueueWaitIdle(Renderer::graphics_queue);
-	vkFreeCommandBuffers(Renderer::device, Renderer::command_pool, 1, &command_buffer);
+	vkQueueSubmit(rhr::render::renderer::graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
+	vkQueueWaitIdle(rhr::render::renderer::graphics_queue);
+	vkFreeCommandBuffers(rhr::render::renderer::device, rhr::render::renderer::command_pool, 1, &command_buffer);
 }
 
 vk::format rhr::render::tools::find_supported_format(const std::vector<vk::format>& candidates, vk::image_tiling tiling, vk::format_feature_flags features)
@@ -171,7 +174,7 @@ vk::format rhr::render::tools::find_supported_format(const std::vector<vk::forma
 	for (vk::format format : candidates)
 	{
 		VkFormatProperties props;
-		vkGetPhysicalDeviceFormatProperties(Renderer::physical_device, format, &props);
+		vkGetPhysicalDeviceFormatProperties(rhr::render::renderer::physical_device, format, &props);
 
 		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 		{
@@ -277,7 +280,7 @@ void rhr::render::tools::transition_image_layout(vk::image image, vk::format for
 u32 rhr::render::tools::find_memory_type(u32 type_filter, vk::memory_property_flags properties)
 {
 	vk::physical_device_memory_properties memory_properties;
-	vkGetPhysicalDeviceMemoryProperties(Renderer::physical_device, &memory_properties);
+	vkGetPhysicalDeviceMemoryProperties(rhr::render::renderer::physical_device, &memory_properties);
 
 	for (u32 i = 0; i < memory_properties.memoryTypeCount; i++)
 	{
@@ -329,50 +332,50 @@ void rhr::render::tools::create_buffer(vk::device_size size, VkBufferUsageFlags 
 	buffer_info.usage = usage;
 	buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateBuffer(Renderer::device, &buffer_info, nullptr, &buffer) != VK_SUCCESS)
+	if (vkCreateBuffer(rhr::render::renderer::device, &buffer_info, nullptr, &buffer) != VK_SUCCESS)
 	{
 		Logger::Error("failed to create buffer");
 		return;
 	}
 
 	vk::memory_requirements memory_requirements;
-	vkGetBufferMemoryRequirements(Renderer::device, buffer, &memory_requirements);
+	vkGetBufferMemoryRequirements(rhr::render::renderer::device, buffer, &memory_requirements);
 
 	vk::memory_allocate_info allocate_info {};
 	allocate_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocate_info.allocationSize = memory_requirements.size;
 	allocate_info.memoryTypeIndex = find_memory_type(memory_requirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(Renderer::device, &allocate_info, nullptr, &buffer_memory) != VK_SUCCESS)
+	if (vkAllocateMemory(rhr::render::renderer::device, &allocate_info, nullptr, &buffer_memory) != VK_SUCCESS)
 	{
 		Logger::Error("failed to allocate buffer memory");
 		return;
 	}
 
-	vkBindBufferMemory(Renderer::device, buffer, buffer_memory, 0);
+	vkBindBufferMemory(rhr::render::renderer::device, buffer, buffer_memory, 0);
 }
 
 void rhr::render::tools::delete_buffer(vk::buffer& buffer, vk::device_memory& buffer_memory)
 {
-	vkDestroyBuffer(Renderer::device, buffer, nullptr);
-	vkFreeMemory(Renderer::device, buffer_memory, nullptr);
+	vkDestroyBuffer(rhr::render::renderer::device, buffer, nullptr);
+	vkFreeMemory(rhr::render::renderer::device, buffer_memory, nullptr);
 }
 
 void rhr::render::tools::copy_buffer(vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size)
 {
 	vk::buffer_copy copy_region {};
 	copy_region.size = size;
-	vkCmdCopyBuffer(Renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+	vkCmdCopyBuffer(rhr::render::renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
 }
 
 void rhr::render::tools::copy_buffer(vk::device_memory src_memory, vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size)
 {
 	vk::buffer_copy copy_region {};
 	copy_region.size = size;
-	vkCmdCopyBuffer(Renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+	vkCmdCopyBuffer(rhr::render::renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
 
-	//Renderer::AuxBufferMemory.push_back(srcBuffer);
-	//Renderer::AuxDeviceMemory.push_back(srcMemory);
+	//rhr::render::renderer::AuxBufferMemory.push_back(srcBuffer);
+	//rhr::render::renderer::AuxDeviceMemory.push_back(srcMemory);
 }
 
 bool rhr::render::tools::check_device_extension_support(vk::physical_device* device)
@@ -408,27 +411,27 @@ void rhr::render::tools::create_image(u32 width, u32 height, vk::format format, 
 	image_info.samples = VK_SAMPLE_COUNT_1_BIT;
 	image_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateImage(Renderer::device, &image_info, nullptr, &image) != VK_SUCCESS)
+	if (vkCreateImage(rhr::render::renderer::device, &image_info, nullptr, &image) != VK_SUCCESS)
 	{
 		Logger::Error("failed to create image");
 		return;
 	}
 
 	vk::memory_requirements memory_requirements;
-	vkGetImageMemoryRequirements(Renderer::device, image, &memory_requirements);
+	vkGetImageMemoryRequirements(rhr::render::renderer::device, image, &memory_requirements);
 
 	vk::memory_allocate_info allocation_info {};
 	allocation_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 	allocation_info.allocationSize = memory_requirements.size;
 	allocation_info.memoryTypeIndex = find_memory_type(memory_requirements.memoryTypeBits, properties);
 
-	if (vkAllocateMemory(Renderer::device, &allocation_info, nullptr, &image_memory) != VK_SUCCESS)
+	if (vkAllocateMemory(rhr::render::renderer::device, &allocation_info, nullptr, &image_memory) != VK_SUCCESS)
 	{
 		Logger::Error("failed to allocate image memory");
 		return;
 	}
 
-	vkBindImageMemory(Renderer::device, image, image_memory, 0);
+	vkBindImageMemory(rhr::render::renderer::device, image, image_memory, 0);
 }
 
 vk::image rhr::render::tools::create_texture_image(const std::string& texture_path, vk::device_memory* texture_image_memory)
@@ -450,9 +453,9 @@ vk::image rhr::render::tools::create_texture_image(const std::string& texture_pa
 	create_buffer(image_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, staging_buffer, staging_buffer_memory);
 
 	void* data;
-	vkMapMemory(Renderer::device, staging_buffer_memory, 0, image_size, 0, &data);
+	vkMapMemory(rhr::render::renderer::device, staging_buffer_memory, 0, image_size, 0, &data);
 	memcpy(data, pixels, static_cast<usize>(image_size));
-	vkUnmapMemory(Renderer::device, staging_buffer_memory);
+	vkUnmapMemory(rhr::render::renderer::device, staging_buffer_memory);
 
 	vk::image image;
 	create_image(texture_width, texture_height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *texture_image_memory);
@@ -461,8 +464,8 @@ vk::image rhr::render::tools::create_texture_image(const std::string& texture_pa
 	copy_buffer_to_image(staging_buffer, image, static_cast<u32>(texture_width), static_cast<u32>(texture_height));
 	transition_image_layout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkDestroyBuffer(Renderer::device, staging_buffer, nullptr);
-	vkFreeMemory(Renderer::device, staging_buffer_memory, nullptr);
+	vkDestroyBuffer(rhr::render::renderer::device, staging_buffer, nullptr);
+	vkFreeMemory(rhr::render::renderer::device, staging_buffer_memory, nullptr);
 
 	return image;
 }
@@ -489,9 +492,9 @@ vk::image rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pi
 	create_buffer(image_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, staging_buffer, staging_buffer_memory);
 
 	void* data;
-	vkMapMemory(Renderer::device, staging_buffer_memory, 0, image_size, 0, &data);
+	vkMapMemory(rhr::render::renderer::device, staging_buffer_memory, 0, image_size, 0, &data);
 	memcpy(data, pixels, static_cast<usize>(image_size));
-	vkUnmapMemory(Renderer::device, staging_buffer_memory);
+	vkUnmapMemory(rhr::render::renderer::device, staging_buffer_memory);
 
 	vk::image image;
 	create_image(size.x, size.y, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *texture_image_memory);
@@ -500,8 +503,8 @@ vk::image rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pi
 	copy_buffer_to_image(staging_buffer, image, size.x, size.y);
 	transition_image_layout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkDestroyBuffer(Renderer::device, staging_buffer, nullptr);
-	vkFreeMemory(Renderer::device, staging_buffer_memory, nullptr);
+	vkDestroyBuffer(rhr::render::renderer::device, staging_buffer, nullptr);
+	vkFreeMemory(rhr::render::renderer::device, staging_buffer_memory, nullptr);
 
 	return image;
 }
@@ -514,7 +517,7 @@ std::vector<const char*> rhr::render::tools::get_required_extensions()
 
 	std::vector<const char*> extensions(glfw_extensions, glfw_extensions + glfw_extension_count);
 
-	if (Renderer::enable_validation_layers)
+	if (rhr::render::renderer::enable_validation_layers)
 		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 	return extensions;
@@ -611,7 +614,7 @@ vk::present_mode_khr rhr::render::tools::choose_swap_present_mode(const std::vec
 	{
 		if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR)
 		{
-			Renderer::vsync_enabled = true;
+			rhr::render::renderer::vsync_enabled = true;
 			return available_present_mode;
 		}
 	}
@@ -620,12 +623,12 @@ vk::present_mode_khr rhr::render::tools::choose_swap_present_mode(const std::vec
 	{
 		if (available_present_mode == VK_PRESENT_MODE_IMMEDIATE_KHR)
 		{
-			Renderer::vsync_enabled = false;
+			rhr::render::renderer::vsync_enabled = false;
 			return available_present_mode;
 		}
 	}
 
-	Renderer::vsync_enabled = true;
+	rhr::render::renderer::vsync_enabled = true;
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
 
@@ -652,7 +655,7 @@ vk::extent_2d rhr::render::tools::choose_swap_extent(const vk::surface_capabilit
 	{
 		i32 width;
 		i32 height;
-		glfwGetFramebufferSize(Renderer::window, &width, &height);
+		glfwGetFramebufferSize(rhr::render::renderer::window, &width, &height);
 
 		vk::extent_2d actual_extent = {
 			static_cast<u32>(width),

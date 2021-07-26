@@ -1,8 +1,8 @@
-#include "ModCategories.hpp"
+#include "categories.hpp"
 
-Color CategorySystem::GetColor() const
+cap::color CategorySystem::GetColor() const
 {
-	return Color().FromU8({ 88, 95, 179, 255 });
+	return cap::color().from_u8({ 88, 95, 179, 255 });
 }
 
 std::string CategorySystem::GetUnlocalizedName() const
@@ -15,9 +15,9 @@ std::string CategorySystem::GetDisplayName() const
 	return "System";
 }
 
-Color CategoryUtility::GetColor() const
+cap::color CategoryUtility::GetColor() const
 {
-	return Color().FromU8({ 205, 57, 51, 255 });
+	return cap::color().from_u8({ 205, 57, 51, 255 });
 }
 
 std::string CategoryUtility::GetUnlocalizedName() const
@@ -30,9 +30,9 @@ std::string CategoryUtility::GetDisplayName() const
 	return "Utility";
 }
 
-Color CategoryGraphics::GetColor() const
+cap::color CategoryGraphics::GetColor() const
 {
-	return Color().FromU8({ 230, 143, 46, 255 });
+	return cap::color().from_u8({ 230, 143, 46, 255 });
 }
 
 std::string CategoryGraphics::GetUnlocalizedName() const
@@ -45,9 +45,9 @@ std::string CategoryGraphics::GetDisplayName() const
 	return "Graphics";
 }
 
-Color CategoryBooleans::GetColor() const
+cap::color CategoryBooleans::GetColor() const
 {
-	return Color().FromU8({ 230, 103, 67, 255 });
+	return cap::color().from_u8({ 230, 103, 67, 255 });
 }
 
 std::string CategoryBooleans::GetUnlocalizedName() const
@@ -60,9 +60,9 @@ std::string CategoryBooleans::GetDisplayName() const
 	return "Booleans";
 }
 
-Color CategoryReals::GetColor() const
+cap::color CategoryReals::GetColor() const
 {
-	return Color().FromU8({ 79, 154, 62, 255 });
+	return cap::color().from_u8({ 79, 154, 62, 255 });
 }
 
 std::string CategoryReals::GetUnlocalizedName() const
@@ -75,9 +75,9 @@ std::string CategoryReals::GetDisplayName() const
 	return "Reals";
 }
 
-Color CategoryStrings::GetColor() const
+cap::color CategoryStrings::GetColor() const
 {
-	return Color().FromU8({ 16, 167, 167, 255 });
+	return cap::color().from_u8({ 16, 167, 167, 255 });
 }
 
 std::string CategoryStrings::GetUnlocalizedName() const

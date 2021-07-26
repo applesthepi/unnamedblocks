@@ -28,16 +28,16 @@ enum class VerticalAlignment
 	BOTTOM
 };
 
-class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<2, int32_t>, public ISizeable<int32_t>
+class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<2, i32>, public ISizeable<i32>
 {
 public:
-	ProgressBar(int32_t stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal = HorizontalAlignment::CENTER, float horizontalSizeOverride = 0.0f);
+	ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal = HorizontalAlignment::CENTER, f32 horizontalSizeOverride = 0.0f);
 
 	void SetWeak(std::weak_ptr<ProgressBar>&& weak);
-	void SetDepth(uint32_t depth);
-	void SetStackOffset(int32_t stackOffset);
-	void SetProgress(float progress);
-	void SetProgress(float progress, float extra);
+	void SetDepth(u32 depth);
+	void SetStackOffset(i32 stackOffset);
+	void SetProgress(f32 progress);
+	void SetProgress(f32 progress, f32 extra);
 protected:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void OnRender() override;
@@ -56,16 +56,16 @@ private:
 	HorizontalAlignment m_Horizontal;
 	VerticalAlignment m_Vertical;
 
-	int32_t m_StackOffset;
-	float m_Progress;
-	float m_ProgressExtra;
-	float m_HorizontalSizeOverride;
+	i32 m_StackOffset;
+	f32 m_Progress;
+	f32 m_ProgressExtra;
+	f32 m_HorizontalSizeOverride;
 
 	bool m_Dirty;
 	bool m_BoundsAccepted;
 	bool m_UseExtra;
 
-	uint32_t m_Depth;
+	u32 m_Depth;
 
 	std::weak_ptr<ProgressBar> m_Weak;
 };

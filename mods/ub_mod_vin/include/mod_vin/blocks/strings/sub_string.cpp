@@ -2,14 +2,14 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetString(3) = pass->GetString(0).substr((uint64_t)pass->GetReal(1), (uint64_t)pass->GetReal(2));
+	pass->GetString(3) = pass->GetString(0).substr((u64)pass->GetReal(1), (u64)pass->GetReal(2));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
 	std::string& str = pass->GetString(0);
-	double& offset = pass->GetReal(1);
-	double& count = pass->GetReal(2);
+	f64& offset = pass->GetReal(1);
+	f64& count = pass->GetReal(2);
 	std::string& finalStr = pass->GetString(3);
 
 	if (std::floor(offset) != offset)
@@ -24,16 +24,16 @@ static void ExecuteDebug(ModBlockPass* pass)
 		return;
 	}
 
-	int64_t idxAt = offset;
-	int64_t idxCount = count;
+	i64 idxAt = offset;
+	i64 idxCount = count;
 
-	if (idxAt >= static_cast<int64_t>(str.length()) || idxAt < 0)
+	if (idxAt >= static_cast<i64>(str.length()) || idxAt < 0)
 	{
 		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; offset index out of range", LoggerFatality::BREAK);
 		return;
 	}
 
-	if (idxCount + idxAt > static_cast<int64_t>(str.length()))
+	if (idxCount + idxAt > static_cast<i64>(str.length()))
 	{
 		pass->LogError("failed to substring at \"" + std::to_string(idxAt) + "\" for count \"" + std::to_string(idxCount) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; count to high", LoggerFatality::BREAK);
 		return;

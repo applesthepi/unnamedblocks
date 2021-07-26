@@ -2,7 +2,7 @@
 
 #include "rhr/rendering/renderer.hpp"
 
-static void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
 {
 	rhr::render::frame* frame = (rhr::render::frame*)data;
 	frame->mouse_button(position, scroll, operation);
@@ -644,12 +644,12 @@ void rhr::render::frame::update_mouse_button_status(bool enabled)
 	if (enabled && !m_mouse_button_registered)
 	{
 		m_mouse_button_registered = true;
-		InputHandler::RegisterMouseCallback(mouse_button, this);
+		InputHandler::RegisterMouseCallback(mouse_button_caller, this);
 	}
 	else if (!enabled && m_mouse_button_registered)
 	{
 		m_mouse_button_registered = false;
-		InputHandler::UnregisterMouseCallback(mouse_button);
+		InputHandler::UnregisterMouseCallback(mouse_button_caller);
 	}
 }
 

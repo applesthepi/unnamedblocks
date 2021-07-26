@@ -1,4 +1,4 @@
-#include "ModCatagory.hpp"
+#include "category.hpp"
 
 ModCatagory::ModCatagory(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 	:m_modUnlocalizedName(modUnlocalizedName), m_modDisplayName(modDisplayName)
@@ -16,9 +16,9 @@ std::string ModCatagory::GetModDisplayName()
 	return m_modDisplayName;
 }
 
-Color ModCatagory::GetColor() const
+cap::color ModCatagory::GetColor() const
 {
-	return Color().FromU8({ 255, 0, 255, 255 });
+	return cap::color().from_u8({ 255, 0, 255, 255 });
 }
 
 std::string ModCatagory::GetUnlocalizedName() const

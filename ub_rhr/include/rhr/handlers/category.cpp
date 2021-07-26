@@ -35,9 +35,9 @@ CategoryHandler::CategoryHandler()
 	}
 
 	std::string lastCategoryMod;
-	uint32_t offset = 16 + 10;
+	u32 offset = 16 + 10;
 
-	for (uint64_t i = 0; i < categories.size(); i++)
+	for (u64 i = 0; i < categories.size(); i++)
 	{
 		if (categories[i]->GetModUnlocalizedName() != lastCategoryMod)
 		{
@@ -80,7 +80,7 @@ CategoryHandler::CategoryHandler()
 		rhr::stack::collection* collection = new rhr::stack::collection();
 		collection->SetEnabled(false);
 
-		uint64_t idx = 0;
+		u64 idx = 0;
 
 		for (unsigned int a = 0; a < rhr::registry::block::GetRegistry().GetBlocks().size(); a++)
 		{
@@ -103,7 +103,7 @@ CategoryHandler::CategoryHandler()
 
 	m_modOpen[0] = true;
 	UpdateBlocks(0);
-	const uint32_t height = UpdateButtons();
+	const u32 height = UpdateButtons();
 
 	m_background.setFillColor(MOD_BUTTON_TEXT_BG);
 
@@ -111,21 +111,21 @@ CategoryHandler::CategoryHandler()
 	m_backgroundOptions.setPosition(sf::Vector2f(0, 0));
 }
 
-void CategoryHandler::ToggleMod(u16 modIdx, uint64_t catIdx)
+void CategoryHandler::ToggleMod(u16 modIdx, u64 catIdx)
 {
 	m_modOpen[modIdx] = !m_modOpen[modIdx];
 	UpdateBlocks(catIdx);
 }
 
-void CategoryHandler::UpdateBlocks(uint64_t catIdx)
+void CategoryHandler::UpdateBlocks(u64 catIdx)
 {
-	const uint32_t offset = UpdateButtons();
+	const u32 offset = UpdateButtons();
 
-	uint32_t widest = 0;
+	u32 widest = 0;
 
 	if (Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size() != m_toolbarStackCount)
 	{
-		uint64_t idx = 0;
+		u64 idx = 0;
 		Plane::ToolbarPlane->GetCollections()[catIdx]->RemoveAll(true);
 
 		for (unsigned int a = 0; a < rhr::registry::block::GetRegistry().GetBlocks().size(); a++)
@@ -145,7 +145,7 @@ void CategoryHandler::UpdateBlocks(uint64_t catIdx)
 		}
 	}
 
-	for (uint64_t i = 0; i < Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size(); i++)
+	for (u64 i = 0; i < Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks().size(); i++)
 	{
 		if (Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks()[i]->GetBlocks().front()->GetWidth() > widest)
 			widest = Plane::ToolbarPlane->GetCollections()[catIdx]->GetStacks()[i]->GetBlocks().front()->GetWidth();
@@ -192,7 +192,7 @@ void CategoryHandler::RegisterHeader()
 				if (result)
 				{
 					Plane::PrimaryPlane->DeleteContents();
-					ProjectHandler::CurrentPath.clear();
+					rhr::handler::project::CurrentPath.clear();
 				}
 			};
 
@@ -217,8 +217,8 @@ void CategoryHandler::RegisterHeader()
 				rc += ".ub";
 
 				Logger::Info("loading project \"" + rc + "\"");
-				ProjectHandler::LoadProject(rc);
-				ProjectHandler::CurrentPath = rc;
+				rhr::handler::project::LoadProject(rc);
+				rhr::handler::project::CurrentPath = rc;
 			};
 
 			MessageHandler::RegisterMessage(new MessageInput("load path", &cb), true);
@@ -232,7 +232,7 @@ void CategoryHandler::RegisterHeader()
 		std::function<void()>* function = new std::function<void()>();
 		*function = []()
 		{
-			if (ProjectHandler::CurrentPath == "")
+			if (rhr::handler::project::CurrentPath == "")
 			{
 				std::function<void(const std::string&)> cb = [&](const std::string& result)
 				{
@@ -244,16 +244,16 @@ void CategoryHandler::RegisterHeader()
 					rc += ".ub";
 
 					Logger::Info("saving project as \"" + rc + "\"");
-					ProjectHandler::SaveProject(rc);
-					ProjectHandler::CurrentPath = rc;
+					rhr::handler::project::SaveProject(rc);
+					rhr::handler::project::CurrentPath = rc;
 				};
 
 				MessageHandler::RegisterMessage(new MessageInput("save path", &cb), true);
 			}
 			else
 			{
-				ProjectHandler::SaveProject(ProjectHandler::CurrentPath);
-				Logger::Info("saving project \"" + ProjectHandler::CurrentPath + "\"");
+				rhr::handler::project::SaveProject(rhr::handler::project::CurrentPath);
+				Logger::Info("saving project \"" + rhr::handler::project::CurrentPath + "\"");
 			}
 		};
 
@@ -275,8 +275,8 @@ void CategoryHandler::RegisterHeader()
 				rc += ".ub";
 
 				Logger::Info("saving project as \"" + rc + "\"");
-				ProjectHandler::SaveProject(rc);
-				ProjectHandler::CurrentPath = rc;
+				rhr::handler::project::SaveProject(rc);
+				rhr::handler::project::CurrentPath = rc;
 			};
 
 			MessageHandler::RegisterMessage(new MessageInput("save path", &cb), true);
@@ -314,10 +314,10 @@ void CategoryHandler::RegisterHeader()
 		std::function<void()>* function = new std::function<void()>();
 		*function = []()
 		{
-			if (ProjectHandler::CurrentPath == "")
+			if (rhr::handler::project::CurrentPath == "")
 				Logger::Warn("running unsaved project");
 			else
-				Logger::Debug("running \"" + ProjectHandler::CurrentPath + "\"");
+				Logger::Debug("running \"" + rhr::handler::project::CurrentPath + "\"");
 
 			Plane* planeCopy = new Plane(false, *Plane::PrimaryPlane);
 
@@ -335,10 +335,10 @@ void CategoryHandler::RegisterHeader()
 		std::function<void()>* function = new std::function<void()>();
 		*function = []()
 		{
-			if (ProjectHandler::CurrentPath == "")
+			if (rhr::handler::project::CurrentPath == "")
 				Logger::Warn("running unsaved project");
 			else
-				Logger::Debug("running \"" + ProjectHandler::CurrentPath + "\"");
+				Logger::Debug("running \"" + rhr::handler::project::CurrentPath + "\"");
 
 			Plane* planeCopy = new Plane(false, *Plane::PrimaryPlane);
 
@@ -396,11 +396,11 @@ void CategoryHandler::RegisterHeader()
 	}
 }
 
-uint32_t CategoryHandler::UpdateButtons()
+u32 CategoryHandler::UpdateButtons()
 {
-	uint64_t offset = HEADER_HEIGHT + 10;
+	u64 offset = HEADER_HEIGHT + 10;
 
-	for (uint64_t i = 0; i < m_modCategoryButtons.size(); i++)
+	for (u64 i = 0; i < m_modCategoryButtons.size(); i++)
 	{
 		m_modCategoryButtons[i]->setPosition(sf::Vector2f(10, offset));
 		m_modCategoryButtons[i]->setSize(sf::Vector2u(m_toolbarWidth - 10, 16));
@@ -416,7 +416,7 @@ uint32_t CategoryHandler::UpdateButtons()
 
 		if (m_modOpen[i])
 		{
-			for (uint64_t a = 0; a < m_buttons[i].size(); a++)
+			for (u64 a = 0; a < m_buttons[i].size(); a++)
 			{
 				m_buttons[i][a]->setEnabled(true);
 				m_buttons[i][a]->setPosition(sf::Vector2f(10 + 20, offset));
@@ -426,7 +426,7 @@ uint32_t CategoryHandler::UpdateButtons()
 		}
 		else
 		{
-			for (uint64_t a = 0; a < m_buttons[i].size(); a++)
+			for (u64 a = 0; a < m_buttons[i].size(); a++)
 				m_buttons[i][a]->setEnabled(false);
 		}
 	}
@@ -453,7 +453,7 @@ void CategoryHandler::PostRender(sf::RenderWindow* window)
 		window->draw(m_modIco[i]);
 }
 
-void CategoryHandler::frameUpdate(double deltaTime)
+void CategoryHandler::frameUpdate(f64 deltaTime)
 {
 	if (Plane::ToolbarPlane->GetCollections().size() > m_selectedCategory && Plane::ToolbarPlane->GetCollections()[m_selectedCategory]->GetStacks().size() != m_toolbarStackCount)
 		UpdateBlocks(m_selectedCategory);
@@ -533,22 +533,22 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 
 	// TODO: this modularization should be done in rhr::registry::block
 
-	for (usize i = 0; i < ProjectHandler::mods.size(); i++)
+	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
 	{
 		binned_catagories.push_back(std::vector<ModCatagory*>());
 		binned_blocks.push_back(std::vector<std::vector<ModBlock*>>());
 
 		for (usize a = 0; a < category_infos.size(); a++)
 		{
-			if (category_infos[a].CatagoryModUnlocalizedName == ProjectHandler::mods[i])
+			if (category_infos[a].CatagoryModUnlocalizedName == rhr::handler::project::mods[i])
 			{
 				binned_catagories[i].push_back(category_infos[a].CatagoryModCatagory);
 				binned_blocks[i].push_back(std::vector<ModBlock*>());
 
 				for (usize b = 0; b < block_infos.size(); b++)
 				{
-					if (block_infos[b].BlockModUnlocalizedName == ProjectHandler::mods[i] &&
-						block_infos[b].BlockModBlock->get_categories() == category_infos[a].CatagoryModCatagory->GetUnlocalizedName())
+					if (block_infos[b].BlockModUnlocalizedName == rhr::handler::project::mods[i] &&
+						block_infos[b].BlockModBlock->GetCategory() == category_infos[a].CatagoryModCatagory->GetUnlocalizedName())
 					{
 						binned_blocks[i][a].push_back(block_infos[b].BlockModBlock);
 					}
@@ -596,11 +596,11 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 	//		found = false;
 	//}
 
-	m_mod_groups.reserve(ProjectHandler::mods.size());
+	m_mod_groups.reserve(rhr::handler::project::mods.size());
 
 	i32 offset = rhr::stack::block::padding / 2;
 
-	for (usize i = 0; i < ProjectHandler::mods.size(); i++)
+	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
 	{
 		offset += rhr::stack::block::padding / 2;
 

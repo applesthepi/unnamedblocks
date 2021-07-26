@@ -14,17 +14,17 @@ UtilityGlobalReal::~UtilityGlobalReal()
 
 void UtilityGlobalReal::Bake()
 {
-	m_variables = new double[m_varNames.size()];
+	m_variables = new f64[m_varNames.size()];
 }
 
-double& UtilityGlobalReal::Get(uint64_t idx)
+f64& UtilityGlobalReal::Get(u64 idx)
 {
 	return m_variables[idx];
 }
 
 void UtilityGlobalReal::Put(const std::string& name)
 {
-	for (uint64_t i = 0; i < m_varNames.size(); i++)
+	for (u64 i = 0; i < m_varNames.size(); i++)
 	{
 		if (m_varNames[i] == name)
 			return;
@@ -33,9 +33,9 @@ void UtilityGlobalReal::Put(const std::string& name)
 	m_varNames.push_back(name);
 }
 
-uint64_t UtilityGlobalReal::GetIdx(const std::string& name)
+u64 UtilityGlobalReal::GetIdx(const std::string& name)
 {
-	for (uint64_t i = 0; i < m_varNames.size(); i++)
+	for (u64 i = 0; i < m_varNames.size(); i++)
 	{
 		if (m_varNames[i] == name)
 			return i;

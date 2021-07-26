@@ -24,6 +24,9 @@ public:
 
 	///
 	glm::vec<S, T> get_super_bounds();
+
+	///
+	void set_size_max();
 protected:
 	/// Event called when i_sizeable<T>::set_size() or i_sizeable<T>::set_super_bounds() gets involked.
 	/// \param Size of i_sizeable.

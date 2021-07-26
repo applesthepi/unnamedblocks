@@ -1,4 +1,4 @@
-#include "BlockSystemMain.hpp"
+#include "main.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {

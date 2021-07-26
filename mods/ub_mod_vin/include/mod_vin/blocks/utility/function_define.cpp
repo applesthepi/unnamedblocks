@@ -65,9 +65,9 @@ blockInitialization BlockUtilityFunctionDefine::GetRuntimeGlobalPostInit() const
 	return RuntimeGlobalPostInit;
 }
 
-std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityFunctionDefine::GetRuntimeStages() const
+std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityFunctionDefine::GetRuntimeStages() const
 {
-	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	std::vector<std::pair<blockDataInitialization, u16>> stages;
 	stages.push_back(std::make_pair(RuntimeInit, 0));
 	return stages;
 }

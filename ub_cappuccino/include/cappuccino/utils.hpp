@@ -70,25 +70,25 @@ typedef unsigned long long usize;
 
 // Change to 0 if you want to keep
 // access to the internal types.
-#if 1
+#if 0
 // (keep char)
 #define short
 #define int
 #define long
 #define unsigned
 
-#define float;
-#define double;
+#define float
+#define double
 
-#define int8_t;
-#define int16_t;
-#define int32_t;
-#define int64_t;
-#define uint8_t;
-#define uint16_t;
-#define uint32_t;
-#define uint64_t;
-#define size_t;
+#define int8_t
+#define int16_t
+#define int32_t
+#define int64_t
+#define uint8_t
+#define uint16_t
+#define uint32_t
+#define uint64_t
+#define size_t
 #endif
 
 // TODO: add vulkan functions
@@ -154,6 +154,9 @@ typedef VkExtent2D extent_2d;
 typedef VkShaderModule shader_module;
 typedef VkRenderPassBeginInfo render_pass_begin_info;
 }
+
+#define VK_MAKE_API_VERSION(variant, major, minor, patch) \
+    ((((u32)(variant)) << 29) | (((u32)(major)) << 22) | (((u32)(minor)) << 12) | ((u32)(patch)))
 
 // TODO: add FT functions
 // Maintain code style standards.

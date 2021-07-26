@@ -6,7 +6,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->SetBlockIdx(*(int64_t*)pass->GetPreData(0));
+	pass->SetBlockIdx(*(i64*)pass->GetPreData(0));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -17,14 +17,14 @@ static void ExecuteDebug(ModBlockPass* pass)
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
 	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
-	int64_t idx = finder->FindPoint(*(std::string*)blockData.GetData()[0]);
+	i64 idx = finder->FindPoint(*(std::string*)blockData.GetData()[0]);
 
 	if (idx == -1)
 		return false;
 	
-	//*(double*)blockData.GetCData()[1] = idx;
+	//*(f64*)blockData.GetCData()[1] = idx;
 
-	int64_t* hIdx = new int64_t;
+	i64* hIdx = new i64;
 	*hIdx = idx;
 
 	blockData.GetPreData().push_back(hIdx);
@@ -52,9 +52,9 @@ blockExecution BlockUtilityGotoPoint::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
-std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityGotoPoint::GetRuntimeStages() const
+std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityGotoPoint::GetRuntimeStages() const
 {
-	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	std::vector<std::pair<blockDataInitialization, u16>> stages;
 	stages.push_back(std::make_pair(RuntimeInit, 0));
 	return stages;
 }

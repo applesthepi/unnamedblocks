@@ -1,15 +1,15 @@
-#include "ExecutionThread.hpp"
+#include "execution_thread.hpp"
 
-#include "Registration.hpp"
+#include "cappuccino/registration.hpp"
 
 static void ThreadExecution(ExecutionThread* thr)
 {
 	const executionFunctionStackList calls = thr->GetCalls();
-	const uint64_t* functionCallCount = thr->GetFunctionCallCount();
+	const u64* functionCallCount = thr->GetFunctionCallCount();
 	executionFunctionStack localCallStack;
 	
-	std::vector<uint64_t> callstackBlockIdx;
-	std::vector<uint64_t> callstackStackIdx;
+	std::vector<u64> callstackBlockIdx;
+	std::vector<u64> callstackStackIdx;
 
 	bool successful = false;
 	const std::atomic<bool>& finished = thr->GetFinished();
@@ -84,7 +84,7 @@ loop:
 	}
 }
 
-ExecutionThread::ExecutionThread(uint64_t functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
+ExecutionThread::ExecutionThread(u64 functionStart, u64* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
 	:m_functionStart(functionStart), m_functionCallCount(functionCallCount), m_calls(calls), m_pass(pass)
 {
 	m_finished = false;
@@ -97,12 +97,12 @@ ExecutionThread::ExecutionThread(uint64_t functionStart, uint64_t* functionCallC
 	m_thread = std::thread(ThreadExecution, this);
 }
 
-uint64_t ExecutionThread::GetFunctionStart()
+u64 ExecutionThread::GetFunctionStart()
 {
 	return m_functionStart;
 }
 
-const uint64_t* ExecutionThread::GetFunctionCallCount()
+const u64* ExecutionThread::GetFunctionCallCount()
 {
 	return m_functionCallCount;
 }

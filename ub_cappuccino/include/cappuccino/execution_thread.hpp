@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "ModBlockPass.hpp"
+#include "cappuccino/mod_block/pass.hpp"
 
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
 
 typedef void(***executionFunctionStackList)(ModBlockPass*);
 typedef void(*executionFunction)(ModBlockPass*);
@@ -12,10 +12,10 @@ typedef void(**executionFunctionStack)(ModBlockPass*);
 class ExecutionThread
 {
 public:
-	CAP_DLL ExecutionThread(uint64_t functionStart, uint64_t* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass);
+	CAP_DLL ExecutionThread(u64 functionStart, u64* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass);
 
-	uint64_t GetFunctionStart();
-	const uint64_t* GetFunctionCallCount();
+	u64 GetFunctionStart();
+	const u64* GetFunctionCallCount();
 	const executionFunctionStackList& GetCalls();
 	const std::atomic<bool>& GetFinished();
 	const std::atomic<bool>& GetKill();
@@ -41,8 +41,8 @@ private:
 	std::atomic<bool>* m_resume;
 	std::atomic<bool> m_step;
 
-	const uint64_t m_functionStart;
-	const uint64_t* m_functionCallCount;
+	const u64 m_functionStart;
+	const u64* m_functionCallCount;
 	executionFunctionStackList m_calls;
 	std::thread m_thread;
 	ModBlockPass* m_pass;

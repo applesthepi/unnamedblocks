@@ -55,8 +55,8 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/layer.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/tools.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/tools.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/Vertex.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/Vertex.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/vertex.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/vertex.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/objects/progress_bar.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/objects/progress_bar.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/objects/object.hpp"
@@ -121,5 +121,3 @@ target_include_directories(UB_RHR PUBLIC
 	${RAPIDJSON_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
 )
-
-configure_file(config.h.in config.h)

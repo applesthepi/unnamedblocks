@@ -2,8 +2,8 @@
 
 template <usize S, typename T>
 rhr::render::interfaces::i_scaleable<S, T>::i_scaleable()
-	: m_position(glm::vec<S, T>())
-	, m_super_position(glm::vec<S, T>())
+	: m_scale(glm::vec<S, T>())
+	, m_super_scale(glm::vec<S, T>())
 {
 
 }
@@ -21,7 +21,7 @@ void rhr::render::interfaces::i_scaleable<S, T>::set_scale(const glm::vec<S, T>&
 template <usize S, typename T>
 void rhr::render::interfaces::i_scaleable<S, T>::set_super_scale(const glm::vec<S, T>& super_scale)
 {
-	if (pre_position_update(m_scale, super_scale))
+	if (pre_scale_update(m_scale, super_scale))
 	{
 		m_super_scale = super_scale;
 		post_scale_update();

@@ -15,10 +15,10 @@ cap::color& cap::color::from_normalized(const glm::vec<4, f32>& color)
 cap::color& cap::color::from_u8(const glm::vec<4, u8>& color)
 {
 	m_color = {
-		static_cast<float>(color.r) / 255.0f,
-		static_cast<float>(color.g) / 255.0f,
-		static_cast<float>(color.b) / 255.0f,
-		static_cast<float>(color.a) / 255.0f
+		static_cast<f32>(color.r) / 255.0f,
+		static_cast<f32>(color.g) / 255.0f,
+		static_cast<f32>(color.b) / 255.0f,
+		static_cast<f32>(color.a) / 255.0f
 	};
 
 	return *this;

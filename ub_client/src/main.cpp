@@ -1,13 +1,12 @@
 #include "config.h"
 
-#include "ModLoader.hpp"
-#include "ui/Renderer.hpp"
-#include "ui/RenderTools.hpp"
-#include "handlers/CategoryHandler.hpp"
-#include "registries/UIRegistry.hpp"
-#include "registries/UIRegistry.hpp"
-// #include "ui/ButtonText.hpp"
-#include "imgui/imgui.h"
+#include "mod_loader.hpp"
+#include "rhr/rendering/renderer.hpp"
+#include "rhr/rendering/tools.hpp"
+#include "rhr/handlers/category.hpp"
+#include "rhr/registries/char_texture.hpp"
+
+//#include "imgui/imgui.h"
 
 #if LINUX
 #include <dlfcn.h>
@@ -15,19 +14,9 @@
 #include <windows.h>
 #endif
 
-// #include <RHR/RHR.h>
-#include <Espresso/InputHandler.hpp>
-#include <Cappuccino/Logger.hpp>
-#include <Cappuccino/Intrinsics.hpp>
-#include <Cappuccino/Utils.hpp>
-
-#include <iostream>
-#include <cstring>
-#include <cmath>
-#include <vector>
-#include <math.h>
-#include <string>
-#include <chrono>
+#include <espresso/input_handler.hpp>
+#include <cappuccino/logger.hpp>
+#include <cappuccino/utils.hpp>
 
 // Include last, has defines that conflict with enums
 #if LINUX
@@ -35,7 +24,7 @@
 #endif
 
 /*
-static Plane* toolbarPlane;
+static rhr::stack::plane* toolbarPlane;
 static unsigned char toolbarCatagory = 0;
 static unsigned short toolbarStackCount = 0;
 
@@ -47,7 +36,7 @@ void ReturnFinished()
 }
 */
 
-// void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, sf::View *view, float zoom)
+// void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow &window, sf::View *view, f32 zoom)
 // {
 // 	const sf::Vector2f beforeCoord = window.mapPixelToCoords(pixel, *view);
 // 	view->zoom(zoom);
@@ -61,26 +50,26 @@ void ReturnFinished()
 
 static void AsyncSetup()
 {
-	RenderTools::Initialization();
-	Renderer::Initialization();
-	UIRegistry::Initialize();
+	rhr::render::tools::initialize();
+	rhr::render::renderer::initialize();
+	rhr::registry::char_texture::process_fonts();
 
-	//std::shared_ptr<vui::RenderLayer> setupLayer = std::make_shared<vui::RenderLayer>();
-	//std::shared_ptr<vui::RenderFrame> setupFrame = std::make_shared<vui::RenderFrame>();
-	//setupFrame->SetWeak(setupFrame);
+	//std::shared_ptr<rhr::render::layer> setupLayer = std::make_shared<rhr::render::layer>();
+	//std::shared_ptr<rhr::render::frame> setupFrame = std::make_shared<rhr::render::frame>();
+	//setupFrame->set_weak(setupFrame);
 
-	//setupFrame->SetPosition({ 0, 0 });
-	//setupFrame->SetSize(Renderer::WindowSize);
+	//setupFrame->set_position({ 0, 0 });
+	//setupFrame->set_size(rhr::render::renderer::WindowSize);
 
-	//std::shared_ptr<vui::RenderRectangle> setupBackground = std::make_shared<vui::RenderRectangle>();
-	//setupBackground->SetWeak(setupBackground);
+	//std::shared_ptr<rhr::render::object::rectangle> setupBackground = std::make_shared<rhr::render::object::rectangle>();
+	//setupBackground->set_weak(setupBackground);
 
-	//setupBackground->SetColor(COLOR_BACKGROUND_BASE);
-	//setupBackground->SetPosition({ 0, 0 });
-	//setupBackground->SetSize(Renderer::WindowSize);
+	//setupBackground->set_color(COLOR_BACKGROUND_BASE);
+	//setupBackground->set_position({ 0, 0 });
+	//setupBackground->set_size(rhr::render::renderer::WindowSize);
 	//setupBackground->SetEnabled(true);
 
-	//setupFrame->AddContent(setupBackground);
+	//setupFrame->add_content(setupBackground);
 
 	//std::shared_ptr<vui::ProgressBar> progressStage = std::make_shared<vui::ProgressBar>(-1, vui::VerticalAlignment::CENTER);
 	//std::shared_ptr<vui::ProgressBar> progressMods = std::make_shared<vui::ProgressBar>(0, vui::VerticalAlignment::CENTER);
@@ -88,19 +77,19 @@ static void AsyncSetup()
 	//basicSetupFinished = true;
 
 	//{
-	//	progressStage->SetWeak(progressStage);
-	//	progressMods->SetWeak(progressMods);
+	//	progressStage->set_weak(progressStage);
+	//	progressMods->set_weak(progressMods);
 
 	//	progressStage->SetEnabled(true);
 	//	progressMods->SetEnabled(true);
 
-	//	setupFrame->AddContent(progressStage);
-	//	setupFrame->AddContent(progressMods);
+	//	setupFrame->add_content(progressStage);
+	//	setupFrame->add_content(progressMods);
 
-	//	setupLayer->AddFrame(setupFrame);
+	//	setupLayer->add_frame(setupFrame);
 	//	setupLayer->SetEnabled(true);
 
-	//	Renderer::AddLayer(setupLayer);
+	//	rhr::render::renderer::add_layer(setupLayer);
 
 	//	ModLoaderData* loaderData = new ModLoaderData();
 	//	std::thread threadModLoader(ThreadModLoader, loaderData);
@@ -112,8 +101,8 @@ static void AsyncSetup()
 	//	{
 	//		std::this_thread::sleep_for(std::chrono::milliseconds(5));
 
-	//		progressStage->SetProgress(static_cast<float>(loaderData->GetStage() + 1) / static_cast<float>(loaderData->GetStageCount()));
-	//		progressMods->SetProgress(static_cast<float>(loaderData->GetMod() + 1) / static_cast<float>(loaderData->GetModCount()));
+	//		progressStage->SetProgress(static_cast<f32>(loaderData->GetStage() + 1) / static_cast<f32>(loaderData->GetStageCount()));
+	//		progressMods->SetProgress(static_cast<f32>(loaderData->GetMod() + 1) / static_cast<f32>(loaderData->GetModCount()));
 	//	}
 
 	//	if (threadModLoader.joinable())
@@ -143,7 +132,7 @@ static void AsyncSetup()
 
 int main()
 {
-	//Color testColor = Color().FromU8({ 10, 10, 10, 255 });
+	//cap::color testColor = cap::color().FromU8({ 10, 10, 10, 255 });
 	//auto testColorN = testColor.GetNormalized();
 	//std::cout << testColorN.r << ", " << testColorN.g << ", " << testColorN.b << ", " << testColorN.a << std::endl;
 
@@ -167,294 +156,294 @@ int main()
 	
 	// Frames and Layers
 
-	Plane::PrimaryPlane = std::make_shared<Plane>(false);
-	Plane::PrimaryPlane->SetWeak(Plane::PrimaryPlane);
+	rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
+	rhr::stack::plane::primary_plane->set_weak(rhr::stack::plane::primary_plane);
 
-	Plane::ToolbarPlane = std::make_shared<Plane>(true);
-	Plane::ToolbarPlane->SetWeak(Plane::ToolbarPlane);
+	rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
+	rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
 
 #if 0
-	std::shared_ptr<vui::RenderFrame> frameBase = std::make_shared<vui::RenderFrame>();
-	frameBase->SetWeak(frameBase);
-	frameBase->SetSize({ 1280, 720 });
-	std::shared_ptr<vui::RenderFrame> frameBackground = std::make_shared<vui::RenderFrame>();
-	frameBackground->SetWeak(frameBackground);
-	frameBackground->SetSize({ 1280, 720 });
-	frameBackground->SetPadding(0);
+	std::shared_ptr<rhr::render::frame> frameBase = std::make_shared<rhr::render::frame>();
+	frameBase->set_weak(frameBase);
+	frameBase->set_size({ 1280, 720 });
+	std::shared_ptr<rhr::render::frame> frameBackground = std::make_shared<rhr::render::frame>();
+	frameBackground->set_weak(frameBackground);
+	frameBackground->set_size({ 1280, 720 });
+	frameBackground->set_padding(0);
 
-	std::shared_ptr<vui::RenderRectangle> rectBackground = std::make_shared<vui::RenderRectangle>();
-	rectBackground->SetWeak(rectBackground);
-	rectBackground->SetColor(Color().FromU8({128, 128, 128, 255}));
-	rectBackground->SetDepth(11);
+	std::shared_ptr<rhr::render::object::rectangle> rectBackground = std::make_shared<rhr::render::object::rectangle>();
+	rectBackground->set_weak(rectBackground);
+	rectBackground->set_color(cap::color().FromU8({128, 128, 128, 255}));
+	rectBackground->set_depth(11);
 
-	frameBackground->AddContent(rectBackground, std::weak_ptr<IUpdatable>(), rectBackground, rectBackground, vui::LocalCardinal::RIGHT);
-	rectBackground->SetSizeMax();
+	frameBackground->add_content(rectBackground, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectBackground, rectBackground, rhr::render::cardinal::local::RIGHT);
+	rectBackground->set_size_max();
 
-	std::shared_ptr<vui::RenderLayer> layer = std::make_shared<vui::RenderLayer>();
-	layer->AddFrame(frameBackground);
-	layer->AddFrame(frameBase);
+	std::shared_ptr<rhr::render::layer> layer = std::make_shared<rhr::render::layer>();
+	layer->add_frame(frameBackground);
+	layer->add_frame(frameBase);
 
-	std::shared_ptr<vui::RenderFrame> frameA0 = std::make_shared<vui::RenderFrame>();
-	frameA0->SetWeak(frameA0);
-	std::shared_ptr<vui::RenderFrame> frameA1 = std::make_shared<vui::RenderFrame>();
-	frameA1->SetWeak(frameA1);
+	std::shared_ptr<rhr::render::frame> frameA0 = std::make_shared<rhr::render::frame>();
+	frameA0->set_weak(frameA0);
+	std::shared_ptr<rhr::render::frame> frameA1 = std::make_shared<rhr::render::frame>();
+	frameA1->set_weak(frameA1);
 
-	std::shared_ptr<vui::RenderFrame> frameB0 = std::make_shared<vui::RenderFrame>();
-	frameB0->SetWeak(frameB0);
-	std::shared_ptr<vui::RenderFrame> frameB1 = std::make_shared<vui::RenderFrame>();
-	frameB1->SetWeak(frameB1);
+	std::shared_ptr<rhr::render::frame> frameB0 = std::make_shared<rhr::render::frame>();
+	frameB0->set_weak(frameB0);
+	std::shared_ptr<rhr::render::frame> frameB1 = std::make_shared<rhr::render::frame>();
+	frameB1->set_weak(frameB1);
 
-	std::shared_ptr<vui::RenderFrame> frameC0 = std::make_shared<vui::RenderFrame>();
-	frameC0->SetWeak(frameC0);
-	std::shared_ptr<vui::RenderFrame> frameC1 = std::make_shared<vui::RenderFrame>();
-	frameC1->SetWeak(frameC1);
+	std::shared_ptr<rhr::render::frame> frameC0 = std::make_shared<rhr::render::frame>();
+	frameC0->set_weak(frameC0);
+	std::shared_ptr<rhr::render::frame> frameC1 = std::make_shared<rhr::render::frame>();
+	frameC1->set_weak(frameC1);
 
-	std::shared_ptr<vui::RenderFrame> frameD0 = std::make_shared<vui::RenderFrame>();
-	frameD0->SetWeak(frameD0);
-	std::shared_ptr<vui::RenderFrame> frameD1 = std::make_shared<vui::RenderFrame>();
-	frameD1->SetWeak(frameD1);
+	std::shared_ptr<rhr::render::frame> frameD0 = std::make_shared<rhr::render::frame>();
+	frameD0->set_weak(frameD0);
+	std::shared_ptr<rhr::render::frame> frameD1 = std::make_shared<rhr::render::frame>();
+	frameD1->set_weak(frameD1);
 
-	std::shared_ptr<vui::RenderFrame> frameE0 = std::make_shared<vui::RenderFrame>();
-	frameE0->SetWeak(frameE0);
-	std::shared_ptr<vui::RenderFrame> frameE1 = std::make_shared<vui::RenderFrame>();
-	frameE1->SetWeak(frameE1);
+	std::shared_ptr<rhr::render::frame> frameE0 = std::make_shared<rhr::render::frame>();
+	frameE0->set_weak(frameE0);
+	std::shared_ptr<rhr::render::frame> frameE1 = std::make_shared<rhr::render::frame>();
+	frameE1->set_weak(frameE1);
 
-	frameBase->AddFrame(frameA0, vui::LocalCardinal::RIGHT);
-	frameBase->AddFrame(frameA1, vui::LocalCardinal::RIGHT);
+	frameBase->add_frame(frameA0, rhr::render::cardinal::local::RIGHT);
+	frameBase->add_frame(frameA1, rhr::render::cardinal::local::RIGHT);
 
-	frameA0->SetSizeMax();
-	frameA1->SetSizeMax();
+	frameA0->set_size_max();
+	frameA1->set_size_max();
 
-	frameA0->AddFrame(frameB0, vui::LocalCardinal::DOWN);
-	frameA0->AddFrame(frameB1, vui::LocalCardinal::DOWN);
+	frameA0->add_frame(frameB0, rhr::render::cardinal::local::DOWN);
+	frameA0->add_frame(frameB1, rhr::render::cardinal::local::DOWN);
 
-	frameB0->SetSizeMax();
-	frameB1->SetSizeMax();
+	frameB0->set_size_max();
+	frameB1->set_size_max();
 
-	frameB1->AddFrame(frameC0, vui::LocalCardinal::RIGHT);
-	frameB1->AddFrame(frameC1, vui::LocalCardinal::RIGHT);
+	frameB1->add_frame(frameC0, rhr::render::cardinal::local::RIGHT);
+	frameB1->add_frame(frameC1, rhr::render::cardinal::local::RIGHT);
 
-	frameC0->SetSizeMax();
-	frameC1->SetSizeMax();
+	frameC0->set_size_max();
+	frameC1->set_size_max();
 
-	frameC1->AddFrame(frameD0, vui::LocalCardinal::DOWN);
-	frameC1->AddFrame(frameD1, vui::LocalCardinal::DOWN);
+	frameC1->add_frame(frameD0, rhr::render::cardinal::local::DOWN);
+	frameC1->add_frame(frameD1, rhr::render::cardinal::local::DOWN);
 
-	frameD0->SetSizeMax();
-	frameD1->SetSizeMax();
+	frameD0->set_size_max();
+	frameD1->set_size_max();
 
-	frameD0->AddFrame(frameE0, vui::LocalCardinal::DOWN);
-	frameD0->AddFrame(frameE1, vui::LocalCardinal::DOWN);
+	frameD0->add_frame(frameE0, rhr::render::cardinal::local::DOWN);
+	frameD0->add_frame(frameE1, rhr::render::cardinal::local::DOWN);
 
-	frameE0->SetSizeMax();
-	frameE1->SetSizeMax();
+	frameE0->set_size_max();
+	frameE1->set_size_max();
 
-	std::shared_ptr<vui::RenderRectangle> rectA1_1 = std::make_shared<vui::RenderRectangle>();
-	rectA1_1->SetWeak(rectA1_1);
-	std::shared_ptr<vui::RenderRectangle> rectA1_2 = std::make_shared<vui::RenderRectangle>();
-	rectA1_2->SetWeak(rectA1_2);
+	std::shared_ptr<rhr::render::object::rectangle> rectA1_1 = std::make_shared<rhr::render::object::rectangle>();
+	rectA1_1->set_weak(rectA1_1);
+	std::shared_ptr<rhr::render::object::rectangle> rectA1_2 = std::make_shared<rhr::render::object::rectangle>();
+	rectA1_2->set_weak(rectA1_2);
 
-	std::shared_ptr<vui::RenderRectangle> rectB0_1 = std::make_shared<vui::RenderRectangle>();
-	rectB0_1->SetWeak(rectB0_1);
-	std::shared_ptr<vui::RenderRectangle> rectB0_2 = std::make_shared<vui::RenderRectangle>();
-	rectB0_2->SetWeak(rectB0_2);
-	std::shared_ptr<vui::RenderRectangle> rectB0_3 = std::make_shared<vui::RenderRectangle>();
-	rectB0_3->SetWeak(rectB0_3);
-	std::shared_ptr<vui::RenderRectangle> rectB0_4 = std::make_shared<vui::RenderRectangle>();
-	rectB0_4->SetWeak(rectB0_4);
+	std::shared_ptr<rhr::render::object::rectangle> rectB0_1 = std::make_shared<rhr::render::object::rectangle>();
+	rectB0_1->set_weak(rectB0_1);
+	std::shared_ptr<rhr::render::object::rectangle> rectB0_2 = std::make_shared<rhr::render::object::rectangle>();
+	rectB0_2->set_weak(rectB0_2);
+	std::shared_ptr<rhr::render::object::rectangle> rectB0_3 = std::make_shared<rhr::render::object::rectangle>();
+	rectB0_3->set_weak(rectB0_3);
+	std::shared_ptr<rhr::render::object::rectangle> rectB0_4 = std::make_shared<rhr::render::object::rectangle>();
+	rectB0_4->set_weak(rectB0_4);
 
-	std::shared_ptr<vui::RenderRectangle> rectC0_1 = std::make_shared<vui::RenderRectangle>();
-	rectC0_1->SetWeak(rectC0_1);
-	std::shared_ptr<vui::RenderRectangle> rectC0_2 = std::make_shared<vui::RenderRectangle>();
-	rectC0_2->SetWeak(rectC0_2);
+	std::shared_ptr<rhr::render::object::rectangle> rectC0_1 = std::make_shared<rhr::render::object::rectangle>();
+	rectC0_1->set_weak(rectC0_1);
+	std::shared_ptr<rhr::render::object::rectangle> rectC0_2 = std::make_shared<rhr::render::object::rectangle>();
+	rectC0_2->set_weak(rectC0_2);
 
-	std::shared_ptr<vui::RenderRectangle> rectD1_1 = std::make_shared<vui::RenderRectangle>();
-	rectD1_1->SetWeak(rectD1_1);
-	std::shared_ptr<vui::RenderRectangle> rectD1_2 = std::make_shared<vui::RenderRectangle>();
-	rectD1_2->SetWeak(rectD1_2);
-	std::shared_ptr<vui::RenderRectangle> rectD1_3 = std::make_shared<vui::RenderRectangle>();
-	rectD1_3->SetWeak(rectD1_3);
+	std::shared_ptr<rhr::render::object::rectangle> rectD1_1 = std::make_shared<rhr::render::object::rectangle>();
+	rectD1_1->set_weak(rectD1_1);
+	std::shared_ptr<rhr::render::object::rectangle> rectD1_2 = std::make_shared<rhr::render::object::rectangle>();
+	rectD1_2->set_weak(rectD1_2);
+	std::shared_ptr<rhr::render::object::rectangle> rectD1_3 = std::make_shared<rhr::render::object::rectangle>();
+	rectD1_3->set_weak(rectD1_3);
 
-	std::shared_ptr<vui::RenderRectangle> rectE0_1 = std::make_shared<vui::RenderRectangle>();
-	rectE0_1->SetWeak(rectE0_1);
+	std::shared_ptr<rhr::render::object::rectangle> rectE0_1 = std::make_shared<rhr::render::object::rectangle>();
+	rectE0_1->set_weak(rectE0_1);
 
-	std::shared_ptr<vui::RenderRectangle> rectE1_1 = std::make_shared<vui::RenderRectangle>();
-	rectE1_1->SetWeak(rectE1_1);
-	std::shared_ptr<vui::RenderRectangle> rectE1_2 = std::make_shared<vui::RenderRectangle>();
-	rectE1_2->SetWeak(rectE1_2);
+	std::shared_ptr<rhr::render::object::rectangle> rectE1_1 = std::make_shared<rhr::render::object::rectangle>();
+	rectE1_1->set_weak(rectE1_1);
+	std::shared_ptr<rhr::render::object::rectangle> rectE1_2 = std::make_shared<rhr::render::object::rectangle>();
+	rectE1_2->set_weak(rectE1_2);
 
-	frameA1->AddContent(rectA1_1, std::weak_ptr<IUpdatable>(), rectA1_1, rectA1_1, vui::LocalCardinal::RIGHT);
-	frameA1->AddContent(rectA1_2, std::weak_ptr<IUpdatable>(), rectA1_2, rectA1_2, vui::LocalCardinal::RIGHT);
+	frameA1->add_content(rectA1_1, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectA1_1, rectA1_1, rhr::render::cardinal::local::RIGHT);
+	frameA1->add_content(rectA1_2, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectA1_2, rectA1_2, rhr::render::cardinal::local::RIGHT);
 
-	frameB0->AddContent(rectB0_1, std::weak_ptr<IUpdatable>(), rectB0_1, rectB0_1, vui::LocalCardinal::DOWN);
-	frameB0->AddContent(rectB0_2, std::weak_ptr<IUpdatable>(), rectB0_2, rectB0_2, vui::LocalCardinal::DOWN);
-	frameB0->AddContent(rectB0_3, std::weak_ptr<IUpdatable>(), rectB0_3, rectB0_3, vui::LocalCardinal::DOWN);
-	frameB0->AddContent(rectB0_4, std::weak_ptr<IUpdatable>(), rectB0_4, rectB0_4, vui::LocalCardinal::DOWN);
+	frameB0->add_content(rectB0_1, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectB0_1, rectB0_1, rhr::render::cardinal::local::DOWN);
+	frameB0->add_content(rectB0_2, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectB0_2, rectB0_2, rhr::render::cardinal::local::DOWN);
+	frameB0->add_content(rectB0_3, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectB0_3, rectB0_3, rhr::render::cardinal::local::DOWN);
+	frameB0->add_content(rectB0_4, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectB0_4, rectB0_4, rhr::render::cardinal::local::DOWN);
 
-	frameC0->AddContent(rectC0_1, std::weak_ptr<IUpdatable>(), rectC0_1, rectC0_1, vui::LocalCardinal::RIGHT);
-	frameC0->AddContent(rectC0_2, std::weak_ptr<IUpdatable>(), rectC0_2, rectC0_2, vui::LocalCardinal::RIGHT);
+	frameC0->add_content(rectC0_1, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectC0_1, rectC0_1, rhr::render::cardinal::local::RIGHT);
+	frameC0->add_content(rectC0_2, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectC0_2, rectC0_2, rhr::render::cardinal::local::RIGHT);
 
-	frameD1->AddContent(rectD1_1, std::weak_ptr<IUpdatable>(), rectD1_1, rectD1_1, vui::LocalCardinal::RIGHT);
-	frameD1->AddContent(rectD1_2, std::weak_ptr<IUpdatable>(), rectD1_2, rectD1_2, vui::LocalCardinal::RIGHT);
-	frameD1->AddContent(rectD1_3, std::weak_ptr<IUpdatable>(), rectD1_3, rectD1_3, vui::LocalCardinal::RIGHT);
+	frameD1->add_content(rectD1_1, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectD1_1, rectD1_1, rhr::render::cardinal::local::RIGHT);
+	frameD1->add_content(rectD1_2, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectD1_2, rectD1_2, rhr::render::cardinal::local::RIGHT);
+	frameD1->add_content(rectD1_3, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectD1_3, rectD1_3, rhr::render::cardinal::local::RIGHT);
 
-	frameE0->AddContent(rectE0_1, std::weak_ptr<IUpdatable>(), rectE0_1, rectE0_1, vui::LocalCardinal::RIGHT);
+	frameE0->add_content(rectE0_1, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectE0_1, rectE0_1, rhr::render::cardinal::local::RIGHT);
 
-	frameE1->AddContent(rectE1_1, std::weak_ptr<IUpdatable>(), rectE1_1, rectE1_1, vui::LocalCardinal::RIGHT);
-	frameE1->AddContent(rectE1_2, std::weak_ptr<IUpdatable>(), rectE1_2, rectE1_2, vui::LocalCardinal::RIGHT);
+	frameE1->add_content(rectE1_1, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectE1_1, rectE1_1, rhr::render::cardinal::local::RIGHT);
+	frameE1->add_content(rectE1_2, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectE1_2, rectE1_2, rhr::render::cardinal::local::RIGHT);
 
-	rectA1_1->SetSizeMax();
-	rectA1_2->SetSizeMax();
+	rectA1_1->set_size_max();
+	rectA1_2->set_size_max();
 
-	rectB0_1->SetSizeMax();
-	rectB0_2->SetSizeMax();
-	rectB0_3->SetSizeMax();
-	rectB0_4->SetSizeMax();
+	rectB0_1->set_size_max();
+	rectB0_2->set_size_max();
+	rectB0_3->set_size_max();
+	rectB0_4->set_size_max();
 
-	rectC0_1->SetSizeMax();
-	rectC0_2->SetSizeMax();
+	rectC0_1->set_size_max();
+	rectC0_2->set_size_max();
 
-	rectD1_1->SetSizeMax();
-	rectD1_2->SetSizeMax();
-	rectD1_3->SetSizeMax();
+	rectD1_1->set_size_max();
+	rectD1_2->set_size_max();
+	rectD1_3->set_size_max();
 
-	rectE0_1->SetSizeMax();
+	rectE0_1->set_size_max();
 
-	rectE1_1->SetSizeMax();
-	rectE1_2->SetSizeMax();
+	rectE1_1->set_size_max();
+	rectE1_2->set_size_max();
 
-	Renderer::AddLayer(layer);
+	rhr::render::renderer::add_layer(layer);
 #endif
 
-	std::shared_ptr<vui::RenderFrame> frameBase = std::make_shared<vui::RenderFrame>();
-	frameBase->SetWeak(frameBase);
-	frameBase->SetSize({ 1280, 720 });
+	std::shared_ptr<rhr::render::frame> frameBase = std::make_shared<rhr::render::frame>();
+	frameBase->set_weak(frameBase);
+	frameBase->set_size({ 1280, 720 });
 
-	std::shared_ptr<vui::RenderFrame> frameBackground = std::make_shared<vui::RenderFrame>();
-	frameBackground->SetWeak(frameBackground);
-	frameBackground->SetSize({ 1280, 720 });
-	frameBackground->SetPadding(0);
+	std::shared_ptr<rhr::render::frame> frameBackground = std::make_shared<rhr::render::frame>();
+	frameBackground->set_weak(frameBackground);
+	frameBackground->set_size({ 1280, 720 });
+	frameBackground->set_padding(0);
 
-	std::shared_ptr<vui::RenderRectangle> rectBackground = std::make_shared<vui::RenderRectangle>();
-	rectBackground->SetWeak(rectBackground);
-	rectBackground->SetColor(Color::BackgroundColor1);
-	rectBackground->SetDepth(Renderer::DepthBackground);
+	std::shared_ptr<rhr::render::object::rectangle> rectBackground = std::make_shared<rhr::render::object::rectangle>();
+	rectBackground->set_weak(rectBackground);
+	rectBackground->set_color(cap::color::background_color_1);
+	rectBackground->set_depth(rhr::render::renderer::depth_background);
 
-	frameBackground->AddContent(rectBackground, std::weak_ptr<IUpdatable>(), rectBackground, rectBackground, vui::LocalCardinal::RIGHT);
-	rectBackground->SetSizeMax();
+	frameBackground->add_content(rectBackground, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectBackground, rectBackground, rhr::render::cardinal::local::RIGHT);
+	rectBackground->set_size_max();
 
-	std::shared_ptr<vui::RenderLayer> layer = std::make_shared<vui::RenderLayer>();
-	layer->AddFrame(frameBackground);
-	layer->AddFrame(frameBase);
+	std::shared_ptr<rhr::render::layer> layer = std::make_shared<rhr::render::layer>();
+	layer->add_frame(frameBackground);
+	layer->add_frame(frameBase);
 
-	std::shared_ptr<vui::RenderFrame> frameOptionsContent = std::make_shared<vui::RenderFrame>();
-	frameOptionsContent->SetWeak(frameOptionsContent);
-	std::shared_ptr<vui::RenderFrame> frameSidebarPrimary = std::make_shared<vui::RenderFrame>();
-	frameSidebarPrimary->SetWeak(frameSidebarPrimary);
-	std::shared_ptr<vui::RenderFrame> frameSidebarCategories = std::make_shared<vui::RenderFrame>();
-	frameSidebarCategories->SetWeak(frameSidebarCategories);
+	std::shared_ptr<rhr::render::frame> frameOptionsContent = std::make_shared<rhr::render::frame>();
+	frameOptionsContent->set_weak(frameOptionsContent);
+	std::shared_ptr<rhr::render::frame> frameSidebarPrimary = std::make_shared<rhr::render::frame>();
+	frameSidebarPrimary->set_weak(frameSidebarPrimary);
+	std::shared_ptr<rhr::render::frame> frameSidebarCategories = std::make_shared<rhr::render::frame>();
+	frameSidebarCategories->set_weak(frameSidebarCategories);
 
-	std::shared_ptr<vui::RenderFrame> frameOptions = std::make_shared<vui::RenderFrame>();
-	frameOptions->SetWeak(frameOptions);
-	std::shared_ptr<vui::RenderFrame> frameCategories = std::make_shared<vui::RenderFrame>();
-	frameCategories->SetWeak(frameCategories);
-	std::shared_ptr<vui::RenderFrame> frameToolbar = std::make_shared<vui::RenderFrame>();
-	frameToolbar->SetWeak(frameToolbar);
-	std::shared_ptr<vui::RenderFrame> framePrimary = std::make_shared<vui::RenderFrame>();
-	framePrimary->SetWeak(framePrimary);
+	std::shared_ptr<rhr::render::frame> frameOptions = std::make_shared<rhr::render::frame>();
+	frameOptions->set_weak(frameOptions);
+	std::shared_ptr<rhr::render::frame> frameCategories = std::make_shared<rhr::render::frame>();
+	frameCategories->set_weak(frameCategories);
+	std::shared_ptr<rhr::render::frame> frameToolbar = std::make_shared<rhr::render::frame>();
+	frameToolbar->set_weak(frameToolbar);
+	std::shared_ptr<rhr::render::frame> framePrimary = std::make_shared<rhr::render::frame>();
+	framePrimary->set_weak(framePrimary);
 
-	std::shared_ptr<vui::RenderRectangle> rectOptions = std::make_shared<vui::RenderRectangle>();
-	rectOptions->SetWeak(rectOptions);
-	std::shared_ptr<vui::RenderRectangle> rectCategories = std::make_shared<vui::RenderRectangle>();
-	rectCategories->SetWeak(rectCategories);
+	std::shared_ptr<rhr::render::object::rectangle> rectOptions = std::make_shared<rhr::render::object::rectangle>();
+	rectOptions->set_weak(rectOptions);
+	std::shared_ptr<rhr::render::object::rectangle> rectCategories = std::make_shared<rhr::render::object::rectangle>();
+	rectCategories->set_weak(rectCategories);
 
-	//frameBase->AddContent(rectOptions, std::weak_ptr<IUpdatable>(), rectOptions, rectOptions, vui::LocalCardinal::RIGHT);
-	//rectOptions->SetSizeMax();
+	//frameBase->add_content(rectOptions, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectOptions, rectOptions, rhr::render::cardinal::local::RIGHT);
+	//rectOptions->set_size_max();
 
-	frameBase->AddFrame(frameOptionsContent, vui::LocalCardinal::RIGHT);
-	frameOptionsContent->SetSizeMax();
+	frameBase->add_frame(frameOptionsContent, rhr::render::cardinal::local::RIGHT);
+	frameOptionsContent->set_size_max();
 
-	frameOptionsContent->AddFrame(frameOptions, vui::LocalCardinal::DOWN);
-	frameOptionsContent->AddFrame(frameSidebarPrimary, vui::LocalCardinal::DOWN);
-	frameOptionsContent->SetBar(0, 50);
+	frameOptionsContent->add_frame(frameOptions, rhr::render::cardinal::local::DOWN);
+	frameOptionsContent->add_frame(frameSidebarPrimary, rhr::render::cardinal::local::DOWN);
+	frameOptionsContent->set_bar(0, 50);
 
-	frameOptions->SetSizeMax();
-	frameSidebarPrimary->SetSizeMax();
+	frameOptions->set_size_max();
+	frameSidebarPrimary->set_size_max();
 
-	frameSidebarPrimary->AddFrame(frameSidebarCategories, vui::LocalCardinal::RIGHT);
-	frameSidebarPrimary->AddFrame(framePrimary, vui::LocalCardinal::RIGHT);
-	frameSidebarPrimary->SetBar(0, 200);
+	frameSidebarPrimary->add_frame(frameSidebarCategories, rhr::render::cardinal::local::RIGHT);
+	frameSidebarPrimary->add_frame(framePrimary, rhr::render::cardinal::local::RIGHT);
+	frameSidebarPrimary->set_bar(0, 200);
 
-	frameSidebarCategories->SetSizeMax();
-	framePrimary->SetSizeMax();
+	frameSidebarCategories->set_size_max();
+	framePrimary->set_size_max();
 
-	frameSidebarCategories->AddFrame(frameCategories, vui::LocalCardinal::DOWN);
-	frameSidebarCategories->AddFrame(frameToolbar, vui::LocalCardinal::DOWN);
-	frameSidebarCategories->SetBar(0, 200);
+	frameSidebarCategories->add_frame(frameCategories, rhr::render::cardinal::local::DOWN);
+	frameSidebarCategories->add_frame(frameToolbar, rhr::render::cardinal::local::DOWN);
+	frameSidebarCategories->set_bar(0, 200);
 
-	frameCategories->SetSizeMax();
-	frameToolbar->SetSizeMax();
+	frameCategories->set_size_max();
+	frameToolbar->set_size_max();
 
-	frameOptions->AddContent(rectOptions, std::weak_ptr<IUpdatable>(), rectOptions, rectOptions, vui::LocalCardinal::RIGHT);
-	rectOptions->SetSizeMax();
+	frameOptions->add_content(rectOptions, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectOptions, rectOptions, rhr::render::cardinal::local::RIGHT);
+	rectOptions->set_size_max();
 	
-	//frameCategories->AddContent(rectCategories, std::weak_ptr<IUpdatable>(), rectCategories, rectCategories, vui::LocalCardinal::RIGHT);
-	//rectCategories->SetSizeMax();
+	//frameCategories->add_content(rectCategories, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectCategories, rectCategories, rhr::render::cardinal::local::RIGHT);
+	//rectCategories->set_size_max();
 
-	framePrimary->AddContent(Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, Plane::PrimaryPlane, vui::LocalCardinal::RIGHT);
-	Plane::PrimaryPlane->SetSizeMax();
-	frameToolbar->AddContent(Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, Plane::ToolbarPlane, vui::LocalCardinal::RIGHT);
-	Plane::ToolbarPlane->SetSizeMax();
+	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::render::cardinal::local::RIGHT);
+	rhr::stack::plane::primary_plane->set_size_max();
+	frameToolbar->add_content(rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::render::cardinal::local::RIGHT);
+	rhr::stack::plane::toolbar_plane->set_size_max();
 
-	Renderer::AddLayer(layer);
+	rhr::render::renderer::add_layer(layer);
 
 	// Critical Setup
 
-	Renderer::InitializeWindow();
+	rhr::render::renderer::initialize_window();
 	AsyncSetup();
 	//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
 
 	InputHandler::Initialization();
-	BlockRegistry::CreateBlockRegistry();
+	rhr::registry::block::create_block_registry();
 
 	run();
-	CatagoryHandler::Populate(frameCategories);
+	rhr::handler::category::populate(frameCategories);
 
 	// Debug
 
-	std::shared_ptr<Collection> testCollection = std::make_shared<Collection>();
-	testCollection->SetWeak(testCollection);
-	testCollection->SetPosition({ 200, 200 });
-	testCollection->SetSize({ 500, 300 });
+	std::shared_ptr<rhr::stack::collection> testCollection = std::make_shared<rhr::stack::collection>();
+	testCollection->set_weak(testCollection);
+	testCollection->set_position({ 200, 200 });
+	testCollection->set_size({ 500, 300 });
 
-	std::shared_ptr<Stack> testStack1 = std::make_shared<Stack>();
-	testStack1->SetWeak(testStack1);
-	testStack1->SetPosition({ 0, 0 });
+	std::shared_ptr<rhr::stack::stack> testStack1 = std::make_shared<rhr::stack::stack>();
+	testStack1->set_weak(testStack1);
+	testStack1->set_position({ 0, 0 });
 	
-	std::shared_ptr<Stack> testStack2 = std::make_shared<Stack>();
-	testStack2->SetWeak(testStack2);
-	testStack2->SetPosition({ 300, 300 });
+	std::shared_ptr<rhr::stack::stack> testStack2 = std::make_shared<rhr::stack::stack>();
+	testStack2->set_weak(testStack2);
+	testStack2->set_position({ 300, 300 });
 
-	for (uint8_t i = 0; i < 5; i++)
+	for (u8 i = 0; i < 5; i++)
 	{
-		std::shared_ptr<Block> testBlock = std::make_shared<Block>("vin_main");
-		testBlock->SetWeak(testBlock);
-		testStack1->AddBlock(testBlock);
+		std::shared_ptr<rhr::stack::block> testBlock = std::make_shared<rhr::stack::block>("vin_main");
+		testBlock->set_weak(testBlock);
+		testStack1->add_block(testBlock);
 	}
 
-	for (uint8_t i = 0; i < 5; i++)
+	for (u8 i = 0; i < 5; i++)
 	{
-		std::shared_ptr<Block> testBlock = std::make_shared<Block>("vin_main");
-		testBlock->SetWeak(testBlock);
-		testStack2->AddBlock(testBlock);
+		std::shared_ptr<rhr::stack::block> testBlock = std::make_shared<rhr::stack::block>("vin_main");
+		testBlock->set_weak(testBlock);
+		testStack2->add_block(testBlock);
 	}
 
-	testCollection->AddStack(testStack1);
-	testCollection->AddStack(testStack2);
-	Plane::PrimaryPlane->AddCollection(testCollection, true);
+	testCollection->add_stack(testStack1);
+	testCollection->add_stack(testStack2);
+	rhr::stack::plane::primary_plane->add_collection(testCollection, true);
 
-	size_t currentFrame = 0;
-	double deltaTime = 0.0f;
+	usize currentFrame = 0;
+	f64 deltaTime = 0.0f;
 
 	TIME_POINT capture = std::chrono::high_resolution_clock::now();
 	TIME_POINT last = std::chrono::high_resolution_clock::now();
@@ -463,12 +452,12 @@ int main()
 	TIME_POINT sleepTime = std::chrono::high_resolution_clock::now();
 	TIME_POINT diagnosticsTime = std::chrono::high_resolution_clock::now();
 
-	std::vector<double> fpsAdverage;
+	std::vector<f64> fpsAdverage;
 	bool reloadRenderObjects = false;
 
-	//for (auto block : BlockRegistry::GetRegistry().GetBlocks())
+	//for (auto block : rhr::registry::block::GetRegistry().GetBlocks())
 	//{
-	//	Plane::ToolbarPlane
+	//	rhr::stack::plane::toolbar_plane
 	//}
 
 
@@ -479,34 +468,34 @@ int main()
 	LogTotalMemoryConsumedInit();
 #endif
 
-	//while (!glfwWindowShouldClose(Renderer::Window) && !basicSetupFinished)
+	//while (!glfwWindowShouldClose(rhr::render::renderer::Window) && !basicSetupFinished)
 	//{
 	//	std::this_thread::sleep_for(std::chrono::milliseconds(16 /* 60fps */));
 	//	glfwPollEvents();
 	//}
 
-	while (!glfwWindowShouldClose(Renderer::Window))
+	while (!glfwWindowShouldClose(rhr::render::renderer::window))
 	{
 
 #if DEBUG_ALLOCATIONS
 		LogTotalMemoryConsumed();
 #endif
 
-		if (!Renderer::VsyncEnabled)
+		//if (!rhr::render::renderer::vsync_enabled)
 			std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
 
 		glfwPollEvents();
 
-		vkWaitForFences(Renderer::Device, 1, &Renderer::InFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-		vkResetFences(Renderer::Device, 1, &Renderer::InFlightFences[currentFrame]);
+		vkWaitForFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[currentFrame], VK_TRUE, UINT64_MAX);
+		vkResetFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[currentFrame]);
 
-		uint32_t imageIndex;
-		VkResult result = vkAcquireNextImageKHR(Renderer::Device, Renderer::SwapChain, UINT64_MAX, Renderer::ImageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-		Renderer::ActiveCommandBuffer = Renderer::CommandBuffers[imageIndex];
+		u32 imageIndex;
+		VkResult result = vkAcquireNextImageKHR(rhr::render::renderer::device, rhr::render::renderer::swap_chain, UINT64_MAX, rhr::render::renderer::image_available_semaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+		rhr::render::renderer::active_command_buffer = rhr::render::renderer::command_buffers[imageIndex];
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR)
 		{
-			Renderer::RecreateSwapChain();
+			rhr::render::renderer::recreate_swap_chain();
 			currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 			reloadRenderObjects = true;
 			continue;
@@ -516,26 +505,26 @@ int main()
 
 		//std::cout << imageIndex << std::endl;
 		// Check if a previous frame is using this image (i.e. there is its fence to wait on)
-		if (Renderer::ImagesInFlight[imageIndex] != VK_NULL_HANDLE)
-			vkWaitForFences(Renderer::Device, 1, &Renderer::ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+		if (rhr::render::renderer::images_in_flight[imageIndex] != VK_NULL_HANDLE)
+			vkWaitForFences(rhr::render::renderer::device, 1, &rhr::render::renderer::images_in_flight[imageIndex], VK_TRUE, UINT64_MAX);
 
 		// Mark the image as now being in use by this frame
-		Renderer::ImagesInFlight[imageIndex] = Renderer::InFlightFences[currentFrame];
+		rhr::render::renderer::images_in_flight[imageIndex] = rhr::render::renderer::in_flight_fences[currentFrame];
 
 		capture = std::chrono::high_resolution_clock::now();
-		deltaTime = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(capture - last).count()) / 1000000.0;
+		deltaTime = static_cast<f64>(std::chrono::duration_cast<std::chrono::microseconds>(capture - last).count()) / 1000000.0;
 		last = capture;
 
 		if (reloadRenderObjects)
 		{
-			Plane::PrimaryPlane->ReloadSwapChain();
-			Plane::ToolbarPlane->ReloadSwapChain();
+			rhr::stack::plane::primary_plane->reload_swap_chain();
+			rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
-			Renderer::ReloadLayerSwapChains();
+			rhr::render::renderer::reload_layer_swap_chains();
 			reloadRenderObjects = false;
 		}
 
-		Renderer::Render(imageIndex, deltaTime, /*!setupFinished*/ false, diagnosticsTime);
+		rhr::render::renderer::render(imageIndex, deltaTime, /*!setupFinished*/ false, diagnosticsTime);
 
 		if (std::chrono::duration_cast<std::chrono::milliseconds>(capture - beginFps).count() > 200)
 		{
@@ -543,15 +532,15 @@ int main()
 
 			if (fpsAdverage.size() == 5)
 			{
-				double adverage = 0.0;
+				f64 adverage = 0.0;
 
-				for (uint8_t i = 0; i < fpsAdverage.size(); i++)
+				for (u8 i = 0; i < fpsAdverage.size(); i++)
 					adverage += fpsAdverage[i];
 
-				adverage /= static_cast<double>(fpsAdverage.size());
+				adverage /= static_cast<f64>(fpsAdverage.size());
 				fpsAdverage.clear();
 
-				// Logger::Info(SIDE::CLIENT, "FPS: " + std::to_string(static_cast<uint64_t>(adverage)));
+				// Logger::Info(SIDE::CLIENT, "FPS: " + std::to_string(static_cast<u64>(adverage)));
 			}
 			else
 				fpsAdverage.push_back(1.0 / deltaTime);
@@ -560,22 +549,22 @@ int main()
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-		VkSemaphore waitSemaphores[] = { Renderer::ImageAvailableSemaphores[currentFrame] };
+		VkSemaphore waitSemaphores[] = { rhr::render::renderer::image_available_semaphores[currentFrame] };
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submitInfo.waitSemaphoreCount = 1;
 		submitInfo.pWaitSemaphores = waitSemaphores;
 		submitInfo.pWaitDstStageMask = waitStages;
 
 		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &Renderer::CommandBuffers[imageIndex];
+		submitInfo.pCommandBuffers = &rhr::render::renderer::command_buffers[imageIndex];
 
-		VkSemaphore signalSemaphores[] = { Renderer::RenderFinishedSemaphores[currentFrame] };
+		VkSemaphore signalSemaphores[] = { rhr::render::renderer::render_finished_semaphores[currentFrame] };
 		submitInfo.signalSemaphoreCount = 1;
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
-		vkResetFences(Renderer::Device, 1, &Renderer::InFlightFences[currentFrame]);
+		vkResetFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[currentFrame]);
 
-		if (vkQueueSubmit(Renderer::GraphicsQueue, 1, &submitInfo, Renderer::InFlightFences[currentFrame]) != VK_SUCCESS)
+		if (vkQueueSubmit(rhr::render::renderer::graphics_queue, 1, &submitInfo, rhr::render::renderer::in_flight_fences[currentFrame]) != VK_SUCCESS)
 		{
 			Logger::Error("failed to submit draw call to command buffer");
 			return -1;
@@ -587,18 +576,18 @@ int main()
 		presentInfo.waitSemaphoreCount = 1;
 		presentInfo.pWaitSemaphores = signalSemaphores;
 
-		VkSwapchainKHR swapChains[] = { Renderer::SwapChain };
+		VkSwapchainKHR swapChains[] = { rhr::render::renderer::swap_chain };
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &imageIndex;
 		presentInfo.pResults = nullptr; // Optional
 
-		result = vkQueuePresentKHR(Renderer::PresentQueue, &presentInfo);
+		result = vkQueuePresentKHR(rhr::render::renderer::present_queue, &presentInfo);
 
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || Renderer::FramebufferResized)
+		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || rhr::render::renderer::frame_buffer_resized)
 		{
-			Renderer::FramebufferResized = false;
-			Renderer::RecreateSwapChain();
+			rhr::render::renderer::frame_buffer_resized = false;
+			rhr::render::renderer::recreate_swap_chain();
 			currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 			reloadRenderObjects = true;
 			continue;
@@ -609,7 +598,7 @@ int main()
 			return -1;
 		}
 
-		vkQueueWaitIdle(Renderer::PresentQueue);
+		vkQueueWaitIdle(rhr::render::renderer::present_queue);
 		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
 		//sleepTime = std::chrono::high_resolution_clock::now();
@@ -619,8 +608,8 @@ int main()
 		//}
 	}
 
-	// Plane::PrimaryPlane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
-	// Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
+	// rhr::stack::plane::primary_plane->setPosition(sf::Vector2f(10, HEADER_HEIGHT + 5));
+	// rhr::stack::plane::primary_plane->setSize(sf::Vector2u(window.getSize().x - rhr::stack::plane::primary_plane->getPosition().x - 5, window.getSize().y - rhr::stack::plane::primary_plane->getPosition().y - 5));
 
 	// CategoryHandler::CreateHandler();
 	// CategoryHandler::GetHandler().RegisterHeader();
@@ -638,7 +627,7 @@ int main()
 	// sf::Clock clDeltaDisplay;
 	// sf::Clock clDeltaTime;
 
-	// double deltaTime = 0.0;
+	// f64 deltaTime = 0.0;
 	// sf::Time sfmlDeltaTime(sf::Time::Zero);
 
 	// int fps = 240;
@@ -657,8 +646,8 @@ int main()
 	// clDeltaDisplay.restart();
 	// clDeltaTime.restart();
 
-	// *Plane::ToolbarPlane->GetView() = window.getDefaultView();
-	// *Plane::PrimaryPlane->GetView() = window.getDefaultView();
+	// *rhr::stack::plane::toolbar_plane->GetView() = window.getDefaultView();
+	// *rhr::stack::plane::primary_plane->GetView() = window.getDefaultView();
 
 	// #ifndef NDEBUG
 	// 	//auto killme = ImGui::CreateContext();
@@ -694,40 +683,40 @@ int main()
 		// 				sf::FloatRect visibleArea(0, 0, ev.size.width, ev.size.height);
 		// 				window.setView(sf::View(visibleArea));
 
-		// 				Plane::PrimaryPlane->setPosition(sf::Vector2f(CategoryHandler::GetHandler().GetToolbarWidth() + 10, HEADER_HEIGHT + 5));
-		// 				Plane::PrimaryPlane->setSize(sf::Vector2u(window.getSize().x - Plane::PrimaryPlane->getPosition().x - 5, window.getSize().y - Plane::PrimaryPlane->getPosition().y - 5));
+		// 				rhr::stack::plane::primary_plane->setPosition(sf::Vector2f(CategoryHandler::GetHandler().GetToolbarWidth() + 10, HEADER_HEIGHT + 5));
+		// 				rhr::stack::plane::primary_plane->setSize(sf::Vector2u(window.getSize().x - rhr::stack::plane::primary_plane->getPosition().x - 5, window.getSize().y - rhr::stack::plane::primary_plane->getPosition().y - 5));
 		// 			}
 		// 			else if (ev.type == sf::Event::MouseWheelScrolled)
 		// 			{
 		// 				if (window.hasFocus())
 		// 				{
-		// 					int32_t delta = ev.mouseWheelScroll.delta * -200;
+		// 					i32 delta = ev.mouseWheelScroll.delta * -200;
 
 		// 					if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
 		// 					{
-		// 						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+		// 						sf::View* primaryView = rhr::stack::plane::primary_plane->GetView();
 		// 						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(delta, 0.0f));
 		// 					}
 		// 					else if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
 		// 					{
 		// 						if (ev.mouseWheelScroll.delta > 0)
 		// 						{
-		// 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
+		// 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, rhr::stack::plane::primary_plane->GetView(), 1.0f / 1.2f);
 
-		// 							if (Plane::PrimaryPlane->CalculateZoom().x > 5.0)
-		// 								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
+		// 							if (rhr::stack::plane::primary_plane->CalculateZoom().x > 5.0)
+		// 								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, rhr::stack::plane::primary_plane->GetView(), 1.2f);
 		// 						}
 		// 						else
 		// 						{
-		// 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.2f);
+		// 							zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, rhr::stack::plane::primary_plane->GetView(), 1.2f);
 
-		// 							if (Plane::PrimaryPlane->CalculateZoom().x < 0.2)
-		// 								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, Plane::PrimaryPlane->GetView(), 1.0f / 1.2f);
+		// 							if (rhr::stack::plane::primary_plane->CalculateZoom().x < 0.2)
+		// 								zoomViewAt(sf::Vector2i(ev.mouseWheelScroll.x, ev.mouseWheelScroll.y), window, rhr::stack::plane::primary_plane->GetView(), 1.0f / 1.2f);
 		// 						}
 		// 					}
 		// 					else
 		// 					{
-		// 						sf::View* primaryView = Plane::PrimaryPlane->GetView();
+		// 						sf::View* primaryView = rhr::stack::plane::primary_plane->GetView();
 		// 						primaryView->setCenter(primaryView->getCenter() + sf::Vector2f(0.0f, delta));
 		// 					}
 		// 				}
@@ -748,10 +737,10 @@ int main()
 		// 				{
 		// 					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
 
-		// 					if (!UIRegistry::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+		// 					if (!rhr::registry::char_texture::GetRegistry().mouseButton(true, Global::MousePosition, ev.mouseButton.button))
 		// 					{
-		// 						if (!Plane::PrimaryPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
-		// 							Plane::ToolbarPlane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
+		// 						if (!rhr::stack::plane::primary_plane->mouseButton(true, Global::MousePosition, ev.mouseButton.button))
+		// 							rhr::stack::plane::toolbar_plane->mouseButton(true, Global::MousePosition, ev.mouseButton.button);
 		// 					}
 		// 				}
 		// 			}
@@ -761,10 +750,10 @@ int main()
 		// 				{
 		// 					Global::MousePosition = sf::Vector2i(ev.mouseButton.x, ev.mouseButton.y);
 
-		// 					if (!UIRegistry::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+		// 					if (!rhr::registry::char_texture::GetRegistry().mouseButton(false, Global::MousePosition, ev.mouseButton.button))
 		// 					{
-		// 						if (!Plane::PrimaryPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
-		// 							Plane::ToolbarPlane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
+		// 						if (!rhr::stack::plane::primary_plane->mouseButton(false, Global::MousePosition, ev.mouseButton.button))
+		// 							rhr::stack::plane::toolbar_plane->mouseButton(false, Global::MousePosition, ev.mouseButton.button);
 		// 					}
 		// 				}
 		// 			}
@@ -785,12 +774,12 @@ int main()
 				// FPS
 				//////////////////////////////////////////////////////////
 
-				// deltaTime = static_cast<double>(clDeltaTime.getElapsedTime().asMicroseconds()) * 0.000001;
+				// deltaTime = static_cast<f64>(clDeltaTime.getElapsedTime().asMicroseconds()) * 0.000001;
 				// sfmlDeltaTime = clDeltaTime.getElapsedTime();
 
 				// if (clDeltaDisplay.getElapsedTime().asMilliseconds() >= 100)
 				// {
-				// 	frameRate.setString("fps: " + std::to_string((uint64_t)floor(1.0 / deltaTime)));
+				// 	frameRate.setString("fps: " + std::to_string((u64)floor(1.0 / deltaTime)));
 				// 	clDeltaDisplay.restart();
 				// }
 
@@ -802,29 +791,29 @@ int main()
 				// Frame Update
 				//////////////////////////////////////////////////////////
 
-				// UIRegistry::GetRegistry().frameUpdate(deltaTime);
+				// rhr::registry::char_texture::GetRegistry().frameUpdate(deltaTime);
 				// CategoryHandler::GetHandler().frameUpdate(deltaTime);
 
-				// Plane::ToolbarPlane->frameUpdate(deltaTime);
-				// Plane::PrimaryPlane->frameUpdate(deltaTime);
+				// rhr::stack::plane::toolbar_plane->frameUpdate(deltaTime);
+				// rhr::stack::plane::primary_plane->frameUpdate(deltaTime);
 
 				//////////////////////////////////////////////////////////
-				// Render
+				// render
 				//////////////////////////////////////////////////////////
 
 				// window.clear(MOD_BACKGROUND_HIGH);
 
 				// window.draw(CategoryHandler::GetHandler());
-				// Plane::ToolbarPlane->render(window);
-				// Plane::PrimaryPlane->render(window);
-				// window.draw(UIRegistry::GetRegistry());
+				// rhr::stack::plane::toolbar_plane->render(window);
+				// rhr::stack::plane::primary_plane->render(window);
+				// window.draw(rhr::registry::char_texture::GetRegistry());
 
-				// Plane::ToolbarPlane->snapRender(window);
-				// Plane::PrimaryPlane->snapRender(window);
+				// rhr::stack::plane::toolbar_plane->snapRender(window);
+				// rhr::stack::plane::primary_plane->snapRender(window);
 
 				// CategoryHandler::GetHandler().PostRender(&window);
-				// Plane::ToolbarPlane->postRender(window);
-				// Plane::PrimaryPlane->postRender(window);
+				// rhr::stack::plane::toolbar_plane->postRender(window);
+				// rhr::stack::plane::primary_plane->postRender(window);
 
 				//////////////////////////////////////////////////////////
 				// ImGui
@@ -905,7 +894,7 @@ int main()
 				// 			ImGui::End();
 				// 		}
 
-				// 		ImGui::SFML::Render(window);
+				// 		ImGui::SFML::render(window);
 
 				// #endif
 

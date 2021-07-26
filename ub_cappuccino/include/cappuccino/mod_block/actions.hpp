@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "PreProcessorData.hpp"
+#include "cappuccino/preprocessor_data.hpp"
 
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
 
 class ModBlockAction
 {
@@ -118,11 +118,11 @@ public:
 	class DataContainer
 	{
 	public:
-		uint64_t Arg0;
+		u64 Arg0;
 		std::string Arg1;
 	};
 
-	ModBlockActionCreateLocalContainer(uint64_t idx, const std::string& container)
+	ModBlockActionCreateLocalContainer(u64 idx, const std::string& container)
 	{
 		Data = (void*)new DataContainer();
 		((DataContainer*)Data)->Arg0 = idx;
@@ -146,13 +146,13 @@ public:
 	class DataContainer
 	{
 	public:
-		uint64_t Arg0;
+		u64 Arg0;
 		std::string Arg1;
 		std::string Arg2;
 		PreprocessorCell Arg3;
 	};
 
-	ModBlockActionAddLocalContainer(uint64_t idx, const std::string& container, const std::string& name, const PreprocessorCell& cell)
+	ModBlockActionAddLocalContainer(u64 idx, const std::string& container, const std::string& name, const PreprocessorCell& cell)
 	{
 		Data = (void*)new DataContainer();
 		((DataContainer*)Data)->Arg0 = idx;
@@ -178,13 +178,13 @@ public:
 	class DataContainer
 	{
 	public:
-		uint64_t Arg0;
+		u64 Arg0;
 		std::string Arg1;
 		std::string Arg2;
 		void(*Arg3)(const PreprocessorCell& cell);
 	};
 
-	ModBlockActionGetLocalContainer(uint64_t idx, const std::string& container, const std::string& name, void(*callback)(const PreprocessorCell&))
+	ModBlockActionGetLocalContainer(u64 idx, const std::string& container, const std::string& name, void(*callback)(const PreprocessorCell&))
 	{
 		Data = (void*)new DataContainer();
 		((DataContainer*)Data)->Arg0 = idx;

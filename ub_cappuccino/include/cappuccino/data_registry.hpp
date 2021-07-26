@@ -1,16 +1,16 @@
 #pragma once
 #include "config.h"
 
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
 
 class DataRegistry
 {
 public:
-	DataRegistry(uint64_t keyCount);
+	DataRegistry(u64 keyCount);
 	~DataRegistry();
 
-	void CreateKey(void* value, uint64_t idx);
-	void* GetKey(uint64_t idx);
+	void CreateKey(void* value, u64 idx);
+	void* GetKey(u64 idx);
 private:
 	void** m_keys;
 };

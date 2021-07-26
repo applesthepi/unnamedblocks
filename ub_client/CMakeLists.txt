@@ -81,5 +81,8 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy
     $<TARGET_FILE:UB_CAPPUCCINO>
     $<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
-
-configure_file(config.h.in config.h)
+	
+configure_file (
+	"${PROJECT_SOURCE_DIR}/config.h.in"
+	"${PROJECT_BINARY_DIR}/config.h"
+)

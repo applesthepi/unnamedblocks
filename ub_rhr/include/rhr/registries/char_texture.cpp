@@ -75,9 +75,9 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 		FT_Bitmap map = font_texture_data.face->glyph->bitmap;
 
 #if 0
-		for (size_t y = 0; y < map.rows; y++)
+		for (usize y = 0; y < map.rows; y++)
 		{
-			for (size_t x = 0; x < map.width; x++)
+			for (usize x = 0; x < map.width; x++)
 				std::cout << static_cast<u16>(map.buffer[y * map.width + x]) << ", ";
 
 			std::cout << '\n';
@@ -146,9 +146,9 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 		free(char_image);
 
 #if 0
-	for (size_t i = 0; i < image_side_length * highest_height; i++)
+	for (usize i = 0; i < image_side_length * highest_height; i++)
 	{
-		for (size_t a = 0; a < image_side_length * highest_width * 4; a++)
+		for (usize a = 0; a < image_side_length * highest_width * 4; a++)
 		{
 			std::cout << ((texture_sheet[(i * image_side_length * highest_width * 4) + a] == 255) ? 1 : 0);
 			//texture_sheet[(i * image_side_length * highest_width * 4) + a] = 128;
@@ -160,7 +160,7 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 	std::cout << std::flush;
 #endif
 
-	font_texture_data.image = RenderTools::create_texture_image({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &font_texture_data.memory);
+	font_texture_data.image = rhr::render::tools::create_texture_image({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &font_texture_data.memory);
 	texture_map[type] = font_texture_data;
 }
 

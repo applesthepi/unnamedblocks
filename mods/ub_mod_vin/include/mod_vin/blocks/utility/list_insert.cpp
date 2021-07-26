@@ -6,7 +6,7 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	if (pass->GetBool(3))
-		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->InsertValue(new double(pass->GetReal(1)), pass->GetReal(2), true);
+		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->InsertValue(new f64(pass->GetReal(1)), pass->GetReal(2), true);
 	else
 		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->InsertValue(&pass->GetReal(1), pass->GetReal(2), false);
 }
@@ -22,7 +22,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	}
 
 	if (pass->GetBool(3))
-		list->InsertValue(new double(pass->GetReal(1)), pass->GetReal(2), true);
+		list->InsertValue(new f64(pass->GetReal(1)), pass->GetReal(2), true);
 	else
 		list->InsertValue(&pass->GetReal(1), pass->GetReal(2), false);
 }

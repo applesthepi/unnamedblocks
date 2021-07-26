@@ -51,22 +51,21 @@ void rhr::render::object::rectangle::on_render()
 
 void rhr::render::object::rectangle::on_update_buffers()
 {
-	std::vector<Vertex> vertices;
+	std::vector<rhr::render::vertex> vertices;
 	std::vector<u32> indices;
 
 	vertices.reserve(4);
 	indices.reserve(6);
 
 	glm::vec<2, i32> position = m_position + m_super_position;
-	glm::vec<3, f32> color = { m_color.get_normalized().r, m_color.get_normalized().g, m_color.get_normalized().b };
 
 	// TODO: remove
 	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
 
-	Vertex v0 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y), static_cast<i32>(m_depth) * -1 }, color, { 0.0f, 0.0f });
-	Vertex v1 = Vertex({ static_cast<float>(position.x + m_use_size.x), static_cast<float>(position.y), static_cast<i32>(m_depth) * -1 }, color, { 1.0f, 0.0f });
-	Vertex v2 = Vertex({ static_cast<float>(position.x + m_use_size.x), static_cast<float>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, color, { 1.0f, 1.0f });
-	Vertex v3 = Vertex({ static_cast<float>(position.x), static_cast<float>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, color, { 0.0f, 1.0f });
+	rhr::render::vertex v0 = rhr::render::vertex({ static_cast<f32>(position.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 0.0f });
+	rhr::render::vertex v1 = rhr::render::vertex({ static_cast<f32>(position.x + m_use_size.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 0.0f });
+	rhr::render::vertex v2 = rhr::render::vertex({ static_cast<f32>(position.x + m_use_size.x), static_cast<f32>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 1.0f });
+	rhr::render::vertex v3 = rhr::render::vertex({ static_cast<f32>(position.x), static_cast<f32>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 1.0f });
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);

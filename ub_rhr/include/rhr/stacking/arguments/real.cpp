@@ -61,19 +61,19 @@ void rhr::stack::argument::real::on_update_buffers()
 
 	vertices[0] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 	vertices[1] = rhr::render::vertex({ 0, 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[2] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[2] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[3] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[4] = rhr::render::vertex({ 0, static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[5] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[3] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[4] = rhr::render::vertex({ 0, static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[5] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
 	vertices[6] = rhr::render::vertex({ other_side, 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 	vertices[7] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[8] = rhr::render::vertex({ other_side, static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[8] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[9] = rhr::render::vertex({ other_side, static_cast<f32>(Block::HeightContent / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[10] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[11] = rhr::render::vertex({ other_side, static_cast<f32>(Block::HeightContent), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[9] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[10] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[11] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
 
 	m_decor_left_top->update_vertices(vertices + 0, 3, true);
 	m_decor_left_bottom->update_vertices(vertices + 3, 3, true);

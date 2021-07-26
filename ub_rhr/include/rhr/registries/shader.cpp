@@ -4,7 +4,7 @@
 // {
 //     m_shaderUnlocalizedNames.clear();
     
-//     for (uint8_t i = 0; i < m_shaders.size(); i++)
+//     for (u8 i = 0; i < m_shaders.size(); i++)
 //         delete m_shaders[i];
 
 //     m_shaders.clear();

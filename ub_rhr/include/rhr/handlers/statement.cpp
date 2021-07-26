@@ -5,9 +5,9 @@ std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)
 {
 	std::vector<StatmentIf> ifStatments;
 	std::vector<StatmentIf> currentIfs;
-	std::vector<std::vector<uint32_t>> currentIfElse;
+	std::vector<std::vector<u32>> currentIfElse;
 
-	for (uint32_t a = 0; a < stack->GetBlockCount(); a++)
+	for (u32 a = 0; a < stack->GetBlockCount(); a++)
 	{
 		if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_if")
 		{
@@ -48,7 +48,7 @@ std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)
 				}
 
 				if (!currentIfs.back().HasElseIf)
-					currentIfElse.push_back(std::vector<uint32_t>());
+					currentIfElse.push_back(std::vector<u32>());
 
 				currentIfs.back().HasElseIf = true;
 				currentIfElse.back().push_back(a);

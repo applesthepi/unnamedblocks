@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
-#include <Cappuccino/Color.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/color.hpp>
 
 class ModCatagory
 {
@@ -12,7 +12,7 @@ public:
 	std::string GetModDisplayName();
 
 	// the color of the category, and the background color of all of the blocks registered to this category
-	virtual Color GetColor() const;
+	virtual cap::color GetColor() const;
 
 	// the name the engine uses to refer to this category as. Convention example: "mymod_some_category"
 	virtual std::string GetUnlocalizedName() const;

@@ -1,12 +1,11 @@
 #pragma once
 #include "config.h"
 
-#include "block/ModBlockFlags.hpp"
-#include "block/ModBlockActions.hpp"
-#include "ModBlockPass.hpp"
-#include "runtime/ModBlockData.hpp"
-
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
+#include "cappuccino/mod_block/flags.hpp"
+#include "cappuccino/mod_block/actions.hpp"
+#include "cappuccino/mod_block/pass.hpp"
+#include "cappuccino/mod_block/data.hpp"
 
 #if !LINUX
 #ifdef CAPPUCCINO
@@ -102,7 +101,7 @@ public:
 	CAP_DLL virtual blockInitialization GetRuntimeLocalPostInit() const;
 
 	// actions to run on each block preprocessed; during Initialization
-	CAP_DLL virtual std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const;
+	CAP_DLL virtual std::vector<std::pair<blockDataInitialization, u16>> GetRuntimeStages() const;
 	
 	// block arguments, including text
 	CAP_DLL virtual const std::vector<BlockArgumentInitializer> GetArguments() const;

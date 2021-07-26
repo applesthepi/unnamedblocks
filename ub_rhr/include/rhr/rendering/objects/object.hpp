@@ -36,13 +36,13 @@ public:
 	void set_texture(texture_type type);
 
 	///
-	void update_vertices(const std::vector<Vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now = false);
+	void update_vertices(const std::vector<rhr::render::vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now = false);
 
 	///
-	void update_vertices(const Vertex* vertices, u32 vertex_count, const u32* indices, u32 index_count, bool update_buffers_now = false);
+	void update_vertices(const rhr::render::vertex* vertices, u32 vertex_count, const u32* indices, u32 index_count, bool update_buffers_now = false);
 
 	///
-	void update_vertices(const Vertex* vertices, u32 vertex_count, bool update_buffers_now = false);
+	void update_vertices(const rhr::render::vertex* vertices, u32 vertex_count, bool update_buffers_now = false);
 
 	///
 	void set_queue(u8 queue);
@@ -77,10 +77,10 @@ private:
 	usize m_index_alloc_count;
 
 	/// Arrays of data in ram.
-	Vertex* m_vertices;
+	rhr::render::vertex* m_vertices;
 	u32* m_indices;
 
-	/// Vertex buffer data.
+	/// rhr::render::vertex buffer data.
 	vk::buffer m_vertex_buffer;
 	vk::device_memory m_vertex_buffer_memory;
 	vk::buffer m_vertex_staging_buffer;

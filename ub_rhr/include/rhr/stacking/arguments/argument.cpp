@@ -55,7 +55,7 @@ void rhr::stack::argument::argument::unselect()
 
 }
 
-i32 rhr::stack::argument::argument::padding = Block::padding * 4;
+i32 rhr::stack::argument::argument::padding = rhr::stack::block::padding * 4;
 
 void rhr::stack::argument::argument::on_render()
 {

@@ -24,7 +24,7 @@ void rhr::render::object::text::set_text(const std::string& text)
 	{
 		m_text.clear();
 		m_render_object_text->set_enabled(false);
-		m_size = { 10, Block::Height - (Block::Padding * 2) };
+		m_size = { 10, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
 	}
 	else
 	{
@@ -59,9 +59,9 @@ void rhr::render::object::text::update_size()
 	i32 running_x = m_padding;
 
 	for (usize i = 0; i < m_text.size(); i++)
-		running_x += rhr::registries::char_texture::texture_map[rhr::registries::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
+		running_x += rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
 	
-	m_size = { running_x + m_padding, Block::Height - (Block::Padding * 2) };
+	m_size = { running_x + m_padding, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
 }
 
 void rhr::render::object::text::on_render()
@@ -70,11 +70,11 @@ void rhr::render::object::text::on_render()
 	{
 		if (m_enable_background)
 		{
-			vkCmdBindPipeline(Renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::ui_pipeline);
+			vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
 			m_render_object_background->render();
 		}
 
-		vkCmdBindPipeline(Renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, Renderer::ui_texture_pipeline);
+		vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
 		m_render_object_text->render();
 	}
 }
@@ -84,13 +84,13 @@ void rhr::render::object::text::on_update_buffers()
 	clear_dirty();
 
 	{
-		Vertex vertices[4];
+		rhr::render::vertex vertices[4];
 		u32 indices[6];
 
-		vertices[0] = Vertex({ 0.0f, 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 0.0f });
-		vertices[1] = Vertex({ static_cast<float>(m_size.x), 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 0.0f });
-		vertices[2] = Vertex({ static_cast<float>(m_size.x), static_cast<float>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 1.0f });
-		vertices[3] = Vertex({ 0.0f, static_cast<float>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 1.0f });
+		vertices[0] = rhr::render::vertex({ 0.0f, 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 0.0f });
+		vertices[1] = rhr::render::vertex({ static_cast<f32>(m_size.x), 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 0.0f });
+		vertices[2] = rhr::render::vertex({ static_cast<f32>(m_size.x), static_cast<f32>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 1.0f });
+		vertices[3] = rhr::render::vertex({ 0.0f, static_cast<f32>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 1.0f });
 
 		indices[0] = 1;
 		indices[1] = 0;
@@ -104,21 +104,20 @@ void rhr::render::object::text::on_update_buffers()
 
 	if (m_render_object_text->get_enabled())
 	{
-		Vertex* vertices = (Vertex*)alloca(sizeof(Vertex) * m_text.size() * 4);
+		rhr::render::vertex* vertices = (rhr::render::vertex*)alloca(sizeof(rhr::render::vertex) * m_text.size() * 4);
 		u32* indices = (u32*)alloca(sizeof(u32) * m_text.size() * 6);
 
-		int32_t running_x = m_padding;
-		glm::vec<3, float> primary_color = { m_color_primary.get_normalized().r, m_color_primary.get_normalized().g, m_color_primary.get_normalized().b };
+		i32 running_x = m_padding;
 
-		for (size_t i = 0; i < m_text.size(); i++)
+		for (usize i = 0; i < m_text.size(); i++)
 		{
-			rhr::registries::char_texture::char_data char_data = rhr::registries::char_texture::texture_map[rhr::registries::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]];
-			float y_offset = static_cast<float>(Block::HeightContent) + (-1.0f * static_cast<float>(char_data.offset.y)) - static_cast<float>(Block::Padding);
+			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]];
+			f32 y_offset = static_cast<f32>(rhr::stack::block::height_content) + (-1.0f * static_cast<f32>(char_data.offset.y)) - static_cast<f32>(rhr::stack::block::padding);
 
-			vertices[i * 4 + 0] = Vertex({ static_cast<float>(running_x + char_data.offset.x), y_offset, 0.0f }, primary_color, { char_data.first.x, char_data.first.y });
-			vertices[i * 4 + 1] = Vertex({ static_cast<float>(running_x + char_data.offset.x + char_data.size.x), y_offset, 0.0f }, primary_color, { char_data.second.x, char_data.first.y });
-			vertices[i * 4 + 2] = Vertex({ static_cast<float>(running_x + char_data.offset.x + char_data.size.x), static_cast<float>(char_data.size.y) + y_offset, 0.0f }, primary_color, { char_data.second.x, char_data.second.y });
-			vertices[i * 4 + 3] = Vertex({ static_cast<float>(running_x + char_data.offset.x), static_cast<float>(char_data.size.y) + y_offset, 0.0f }, primary_color, { char_data.first.x, char_data.second.y });
+			vertices[i * 4 + 0] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x), y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.first.y });
+			vertices[i * 4 + 1] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.second.x, char_data.first.y });
+			vertices[i * 4 + 2] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), static_cast<f32>(char_data.size.y) + y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.second.x, char_data.second.y });
+			vertices[i * 4 + 3] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x), static_cast<f32>(char_data.size.y) + y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.second.y });
 
 			indices[i * 6 + 0] = i * 4 + 1;
 			indices[i * 6 + 1] = i * 4 + 0;
@@ -131,7 +130,7 @@ void rhr::render::object::text::on_update_buffers()
 		}
 
 		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);
-		m_size = { running_x + m_padding, Block::Height - (Block::Padding * 2) };
+		m_size = { running_x + m_padding, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
 	}
 }
 

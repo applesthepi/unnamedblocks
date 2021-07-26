@@ -2,13 +2,13 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetString(2) = pass->GetString(0).at((uint64_t)pass->GetReal(1));
+	pass->GetString(2) = pass->GetString(0).at((u64)pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
 	std::string& str = pass->GetString(0);
-	double& chAt = pass->GetReal(1);
+	f64& chAt = pass->GetReal(1);
 	std::string& finalStr = pass->GetString(2);
 
 	if (std::floor(chAt) != chAt)
@@ -17,9 +17,9 @@ static void ExecuteDebug(ModBlockPass* pass)
 		return;
 	}
 
-	int64_t idx = chAt;
+	i64 idx = chAt;
 
-	if (idx >= static_cast<int64_t>(str.length()) || idx < 0)
+	if (idx >= static_cast<i64>(str.length()) || idx < 0)
 	{
 		pass->LogError("failed to get char at \"" + std::to_string(idx) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; index out of range", LoggerFatality::BREAK);
 		return;

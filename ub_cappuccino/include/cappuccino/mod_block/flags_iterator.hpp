@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
 
 #if !LINUX
 #ifdef __CAP
@@ -25,9 +25,9 @@ class ModBlockFlagsIterator
 {
 public:
 	CAP_DLL ModBlockFlagType PullNext();
-	CAP_DLL ModBlockFlagsIterator(const uint64_t* flag);
+	CAP_DLL ModBlockFlagsIterator(const u64* flag);
 	CAP_DLL void Reset();
 private:
-	uint64_t m_iterator;
-	const uint64_t* m_flag;
+	u64 m_iterator;
+	const u64* m_flag;
 };

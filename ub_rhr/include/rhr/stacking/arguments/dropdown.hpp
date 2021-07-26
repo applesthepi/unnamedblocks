@@ -26,7 +26,7 @@ public:
 		element.reserve(16);
 		elements.reserve(4);
 
-		for (uint64_t i = 0; i < data.length(); i++)
+		for (u64 i = 0; i < data.length(); i++)
 		{
 			if (data[i] == ';')
 				elements.push_back(element);

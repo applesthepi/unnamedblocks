@@ -1,7 +1,4 @@
-#include "InputHandler.hpp"
-
-// TODO: remove include (debugging)
-#include <iostream>
+#include "input_handler.hpp"
 
 void InputHandler::Initialization()
 {
@@ -11,18 +8,18 @@ void InputHandler::Initialization()
 	m_MousePosition = { 0, 0 };
 }
 
-// void InputHandler::RunTextProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
+// void InputHandler::RunTextProccess(std::string* text, u64* locHigh, u64* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
 // {
 // 	std::function<void(const char& ch)> insertChar = [&](const char& ch)
 // 	{
 // 		std::string nt;
 
-// 		for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 		for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 			nt += text->at(i);
 
 // 		nt += ch;
 
-// 		for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 		for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 			nt += text->at(i);
 
 // 		*text = nt;
@@ -35,12 +32,12 @@ void InputHandler::Initialization()
 // 	{
 // 		std::string nt;
 
-// 		for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 		for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 			nt += text->at(i);
 
 // 		nt += ch;
 
-// 		for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 		for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 			nt += text->at(i);
 
 // 		*text = nt;
@@ -57,7 +54,7 @@ void InputHandler::Initialization()
 // 			{
 // 				if (text->at(*loc - 1) == ' ')
 // 				{
-// 					for (int64_t i = *loc - 1; i >= 0; i--)
+// 					for (i64 i = *loc - 1; i >= 0; i--)
 // 					{
 // 						if (text->at(i) != ' ')
 // 							break;
@@ -67,7 +64,7 @@ void InputHandler::Initialization()
 // 				}
 // 				else if (text->at(*loc - 1) == '	')
 // 				{
-// 					for (int64_t i = *loc - 1; i >= 0; i--)
+// 					for (i64 i = *loc - 1; i >= 0; i--)
 // 					{
 // 						if (text->at(i) != '	')
 // 							break;
@@ -77,11 +74,11 @@ void InputHandler::Initialization()
 // 				}
 // 				else
 // 				{
-// 					uint64_t oLoc = *loc;
-// 					for (int64_t i = *loc - 1; i >= 0; i--)
+// 					u64 oLoc = *loc;
+// 					for (i64 i = *loc - 1; i >= 0; i--)
 // 					{
 // 						char re = text->at(i);
-// 						if (i != static_cast<int64_t>(oLoc) - 1 && (
+// 						if (i != static_cast<i64>(oLoc) - 1 && (
 // 							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
 // 							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
 // 							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
@@ -108,7 +105,7 @@ void InputHandler::Initialization()
 // 			{
 // 				if (text->at(*loc) == ' ')
 // 				{
-// 					for (uint64_t i = *loc; i < text->size(); i++)
+// 					for (u64 i = *loc; i < text->size(); i++)
 // 					{
 // 						if (text->at(i) != ' ')
 // 							break;
@@ -118,7 +115,7 @@ void InputHandler::Initialization()
 // 				}
 // 				else if (text->at(*loc) == '	')
 // 				{
-// 					for (uint64_t i = *loc; i < text->size(); i++)
+// 					for (u64 i = *loc; i < text->size(); i++)
 // 					{
 // 						if (text->at(i) != '	')
 // 							break;
@@ -128,8 +125,8 @@ void InputHandler::Initialization()
 // 				}
 // 				else
 // 				{
-// 					uint64_t oLoc = *loc;
-// 					for (uint64_t i = *loc; i < text->size(); i++)
+// 					u64 oLoc = *loc;
+// 					for (u64 i = *loc; i < text->size(); i++)
 // 					{
 // 						if (i != oLoc && (
 // 							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
@@ -175,10 +172,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 			for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 			for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -190,10 +187,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < *loc - 1; i++)
+// 			for (u64 i = 0; i < *loc - 1; i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = *loc; i < text->size(); i++)
+// 			for (u64 i = *loc; i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -208,10 +205,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 			for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 			for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -223,10 +220,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < *loc; i++)
+// 			for (u64 i = 0; i < *loc; i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = *loc + 1; i < text->size(); i++)
+// 			for (u64 i = *loc + 1; i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -363,18 +360,18 @@ void InputHandler::Initialization()
 // 		insertChar('/');
 // }
 
-// void InputHandler::RunNumberProccess(std::string* text, uint64_t* locHigh, uint64_t* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
+// void InputHandler::RunNumberProccess(std::string* text, u64* locHigh, u64* loc, std::function<void()>* enter, std::function<void()>* escape, const sf::Event::KeyEvent& ev)
 // {
 // 	std::function<void(const char& ch)> insertChar = [&](const char& ch)
 // 	{
 // 		std::string nt;
 
-// 		for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 		for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 			nt += text->at(i);
 
 // 		nt += ch;
 
-// 		for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 		for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 			nt += text->at(i);
 
 // 		*text = nt;
@@ -391,7 +388,7 @@ void InputHandler::Initialization()
 // 		nCh.reserve(ch.length());
 // 		bool hasDecimal = false;
 
-// 		for (uint64_t i = 0; i < ch.length(); i++)
+// 		for (u64 i = 0; i < ch.length(); i++)
 // 		{
 // 			if (i == 0 && ch[i] == '-')
 // 				nCh += ch[i];
@@ -409,12 +406,12 @@ void InputHandler::Initialization()
 
 // 		std::string nt;
 
-// 		for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 		for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 			nt += text->at(i);
 
 // 		nt += ch;
 
-// 		for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 		for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 			nt += text->at(i);
 
 // 		*text = nt;
@@ -431,7 +428,7 @@ void InputHandler::Initialization()
 // 			{
 // 				if (text->at(*loc - 1) == ' ')
 // 				{
-// 					for (int64_t i = *loc - 1; i >= 0; i--)
+// 					for (i64 i = *loc - 1; i >= 0; i--)
 // 					{
 // 						if (text->at(i) != ' ')
 // 							break;
@@ -441,7 +438,7 @@ void InputHandler::Initialization()
 // 				}
 // 				else if (text->at(*loc - 1) == '	')
 // 				{
-// 					for (int64_t i = *loc - 1; i >= 0; i--)
+// 					for (i64 i = *loc - 1; i >= 0; i--)
 // 					{
 // 						if (text->at(i) != '	')
 // 							break;
@@ -451,11 +448,11 @@ void InputHandler::Initialization()
 // 				}
 // 				else
 // 				{
-// 					uint64_t oLoc = *loc;
-// 					for (int64_t i = *loc - 1; i >= 0; i--)
+// 					u64 oLoc = *loc;
+// 					for (i64 i = *loc - 1; i >= 0; i--)
 // 					{
 // 						char re = text->at(i);
-// 						if (i != static_cast<int64_t>(oLoc) - 1 && (
+// 						if (i != static_cast<i64>(oLoc) - 1 && (
 // 							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
 // 							text->at(i) == '%' || text->at(i) == '^' || text->at(i) == '&' || text->at(i) == '*' || text->at(i) == '(' || text->at(i) == ')' || text->at(i) == '-' ||
 // 							text->at(i) == '=' || text->at(i) == '+' || text->at(i) == '[' || text->at(i) == ']' || text->at(i) == '{' || text->at(i) == '}' || text->at(i) == '\\' ||
@@ -482,7 +479,7 @@ void InputHandler::Initialization()
 // 			{
 // 				if (text->at(*loc) == ' ')
 // 				{
-// 					for (uint64_t i = *loc; i < text->size(); i++)
+// 					for (u64 i = *loc; i < text->size(); i++)
 // 					{
 // 						if (text->at(i) != ' ')
 // 							break;
@@ -492,7 +489,7 @@ void InputHandler::Initialization()
 // 				}
 // 				else if (text->at(*loc) == '	')
 // 				{
-// 					for (uint64_t i = *loc; i < text->size(); i++)
+// 					for (u64 i = *loc; i < text->size(); i++)
 // 					{
 // 						if (text->at(i) != '	')
 // 							break;
@@ -502,8 +499,8 @@ void InputHandler::Initialization()
 // 				}
 // 				else
 // 				{
-// 					uint64_t oLoc = *loc;
-// 					for (uint64_t i = *loc; i < text->size(); i++)
+// 					u64 oLoc = *loc;
+// 					for (u64 i = *loc; i < text->size(); i++)
 // 					{
 // 						if (i != oLoc && (
 // 							text->at(i) == ' ' || text->at(i) == '`' || text->at(i) == '~' || text->at(i) == '!' || text->at(i) == '@' || text->at(i) == '#' || text->at(i) == '$' ||
@@ -535,10 +532,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 			for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 			for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -550,10 +547,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < *loc - 1; i++)
+// 			for (u64 i = 0; i < *loc - 1; i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = *loc; i < text->size(); i++)
+// 			for (u64 i = *loc; i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -568,10 +565,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < std::min(*locHigh, *loc); i++)
+// 			for (u64 i = 0; i < std::min(*locHigh, *loc); i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = std::max(*locHigh, *loc); i < text->size(); i++)
+// 			for (u64 i = std::max(*locHigh, *loc); i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -583,10 +580,10 @@ void InputHandler::Initialization()
 // 		{
 // 			std::string nt;
 
-// 			for (uint64_t i = 0; i < *loc; i++)
+// 			for (u64 i = 0; i < *loc; i++)
 // 				nt += text->at(i);
 
-// 			for (uint64_t i = *loc + 1; i < text->size(); i++)
+// 			for (u64 i = *loc + 1; i < text->size(); i++)
 // 				nt += text->at(i);
 
 // 			*text = nt;
@@ -608,7 +605,7 @@ void InputHandler::Initialization()
 // 	{
 // 		bool found = false;
 
-// 		for (uint64_t i = 0; i < text->length(); i++)
+// 		for (u64 i = 0; i < text->length(); i++)
 // 		{
 // 			if (text->at(i) == '.')
 // 			{
@@ -633,9 +630,9 @@ void InputHandler::Initialization()
 // 		insertString(sf::Clipboard::getString());
 // }
 
-// bool InputHandler::RunMouseProccess(sf::Text* text, uint64_t* locHigh, uint64_t* loc, bool* isDown, bool down, const sf::Vector2i& pos, uint64_t yOverride)
+// bool InputHandler::RunMouseProccess(sf::Text* text, u64* locHigh, u64* loc, bool* isDown, bool down, const sf::Vector2i& pos, u64 yOverride)
 // {
-// 	uint64_t yHeight = yOverride;
+// 	u64 yHeight = yOverride;
 
 // 	if (yHeight == 0)
 // 		yHeight = text->getLocalBounds().height;
@@ -646,9 +643,9 @@ void InputHandler::Initialization()
 // 		{
 // 			*isDown = true;
 
-// 			for (uint64_t i = 0; i < text->getString().getSize() + 1; i++)
+// 			for (u64 i = 0; i < text->getString().getSize() + 1; i++)
 // 			{
-// 				double ix = text->getPosition().x;
+// 				f64 ix = text->getPosition().x;
 
 // 				if (i == text->getString().getSize())
 // 				{
@@ -679,20 +676,20 @@ void InputHandler::Initialization()
 // 	return false;
 // }
 
-// bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, int16_t vanityOffset)
+// bool InputHandler::RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, u16 fontSize, i16 vanityOffset)
 // {
-// 	if (pos.x >= tPos.x && pos.x <= tPos.x + static_cast<int64_t>(tSize.x))
+// 	if (pos.x >= tPos.x && pos.x <= tPos.x + static_cast<i64>(tSize.x))
 // 	{
 // 		if (!down)
 // 			*system.IsDown = false;
 
-// 		if (down && pos.y >= tPos.y && pos.y <= tPos.y + static_cast<int64_t>(tSize.y))
+// 		if (down && pos.y >= tPos.y && pos.y <= tPos.y + static_cast<i64>(tSize.y))
 // 		{
 // 			*system.IsDown = true;
 
-// 			for (uint64_t i = 0; i < system.Text->length() + 1; i++)
+// 			for (u64 i = 0; i < system.Text->length() + 1; i++)
 // 			{
-// 				int64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
+// 				i64 ix = tPos.x + vanityOffset + Global::BlockBorder;
 
 // 				if (i == system.Text->length())
 // 				{
@@ -715,26 +712,26 @@ void InputHandler::Initialization()
 // 			}
 // 		}
 
-// 		return pos.y >= tPos.y && pos.y <= tPos.y + static_cast<int64_t>(tSize.y);
+// 		return pos.y >= tPos.y && pos.y <= tPos.y + static_cast<i64>(tSize.y);
 // 	}
 
 // 	return false;
 // }
 
-// void InputHandler::RunMouseProccessFrame(sf::Text* text, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint64_t yOverride)
+// void InputHandler::RunMouseProccessFrame(sf::Text* text, u64* loc, bool* isDown, const sf::Vector2i& pos, u64 yOverride)
 // {
 // 	if (*isDown)
 // 	{
-// 		uint64_t yHeight = yOverride;
+// 		u64 yHeight = yOverride;
 
 // 		if (yHeight == 0)
 // 			yHeight = text->getLocalBounds().height;
 
 // 		if (pos.x >= text->getPosition().x && pos.x <= text->getPosition().x + text->getLocalBounds().width)
 // 		{
-// 			for (uint64_t i = 0; i < text->getString().getSize() + 1; i++)
+// 			for (u64 i = 0; i < text->getString().getSize() + 1; i++)
 // 			{
-// 				float ix = text->getPosition().x;
+// 				f32 ix = text->getPosition().x;
 
 // 				if (i == text->getString().getSize())
 // 				{
@@ -757,15 +754,15 @@ void InputHandler::Initialization()
 // 	}
 // }
 
-// void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, uint64_t* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, int16_t vanityOffset)
+// void InputHandler::RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, u64* loc, bool* isDown, const sf::Vector2i& pos, u16 fontSize, i16 vanityOffset)
 // {
 // 	if (*isDown)
 // 	{
-// 		if (pos.x >= tPos.x && pos.x <= tPos.x + static_cast<int64_t>(tSize.x))
+// 		if (pos.x >= tPos.x && pos.x <= tPos.x + static_cast<i64>(tSize.x))
 // 		{
-// 			for (uint64_t i = 0; i < text->length() + 1; i++)
+// 			for (u64 i = 0; i < text->length() + 1; i++)
 // 			{
-// 				int64_t ix = tPos.x + vanityOffset + Global::BlockBorder;
+// 				i64 ix = tPos.x + vanityOffset + Global::BlockBorder;
 
 // 				if (i == text->length())
 // 				{
@@ -788,7 +785,7 @@ void InputHandler::Initialization()
 // 	}
 // }
 
-void InputHandler::RegisterKeyCallback(void(*callback)(int16_t key, bool down, bool shift, void* data), void* data)
+void InputHandler::RegisterKeyCallback(void(*callback)(i16 key, bool down, bool shift, void* data), void* data)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -796,11 +793,11 @@ void InputHandler::RegisterKeyCallback(void(*callback)(int16_t key, bool down, b
 	m_KeyDatas.push_back(data);
 }
 
-void InputHandler::UnregisterKeyCallback(void(*callback)(int16_t key, bool down, bool shift, void* data))
+void InputHandler::UnregisterKeyCallback(void(*callback)(i16 key, bool down, bool shift, void* data))
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
-	for (size_t i = 0; i < m_KeyCallbacks.size(); i++)
+	for (usize i = 0; i < m_KeyCallbacks.size(); i++)
 	{
 		if (m_KeyCallbacks[i] == callback)
 		{
@@ -813,7 +810,7 @@ void InputHandler::UnregisterKeyCallback(void(*callback)(int16_t key, bool down,
 	Logger::Error("failed to unregister key callback");
 }
 
-void InputHandler::RegisterTextCallback(void(*callback)(int16_t key, bool shift, void* data), void* data)
+void InputHandler::RegisterTextCallback(void(*callback)(i16 key, bool shift, void* data), void* data)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -821,11 +818,11 @@ void InputHandler::RegisterTextCallback(void(*callback)(int16_t key, bool shift,
 	m_TextDatas.push_back(data);
 }
 
-void InputHandler::UnregisterTextCallback(void(*callback)(int16_t key, bool shift, void* data))
+void InputHandler::UnregisterTextCallback(void(*callback)(i16 key, bool shift, void* data))
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
-	for (size_t i = 0; i < m_TextCallbacks.size(); i++)
+	for (usize i = 0; i < m_TextCallbacks.size(); i++)
 	{
 		if (m_TextCallbacks[i] == callback)
 		{
@@ -838,7 +835,7 @@ void InputHandler::UnregisterTextCallback(void(*callback)(int16_t key, bool shif
 	Logger::Error("failed to unregister text callback");
 }
 
-void InputHandler::RegisterMouseCallback(void(*callback)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data), void* data)
+void InputHandler::RegisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data), void* data)
 {
 	std::unique_lock lock(m_MouseMutex);
 
@@ -846,11 +843,11 @@ void InputHandler::RegisterMouseCallback(void(*callback)(glm::vec<2, int32_t> po
 	m_MouseDatas.push_back(data);
 }
 
-void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data))
+void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data))
 {
 	std::unique_lock lock(m_MouseMutex);
 
-	for (size_t i = 0; i < m_MouseCallbacks.size(); i++)
+	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 	{
 		if (m_MouseCallbacks[i] == callback)
 		{
@@ -863,7 +860,7 @@ void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, int32_t> 
 	Logger::Error("failed to unregister mouse callback");
 }
 
-void InputHandler::FireKey(int16_t key, uint8_t operation)
+void InputHandler::FireKey(i16 key, u8 operation)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -877,25 +874,25 @@ void InputHandler::FireKey(int16_t key, uint8_t operation)
 
 	if (operation == GLFW_PRESS)
 	{
-		for (size_t i = 0; i < m_KeyCallbacks.size(); i++)
+		for (usize i = 0; i < m_KeyCallbacks.size(); i++)
 			m_KeyCallbacks[i](key, true, m_ShiftDown, m_KeyDatas[i]);
 	}
 	else if (operation == GLFW_RELEASE)
 	{
-		for (size_t i = 0; i < m_KeyCallbacks.size(); i++)
+		for (usize i = 0; i < m_KeyCallbacks.size(); i++)
 			m_KeyCallbacks[i](key, false, m_ShiftDown, m_KeyDatas[i]);
 	}
 	else if (operation == GLFW_REPEAT)
 	{
 		if (key >= 32 && key <= 96)
 		{
-			for (size_t i = 0; i < m_TextCallbacks.size(); i++)
+			for (usize i = 0; i < m_TextCallbacks.size(); i++)
 				m_TextCallbacks[i](key, true, m_TextDatas[i]);
 		}
 	}
 }
 
-void InputHandler::FireMouseButton(uint8_t button, uint8_t operation)
+void InputHandler::FireMouseButton(u8 button, u8 operation)
 {
 	if (button != GLFW_MOUSE_BUTTON_LEFT)
 		return;
@@ -904,50 +901,50 @@ void InputHandler::FireMouseButton(uint8_t button, uint8_t operation)
 
 	if (operation == GLFW_PRESS)
 	{
-		for (size_t i = 0; i < m_MouseCallbacks.size(); i++)
+		for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Press, m_MouseDatas[i]);
 	}
 	else if (operation == GLFW_RELEASE)
 	{
-		for (size_t i = 0; i < m_MouseCallbacks.size(); i++)
+		for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Release, m_MouseDatas[i]);
 
-		for (size_t i = 0; i < m_MouseCallbacks.size(); i++)
+		for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Click, m_MouseDatas[i]);
 	}
 }
 
-void InputHandler::FireMouseMove(glm::vec<2, int32_t> position)
+void InputHandler::FireMouseMove(glm::vec<2, i32> position)
 {
 	std::unique_lock lock(m_MouseMutex);
 	m_MousePosition = position;
 
-	for (size_t i = 0; i < m_MouseCallbacks.size(); i++)
+	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 		m_MouseCallbacks[i](position, 0.0f, MouseOperation::Move, m_MouseDatas[i]);
 }
 
-void InputHandler::FireMouseScroll(float scroll)
+void InputHandler::FireMouseScroll(f32 scroll)
 {
 	std::unique_lock lock(m_MouseMutex);
 
-	for (size_t i = 0; i < m_MouseCallbacks.size(); i++)
+	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 		m_MouseCallbacks[i](m_MousePosition, scroll, MouseOperation::Scroll, m_MouseDatas[i]);
 }
 
-glm::vec<2, int32_t> InputHandler::GetMousePosition()
+glm::vec<2, i32> InputHandler::GetMousePosition()
 {
 	return m_MousePosition;
 }
 
 bool InputHandler::m_MouseWasDown;
 bool InputHandler::m_ShiftDown;
-glm::vec<2, int32_t> InputHandler::m_MousePosition;
+glm::vec<2, i32> InputHandler::m_MousePosition;
 std::shared_mutex InputHandler::m_KeyTextMutex;
 std::shared_mutex InputHandler::m_MouseMutex;
 
-std::vector<void(*)(int16_t key, bool down, bool shift, void* data)> InputHandler::m_KeyCallbacks;
+std::vector<void(*)(i16 key, bool down, bool shift, void* data)> InputHandler::m_KeyCallbacks;
 std::vector<void*> InputHandler::m_KeyDatas;
-std::vector<void(*)(int16_t key, bool shift, void* data)> InputHandler::m_TextCallbacks;
+std::vector<void(*)(i16 key, bool shift, void* data)> InputHandler::m_TextCallbacks;
 std::vector<void*> InputHandler::m_TextDatas;
-std::vector<void(*)(glm::vec<2, int32_t> position, float scroll, MouseOperation operation, void* data)> InputHandler::m_MouseCallbacks;
+std::vector<void(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)> InputHandler::m_MouseCallbacks;
 std::vector<void*> InputHandler::m_MouseDatas;

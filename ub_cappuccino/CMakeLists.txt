@@ -57,7 +57,7 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 )
 
 target_include_directories(UB_CAPPUCCINO PUBLIC
-	"${PROJECT_BINARY_DIR}"
+	${PROJECT_BINARY_DIR}
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 
     ${STB_INCLUDE_DIRS}
@@ -73,5 +73,3 @@ set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
 #	COMMAND ${CMAKE_COMMAND} -E touch
 #	"${CMAKE_SOURCE_DIR}/UB_Client/src/main.cpp"
 #)
-
-configure_file(config.h.in config.h)

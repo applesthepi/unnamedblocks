@@ -1,9 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "block/ModBlockFlagsIterator.hpp"
-
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
+#include "cappuccino/mod_block/flags_iterator.hpp"
 
 #if !LINUX
 #ifdef __CAP
@@ -25,5 +24,5 @@ public:
 	CAP_DLL ModBlockFlags& CheckStack();
 private:
 	ModBlockFlagsIterator m_iterator;
-	uint64_t m_flag;
+	u64 m_flag;
 };

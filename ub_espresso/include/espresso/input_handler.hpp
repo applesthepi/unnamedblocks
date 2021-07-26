@@ -53,11 +53,11 @@ public:
 
 	// run once per mouse update events on window
 	// static bool RunMouseProccess(sf::Text* text, u64* locHigh, u64* loc, bool* isDown, bool down, const sf::Vector2i& pos, u64 yOverride = 0);
-	// static bool RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, uint16_t fontSize, i16 vanityOffset);
+	// static bool RunMouseProccess(TextSystem& system, const sf::Vector2i& tPos, const sf::Vector2u& tSize, bool down, const sf::Vector2i& pos, u16 fontSize, i16 vanityOffset);
 
 	// run every frame
 	// static void RunMouseProccessFrame(sf::Text* text, u64* loc, bool* isDown, const sf::Vector2i& pos, u64 yOverride = 0);
-	// static void RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, u64* loc, bool* isDown, const sf::Vector2i& pos, uint16_t fontSize, i16 vanityOffset);
+	// static void RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, u64* loc, bool* isDown, const sf::Vector2i& pos, u16 fontSize, i16 vanityOffset);
 private:
 	static bool m_MouseWasDown;
 	static bool m_ShiftDown;

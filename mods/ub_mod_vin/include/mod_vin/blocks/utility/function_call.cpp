@@ -3,7 +3,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->AddCallstack(*(uint64_t*)(pass->GetPreData(0)), 0);
+	pass->AddCallstack(*(u64*)(pass->GetPreData(0)), 0);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -14,7 +14,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 {
 	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
-	uint64_t* loc = new uint64_t;
+	u64* loc = new u64;
 	std::string* str = (std::string*)(blockData.GetData()[0]);
 	
 	*loc = finder->GetFunctionStackIdx(*str);
@@ -43,9 +43,9 @@ blockExecution BlockUtilityFunctionCall::PullExecuteRelease() const
 	return ExecuteRelease;
 }
 
-std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityFunctionCall::GetRuntimeStages() const
+std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityFunctionCall::GetRuntimeStages() const
 {
-	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	std::vector<std::pair<blockDataInitialization, u16>> stages;
 	stages.push_back(std::make_pair(RuntimeInit, 1));
 	return stages;
 }

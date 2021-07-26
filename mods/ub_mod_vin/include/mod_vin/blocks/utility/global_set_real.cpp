@@ -5,8 +5,8 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	UtilityGlobalReal* global = (UtilityGlobalReal*)pass->CustomGet(*(uint64_t*)pass->GetPreData(0));
-	global->Get(*(uint64_t*)pass->GetPreData(1)) = pass->GetReal(1);
+	UtilityGlobalReal* global = (UtilityGlobalReal*)pass->CustomGet(*(u64*)pass->GetPreData(0));
+	global->Get(*(u64*)pass->GetPreData(1)) = pass->GetReal(1);
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -17,7 +17,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 static bool RuntimeGlobalPreInit(PreProcessorData& data)
 {
 	UtilityGlobalReal* global = new UtilityGlobalReal();
-	uint64_t* globalIdx = new uint64_t;
+	u64* globalIdx = new u64;
 
 	*globalIdx = data.CustomPut(global);
 
@@ -47,7 +47,7 @@ static bool RuntimeInit0(PreProcessorData& preData, ModBlockData& blockData)
 
 static bool RuntimeInit1(PreProcessorData& preData, ModBlockData& blockData)
 {
-	uint64_t* idx = new uint64_t;
+	u64* idx = new u64;
 	*idx = ((UtilityGlobalReal*)preData.GetStructure(GLOBAL_REAL_NAME))->GetIdx(*(std::string*)blockData.GetData()[0]);
 
 	blockData.GetPreData().push_back(idx);
@@ -85,9 +85,9 @@ blockInitialization BlockUtilityGlobalSetReal::GetRuntimeGlobalPostInit() const
 	return RuntimeGlobalPostInit;
 }
 
-std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityGlobalSetReal::GetRuntimeStages() const
+std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityGlobalSetReal::GetRuntimeStages() const
 {
-	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	std::vector<std::pair<blockDataInitialization, u16>> stages;
 
 	stages.push_back(std::make_pair(RuntimeInit0, 0));
 	stages.push_back(std::make_pair(RuntimeInit1, 1));

@@ -1,9 +1,9 @@
-#include "Mod.hpp"
+#include "mod.hpp"
 
 // system
 
-#include "blocks/system/BlockSystemMain.hpp"
-#include "blocks/system/BlockSystemPullEvents.hpp"
+#include "blocks/system/main.hpp"
+/*#include "blocks/system/BlockSystemPullEvents.hpp"
 #include "blocks/system/BlockSystemCreateWindow.hpp"
 #include "blocks/system/BlockSystemWindowMouseX.hpp"
 #include "blocks/system/BlockSystemWindowMouseY.hpp"
@@ -110,7 +110,7 @@
 #include "blocks/strings/BlockStringFromBool.hpp"
 #include "blocks/strings/BlockStringFind.hpp"
 #include "blocks/strings/BlockStringCatFrom.hpp"
-
+*/
 UB_EXPORT void Initialization(ModData* data)
 {
 	// ============================================
@@ -119,7 +119,7 @@ UB_EXPORT void Initialization(ModData* data)
 
 	data->ModUnlocalizedName = "ModVin";
 	data->ModDisplayName = "Vanilla Mod";
-	data->Version = ModVinVersion;
+	data->Version = "NULL";// TODO: version
 
 	// ============================================
 	// ==== Categories
@@ -139,7 +139,7 @@ UB_EXPORT void Initialization(ModData* data)
 	// system
 
 	data->RegisterBlock(new BlockSystemMain());
-	data->RegisterBlock(new BlockSystemSleep());
+	/*data->RegisterBlock(new BlockSystemSleep());
 	data->RegisterBlock(new BlockSystemCreateWindow());
 	data->RegisterBlock(new BlockSystemPullEvents());
 	data->RegisterBlock(new BlockSystemWindowRender());
@@ -247,5 +247,5 @@ UB_EXPORT void Initialization(ModData* data)
 	data->RegisterBlock(new BlockStringCharAt());
 	data->RegisterBlock(new BlockStringSubString());
 	data->RegisterBlock(new BlockStringFind());
-	data->RegisterBlock(new BlockStringCompEq());
+	data->RegisterBlock(new BlockStringCompEq());*/
 }

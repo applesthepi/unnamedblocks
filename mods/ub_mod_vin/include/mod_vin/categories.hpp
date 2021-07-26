@@ -1,5 +1,7 @@
 #pragma once
-#include <Espresso/Espresso.hpp>
+#include "config.h"
+
+#include <espresso/mod/category.hpp>
 
 #define CATEGORY_SYSTEM "vin_system"
 #define CATEGORY_UTILITY "vin_utility"
@@ -14,7 +16,7 @@ public:
 	CategorySystem(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	Color GetColor() const override;
+	cap::color GetColor() const override;
 	std::string GetUnlocalizedName() const override;
 	std::string GetDisplayName() const override;
 };
@@ -25,7 +27,7 @@ public:
 	CategoryUtility(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	Color GetColor() const override;
+	cap::color GetColor() const override;
 	std::string GetUnlocalizedName() const override;
 	std::string GetDisplayName() const override;
 };
@@ -36,7 +38,7 @@ public:
 	CategoryGraphics(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	Color GetColor() const override;
+	cap::color GetColor() const override;
 	std::string GetUnlocalizedName() const override;
 	std::string GetDisplayName() const override;
 };
@@ -47,7 +49,7 @@ public:
 	CategoryBooleans(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	Color GetColor() const override;
+	cap::color GetColor() const override;
 	std::string GetUnlocalizedName() const override;
 	std::string GetDisplayName() const override;
 };
@@ -58,7 +60,7 @@ public:
 	CategoryReals(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	Color GetColor() const override;
+	cap::color GetColor() const override;
 	std::string GetUnlocalizedName() const override;
 	std::string GetDisplayName() const override;
 };
@@ -69,7 +71,7 @@ public:
 	CategoryStrings(const std::string& modUnlocalizedName, const std::string& modDisplayName)
 		:ModCatagory(modUnlocalizedName, modDisplayName) {}
 
-	Color GetColor() const override;
+	cap::color GetColor() const override;
 	std::string GetUnlocalizedName() const override;
 	std::string GetDisplayName() const override;
 };

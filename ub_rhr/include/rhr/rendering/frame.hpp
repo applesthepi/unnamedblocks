@@ -102,9 +102,6 @@ private:
 	};
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
-
-	///
 	void update_content_dimentions();
 
 	///

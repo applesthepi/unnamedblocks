@@ -1,24 +1,24 @@
-#include "Cappuccino.hpp"
+#include "cappuccino.hpp"
 
-#include "Registration.hpp"
-#include "ModBlockPass.hpp"
+#include "cappuccino/registration.hpp"
+#include "cappuccino/mod_block/pass.hpp"
 
 CAP_CPP_EXPORT void cpInit()
 {
 	Registration::Initialize();
 }
 
-CAP_CPP_EXPORT void cpSetFunctionMain(uint64_t functionMain)
+CAP_CPP_EXPORT void cpSetFunctionMain(u64 functionMain)
 {
 	Registration::SetFunctionMain(functionMain);
 }
 
-CAP_CPP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount)
+CAP_CPP_EXPORT void cpSetFunctionCallCount(u64* functionCallCount)
 {
 	Registration::SetFunctionCallCount(functionCallCount);
 }
 
-CAP_CPP_EXPORT void cpSetFunctionTotalCount(uint64_t functionTotalCount)
+CAP_CPP_EXPORT void cpSetFunctionTotalCount(u64 functionTotalCount)
 {
 	Registration::SetFunctionTotalCount(functionTotalCount);
 }
@@ -43,7 +43,7 @@ CAP_CPP_EXPORT void cpSetDebugBuild(bool debugBuild)
 	Registration::SetDebug(debugBuild);
 }
 
-CAP_CPP_EXPORT void cpSetSuper(uint8_t* super, int64_t* superData, void* superMutex)
+CAP_CPP_EXPORT void cpSetSuper(u8* super, i64* superData, void* superMutex)
 {
 	Registration::SetSuper(super, superData, superMutex);
 }

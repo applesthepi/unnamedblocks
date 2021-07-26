@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "ModCategories.hpp"
+#include "categories.hpp"
 
-#include <Espresso/Espresso.hpp>
+#include <espresso/mod/data.hpp>
 
 #if LINUX
 #define UB_EXPORT extern "C"

@@ -2,7 +2,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	size_t result = pass->GetString(0).find(pass->GetString(1), pass->GetReal(2));
+	usize result = pass->GetString(0).find(pass->GetString(1), pass->GetReal(2));
 
 	if (result == std::string::npos)
 		pass->GetReal(3) = -1;

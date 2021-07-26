@@ -16,13 +16,13 @@ typedef void(***executionFunctionStackList)(ModBlockPass*);
 CAP_CPP_EXPORT void cpInit();
 
 // set main entry function
-CAP_CPP_EXPORT void cpSetFunctionMain(uint64_t functionMain);
+CAP_CPP_EXPORT void cpSetFunctionMain(u64 functionMain);
 
 // set the functionCallCount
-CAP_CPP_EXPORT void cpSetFunctionCallCount(uint64_t* functionCallCount);
+CAP_CPP_EXPORT void cpSetFunctionCallCount(u64* functionCallCount);
 
 // set the total count of all stacks
-CAP_CPP_EXPORT void cpSetFunctionTotalCount(uint64_t functionTotalCount);
+CAP_CPP_EXPORT void cpSetFunctionTotalCount(u64 functionTotalCount);
 
 // set the calls
 CAP_CPP_EXPORT void cpSetCalls(executionFunctionStackList calls);
@@ -37,8 +37,7 @@ CAP_CPP_EXPORT void cpSetBlocks(ModBlock*** blocks);
 CAP_CPP_EXPORT void cpSetDebugBuild(bool debugBuild);
 
 // set the super instruction; used for debugging instructions from UB exe
-CAP_CPP_EXPORT void cpSetSuper(uint8_t* super, int64_t* superData, void* superMutex);
+CAP_CPP_EXPORT void cpSetSuper(u8* super, i64* superData, void* superMutex);
 
 // run
 CAP_CPP_EXPORT void cpRun();
-

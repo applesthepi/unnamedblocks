@@ -1,9 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "runtime/ModBlockData.hpp"
-
-#include "Utils.hpp"
+#include "cappuccino/utils.hpp"
+#include "cappuccino/mod_block/data.hpp"
 
 #if !LINUX
 	#ifdef CAPPUCCINO
@@ -25,9 +24,9 @@ public:
 	// user data
 
 	void** Data;
-	const std::vector<uint64_t>* VariablesRealCount;
-	const std::vector<uint64_t>* VariablesBoolCount;
-	const std::vector<uint64_t>* VariablesStringCount;
+	const std::vector<u64>* VariablesRealCount;
+	const std::vector<u64>* VariablesBoolCount;
+	const std::vector<u64>* VariablesStringCount;
 
 	std::mutex* CustomRegisterMutex;
 	std::vector<void*>* CustomRegister;
@@ -36,7 +35,7 @@ public:
 
 	// debug only
 
-	uint64_t DataSize;
+	u64 DataSize;
 	std::vector<std::string>* VariableRegistry;
 };
 
@@ -65,8 +64,8 @@ public:
 	CAP_DLL const std::vector<std::string>& PullMessages();
 	CAP_DLL void ReturnMessages();
 	CAP_DLL void SetData(ModBlockData** data);
-	CAP_DLL void SetCallstackStack(std::vector<uint64_t>* callstack);
-	CAP_DLL void SetCallstackBlock(std::vector<uint64_t>* callstack);
+	CAP_DLL void SetCallstackStack(std::vector<u64>* callstack);
+	CAP_DLL void SetCallstackBlock(std::vector<u64>* callstack);
 	CAP_DLL void SetSuccessful(bool* successful);
 	CAP_DLL void SetFinished(std::atomic<bool>* finished);
 	CAP_DLL void SetCallstackLocal(void(***localCallstack)(ModBlockPass*));
@@ -83,20 +82,20 @@ public:
 	CAP_DLL void LogWarning(const std::string& message);
 	CAP_DLL void LogError(const std::string& message, const LoggerFatality& fatality);
 
-	CAP_DLL double& GetReal(uint64_t idx);
-	CAP_DLL bool& GetBool(uint64_t idx);
-	CAP_DLL std::string& GetString(uint64_t idx);
+	CAP_DLL f64& GetReal(u64 idx);
+	CAP_DLL bool& GetBool(u64 idx);
+	CAP_DLL std::string& GetString(u64 idx);
 
-	CAP_DLL void* GetPreData(uint64_t idx);
+	CAP_DLL void* GetPreData(u64 idx);
 	CAP_DLL std::chrono::steady_clock::time_point* GetBeginTime();
 
 	CAP_DLL void Stop();
 
-	CAP_DLL void AddCallstack(uint64_t stack, uint64_t block, bool special = true);
+	CAP_DLL void AddCallstack(u64 stack, u64 block, bool special = true);
 	CAP_DLL void PopCallstack();
 
-	CAP_DLL void SetStackIdx(uint64_t idx);
-	CAP_DLL void SetBlockIdx(uint64_t idx);
+	CAP_DLL void SetStackIdx(u64 idx);
+	CAP_DLL void SetBlockIdx(u64 idx);
 
 	CAP_DLL std::mt19937_64& GetRandomGenerator();
 
@@ -120,29 +119,29 @@ public:
 	//		Cappuccino ends, then you must call "CustomFree" with the parameter "deallocate" set to false.
 	//		This will ensure it does not get freed at the end.
 
-	CAP_DLL uint64_t CustomPut(void* mem);
-	CAP_DLL void* CustomGet(uint64_t idx);
-	CAP_DLL void CustomFree(uint64_t idx, bool deallocate = true);
+	CAP_DLL u64 CustomPut(void* mem);
+	CAP_DLL void* CustomGet(u64 idx);
+	CAP_DLL void CustomFree(u64 idx, bool deallocate = true);
 private:
 	void UpdateLocations();
 
 	// user data interactions
 
-	double& (ModBlockPass::* m_getReal)(uint64_t idx);
-	double& GetRealDebug(uint64_t idx);
-	double& GetRealRelease(uint64_t idx);
+	f64& (ModBlockPass::* m_getReal)(u64 idx);
+	f64& GetRealDebug(u64 idx);
+	f64& GetRealRelease(u64 idx);
 
-	bool& (ModBlockPass::* m_getBool)(uint64_t idx);
-	bool& GetBoolDebug(uint64_t idx);
-	bool& GetBoolRelease(uint64_t idx);
+	bool& (ModBlockPass::* m_getBool)(u64 idx);
+	bool& GetBoolDebug(u64 idx);
+	bool& GetBoolRelease(u64 idx);
 
-	std::string& (ModBlockPass::* m_getString)(uint64_t idx);
-	std::string& GetStringDebug(uint64_t idx);
-	std::string& GetStringRelease(uint64_t idx);
+	std::string& (ModBlockPass::* m_getString)(u64 idx);
+	std::string& GetStringDebug(u64 idx);
+	std::string& GetStringRelease(u64 idx);
 
-	void* (ModBlockPass::* m_getPreData)(uint64_t idx);
-	void* GetPreDataDebug(uint64_t idx);
-	void* GetPreDataRelease(uint64_t idx);
+	void* (ModBlockPass::* m_getPreData)(u64 idx);
+	void* GetPreDataDebug(u64 idx);
+	void* GetPreDataRelease(u64 idx);
 
 	std::mutex m_messagesMutex;
 	std::vector<std::string> m_messages;
@@ -157,33 +156,33 @@ private:
 
 	ModBlockData** m_data;
 
-	std::vector<const uint64_t**> m_dataStackIdx;
+	std::vector<const u64**> m_dataStackIdx;
 	std::vector<void***> m_dataStackPre;
-	std::vector<double*> m_dataStackReal;
+	std::vector<f64*> m_dataStackReal;
 	std::vector<bool*> m_dataStackBool;
 	std::vector<std::string*> m_dataStackString;
 
-	const uint64_t** m_activeIdx;
+	const u64** m_activeIdx;
 	void*** m_activePre;
-	double* m_activeReal;
+	f64* m_activeReal;
 	bool* m_activeBool;
 	std::string* m_activeString;
 	
 	std::vector<bool> m_stackingSpecial;
-	std::vector<double*> m_stackingReal;
+	std::vector<f64*> m_stackingReal;
 	std::vector<bool*> m_stackingBool;
 	std::vector<std::string*> m_stackingString;
 
-	std::vector<uint64_t*> m_preDataCount;
-	const std::vector<uint64_t>* m_variablesRealCount;
-	const std::vector<uint64_t>* m_variablesBoolCount;
-	const std::vector<uint64_t>* m_variablesStringCount;
+	std::vector<u64*> m_preDataCount;
+	const std::vector<u64>* m_variablesRealCount;
+	const std::vector<u64>* m_variablesBoolCount;
+	const std::vector<u64>* m_variablesStringCount;
 
 	std::mutex* m_customRegistrerMutex;
 	std::vector<void*>* m_customRegister;
 
-	std::vector<uint64_t>* m_callstackStackIdx;
-	std::vector<uint64_t>* m_callstackBlockIdx;
+	std::vector<u64>* m_callstackStackIdx;
+	std::vector<u64>* m_callstackBlockIdx;
 
 	void(***m_localCallstack)(ModBlockPass*);
 	void(***m_calls)(ModBlockPass*);

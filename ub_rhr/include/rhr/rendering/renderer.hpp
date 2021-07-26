@@ -149,7 +149,7 @@ public:
 	static bool vsync_enabled;
 
 	///
-	static glm::vec<2, u32> window_size;
+	static glm::vec<2, i32> window_size;
 
 	///
 	static std::shared_ptr<rhr::render::frame> debug_frame;

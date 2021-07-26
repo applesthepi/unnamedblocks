@@ -1,5 +1,5 @@
 #pragma once
-#include "ModVin/ModCategories.hpp"
+#include "mod_vin/categories.hpp"
 #include <Cappuccino/Cappuccino.hpp>
 
 class BlockUtilityGotoPointIf : public ModBlock
@@ -11,7 +11,7 @@ public:
 	blockExecution PullExecuteDebug() const override;
 	blockExecution PullExecuteRelease() const override;
 
-	std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const override;
+	std::vector<std::pair<blockDataInitialization, u16>> GetRuntimeStages() const override;
 
 	const std::vector<BlockArgumentInitializer> GetArguments() const override;
 };

@@ -1,4 +1,4 @@
-#include "ModData.hpp"
+#include "data.hpp"
 
 ModDataBaked ModData::Bake()
 {
@@ -22,10 +22,10 @@ ModDataBaked ModData::Bake()
 		return baked;
 	}
 
-	for (uint32_t i = 0; i < Blocks.size(); i++)
+	for (u32 i = 0; i < Blocks.size(); i++)
 		baked.Blocks[i] = Blocks[i];
 
-	for (uint32_t i = 0; i < Categories.size(); i++)
+	for (u32 i = 0; i < Categories.size(); i++)
 		baked.Categories[i] = Categories[i];
 
 	Blocks.clear();

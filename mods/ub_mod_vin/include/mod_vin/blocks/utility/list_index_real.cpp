@@ -4,7 +4,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	pass->GetReal(2) = *(double*)((std::vector<void*>*)pass->CustomGet(pass->GetReal(0)))->at(pass->GetReal(1));
+	pass->GetReal(2) = *(f64*)((std::vector<void*>*)pass->CustomGet(pass->GetReal(0)))->at(pass->GetReal(1));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
@@ -17,7 +17,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 		return;
 	}
 
-	pass->GetReal(2) = *(double*)list->at(pass->GetReal(1));
+	pass->GetReal(2) = *(f64*)list->at(pass->GetReal(1));
 }
 
 const char* BlockUtilityListIndexReal::GetUnlocalizedName() const

@@ -1,18 +1,18 @@
 #pragma once
 #include "config.h"
 
-#include "catagory/ModCatagory.hpp"
+#include "espresso/mod/category.hpp"
 
-#include <Cappuccino/Utils.hpp>
-#include <Cappuccino/block/ModBlock.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/mod_block/block.hpp>
 
 class ModDataBaked
 {
 public:
-	uint32_t BlocksLength;
+	u32 BlocksLength;
 	ModBlock** Blocks;
 
-	uint32_t CategoriesLength;
+	u32 CategoriesLength;
 	ModCatagory** Categories;
 };
 

@@ -2,8 +2,8 @@
 
 template <usize S, typename T>
 rhr::render::interfaces::i_sizeable<S, T>::i_sizeable()
-	: m_position(glm::vec<S, T>())
-	, m_super_position(glm::vec<S, T>())
+	: m_size(glm::vec<S, T>())
+	, m_super_bounds(glm::vec<S, T>())
 {
 
 }
@@ -21,7 +21,7 @@ void rhr::render::interfaces::i_sizeable<S, T>::set_size(const glm::vec<S, T>& s
 template <usize S, typename T>
 void rhr::render::interfaces::i_sizeable<S, T>::set_super_bounds(const glm::vec<S, T>& super_bounds)
 {
-	if (pre_position_update(m_size, super_bounds))
+	if (pre_size_update(m_size, super_bounds))
 	{
 		m_super_bounds = super_bounds;
 		post_size_update();
@@ -38,6 +38,12 @@ template <usize S, typename T>
 glm::vec<S, T> rhr::render::interfaces::i_sizeable<S, T>::get_super_bounds()
 {
 	return m_super_bounds;
+}
+
+template <usize S, typename T>
+void rhr::render::interfaces::i_sizeable<S, T>::set_size_max()
+{
+	set_size(m_super_bounds);
 }
 
 template <usize S, typename T>

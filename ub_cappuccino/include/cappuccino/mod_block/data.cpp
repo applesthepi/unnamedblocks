@@ -1,6 +1,6 @@
-#include "ModBlockData.hpp"
+#include "data.hpp"
 
-#include "Registration.hpp"
+#include "cappuccino/registration.hpp"
 
 MODBLOCK_EXPORT ModBlockData::ModBlockData()
 {
@@ -18,7 +18,7 @@ const std::vector<void*>& ModBlockData::GetData()
 	return m_data;
 }
 
-const std::vector<uint64_t>& ModBlockData::GetRuntimeData()
+const std::vector<u64>& ModBlockData::GetRuntimeData()
 {
 	return m_runtimeData;
 }
@@ -43,18 +43,18 @@ MODBLOCK_EXPORT void ModBlockData::ClearData()
 	m_data.clear();
 }
 
-MODBLOCK_EXPORT void ModBlockData::SetRuntimeData(const std::vector<uint64_t>& data)
+MODBLOCK_EXPORT void ModBlockData::SetRuntimeData(const std::vector<u64>& data)
 {
 	m_runtimeData = data;
 }
 
-MODBLOCK_EXPORT void ModBlockData::SetDataTemplates(uint64_t stackIdx)
+MODBLOCK_EXPORT void ModBlockData::SetDataTemplates(u64 stackIdx)
 {
-	const std::vector<double*>& reals = Registration::GetRealTemplate();
+	const std::vector<f64*>& reals = Registration::GetRealTemplate();
 	const std::vector<bool*>& bools = Registration::GetBoolTemplate();
 	const std::vector<std::string*>& strings = Registration::GetStringTemplate();
 	std::string* str;
-	for (uint64_t i = 0; i < m_runtimeData.size(); i++)
+	for (u64 i = 0; i < m_runtimeData.size(); i++)
 	{
 		if (m_interpretations[i] == ModBlockDataInterpretation::REAL)
 			m_data.push_back(&(reals[stackIdx][m_runtimeData[i]]));
@@ -75,7 +75,7 @@ void ModBlockData::SetInterpretations(const std::vector<ModBlockDataInterpretati
 	m_interpretations = interpretations;
 }
 
-MODBLOCK_EXPORT void ModBlockData::SetInterpretation(const ModBlockDataInterpretation& interpretation, uint64_t idx)
+MODBLOCK_EXPORT void ModBlockData::SetInterpretation(const ModBlockDataInterpretation& interpretation, u64 idx)
 {
 	m_interpretations[idx] = interpretation;
 }

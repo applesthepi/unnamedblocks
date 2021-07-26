@@ -7,7 +7,7 @@
 static void ExecuteRelease(ModBlockPass* pass)
 {
 	if (pass->GetBool(2))
-		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->AddValue(new double(pass->GetReal(1)), true);
+		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->AddValue(new f64(pass->GetReal(1)), true);
 	else
 		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->AddValue(&pass->GetReal(1), false);
 }

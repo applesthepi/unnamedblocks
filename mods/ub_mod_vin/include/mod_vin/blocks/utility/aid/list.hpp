@@ -18,17 +18,17 @@ class UtilityList
 {
 public:
 	void AddValue(void* memory, bool copy);
-	void InsertValue(void* memory, uint64_t idx, bool copy);
+	void InsertValue(void* memory, u64 idx, bool copy);
 
-	void RemoveValue(uint64_t idx);
-	void ReplaceValue(void* memory, uint64_t idx, bool copy);
+	void RemoveValue(u64 idx);
+	void ReplaceValue(void* memory, u64 idx, bool copy);
 
-	void Reserve(uint64_t size);
-	uint64_t Size();
+	void Reserve(u64 size);
+	u64 Size();
 
-	double* IndexReal(uint64_t idx);
-	bool* IndexBool(uint64_t idx);
-	std::string* IndexString(uint64_t idx);
+	f64* IndexReal(u64 idx);
+	bool* IndexBool(u64 idx);
+	std::string* IndexString(u64 idx);
 private:
 	std::vector<UtiltiyListCell> m_memory;
 };

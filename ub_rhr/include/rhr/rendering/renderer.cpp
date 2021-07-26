@@ -8,8 +8,8 @@
 
 #include <espresso/input_handler.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+//#define STB_IMAGE_IMPLEMENTATION
+//#include <stb_image.h>
 
 void frame_buffer_resize_callback(GLFWwindow* window, i32 width, i32 height)
 {
@@ -51,7 +51,6 @@ void rhr::render::renderer::initialize_window()
 	projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
 
 	window_size = { 1280, 720 };
-	glm::vec<2, i32> window_size = window_size;
 
 	glfwInit();
 
@@ -188,8 +187,8 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 
 	// Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
 	// diagnosticsTime = std::chrono::high_resolution_clock::now();
-	Plane::primary_plane->frame_update(deltaTime);
-	Plane::toolbar_plane->frame_update(deltaTime);
+	rhr::stack::plane::primary_plane->frame_update(deltaTime);
+	rhr::stack::plane::toolbar_plane->frame_update(deltaTime);
 
 	process_dirty();
 	// Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
@@ -205,8 +204,8 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 	// 	Client::Instance->GetDiagnostics()->UpdateProgressBars();
 	// }
 
-	Plane::primary_plane->render();
-	Plane::toolbar_plane->render();
+	rhr::stack::plane::primary_plane->render();
+	rhr::stack::plane::toolbar_plane->render();
 
 
 	bool erased = false;
@@ -370,9 +369,9 @@ void rhr::render::renderer::init_instance()
 	vk::application_info app_info;
 	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app_info.pApplicationName = "Unnamed Blocks";
-	app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+	app_info.applicationVersion = VK_MAKE_API_VERSION(0, 0, 0, 0);
 	app_info.pEngineName = "No Engine";
-	app_info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
+	app_info.engineVersion = VK_MAKE_API_VERSION(0, 0, 0, 0);
 	app_info.apiVersion = VK_API_VERSION_1_0;
 	app_info.pNext = NULL;
 
@@ -665,7 +664,7 @@ void rhr::render::renderer::create_pipeline(const std::string& shader, VkPipelin
 	VkPipelineShaderStageCreateInfo shader_stages[] = { vert_shader_stage_info, frag_shader_stage_info };
 
 	auto binding_description = rhr::render::vertex::get_binding_description();
-	auto attribute_descriptions = rhr::render::vertex::get_binding_description();
+	auto attribute_descriptions = rhr::render::vertex::get_attribute_description();
 
 	VkPipelineVertexInputStateCreateInfo vertex_input_info{};
 	vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
@@ -1013,7 +1012,7 @@ glm::mat4 rhr::render::renderer::view_matrix;
 glm::mat4 rhr::render::renderer::projection_matrix;
 glm::mat4 rhr::render::renderer::ui_projection_matrix;
 bool rhr::render::renderer::vsync_enabled;
-glm::vec<2, u32> rhr::render::renderer::window_size;
+glm::vec<2, i32> rhr::render::renderer::window_size;
 std::shared_ptr<rhr::render::frame> rhr::render::renderer::debug_frame;
 
 VkPipelineLayout rhr::render::renderer::blocks_pipeline_layout;

@@ -43,5 +43,3 @@ target_include_directories(UB_ESPRESSO PUBLIC
 	${RAPIDJSON_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
 )
-
-configure_file(config.h.in config.h)

@@ -3,7 +3,7 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	std::uniform_real_distribution<double> draw(0.0, 1.0);
+	std::uniform_real_distribution<f64> draw(0.0, 1.0);
 	pass->GetReal(0) = draw(pass->GetRandomGenerator());
 }
 

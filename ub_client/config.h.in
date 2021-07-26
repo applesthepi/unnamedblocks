@@ -8,6 +8,8 @@
 #define E_AVX @AVX@
 #define E_MODS @MODS@
 
+#define CAPPUCCINO
+
 #define VER_CLIENT "@VER_CLIENT@"
 #define VER_SERVER "@VER_SERVER@"
 #define VER_MOD_VIN "@VER_MOD_VIN@"

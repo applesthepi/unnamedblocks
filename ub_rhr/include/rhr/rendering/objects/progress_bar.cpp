@@ -2,7 +2,7 @@
 /*
 #include "ui/Renderer.hpp"
 
-vui::ProgressBar::ProgressBar(int32_t stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge, HorizontalAlignment horizontal, float horizontalSizeOverride)
+vui::ProgressBar::ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge, HorizontalAlignment horizontal, f32 horizontalSizeOverride)
 	: IDiColorable(Color().FromU8({ 150, 150, 150, 255 }), Color().FromU8({ 100, 100, 100, 255 }))
 	, IEnableable(true)
 	, m_RenderRectangleCompleted(std::make_shared<RenderRectangle>())
@@ -37,7 +37,7 @@ void vui::ProgressBar::SetWeak(std::weak_ptr<ProgressBar>&& weak)
 	m_Weak = std::move(weak);
 }
 
-void vui::ProgressBar::SetDepth(uint32_t depth)
+void vui::ProgressBar::SetDepth(u32 depth)
 {
 	m_Depth = depth;
 
@@ -48,7 +48,7 @@ void vui::ProgressBar::SetDepth(uint32_t depth)
 	MarkDirty();
 }
 
-void vui::ProgressBar::SetStackOffset(int32_t stackOffset)
+void vui::ProgressBar::SetStackOffset(i32 stackOffset)
 {
 	m_StackOffset = stackOffset;
 	MarkDirty();
@@ -60,13 +60,13 @@ void vui::ProgressBar::SetStackOffset(int32_t stackOffset)
 //	// dont need to mark dirty
 //}
 
-//void vui::ProgressBar::SetColor(glm::vec<3, float> light, glm::vec<3, float> dark)
+//void vui::ProgressBar::SetColor(glm::vec<3, f32> light, glm::vec<3, f32> dark)
 //{
 //	m_ColorLight = light;
 //	m_ColorDark = dark;
 //}
 
-void vui::ProgressBar::SetProgress(float progress)
+void vui::ProgressBar::SetProgress(f32 progress)
 {
 	m_Progress = progress;
 	m_ProgressExtra = progress;
@@ -75,7 +75,7 @@ void vui::ProgressBar::SetProgress(float progress)
 	MarkDirty();
 }
 
-void vui::ProgressBar::SetProgress(float progress, float extra)
+void vui::ProgressBar::SetProgress(f32 progress, f32 extra)
 {
 	m_Progress = progress;
 	m_ProgressExtra = extra;
@@ -84,7 +84,7 @@ void vui::ProgressBar::SetProgress(float progress, float extra)
 	MarkDirty();
 }
 
-//void vui::ProgressBar::SetParent(glm::vec<2, int32_t> position, glm::vec<2, int32_t> size)
+//void vui::ProgressBar::SetParent(glm::vec<2, i32> position, glm::vec<2, i32> size)
 //{
 //	m_SuperOffset = position;
 //	m_SuperBounds = size;
@@ -116,9 +116,9 @@ void vui::ProgressBar::OnUpdateBuffers()
 {
 	m_Dirty = false;
 
-	glm::vec<2, int32_t> parentHigh = (m_SuperOffset + m_SuperBounds);
-	glm::vec<2, int32_t> center = parentHigh / glm::vec<2, int32_t>(2, 2);
-	int32_t ypos = 0;
+	glm::vec<2, i32> parentHigh = (m_SuperOffset + m_SuperBounds);
+	glm::vec<2, i32> center = parentHigh / glm::vec<2, i32>(2, 2);
+	i32 ypos = 0;
 
 	if (m_Vertical == VerticalAlignment::TOP)
 		ypos = UI_VERTICAL_STACK + ((UI_VERTICAL_STACK + PROGRESS_BAR_HEIGHT) * m_StackOffset);
@@ -129,7 +129,7 @@ void vui::ProgressBar::OnUpdateBuffers()
 
 	ypos += m_SuperOffset.y;
 
-	float horizontalSize = PROGRESS_BAR_WIDTH;
+	f32 horizontalSize = PROGRESS_BAR_WIDTH;
 
 	if (m_HorizontalSizeOverride > 0.0f && m_HorizontalSizeOverride <= 1.0f)
 		horizontalSize = m_HorizontalSizeOverride;

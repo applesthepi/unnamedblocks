@@ -8,7 +8,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	double nd = 0.0;
+	f64 nd = 0.0;
 
 	try
 	{

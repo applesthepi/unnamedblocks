@@ -64,9 +64,9 @@ blockInitialization BlockUtilityMarkPoint::GetRuntimeLocalPostInit() const
 	return RuntimeLocalPostInit;
 }
 
-std::vector<std::pair<blockDataInitialization, uint16_t>> BlockUtilityMarkPoint::GetRuntimeStages() const
+std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityMarkPoint::GetRuntimeStages() const
 {
-	std::vector<std::pair<blockDataInitialization, uint16_t>> stages;
+	std::vector<std::pair<blockDataInitialization, u16>> stages;
 	stages.push_back(std::make_pair(RuntimeInit, 0));
 	return stages;
 }

@@ -1,7 +1,7 @@
 #pragma once
-#include "ModVin/ModCategories.hpp"
+#include "mod_vin/categories.hpp"
 
-#include <Espresso/Espresso.hpp>
+#include <espresso/mod/data.hpp>
 #include <vector>
 #include <string>
 
@@ -10,15 +10,15 @@
 class PointFinder
 {
 public:
-	void AddPoint(uint64_t idx, std::string& data)
+	void AddPoint(u64 idx, std::string& data)
 	{
 		m_names.push_back(data);
 		m_idx.push_back(idx);
 	}
 
-	int64_t FindPoint(std::string& data)
+	i64 FindPoint(std::string& data)
 	{
-		for (uint64_t i = 0; i < m_names.size(); i++)
+		for (u64 i = 0; i < m_names.size(); i++)
 		{
 			if (m_names[i] == data)
 				return m_idx[i];
@@ -29,7 +29,7 @@ public:
 	}
 private:
 	std::vector<std::string> m_names;
-	std::vector<uint64_t> m_idx;
+	std::vector<u64> m_idx;
 };
 
 class BlockUtilityMarkPoint : public ModBlock
@@ -43,7 +43,7 @@ public:
 
 	blockInitialization GetRuntimeLocalPreInit() const override;
 	blockInitialization GetRuntimeLocalPostInit() const override;
-	std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const override;
+	std::vector<std::pair<blockDataInitialization, u16>> GetRuntimeStages() const override;
 
 	const std::vector<BlockArgumentInitializer> GetArguments() const override;
 };

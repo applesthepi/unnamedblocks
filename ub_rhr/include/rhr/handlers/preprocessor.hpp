@@ -44,19 +44,19 @@ super
 //	// util
 //	static void SetFinished(bool finished);
 //	static Plane* GetPlaneCopy();
-//	static void SetSuper(uint8_t super, int16_t superData);
-//	static uint8_t GetSuper();
-//	static int64_t GetSuperData();
+//	static void SetSuper(u8 super, i16 superData);
+//	static u8 GetSuper();
+//	static i64 GetSuperData();
 //
-//	static uint8_t* MakeSuper();
-//	static int64_t* GetMadeData();
+//	static u8* MakeSuper();
+//	static i64* GetMadeData();
 //	static std::mutex* GetMadeMutex();
 //private:
 //	static std::thread m_thread;
 //	static std::atomic<bool> m_finished;
 //	static Plane* m_planeCopy;
-//	static uint8_t* m_super;
-//	static int64_t* m_superData;
+//	static u8* m_super;
+//	static i64* m_superData;
 //
 //	static std::mutex* m_superMutex;
 //};

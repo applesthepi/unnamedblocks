@@ -1,6 +1,6 @@
 #include "button.hpp"
 
-static void mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void mouse_update_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
 {
 	rhr::render::object::button* button = (rhr::render::object::button*)data;
 	button->mouse_update(position, scroll, operation);
@@ -20,15 +20,15 @@ rhr::render::object::button::button(const cap::color& primary_color, const cap::
 	set_position({ 0, 0 });
 	set_size({ 100, 20 });
 
-	InputHandler::RegisterMouseCallback(mouse_update, this);
+	InputHandler::RegisterMouseCallback(mouse_update_caller, this);
 }
 
 rhr::render::object::button::~button()
 {
-	InputHandler::UnregisterMouseCallback(mouse_update);
+	InputHandler::UnregisterMouseCallback(mouse_update_caller);
 }
 
-void rhr::render::object::button::set_depth(u32 depth)
+void rhr::render::object::button::set_depth(i32 depth)
 {
 	m_background->set_depth(depth);
 }
@@ -63,17 +63,17 @@ void rhr::render::object::button::enable_fill_width(bool enable)
 
 void rhr::render::object::button::on_render()
 {
-	m_background->on_render();
+	m_background->render();
 }
 
 void rhr::render::object::button::on_update_buffers()
 {
-	m_background->on_update_buffers();
+	m_background->update_buffers();
 }
 
 void rhr::render::object::button::on_reload_swap_chain()
 {
-	m_background->on_reload_swap_chain();
+	m_background->reload_swap_chain();
 }
 
 void rhr::render::object::button::post_position_update()

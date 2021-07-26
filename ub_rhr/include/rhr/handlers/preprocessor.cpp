@@ -13,7 +13,7 @@ void PullFileSingle(char** ptr, const char* file_path)
 	if (fp)
 	{
 		std::fseek(fp, 0, SEEK_END);
-		size_t size = static_cast<size_t>(std::ftell(fp));
+		usize size = static_cast<usize>(std::ftell(fp));
 		*ptr = static_cast<char*>( malloc(size+1) );//
 		(*ptr)[size] = 0;
 		std::rewind(fp);
@@ -38,27 +38,27 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	tcc_add_include_path(state, "res");
 
 	std::vector<std::string> functionReferences;
-	std::vector<uint32_t> functionIds;
-	std::vector<uint64_t> functionCallCount;
+	std::vector<u32> functionIds;
+	std::vector<u64> functionCallCount;
 	std::vector<std::vector<void(*)(ModBlockPass* pass)>> functionCalls;
 
-	uint64_t functionMain = 0;
+	u64 functionMain = 0;
 	bool functionMainFound = false;
 
 	std::vector<std::shared_ptr<Stack>> stacks;
 
-	for (uint64_t i = 0; i < PreProcessor::GetPlaneCopy()->get_collections().size(); i++)
+	for (u64 i = 0; i < PreProcessor::GetPlaneCopy()->get_collections().size(); i++)
 	{
 		const std::vector<std::shared_ptr<Stack>>& colStacks = PreProcessor::GetPlaneCopy()->get_collections()[i]->get_stacks();
 
-		for (uint64_t a = 0; a < colStacks.size(); a++)
+		for (u64 a = 0; a < colStacks.size(); a++)
 			stacks.push_back(colStacks[a]);
 	}
 
 	ModBlockData** functionData = new ModBlockData*[stacks.size()];
 	ModBlock*** modBlocks = new ModBlock**[stacks.size()];
 	
-	for (uint64_t i = 0; i < stacks.size(); i++)
+	for (u64 i = 0; i < stacks.size(); i++)
 	{
 		functionData[i] = new ModBlockData[stacks[i]->get_blocks().size()];
 		modBlocks[i] = new ModBlock*[stacks[i]->get_blocks().size()];
@@ -84,7 +84,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 		std::vector<void(*)(ModBlockPass* pass)> transCalls;
 
-		for (uint64_t a = 0; a < stacks[i]->get_blocks().size(); a++)
+		for (u64 a = 0; a < stacks[i]->get_blocks().size(); a++)
 		{
 			if (debugBuild)
 				transCalls.push_back(stacks[i]->get_blocks()[a]->GetModBlock()->PullExecuteDebug());
@@ -97,7 +97,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			std::vector<ModBlockDataType> argTypes;
 			std::vector<ModBlockDataInterpretation> argInterpretations;
 
-			for (uint64_t b = 0; b < stacks[i]->get_blocks()[a]->GetArguments().size(); b++)
+			for (u64 b = 0; b < stacks[i]->get_blocks()[a]->GetArguments().size(); b++)
 			{
 				BlockArgumentType type = stacks[i]->get_blocks()[a]->GetArguments()[b]->get_type();
 
@@ -167,7 +167,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 				}
 				else if (type == BlockArgumentType::REAL)
 				{
-					double* dt = new double;
+					f64* dt = new f64;
 					
 					try
 					{
@@ -203,28 +203,28 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	void (***calls)(ModBlockPass*);
 	calls = (void(***)(ModBlockPass*))malloc(sizeof(void(**)(ModBlockPass*)) * functionCalls.size());
 
-	for (uint64_t i = 0; i < functionCalls.size(); i++)
+	for (u64 i = 0; i < functionCalls.size(); i++)
 	{
 		void (**callsInside)(ModBlockPass*);
 		callsInside = (void(**)(ModBlockPass*))malloc(sizeof(void(*)(ModBlockPass*)) * functionCalls[i].size());
 
-		for (uint64_t a = 0; a < functionCalls[i].size(); a++)
+		for (u64 a = 0; a < functionCalls[i].size(); a++)
 			callsInside[a] = functionCalls[i][a];
 
 		calls[i] = callsInside;
 	}
 
-	uint64_t* functionCallCountC = new uint64_t[functionCalls.size()];
+	u64* functionCallCountC = new u64[functionCalls.size()];
 
-	for (uint64_t i = 0; i < functionCallCount.size(); i++)
+	for (u64 i = 0; i < functionCallCount.size(); i++)
 		functionCallCountC[i] = functionCallCount[i];
 
 	bool buildType = debugBuild;
 
-	uint64_t functionTotalCount = stacks.size();
+	u64 functionTotalCount = stacks.size();
 
-	uint8_t* super = PreProcessor::MakeSuper();
-	int64_t* superData = PreProcessor::GetMadeData();
+	u8* super = PreProcessor::MakeSuper();
+	i64* superData = PreProcessor::GetMadeData();
 	std::mutex* superMutex = PreProcessor::GetMadeMutex();
 
 #if LINUX
@@ -252,7 +252,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	
 // 	tcc_add_library_path(state, "mods/");
 // 
-// 	for (uint32_t i = 0; i < ProjectHandler::Mods.size(); i++)
+// 	for (u32 i = 0; i < ProjectHandler::Mods.size(); i++)
 // 	{
 // 		if (ProjectHandler::Mods[i] == "")
 // 		{
@@ -276,13 +276,13 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	tcc_run(state, 0, 0);
 	
-	for (uint64_t i = 0; i < functionTotalCount; i++)
+	for (u64 i = 0; i < functionTotalCount; i++)
 		free(calls[i]);
 	free(calls);
 
 	delete[] functionCallCountC;
 
-	for (uint64_t i = 0; i < functionTotalCount; i++)
+	for (u64 i = 0; i < functionTotalCount; i++)
 		delete[] functionData[i];
 	delete[] functionData;
 
@@ -331,7 +331,7 @@ Plane* PreProcessor::GetPlaneCopy()
 	return m_planeCopy;
 }
 
-void PreProcessor::SetSuper(uint8_t super, int16_t superData)
+void PreProcessor::SetSuper(u8 super, i16 superData)
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 
@@ -339,21 +339,21 @@ void PreProcessor::SetSuper(uint8_t super, int16_t superData)
 	*m_superData = superData;
 }
 
-uint8_t PreProcessor::GetSuper()
+u8 PreProcessor::GetSuper()
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 
 	return *m_super;
 }
 
-int64_t PreProcessor::GetSuperData()
+i64 PreProcessor::GetSuperData()
 {
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 
 	return *m_superData;
 }
 
-uint8_t* PreProcessor::MakeSuper()
+u8* PreProcessor::MakeSuper()
 {
 	if (m_super != nullptr)
 	{
@@ -361,10 +361,10 @@ uint8_t* PreProcessor::MakeSuper()
 		delete m_superMutex;
 	}
 
-	m_super = new uint8_t;
+	m_super = new u8;
 	*m_super = 0;
 
-	m_superData = new int64_t;
+	m_superData = new i64;
 	*m_superData = 0;
 
 	m_superMutex = new std::mutex();
@@ -372,7 +372,7 @@ uint8_t* PreProcessor::MakeSuper()
 	return m_super;
 }
 
-int64_t* PreProcessor::GetMadeData()
+i64* PreProcessor::GetMadeData()
 {
 	return m_superData;
 }
@@ -388,9 +388,9 @@ std::atomic<bool> PreProcessor::m_finished;
 
 Plane* PreProcessor::m_planeCopy;
 
-uint8_t* PreProcessor::m_super;
+u8* PreProcessor::m_super;
 
-int64_t* PreProcessor::m_superData;
+i64* PreProcessor::m_superData;
 
 std::mutex* PreProcessor::m_superMutex;
 */

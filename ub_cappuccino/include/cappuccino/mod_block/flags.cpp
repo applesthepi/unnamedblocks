@@ -1,4 +1,4 @@
-#include "ModBlockFlags.hpp"
+#include "flags.hpp"
 
 ModBlockFlags::ModBlockFlags()
 	:m_iterator(ModBlockFlagsIterator(&m_flag))
@@ -13,13 +13,13 @@ ModBlockFlagsIterator ModBlockFlags::UseIterator() const
 
 ModBlockFlags& ModBlockFlags::CheckHeap()
 {
-	m_flag |= (uint64_t)ModBlockFlagType::FlagCheckHeap;
+	m_flag |= (u64)ModBlockFlagType::FlagCheckHeap;
 	return *this;
 }
 
 ModBlockFlags& ModBlockFlags::CheckStack()
 {
-	m_flag |= (uint64_t)ModBlockFlagType::FlagCheckStack;
+	m_flag |= (u64)ModBlockFlagType::FlagCheckStack;
 	return *this;
 }
 

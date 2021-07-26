@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include <Espresso/mod/ModData.hpp>
+#include <espresso/mod/data.hpp>
 
 enum class ModLoaderStatus
 {

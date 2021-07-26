@@ -1,5 +1,5 @@
 #pragma once
-#include "ModVin/ModCategories.hpp"
+#include "mod_vin/categories.hpp"
 
 #include <Cappuccino/Logger.hpp>
 
@@ -8,9 +8,9 @@
 class FunctionFinder
 {
 public:
-	void AddFunction(const std::string& name, uint64_t stackIdx)
+	void AddFunction(const std::string& name, u64 stackIdx)
 	{
-		for (uint64_t i = 0; i < m_names.size(); i++)
+		for (u64 i = 0; i < m_names.size(); i++)
 		{
 			if (m_names[i] == name)
 				return;
@@ -20,9 +20,9 @@ public:
 		m_stackIdx.push_back(stackIdx);
 	}
 
-	uint64_t GetFunctionStackIdx(const std::string& name)
+	u64 GetFunctionStackIdx(const std::string& name)
 	{
-		for (uint64_t i = 0; i < m_names.size(); i++)
+		for (u64 i = 0; i < m_names.size(); i++)
 		{
 			if (m_names[i] == name)
 				return m_stackIdx[i];
@@ -34,7 +34,7 @@ public:
 	}
 private:
 	std::vector<std::string> m_names;
-	std::vector<uint64_t> m_stackIdx;
+	std::vector<u64> m_stackIdx;
 };
 
 class BlockUtilityFunctionDefine : public ModBlock
@@ -51,7 +51,7 @@ public:
 	blockInitialization GetRuntimeGlobalPreInit() const override;
 	blockInitialization GetRuntimeGlobalPostInit() const override;
 
-	std::vector<std::pair<blockDataInitialization, uint16_t>> GetRuntimeStages() const override;
+	std::vector<std::pair<blockDataInitialization, u16>> GetRuntimeStages() const override;
 
 	const std::vector<BlockArgumentInitializer> GetArguments() const override;
 };

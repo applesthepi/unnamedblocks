@@ -1,4 +1,4 @@
-#include "ModBlock.hpp"
+#include "block.hpp"
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
@@ -65,9 +65,9 @@ blockInitialization ModBlock::GetRuntimeLocalPostInit() const
 	return RuntimeInitialization;
 }
 
-CAP_DLL std::vector<std::pair<blockDataInitialization, uint16_t>> ModBlock::GetRuntimeStages() const
+CAP_DLL std::vector<std::pair<blockDataInitialization, u16>> ModBlock::GetRuntimeStages() const
 {
-	return std::vector<std::pair<blockDataInitialization, uint16_t>>();
+	return std::vector<std::pair<blockDataInitialization, u16>>();
 }
 
 const std::vector<BlockArgumentInitializer> ModBlock::GetArguments() const

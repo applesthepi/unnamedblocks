@@ -5,12 +5,12 @@
 
 static void ExecuteRelease(ModBlockPass* pass)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds((uint64_t)pass->GetReal(0)));
+	std::this_thread::sleep_for(std::chrono::milliseconds((u64)pass->GetReal(0)));
 }
 
 static void ExecuteDebug(ModBlockPass* pass)
 {
-	double ms = pass->GetReal(0);
+	f64 ms = pass->GetReal(0);
 
 	if (std::floor(ms) != ms)
 	{
@@ -18,7 +18,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 		return;
 	}
 
-	int64_t msInt = ms;
+	i64 msInt = ms;
 
 	if (msInt < 0)
 	{
@@ -26,7 +26,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 		return;
 	}
 
-	uint32_t msUint = ms;
+	u32 msUint = ms;
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(msUint));
 }
