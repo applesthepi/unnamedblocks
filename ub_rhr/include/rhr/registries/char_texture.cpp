@@ -5,7 +5,7 @@
 
 #include <cappuccino/color.hpp>
 
-void rhr::registries::char_texture::process_fonts()
+void rhr::registry::char_texture::process_fonts()
 {
 	ft::error error;
 
@@ -22,7 +22,7 @@ void rhr::registries::char_texture::process_fonts()
 	process_font("res/CascadiaMonoItalic-BoldItalic.ttf", texture_type::BOLD_ITALIC);
 }
 
-void rhr::registries::char_texture::process_font(const std::string& font_path, texture_type type)
+void rhr::registry::char_texture::process_font(const std::string& font_path, texture_type type)
 {
 	texture_data font_texture_data;
 	ft::error error;
@@ -41,7 +41,7 @@ void rhr::registries::char_texture::process_font(const std::string& font_path, t
 		return;
 	}
 
-	error = FT_Set_Pixel_Sizes(font_texture_data.face, 0, Block::Height - (Block::Padding * 2));
+	error = FT_Set_Pixel_Sizes(font_texture_data.face, 0, rhr::stack::block::height - (rhr::stack::block::padding * 2));
 	if (error)
 	{
 		Logger::Error("failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
@@ -118,7 +118,7 @@ void rhr::registries::char_texture::process_font(const std::string& font_path, t
 			highest_height = char_sizes[i].y;
 	}
 
-	u16 image_side_length = glm::ceil(glm::sqrt(static_cast<double>(char_images.size())));
+	u16 image_side_length = glm::ceil(glm::sqrt(static_cast<f64>(char_images.size())));
 	usize texture_sheet_total_size = glm::pow(image_side_length, 2) * highest_width * highest_height * 4;
 	u8* texture_sheet = (u8*)malloc(texture_sheet_total_size);
 	memset(texture_sheet, 0x0, texture_sheet_total_size);
@@ -133,8 +133,8 @@ void rhr::registries::char_texture::process_font(const std::string& font_path, t
 			if (char_idx >= char_sizes.size())
 				continue;
 
-			glm::vec<2, float> first = { static_cast<float>(x * highest_width) / static_cast<float>(image_side_length * highest_width), static_cast<float>(y * highest_height) / static_cast<float>(image_side_length * highest_height) };
-			glm::vec<2, float> second = { static_cast<float>(x * highest_width + char_sizes[char_idx].x) / static_cast<float>(image_side_length * highest_width), static_cast<float>(y * highest_height + char_sizes[char_idx].y) / static_cast<float>(image_side_length * highest_height) };
+			glm::vec<2, f32> first = { static_cast<f32>(x * highest_width) / static_cast<f32>(image_side_length * highest_width), static_cast<f32>(y * highest_height) / static_cast<f32>(image_side_length * highest_height) };
+			glm::vec<2, f32> second = { static_cast<f32>(x * highest_width + char_sizes[char_idx].x) / static_cast<f32>(image_side_length * highest_width), static_cast<f32>(y * highest_height + char_sizes[char_idx].y) / static_cast<f32>(image_side_length * highest_height) };
 			font_texture_data.char_map[chars[char_idx]] = { first, second, char_sizes[char_idx], char_offsets[char_idx], char_advances[char_idx] };
 
 			for (u16 cy = 0; cy < char_sizes[char_idx].y; cy++)
@@ -164,6 +164,6 @@ void rhr::registries::char_texture::process_font(const std::string& font_path, t
 	texture_map[type] = font_texture_data;
 }
 
-ft::library rhr::registries::char_texture::m_library;
+ft::library rhr::registry::char_texture::m_library;
 
-std::unordered_map<rhr::registries::char_texture::texture_type, rhr::registries::char_texture::texture_data> rhr::registries::char_texture::texture_map;
+std::unordered_map<rhr::registry::char_texture::texture_type, rhr::registry::char_texture::texture_data> rhr::registry::char_texture::texture_map;

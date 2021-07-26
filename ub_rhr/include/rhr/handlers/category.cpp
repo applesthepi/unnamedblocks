@@ -522,8 +522,8 @@ void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 	m_RenderFrame->EnableBackground(Color::BackgroundColor2);
 	m_RenderFrame->DisableBarMovement();
 
-	const std::vector<CatagoryInfo>& categoryInfos = BlockRegistry::GetRegistry().GetCategories();
-	const std::vector<BlockInfo>& blockInfos = BlockRegistry::GetRegistry().GetBlocks();
+	const std::vector<CatagoryInfo>& categoryInfos = BlockRegistry::get_registry().get_categories();
+	const std::vector<BlockInfo>& blockInfos = BlockRegistry::get_registry().get_blocks();
 
 	//std::vector<std::string> binnedMods;
 	std::vector<std::vector<ModCatagory*>> binnedCatagories;
@@ -548,7 +548,7 @@ void CatagoryHandler::Populate(std::shared_ptr<vui::RenderFrame>& renderFrame)
 				for (size_t b = 0; b < blockInfos.size(); b++)
 				{
 					if (blockInfos[b].BlockModUnlocalizedName == ProjectHandler::Mods[i] &&
-						blockInfos[b].BlockModBlock->GetCategory() == categoryInfos[a].CatagoryModCatagory->GetUnlocalizedName())
+						blockInfos[b].BlockModBlock->get_categories() == categoryInfos[a].CatagoryModCatagory->GetUnlocalizedName())
 					{
 						binnedBlocks[i][a].push_back(blockInfos[b].BlockModBlock);
 					}

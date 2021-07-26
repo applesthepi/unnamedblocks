@@ -1,4 +1,4 @@
-#include "ShaderRegistry.hpp"
+#include "shader.hpp"
 
 // void ShaderRegistry::ReloadAllShaders()
 // {

@@ -9,11 +9,11 @@
 #include "rhr/rendering/renderer.hpp"
 
 rhr::stack::block::block(const std::string& unlocalized_name)
-	: m_mod_block(BlockRegistry::GetRegistry().GetBlock(unlocalized_name)->BlockModBlock)
+	: m_mod_block(BlockRegistry::get_registry().get_block(unlocalized_name)->BlockModBlock)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 {
 	m_size = { 100, rhr::stack::block::height };
-	m_mod_category = BlockRegistry::GetRegistry().GetCategory(m_mod_block->GetCategory())->CatagoryModCatagory;
+	m_mod_category = BlockRegistry::get_registry().get_categories(m_mod_block->get_categories())->CatagoryModCatagory;
 	m_background->set_weak(m_background);
 	m_background->set_color(m_mod_category->GetColor());
 	m_background->set_depth(rhr::render::renderer::depth_block);

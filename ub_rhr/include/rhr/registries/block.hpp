@@ -1,52 +1,77 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
-#include <Cappuccino/block/ModBlock.hpp>
-#include <Espresso/catagory/ModCatagory.hpp>
-#include <Cappuccino/ExecutionThread.hpp>
+#include <cappuccino/utils.hpp>
+#include <cappuccino/mod_block/block.hpp>
+#include <cappuccino/execution_thread.hpp>
+#include <espresso/mod/category.hpp>
 
-class BlockArgumentCaller
+namespace rhr::registry
+{
+// TODO: make completely static and remove singleton
+///
+class block
 {
 public:
-	BlockArgumentCaller(const BlockArgumentVariableMode mode, const std::string value)
-		:Mode(mode), Value(value) {}
+	// TODO: fix location/case
+	///
+	class BlockArgumentCaller
+	{
+	public:
+		BlockArgumentCaller(const BlockArgumentVariableMode mode, const std::string value)
+			:Mode(mode), Value(value) {}
 
-	BlockArgumentVariableMode Mode;
-	std::string Value;
-};
+		BlockArgumentVariableMode Mode;
+		std::string Value;
+	};
 
-struct BlockInfo
-{
-	ModBlock* BlockModBlock;
-	std::string BlockModUnlocalizedName;
-};
+	// TODO: fix location/case
+	///
+	struct BlockInfo
+	{
+		ModBlock* BlockModBlock;
+		std::string BlockModUnlocalizedName;
+	};
 
-struct CatagoryInfo
-{
-	ModCatagory* CatagoryModCatagory;
-	std::string CatagoryModUnlocalizedName;
-};
+	// TODO: fix location/case
+	///
+	struct CatagoryInfo
+	{
+		ModCatagory* CatagoryModCatagory;
+		std::string CatagoryModUnlocalizedName;
+	};
 
-class BlockRegistry
-{
-public:
-	void RegisterBlock(ModBlock* block, const std::string& modUnlocalizedName);
-	void RegisterCatagory(ModCatagory* catagory, const std::string& modUnlocalizedName);
+	///
+	void register_block(ModBlock* block, const std::string& mod_unlocalized_name);
 
-	const BlockInfo* GetBlock(const std::string& unlocalizedName);
-	const CatagoryInfo* GetCategory(const std::string& unlocalizedName);
+	///
+	void register_category(ModCatagory* catagory, const std::string& mod_unlocalized_name);
 
-	const std::vector<BlockInfo>& GetBlocks();
-	const std::vector<CatagoryInfo>& GetCategories();
+	///
+	const BlockInfo* get_block(const std::string& unlocalized_name);
 
-	//const std::string& GetBlockMod(const ModBlock* modBlock);
+	///
+	const CatagoryInfo* get_categories(const std::string& unlocalized_name);
 
-	static void CreateBlockRegistry();
-	static BlockRegistry& GetRegistry();
+	///
+	const std::vector<BlockInfo>& get_blocks();
+
+	///
+	const std::vector<CatagoryInfo>& get_categories();
+
+	///
+	static void create_block_registry();
+
+	///
+	static block& get_registry();
 private:
-	static BlockRegistry* m_Registry;
+	///
+	static block* m_registry;
 
-	std::vector<BlockInfo> m_Blocks;
-	std::vector<CatagoryInfo> m_Catagories;
+	///
+	std::vector<BlockInfo> m_blocks;
+
+	///
+	std::vector<CatagoryInfo> m_catagories;
 };
+}

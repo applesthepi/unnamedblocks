@@ -1,10 +1,10 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+//#include <Cappuccino/Utils.hpp>
 
-class ShaderRegistry
-{
+//class ShaderRegistry
+//{
 // public:
 //     static void ReloadAllShaders();
 //     static sf::Shader* GetShader(const std::string& name);
@@ -15,4 +15,4 @@ class ShaderRegistry
 //     static std::vector<std::string> m_shaderUnlocalizedNames;
 //     static std::vector<sf::Shader*> m_shaders;
 //     static std::mutex m_mutex;
-};
+//};

@@ -1,24 +1,24 @@
-#include "BlockRegistry.hpp"
+#include "block.hpp"
 
-void BlockRegistry::RegisterBlock(ModBlock* block, const std::string& modUnlocalizedName)
+void rhr::registry::block::register_block(ModBlock* block, const std::string& mod_unlocalized_name)
 {
-	m_Blocks.push_back({ block, modUnlocalizedName });
+	m_blocks.push_back({ block, mod_unlocalized_name });
 }
 
-void BlockRegistry::RegisterCatagory(ModCatagory* catagory, const std::string& modUnlocalizedName)
+void rhr::registry::block::register_category(ModCatagory* catagory, const std::string& mod_unlocalized_name)
 {
-	m_Catagories.push_back({ catagory, modUnlocalizedName });
+	m_catagories.push_back({ catagory, mod_unlocalized_name });
 }
 
-const BlockInfo* BlockRegistry::GetBlock(const std::string& unlocalizedName)
+const rhr::registry::block::BlockInfo* rhr::registry::block::get_block(const std::string& unlocalized_name)
 {
-	for (auto& info : m_Blocks)
+	for (auto& info : m_blocks)
 	{
-		if (info.BlockModBlock->GetUnlocalizedName() == unlocalizedName)
+		if (info.BlockModBlock->GetUnlocalizedName() == unlocalized_name)
 			return &info;
 	}
 
-	for (auto& info : m_Blocks)
+	for (auto& info : m_blocks)
 	{
 		if (info.BlockModBlock->GetUnlocalizedName() == "vin_null")
 			return &info;
@@ -28,11 +28,11 @@ const BlockInfo* BlockRegistry::GetBlock(const std::string& unlocalizedName)
 	return nullptr;
 }
 
-const CatagoryInfo* BlockRegistry::GetCategory(const std::string& unlocalizedName)
+const rhr::registry::block::CatagoryInfo* rhr::registry::block::get_categories(const std::string& unlocalized_name)
 {
-	for (auto& info : m_Catagories)
+	for (auto& info : m_catagories)
 	{
-		if (info.CatagoryModCatagory->GetUnlocalizedName() == unlocalizedName)
+		if (info.CatagoryModCatagory->GetUnlocalizedName() == unlocalized_name)
 			return &info;
 	}
 
@@ -40,24 +40,24 @@ const CatagoryInfo* BlockRegistry::GetCategory(const std::string& unlocalizedNam
 	return nullptr;
 }
 
-const std::vector<BlockInfo>& BlockRegistry::GetBlocks()
+const std::vector<rhr::registry::block::BlockInfo>& rhr::registry::block::get_blocks()
 {
-	return m_Blocks;
+	return m_blocks;
 }
 
-const std::vector<CatagoryInfo>& BlockRegistry::GetCategories()
+const std::vector<rhr::registry::block::CatagoryInfo>& rhr::registry::block::get_categories()
 {
-	return m_Catagories;
+	return m_catagories;
 }
 
-void BlockRegistry::CreateBlockRegistry()
+void rhr::registry::block::create_block_registry()
 {
-	m_Registry = new BlockRegistry();
+	m_registry = new rhr::registry::block();
 }
 
-BlockRegistry& BlockRegistry::GetRegistry()
+rhr::registry::block& rhr::registry::block::get_registry()
 {
-	return *m_Registry;
+	return *m_registry;
 }
 
-BlockRegistry* BlockRegistry::m_Registry;
+rhr::registry::block* rhr::registry::block::m_registry;
