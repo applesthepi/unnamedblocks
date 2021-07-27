@@ -1,6 +1,5 @@
 #!/bin/bash
 
-echo test;
 git submodule update --init;
 ./vcpkg/bootstrap-vcpkg.sh;
 ./vcpkg/vcpkg upgrade;

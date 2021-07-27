@@ -1,4 +1,6 @@
 cd vcpkg
+
+git submodule update --init;
 call bootstrap-vcpkg.bat
 vcpkg.exe upgrade
 vcpkg.exe update
