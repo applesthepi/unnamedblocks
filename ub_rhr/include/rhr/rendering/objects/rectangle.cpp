@@ -63,7 +63,7 @@ void rhr::render::object::rectangle::on_update_buffers()
 	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
 
 	//Logger::Debug(std::to_string(m_color.get_normalized().r) + ", " + std::to_string(m_color.get_normalized().g) + ", " + std::to_string(m_color.get_normalized().b));
-	Logger::Debug(std::to_string(m_use_size.x) + ", " + std::to_string(m_use_size.y));
+	//Logger::Debug(std::to_string(m_use_size.x) + ", " + std::to_string(m_use_size.y));
 
 	rhr::render::vertex v0 = rhr::render::vertex({ static_cast<f32>(position.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 0.0f });
 	rhr::render::vertex v1 = rhr::render::vertex({ static_cast<f32>(position.x + m_use_size.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 0.0f });
