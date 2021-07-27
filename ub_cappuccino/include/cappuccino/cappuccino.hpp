@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "Utils.hpp"
-#include "Export.hpp"
+#include "cappuccino/utils.hpp"
+#include "cappuccino/export.hpp"
 
 typedef class ModBlockPass ModBlockPass;
 typedef class ModBlockData ModBlockData;

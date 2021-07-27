@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "Export.hpp"
+#include "cappuccino/export.hpp"
 
 // Utils.hpp requires Logger.hpp
 #include <string>
