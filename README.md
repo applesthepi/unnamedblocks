@@ -1,5 +1,5 @@
 # Installation
-Please note that this project isnt setup properly for public use. In the future there will be downloadable demos and an easy way to clone and build the repository.
+Please note that this project isnt setup properly for public use. In the future there will be proper downloadable demos and an easy way to clone and build the repository. For now, the only demo availible is from 1 year ago here https://applesthepi.com/unnamedblocks/downloads
 
 ### General User
 TODO
