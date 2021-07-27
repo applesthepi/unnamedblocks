@@ -155,13 +155,13 @@ namespace cap::endianness {
 	u32 u32_from_ne_bytes(std::array<char, 4> bytes) {return (u32)*bytes.data();}
 	u64 u64_from_ne_bytes(std::array<char, 8> bytes) {return (u64)*bytes.data();}
 
-	u16 u16_from_le_bytes(std::array<char, 2> bytes) {if(is_le) return (u16)*bytes.data(); else return (u16)*(reverse(bytes)).data();}
-	u32 u32_from_le_bytes(std::array<char, 4> bytes) {if(is_le) return (u32)*bytes.data(); else return (u32)*(reverse(bytes)).data();}
-	u64 u64_from_le_bytes(std::array<char, 8> bytes) {if(is_le) return (u64)*bytes.data(); else return (u64)*(reverse(bytes)).data();}
+	u16 u16_from_le_bytes(std::array<char, 2> bytes) {if(is_le) return (u16)*bytes.data(); else return (u16)*(reverse<2>(bytes)).data();}
+	u32 u32_from_le_bytes(std::array<char, 4> bytes) {if(is_le) return (u32)*bytes.data(); else return (u32)*(reverse<4>(bytes)).data();}
+	u64 u64_from_le_bytes(std::array<char, 8> bytes) {if(is_le) return (u64)*bytes.data(); else return (u64)*(reverse<8>(bytes)).data();}
 
-	u16 u16_from_be_bytes(std::array<char, 2> bytes) {if(!is_le) return (u16)*bytes.data(); else return (u16)*(reverse(bytes)).data();}
-	u32 u32_from_be_bytes(std::array<char, 4> bytes) {if(!is_le) return (u32)*bytes.data(); else return (u32)*(reverse(bytes)).data();}
-	u64 u64_from_be_bytes(std::array<char, 8> bytes) {if(!is_le) return (u64)*bytes.data(); else return (u64)*(reverse(bytes)).data();}
+	u16 u16_from_be_bytes(std::array<char, 2> bytes) {if(!is_le) return (u16)*bytes.data(); else return (u16)*(reverse<2>(bytes)).data();}
+	u32 u32_from_be_bytes(std::array<char, 4> bytes) {if(!is_le) return (u32)*bytes.data(); else return (u32)*(reverse<4>(bytes)).data();}
+	u64 u64_from_be_bytes(std::array<char, 8> bytes) {if(!is_le) return (u64)*bytes.data(); else return (u64)*(reverse<8>(bytes)).data();}
 
 	i16 i16_from_ne_bytes(std::array<char, 2> bytes) {return (i16)*bytes.data();}
 	i32 i32_from_ne_bytes(std::array<char, 4> bytes) {return (i32)*bytes.data();}
@@ -169,15 +169,15 @@ namespace cap::endianness {
 	f32 f32_from_ne_bytes(std::array<char, 4> bytes) {return (f32)*bytes.data();}
 	f64 f64_from_ne_bytes(std::array<char, 8> bytes) {return (f64)*bytes.data();}
 
-	i16 i16_from_le_bytes(std::array<char, 2> bytes) {if(is_le) return (i16)*bytes.data(); else return (i16)*(reverse(bytes)).data();}
-	i32 i32_from_le_bytes(std::array<char, 4> bytes) {if(is_le) return (i32)*bytes.data(); else return (i32)*(reverse(bytes)).data();}
-	i64 i64_from_le_bytes(std::array<char, 8> bytes) {if(is_le) return (i64)*bytes.data(); else return (i64)*(reverse(bytes)).data();}
-	f32 f32_from_le_bytes(std::array<char, 4> bytes) {if(is_le) return (f32)*bytes.data(); else return (f32)*(reverse(bytes)).data();}
-	f64 f64_from_le_bytes(std::array<char, 8> bytes) {if(is_le) return (f64)*bytes.data(); else return (f64)*(reverse(bytes)).data();}
+	i16 i16_from_le_bytes(std::array<char, 2> bytes) {if(is_le) return (i16)*bytes.data(); else return (i16)*(reverse<2>(bytes)).data();}
+	i32 i32_from_le_bytes(std::array<char, 4> bytes) {if(is_le) return (i32)*bytes.data(); else return (i32)*(reverse<4>(bytes)).data();}
+	i64 i64_from_le_bytes(std::array<char, 8> bytes) {if(is_le) return (i64)*bytes.data(); else return (i64)*(reverse<8>(bytes)).data();}
+	f32 f32_from_le_bytes(std::array<char, 4> bytes) {if(is_le) return (f32)*bytes.data(); else return (f32)*(reverse<4>(bytes)).data();}
+	f64 f64_from_le_bytes(std::array<char, 8> bytes) {if(is_le) return (f64)*bytes.data(); else return (f64)*(reverse<8>(bytes)).data();}
 
-	i16 i16_from_be_bytes(std::array<char, 2> bytes) {if(!is_le) return (i16)*bytes.data(); else return (i16)*(reverse(bytes)).data();}
-	i32 i32_from_be_bytes(std::array<char, 4> bytes) {if(!is_le) return (i32)*bytes.data(); else return (i32)*(reverse(bytes)).data();}
-	i64 i64_from_be_bytes(std::array<char, 8> bytes) {if(!is_le) return (i64)*bytes.data(); else return (i64)*(reverse(bytes)).data();}
-	f32 f32_from_be_bytes(std::array<char, 4> bytes) {if(!is_le) return (f32)*bytes.data(); else return (f32)*(reverse(bytes)).data();}
-	f64 f64_from_be_bytes(std::array<char, 8> bytes) {if(!is_le) return (f64)*bytes.data(); else return (f64)*(reverse(bytes)).data();}
+	i16 i16_from_be_bytes(std::array<char, 2> bytes) {if(!is_le) return (i16)*bytes.data(); else return (i16)*(reverse<2>(bytes)).data();}
+	i32 i32_from_be_bytes(std::array<char, 4> bytes) {if(!is_le) return (i32)*bytes.data(); else return (i32)*(reverse<4>(bytes)).data();}
+	i64 i64_from_be_bytes(std::array<char, 8> bytes) {if(!is_le) return (i64)*bytes.data(); else return (i64)*(reverse<8>(bytes)).data();}
+	f32 f32_from_be_bytes(std::array<char, 4> bytes) {if(!is_le) return (f32)*bytes.data(); else return (f32)*(reverse<4>(bytes)).data();}
+	f64 f64_from_be_bytes(std::array<char, 8> bytes) {if(!is_le) return (f64)*bytes.data(); else return (f64)*(reverse<8>(bytes)).data();}
 }
