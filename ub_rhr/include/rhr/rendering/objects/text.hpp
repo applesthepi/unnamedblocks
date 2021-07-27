@@ -17,7 +17,7 @@ class text : public rhr::render::interfaces::i_renderable, public rhr::render::i
 {
 public:
 	///
-	text();
+	text(rhr::registry::char_texture::texture_type texture_type = rhr::registry::char_texture::texture_type::LIGHT_NORMAL);
 
 	/// Sets text.
 	/// \param Text.

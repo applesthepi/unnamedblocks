@@ -26,6 +26,9 @@ public:
 	/// \return Color.
 	const glm::vec<4, f32>& get_normalized() const;
 
+	///
+	glm::vec<4, f32> get_normalized_scaled(f32 scale, bool scale_alpha) const;
+
 	/// Gets color as a 4 component u8 (0 - 255) vector.
 	/// \return Color.
 	glm::vec<4, u8> get_u8() const;

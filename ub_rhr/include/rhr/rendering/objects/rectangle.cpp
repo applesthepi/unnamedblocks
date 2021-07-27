@@ -27,12 +27,12 @@ void rhr::render::object::rectangle::set_texture(const std::string& texture)
 	mark_dirty();
 }
 
-void rhr::render::object::rectangle::set_texture(rhr::render::object::object::texture_type type)
+void rhr::render::object::rectangle::set_texture(rhr::registry::char_texture::texture_type type)
 {
 	m_has_texture = true;
 	m_texture.clear();
 	m_texture_type = rhr::render::object::object::texture_type::TEXT_SHEET;
-	m_render_object->set_texture(type);
+	m_render_object->set_texture_char(type);
 
 	mark_dirty();
 }
@@ -61,6 +61,9 @@ void rhr::render::object::rectangle::on_update_buffers()
 
 	// TODO: remove
 	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
+
+	//Logger::Debug(std::to_string(m_color.get_normalized().r) + ", " + std::to_string(m_color.get_normalized().g) + ", " + std::to_string(m_color.get_normalized().b));
+	Logger::Debug(std::to_string(m_use_size.x) + ", " + std::to_string(m_use_size.y));
 
 	rhr::render::vertex v0 = rhr::render::vertex({ static_cast<f32>(position.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 0.0f });
 	rhr::render::vertex v1 = rhr::render::vertex({ static_cast<f32>(position.x + m_use_size.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 0.0f });

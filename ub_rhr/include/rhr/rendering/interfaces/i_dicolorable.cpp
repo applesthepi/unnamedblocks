@@ -10,11 +10,13 @@ rhr::render::interfaces::i_dicolorable::i_dicolorable(const cap::color& primary_
 void rhr::render::interfaces::i_dicolorable::set_color_primary(const cap::color& primary)
 {
 	m_color_primary = primary;
+	post_color_update();
 }
 
 void rhr::render::interfaces::i_dicolorable::set_color_secondary(const cap::color& secondary)
 {
 	m_color_secondary = secondary;
+	post_color_update();
 }
 
 const cap::color& rhr::render::interfaces::i_dicolorable::get_color_primary()

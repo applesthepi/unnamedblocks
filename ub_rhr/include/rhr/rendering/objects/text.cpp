@@ -5,7 +5,7 @@
 #include "rhr/stacking/block.hpp"
 #include "rhr/registries/char_texture.hpp"
 
-rhr::render::object::text::text()
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
 	, i_enableable(true)
 	, m_depth(10)
@@ -15,7 +15,8 @@ rhr::render::object::text::text()
 {
 	m_render_object_background->set_weak(m_render_object_background);
 	m_render_object_text->set_weak(m_render_object_text);
-	m_render_object_text->set_texture(rhr::render::object::object::texture_type::TEXT_SHEET);
+	m_render_object_text->set_texture_char(texture_type);
+	m_render_object_text->set_enabled(false);
 }
 
 void rhr::render::object::text::set_text(const std::string& text)
@@ -111,7 +112,7 @@ void rhr::render::object::text::on_update_buffers()
 
 		for (usize i = 0; i < m_text.size(); i++)
 		{
-			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]];
+			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::BOLD_NORMAL].char_map[m_text[i]];
 			f32 y_offset = static_cast<f32>(rhr::stack::block::height_content) + (-1.0f * static_cast<f32>(char_data.offset.y)) - static_cast<f32>(rhr::stack::block::padding);
 
 			vertices[i * 4 + 0] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x), y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.first.y });

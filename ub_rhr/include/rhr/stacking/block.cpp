@@ -91,7 +91,7 @@ void rhr::stack::block::update_arguments()
 	std::vector<BlockArgumentInitializer> argumentInit = m_mod_block->GetArguments();
 
 	u32 width = rhr::stack::block::padding;
-	cap::color argColor = cap::color().from_normalized(m_mod_category->GetColor().get_normalized() * 0.25f);
+	cap::color argColor = cap::color().from_normalized(m_mod_category->GetColor().get_normalized_scaled(0.25f, false));
 
 	for (usize i = 0; i < argumentInit.size(); i++)
 	{
@@ -154,6 +154,8 @@ void rhr::stack::block::update_arguments()
 			width += args.back()->GetWidth();
 		}*/
 	}
+
+	update_width();
 }
 
 void rhr::stack::block::update_width()

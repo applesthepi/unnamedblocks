@@ -29,6 +29,14 @@ const glm::vec<4, f32>& cap::color::get_normalized() const
 	return m_color;
 }
 
+glm::vec<4, f32> cap::color::get_normalized_scaled(f32 scale, bool scale_alpha) const
+{
+	if (scale_alpha)
+		return { m_color.r * scale, m_color.g * scale, m_color.b * scale, m_color.a * scale };
+	else
+		return { m_color.r * scale, m_color.g * scale, m_color.b * scale, m_color.a };
+}
+
 glm::vec<4, u8> cap::color::get_u8() const
 {
 	return glm::vec<4, u8>(

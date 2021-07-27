@@ -54,7 +54,7 @@ std::array<VkVertexInputAttributeDescription, 3> rhr::render::vertex::get_attrib
 
 	attributeDescriptions[1].binding = 0;
 	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
 	attributeDescriptions[1].offset = offsetof(vertex, color);
 
 	attributeDescriptions[2].binding = 0;

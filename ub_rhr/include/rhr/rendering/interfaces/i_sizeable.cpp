@@ -44,6 +44,7 @@ template <usize S, typename T>
 void rhr::render::interfaces::i_sizeable<S, T>::set_size_max()
 {
 	set_size(m_super_bounds);
+	post_size_update();
 }
 
 template <usize S, typename T>

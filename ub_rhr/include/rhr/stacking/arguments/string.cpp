@@ -5,7 +5,7 @@
 
 rhr::stack::argument::string::string(const cap::color& color)
 	: rhr::stack::argument::argument(color)
-	, m_text(std::make_shared<rhr::render::object::text>())
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL))
 {
 	m_text->set_weak(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
