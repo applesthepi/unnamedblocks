@@ -1,8 +1,8 @@
 # Installation
+Please note that this project isnt setup properly for public use. In the future there will be downloadable demos and an easy way to clone and build the repository.
+
 ### General User
-- Windows - https://applesthepi.com/unnamedblocks/downloads
-- Arch - TODO AUR
-- ... - TODO
+TODO
 
 ### Development Installation
 TODO
