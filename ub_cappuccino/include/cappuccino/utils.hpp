@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "Logger.hpp"
+#include "cappuccino/logger.hpp"
 
 #include <bit>
 #include <cinttypes>
