@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/stacking/Plane.hpp"
+#include "rhr/stacking/plane.hpp"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace rhr::handler
 {

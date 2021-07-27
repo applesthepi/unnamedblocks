@@ -10,9 +10,9 @@
 
 #define CAPPUCCINO
 
-#define VER_CLIENT "@VER_CLIENT@"
-#define VER_SERVER "@VER_SERVER@"
-#define VER_MOD_VIN "@VER_MOD_VIN@"
+#define VER_CLIENT @VER_CLIENT@
+#define VER_SERVER @VER_SERVER@
+#define VER_MOD_VIN @VER_MOD_VIN@
 
 #ifdef NDEBUG
 #define UB_ASSERT(expression)

@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include <Cappuccino/Utils.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace rhr::render
 {

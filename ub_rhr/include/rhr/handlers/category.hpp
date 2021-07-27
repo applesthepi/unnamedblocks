@@ -2,10 +2,10 @@
 #include "config.h"
 
 #include "rhr/registries/block.hpp"
-#include "rhr/stacking/Plane.hpp"
-#include "rhr/stacking/Collection.hpp"
-#include "rhr/stacking/Stack.hpp"
-#include "rhr/stacking/Block.hpp"
+#include "rhr/stacking/plane.hpp"
+#include "rhr/stacking/collection.hpp"
+#include "rhr/stacking/stack.hpp"
+#include "rhr/stacking/block.hpp"
 #include "rhr/rendering/objects/button.hpp"
 #include "rhr/rendering/frame.hpp"
 
@@ -14,7 +14,7 @@
 namespace rhr::handler
 {
 ///
-static class category
+class category
 {
 public:
 	///
