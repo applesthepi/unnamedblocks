@@ -8,12 +8,14 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/project.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/statement.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/statement.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/context.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/context.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/field.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/field.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/category.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/category.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/preprocessor.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/preprocessor.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/field_data.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/handlers/field_data.cpp"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/registries/block.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/registries/block.cpp"
@@ -84,6 +86,8 @@ set(UB_RHR_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/interfaces/i_dicolorable.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/interfaces/i_enableable.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/interfaces/i_enableable.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/interfaces/i_field.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/rhr/rendering/interfaces/i_field.cpp"
 )
 
 add_library(UB_RHR STATIC

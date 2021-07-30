@@ -6,6 +6,7 @@
 #include "rhr/rendering/interfaces/i_sizeable.hpp"
 #include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_dicolorable.hpp"
+#include "rhr/rendering/interfaces/i_field.hpp"
 #include "rhr/rendering/objects/object.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -13,7 +14,7 @@
 namespace rhr::render::object
 {
 ///
-class text : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_dicolorable, public rhr::render::interfaces::i_enableable
+class text : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_dicolorable, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_field
 {
 public:
 	///
@@ -51,6 +52,12 @@ private:
 	///
 	void post_size_update() override;
 
+	///
+	std::optional<usize> pick_index(glm::vec<2, i32> position, bool ignore_y) override;
+
+	///
+	std::optional<glm::vec<2, i32>> get_index_position(usize idx) override;
+
 	/// Object to render the background rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object_background;
 
@@ -59,6 +66,9 @@ private:
 
 	///
 	std::string m_text;
+
+	///
+	std::vector<i16> m_char_widths;
 
 	///
 	i32 m_depth;

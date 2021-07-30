@@ -5,6 +5,7 @@
 #include "rhr/registries/char_texture.hpp"
 #include "rhr/rendering/objects/text.hpp"
 #include "rhr/rendering/objects/object.hpp"
+#include "rhr/handlers/field.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <espresso/input_handler.hpp>
@@ -48,5 +49,11 @@ private:
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;
+
+	///
+	bool m_registered;
+
+	///
+	std::optional<rhr::handler::field_data::location> m_location;
 };
 }

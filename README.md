@@ -3,10 +3,10 @@
 Please note that this project isnt setup properly for public use. In the future there will be more downloads. For now, the only demo availible is from 1 year ago is for windows only here https://applesthepi.com/unnamedblocks/downloads
 
 ### Development Installation
-**master** - active development branch (features not functioning)
-**stable** - stable releases (1y old demo)
-**nightly** - bleeding edge releases (1y old demo)
-
+**master** - active development branch (features not functioning)  
+**stable** - stable releases (1y old demo)  
+**nightly** - bleeding edge releases (1y old demo)  
+  
 Your expected to have cmake and git installed and in your path. Follow these steps for repo setup:
 #### Windows
 in powershell
@@ -22,7 +22,7 @@ using any linux shell
 3. `./configure.sh`
 
 # Code Style
-This describes the code style that everyone should use throughout UB and in mods. While the style might not be what people are used to, it would be very helpful if everyone used the same style. Nothing will happen if you don't follow these, it's just a strong recommendation to follow these standards.
+This describes the code style that everyone should use throughout Unnamed Blocks and preferably mods. I recommend everyone follow this standard.
 
 ### Filename
 `snake_case_only_please.hpp`

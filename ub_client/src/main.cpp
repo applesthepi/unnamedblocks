@@ -4,6 +4,7 @@
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/tools.hpp"
 #include "rhr/handlers/category.hpp"
+#include "rhr/handlers/field.hpp"
 #include "rhr/registries/char_texture.hpp"
 
 //#include "imgui/imgui.h"
@@ -17,6 +18,7 @@
 #include <espresso/input_handler.hpp>
 #include <cappuccino/logger.hpp>
 #include <cappuccino/utils.hpp>
+#include <iostream>
 
 // Include last, has defines that conflict with enums
 #if LINUX
@@ -405,6 +407,7 @@ int main()
 
 	InputHandler::Initialization();
 	rhr::registry::block::create_block_registry();
+	//rhr::handler::field::initialize();
 
 	run();
 	rhr::handler::category::populate(frameCategories);

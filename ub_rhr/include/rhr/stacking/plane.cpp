@@ -1,6 +1,5 @@
 #include "plane.hpp"
 
-#include "rhr/handlers/context.hpp"
 #include "rhr/rendering/renderer.hpp"
 
 static void primary_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
@@ -275,6 +274,11 @@ void rhr::stack::plane::frame_update(f64 deltaTime)
 
 	if (dragging_stack())
 		dragging_stack_update();
+}
+
+rhr::handler::field& rhr::stack::plane::get_field()
+{
+	return m_field;
 }
 
 void rhr::stack::plane::on_render()

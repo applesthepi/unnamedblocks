@@ -8,6 +8,7 @@
 #include "rhr/rendering/interfaces/i_sizeable.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 #include "rhr/rendering/objects/text.hpp"
+#include "rhr/handlers/field.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <cappuccino/intrinsics.hpp>
@@ -51,6 +52,9 @@ public:
 	
 	///
 	void frame_update(f64 delta_time) override;
+
+	///
+	rhr::handler::field& get_field();
 private:
 	///
 	void on_render() override;
@@ -168,5 +172,8 @@ private:
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
+
+	///
+	rhr::handler::field m_field;
 };
 }

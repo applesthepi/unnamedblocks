@@ -52,7 +52,7 @@
 #else
 #define TIME_POINT std::chrono::steady_clock::time_point
 #endif
-
+// TODO: change typedefs to usings
 typedef char i8;
 typedef short i16;
 typedef int i32;
