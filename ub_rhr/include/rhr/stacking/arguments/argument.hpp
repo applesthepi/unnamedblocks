@@ -48,12 +48,18 @@ public:
 	/// \return Has data.
 	virtual bool has_data();
 
+	// TODO: remove?
 	/// Select the argument and enable it.
 	virtual void select();
 
+	// TODO: remove?
 	/// When the focus turns off of the argument.
 	virtual void unselect();
 
+	///
+	virtual bool drag_bounds(glm::vec<2, i32> position);
+
+	///
 	static i32 padding;
 protected:
 	/// Add draw calls to cmd buffer prebound by Renderer.

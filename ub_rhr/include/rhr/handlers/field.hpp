@@ -25,7 +25,7 @@ public:
 	void unregister_field(rhr::handler::field_data::location location);
 
 	///
-	void update_field_position(rhr::handler::field_data::location location, glm::vec<2, i32> position);
+	rhr::handler::field_data::location update_field_position(rhr::handler::field_data::location location, glm::vec<2, i32> position);
 
 	///
 	void update_field_size(rhr::handler::field_data::location location, glm::vec<2, i32> size);

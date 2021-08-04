@@ -63,6 +63,9 @@ public:
 	std::weak_ptr<rhr::render::interfaces::i_field>& get_text_field();
 
 	///
+	void set_location(location location);
+
+	///
 	location get_location();
 private:
 	///

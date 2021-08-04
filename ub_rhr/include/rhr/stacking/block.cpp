@@ -172,3 +172,14 @@ void rhr::stack::block::update_width()
 
 	m_background->set_size(m_size);
 }
+
+bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
+{
+	for (auto arg : m_arguments)
+	{
+		if (arg->drag_bounds(position))
+			return true;
+	}
+
+	return false;
+}

@@ -860,6 +860,40 @@ void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> posi
 	Logger::Error("failed to unregister mouse callback");
 }
 
+void InputHandler::RegisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data), u8 layer, void* data)
+{
+	std::unique_lock lock(m_MouseMutex);
+
+	if (layer >= m_BullishMouseCallbacks.size())
+	{
+		for (u8 i = 0; i < layer - m_BullishMouseCallbacks.size() + 1; i++)
+		{
+			m_BullishMouseCallbacks.push_back(std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)>());
+			m_BullishMouseDatas.push_back(std::vector<void*>());
+		}
+	}
+
+	m_BullishMouseCallbacks[layer].push_back(callback);
+	m_BullishMouseDatas[layer].push_back(data);
+}
+
+void InputHandler::UnregisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data), u8 layer)
+{
+	std::unique_lock lock(m_MouseMutex);
+
+	for (usize i = 0; i < m_BullishMouseCallbacks[layer].size(); i++)
+	{
+		if (m_BullishMouseCallbacks[layer][i] == callback)
+		{
+			m_BullishMouseCallbacks[layer].erase(m_BullishMouseCallbacks[layer].begin() + i);
+			m_BullishMouseDatas[layer].erase(m_BullishMouseDatas[layer].begin() + i);
+			return;
+		}
+	}
+
+	Logger::Error("failed to unregister bullish mouse callback");
+}
+
 void InputHandler::FireKey(i16 key, u8 operation)
 {
 	std::unique_lock lock(m_KeyTextMutex);
@@ -921,6 +955,15 @@ void InputHandler::FireMouseMove(glm::vec<2, i32> position)
 
 	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
 		m_MouseCallbacks[i](position, 0.0f, MouseOperation::Move, m_MouseDatas[i]);
+
+	for (u8 i = 0; i < m_BullishMouseCallbacks.size(); i++)
+	{
+		for (usize a = 0; a < m_BullishMouseCallbacks[static_cast<usize>(i)].size(); a++)
+		{
+			if (m_BullishMouseCallbacks[i][a](position, 0.0f, MouseOperation::Move, m_BullishMouseDatas[i][a]))
+				return;
+		}
+	}
 }
 
 void InputHandler::FireMouseScroll(f32 scroll)
@@ -936,6 +979,11 @@ glm::vec<2, i32> InputHandler::GetMousePosition()
 	return m_MousePosition;
 }
 
+u8 InputHandler::BullishLayerPopups = 10;
+u8 InputHandler::BullishLayerUI = 15;
+u8 InputHandler::BullishLayerArguments = 20;
+u8 InputHandler::BullishLayerBackground = 25;
+
 bool InputHandler::m_MouseWasDown;
 bool InputHandler::m_ShiftDown;
 glm::vec<2, i32> InputHandler::m_MousePosition;
@@ -948,3 +996,5 @@ std::vector<void(*)(i16 key, bool shift, void* data)> InputHandler::m_TextCallba
 std::vector<void*> InputHandler::m_TextDatas;
 std::vector<void(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)> InputHandler::m_MouseCallbacks;
 std::vector<void*> InputHandler::m_MouseDatas;
+std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)>> InputHandler::m_BullishMouseCallbacks;
+std::vector<std::vector<void*>> InputHandler::m_BullishMouseDatas;

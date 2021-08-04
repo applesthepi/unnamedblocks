@@ -55,6 +55,11 @@ void rhr::stack::argument::argument::unselect()
 
 }
 
+bool rhr::stack::argument::argument::drag_bounds(glm::vec<2, i32> position)
+{
+	return false;
+}
+
 i32 rhr::stack::argument::argument::padding = rhr::stack::block::padding * 4;
 
 void rhr::stack::argument::argument::on_render()

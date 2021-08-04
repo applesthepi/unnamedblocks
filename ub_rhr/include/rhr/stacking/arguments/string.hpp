@@ -28,6 +28,9 @@ public:
 	/// Whether or not the argument contains data for storing.
 	/// \return Has data.
 	bool has_data() override;
+
+	///
+	bool drag_bounds(glm::vec<2, i32> position);
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void on_render() override;
@@ -42,6 +45,7 @@ private:
 	/// \param Seconds since last frame.
 	void on_frame_update(f64 delta_time) override;
 
+	///
 	void post_position_update() override;
 
 	/// Sets data. Data of the argument is stored as a string.

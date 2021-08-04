@@ -185,8 +185,10 @@ void rhr::handler::field::unregister_field(rhr::handler::field_data::location lo
 	pop_data(location);
 }
 
-void rhr::handler::field::update_field_position(rhr::handler::field_data::location location, glm::vec<2, i32> position)
+rhr::handler::field_data::location rhr::handler::field::update_field_position(rhr::handler::field_data::location location, glm::vec<2, i32> position)
 {
+	//Logger::Debug(std::to_string(position.x) + ", " + std::to_string(position.y));
+
 	glm::vec<2, i32> cell_position = location.get_cell();
 	cell_position.x *= FIELD_CELL_SIZE;
 	cell_position.y *= FIELD_CELL_SIZE;
@@ -196,24 +198,28 @@ void rhr::handler::field::update_field_position(rhr::handler::field_data::locati
 	{
 		std::optional<rhr::handler::field_data::data*> data = find_data(location);
 		if (!data.has_value())
-			return;
+			return location;
 
 		data.value()->set_position(position);
+		return location;
 	}
 	else
 	{
 		std::optional<rhr::handler::field_data::data*> data = find_data(location);
 		if (!data.has_value())
-			return;
-
-		rhr::handler::field_data::data local_data = *data.value();
-		local_data.set_position(position);
+			return location;
 
 		glm::vec<2, usize> cell_position = calculate_cell_position(position);
 		resize(cell_position + glm::vec<2, usize>(1, 1));
 
+		rhr::handler::field_data::data local_data = *data.value();
+		local_data.set_position(position);
+		local_data.set_location(rhr::handler::field_data::location(cell_position, location.get_idx()));
+
 		pop_data(location);
 		push_data(cell_position, local_data);
+
+		return local_data.get_location();
 	}
 }
 

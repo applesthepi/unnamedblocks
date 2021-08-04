@@ -152,6 +152,9 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 									//ContextHandler::Disable();
 									unselect();
 
+									if (m_collections[i]->get_stacks()[a]->get_blocks()[b]->drag_bounds(position))
+										return;
+
 									std::shared_ptr<rhr::stack::collection> active_collection = std::make_shared<rhr::stack::collection>();
 									active_collection->set_weak(active_collection);
 

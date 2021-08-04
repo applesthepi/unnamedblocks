@@ -68,6 +68,11 @@ std::weak_ptr<rhr::render::interfaces::i_field>& rhr::handler::field_data::data:
 	return m_text_field;
 }
 
+void rhr::handler::field_data::data::set_location(location location)
+{
+	m_location = location;
+}
+
 rhr::handler::field_data::location rhr::handler::field_data::data::get_location()
 {
 	return m_location;

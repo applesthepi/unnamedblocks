@@ -56,7 +56,7 @@ void rhr::stack::argument::string::post_position_update()
 	m_text->set_super_position(m_position + m_super_position);
 
 	if (m_registered)
-		rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), m_position + m_super_position);
+		m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), m_position + m_super_position);
 	else
 	{
 		m_registered = true;
@@ -68,4 +68,14 @@ void rhr::stack::argument::string::on_set_data()
 {
 	m_text->set_text(m_data);
 	rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), { get_width(), rhr::stack::block::height_content });
+}
+
+bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
+{
+	glm::vec<2, i32> arg_position = m_position + m_super_position;
+
+	return (
+		position.x > arg_position.x && position.x < arg_position.x + get_width() &&
+		position.y > arg_position.y && position.y < arg_position.y + rhr::stack::block::height_content
+	);
 }

@@ -37,6 +37,9 @@ public:
 	void frame_update(f64 delta_time) override;
 
 	///
+	bool drag_bounds(glm::vec<2, i32> position);
+
+	///
 	static i16 padding;
 
 	///

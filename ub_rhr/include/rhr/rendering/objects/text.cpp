@@ -61,13 +61,23 @@ void rhr::render::object::text::enable_background(bool enable)
 void rhr::render::object::text::update_size()
 {
 	i32 running_x = m_padding;
+	f32 running_char_positions = static_cast<f32>(m_padding);
 	m_char_widths.clear();
 
 	for (usize i = 0; i < m_text.size(); i++)
 	{
 		i16 char_width = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
+
 		running_x += static_cast<i32>(char_width);
-		m_char_widths.push_back(running_x);
+		running_char_positions += static_cast<f32>(char_width) / 2.0f;
+
+		if (i > 0)
+		{
+			i16 last_char_width = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i - 1]].advance.x >> 6;
+			running_char_positions += static_cast<f32>(last_char_width) / 2.0f;
+		}
+		
+		m_char_widths.push_back(static_cast<i16>(running_char_positions));
 	}
 	
 	m_size = { running_x + m_padding, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
@@ -174,17 +184,17 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 			delta_position < -EDGE_CLICK_OVERHANG || delta_position > m_size.x + EDGE_CLICK_OVERHANG)
 			return std::nullopt;
 
-		f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
+		//f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
 
 		for (usize i = 0; i < m_char_widths.size(); i++)
 		{
-			if (i > 0)
+			/*if (i > 0)
 			{
 				running_x += static_cast<f32>(m_char_widths[i - 1]) / 2.0f;
 				running_x += static_cast<f32>(m_char_widths[i]) / 2.0f;
-			}
+			}*/
 
-			if (running_x > static_cast<f32>(delta_position))
+			if (static_cast<i32>(m_char_widths[i]) > delta_position)
 				return i;
 		}
 
@@ -200,17 +210,17 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 			delta_position.y < 0 || delta_position.y > m_size.y)
 			return std::nullopt;
 
-		f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
+		//f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
 
 		for (usize i = 0; i < m_char_widths.size(); i++)
 		{
-			if (i > 0)
+			/*if (i > 0)
 			{
 				running_x += static_cast<f32>(m_char_widths[i - 1]) / 2.0f;
 				running_x += static_cast<f32>(m_char_widths[i]) / 2.0f;
-			}
+			}*/
 
-			if (running_x > static_cast<f32>(delta_position.x))
+			if (static_cast<i32>(m_char_widths[i]) > delta_position.x)
 				return i;
 		}
 
