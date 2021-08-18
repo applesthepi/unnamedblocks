@@ -5,9 +5,9 @@
 
 #define ARG_REAL_DECORE_WIDTH 6
 
-rhr::stack::argument::real::real(const cap::color& color)
-	: rhr::stack::argument::argument(color)
-	, m_text(std::make_shared<rhr::render::object::text>())
+rhr::stack::argument::real::real(const cap::color& color, void(*update)(void*), void* data)
+	: rhr::stack::argument::argument(color, update, data)
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data))
 	, m_decor_left_top(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_left_bottom(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right_top(std::make_shared<rhr::render::object::object>(true))
@@ -19,6 +19,7 @@ rhr::stack::argument::real::real(const cap::color& color)
 	m_decor_right_bottom->set_weak(m_decor_right_bottom);
 
 	m_text->set_weak(m_text);
+	m_text->set_weak_field(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
 	m_text->set_color_primary(cap::color::text_primary_color);
 	m_text->set_color_secondary(color);

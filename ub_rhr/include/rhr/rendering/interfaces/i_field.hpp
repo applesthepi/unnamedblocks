@@ -14,5 +14,20 @@ public:
 
 	///
 	virtual std::optional<glm::vec<2, i32>> get_index_position(usize idx);
+
+	///
+	virtual usize get_index_count();
+
+	///
+	virtual void insert_char(char charactor, usize idx);
+
+	///
+	virtual void insert_string(const std::string& string, usize idx);
+
+	///
+	virtual bool remove_char(usize idx);
+
+	///
+	virtual bool remove_string(usize idx, usize size);
 };
 }

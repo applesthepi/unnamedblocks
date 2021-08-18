@@ -291,6 +291,8 @@ void rhr::stack::plane::on_render()
 
 	if (dragging_stack() || dragging_collection())
 		m_dragging_collection->render();
+
+	m_field.render();
 }
 
 void rhr::stack::plane::on_update_buffers()

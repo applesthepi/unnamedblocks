@@ -236,7 +236,7 @@ void rhr::render::object::object::update_vertices(const rhr::render::vertex* ver
 
 void rhr::render::object::object::on_render()
 {
-	if (!m_has_vertices)
+	if (!m_has_vertices || !m_enabled)
 		return;
 
 	update_uniforms(m_ui);

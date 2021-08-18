@@ -66,6 +66,8 @@ void rhr::render::interfaces::i_renderable::mark_dirty()
 	if (!is_weak() || m_dirty)
 		return;
 
+	on_mark_dirty();
+
 	m_dirty = true;
 	rhr::render::renderer::add_dirty(m_weak);
 }
@@ -92,4 +94,9 @@ bool rhr::render::interfaces::i_renderable::is_weak()
 	}
 
 	return true;
+}
+
+void rhr::render::interfaces::i_renderable::on_mark_dirty()
+{
+
 }

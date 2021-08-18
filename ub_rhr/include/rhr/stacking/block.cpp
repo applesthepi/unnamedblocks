@@ -8,6 +8,12 @@
 #include "rhr/registries/block.hpp"
 #include "rhr/rendering/renderer.hpp"
 
+static void block_update(void* data)
+{
+	rhr::stack::block* block = (rhr::stack::block*)data;
+	block->update_width();
+}
+
 rhr::stack::block::block(const std::string& unlocalized_name)
 	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->BlockModBlock)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
@@ -97,7 +103,7 @@ void rhr::stack::block::update_arguments()
 	{
 		if (argumentInit[i].Type == BlockArgumentType::TEXT)
 		{
-			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor);
+			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor, block_update, this);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -109,7 +115,7 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::REAL)
 		{
-			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor);
+			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor, block_update, this);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -121,7 +127,7 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::STRING)
 		{
-			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor);
+			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor, block_update, this);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -133,7 +139,7 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
 		{
-			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor);
+			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor, block_update, this);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -164,6 +170,8 @@ void rhr::stack::block::update_width()
 
 	for (usize i = 0; i < m_arguments.size(); i++)
 	{
+		m_arguments[i]->set_position({ m_width, rhr::stack::block::padding });
+
 		m_width += m_arguments[i]->get_width();
 		m_width += rhr::stack::block::padding;
 	}

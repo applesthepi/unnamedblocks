@@ -15,7 +15,7 @@ namespace rhr::stack::argument
 class string : public rhr::stack::argument::argument
 {
 public:
-	string(const cap::color& color);
+	string(const cap::color& color, void(*update)(void*), void* data);
 
 	/// How to interpret the data.
 	/// \return Type of argument.
@@ -53,11 +53,5 @@ private:
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;
-
-	///
-	bool m_registered;
-
-	///
-	std::optional<rhr::handler::field_data::location> m_location;
 };
 }

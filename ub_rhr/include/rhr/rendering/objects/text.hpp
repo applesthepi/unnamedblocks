@@ -8,6 +8,7 @@
 #include "rhr/rendering/interfaces/i_dicolorable.hpp"
 #include "rhr/rendering/interfaces/i_field.hpp"
 #include "rhr/rendering/objects/object.hpp"
+#include "rhr/handlers/field.hpp"
 
 #include <cappuccino/utils.hpp>
 
@@ -18,7 +19,10 @@ class text : public rhr::render::interfaces::i_renderable, public rhr::render::i
 {
 public:
 	///
-	text(rhr::registry::char_texture::texture_type texture_type = rhr::registry::char_texture::texture_type::LIGHT_NORMAL);
+	text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data);
+
+	///
+	void set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field);
 
 	/// Sets text.
 	/// \param Text.
@@ -33,6 +37,27 @@ public:
 
 	///
 	void enable_background(bool enable);
+
+	///
+	std::optional<usize> pick_index(glm::vec<2, i32> position, bool ignore_y) override;
+
+	///
+	std::optional<glm::vec<2, i32>> get_index_position(usize idx) override;
+
+	///
+	usize get_index_count() override;
+
+	///
+	void insert_char(char charactor, usize idx) override;
+
+	///
+	void insert_string(const std::string& string, usize idx) override;
+
+	///
+	bool remove_char(usize idx) override;
+
+	///
+	bool remove_string(usize idx, usize size) override;
 private:
 	///
 	void update_size();
@@ -52,12 +77,6 @@ private:
 	///
 	void post_size_update() override;
 
-	///
-	std::optional<usize> pick_index(glm::vec<2, i32> position, bool ignore_y) override;
-
-	///
-	std::optional<glm::vec<2, i32>> get_index_position(usize idx) override;
-
 	/// Object to render the background rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object_background;
 
@@ -68,7 +87,10 @@ private:
 	std::string m_text;
 
 	///
-	std::vector<i16> m_char_widths;
+	std::vector<i16> m_char_contacts;
+
+	///
+	std::vector<i16> m_char_offsets;
 
 	///
 	i32 m_depth;
@@ -78,5 +100,14 @@ private:
 
 	///
 	bool m_enable_background;
+
+	///
+	void(*m_update)(void*);
+
+	///
+	void* m_update_data;
+
+	///
+	std::optional<rhr::handler::field_data::location> m_location;
 };
 }

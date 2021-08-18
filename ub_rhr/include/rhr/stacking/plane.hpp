@@ -168,7 +168,7 @@ private:
 	bool m_toolbar;
 
 	///
-	rhr::render::object::text m_inner_text;
+	//rhr::render::object::text m_inner_text;
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;

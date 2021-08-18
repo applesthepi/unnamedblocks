@@ -10,7 +10,6 @@
 #include <cappuccino/mod_block/block.hpp>
 #include <cappuccino/color.hpp>
 
-
 namespace rhr::stack::argument
 {
 /// Base class for visual block arguments.
@@ -18,7 +17,7 @@ class argument : public rhr::render::interfaces::i_renderable, public rhr::rende
 {
 public:
 	///
-	argument(const cap::color& block_color);
+	argument(const cap::color& block_color, void(*update)(void*), void* data);
 
 	/// Sets data. Data of the argument is stored as a string.
 	/// \param Data to set the argument to.
@@ -86,5 +85,11 @@ protected:
 
 	///
 	cap::color m_block_color;
+
+	///
+	void(*m_update)(void*);
+
+	///
+	void* m_update_data;
 };
 }

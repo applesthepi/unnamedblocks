@@ -40,6 +40,9 @@ public:
 	bool drag_bounds(glm::vec<2, i32> position);
 
 	///
+	void update_width();
+
+	///
 	static i16 padding;
 
 	///
@@ -62,9 +65,6 @@ private:
 
 	///
 	void update_arguments();
-
-	///
-	void update_width();
 
 	///
 	u32 m_width;

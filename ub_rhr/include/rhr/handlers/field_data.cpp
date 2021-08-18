@@ -1,16 +1,18 @@
 #include "field_data.hpp"
 
-rhr::handler::field_data::location::location(glm::vec<2, usize> size, usize idx)
-	: m_size(size)
+rhr::handler::field_data::location::location(glm::vec<2, usize> position, usize idx, u8 layer)
+	: m_position(position)
 	, m_idx(idx)
+	, m_layer(layer)
 	, m_null(false)
 {
 
 }
 
-rhr::handler::field_data::location::location(glm::vec<2, usize> size, usize idx, bool null)
-	: m_size(size)
+rhr::handler::field_data::location::location(glm::vec<2, usize> position, usize idx, u8 layer, bool null)
+	: m_position(position)
 	, m_idx(idx)
+	, m_layer(layer)
 	, m_null(null)
 {
 
@@ -18,7 +20,7 @@ rhr::handler::field_data::location::location(glm::vec<2, usize> size, usize idx,
 
 glm::vec<2, usize> rhr::handler::field_data::location::get_cell()
 {
-	return m_size;
+	return m_position;
 }
 
 usize rhr::handler::field_data::location::get_idx()
@@ -26,7 +28,12 @@ usize rhr::handler::field_data::location::get_idx()
 	return m_idx;
 }
 
-rhr::handler::field_data::location rhr::handler::field_data::location::none = rhr::handler::field_data::location({ 0, 0 }, 0, true);
+u8 rhr::handler::field_data::location::get_layer()
+{
+	return m_layer;
+}
+
+rhr::handler::field_data::location rhr::handler::field_data::location::none = rhr::handler::field_data::location({ 0, 0 }, 0, 0, true);
 
 rhr::handler::field_data::data::data(usize idx, glm::vec<2, i32> position, glm::vec<2, i32> size, std::weak_ptr<rhr::render::interfaces::i_field> text_field, location location)
 	: m_idx(idx)

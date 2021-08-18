@@ -3,6 +3,8 @@
 
 #include <cappuccino/utils.hpp>
 
+// TODO: transform file to snake case
+
 class TextSystem
 {
 public:
@@ -21,6 +23,8 @@ enum class MouseOperation
 	HoverOff,
 	Click,
 	Press,
+	DoublePress,
+	TripplePress,
 	Release,
 	Move,
 	Scroll
@@ -29,13 +33,23 @@ enum class MouseOperation
 class InputHandler
 {
 public:
+	struct key_state
+	{
+		i16 key;
+
+		bool down;
+		bool shift;
+		bool ctrl;
+		bool alt;
+	};
+
 	static void Initialization();
 
-	static void RegisterKeyCallback(void(*callback)(i16 key, bool down, bool shift, void* data), void* data);
-	static void UnregisterKeyCallback(void(*callback)(i16 key, bool down, bool shift, void* data));
+	static void RegisterKeyCallback(void(*callback)(key_state state, void* data), void* data);
+	static void UnregisterKeyCallback(void(*callback)(key_state state, void* data));
 
-	static void RegisterTextCallback(void(*callback)(i16 key, bool shift, void* data), void* data);
-	static void UnregisterTextCallback(void(*callback)(i16 key, bool shift, void* data));
+	static void RegisterTextCallback(void(*callback)(key_state state, void* data), void* data);
+	static void UnregisterTextCallback(void(*callback)(key_state state, void* data));
 
 	static void RegisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data), void* data);
 	static void UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data));
@@ -69,16 +83,19 @@ public:
 private:
 	static bool m_MouseWasDown;
 	static bool m_ShiftDown;
+	static bool m_ControlDown;
+	static bool m_AltDown;
 	static glm::vec<2, i32> m_MousePosition;
 	static std::shared_mutex m_KeyTextMutex;
 	static std::shared_mutex m_MouseMutex;
 
-	static std::vector<void(*)(i16 key, bool down, bool shift, void* data)> m_KeyCallbacks;
+	static std::vector<void(*)(key_state state, void* data)> m_KeyCallbacks;
 	static std::vector<void*> m_KeyDatas;
-	static std::vector<void(*)(i16 key, bool shift, void* data)> m_TextCallbacks;
+	static std::vector<void(*)(key_state state, void* data)> m_TextCallbacks;
 	static std::vector<void*> m_TextDatas;
 	static std::vector<void(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)> m_MouseCallbacks;
 	static std::vector<void*> m_MouseDatas;
 	static std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)>> m_BullishMouseCallbacks;
 	static std::vector<std::vector<void*>> m_BullishMouseDatas;
+	static std::vector<TIME_POINT> m_PressLog;
 };

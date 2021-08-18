@@ -2,9 +2,11 @@
 
 #include "rhr/stacking/block.hpp"
 
-rhr::stack::argument::argument::argument(const cap::color& block_color)
+rhr::stack::argument::argument::argument(const cap::color& block_color, void(*update)(void*), void* data)
 	: m_mode(BlockArgumentVariableMode::RAW)
 	, m_block_color(block_color)
+	, m_update(update)
+	, m_update_data(data)
 {
 	
 }

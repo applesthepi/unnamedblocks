@@ -785,7 +785,7 @@ void InputHandler::Initialization()
 // 	}
 // }
 
-void InputHandler::RegisterKeyCallback(void(*callback)(i16 key, bool down, bool shift, void* data), void* data)
+void InputHandler::RegisterKeyCallback(void(*callback)(key_state state, void* data), void* data)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -793,7 +793,7 @@ void InputHandler::RegisterKeyCallback(void(*callback)(i16 key, bool down, bool 
 	m_KeyDatas.push_back(data);
 }
 
-void InputHandler::UnregisterKeyCallback(void(*callback)(i16 key, bool down, bool shift, void* data))
+void InputHandler::UnregisterKeyCallback(void(*callback)(key_state state, void* data))
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -810,7 +810,7 @@ void InputHandler::UnregisterKeyCallback(void(*callback)(i16 key, bool down, boo
 	Logger::Error("failed to unregister key callback");
 }
 
-void InputHandler::RegisterTextCallback(void(*callback)(i16 key, bool shift, void* data), void* data)
+void InputHandler::RegisterTextCallback(void(*callback)(key_state state, void* data), void* data)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -818,7 +818,7 @@ void InputHandler::RegisterTextCallback(void(*callback)(i16 key, bool shift, voi
 	m_TextDatas.push_back(data);
 }
 
-void InputHandler::UnregisterTextCallback(void(*callback)(i16 key, bool shift, void* data))
+void InputHandler::UnregisterTextCallback(void(*callback)(key_state state, void* data))
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -906,23 +906,39 @@ void InputHandler::FireKey(i16 key, u8 operation)
 			m_ShiftDown = false;
 	}
 
+	if (key == GLFW_KEY_LEFT_CONTROL)
+	{
+		if (operation == GLFW_PRESS)
+			m_ControlDown = true;
+		else if (operation == GLFW_RELEASE)
+			m_ControlDown = false;
+	}
+
+	if (key == GLFW_KEY_LEFT_ALT)
+	{
+		if (operation == GLFW_PRESS)
+			m_AltDown = true;
+		else if (operation == GLFW_RELEASE)
+			m_AltDown = false;
+	}
+
 	if (operation == GLFW_PRESS)
 	{
 		for (usize i = 0; i < m_KeyCallbacks.size(); i++)
-			m_KeyCallbacks[i](key, true, m_ShiftDown, m_KeyDatas[i]);
+			m_KeyCallbacks[i]({ key, true, m_ShiftDown, m_ControlDown, m_AltDown }, m_KeyDatas[i]);
+
+		for (usize i = 0; i < m_TextCallbacks.size(); i++)
+			m_TextCallbacks[i]({ key, true, m_ShiftDown, m_ControlDown, m_AltDown }, m_TextDatas[i]);
 	}
 	else if (operation == GLFW_RELEASE)
 	{
 		for (usize i = 0; i < m_KeyCallbacks.size(); i++)
-			m_KeyCallbacks[i](key, false, m_ShiftDown, m_KeyDatas[i]);
+			m_KeyCallbacks[i]({ key, false, m_ShiftDown, m_ControlDown, m_AltDown }, m_KeyDatas[i]);
 	}
 	else if (operation == GLFW_REPEAT)
 	{
-		if (key >= 32 && key <= 96)
-		{
-			for (usize i = 0; i < m_TextCallbacks.size(); i++)
-				m_TextCallbacks[i](key, true, m_TextDatas[i]);
-		}
+		for (usize i = 0; i < m_TextCallbacks.size(); i++)
+			m_TextCallbacks[i]({ key, true, m_ShiftDown, m_ControlDown, m_AltDown }, m_TextDatas[i]);
 	}
 }
 
@@ -935,8 +951,28 @@ void InputHandler::FireMouseButton(u8 button, u8 operation)
 
 	if (operation == GLFW_PRESS)
 	{
-		for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Press, m_MouseDatas[i]);
+		TIME_POINT now = std::chrono::high_resolution_clock::now();
+
+		if ((m_PressLog.size() > 0 && std::chrono::duration_cast<std::chrono::milliseconds>(now - m_PressLog.back()).count() > 300) || m_PressLog.size() >= 3)
+			m_PressLog.clear();
+
+		m_PressLog.push_back(now);
+
+		if (m_PressLog.size() == 1)
+		{
+			for (usize i = 0; i < m_MouseCallbacks.size(); i++)
+				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Press, m_MouseDatas[i]);
+		}
+		else if (m_PressLog.size() == 2)
+		{
+			for (usize i = 0; i < m_MouseCallbacks.size(); i++)
+				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::DoublePress, m_MouseDatas[i]);
+		}
+		else if (m_PressLog.size() == 3)
+		{
+			for (usize i = 0; i < m_MouseCallbacks.size(); i++)
+				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::TripplePress, m_MouseDatas[i]);
+		}
 	}
 	else if (operation == GLFW_RELEASE)
 	{
@@ -986,15 +1022,19 @@ u8 InputHandler::BullishLayerBackground = 25;
 
 bool InputHandler::m_MouseWasDown;
 bool InputHandler::m_ShiftDown;
+bool InputHandler::m_ControlDown;
+bool InputHandler::m_AltDown;
+
 glm::vec<2, i32> InputHandler::m_MousePosition;
 std::shared_mutex InputHandler::m_KeyTextMutex;
 std::shared_mutex InputHandler::m_MouseMutex;
 
-std::vector<void(*)(i16 key, bool down, bool shift, void* data)> InputHandler::m_KeyCallbacks;
+std::vector<void(*)(InputHandler::key_state state, void* data)> InputHandler::m_KeyCallbacks;
 std::vector<void*> InputHandler::m_KeyDatas;
-std::vector<void(*)(i16 key, bool shift, void* data)> InputHandler::m_TextCallbacks;
+std::vector<void(*)(InputHandler::key_state state, void* data)> InputHandler::m_TextCallbacks;
 std::vector<void*> InputHandler::m_TextDatas;
 std::vector<void(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)> InputHandler::m_MouseCallbacks;
 std::vector<void*> InputHandler::m_MouseDatas;
 std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)>> InputHandler::m_BullishMouseCallbacks;
 std::vector<std::vector<void*>> InputHandler::m_BullishMouseDatas;
+std::vector<TIME_POINT> InputHandler::m_PressLog;

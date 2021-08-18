@@ -14,7 +14,7 @@ namespace rhr::stack::argument
 class real : public rhr::stack::argument::argument
 {
 public:
-	real(const cap::color& color);
+	real(const cap::color& color, void(*update)(void*), void* data);
 
 	/// How to interpret the data.
 	/// \return Type of argument.

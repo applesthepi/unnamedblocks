@@ -44,6 +44,9 @@ protected:
 	/// Called when i_renderable::set_weak is called.
 	virtual void on_set_weak();
 
+	/// Called when i_renderable::mark_dirty is called.
+	virtual void on_mark_dirty();
+
 	/// Marks i_renderable as dirty. UpdateBuffers will be called next frame.
 	void mark_dirty();
 

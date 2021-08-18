@@ -1,7 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "field_data.hpp"
+#include "rhr/handlers/field_data.hpp"
+#include "rhr/rendering/objects/rectangle.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <espresso/input_handler.hpp>
@@ -16,10 +17,16 @@ public:
 	field();
 
 	///
+	void render();
+
+	///
 	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
 
 	///
-	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position);
+	void text_button(InputHandler::key_state state);
+
+	///
+	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, u8 layer);
 
 	///
 	void unregister_field(rhr::handler::field_data::location location);
@@ -34,16 +41,19 @@ private:
 	void resize(const glm::vec<2, usize>& size);
 
 	///
-	std::optional<rhr::handler::field_data::data*> find_data(glm::vec<2, i32> position);
+	std::optional<rhr::handler::field_data::data*> find_first_data(glm::vec<2, i32> position);
+
+	///
+	std::optional<rhr::handler::field_data::data*> find_data(glm::vec<2, i32> position, u8 layer);
 
 	///
 	std::optional<rhr::handler::field_data::data*> find_data(rhr::handler::field_data::location location);
 
 	///
-	std::optional<std::vector<rhr::handler::field_data::data>*> get_cell(glm::vec<2, usize> cell_location);
+	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> get_cell(glm::vec<2, usize> cell_location);
 
 	///
-	void push_data(glm::vec<2, usize> cell_location, rhr::handler::field_data::data data);
+	void push_data(rhr::handler::field_data::location location, rhr::handler::field_data::data data);
 
 	///
 	void pop_data(rhr::handler::field_data::location location);
@@ -52,7 +62,25 @@ private:
 	glm::vec<2, usize> calculate_cell_position(glm::vec<2, usize> position);
 
 	///
-	std::vector<std::vector<std::vector<rhr::handler::field_data::data>>> m_cell_table;
+	void update_cursor();
+
+	///
+	void update_highlight();
+
+	///
+	void reset_all();
+
+	///
+	void process_highlight(bool copy);
+
+	///
+	void advance_cursor(i64 idx, bool break_highlight);
+
+	///
+	void set_cursor(usize idx, bool break_highlight);
+
+	///
+	std::vector<std::vector<std::vector<std::vector<rhr::handler::field_data::data>>>> m_cell_table;
 
 	///
 	glm::vec<2, usize> m_cell_table_size;
@@ -61,7 +89,13 @@ private:
 	bool m_mouse_down;
 
 	///
+	rhr::handler::field_data::data* m_mouse_down_data;
+
+	///
 	bool m_mouse_drag;
+
+	///
+	bool m_mouse_click_highlight;
 
 	///
 	usize m_mouse_drag_start;
@@ -89,5 +123,11 @@ private:
 
 	///
 	usize m_idx;
+
+	///
+	std::shared_ptr<rhr::render::object::rectangle> m_rectangle_cursor;
+
+	///
+	std::shared_ptr<rhr::render::object::rectangle> m_rectangle_highlight;
 };
 }

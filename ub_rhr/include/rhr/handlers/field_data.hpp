@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/objects/text.hpp"
+#include "rhr/rendering/interfaces/i_field.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <espresso/input_handler.hpp>
@@ -13,10 +13,10 @@ class location
 {
 public:
 	///
-	location(glm::vec<2, usize> size, usize idx);
+	location(glm::vec<2, usize> position, usize idx, u8 layer);
 
 	///
-	location(glm::vec<2, usize> size, usize idx, bool null);
+	location(glm::vec<2, usize> position, usize idx, u8 layer, bool null);
 
 	///
 	glm::vec<2, usize> get_cell();
@@ -25,13 +25,19 @@ public:
 	usize get_idx();
 
 	///
+	u8 get_layer();
+
+	///
 	static location none;
 private:
 	///
-	glm::vec<2, usize> m_size;
+	glm::vec<2, usize> m_position;
 
 	///
 	usize m_idx;
+
+	///
+	u8 m_layer;
 
 	///
 	bool m_null;
