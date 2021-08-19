@@ -1,11 +1,11 @@
 #include "preprocessor.hpp"
 
-//#include "handlers/ProjectHandler.hpp"
+#include "rhr/handlers/project.hpp"
 
-//#include <Cappuccino/runtime/ModBlockData.hpp>
-//#include <libtcc.h>
+#include <cappuccino/mod_block/data.hpp>
 
-/*
+#include <libtcc.h>
+
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)
 {
@@ -28,13 +28,13 @@ void PullFileSingle(char** ptr, const char* file_path)
 
 void ThreadPreProcessorExecution(bool debugBuild)
 {
-	PreProcessor::SetFinished(false);// just in case
+	rhr::handler::preprocessor::set_finished(false);// just in case
 	char* file;
 	PullFileSingle(&file, "res/comp.c");
 	TCCState* state = tcc_new();
 
-	tcc_add_include_path(state, "Cappuccino/include");
-	tcc_add_include_path(state, "csfml/include");
+	tcc_add_include_path(state, "ub_cappuccino/include");
+//	tcc_add_include_path(state, "csfml/include");
 	tcc_add_include_path(state, "res");
 
 	std::vector<std::string> functionReferences;
@@ -45,11 +45,11 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	u64 functionMain = 0;
 	bool functionMainFound = false;
 
-	std::vector<std::shared_ptr<Stack>> stacks;
+	std::vector<std::shared_ptr<rhr::stack::stack>> stacks;
 
-	for (u64 i = 0; i < PreProcessor::GetPlaneCopy()->get_collections().size(); i++)
+	for (u64 i = 0; i < rhr::stack::plane::primary_plane->get_collections().size(); i++)
 	{
-		const std::vector<std::shared_ptr<Stack>>& colStacks = PreProcessor::GetPlaneCopy()->get_collections()[i]->get_stacks();
+		const std::vector<std::shared_ptr<rhr::stack::stack>>& colStacks = rhr::stack::plane::primary_plane->get_collections()[i]->get_stacks();
 
 		for (u64 a = 0; a < colStacks.size(); a++)
 			stacks.push_back(colStacks[a]);
@@ -63,12 +63,12 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		functionData[i] = new ModBlockData[stacks[i]->get_blocks().size()];
 		modBlocks[i] = new ModBlock*[stacks[i]->get_blocks().size()];
 
-		if (stacks[i]->get_blocks().size() >= 1 && std::string(stacks[i]->get_blocks()[0]->GetModBlock()->GetUnlocalizedName()) == "vin_main")
+		if (stacks[i]->get_blocks().size() >= 1 && std::string(stacks[i]->get_blocks()[0]->get_mod_block()->GetUnlocalizedName()) == "vin_main")
 		{
 			if (functionMainFound)
 			{
 				Logger::Error("program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
-				PreProcessor::SetFinished(true);
+				rhr::handler::preprocessor::set_finished(true);
 
 				return;
 			}
@@ -77,7 +77,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			functionMainFound = true;
 		}
 		
-		// TODO function references to indices (use lambda code in Cappuccino/Registration.cpp)
+		// TODO: function references to indices (use lambda code in Cappuccino/Registration.cpp)
 
 		//functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
 		//functionIds.push_back(functionReferences.size());
@@ -87,27 +87,27 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		for (u64 a = 0; a < stacks[i]->get_blocks().size(); a++)
 		{
 			if (debugBuild)
-				transCalls.push_back(stacks[i]->get_blocks()[a]->GetModBlock()->PullExecuteDebug());
+				transCalls.push_back(stacks[i]->get_blocks()[a]->get_mod_block()->PullExecuteDebug());
 			else
-				transCalls.push_back(stacks[i]->get_blocks()[a]->GetModBlock()->PullExecuteRelease());
+				transCalls.push_back(stacks[i]->get_blocks()[a]->get_mod_block()->PullExecuteRelease());
 
-			modBlocks[i][a] = (ModBlock*)stacks[i]->get_blocks()[a]->GetModBlock();
+			modBlocks[i][a] = (ModBlock*)stacks[i]->get_blocks()[a]->get_mod_block();
 
 			std::vector<void*> argData;
 			std::vector<ModBlockDataType> argTypes;
 			std::vector<ModBlockDataInterpretation> argInterpretations;
 
-			for (u64 b = 0; b < stacks[i]->get_blocks()[a]->GetArguments().size(); b++)
+			for (u64 b = 0; b < stacks[i]->get_blocks()[a]->get_arguments().size(); b++)
 			{
-				BlockArgumentType type = stacks[i]->get_blocks()[a]->GetArguments()[b]->get_type();
+				BlockArgumentType type = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_type();
 
-				if (stacks[i]->get_blocks()[a]->GetArguments()[b]->get_mode() == BlockArgumentVariableMode::VAR)
+				if (stacks[i]->get_blocks()[a]->get_arguments()[b]->get_mode() == BlockArgumentVariableMode::VAR)
 				{
 					std::string* dt = new std::string();
 
 					try
 					{
-						*dt = stacks[i]->get_blocks()[a]->GetArguments()[b]->get_data();
+						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data();
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -135,7 +135,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 					
 					try
 					{
-						*dt = stacks[i]->get_blocks()[a]->GetArguments()[b]->get_data();
+						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data();
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -153,7 +153,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 					try
 					{
-						*dt = stacks[i]->get_blocks()[a]->GetArguments()[b]->get_data() == "1";
+						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data() == "1";
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -171,7 +171,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 					
 					try
 					{
-						*dt = std::stod(stacks[i]->get_blocks()[a]->GetArguments()[b]->get_data());
+						*dt = std::stod(stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data());
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -195,7 +195,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	if (!functionMainFound)
 	{
 		Logger::Error("program has no entry points; can not run program without exactly 1 entry point (vin_main)");
-		PreProcessor::SetFinished(true);
+		rhr::handler::preprocessor::set_finished(true);
 
 		return;
 	}
@@ -223,9 +223,9 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	u64 functionTotalCount = stacks.size();
 
-	u8* super = PreProcessor::MakeSuper();
-	i64* superData = PreProcessor::GetMadeData();
-	std::mutex* superMutex = PreProcessor::GetMadeMutex();
+	u8* super = rhr::handler::preprocessor::make_super();
+	i64* superData = rhr::handler::preprocessor::get_made_data();
+	std::mutex* superMutex = rhr::handler::preprocessor::get_made_mutex();
 
 #if LINUX
 	tcc_define_symbol(state, "LINUX", "1");
@@ -288,109 +288,103 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 	free(file);
 
-	PreProcessor::SetFinished(true);
+	rhr::handler::preprocessor::set_finished(true);
 }
 
-void PreProcessor::Initialize()
+void rhr::handler::preprocessor::initialize()
 {
-	m_planeCopy = nullptr;
+//	m_planeCopy = nullptr;
 	m_super = nullptr;
 	m_finished = true;
 }
 
-void PreProcessor::Cleanup()
+void rhr::handler::preprocessor::clean_up()
 {
 	m_finished = false;
-	if (m_planeCopy != nullptr)
-	{
-		delete m_planeCopy;
-		m_planeCopy = nullptr;
-	}
+//	if (m_planeCopy != nullptr)
+//	{
+//		delete m_planeCopy;
+//		m_planeCopy = nullptr;
+//	}
 }
 
-void PreProcessor::Start(Plane* planeCopy, bool debugBuild)
+void rhr::handler::preprocessor::build(bool debugBuild)
 {
-	m_planeCopy = planeCopy;
+//	m_planeCopy = planeCopy;
 	m_finished = false;
 	m_thread = std::thread(ThreadPreProcessorExecution, debugBuild);
 	m_thread.detach();
 }
 
-bool PreProcessor::IsFinished()
+bool rhr::handler::preprocessor::is_finished()
 {
 	return m_finished;
 }
 
-void PreProcessor::SetFinished(bool finished)
+void rhr::handler::preprocessor::set_finished(bool finished)
 {
 	m_finished = finished;
 }
 
-Plane* PreProcessor::GetPlaneCopy()
-{
-	return m_planeCopy;
-}
+//Plane* rhr::handler::preprocessor::GetPlaneCopy()
+//{
+//	return m_planeCopy;
+//}
 
-void PreProcessor::SetSuper(u8 super, i16 superData)
+void rhr::handler::preprocessor::set_super(u8 super, i16 super_data)
 {
-	std::unique_lock<std::mutex> lock(*m_superMutex);
+	std::unique_lock<std::mutex> lock(*m_super_mutex);
 
 	*m_super = super;
-	*m_superData = superData;
+	*m_super_data = super_data;
 }
 
-u8 PreProcessor::GetSuper()
+u8 rhr::handler::preprocessor::get_super()
 {
-	std::unique_lock<std::mutex> lock(*m_superMutex);
+	std::unique_lock<std::mutex> lock(*m_super_mutex);
 
 	return *m_super;
 }
 
-i64 PreProcessor::GetSuperData()
+i64 rhr::handler::preprocessor::get_super_data()
 {
-	std::unique_lock<std::mutex> lock(*m_superMutex);
+	std::unique_lock<std::mutex> lock(*m_super_mutex);
 
-	return *m_superData;
+	return *m_super_data;
 }
 
-u8* PreProcessor::MakeSuper()
+u8* rhr::handler::preprocessor::make_super()
 {
 	if (m_super != nullptr)
 	{
 		delete m_super;
-		delete m_superMutex;
+		delete m_super_mutex;
 	}
 
 	m_super = new u8;
 	*m_super = 0;
 
-	m_superData = new i64;
-	*m_superData = 0;
+	m_super_data = new i64;
+	*m_super_data = 0;
 
-	m_superMutex = new std::mutex();
+	m_super_mutex = new std::mutex();
 
 	return m_super;
 }
 
-i64* PreProcessor::GetMadeData()
+i64* rhr::handler::preprocessor::get_made_data()
 {
-	return m_superData;
+	return m_super_data;
 }
 
-std::mutex* PreProcessor::GetMadeMutex()
+std::mutex* rhr::handler::preprocessor::get_made_mutex()
 {
-	return m_superMutex;
+	return m_super_mutex;
 }
 
-std::thread PreProcessor::m_thread;
-
-std::atomic<bool> PreProcessor::m_finished;
-
-Plane* PreProcessor::m_planeCopy;
-
-u8* PreProcessor::m_super;
-
-i64* PreProcessor::m_superData;
-
-std::mutex* PreProcessor::m_superMutex;
-*/
+std::thread rhr::handler::preprocessor::m_thread;
+std::atomic<bool> rhr::handler::preprocessor::m_finished;
+//Plane* rhr::handler::preprocessor::m_planeCopy;
+u8* rhr::handler::preprocessor::m_super;
+i64* rhr::handler::preprocessor::m_super_data;
+std::mutex* rhr::handler::preprocessor::m_super_mutex;

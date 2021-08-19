@@ -32,6 +32,7 @@ target_link_libraries(UB_ESPRESSO PUBLIC
 	imgui::imgui
 	Vulkan::Vulkan
 	freetype
+	${TCC_LIBRARY}
 )
 
 target_include_directories(UB_ESPRESSO PUBLIC
@@ -42,4 +43,5 @@ target_include_directories(UB_ESPRESSO PUBLIC
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
+	${TCC_INCLUDE}
 )

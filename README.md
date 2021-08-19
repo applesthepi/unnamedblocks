@@ -120,3 +120,8 @@ Unnamed Blocks currently uses doxygen documentation generation. Heres a big exam
 /// \return Condition to allow i_positionable<T>::set_position() to run.
 virtual bool preposition_update(const glm::vec<S, T>& position, const glm::vec<S, T>& offset);
 ```
+# Version Standard
+This is the version standard Unnamed Blocks will be following.  
+
+**Pre-Alpha** - 0.0.1.X  
+**Post-Alpha** - Major . Minor . Beta

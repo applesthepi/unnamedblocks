@@ -6,7 +6,7 @@
 #include "rhr/handlers/category.hpp"
 #include "rhr/handlers/field.hpp"
 #include "rhr/registries/char_texture.hpp"
-
+#include "rhr/handlers/preprocessor.hpp"
 //#include "imgui/imgui.h"
 
 #if LINUX
@@ -30,6 +30,11 @@ static void async_setup()
 	rhr::render::tools::initialize();
 	rhr::render::renderer::initialize();
 	rhr::registry::char_texture::process_fonts();
+}
+
+static void button_callback_build_debug(void* data)
+{
+    rhr::handler::preprocessor::build(true);
 }
 
 int main()
@@ -133,11 +138,17 @@ int main()
 	frameCategories->set_size_max();
 	frameToolbar->set_size_max();
 
-	frameOptions->add_content(rectOptions, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectOptions, rectOptions, rhr::render::cardinal::local::RIGHT);
-	rectOptions->set_size_max();
+//	frameOptions->add_content(rectOptions, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectOptions, rectOptions, rhr::render::cardinal::local::RIGHT);
+//	rectOptions->set_size_max();
 	
-	//frameCategories->add_content(rectCategories, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectCategories, rectCategories, rhr::render::cardinal::local::RIGHT);
-	//rectCategories->set_size_max();
+//	frameCategories->add_content(rectCategories, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectCategories, rectCategories, rhr::render::cardinal::local::RIGHT);
+//	rectCategories->set_size_max();
+
+    std::shared_ptr<rhr::render::object::button> button_debug = std::make_shared<rhr::render::object::button>(cap::color::black, cap::color().from_u8({255, 110, 0, 255}));
+    button_debug->set_weak(button_debug);
+    button_debug->set_size({100, 20});
+    button_debug->set_callback(button_callback_build_debug, nullptr);
+    frameOptions->add_content(button_debug, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button_debug, button_debug, rhr::render::cardinal::local::LEFT);
 
 	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::render::cardinal::local::RIGHT);
 	rhr::stack::plane::primary_plane->set_size_max();
@@ -153,6 +164,7 @@ int main()
 	//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
 
 	InputHandler::Initialization();
+	rhr::handler::preprocessor::initialize();
 	rhr::registry::block::create_block_registry();
 	//rhr::handler::field::initialize();
 

@@ -35,12 +35,19 @@ find_package(zstd CONFIG REQUIRED)
 find_package(freetype CONFIG REQUIRED)
 find_package(glad CONFIG REQUIRED)
 
-# find_library(TCC_LIBRARY NAMES libtcc1-64 PATHS "${CMAKE_SOURCE_DIR}/tcc")
-# find_path(TCC_INCLUDE NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}/tcc")
+#find_library(TCC_LIBRARY NAMES libtcc1-64 PATHS "${CMAKE_SOURCE_DIR}/tcc")
+#find_path(TCC_INCLUDE NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}/tcc")
+#set(TCC_LIBRARY "${CMAKE_SOURCE_DIR}/tcc/lib/libtcc")
+#set(TCC_INCLUDE "${CMAKE_SOURCE_DIR}/tcc/libtcc")
+
+find_library(libtcc NAMES tcc libtcc PATHS ${CMAKE_SOURCE_DIR})
+find_path(tcc_include NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}")
+
+message("${libtcc}")
+message("${tcc_include}")
 
 find_path(STB_INCLUDE_DIRS "stb.h")
 find_path(CPPTOML_INCLUDE_DIRS "cpptoml.h")
-
 
 # Visual Studio
 # set_property(TARGET UB PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Debug")

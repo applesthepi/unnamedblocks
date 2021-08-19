@@ -113,6 +113,7 @@ target_link_libraries(UB_RHR PUBLIC
 	imgui::imgui
 	Vulkan::Vulkan
 	freetype
+	${TCC_LIBRARY}
 )
 
 target_include_directories(UB_RHR PUBLIC
@@ -124,4 +125,5 @@ target_include_directories(UB_RHR PUBLIC
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
+	${TCC_INCLUDE}
 )

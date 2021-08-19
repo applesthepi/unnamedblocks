@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo this may take a while
+sleep 1s
 git submodule update --init;
 ./vcpkg/bootstrap-vcpkg.sh;
 ./vcpkg/vcpkg upgrade;
@@ -15,4 +17,5 @@ git submodule update --init;
 ./vcpkg/vcpkg install stb:x64-linux;
 ./vcpkg/vcpkg install vulkan:x64-linux;
 ./vcpkg/vcpkg install zstd:x64-linux;
+./vcpkg/vcpkg install llvm[clang]:x64-linux;
 echo done;

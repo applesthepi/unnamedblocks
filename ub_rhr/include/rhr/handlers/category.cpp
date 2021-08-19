@@ -321,8 +321,8 @@ void CategoryHandler::RegisterHeader()
 
 			Plane* planeCopy = new Plane(false, *Plane::PrimaryPlane);
 
-			PreProcessor::Cleanup();
-			PreProcessor::Start(planeCopy, false);
+			rhr::handler::preprocessor::Cleanup();
+			rhr::handler::preprocessor::Start(planeCopy, false);
 		};
 
 		ButtonImage* button = new ButtonImage(function, "res/deb_run_release.png", sf::Vector2f(16, 16));
@@ -342,8 +342,8 @@ void CategoryHandler::RegisterHeader()
 
 			Plane* planeCopy = new Plane(false, *Plane::PrimaryPlane);
 
-			PreProcessor::Cleanup();
-			PreProcessor::Start(planeCopy, true);
+			rhr::handler::preprocessor::Cleanup();
+			rhr::handler::preprocessor::Start(planeCopy, true);
 		};
 
 		ButtonImage* button = new ButtonImage(function, "res/deb_run_debug.png", sf::Vector2f(16, 16));
@@ -357,7 +357,7 @@ void CategoryHandler::RegisterHeader()
 		*function = []()
 		{
 			Logger::Debug("stopping all");
-			PreProcessor::SetSuper(1, 0);
+			rhr::handler::preprocessor::SetSuper(1, 0);
 		};
 
 		ButtonImage* button = new ButtonImage(function, "res/deb_stop.png", sf::Vector2f(16, 16));
@@ -374,7 +374,7 @@ void CategoryHandler::RegisterHeader()
 				m_fullBreak = true;
 
 				Logger::Debug("breaking all");
-				PreProcessor::SetSuper(2, 0);
+				rhr::handler::preprocessor::SetSuper(2, 0);
 
 				m_runtimeButtons[1]->SetImage("res/deb_resume.png");
 			}
@@ -383,7 +383,7 @@ void CategoryHandler::RegisterHeader()
 				m_fullBreak = false;
 
 				Logger::Debug("resuming all");
-				PreProcessor::SetSuper(3, 0);
+				rhr::handler::preprocessor::SetSuper(3, 0);
 
 				m_runtimeButtons[1]->SetImage("res/deb_pause.png");
 			}
@@ -458,7 +458,7 @@ void CategoryHandler::frameUpdate(f64 deltaTime)
 	if (Plane::ToolbarPlane->GetCollections().size() > m_selectedCategory && Plane::ToolbarPlane->GetCollections()[m_selectedCategory]->GetStacks().size() != m_toolbarStackCount)
 		UpdateBlocks(m_selectedCategory);
 
-	if (PreProcessor::IsFinished() && m_running)
+	if (rhr::handler::preprocessor::IsFinished() && m_running)
 	{
 		// finish
 
@@ -470,7 +470,7 @@ void CategoryHandler::frameUpdate(f64 deltaTime)
 		for (u16 i = 0; i < m_editorButtons.size(); i++)
 			UIRegistry::GetRegistry().AddComponent(m_editorButtons[i]);
 	}
-	else if (!PreProcessor::IsFinished() && !m_running)
+	else if (!rhr::handler::preprocessor::IsFinished() && !m_running)
 	{
 		// start
 
