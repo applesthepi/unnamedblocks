@@ -5,21 +5,21 @@
 CAP_C_EXPORT void Logger::Info(const std::string& message)
 {
     m_logMutex.lock();
-    std::cout << " [INFO] " << message << "\n";
+    std::cout << " [INFO] " << message << "\n" << std::flush;
     m_logMutex.unlock();
 }
 
 CAP_C_EXPORT void Logger::Warn(const std::string& message)
 {
     m_logMutex.lock();
-    std::cout << " [WARN] " << message << "\n";
+    std::cout << " [WARN] " << message << "\n" << std::flush;
     m_logMutex.unlock();
 }
 
 CAP_C_EXPORT void Logger::Error(const std::string& message)
 {
     m_logMutex.lock();
-    std::cout << " [ERROR] " << message << "\n";
+    std::cout << " [ERROR] " << message << "\n" << std::flush;
     m_logMutex.unlock();
 }
 
@@ -33,7 +33,7 @@ CAP_C_EXPORT void Logger::Fatal(const std::string& message)
 CAP_C_EXPORT void Logger::Debug(const std::string& message)
 {
     m_logMutex.lock();
-    std::cout << " [DEBUG] " << message << "\n";
+    std::cout << " [DEBUG] " << message << "\n" << std::flush;
     m_logMutex.unlock();
 }
 

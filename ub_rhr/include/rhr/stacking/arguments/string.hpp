@@ -30,7 +30,7 @@ public:
 	bool has_data() override;
 
 	///
-	bool drag_bounds(glm::vec<2, i32> position);
+	bool drag_bounds(glm::vec<2, i32> position) override;
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void on_render() override;

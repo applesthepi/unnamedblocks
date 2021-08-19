@@ -4,7 +4,7 @@
 
 rhr::stack::argument::text::text(const cap::color& color, void(*update)(void*), void* data)
 	: rhr::stack::argument::argument(color, update, data)
-	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::BOLD_NORMAL, update, data))
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::BOLD_NORMAL, update, data, true))
 {
 	m_text->set_weak(m_text);
 	m_text->set_weak_field(m_text);

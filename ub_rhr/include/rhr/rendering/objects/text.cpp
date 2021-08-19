@@ -8,7 +8,7 @@
 
 #define EDGE_CLICK_OVERHANG 5
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data)
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
 	, i_enableable(true)
 	, m_depth(10)
@@ -17,6 +17,7 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	, m_enable_background(true)
 	, m_update(update)
 	, m_update_data(data)
+	, m_read_only(read_only)
 {
 	m_render_object_background->set_weak(m_render_object_background);
 	m_render_object_text->set_weak(m_render_object_text);
@@ -26,7 +27,8 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 
 void rhr::render::object::text::set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field)
 {
-	m_location = rhr::stack::plane::primary_plane->get_field().register_field(weak_field, m_position + m_super_position, InputHandler::BullishLayerArguments);
+    if (!m_read_only)
+	    m_location = rhr::stack::plane::primary_plane->get_field().register_field(weak_field, m_position + m_super_position, InputHandler::BullishLayerArguments);
 }
 
 void rhr::render::object::text::set_text(const std::string& text)
@@ -306,7 +308,8 @@ void rhr::render::object::text::on_update_buffers()
 	else
 		m_size = { m_padding * 2, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
 
-	rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), m_size);
+	if (!m_read_only)
+	    rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), m_size);
 }
 
 void rhr::render::object::text::on_reload_swap_chain()
@@ -321,7 +324,8 @@ void rhr::render::object::text::post_position_update()
 	m_render_object_background->set_super_position({static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) });
 	m_render_object_text->set_super_position({ static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) - 0.1 });
 
-	m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), m_position + m_super_position);
+	if (!m_read_only)
+	    m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), m_position + m_super_position);
 
 	mark_dirty();
 }

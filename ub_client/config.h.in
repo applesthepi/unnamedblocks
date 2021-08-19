@@ -4,6 +4,7 @@
 #define False false
 
 #define LINUX @LINUX@
+#define LINUX_TOOLCHAIN !_MSC_VER /*!(_MSC_VER && !__INTEL_COMPILER)*/
 #define E_BETA @BETA@
 #define E_AVX @AVX@
 #define E_MODS @MODS@

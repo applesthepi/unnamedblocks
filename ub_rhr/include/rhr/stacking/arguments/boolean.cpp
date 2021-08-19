@@ -7,7 +7,7 @@
 
 rhr::stack::argument::boolean::boolean(const cap::color& color, void(*update)(void*), void* data)
 	: argument(color, update, data)
-	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data))
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data, false))
 	, m_decor_left(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right(std::make_shared<rhr::render::object::object>(true))
 {
@@ -93,4 +93,14 @@ void rhr::stack::argument::boolean::post_position_update()
 void rhr::stack::argument::boolean::on_set_data()
 {
 	m_text->set_text(m_data);
+}
+
+bool rhr::stack::argument::boolean::drag_bounds(glm::vec<2, i32> position)
+{
+    glm::vec<2, i32> arg_position = m_position + m_super_position;
+
+    return (
+            position.x > arg_position.x && position.x < arg_position.x + get_width() &&
+            position.y > arg_position.y && position.y < arg_position.y + rhr::stack::block::height_content
+            );
 }

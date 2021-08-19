@@ -27,6 +27,9 @@ public:
 	/// Whether or not the argument contains data for storing.
 	/// \return Has data.
 	bool has_data() override;
+
+	///
+	bool drag_bounds(glm::vec<2, i32> position) override;
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void on_render() override;

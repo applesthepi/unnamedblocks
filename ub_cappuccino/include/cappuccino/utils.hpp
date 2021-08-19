@@ -47,12 +47,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#if LINUX
+#if LINUX_TOOLCHAIN
 #define TIME_POINT std::chrono::system_clock::time_point
 #else
 #define TIME_POINT std::chrono::steady_clock::time_point
 #endif
-// TODO: change typedefs to usings
+// TODO: change typedefs to usigns
 typedef char i8;
 typedef short i16;
 typedef int i32;

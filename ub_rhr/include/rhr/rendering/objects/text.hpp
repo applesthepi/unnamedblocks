@@ -19,7 +19,7 @@ class text : public rhr::render::interfaces::i_renderable, public rhr::render::i
 {
 public:
 	///
-	text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data);
+	text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only);
 
 	///
 	void set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field);
@@ -109,5 +109,8 @@ private:
 
 	///
 	std::optional<rhr::handler::field_data::location> m_location;
+
+	///
+	bool m_read_only;
 };
 }
