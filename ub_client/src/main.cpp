@@ -181,27 +181,35 @@ int main()
 	std::shared_ptr<rhr::stack::stack> testStack1 = std::make_shared<rhr::stack::stack>();
 	testStack1->set_weak(testStack1);
 	testStack1->set_position({ 0, 0 });
-	
-	std::shared_ptr<rhr::stack::stack> testStack2 = std::make_shared<rhr::stack::stack>();
-	testStack2->set_weak(testStack2);
-	testStack2->set_position({ 300, 300 });
 
-	for (u8 i = 0; i < 5; i++)
-	{
-		std::shared_ptr<rhr::stack::block> testBlock = std::make_shared<rhr::stack::block>("vin_main");
-		testBlock->set_weak(testBlock);
-		testStack1->add_block(testBlock);
-	}
+	std::shared_ptr<rhr::stack::block> testBlock1 = std::make_shared<rhr::stack::block>("vin_main");
+	testBlock1->set_weak(testBlock1);
+	testStack1->add_block(testBlock1);
 
-	for (u8 i = 0; i < 5; i++)
-	{
-		std::shared_ptr<rhr::stack::block> testBlock = std::make_shared<rhr::stack::block>("vin_main");
-		testBlock->set_weak(testBlock);
-		testStack2->add_block(testBlock);
-	}
+	std::shared_ptr<rhr::stack::block> testBlock2 = std::make_shared<rhr::stack::block>("vin_string_log");
+	testBlock2->set_weak(testBlock2);
+	testStack1->add_block(testBlock2);
+
+//	std::shared_ptr<rhr::stack::stack> testStack2 = std::make_shared<rhr::stack::stack>();
+//	testStack2->set_weak(testStack2);
+//	testStack2->set_position({ 300, 300 });
+//
+//	for (u8 i = 0; i < 5; i++)
+//	{
+//		std::shared_ptr<rhr::stack::block> testBlock = std::make_shared<rhr::stack::block>("vin_main");
+//		testBlock->set_weak(testBlock);
+//		testStack1->add_block(testBlock);
+//	}
+//
+//	for (u8 i = 0; i < 5; i++)
+//	{
+//		std::shared_ptr<rhr::stack::block> testBlock = std::make_shared<rhr::stack::block>("vin_main");
+//		testBlock->set_weak(testBlock);
+//		testStack2->add_block(testBlock);
+//	}
 
 	testCollection->add_stack(testStack1);
-	testCollection->add_stack(testStack2);
+//	testCollection->add_stack(testStack2);
 	rhr::stack::plane::primary_plane->add_collection(testCollection, true);
 
 	usize current_frame = 0;

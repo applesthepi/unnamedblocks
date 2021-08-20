@@ -264,15 +264,15 @@ void ThreadPreProcessorExecution(bool debugBuild)
 // 			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
 // 	}
 
-	tcc_add_library_path(state, "Cappuccino/lib");
-	[[maybe_unused]] int re = tcc_add_library(state, "Cappuccino");
-	tcc_add_library_path(state, "csfml/lib/gcc");
+	tcc_add_library_path(state, "ub_cappuccino/lib");
+	[[maybe_unused]] int re = tcc_add_library(state, "cappuccino");
+//	tcc_add_library_path(state, "csfml/lib/gcc");
 
-	tcc_add_library(state, "csfml-audio");
-	tcc_add_library(state, "csfml-graphics");
-	tcc_add_library(state, "csfml-network");
-	tcc_add_library(state, "csfml-system");
-	tcc_add_library(state, "csfml-window");
+//	tcc_add_library(state, "csfml-audio");
+//	tcc_add_library(state, "csfml-graphics");
+//	tcc_add_library(state, "csfml-network");
+//	tcc_add_library(state, "csfml-system");
+//	tcc_add_library(state, "csfml-window");
 
 	tcc_run(state, 0, 0);
 	

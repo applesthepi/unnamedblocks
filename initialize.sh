@@ -17,5 +17,4 @@ git submodule update --init;
 ./vcpkg/vcpkg install stb:x64-linux;
 ./vcpkg/vcpkg install vulkan:x64-linux;
 ./vcpkg/vcpkg install zstd:x64-linux;
-./vcpkg/vcpkg install llvm[clang]:x64-linux;
 echo done;

@@ -1,5 +1,6 @@
 #pragma once
 #include "config.h"
+#include "cap_config.h"
 
 #include "cappuccino/utils.hpp"
 #include "cappuccino/mod_block/block.hpp"
@@ -8,7 +9,7 @@
 #include "cappuccino/mod_block/data.hpp"
 
 #if !LINUX
-#ifdef CAPPUCCINO
+#ifdef __CAP
 #define CAP_DLL __declspec(dllexport)
 #else
 #define CAP_DLL __declspec(dllimport)

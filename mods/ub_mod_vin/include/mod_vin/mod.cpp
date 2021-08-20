@@ -111,6 +111,9 @@
 #include "blocks/strings/BlockStringFind.hpp"
 #include "blocks/strings/BlockStringCatFrom.hpp"
 */
+
+#include "blocks/strings/log.hpp"
+
 UB_EXPORT void Initialization(ModData* data)
 {
 	// ============================================
@@ -139,6 +142,7 @@ UB_EXPORT void Initialization(ModData* data)
 	// system
 
 	data->RegisterBlock(new BlockSystemMain());
+	data->RegisterBlock(new BlockStringLog());
 	/*data->RegisterBlock(new BlockSystemSleep());
 	data->RegisterBlock(new BlockSystemCreateWindow());
 	data->RegisterBlock(new BlockSystemPullEvents());

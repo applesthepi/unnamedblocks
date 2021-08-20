@@ -18,5 +18,4 @@ vcpkg.exe install rapidjson:x64-windows
 vcpkg.exe install stb:x64-windows
 vcpkg.exe install vulkan:x64-windows
 vcpkg.exe install zstd:x64-windows
-vcpkg.exe install llvm[clang]:x64-windows
 echo done

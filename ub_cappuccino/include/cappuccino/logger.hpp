@@ -1,5 +1,6 @@
 #pragma once
 #include "config.h"
+#include "cap_config.h"
 
 #include "cappuccino/export.hpp"
 

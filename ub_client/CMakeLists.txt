@@ -50,7 +50,7 @@ target_include_directories(UB_CLIENT PUBLIC
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
-	${TCC_INCLUDE}
+	${CMAKE_INCLUDES}
 )
 
 # Copy res folder
@@ -84,6 +84,26 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy
     $<TARGET_FILE:UB_CAPPUCCINO>
     $<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
+add_custom_command(
+	TARGET UB_CLIENT POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy
+	"${CMAKE_SOURCE_DIR}/cmake/bin/libtcc.dll"
+	$<TARGET_FILE_DIR:UB_CLIENT>/)
+add_custom_command(
+		TARGET UB_CLIENT POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_SOURCE_DIR}/tcc/include"
+		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include)
+add_custom_command(
+		TARGET UB_CLIENT POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		"${CMAKE_SOURCE_DIR}/build/config.h"
+		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include/)
+add_custom_command(
+		TARGET UB_CLIENT POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy
+		"${CMAKE_SOURCE_DIR}/build/cap_config.h"
+		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include/)
 	
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.in"

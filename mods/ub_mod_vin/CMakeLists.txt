@@ -221,8 +221,8 @@ set(UB_MOD_VIN_SRC
 #	
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/force.hpp"
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/force.cpp"
-#	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/log.hpp"
-#	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/log.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/log.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/log.cpp"
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/sub_string.hpp"
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/sub_string.cpp"
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/char_at.hpp"

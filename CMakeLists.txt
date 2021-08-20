@@ -40,11 +40,11 @@ find_package(glad CONFIG REQUIRED)
 #set(TCC_LIBRARY "${CMAKE_SOURCE_DIR}/tcc/lib/libtcc")
 #set(TCC_INCLUDE "${CMAKE_SOURCE_DIR}/tcc/libtcc")
 
-find_library(libtcc NAMES tcc libtcc PATHS ${CMAKE_SOURCE_DIR})
-find_path(tcc_include NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}")
+find_library(TCC_LIBRARY NAMES tcc libtcc PATHS "${CMAKE_SOURCE_DIR}/cmake/lib")
+set(CMAKE_INCLUDES "${CMAKE_SOURCE_DIR}/cmake/include")
 
-message("${libtcc}")
-message("${tcc_include}")
+message("${TCC_LIBRARY}")
+message("${CMAKE_INCLUDES}")
 
 find_path(STB_INCLUDE_DIRS "stb.h")
 find_path(CPPTOML_INCLUDE_DIRS "cpptoml.h")

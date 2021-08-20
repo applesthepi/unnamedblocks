@@ -36,6 +36,8 @@ set(UB_CAPPUCCINO_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/color.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/color.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/export.hpp"
+
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/cutils.h"
 )
 
 set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
@@ -64,7 +66,7 @@ target_include_directories(UB_CAPPUCCINO PUBLIC
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
 	${VULKAN_INCLUDE_DIRS}
-	${TCC_INCLUDE}
+	${CMAKE_INCLUDES}
 )
 
 # TODO: what is this for?
@@ -75,3 +77,9 @@ set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
 #	COMMAND ${CMAKE_COMMAND} -E touch
 #	"${CMAKE_SOURCE_DIR}/UB_Client/src/main.cpp"
 #)
+
+
+configure_file (
+		"${PROJECT_SOURCE_DIR}/config.h.in"
+		"${PROJECT_BINARY_DIR}/cap_config.h"
+)
