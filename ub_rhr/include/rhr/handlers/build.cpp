@@ -1,43 +1,11 @@
-#include "preprocessor.hpp"
+#include "build.hpp"
 
 #include "rhr/handlers/project.hpp"
 
 #include <cappuccino/mod_block/data.hpp>
 
-//#include <libtcc.h>
-
-/// Reads file at file_path and stores its contents in ptr
-void PullFileSingle(char** ptr, const char* file_path)
+void thread_build(cap::build_system::method build_method, cap::build_system::type build_type)
 {
-	std::FILE *fp = std::fopen(file_path, "rb");
-	if (fp)
-	{
-		std::fseek(fp, 0, SEEK_END);
-		usize size = static_cast<usize>(std::ftell(fp));
-		*ptr = static_cast<char*>( malloc(size+1) );//
-		(*ptr)[size] = 0;
-		std::rewind(fp);
-		std::fread(*ptr, 1, size, fp);
-		std::fclose(fp);
-	}
-	else
-	{
-		throw(std::strerror(errno));
-	}
-}
-
-void ThreadPreProcessorExecution(bool debugBuild)
-{
-	/*
-	rhr::handler::preprocessor::set_finished(false);// just in case
-	char* file;
-	PullFileSingle(&file, "res/comp.c");
-	TCCState* state = tcc_new();
-
-	tcc_add_include_path(state, "ub_cappuccino/include");
-//	tcc_add_include_path(state, "csfml/include");
-	tcc_add_include_path(state, "res");
-
 	std::vector<std::string> functionReferences;
 	std::vector<u32> functionIds;
 	std::vector<u64> functionCallCount;
@@ -69,8 +37,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 			if (functionMainFound)
 			{
 				Logger::Error("program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
-				rhr::handler::preprocessor::set_finished(true);
-
+				rhr::handler::build::confirm_terminated();
 				return;
 			}
 
@@ -87,7 +54,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 
 		for (u64 a = 0; a < stacks[i]->get_blocks().size(); a++)
 		{
-			if (debugBuild)
+			if (build_type == cap::build_system::type::DEBUG)
 				transCalls.push_back(stacks[i]->get_blocks()[a]->get_mod_block()->PullExecuteDebug());
 			else
 				transCalls.push_back(stacks[i]->get_blocks()[a]->get_mod_block()->PullExecuteRelease());
@@ -196,8 +163,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	if (!functionMainFound)
 	{
 		Logger::Error("program has no entry points; can not run program without exactly 1 entry point (vin_main)");
-		rhr::handler::preprocessor::set_finished(true);
-
+		rhr::handler::build::confirm_terminated();
 		return;
 	}
 
@@ -220,63 +186,18 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	for (u64 i = 0; i < functionCallCount.size(); i++)
 		functionCallCountC[i] = functionCallCount[i];
 
-	bool buildType = debugBuild;
+	bool buildType = build_type == cap::build_system::type::DEBUG;
 
 	u64 functionTotalCount = stacks.size();
 
-	u8* super = rhr::handler::preprocessor::make_super();
-	i64* superData = rhr::handler::preprocessor::get_made_data();
-	std::mutex* superMutex = rhr::handler::preprocessor::get_made_mutex();
+	cap::build_system::set_main(functionMain);
+	cap::build_system::set_function_call_count(functionCallCount.data());
+	cap::build_system::set_function_total_count(functionTotalCount);
+	cap::build_system::set_calls(calls);
+	cap::build_system::set_function_data(functionData);
+	cap::build_system::set_mod_blocks(modBlocks);
+	cap::build_system::execute(build_method, build_type);
 
-#if LINUX
-	tcc_define_symbol(state, "LINUX", "1");
-#endif
-
-	// compile
-
-	tcc_set_output_type(state, TCC_OUTPUT_MEMORY);
-	[[maybe_unused]] int r2 = tcc_compile_string(state, file);
-
-	// NOTE: Referencing the pointers is needed. The dereferenced value is what is sent over. int* -> int, int** -> int*, bool* -> bool etc
-	[[maybe_unused]] int r14 = tcc_add_symbol(state, "functionMain", &functionMain);
-	[[maybe_unused]] int r7 = tcc_add_symbol(state, "calls", &calls);
-	[[maybe_unused]] int r8 = tcc_add_symbol(state, "functionCallCount", &functionCallCountC);
-	[[maybe_unused]] int r9 = tcc_add_symbol(state, "debugBuild", &buildType);
-	[[maybe_unused]] int r900 = tcc_add_symbol(state, "functionData", &functionData);
-	[[maybe_unused]] int r9002 = tcc_add_symbol(state, "modBlocks", &modBlocks);
-	[[maybe_unused]] int r9001 = tcc_add_symbol(state, "functionTotalCount", &functionTotalCount);
-	[[maybe_unused]] int r9003 = tcc_add_symbol(state, "superInstruction", &super);
-	[[maybe_unused]] int r9005 = tcc_add_symbol(state, "superData", &superData);
-	[[maybe_unused]] int r9004 = tcc_add_symbol(state, "superMutex", (void**)&superMutex);
-
-	// libs
-	
-// 	tcc_add_library_path(state, "mods/");
-// 
-// 	for (u32 i = 0; i < ProjectHandler::Mods.size(); i++)
-// 	{
-// 		if (ProjectHandler::Mods[i] == "")
-// 		{
-// 			Logger::Warn("failed to register unknown mod into static build");
-// 			continue;
-// 		}
-// 
-// 		if (tcc_add_library(state, (ProjectHandler::Mods[i]).c_str()) == -1)
-// 			Logger::Error("failed to link \"" + ProjectHandler::Mods[i] + "\"");
-// 	}
-
-	tcc_add_library_path(state, "ub_cappuccino/lib");
-	[[maybe_unused]] int re = tcc_add_library(state, "UB_CAPPUCCINO_TCC");
-//	tcc_add_library_path(state, "csfml/lib/gcc");
-
-//	tcc_add_library(state, "csfml-audio");
-//	tcc_add_library(state, "csfml-graphics");
-//	tcc_add_library(state, "csfml-network");
-//	tcc_add_library(state, "csfml-system");
-//	tcc_add_library(state, "csfml-window");
-
-	tcc_run(state, 0, 0);
-	
 	for (u64 i = 0; i < functionTotalCount; i++)
 		free(calls[i]);
 	free(calls);
@@ -287,106 +208,44 @@ void ThreadPreProcessorExecution(bool debugBuild)
 		delete[] functionData[i];
 	delete[] functionData;
 
-	free(file);
-
-	rhr::handler::preprocessor::set_finished(true);
-	 */
+	rhr::handler::build::confirm_terminated();
 }
 
-void rhr::handler::preprocessor::initialize()
+void rhr::handler::build::initialize()
 {
-//	m_planeCopy = nullptr;
-	m_super = nullptr;
-	m_finished = true;
+	m_terminate = false;
+	m_status = cap::build_system::status::READY;
 }
 
-void rhr::handler::preprocessor::clean_up()
+void rhr::handler::build::execute(cap::build_system::method build_method, cap::build_system::type build_type)
 {
-	m_finished = false;
-//	if (m_planeCopy != nullptr)
-//	{
-//		delete m_planeCopy;
-//		m_planeCopy = nullptr;
-//	}
-}
-
-void rhr::handler::preprocessor::build(bool debugBuild)
-{
-//	m_planeCopy = planeCopy;
-	m_finished = false;
-	m_thread = std::thread(ThreadPreProcessorExecution, debugBuild);
-	m_thread.detach();
-}
-
-bool rhr::handler::preprocessor::is_finished()
-{
-	return m_finished;
-}
-
-void rhr::handler::preprocessor::set_finished(bool finished)
-{
-	m_finished = finished;
-}
-
-//Plane* rhr::handler::preprocessor::GetPlaneCopy()
-//{
-//	return m_planeCopy;
-//}
-
-void rhr::handler::preprocessor::set_super(u8 super, i16 super_data)
-{
-	std::unique_lock<std::mutex> lock(*m_super_mutex);
-
-	*m_super = super;
-	*m_super_data = super_data;
-}
-
-u8 rhr::handler::preprocessor::get_super()
-{
-	std::unique_lock<std::mutex> lock(*m_super_mutex);
-
-	return *m_super;
-}
-
-i64 rhr::handler::preprocessor::get_super_data()
-{
-	std::unique_lock<std::mutex> lock(*m_super_mutex);
-
-	return *m_super_data;
-}
-
-u8* rhr::handler::preprocessor::make_super()
-{
-	if (m_super != nullptr)
+	if (m_status == cap::build_system::status::RUNNING)
 	{
-		delete m_super;
-		delete m_super_mutex;
+		Logger::Error("can not execute a build while already running");
+		return;
 	}
 
-	m_super = new u8;
-	*m_super = 0;
-
-	m_super_data = new i64;
-	*m_super_data = 0;
-
-	m_super_mutex = new std::mutex();
-
-	return m_super;
+	m_status = cap::build_system::status::RUNNING;
+	m_thread = std::thread(thread_build, build_method, build_type);
 }
 
-i64* rhr::handler::preprocessor::get_made_data()
+cap::build_system::status rhr::handler::build::get_status()
 {
-	return m_super_data;
+	return m_status;
 }
 
-std::mutex* rhr::handler::preprocessor::get_made_mutex()
+void rhr::handler::build::terminate()
 {
-	return m_super_mutex;
+	if (m_status == cap::build_system::status::RUNNING)
+		m_terminate = true;
 }
 
-std::thread rhr::handler::preprocessor::m_thread;
-std::atomic<bool> rhr::handler::preprocessor::m_finished;
-//Plane* rhr::handler::preprocessor::m_planeCopy;
-u8* rhr::handler::preprocessor::m_super;
-i64* rhr::handler::preprocessor::m_super_data;
-std::mutex* rhr::handler::preprocessor::m_super_mutex;
+void rhr::handler::build::confirm_terminated()
+{
+	m_terminate = false;
+	m_status = cap::build_system::status::READY;
+}
+
+std::thread rhr::handler::build::m_thread;
+std::atomic<bool> rhr::handler::build::m_terminate;
+cap::build_system::status rhr::handler::build::m_status;

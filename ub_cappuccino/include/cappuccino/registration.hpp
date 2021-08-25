@@ -1,6 +1,5 @@
 #pragma once
 #include "config.h"
-#include "cap_config.h"
 
 #include "cappuccino/utils.hpp"
 #include "cappuccino/mod_block/block.hpp"
@@ -8,26 +7,16 @@
 #include "cappuccino/execution_thread.hpp"
 #include "cappuccino/mod_block/data.hpp"
 
-#if !LINUX
-#ifdef __CAP
-#define CAP_DLL __declspec(dllexport)
-#else
-#define CAP_DLL __declspec(dllimport)
-#endif
-#else
-#define CAP_DLL
-#endif
-
 class Registration
 {
 public:
 	static void Initialize();
 
-	static CAP_DLL void RegisterPass(ModBlockPass* pass);
-	static CAP_DLL void UnRegisterPass(ModBlockPass* pass);
+	static void RegisterPass(ModBlockPass* pass);
+	static void UnRegisterPass(ModBlockPass* pass);
 
-	static CAP_DLL void RegisterExecutionThread(ExecutionThread* thr);
-	static CAP_DLL void UnRegisterExecutionThread(ExecutionThread* thr, bool join);
+	static void RegisterExecutionThread(ExecutionThread* thr);
+	static void UnRegisterExecutionThread(ExecutionThread* thr, bool join);
 
 	static void SetFunctionMain(u64 main);
 	static void SetFunctionCallCount(u64* functionCallCount);
@@ -39,28 +28,28 @@ public:
 	static void SetSuper(u8* super, i64* superData, void* superMutex);
 
 	static void EndAll(ModBlockPass* whitelist = nullptr);
-	static CAP_DLL void Stop();
+	static void Stop();
 
 	static std::atomic<bool>& GetUtilFinished();
 	static std::atomic<bool>& GetStop();
-	static CAP_DLL u64* GetFunctionCallCount();
-	static CAP_DLL u64 GetFunctionTotalCount();
-	static CAP_DLL executionFunctionStackList GetCalls();
+	static u64* GetFunctionCallCount();
+	static u64 GetFunctionTotalCount();
+	static executionFunctionStackList GetCalls();
 	static void SetUtilReturnFinished(bool finished);
 	static void RunUtilityTick();
 	static void Run();
 	static bool IsAllDone();
 
-	static CAP_DLL const std::vector<f64*>& GetRealTemplate();
-	static CAP_DLL const std::vector<bool*>& GetBoolTemplate();
-	static CAP_DLL const std::vector<std::string*>& GetStringTemplate();
+	static const std::vector<f64*>& GetRealTemplate();
+	static const std::vector<bool*>& GetBoolTemplate();
+	static const std::vector<std::string*>& GetStringTemplate();
 
-	static CAP_DLL const std::vector<u64>* GetRealCount();
-	static CAP_DLL const std::vector<u64>* GetBoolCount();
-	static CAP_DLL const std::vector<u64>* GetStringCount();
+	static const std::vector<u64>* GetRealCount();
+	static const std::vector<u64>* GetBoolCount();
+	static const std::vector<u64>* GetStringCount();
 
-	static CAP_DLL std::mutex* GetCustomMutex();
-	static CAP_DLL std::vector<void*>* GetCustomRegistry();
+	static std::mutex* GetCustomMutex();
+	static std::vector<void*>* GetCustomRegistry();
 	static ModBlockData** GetData();
 private:
 	static bool GlobalPre(PreProcessorData& data);

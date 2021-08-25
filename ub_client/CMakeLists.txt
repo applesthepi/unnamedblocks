@@ -34,7 +34,7 @@ target_link_libraries(UB_CLIENT PUBLIC
 	
 	glad::glad
 	glfw
-	imgui::imgui
+#	imgui::imgui
 	Vulkan::Vulkan
 	freetype
 )

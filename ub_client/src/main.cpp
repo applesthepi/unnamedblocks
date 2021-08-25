@@ -6,7 +6,7 @@
 #include "rhr/handlers/category.hpp"
 #include "rhr/handlers/field.hpp"
 #include "rhr/registries/char_texture.hpp"
-#include "rhr/handlers/preprocessor.hpp"
+#include "rhr/handlers/build.hpp"
 //#include "imgui/imgui.h"
 
 #if LINUX
@@ -34,7 +34,7 @@ static void async_setup()
 
 static void button_callback_build_debug(void* data)
 {
-    rhr::handler::preprocessor::build(true);
+    rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
 }
 
 int main()
@@ -164,7 +164,7 @@ int main()
 	//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
 
 	InputHandler::Initialization();
-	rhr::handler::preprocessor::initialize();
+	rhr::handler::build::initialize();
 	rhr::registry::block::create_block_registry();
 	//rhr::handler::field::initialize();
 

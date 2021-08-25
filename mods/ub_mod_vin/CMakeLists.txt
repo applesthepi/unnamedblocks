@@ -269,7 +269,7 @@ target_link_libraries(UB_MOD_VIN PUBLIC
 	
 	glad::glad
 	glfw
-	imgui::imgui
+#	imgui::imgui
 	Vulkan::Vulkan
 	freetype
 )

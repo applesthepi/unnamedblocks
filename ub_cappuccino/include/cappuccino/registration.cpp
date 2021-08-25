@@ -203,7 +203,7 @@ u64* Registration::GetFunctionCallCount()
 	return m_functionCallCount;
 }
 
-CAP_DLL u64 Registration::GetFunctionTotalCount()
+u64 Registration::GetFunctionTotalCount()
 {
 	return m_functionTotalCount;
 }
@@ -413,27 +413,27 @@ const std::vector<std::string*>& Registration::GetStringTemplate()
 	return m_variableStringTemplate;
 }
 
-CAP_DLL const std::vector<u64>* Registration::GetRealCount()
+const std::vector<u64>* Registration::GetRealCount()
 {
 	return &m_variableRealCount;
 }
 
-CAP_DLL const std::vector<u64>* Registration::GetBoolCount()
+const std::vector<u64>* Registration::GetBoolCount()
 {
 	return &m_variableBoolCount;
 }
 
-CAP_DLL const std::vector<u64>* Registration::GetStringCount()
+const std::vector<u64>* Registration::GetStringCount()
 {
 	return &m_variableStringCount;
 }
 
-CAP_DLL std::mutex* Registration::GetCustomMutex()
+std::mutex* Registration::GetCustomMutex()
 {
 	return &m_customRegisterMutex;
 }
 
-CAP_DLL std::vector<void*>* Registration::GetCustomRegistry()
+std::vector<void*>* Registration::GetCustomRegistry()
 {
 	return &m_customRegister;
 }
@@ -644,6 +644,7 @@ bool Registration::Init(PreProcessorData& preData, ModBlockData** blockData)
 
 bool Registration::TestSuperBase()
 {
+	return false;
 	std::unique_lock<std::mutex> lock(*m_superMutex);
 
 	if (*m_super == 1)
@@ -702,6 +703,7 @@ bool Registration::TestSuperBase()
 
 bool Registration::TestSuperDebug()
 {
+	return false;
 	if (*m_super == 4)
 	{
 		*m_super = 0;
