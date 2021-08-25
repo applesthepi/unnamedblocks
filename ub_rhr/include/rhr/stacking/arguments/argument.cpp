@@ -17,11 +17,6 @@ void rhr::stack::argument::argument::set_data(const std::string& data)
 	on_set_data();
 }
 
-const std::string& rhr::stack::argument::argument::get_data()
-{
-	return m_data;
-}
-
 void rhr::stack::argument::argument::set_mode(BlockArgumentVariableMode mode)
 {
 	m_mode = mode;
@@ -30,6 +25,11 @@ void rhr::stack::argument::argument::set_mode(BlockArgumentVariableMode mode)
 BlockArgumentVariableMode rhr::stack::argument::argument::get_mode()
 {
 	return m_mode;
+}
+
+const std::string& rhr::stack::argument::argument::get_data()
+{
+	return m_data;
 }
 
 BlockArgumentType rhr::stack::argument::argument::get_type()

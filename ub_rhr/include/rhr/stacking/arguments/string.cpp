@@ -70,3 +70,8 @@ bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
 		position.y > arg_position.y && position.y < arg_position.y + rhr::stack::block::height_content
 	);
 }
+
+const std::string& rhr::stack::argument::string::get_data()
+{
+	return m_text->get_text();
+}

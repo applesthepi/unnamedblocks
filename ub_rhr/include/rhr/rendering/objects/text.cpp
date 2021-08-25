@@ -334,3 +334,8 @@ void rhr::render::object::text::post_size_update()
 {
 	mark_dirty();
 }
+
+const std::string& rhr::render::object::text::get_text()
+{
+	return m_text;
+}

@@ -51,5 +51,8 @@ public:
 
 	///
 	static void execute(method build_method, type build_type);
+
+	///
+	static void setup();
 };
 }

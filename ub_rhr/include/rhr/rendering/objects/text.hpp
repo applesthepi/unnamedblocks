@@ -28,6 +28,9 @@ public:
 	/// \param Text.
 	void set_text(const std::string& text);
 
+	///
+	const std::string& get_text();
+
 	/// Sets Z depth.
 	/// \param Z depth.
 	void set_depth(i32 depth);

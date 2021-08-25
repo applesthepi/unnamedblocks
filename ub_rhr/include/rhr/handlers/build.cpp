@@ -190,12 +190,15 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 	u64 functionTotalCount = stacks.size();
 
+	cap::build_system::setup();
+
 	cap::build_system::set_main(functionMain);
 	cap::build_system::set_function_call_count(functionCallCount.data());
 	cap::build_system::set_function_total_count(functionTotalCount);
 	cap::build_system::set_calls(calls);
 	cap::build_system::set_function_data(functionData);
 	cap::build_system::set_mod_blocks(modBlocks);
+
 	cap::build_system::execute(build_method, build_type);
 
 	for (u64 i = 0; i < functionTotalCount; i++)
@@ -226,6 +229,10 @@ void rhr::handler::build::execute(cap::build_system::method build_method, cap::b
 	}
 
 	m_status = cap::build_system::status::RUNNING;
+
+	if (m_thread.joinable())
+		m_thread.join();
+
 	m_thread = std::thread(thread_build, build_method, build_type);
 }
 

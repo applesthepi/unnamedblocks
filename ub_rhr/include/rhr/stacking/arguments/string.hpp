@@ -29,6 +29,10 @@ public:
 	/// \return Has data.
 	bool has_data() override;
 
+	/// Gets data. Data of the argument is stored as a string.
+	/// \return Data from the argument.
+	const std::string& get_data() override;
+
 	///
 	bool drag_bounds(glm::vec<2, i32> position) override;
 private:

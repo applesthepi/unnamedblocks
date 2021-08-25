@@ -23,10 +23,6 @@ public:
 	/// \param Data to set the argument to.
 	void set_data(const std::string& data);
 
-	/// Gets data. Data of the argument is stored as a string.
-	/// \return Data from the argument.
-	const std::string& get_data();
-
 	/// Sets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \param Argument variable mode.
 	void set_mode(BlockArgumentVariableMode mode);
@@ -34,6 +30,10 @@ public:
 	/// Gets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \return Argument variable mode.
 	BlockArgumentVariableMode get_mode();
+
+	/// Gets data. Data of the argument is stored as a string.
+	/// \return Data from the argument.
+	virtual const std::string& get_data();
 
 	/// How to interpret the data.
 	/// \return Type of argument.

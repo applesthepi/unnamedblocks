@@ -38,3 +38,8 @@ void cap::build_system::execute(cap::build_system::method build_method, cap::bui
 		Registration::Run();
 	}
 }
+
+void cap::build_system::setup()
+{
+	Registration::Initialize();
+}
