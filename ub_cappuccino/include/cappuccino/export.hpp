@@ -1,6 +1,5 @@
 #pragma once
 #include "config.h"
-#include "cap_config.h"
 
 //#define CAP_CPP_EXPORT extern "C"
 #define CAP_C_EXPORT
