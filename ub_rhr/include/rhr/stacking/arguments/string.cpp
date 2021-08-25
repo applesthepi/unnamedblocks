@@ -4,16 +4,37 @@
 #include "rhr/stacking/block.hpp"
 #include "rhr/stacking/plane.hpp"
 
+// TODO: remove
+#include <iostream>
+
 rhr::stack::argument::string::string(const cap::color& color, void(*update)(void*), void* data)
 	: rhr::stack::argument::argument(color, update, data)
 	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data, false))
 {
+	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+	{
+		if (button == MouseButton::MIDDLE && operation == MouseOperation::Click)
+		{
+			if (m_mode == BlockArgumentVariableMode::RAW)
+			{
+				m_mode = BlockArgumentVariableMode::VAR;
+				m_text->set_color_secondary(cap::color().from_u8({ 30, 30, 30, 255 }));
+			}
+			else if (m_mode == BlockArgumentVariableMode::VAR)
+			{
+				m_mode = BlockArgumentVariableMode::RAW;
+				m_text->set_color_secondary(color);
+			}
+		}
+	};
+
 	m_text->set_weak(m_text);
 	m_text->set_weak_field(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
 	m_text->set_color_primary(cap::color::text_primary_color);
 	m_text->set_color_secondary(color);
 	m_text->set_padding(rhr::stack::argument::argument::padding);
+	m_text->set_mouse_button(m_mouse_button);
 }
 
 BlockArgumentType rhr::stack::argument::string::get_type()

@@ -42,6 +42,9 @@ public:
 	void enable_background(bool enable);
 
 	///
+	void set_mouse_button(std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>& mouse_button);
+
+	///
 	std::optional<usize> pick_index(glm::vec<2, i32> position, bool ignore_y) override;
 
 	///
@@ -61,6 +64,9 @@ public:
 
 	///
 	bool remove_string(usize idx, usize size) override;
+
+	///
+	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button) override;
 private:
 	///
 	void update_size();
@@ -79,6 +85,9 @@ private:
 
 	///
 	void post_size_update() override;
+
+	///
+	void post_color_update() override;
 
 	/// Object to render the background rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object_background;
@@ -115,5 +124,8 @@ private:
 
 	///
 	bool m_read_only;
+
+	///
+	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
 };
 }

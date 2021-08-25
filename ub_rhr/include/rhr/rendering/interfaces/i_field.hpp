@@ -2,6 +2,7 @@
 #include "config.h"
 
 #include <cappuccino/utils.hpp>
+#include <espresso/input_handler.hpp>
 
 namespace rhr::render::interfaces
 {
@@ -29,5 +30,8 @@ public:
 
 	///
 	virtual bool remove_string(usize idx, usize size);
+
+	///
+	virtual void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
 };
 }

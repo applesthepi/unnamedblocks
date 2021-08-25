@@ -2,12 +2,12 @@
 
 #include "rhr/rendering/renderer.hpp"
 
-static void primary_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void primary_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
 	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation);
 }
 
-static void toolbar_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void toolbar_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
 	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation);
 }

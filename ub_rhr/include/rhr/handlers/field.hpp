@@ -20,7 +20,7 @@ public:
 	void render();
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
+	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
 
 	///
 	void text_button(InputHandler::key_state state);

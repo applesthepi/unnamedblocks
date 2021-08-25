@@ -18,6 +18,7 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	, m_update(update)
 	, m_update_data(data)
 	, m_read_only(read_only)
+	, m_mouse_button(nullptr)
 {
 	m_render_object_background->set_weak(m_render_object_background);
 	m_render_object_text->set_weak(m_render_object_text);
@@ -338,4 +339,21 @@ void rhr::render::object::text::post_size_update()
 const std::string& rhr::render::object::text::get_text()
 {
 	return m_text;
+}
+
+void rhr::render::object::text::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation,
+											 MouseButton button)
+{
+	if (m_mouse_button != nullptr)
+		m_mouse_button(position, scroll, operation, button);
+}
+
+void rhr::render::object::text::set_mouse_button(std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>& mouse_button)
+{
+	m_mouse_button = mouse_button;
+}
+
+void rhr::render::object::text::post_color_update()
+{
+	mark_dirty();
 }

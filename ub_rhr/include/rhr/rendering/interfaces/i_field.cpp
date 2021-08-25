@@ -34,3 +34,9 @@ bool rhr::render::interfaces::i_field::remove_string(usize idx, usize size)
 {
 	return false;
 }
+
+void rhr::render::interfaces::i_field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation,
+													MouseButton button)
+{
+
+}

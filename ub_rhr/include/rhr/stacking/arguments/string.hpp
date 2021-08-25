@@ -57,5 +57,8 @@ private:
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;
+
+	///
+	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
 };
 }

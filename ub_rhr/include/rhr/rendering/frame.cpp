@@ -2,7 +2,7 @@
 
 #include "rhr/rendering/renderer.hpp"
 
-static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
 	rhr::render::frame* frame = (rhr::render::frame*)data;
 	frame->mouse_button(position, scroll, operation);

@@ -1,9 +1,9 @@
 #include "button.hpp"
 
-static void mouse_update_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void mouse_update_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
-	rhr::render::object::button* button = (rhr::render::object::button*)data;
-	button->mouse_update(position, scroll, operation);
+	rhr::render::object::button* button_object = (rhr::render::object::button*)data;
+	button_object->mouse_update(position, scroll, operation);
 }
 
 rhr::render::object::button::button(const cap::color& primary_color, const cap::color& secondary_color)

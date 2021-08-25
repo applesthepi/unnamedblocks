@@ -4,10 +4,10 @@
 
 #define FIELD_CELL_SIZE 500
 
-static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, void* data)
+static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
 	rhr::handler::field* field = (rhr::handler::field*)data;
-	field->mouse_button(position, scroll, operation);
+	field->mouse_button(position, scroll, operation, button);
 }
 
 static void text_button_caller(InputHandler::key_state state, void* data)
@@ -85,8 +85,19 @@ void rhr::handler::field::render()
 		m_rectangle_highlight->render();
 }
 
-void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation)
+void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 {
+	std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
+
+	if (!data.has_value())
+	{
+		reset_all();
+		return;
+	}
+
+	if (auto lock = data.value()->get_text_field().lock())
+		lock->mouse_button(position, scroll, operation, button);
+
 	if (operation == MouseOperation::Move)
 	{
 		if (m_mouse_down_data == nullptr || !m_mouse_down)
@@ -94,6 +105,9 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 
 		if (auto lock = m_mouse_down_data->get_text_field().lock())
 		{
+			if (button != MouseButton::LEFT)
+				return;
+
 			std::optional<usize> idx = lock->pick_index(position, true);
 			if (!idx.has_value())
 				return;
@@ -114,7 +128,7 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 			update_cursor();
 			update_highlight();
 
-			Logger::Debug("move from " + std::to_string(m_mouse_drag_start) + " to " + std::to_string(m_mouse_drag_end));
+//			Logger::Debug("move from " + std::to_string(m_mouse_drag_start) + " to " + std::to_string(m_mouse_drag_end));
 		}
 		else
 		{
@@ -124,20 +138,15 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 	}
 	else if (operation == MouseOperation::Press)
 	{
-		std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
-
 		// TODO: drag selection box like on a desktop?
 		if (m_mouse_down)
 			return;
 
-		if (!data.has_value())
-		{
-			reset_all();
-			return;
-		}
-
 		if (auto lock = data.value()->get_text_field().lock())
 		{
+			if (button != MouseButton::LEFT)
+				return;
+
 			std::optional<usize> idx = lock->pick_index(position, false);
 			if (!idx.has_value())
 				return;
@@ -171,19 +180,14 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 	}
 	else if (operation == MouseOperation::DoublePress)
 	{
-		std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
-
 		if (m_mouse_down)
 			return;
 
-		if (!data.has_value())
-		{
-			reset_all();
-			return;
-		}
-
 		if (auto lock = data.value()->get_text_field().lock())
 		{
+			if (button != MouseButton::LEFT)
+				return;
+
 			std::optional<usize> idx = lock->pick_index(position, false);
 			if (!idx.has_value())
 				return;
@@ -224,7 +228,7 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 	{
 		if (!m_mouse_down)
 			return;
-		
+
 		m_mouse_down = false;
 	}
 }
