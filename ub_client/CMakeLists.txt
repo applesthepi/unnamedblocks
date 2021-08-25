@@ -37,7 +37,6 @@ target_link_libraries(UB_CLIENT PUBLIC
 	imgui::imgui
 	Vulkan::Vulkan
 	freetype
-	${TCC_LIBRARY}
 )
 
 target_include_directories(UB_CLIENT PUBLIC
@@ -53,57 +52,58 @@ target_include_directories(UB_CLIENT PUBLIC
 	${CMAKE_INCLUDES}
 )
 
-# Copy res folder
+# Copy Resources
 add_custom_command(
 	TARGET UB_CLIENT POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
 	"${CMAKE_SOURCE_DIR}/res"
 	$<TARGET_FILE_DIR:UB_CLIENT>/res)
-# Copy csfml
-#add_custom_command(
-#	TARGET UB_CLIENT POST_BUILD
-#	COMMAND ${CMAKE_COMMAND} -E copy_directory
-#	"${CMAKE_SOURCE_DIR}/csfml"
-#	$<TARGET_FILE_DIR:UB_CLIENT>/csfml)
-# Create mods folder for the mods to copy themselves into later
+
+# Mods Folder
 add_custom_command(
 	TARGET UB_CLIENT POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E make_directory
 	$<TARGET_FILE_DIR:UB_CLIENT>/mods)
-add_custom_command(
-	TARGET UB_CLIENT POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
-	$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include)
-add_custom_command(
-    TARGET UB_CLIENT POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory
-    $<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
-add_custom_command(
-    TARGET UB_CLIENT POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy
-    $<TARGET_FILE:UB_CAPPUCCINO>
-    $<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
-add_custom_command(
-	TARGET UB_CLIENT POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy
-	"${CMAKE_SOURCE_DIR}/cmake/bin/libtcc.dll"
-	$<TARGET_FILE_DIR:UB_CLIENT>/)
-add_custom_command(
-		TARGET UB_CLIENT POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy_directory
-		"${CMAKE_SOURCE_DIR}/tcc/include"
-		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include)
-add_custom_command(
-		TARGET UB_CLIENT POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy
-		"${CMAKE_SOURCE_DIR}/build/config.h"
-		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include/)
-add_custom_command(
-		TARGET UB_CLIENT POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E copy
-		"${CMAKE_SOURCE_DIR}/build/cap_config.h"
-		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include/)
+
+#add_custom_command(
+#	TARGET UB_CLIENT POST_BUILD
+#	COMMAND ${CMAKE_COMMAND} -E copy_directory
+#	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+#	$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include)
+#add_custom_command(
+#    TARGET UB_CLIENT POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E make_directory
+#    $<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
+#add_custom_command(
+#    TARGET UB_CLIENT POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy
+#    $<TARGET_FILE:UB_CAPPUCCINO_TCC>
+#    $<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
+#add_custom_command(
+#	TARGET UB_CLIENT POST_BUILD
+#	COMMAND ${CMAKE_COMMAND} -E copy
+#	"${CMAKE_SOURCE_DIR}/cmake/bin/libtcc.dll"
+#	$<TARGET_FILE_DIR:UB_CLIENT>/)
+#add_custom_command(
+#		TARGET UB_CLIENT POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy_directory
+#		"${CMAKE_SOURCE_DIR}/tcc/include"
+#		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include)
+#add_custom_command(
+#		TARGET UB_CLIENT POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy
+#		"${CMAKE_SOURCE_DIR}/build/config.h"
+#		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include/)
+#add_custom_command(
+#		TARGET UB_CLIENT POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy
+#		"${CMAKE_SOURCE_DIR}/res/cap_config.h"
+#		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/include/)
+#add_custom_command(
+#		TARGET UB_CLIENT POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy
+#		"${CMAKE_SOURCE_DIR}/tcc/lib/libtcc1-64.a"
+#		$<TARGET_FILE_DIR:UB_CLIENT>/ub_cappuccino/lib/)
 	
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.in"

@@ -19,7 +19,7 @@ set(UB_CAPPUCCINO_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/data_key.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/data_registry.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/data_registry.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/cappuccino.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/cappuccino.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/cappuccino.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/execution_thread.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino/execution_thread.cpp"
@@ -41,9 +41,12 @@ set(UB_CAPPUCCINO_SRC
 )
 
 set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
-add_library(UB_CAPPUCCINO
+add_library(UB_CAPPUCCINO STATIC
 	${UB_CAPPUCCINO_SRC}
 )
+#add_library(UB_CAPPUCCINO_TCC SHARED
+#	${UB_CAPPUCCINO_SRC}
+#)
 
 if(MSVC)
 	source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/include/cappuccino FILES ${UB_CAPPUCCINO_SRC})
@@ -56,8 +59,16 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 	imgui::imgui
 	Vulkan::Vulkan
 	freetype
-	${TCC_LIBRARY}
 )
+
+#target_link_libraries(UB_CAPPUCCINO_TCC PUBLIC
+#		glad::glad
+#		glfw
+#		imgui::imgui
+#		Vulkan::Vulkan
+#		freetype
+#		${TCC_LIBRARY}
+#		)
 
 target_include_directories(UB_CAPPUCCINO PUBLIC
 	${PROJECT_BINARY_DIR}
@@ -69,6 +80,16 @@ target_include_directories(UB_CAPPUCCINO PUBLIC
 	${CMAKE_INCLUDES}
 )
 
+#target_include_directories(UB_CAPPUCCINO_TCC PUBLIC
+#		${PROJECT_BINARY_DIR}
+#		"${CMAKE_CURRENT_SOURCE_DIR}/include"
+#
+#		${STB_INCLUDE_DIRS}
+#		${RAPIDJSON_INCLUDE_DIRS}
+#		${VULKAN_INCLUDE_DIRS}
+#		${CMAKE_INCLUDES}
+#		)
+
 # TODO: what is this for?
 set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
 
@@ -79,7 +100,7 @@ set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
 #)
 
 
-configure_file (
-		"${PROJECT_SOURCE_DIR}/config.h.in"
-		"${PROJECT_BINARY_DIR}/cap_config.h"
-)
+#configure_file (
+#		"${PROJECT_SOURCE_DIR}/config.h.in"
+#		"${PROJECT_BINARY_DIR}/cap_config.h"
+#)

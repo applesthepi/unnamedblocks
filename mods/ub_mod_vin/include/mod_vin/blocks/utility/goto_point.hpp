@@ -1,6 +1,6 @@
 #pragma once
 #include "mod_vin/categories.hpp"
-#include <Cappuccino/Cappuccino.hpp>
+#include <cappuccino/cappuccino.h>
 
 class BlockUtilityGotoPoint : public ModBlock
 {

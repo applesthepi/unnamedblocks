@@ -1,0 +1,65 @@
+UNNAMED BLOCKS COMPILATION
+
+STAGE 1 - PREPROCESSOR
+
+The preprocessor will go through every block to retrieve
+the corresponding debug or release function from the mod
+dll that has been built before externaly. Next the
+preprocessor will create a 2d array of function calls
+that is x: an array of stacks, and y: an array of block
+function calls (or vise versa). Along side that, it is
+also creating another 2d array for each block's argument
+data and interpretation. This gets passed to a c
+program which interfaces with Cappuccino.
+
+EXECUTION - QUICK BUILD
+
+Once Cappuccino gets both 2d arrays along with other
+general information like which block to start on, the
+user can have Cappuccino interpret the function pointers
+(quick build) or continue with a full build. During the
+debug execution, Cappuccino will handle all of the
+regiestries and stack access.
+
+STAGE 2 - SCRIPT COLLECTION
+
+If told to full build, Cappuccino will be passed pointers
+to information in a script regiestry from RHR. This
+process of gathering the scripts will happen in the
+background and might be cached on disk. During this
+collection, RHR is going through every block file in
+every mod and gathering the functions using clang. This
+code gets stored in regiestries and later passed to
+Cappuccino after stage 1.
+
+STAGE 3 - SCRIPT PARSING
+
+Cappuccino will take each block's execution function and
+attempt to parse what it is doing. Then Cappuccino will
+recreate the execution functions based on the new
+information. For example if Cappuccino concluded that a
+variable is presumed static then it will
+completley bypass the variable regiestry. Once all these
+optimization attempts have been made, Cappuccino
+implements the registries and handlers. For variables
+that are presumed static, it will create them as
+local variables reserving the registry for variables
+with undefined names (conditionaly made). When adding
+the final execution functions to the program, they
+will be added to a cpp file corresponding to the stack
+idx. This is to be able to multithread build for each
+stack to speed up the final stage.
+
+STAGE 4 - SCRIPT BUILDING
+
+Once everything has been put together and optimized,
+Cappuccino will build the program with the ability to be
+controled from Cappuccino or not.
+
+EXECUTION - FULL BUILD
+
+If this is a debug build, then Cappuccino will access it
+to control its execution. If this is a release build,
+then Cappuccino will flag the compiler to build at full
+optimization with no debug symbols or connection to
+Cappuccino.

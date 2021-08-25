@@ -1,5 +1,5 @@
 #pragma once
-
+// TODO: use "using" instead of typedef
 typedef char i8;
 typedef short i16;
 typedef int i32;

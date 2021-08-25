@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <cappuccino/cappuccino.hpp>
+#include <cappuccino/cappuccino.h>
 
 #if !LINUX
 #define COMP_EXPORT extern __declspec(dllimport)

@@ -4,7 +4,7 @@
 
 #include <cappuccino/mod_block/data.hpp>
 
-#include <libtcc.h>
+//#include <libtcc.h>
 
 /// Reads file at file_path and stores its contents in ptr
 void PullFileSingle(char** ptr, const char* file_path)
@@ -28,6 +28,7 @@ void PullFileSingle(char** ptr, const char* file_path)
 
 void ThreadPreProcessorExecution(bool debugBuild)
 {
+	/*
 	rhr::handler::preprocessor::set_finished(false);// just in case
 	char* file;
 	PullFileSingle(&file, "res/comp.c");
@@ -265,7 +266,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 // 	}
 
 	tcc_add_library_path(state, "ub_cappuccino/lib");
-	[[maybe_unused]] int re = tcc_add_library(state, "cappuccino");
+	[[maybe_unused]] int re = tcc_add_library(state, "UB_CAPPUCCINO_TCC");
 //	tcc_add_library_path(state, "csfml/lib/gcc");
 
 //	tcc_add_library(state, "csfml-audio");
@@ -289,6 +290,7 @@ void ThreadPreProcessorExecution(bool debugBuild)
 	free(file);
 
 	rhr::handler::preprocessor::set_finished(true);
+	 */
 }
 
 void rhr::handler::preprocessor::initialize()

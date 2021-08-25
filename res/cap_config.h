@@ -1,0 +1,1 @@
+#define CAP_EXPORT /*__attribute__((visibility("default")))*/ __declspec(dllimport)

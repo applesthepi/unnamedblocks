@@ -1,54 +1,59 @@
-#include "cappuccino.hpp"
+#if 0
 
+#include "cappuccino.h"
 #include "cappuccino/registration.hpp"
 #include "cappuccino/mod_block/pass.hpp"
 
-CAP_EXPORT void cpInit()
+extern "C"
 {
-	Registration::Initialize();
-}
+	void cpInit()
+	{
+		Registration::Initialize();
+	}
 
-CAP_EXPORT void cpSetFunctionMain(u64 functionMain)
-{
-	Registration::SetFunctionMain(functionMain);
-}
+	void cpSetFunctionMain(u64 functionMain)
+	{
+		Registration::SetFunctionMain(functionMain);
+	}
 
-CAP_EXPORT void cpSetFunctionCallCount(u64* functionCallCount)
-{
-	Registration::SetFunctionCallCount(functionCallCount);
-}
+	void cpSetFunctionCallCount(u64* functionCallCount)
+	{
+		Registration::SetFunctionCallCount(functionCallCount);
+	}
 
-CAP_EXPORT void cpSetFunctionTotalCount(u64 functionTotalCount)
-{
-	Registration::SetFunctionTotalCount(functionTotalCount);
-}
+	void cpSetFunctionTotalCount(u64 functionTotalCount)
+	{
+		Registration::SetFunctionTotalCount(functionTotalCount);
+	}
 
-CAP_EXPORT void cpSetCalls(executionFunctionStackList calls)
-{
-	Registration::SetCalls(calls);
-}
+	void cpSetCalls(executionFunctionStackList calls)
+	{
+		Registration::SetCalls(calls);
+	}
 
-CAP_EXPORT void cpSetData(ModBlockData** data)
-{
-	Registration::SetData(data);
-}
+	void cpSetData(ModBlockData** data)
+	{
+		Registration::SetData(data);
+	}
 
-CAP_EXPORT void cpSetBlocks(ModBlock*** blocks)
-{
-	Registration::SetBlocks(blocks);
-}
+	void cpSetBlocks(ModBlock*** blocks)
+	{
+		Registration::SetBlocks(blocks);
+	}
 
-CAP_EXPORT void cpSetDebugBuild(bool debugBuild)
-{
-	Registration::SetDebug(debugBuild);
-}
+	void cpSetDebugBuild(bool debugBuild)
+	{
+		Registration::SetDebug(debugBuild);
+	}
 
-CAP_EXPORT void cpSetSuper(u8* super, i64* superData, void* superMutex)
-{
-	Registration::SetSuper(super, superData, superMutex);
-}
+	void cpSetSuper(u8* super, i64* superData, void* superMutex)
+	{
+		Registration::SetSuper(super, superData, superMutex);
+	}
 
-CAP_EXPORT void cpRun()
-{
-	Registration::Run();
+	void cpRun()
+	{
+		Registration::Run();
+	}
 }
+#endif
