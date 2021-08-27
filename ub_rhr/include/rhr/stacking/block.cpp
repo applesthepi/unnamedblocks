@@ -110,6 +110,8 @@ void rhr::stack::block::update_arguments()
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
+			arg->set_mode(argumentInit[i].Mode);
+			arg->set_mode_restriction(argumentInit[i].Restriction);
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
@@ -122,6 +124,8 @@ void rhr::stack::block::update_arguments()
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
+			arg->set_mode(argumentInit[i].Mode);
+			arg->set_mode_restriction(argumentInit[i].Restriction);
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
@@ -134,6 +138,8 @@ void rhr::stack::block::update_arguments()
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
+			arg->set_mode(argumentInit[i].Mode);
+			arg->set_mode_restriction(argumentInit[i].Restriction);
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
@@ -146,19 +152,11 @@ void rhr::stack::block::update_arguments()
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
 			arg->set_data(argumentInit[i].DefaultValue);
+			arg->set_mode(argumentInit[i].Mode);
+			arg->set_mode_restriction(argumentInit[i].Restriction);
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
-		/*else if (argumentInit[i].Type == BlockArgumentType::ANY)
-		{
-			args.push_back(new ArgumentAny());
-
-			args.back()->setPosition(width, Global::BlockBorder);
-			args.back()->SetData(argumentInit[i].DefaultValue);
-			args.back()->UpdateData();
-
-			width += args.back()->GetWidth();
-		}*/
 	}
 
 	update_width();

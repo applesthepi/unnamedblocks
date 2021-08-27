@@ -6,7 +6,7 @@
 #include "rhr/stacking/collection.hpp"
 #include "rhr/stacking/stack.hpp"
 #include "rhr/stacking/block.hpp"
-#include "rhr/rendering/objects/button.hpp"
+#include "rhr/rendering/objects/button_text.hpp"
 #include "rhr/rendering/frame.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -35,6 +35,9 @@ public:
 
 	///
 	static void select_category(active active_category);
+
+	///
+	static void toggle_category(usize category_idx);
 private:
 	///
 	struct mod_group
@@ -44,13 +47,22 @@ private:
 			: mod_button(std::make_shared<rhr::render::object::button>(primary_color, secondary_color))
 		{
 			mod_button->set_weak(mod_button);
+			m_enabled = true;
+		}
+
+		void toggle()
+		{
+			m_enabled = !m_enabled;
+
+			for (auto button : mod_category)
+				button->set_enabled(m_enabled);
 		}
 
 		///
 		std::shared_ptr<rhr::render::object::button> mod_button;
 
 		///
-		std::vector<std::shared_ptr<rhr::render::object::button>> mod_category;
+		std::vector<std::shared_ptr<rhr::render::object::button_text>> mod_category;
 
 		///
 		std::vector<std::vector<std::shared_ptr<rhr::stack::collection>>> mod_category_collections;
@@ -60,6 +72,9 @@ private:
 
 		///
 		std::vector<std::vector<std::shared_ptr<rhr::stack::block>>> mod_category_blocks;
+
+		///
+		bool m_enabled;
 	};
 
 	///

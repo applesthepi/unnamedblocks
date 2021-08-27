@@ -55,6 +55,9 @@ private:
 	/// Sets data. Data of the argument is stored as a string.
 	void on_set_data() override;
 
+	///
+	void on_set_mode(BlockArgumentVariableMode mode) override;
+
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;
 

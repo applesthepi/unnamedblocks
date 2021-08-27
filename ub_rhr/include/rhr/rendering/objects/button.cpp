@@ -1,5 +1,7 @@
 #include "button.hpp"
 
+#include "rhr/rendering/renderer.hpp"
+
 static void mouse_update_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
 	rhr::render::object::button* button_object = (rhr::render::object::button*)data;
@@ -16,6 +18,7 @@ rhr::render::object::button::button(const cap::color& primary_color, const cap::
 {
 	m_background->set_weak(m_background);
 	m_background->set_color(m_color_secondary);
+	m_background->set_depth(rhr::render::renderer::depth_ui_background);
 
 	set_position({ 0, 0 });
 	set_size({ 100, 20 });
@@ -30,7 +33,7 @@ rhr::render::object::button::~button()
 
 void rhr::render::object::button::set_depth(i32 depth)
 {
-	m_background->set_depth(depth);
+//	m_background->set_depth(depth);
 }
 
 void rhr::render::object::button::set_callback(void(*callback)(void*), void* data)

@@ -167,11 +167,14 @@ public:
 	///
 	static u32 depth_background;
 	static u32 depth_plane;
+	static u32 depth_frame_background;
 	static u32 depth_collection;
 	static u32 depth_stack;
 	static u32 depth_block;
 	static u32 depth_argument;
 	static u32 depth_argument_text;
+	static u32 depth_ui_background;
+	static u32 depth_ui_text;
 
 	///
 #ifdef NDEBUG

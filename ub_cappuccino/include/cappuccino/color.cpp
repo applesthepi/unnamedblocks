@@ -60,3 +60,5 @@ cap::color cap::color::text_secondary_color = cap::color().from_u8({ 120, 120, 1
 cap::color cap::color::white = cap::color().from_u8({ 255, 255, 255, 255 });
 
 cap::color cap::color::black = cap::color().from_u8({ 0, 0, 0, 255 });
+
+cap::color cap::color::alpha = cap::color().from_u8({ 0, 0, 0, 0 });

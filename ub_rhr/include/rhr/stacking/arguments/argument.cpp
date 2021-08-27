@@ -7,6 +7,7 @@ rhr::stack::argument::argument::argument(const cap::color& block_color, void(*up
 	, m_block_color(block_color)
 	, m_update(update)
 	, m_update_data(data)
+	, m_mode_restriction(BlockArgumentVariableModeRestriction::NONE)
 {
 	
 }
@@ -17,9 +18,16 @@ void rhr::stack::argument::argument::set_data(const std::string& data)
 	on_set_data();
 }
 
-void rhr::stack::argument::argument::set_mode(BlockArgumentVariableMode mode)
+bool rhr::stack::argument::argument::set_mode(BlockArgumentVariableMode mode)
 {
-	m_mode = mode;
+	if (m_mode_restriction == BlockArgumentVariableModeRestriction::NONE)
+	{
+		m_mode = mode;
+		on_set_mode(mode);
+		return true;
+	}
+
+	return false;
 }
 
 BlockArgumentVariableMode rhr::stack::argument::argument::get_mode()
@@ -85,6 +93,16 @@ void rhr::stack::argument::argument::on_frame_update(f64 delta_time)
 }
 
 void rhr::stack::argument::argument::on_set_data()
+{
+
+}
+
+void rhr::stack::argument::argument::set_mode_restriction(BlockArgumentVariableModeRestriction mode_restriction)
+{
+	m_mode_restriction = mode_restriction;
+}
+
+void rhr::stack::argument::argument::on_set_mode(BlockArgumentVariableMode mode)
 {
 
 }

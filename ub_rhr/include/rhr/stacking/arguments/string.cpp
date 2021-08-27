@@ -16,15 +16,9 @@ rhr::stack::argument::string::string(const cap::color& color, void(*update)(void
 		if (button == MouseButton::MIDDLE && operation == MouseOperation::Click)
 		{
 			if (m_mode == BlockArgumentVariableMode::RAW)
-			{
-				m_mode = BlockArgumentVariableMode::VAR;
-				m_text->set_color_secondary(cap::color().from_u8({ 30, 30, 30, 255 }));
-			}
+				set_mode(BlockArgumentVariableMode::VAR);
 			else if (m_mode == BlockArgumentVariableMode::VAR)
-			{
-				m_mode = BlockArgumentVariableMode::RAW;
-				m_text->set_color_secondary(color);
-			}
+				set_mode(BlockArgumentVariableMode::RAW);
 		}
 	};
 
@@ -95,4 +89,12 @@ bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
 const std::string& rhr::stack::argument::string::get_data()
 {
 	return m_text->get_text();
+}
+
+void rhr::stack::argument::string::on_set_mode(BlockArgumentVariableMode mode)
+{
+	if (m_mode == BlockArgumentVariableMode::RAW)
+		m_text->set_color_secondary(m_block_color);
+	else if (m_mode == BlockArgumentVariableMode::VAR)
+		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
 }

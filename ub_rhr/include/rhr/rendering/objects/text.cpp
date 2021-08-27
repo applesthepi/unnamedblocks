@@ -19,6 +19,7 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	, m_update_data(data)
 	, m_read_only(read_only)
 	, m_mouse_button(nullptr)
+	, m_font_size(16)
 {
 	m_render_object_background->set_weak(m_render_object_background);
 	m_render_object_text->set_weak(m_render_object_text);
@@ -40,7 +41,7 @@ void rhr::render::object::text::set_text(const std::string& text)
 		m_char_offsets.clear();
 		m_char_contacts.clear();
 		m_render_object_text->set_enabled(false);
-		m_size = { 10, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
+		m_size = { 10, m_font_size };
 	}
 	else
 	{
@@ -163,7 +164,8 @@ void rhr::render::object::text::insert_char(char charactor, usize idx)
 	m_text.insert(m_text.begin() + idx, charactor);
 
 	update_size();
-	m_update(m_update_data);
+	if (m_update != nullptr)
+		m_update(m_update_data);
 	mark_dirty();
 }
 
@@ -175,7 +177,8 @@ void rhr::render::object::text::insert_string(const std::string& string, usize i
 	m_text.insert(idx, string);
 	
 	update_size();
-	m_update(m_update_data);
+	if (m_update != nullptr)
+		m_update(m_update_data);
 	mark_dirty();
 }
 
@@ -187,7 +190,8 @@ bool rhr::render::object::text::remove_char(usize idx)
 	m_text.erase(m_text.begin() + idx);
 	
 	update_size();
-	m_update(m_update_data);
+	if (m_update != nullptr)
+		m_update(m_update_data);
 	mark_dirty();
 
 	return true;
@@ -202,7 +206,8 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	m_text.erase(idx, size);
 	
 	update_size();
-	m_update(m_update_data);
+	if (m_update != nullptr)
+		m_update(m_update_data);
 	mark_dirty();
 
 	return true;
@@ -215,25 +220,26 @@ void rhr::render::object::text::update_size()
 
 	f32 running_char_offsets = static_cast<f32>(m_padding);
 	f32 running_char_contacts = static_cast<f32>(m_padding);
+	f32 font_size_scale = static_cast<f32>(m_font_size) / 16.0f;
 
 	for (usize i = 0; i < m_text.size(); i++)
 	{
 		i16 char_width = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
 
-		running_char_offsets += static_cast<f32>(char_width);
-		running_char_contacts += static_cast<f32>(char_width) / 2.0f;
+		running_char_offsets += static_cast<f32>(char_width) * font_size_scale;
+		running_char_contacts += static_cast<f32>(char_width) * font_size_scale / 2.0f;
 
 		if (i > 0)
 		{
 			i16 last_char_width = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i - 1]].advance.x >> 6;
-			running_char_contacts += static_cast<f32>(last_char_width) / 2.0f;
+			running_char_contacts += static_cast<f32>(last_char_width) * font_size_scale / 2.0f;
 		}
 		
 		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
 		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
 	}
 	
-	m_size = { static_cast<i32>(running_char_offsets) + m_padding, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
+	m_size = { static_cast<i32>(running_char_offsets) + m_padding, m_font_size };
 }
 
 void rhr::render::object::text::on_render()
@@ -281,17 +287,18 @@ void rhr::render::object::text::on_update_buffers()
 		rhr::render::vertex* vertices = (rhr::render::vertex*)alloca(sizeof(rhr::render::vertex) * m_text.size() * 4);
 		u32* indices = (u32*)alloca(sizeof(u32) * m_text.size() * 6);
 
-		i32 running_x = m_padding;
+		f32 running_x = static_cast<f32>(m_padding);
+		f32 font_size_scale = static_cast<f32>(m_font_size) / 16.0f;
 
 		for (usize i = 0; i < m_text.size(); i++)
 		{
 			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::BOLD_NORMAL].char_map[m_text[i]];
-			f32 y_offset = static_cast<f32>(rhr::stack::block::height_content) + (-1.0f * static_cast<f32>(char_data.offset.y)) - static_cast<f32>(rhr::stack::block::padding);
+			f32 y_offset = static_cast<f32>(m_font_size) + (-1.0f * static_cast<f32>(char_data.offset.y) * font_size_scale) - static_cast<f32>(rhr::stack::block::padding);
 
-			vertices[i * 4 + 0] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x), y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.first.y });
-			vertices[i * 4 + 1] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.second.x, char_data.first.y });
-			vertices[i * 4 + 2] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), static_cast<f32>(char_data.size.y) + y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.second.x, char_data.second.y });
-			vertices[i * 4 + 3] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x), static_cast<f32>(char_data.size.y) + y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.second.y });
+			vertices[i * 4 + 0] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x) * font_size_scale, y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.first.y });
+			vertices[i * 4 + 1] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x + char_data.size.x) * font_size_scale, y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.second.x, char_data.first.y });
+			vertices[i * 4 + 2] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x + char_data.size.x) * font_size_scale, static_cast<f32>(char_data.size.y) * font_size_scale + y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.second.x, char_data.second.y });
+			vertices[i * 4 + 3] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x) * font_size_scale, static_cast<f32>(char_data.size.y) * font_size_scale + y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.second.y });
 
 			indices[i * 6 + 0] = i * 4 + 1;
 			indices[i * 6 + 1] = i * 4 + 0;
@@ -300,7 +307,7 @@ void rhr::render::object::text::on_update_buffers()
 			indices[i * 6 + 4] = i * 4 + 0;
 			indices[i * 6 + 5] = i * 4 + 3;
 
-			running_x += char_data.advance.x >> 6;
+			running_x += static_cast<f32>(char_data.advance.x >> 6);
 		}
 
 		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);
@@ -355,5 +362,13 @@ void rhr::render::object::text::set_mouse_button(std::function<void(glm::vec<2, 
 
 void rhr::render::object::text::post_color_update()
 {
+	mark_dirty();
+}
+
+void rhr::render::object::text::set_font_size(u16 font_size)
+{
+	m_font_size = font_size;
+
+	update_size();
 	mark_dirty();
 }

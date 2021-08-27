@@ -113,6 +113,7 @@
 */
 
 #include "blocks/strings/log.hpp"
+#include "blocks/strings/set.hpp"
 
 UB_EXPORT void Initialization(ModData* data)
 {
@@ -143,6 +144,8 @@ UB_EXPORT void Initialization(ModData* data)
 
 	data->RegisterBlock(new BlockSystemMain());
 	data->RegisterBlock(new BlockStringLog());
+	data->RegisterBlock(new BlockStringSet());
+
 	/*data->RegisterBlock(new BlockSystemSleep());
 	data->RegisterBlock(new BlockSystemCreateWindow());
 	data->RegisterBlock(new BlockSystemPullEvents());

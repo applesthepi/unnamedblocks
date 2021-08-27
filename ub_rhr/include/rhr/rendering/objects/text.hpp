@@ -39,6 +39,9 @@ public:
 	void set_padding(i32 padding);
 
 	///
+	void set_font_size(u16 font_size);
+
+	///
 	void enable_background(bool enable);
 
 	///
@@ -127,5 +130,8 @@ private:
 
 	///
 	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
+
+	///
+	u16 m_font_size;
 };
 }

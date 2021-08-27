@@ -37,7 +37,7 @@ public:
 
 	///
 	void enable_fill_width(bool enable);
-private:
+protected:
 	///
 	void on_render() override;
 
@@ -55,7 +55,7 @@ private:
 
 	///
 	void post_color_update() override;
-
+private:
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
 

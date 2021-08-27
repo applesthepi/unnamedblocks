@@ -7,6 +7,7 @@
 #include "rhr/handlers/field.hpp"
 #include "rhr/registries/char_texture.hpp"
 #include "rhr/handlers/build.hpp"
+#include "rhr/rendering/objects/button_image.hpp"
 //#include "imgui/imgui.h"
 
 #if LINUX
@@ -99,10 +100,12 @@ int main()
 
 	std::shared_ptr<rhr::render::frame> frameOptions = std::make_shared<rhr::render::frame>();
 	frameOptions->set_weak(frameOptions);
+	frameOptions->enable_background(cap::color::background_color_2);
 	std::shared_ptr<rhr::render::frame> frameCategories = std::make_shared<rhr::render::frame>();
 	frameCategories->set_weak(frameCategories);
 	std::shared_ptr<rhr::render::frame> frameToolbar = std::make_shared<rhr::render::frame>();
 	frameToolbar->set_weak(frameToolbar);
+	frameToolbar->enable_background(cap::color::background_color_2);
 	std::shared_ptr<rhr::render::frame> framePrimary = std::make_shared<rhr::render::frame>();
 	framePrimary->set_weak(framePrimary);
 
@@ -144,9 +147,9 @@ int main()
 //	frameCategories->add_content(rectCategories, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectCategories, rectCategories, rhr::render::cardinal::local::RIGHT);
 //	rectCategories->set_size_max();
 
-    std::shared_ptr<rhr::render::object::button> button_debug = std::make_shared<rhr::render::object::button>(cap::color::black, cap::color().from_u8({255, 110, 0, 255}));
+	std::shared_ptr<rhr::render::object::button_image> button_debug = std::make_shared<rhr::render::object::button_image>("res/deb_run_debug.png");
     button_debug->set_weak(button_debug);
-    button_debug->set_size({100, 20});
+    button_debug->set_size({16, 16});
     button_debug->set_callback(button_callback_build_debug, nullptr);
     frameOptions->add_content(button_debug, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button_debug, button_debug, rhr::render::cardinal::local::LEFT);
 

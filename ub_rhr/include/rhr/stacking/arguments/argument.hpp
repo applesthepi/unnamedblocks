@@ -25,7 +25,10 @@ public:
 
 	/// Sets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \param Argument variable mode.
-	void set_mode(BlockArgumentVariableMode mode);
+	bool set_mode(BlockArgumentVariableMode mode);
+
+	///
+	void set_mode_restriction(BlockArgumentVariableModeRestriction mode_restriction);
 
 	/// Gets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \return Argument variable mode.
@@ -77,11 +80,17 @@ protected:
 	/// Sets data. Data of the argument is stored as a string.
 	virtual void on_set_data();
 
+	///
+	virtual void on_set_mode(BlockArgumentVariableMode mode);
+
 	/// Data of argument stored as a string.
 	std::string m_data;
 
 	/// Mode of argument.
 	BlockArgumentVariableMode m_mode;
+
+	///
+	BlockArgumentVariableModeRestriction m_mode_restriction;
 
 	///
 	cap::color m_block_color;

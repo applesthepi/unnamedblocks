@@ -22,7 +22,7 @@ rhr::render::frame::frame()
 	, m_dragging_bar_idx(0)
 	, m_dragging_mouse_begin({ 0, 0 })
 	, m_dragging_object_begin({ 0, 0 })
-	, m_padding(10)
+	, m_padding(6)
 	, m_background_enabled(false)
 	, m_disable_bar_movement(false)
 {
@@ -288,6 +288,7 @@ void rhr::render::frame::enable_background(const cap::color& color)
 	m_background = std::make_shared<rhr::render::object::rectangle>();
 	m_background->set_weak(m_background);
 	m_background->set_color(color);
+	m_background->set_depth(rhr::render::renderer::depth_frame_background);
 
 	update_background();
 }

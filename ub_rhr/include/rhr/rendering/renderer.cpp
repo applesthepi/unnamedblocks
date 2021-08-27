@@ -1024,11 +1024,14 @@ VkPipeline rhr::render::renderer::ui_texture_pipeline;
 
 u32 rhr::render::renderer::depth_background = 100;
 u32 rhr::render::renderer::depth_plane = 95;
+u32 rhr::render::renderer::depth_frame_background = 93;
 u32 rhr::render::renderer::depth_collection = 90;
 u32 rhr::render::renderer::depth_stack = 85;
 u32 rhr::render::renderer::depth_block = 80;
 u32 rhr::render::renderer::depth_argument = 75;
 u32 rhr::render::renderer::depth_argument_text = 70;
+u32 rhr::render::renderer::depth_ui_background = 65;
+u32 rhr::render::renderer::depth_ui_text = 60;
 
 std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> rhr::render::renderer::m_dirty_renderable;
 std::vector<std::weak_ptr<rhr::render::layer>> rhr::render::renderer::m_layers;
