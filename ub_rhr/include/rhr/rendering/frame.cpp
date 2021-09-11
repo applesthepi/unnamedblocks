@@ -52,12 +52,12 @@ void rhr::render::frame::set_frame(std::shared_ptr<frame>& frame)
 	m_frames.push_back(frame);
 }
 
-void rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::cardinal::local cardinal)
+usize rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::cardinal::local cardinal)
 {
 	if (m_has_content)
 	{
 		Logger::Error("can not add frame to frame that has content");
-		return;
+		return 0;
 	}
 
 	reset_drag();
@@ -74,16 +74,26 @@ void rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::c
 			m_plane = rhr::render::cardinal::plane::HORIZONTAL;
 	}
 
+	usize idx = 0;
+
 	if (cardinal == rhr::render::cardinal::local::UP && m_plane == rhr::render::cardinal::plane::VERTICAL)
 		m_frames.insert(m_frames.begin(), frame);
 	else if (cardinal == rhr::render::cardinal::local::DOWN && m_plane == rhr::render::cardinal::plane::VERTICAL)
+	{
+		idx = m_frames.size();
 		m_frames.insert(m_frames.end(), frame);
+	}
 	else if (cardinal == rhr::render::cardinal::local::LEFT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
 		m_frames.insert(m_frames.begin(), frame);
 	else if (cardinal == rhr::render::cardinal::local::RIGHT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
+	{
+		idx = m_frames.size();
 		m_frames.insert(m_frames.end(), frame);
+	}
 	else
 		Logger::Error("wrong direction when adding a frame to a frame");
+
+	m_frames_enabled.push_back(true);
 
 	if (m_frames.size() > 1)
 	{
@@ -93,9 +103,28 @@ void rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::c
 
 	update_links();
 	update_content_dimentions();
+
+	return idx;
 }
 
-void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable, std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable, std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>>&& positionable, std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>>&& sizeable, rhr::render::cardinal::local cardinal)
+void rhr::render::frame::enable_frame(usize idx, bool enabled)
+{
+	if (idx >= m_frames_enabled.size())
+	{
+		Logger::Error("frame idx out of range");
+		return;
+	}
+
+	m_frames_enabled[idx] = enabled;
+	update_content_dimentions();
+}
+
+void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
+									 std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
+									 std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>>&& positionable,
+									 std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>>&& sizeable,
+									 std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
+									 rhr::render::cardinal::local cardinal)
 {
 	if (m_has_frame)
 	{
@@ -121,13 +150,13 @@ void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_re
 		weak->set_super_position(m_position + m_super_position);
 
 	if (cardinal == rhr::render::cardinal::local::UP && m_plane == rhr::render::cardinal::plane::VERTICAL)
-		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable) });
+		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
 	else if (cardinal == rhr::render::cardinal::local::DOWN && m_plane == rhr::render::cardinal::plane::VERTICAL)
-		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable) });
+		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
 	else if (cardinal == rhr::render::cardinal::local::LEFT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable) });
+		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
 	else if (cardinal == rhr::render::cardinal::local::RIGHT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable) });
+		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
 	else
 		Logger::Error("wrong direction when adding a frame to a frame");
 
@@ -302,8 +331,11 @@ void rhr::render::frame::on_render()
 {
 	if (m_has_frame)
 	{
-		for (auto& frame : m_frames)
-			((rhr::render::interfaces::i_renderable*)frame.get())->render();
+		for (usize i = 0; i < m_frames.size(); i++)
+		{
+			if (m_frames_enabled[i])
+				((rhr::render::interfaces::i_renderable*)m_frames[i].get())->render();
+		}
 	}
 	else if (m_has_content)
 	{
@@ -316,6 +348,10 @@ void rhr::render::frame::on_render()
 				erased = false;
 				i--;
 			}
+
+			if (auto enabled = m_content[i].enableable.lock())
+				if (!enabled->get_enabled())
+					continue;
 
 			if (auto content = m_content[i].renderable.lock())
 				content->render();
@@ -417,6 +453,9 @@ void rhr::render::frame::update_content_dimentions()
 
 		for (usize i = 0; i < m_frames.size(); i++)
 		{
+			if (!m_frames_enabled[i])
+				continue;
+
 			if (i > 0)
 			{
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
@@ -438,7 +477,7 @@ void rhr::render::frame::update_content_dimentions()
 					else
 						offset = m_bars[i].offset - m_bars[i - 1].offset;
 
-					running_size = { offset - static_cast<i32>(static_cast<f32>(0) * 1.5), m_size.y - (static_cast<i32>(0) * 2) };
+					running_size = { offset, m_size.y };
 				}
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
 				{

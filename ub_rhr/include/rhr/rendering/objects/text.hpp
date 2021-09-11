@@ -19,7 +19,7 @@ class text : public rhr::render::interfaces::i_renderable, public rhr::render::i
 {
 public:
 	///
-	text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only);
+	text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only, bool force_register);
 
 	///
 	void set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field);
@@ -92,6 +92,9 @@ private:
 	///
 	void post_color_update() override;
 
+	///
+	void register_field();
+
 	/// Object to render the background rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object_background;
 
@@ -133,5 +136,14 @@ private:
 
 	///
 	u16 m_font_size;
+
+	///
+	bool m_registered;
+
+	///
+	std::weak_ptr<rhr::render::interfaces::i_field> m_weak_field;
+
+	///
+	bool m_force_register;
 };
 }

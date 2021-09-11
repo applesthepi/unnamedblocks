@@ -7,7 +7,7 @@
 
 rhr::stack::argument::real::real(const cap::color& color, void(*update)(void*), void* data)
 	: rhr::stack::argument::argument(color, update, data)
-	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data, false))
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data, false, true))
 	, m_decor_left_top(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_left_bottom(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right_top(std::make_shared<rhr::render::object::object>(true))

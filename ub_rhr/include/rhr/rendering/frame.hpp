@@ -27,10 +27,18 @@ public:
 	void set_frame(std::shared_ptr<frame>& frame);
 
 	///
-	void add_frame(std::shared_ptr<frame>& frame, rhr::render::cardinal::local cardinal);
+	usize add_frame(std::shared_ptr<frame>& frame, rhr::render::cardinal::local cardinal);
 
 	///
-	void add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable, std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable, std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>>&& positionable, std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>>&& sizeable, rhr::render::cardinal::local cardinal);
+	void enable_frame(usize idx, bool enabled);
+
+	///
+	void add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
+					 std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
+					 std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>>&& positionable,
+					 std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>>&& sizeable,
+					 std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
+					 rhr::render::cardinal::local cardinal);
 
 	///
 	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
@@ -52,6 +60,9 @@ public:
 
 	///
 	void disable_bar_movement();
+
+	///
+	void update_content_dimentions();
 protected:
 	///
 	void on_render() override;
@@ -79,6 +90,7 @@ private:
 		std::weak_ptr<rhr::render::interfaces::i_updateable> updateable;
 		std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>> positionable;
 		std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>> sizeable;
+		std::weak_ptr<rhr::render::interfaces::i_enableable> enableable;
 	};
 
 	///
@@ -100,9 +112,6 @@ private:
 		///
 		glm::vec<2, i32> size;
 	};
-
-	///
-	void update_content_dimentions();
 
 	///
 	void submit_new_bar_position(rhr::render::cardinal::local cardinal);
@@ -160,6 +169,9 @@ private:
 
 	///
 	std::vector<std::shared_ptr<frame>> m_frames;
+
+	///
+	std::vector<bool> m_frames_enabled;
 
 	///
 	std::vector<content> m_content;

@@ -12,10 +12,16 @@ static void button_callback_category(void* data)
 	rhr::handler::category::select_category(*active_catagory);
 }
 
+static void button_callback_mod(void* data)
+{
+	usize* category_idx = (usize*)data;
+	rhr::handler::category::toggle_category(*category_idx);
+}
+
 void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& render_frame)
 {
 	m_render_frame = render_frame;
-//	m_render_frame->set_padding(4);
+//	m_render_frame->set_padding(0);
 	m_render_frame->enable_background(cap::color::background_color_2);
 	m_render_frame->disable_bar_movement();
 
@@ -62,11 +68,28 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 	{
 		offset += rhr::stack::block::padding / 2;
 
+		usize* category_idx = new usize;
+		*category_idx = i;
+
  		mod_group group = mod_group(cap::color::text_primary_color, cap::color::background_color_3);
-		group.mod_category.reserve(binned_catagories[i].size());
-		group.mod_button->set_size({ 200, 16 });
+ 		group.mod_category.reserve(binned_catagories[i].size());
+
+		group.mod_button->set_size({ 100, 16 });
 		group.mod_button->enable_fill_width(true);
-		m_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
+		group.mod_button->set_callback(button_callback_mod, category_idx);
+
+		group.mod_button_render_frame = std::make_shared<rhr::render::frame>();
+		group.mod_button_render_frame->set_weak(group.mod_button_render_frame);
+//		group.mod_button_render_frame->set_padding(0);
+
+		group.categories_render_frame = std::make_shared<rhr::render::frame>();
+		group.categories_render_frame->set_weak(group.categories_render_frame);
+//		group.categories_render_frame->set_padding(0);
+
+//		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
+//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
+
+		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
 
 		offset += rhr::stack::block::padding / 2;
  		
@@ -84,7 +107,8 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 			button->set_color_secondary(binned_catagories[i][a]->GetColor());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);
-			m_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, rhr::render::cardinal::local::DOWN);
+
+			group.categories_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, button, rhr::render::cardinal::local::DOWN);
 
 			offset += rhr::stack::block::padding / 2 + button->get_size().y;
 			group.mod_category.push_back(std::move(button));
@@ -114,6 +138,10 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 				group.mod_category_blocks.back().push_back(block);
 			}
 		}
+
+		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
+		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
+		m_render_frame->set_bar(0, 30);
 
 		m_mod_groups.push_back(std::move(group));
 	}

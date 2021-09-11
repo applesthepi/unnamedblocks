@@ -44,6 +44,9 @@ void rhr::render::object::button::set_callback(void(*callback)(void*), void* dat
 
 void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation)
 {
+	if (!m_enabled)
+		return;
+
 	if (operation == MouseOperation::Click)
 	{
 		glm::vec<2, i32> button_position = m_position + m_super_position;

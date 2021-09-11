@@ -84,7 +84,7 @@ int main()
 	rectBackground->set_color(cap::color::background_color_1);
 	rectBackground->set_depth(rhr::render::renderer::depth_background);
 
-	frameBackground->add_content(rectBackground, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectBackground, rectBackground, rhr::render::cardinal::local::RIGHT);
+	frameBackground->add_content(rectBackground, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectBackground, rectBackground, rectBackground, rhr::render::cardinal::local::RIGHT);
 	rectBackground->set_size_max();
 
 	std::shared_ptr<rhr::render::layer> layer = std::make_shared<rhr::render::layer>();
@@ -151,11 +151,11 @@ int main()
     button_debug->set_weak(button_debug);
     button_debug->set_size({16, 16});
     button_debug->set_callback(button_callback_build_debug, nullptr);
-    frameOptions->add_content(button_debug, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button_debug, button_debug, rhr::render::cardinal::local::LEFT);
+    frameOptions->add_content(button_debug, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button_debug, button_debug, button_debug, rhr::render::cardinal::local::LEFT);
 
-	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::render::cardinal::local::RIGHT);
+	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, std::weak_ptr<rhr::render::interfaces::i_enableable>(), rhr::render::cardinal::local::RIGHT);
 	rhr::stack::plane::primary_plane->set_size_max();
-	frameToolbar->add_content(rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::render::cardinal::local::RIGHT);
+	frameToolbar->add_content(rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, std::weak_ptr<rhr::render::interfaces::i_enableable>(), rhr::render::cardinal::local::RIGHT);
 	rhr::stack::plane::toolbar_plane->set_size_max();
 
 	rhr::render::renderer::add_layer(layer);

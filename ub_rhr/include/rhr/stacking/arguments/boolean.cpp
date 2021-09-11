@@ -7,7 +7,7 @@
 
 rhr::stack::argument::boolean::boolean(const cap::color& color, void(*update)(void*), void* data)
 	: argument(color, update, data)
-	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data, false))
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, update, data, false, true))
 	, m_decor_left(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right(std::make_shared<rhr::render::object::object>(true))
 {

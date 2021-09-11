@@ -8,7 +8,7 @@
 
 #define EDGE_CLICK_OVERHANG 5
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only)
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only, bool force_register)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
 	, i_enableable(true)
 	, m_depth(10)
@@ -20,6 +20,8 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	, m_read_only(read_only)
 	, m_mouse_button(nullptr)
 	, m_font_size(16)
+	, m_registered(false)
+	, m_force_register(force_register)
 {
 	m_render_object_background->set_weak(m_render_object_background);
 	m_render_object_text->set_weak(m_render_object_text);
@@ -29,8 +31,10 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 
 void rhr::render::object::text::set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field)
 {
-    if (!m_read_only)
-	    m_location = rhr::stack::plane::primary_plane->get_field().register_field(weak_field, m_position + m_super_position, InputHandler::BullishLayerArguments);
+	m_weak_field = weak_field;
+
+//	if (m_force_register)
+//		register_field();
 }
 
 void rhr::render::object::text::set_text(const std::string& text)
@@ -38,16 +42,16 @@ void rhr::render::object::text::set_text(const std::string& text)
 	if (text.size() == 0)
 	{
 		m_text.clear();
-		m_char_offsets.clear();
-		m_char_contacts.clear();
 		m_render_object_text->set_enabled(false);
-		m_size = { 10, m_font_size };
+		update_size();
+		register_field();
 	}
 	else
 	{
 		m_text = text;
 		m_render_object_text->set_enabled(true);
 		update_size();
+		register_field();
 	}
 
 	mark_dirty();
@@ -138,7 +142,6 @@ std::optional<glm::vec<2, i32>> rhr::render::object::text::get_index_position(us
 		field_position.x += m_padding;
 
 	return field_position;
-
 
 	//i32 running_x = 0;
 
@@ -238,6 +241,12 @@ void rhr::render::object::text::update_size()
 		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
 		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
 	}
+
+	if (m_text.empty())
+	{
+		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
+		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
+	}
 	
 	m_size = { static_cast<i32>(running_char_offsets) + m_padding, m_font_size };
 }
@@ -281,14 +290,13 @@ void rhr::render::object::text::on_update_buffers()
 	}
 
 	m_render_object_text->set_enabled(m_text.size() > 0);
+	f32 font_size_scale = static_cast<f32>(m_font_size) / 16.0f;
 
 	if (m_render_object_text->get_enabled())
 	{
 		rhr::render::vertex* vertices = (rhr::render::vertex*)alloca(sizeof(rhr::render::vertex) * m_text.size() * 4);
 		u32* indices = (u32*)alloca(sizeof(u32) * m_text.size() * 6);
-
 		f32 running_x = static_cast<f32>(m_padding);
-		f32 font_size_scale = static_cast<f32>(m_font_size) / 16.0f;
 
 		for (usize i = 0; i < m_text.size(); i++)
 		{
@@ -311,13 +319,16 @@ void rhr::render::object::text::on_update_buffers()
 		}
 
 		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);
-		m_size = { running_x + m_padding, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
+		m_size = { (running_x + static_cast<f32>(m_padding)) * font_size_scale, rhr::stack::block::height_content };
 	}
 	else
-		m_size = { m_padding * 2, rhr::stack::block::height - (rhr::stack::block::padding * 2) };
+		m_size = { (static_cast<f32>(m_padding) * 2.0f) * font_size_scale, rhr::stack::block::height_content };
 
-	if (!m_read_only)
-	    rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), m_size);
+	if (!m_read_only && m_registered)
+	{
+//		Logger::Debug("updating field size");
+		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), m_size);
+	}
 }
 
 void rhr::render::object::text::on_reload_swap_chain()
@@ -332,7 +343,7 @@ void rhr::render::object::text::post_position_update()
 	m_render_object_background->set_super_position({static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) });
 	m_render_object_text->set_super_position({ static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) - 0.1 });
 
-	if (!m_read_only)
+	if (!m_read_only && m_registered)
 	    m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), m_position + m_super_position);
 
 	mark_dirty();
@@ -371,4 +382,14 @@ void rhr::render::object::text::set_font_size(u16 font_size)
 
 	update_size();
 	mark_dirty();
+}
+
+void rhr::render::object::text::register_field()
+{
+	if (!m_registered)
+	{
+		m_registered = true;
+		if (!m_read_only)
+			m_location = rhr::stack::plane::primary_plane->get_field().register_field(std::move(m_weak_field), m_position + m_super_position, m_size, InputHandler::BullishLayerArguments);
+	}
 }

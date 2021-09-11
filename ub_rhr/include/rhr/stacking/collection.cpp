@@ -9,6 +9,7 @@ rhr::stack::collection::collection()
 {
 	m_background->set_weak(m_background);
 	m_background->set_depth(rhr::render::renderer::depth_collection);
+	m_background->set_color(cap::color().from_u8({ 25, 25, 30, 255 }));
 	m_stacks.reserve(5);
 }
 

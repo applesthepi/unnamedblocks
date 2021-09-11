@@ -47,19 +47,27 @@ private:
 			: mod_button(std::make_shared<rhr::render::object::button>(primary_color, secondary_color))
 		{
 			mod_button->set_weak(mod_button);
-			m_enabled = true;
+			enabled = true;
 		}
 
 		void toggle()
 		{
-			m_enabled = !m_enabled;
+			enabled = !enabled;
 
-			for (auto button : mod_category)
-				button->set_enabled(m_enabled);
+			for (auto& button : mod_category)
+				button->set_enabled(enabled);
+
+			m_render_frame->enable_frame(categories_frame_idx, enabled);
 		}
 
 		///
 		std::shared_ptr<rhr::render::object::button> mod_button;
+
+		///
+		std::shared_ptr<rhr::render::frame> categories_render_frame;
+
+		///
+		std::shared_ptr<rhr::render::frame> mod_button_render_frame;
 
 		///
 		std::vector<std::shared_ptr<rhr::render::object::button_text>> mod_category;
@@ -74,7 +82,10 @@ private:
 		std::vector<std::vector<std::shared_ptr<rhr::stack::block>>> mod_category_blocks;
 
 		///
-		bool m_enabled;
+		bool enabled;
+
+		///
+		usize categories_frame_idx;
 	};
 
 	///
