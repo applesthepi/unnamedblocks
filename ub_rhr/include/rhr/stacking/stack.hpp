@@ -41,6 +41,9 @@ public:
 
 	///
 	void frame_update(f64 delta_time) override;
+
+	///
+	void set_collection_update_function(std::function<void()>* function_collection_update);
 private:
 	///
 	void on_render() override;
@@ -56,5 +59,11 @@ private:
 
 	///
 	std::vector<std::shared_ptr<rhr::stack::block>> m_blocks;
+
+	///
+	std::function<void()>* m_function_collection_update;
+
+	///
+	std::function<void()> m_function_stack_update;
 };
 }

@@ -15,7 +15,7 @@ namespace rhr::stack::argument
 class text : public rhr::stack::argument::argument
 {
 public:
-	text(const cap::color& color, void(*update)(void*), void* data);
+	text(const cap::color& color, std::function<void()>* function_collection_update);
 
 	/// How to interpret the data.
 	/// \return Type of argument.

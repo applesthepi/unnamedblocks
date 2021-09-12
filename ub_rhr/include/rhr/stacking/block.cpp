@@ -17,7 +17,14 @@ static void block_update(void* data)
 rhr::stack::block::block(const std::string& unlocalized_name)
 	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->BlockModBlock)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
+	, m_function_stack_update(nullptr)
 {
+	m_function_block_update = [&]()
+	{
+		update_width();
+		(*m_function_stack_update)();
+	};
+
 	m_size = { 100, rhr::stack::block::height };
 	m_mod_category = rhr::registry::block::get_registry().get_categories(m_mod_block->GetCategory())->CatagoryModCatagory;
 	m_background->set_weak(m_background);
@@ -103,7 +110,7 @@ void rhr::stack::block::update_arguments()
 	{
 		if (argumentInit[i].Type == BlockArgumentType::TEXT)
 		{
-			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor, block_update, this);
+			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -117,7 +124,7 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::REAL)
 		{
-			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor, block_update, this);
+			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -131,7 +138,7 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::STRING)
 		{
-			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor, block_update, this);
+			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -145,7 +152,7 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
 		{
-			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor, block_update, this);
+			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
 			m_arguments.push_back(arg);
 
@@ -188,4 +195,9 @@ bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 	}
 
 	return false;
+}
+
+void rhr::stack::block::set_stack_update_function(std::function<void()>* function_stack_update)
+{
+	m_function_stack_update = function_stack_update;
 }

@@ -14,7 +14,7 @@ namespace rhr::stack::argument
 class boolean : public rhr::stack::argument::argument
 {
 public:
-	boolean(const cap::color& color, void(*update)(void*), void* data);
+	boolean(const cap::color& color, std::function<void()>* function_collection_update);
 
 	/// How to interpret the data.
 	/// \return Type of argument.

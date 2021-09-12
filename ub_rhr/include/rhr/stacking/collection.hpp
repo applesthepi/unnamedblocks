@@ -85,5 +85,8 @@ private:
 
 	///
 	bool m_display_vanity;
+
+	///
+	std::function<void()> m_function_collection_update;
 };
 }

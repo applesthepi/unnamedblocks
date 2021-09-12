@@ -241,8 +241,8 @@ set(UB_MOD_VIN_SRC
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/from_bool.cpp"
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/find.hpp"
 #	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/find.cpp"
-#	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/cat_from.hpp"
-#	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/cat_from.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/cat_from.hpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/include/mod_vin/blocks/strings/cat_from.cpp"
 )
 
 add_library(UB_MOD_VIN MODULE

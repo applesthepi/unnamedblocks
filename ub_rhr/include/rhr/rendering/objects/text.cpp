@@ -8,15 +8,14 @@
 
 #define EDGE_CLICK_OVERHANG 5
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, void(*update)(void*), void* data, bool read_only, bool force_register)
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, std::function<void()>* function_update, bool read_only, bool force_register)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
 	, i_enableable(true)
 	, m_depth(10)
 	, m_render_object_background(std::make_shared<rhr::render::object::object>(true))
 	, m_render_object_text(std::make_shared<rhr::render::object::object>(true))
 	, m_enable_background(true)
-	, m_update(update)
-	, m_update_data(data)
+	, m_function_update(function_update)
 	, m_read_only(read_only)
 	, m_mouse_button(nullptr)
 	, m_font_size(16)
@@ -167,8 +166,9 @@ void rhr::render::object::text::insert_char(char charactor, usize idx)
 	m_text.insert(m_text.begin() + idx, charactor);
 
 	update_size();
-	if (m_update != nullptr)
-		m_update(m_update_data);
+	if (m_function_update != nullptr)
+		(*m_function_update)();
+
 	mark_dirty();
 }
 
@@ -180,8 +180,8 @@ void rhr::render::object::text::insert_string(const std::string& string, usize i
 	m_text.insert(idx, string);
 	
 	update_size();
-	if (m_update != nullptr)
-		m_update(m_update_data);
+	if (m_function_update != nullptr)
+		(*m_function_update)();
 	mark_dirty();
 }
 
@@ -193,8 +193,8 @@ bool rhr::render::object::text::remove_char(usize idx)
 	m_text.erase(m_text.begin() + idx);
 	
 	update_size();
-	if (m_update != nullptr)
-		m_update(m_update_data);
+	if (m_function_update != nullptr)
+		(*m_function_update)();
 	mark_dirty();
 
 	return true;
@@ -209,8 +209,8 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	m_text.erase(idx, size);
 	
 	update_size();
-	if (m_update != nullptr)
-		m_update(m_update_data);
+	if (m_function_update != nullptr)
+		(*m_function_update)();
 	mark_dirty();
 
 	return true;

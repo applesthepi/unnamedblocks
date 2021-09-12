@@ -1,7 +1,14 @@
 #include "stack.hpp"
 
 rhr::stack::stack::stack()
+	: m_function_collection_update(nullptr)
 {
+	m_function_stack_update = [&]()
+	{
+		update_size();
+		(*m_function_collection_update)();
+	};
+
 	m_blocks.reserve(10);
 }
 
@@ -9,6 +16,7 @@ void rhr::stack::stack::add_block(std::shared_ptr<rhr::stack::block> block)
 {
 	block->set_position({ 0, rhr::stack::block::height * m_blocks.size() });
 	block->set_super_position(m_position + m_super_position);
+	block->set_stack_update_function(&m_function_stack_update);
 	m_blocks.push_back(block);
 
 	update_size();
@@ -23,6 +31,7 @@ void rhr::stack::stack::add_blocks(const std::vector<std::shared_ptr<rhr::stack:
 	{
 		blocks[i]->set_position({ 0, rhr::stack::block::height * (m_blocks.size() + i) });
 		blocks[i]->set_super_position(m_position + m_super_position);
+		blocks[i]->set_stack_update_function(&m_function_stack_update);
 		m_blocks.push_back(blocks[i]);
 	}
 
@@ -35,6 +44,7 @@ void rhr::stack::stack::insert_blocks(const std::vector<std::shared_ptr<rhr::sta
 	{
 		blocks[i]->set_position({ 0, rhr::stack::block::height * (idx + i) });
 		blocks[i]->set_super_position(m_position + m_super_position);
+		blocks[i]->set_stack_update_function(&m_function_stack_update);
 		m_blocks.insert(m_blocks.begin() + idx + i, blocks[i]);
 	}
 
@@ -114,4 +124,9 @@ void rhr::stack::stack::post_position_update()
 		m_blocks[i]->set_position({ 0, rhr::stack::block::height * i });
 		m_blocks[i]->set_super_position(m_position + m_super_position);
 	}
+}
+
+void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
+{
+	m_function_collection_update = function_collection_update;
 }

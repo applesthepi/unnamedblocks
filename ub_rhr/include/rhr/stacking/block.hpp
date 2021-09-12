@@ -43,6 +43,9 @@ public:
 	void update_width();
 
 	///
+	void set_stack_update_function(std::function<void()>* function_stack_update);
+
+	///
 	static i16 padding;
 
 	///
@@ -80,5 +83,11 @@ private:
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
+
+	///
+	std::function<void()>* m_function_stack_update;
+
+	///
+	std::function<void()> m_function_block_update;
 };
 }

@@ -7,6 +7,11 @@ rhr::stack::collection::collection()
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_display_vanity(true)
 {
+	m_function_collection_update = [&]()
+	{
+		check_bounds();
+	};
+
 	m_background->set_weak(m_background);
 	m_background->set_depth(rhr::render::renderer::depth_collection);
 	m_background->set_color(cap::color().from_u8({ 25, 25, 30, 255 }));
@@ -16,6 +21,7 @@ rhr::stack::collection::collection()
 void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size)
 {
 	stack->set_super_position(m_position + m_super_position);
+	stack->set_collection_update_function(&m_function_collection_update);
 	m_stacks.push_back(stack);
 
 	if (auto_size)
