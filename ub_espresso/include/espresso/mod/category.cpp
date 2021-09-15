@@ -1,32 +1,32 @@
 #include "category.hpp"
 
-ModCatagory::ModCatagory(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-	:m_modUnlocalizedName(modUnlocalizedName), m_modDisplayName(modDisplayName)
+esp::mod::category::category(const std::string& mod_unlocalized_name, const std::string& mod_display_name)
+:m_mod_unlocalized_name(mod_unlocalized_name), m_mod_display_name(mod_display_name)
 {
 
 }
 
-std::string ModCatagory::GetModUnlocalizedName()
+std::string esp::mod::category::get_mod_unlocalized_name()
 {
-	return m_modUnlocalizedName;
+	return m_mod_unlocalized_name;
 }
 
-std::string ModCatagory::GetModDisplayName()
+std::string esp::mod::category::get_mod_display_name()
 {
-	return m_modDisplayName;
+	return m_mod_display_name;
 }
 
-cap::color ModCatagory::GetColor() const
+cap::color esp::mod::category::get_color() const
 {
 	return cap::color().from_u8({ 255, 0, 255, 255 });
 }
 
-std::string ModCatagory::GetUnlocalizedName() const
+std::string esp::mod::category::get_unlocalized_name() const
 {
 	return "NULL";
 }
 
-std::string ModCatagory::GetDisplayName() const
+std::string esp::mod::category::get_display_name() const
 {
 	return "NULL";
 }

@@ -12,7 +12,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealLogarithmic::GetUnlocalizedName() const
+const char* BlockRealLogarithmic::get_unlocalized_name() const
 {
 	return "vin_real_logarithmic";
 }

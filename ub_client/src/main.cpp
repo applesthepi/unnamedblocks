@@ -44,15 +44,15 @@ int main()
 	//auto testColorN = testColor.GetNormalized();
 	//std::cout << testColorN.r << ", " << testColorN.g << ", " << testColorN.b << ", " << testColorN.a << std::endl;
 
-	// Logger::Info("CLIENT  - " std::string(VER_CLIENT));
-	// Logger::Info("SERVER  - " std::string(VER_SERVER));
+	// cap::logger::Info("CLIENT  - " std::string(VER_CLIENT));
+	// cap::logger::Info("SERVER  - " std::string(VER_SERVER));
 
 // #if MODS
-// 	Logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
+// 	cap::logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
 // #endif
 
 // #if BETA
-// 	Logger::Warn("this is a beta build! There is likely bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
+// 	cap::logger::Warn("this is a beta build! There is likely bugs. Please be careful and save often. Report any issues to the github page https://github.com/applesthepi/unnamedblocks");
 // #endif
 
 #if LINUX
@@ -60,7 +60,7 @@ int main()
 	XInitThreads();
 #endif
 
-	Logger::Info("all unsaved progress will be lost if this window is closed");
+	cap::logger::info("all unsaved progress will be lost if this window is closed");
 	
 	// Frames and Layers
 
@@ -231,7 +231,7 @@ int main()
 			continue;
 		}
 		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-			Logger::Fatal("failed to acquire swap chain image");
+			cap::logger::fatal("failed to acquire swap chain image");
 
 		//std::cout << imageIndex << std::endl;
 		// Check if a previous frame is using this image (i.e. there is its fence to wait on)
@@ -270,7 +270,7 @@ int main()
                 average /= static_cast<f64>(fps_average.size());
 				fps_average.clear();
 
-				Logger::Debug("FPS: " + std::to_string(static_cast<u64>(average)));
+				cap::logger::debug("FPS: " + std::to_string(static_cast<u64>(average)));
 			}
 			else
 				fps_average.push_back(1.0 / delta_time);
@@ -296,7 +296,7 @@ int main()
 
 		if (vkQueueSubmit(rhr::render::renderer::graphics_queue, 1, &submitInfo, rhr::render::renderer::in_flight_fences[current_frame]) != VK_SUCCESS)
 		{
-			Logger::Error("failed to submit draw call to command buffer");
+			cap::logger::error("failed to submit draw call to command buffer");
 			return -1;
 		}
 
@@ -324,7 +324,7 @@ int main()
 		}
 		else if (result != VK_SUCCESS)
 		{
-			Logger::Error("failed to present swap chain image");
+			cap::logger::error("failed to present swap chain image");
 			return -1;
 		}
 

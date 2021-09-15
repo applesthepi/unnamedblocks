@@ -22,7 +22,7 @@ using any linux shell
 3. `./configure.sh`
 
 # Code Style
-This describes the code style that everyone should use throughout Unnamed Blocks and preferably mods. I recommend everyone follow this standard.
+This describes the code style that should be used throughout Unnamed Blocks. Mods don't have to follow this, but I recommend it.
 
 ### Filename
 `snake_case_only_please.hpp`
@@ -125,3 +125,5 @@ This is the version standard Unnamed Blocks will be following.
 
 **Pre-Alpha** - 0.0.1.X  
 **Post-Alpha** - Major . Minor . Beta
+
+All Major and Minor updates should be user tested extensivly while beta updates will have tests ran on it and briefly user tested with some projects.

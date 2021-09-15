@@ -1,45 +1,45 @@
 #include "main.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void ExecuteRelease(pass* pass)
 {
 
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void ExecuteDebug(pass* pass)
 {
 	
 }
 
-const char* BlockSystemMain::GetUnlocalizedName() const
+const char* BlockSystemMain::get_unlocalized_name() const
 {
 	return "vin_main";
 }
 
-const char* BlockSystemMain::GetCategory() const
+const char* BlockSystemMain::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-bool BlockSystemMain::IsTopical() const
+bool BlockSystemMain::is_topical() const
 {
 	return true;
 }
 
-blockExecution BlockSystemMain::PullExecuteRelease() const
+block_execution BlockSystemMain::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockSystemMain::PullExecuteDebug() const
+block_execution BlockSystemMain::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemMain::GetArguments() const
+const std::vector<initializer> BlockSystemMain::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "main"));
+	args.push_back(initializer(type::TEXT, variable_mode_restriction::NONE, variable_mode::RAW, "main"));
 
 	return args;
 }

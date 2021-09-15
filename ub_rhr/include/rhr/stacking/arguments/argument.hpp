@@ -7,7 +7,7 @@
 #include "rhr/rendering/interfaces/i_positionable.hpp"
 
 #include <cappuccino/utils.hpp>
-#include <cappuccino/mod_block/block.hpp>
+#include <cappuccino/mod/block/block.hpp>
 #include <cappuccino/color.hpp>
 
 namespace rhr::stack::argument
@@ -25,14 +25,14 @@ public:
 
 	/// Sets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \param Argument variable mode.
-	bool set_mode(BlockArgumentVariableMode mode);
+	bool set_mode(cap::mod::block::block::argument::variable_mode mode);
 
 	///
-	void set_mode_restriction(BlockArgumentVariableModeRestriction mode_restriction);
+	void set_mode_restriction(cap::mod::block::block::argument::variable_mode_restriction mode_restriction);
 
 	/// Gets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \return Argument variable mode.
-	BlockArgumentVariableMode get_mode();
+	cap::mod::block::block::argument::variable_mode get_mode();
 
 	/// Gets data. Data of the argument is stored as a string.
 	/// \return Data from the argument.
@@ -40,7 +40,7 @@ public:
 
 	/// How to interpret the data.
 	/// \return Type of argument.
-	virtual BlockArgumentType get_type();
+	virtual cap::mod::block::block::argument::type get_type();
 
 	/// Get width for surrounding argument spacing.
 	/// \return Width of argument.
@@ -81,16 +81,16 @@ protected:
 	virtual void on_set_data();
 
 	///
-	virtual void on_set_mode(BlockArgumentVariableMode mode);
+	virtual void on_set_mode(cap::mod::block::block::argument::variable_mode mode);
 
 	/// Data of argument stored as a string.
 	std::string m_data;
 
 	/// Mode of argument.
-	BlockArgumentVariableMode m_mode;
+	cap::mod::block::block::argument::variable_mode m_mode;
 
 	///
-	BlockArgumentVariableModeRestriction m_mode_restriction;
+	cap::mod::block::block::argument::variable_mode_restriction m_mode_restriction;
 
 	///
 	cap::color m_block_color;

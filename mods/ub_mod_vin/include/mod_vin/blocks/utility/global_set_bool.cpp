@@ -18,7 +18,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockUtilityThreadKill::GetUnlocalizedName() const
+const char* BlockUtilityThreadKill::get_unlocalized_name() const
 {
 	return "vin_utility_thread_kill";
 }

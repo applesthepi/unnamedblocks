@@ -22,9 +22,9 @@ rhr::stack::argument::boolean::boolean(const cap::color& color, std::function<vo
 	m_text->set_padding(padding);
 }
 
-BlockArgumentType rhr::stack::argument::boolean::get_type()
+cap::mod::block::block::argument::type rhr::stack::argument::boolean::get_type()
 {
-	return BlockArgumentType::REAL;
+	return cap::mod::block::block::argument::type::REAL;
 }
 
 u32 rhr::stack::argument::boolean::get_width()

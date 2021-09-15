@@ -21,7 +21,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	list->reserve(pass->GetReal(1));
 }
 
-const char* BlockUtilityListReserve::GetUnlocalizedName() const
+const char* BlockUtilityListReserve::get_unlocalized_name() const
 {
 	return "vin_utility_list_reserve";
 }

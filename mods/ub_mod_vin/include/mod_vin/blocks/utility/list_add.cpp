@@ -17,7 +17,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockUtilityListAdd::GetUnlocalizedName() const
+const char* BlockUtilityListAdd::get_unlocalized_name() const
 {
 	return "vin_utility_list_add";
 }

@@ -18,7 +18,7 @@ public:
 
 	/// How to interpret the data.
 	/// \return Type of argument.
-	BlockArgumentType get_type() override;
+	cap::mod::block::block::argument::type get_type() override;
 
 	/// Get width for surrounding argument spacing.
 	/// \return Width of argument.

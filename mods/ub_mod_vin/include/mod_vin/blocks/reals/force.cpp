@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 }
 
-const char* BlockRealForce::GetUnlocalizedName() const
+const char* BlockRealForce::get_unlocalized_name() const
 {
 	return "vin_real_force";
 }

@@ -16,7 +16,7 @@ std::vector<char>* rhr::render::tools::read_file_bytes(const std::string& file_n
 	std::ifstream file(file_name, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
-		Logger::Fatal("failed to open file \"" + file_name + "\"");
+		cap::logger::fatal("failed to open file \"" + file_name + "\"");
 
 	usize file_size = (usize)file.tellg();
 	std::vector<char>* buffer = new std::vector<char>(file_size);
@@ -74,7 +74,7 @@ vk::image_view rhr::render::tools::create_image_view(vk::image image, vk::format
 	vk::image_view image_view;
 
 	if (vkCreateImageView(rhr::render::renderer::device, &view_info, nullptr, &image_view) != VK_SUCCESS)
-		Logger::Fatal("failed to create image view");
+		cap::logger::fatal("failed to create image view");
 
 	return image_view;
 }
@@ -186,7 +186,7 @@ vk::format rhr::render::tools::find_supported_format(const std::vector<vk::forma
 		}
 	}
 
-	Logger::Fatal("failed to find supported format");
+	cap::logger::fatal("failed to find supported format");
 	return candidates.front();
 }
 
@@ -264,7 +264,7 @@ void rhr::render::tools::transition_image_layout(vk::image image, vk::format for
 		destination_stage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
 	else
-		Logger::Fatal("unsupported layout transition");
+		cap::logger::fatal("unsupported layout transition");
 
 	vkCmdPipelineBarrier(
 	    command_buffer,
@@ -288,7 +288,7 @@ u32 rhr::render::tools::find_memory_type(u32 type_filter, vk::memory_property_fl
 			return i;
 	}
 
-	Logger::Fatal("failed to find suitable memory type");
+	cap::logger::fatal("failed to find suitable memory type");
 	return 0;
 }
 
@@ -334,7 +334,7 @@ void rhr::render::tools::create_buffer(vk::device_size size, VkBufferUsageFlags 
 
 	if (vkCreateBuffer(rhr::render::renderer::device, &buffer_info, nullptr, &buffer) != VK_SUCCESS)
 	{
-		Logger::Error("failed to create buffer");
+		cap::logger::error("failed to create buffer");
 		return;
 	}
 
@@ -348,7 +348,7 @@ void rhr::render::tools::create_buffer(vk::device_size size, VkBufferUsageFlags 
 
 	if (vkAllocateMemory(rhr::render::renderer::device, &allocate_info, nullptr, &buffer_memory) != VK_SUCCESS)
 	{
-		Logger::Error("failed to allocate buffer memory");
+		cap::logger::error("failed to allocate buffer memory");
 		return;
 	}
 
@@ -413,7 +413,7 @@ void rhr::render::tools::create_image(u32 width, u32 height, vk::format format, 
 
 	if (vkCreateImage(rhr::render::renderer::device, &image_info, nullptr, &image) != VK_SUCCESS)
 	{
-		Logger::Error("failed to create image");
+		cap::logger::error("failed to create image");
 		return;
 	}
 
@@ -427,7 +427,7 @@ void rhr::render::tools::create_image(u32 width, u32 height, vk::format format, 
 
 	if (vkAllocateMemory(rhr::render::renderer::device, &allocation_info, nullptr, &image_memory) != VK_SUCCESS)
 	{
-		Logger::Error("failed to allocate image memory");
+		cap::logger::error("failed to allocate image memory");
 		return;
 	}
 
@@ -446,7 +446,7 @@ vk::image rhr::render::tools::create_texture_image(const std::string& texture_pa
 	vk::device_size image_size = texture_width * texture_height * 4;
 
 	if (!pixels)
-		Logger::Fatal("failed to load texture \"" + texture_path + "\"");
+		cap::logger::fatal("failed to load texture \"" + texture_path + "\"");
 
 	vk::buffer staging_buffer;
 	vk::device_memory staging_buffer_memory;
@@ -475,7 +475,7 @@ vk::image rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pi
 // 	u8* pixels = (u8*)malloc(size.x * size.y * 4);
 
 // 	if (pixels == nullptr)
-// 		Logger::Fatal("failed to allocate texture in ram.");
+// 		cap::logger::Fatal("failed to allocate texture in ram.");
 
 // 	glm::vec<4, u8> fill_color = color.GetU8();
 // 	
@@ -679,7 +679,7 @@ vk::shader_module rhr::render::tools::create_shader_module(const std::vector<cha
 	vk::shader_module shader_module;
 
 	if (vkCreateShaderModule(*device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
-		Logger::Error("failed to create shader modules");
+		cap::logger::error("failed to create shader modules");
 
 	return shader_module;
 }
@@ -715,9 +715,9 @@ bool rhr::render::tools::is_device_suitable(vk::physical_device* physical_device
 VKAPI_ATTR vk::bool32 VKAPI_CALL rhr::render::tools::debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type, const VkDebugUtilsMessengerCallbackDataEXT* callback_data, void* user_data)
 {
 	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-		Logger::Warn(callback_data->pMessage);
+		cap::logger::warn(callback_data->pMessage);
 	else if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-		Logger::Error(callback_data->pMessage);
+		cap::logger::error(callback_data->pMessage);
 
 	return VK_FALSE;
 }

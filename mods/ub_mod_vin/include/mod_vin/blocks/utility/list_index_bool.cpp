@@ -20,7 +20,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	pass->GetBool(2) = *(bool*)list->at(pass->GetReal(1));
 }
 
-const char* BlockUtilityListIndexBool::GetUnlocalizedName() const
+const char* BlockUtilityListIndexBool::get_unlocalized_name() const
 {
 	return "vin_utility_list_index_bool";
 }

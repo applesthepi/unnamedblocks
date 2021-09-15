@@ -11,7 +11,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealLog::GetUnlocalizedName() const
+const char* BlockRealLog::get_unlocalized_name() const
 {
 	return "vin_real_log";
 }

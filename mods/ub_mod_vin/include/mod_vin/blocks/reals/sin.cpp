@@ -11,7 +11,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealSin::GetUnlocalizedName() const
+const char* BlockRealSin::get_unlocalized_name() const
 {
 	return "vin_real_sin";
 }

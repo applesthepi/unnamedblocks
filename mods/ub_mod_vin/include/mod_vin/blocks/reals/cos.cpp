@@ -11,7 +11,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealCos::GetUnlocalizedName() const
+const char* BlockRealCos::get_unlocalized_name() const
 {
 	return "vin_real_cos";
 }

@@ -3,22 +3,32 @@
 
 #include "cappuccino/export.hpp"
 
-// Utils.hpp requires Logger.hpp
+// utils.hpp requires logger.hpp
 #include <string>
 #include <mutex>
 
-class Logger
+namespace cap
+{
+///
+class logger
 {
 public:
-	static CAP_C_EXPORT void Info(const std::string& message);
+	///
+	static CAP_C_EXPORT void info(const std::string& message);
 
-	static CAP_C_EXPORT void Warn(const std::string& message);
+	///
+	static CAP_C_EXPORT void warn(const std::string& message);
 
-	static CAP_C_EXPORT void Error(const std::string& message);
+	///
+	static CAP_C_EXPORT void error(const std::string& message);
 
-	static CAP_C_EXPORT void Fatal(const std::string& message);
+	///
+	static CAP_C_EXPORT void fatal(const std::string& message);
 
-	static CAP_C_EXPORT void Debug(const std::string& message);
+	///
+	static CAP_C_EXPORT void debug(const std::string& message);
 private:
-	static CAP_C_EXPORT std::mutex m_logMutex;
+	///
+	static CAP_C_EXPORT std::mutex m_log_mutex;
 };
+}

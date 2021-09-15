@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockBooleanFlip::GetUnlocalizedName() const
+const char* BlockBooleanFlip::get_unlocalized_name() const
 {
 	return "vin_boolean_flip";
 }

@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealCompGrEq::GetUnlocalizedName() const
+const char* BlockRealCompGrEq::get_unlocalized_name() const
 {
 	return "vin_real_comp_gr_eq";
 }

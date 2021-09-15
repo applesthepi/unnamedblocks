@@ -16,7 +16,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockSystemWindowVsync::GetUnlocalizedName() const
+const char* BlockSystemWindowVsync::get_unlocalized_name() const
 {
 	return "vin_system_window_vsync";
 }

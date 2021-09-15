@@ -101,7 +101,7 @@ void rhr::handler::field_data::data::host_add_location(const rhr::handler::field
 {
 	if (m_other_locations == nullptr)
 	{
-		Logger::Warn("tried to add a location to a non-host location object");
+		cap::logger::warn("tried to add a location to a non-host location object");
 		return;
 	}
 

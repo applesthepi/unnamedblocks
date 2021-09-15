@@ -2,90 +2,90 @@
 
 #include "cappuccino/registration.hpp"
 
-static void ThreadExecution(ExecutionThread* thr)
+static void thread_execution(cap::execution_thread* thr)
 {
-	const executionFunctionStackList calls = thr->GetCalls();
-	const u64* functionCallCount = thr->GetFunctionCallCount();
-	executionFunctionStack localCallStack;
+	const cap::execution_thread::function_stack_list calls = thr->get_calls();
+	const u64* functionCallCount = thr->get_function_call_count();
+	cap::execution_thread::function_stack local_call_stack;
 	
-	std::vector<u64> callstackBlockIdx;
-	std::vector<u64> callstackStackIdx;
+	std::vector<u64> callstack_block_idx;
+	std::vector<u64> callstack_stack_idx;
 
 	bool successful = false;
-	const std::atomic<bool>& finished = thr->GetFinished();
+	const std::atomic<bool>& finished = thr->get_finished();
 
-	ModBlockData** regData = Registration::GetData();
-	ModBlockPass* pass = thr->GetPass();
+	cap::mod::block::data** reg_data = cap::registration::get_data();
+	cap::mod::block::pass* pass = thr->get_pass();
 
-	pass->SetCallstackStack(&callstackStackIdx);
-	pass->SetCallstackBlock(&callstackBlockIdx);
-	pass->SetData(regData);
-	pass->SetSuccessful(&successful);
-	pass->SetFinished((std::atomic<bool>*)&finished);
-	pass->SetCallstackLocal(&localCallStack);
-	pass->SetCalls(calls);
+	pass->set_callstack_stack(&callstack_stack_idx);
+	pass->set_callstack_block(&callstack_block_idx);
+	pass->set_data(reg_data);
+	pass->set_successful(&successful);
+	pass->set_finished((std::atomic<bool>*) &finished);
+	pass->set_callstack_local(&local_call_stack);
+	pass->set_calls(calls);
 
-	pass->AddCallstack(thr->GetFunctionStart(), 0, false);
+	pass->add_callstack(thr->get_function_start(), 0, false);
 	
 	while (!finished)
 	{
 loop:
-		if (callstackBlockIdx.back() >= functionCallCount[callstackStackIdx.back()])
+		if (callstack_block_idx.back() >= functionCallCount[callstack_stack_idx.back()])
 		{
-			pass->PopCallstack();
+			pass->pop_callstack();
 
 			if (finished)
 				break;
 
-			callstackBlockIdx.back()++;
-			localCallStack = calls[callstackStackIdx.back()];
+			callstack_block_idx.back()++;
+			local_call_stack = calls[callstack_stack_idx.back()];
 
 			continue;
 		}
 
-		localCallStack[callstackBlockIdx.back()](pass);
-		callstackBlockIdx.back()++;
+		local_call_stack[callstack_block_idx.back()](pass);
+		callstack_block_idx.back()++;
 	}
 
-	if (thr->GetBreaked())
+	if (thr->get_breaked())
 	{
-		thr->SetFinished(false);
+		thr->set_finished(false);
 
-		while (!*thr->GetResume())
+		while (!*thr->get_resume())
 		{
 			std::this_thread::sleep_for(std::chrono::milliseconds(100));
 			
-			if (thr->GetKill())
+			if (thr->get_kill())
 			{
 				printf("killed thread during break\n");
 				return;
 			}
 
-			if (thr->GetStep())
+			if (thr->get_step())
 			{
-				thr->SetStep(false);
-				thr->SetFinished(true);
+				thr->set_step(false);
+				thr->set_finished(true);
 				break;
 			}
 		}
 
-		if (*thr->GetResume())
-			thr->SetBreak(false);
+		if (*thr->get_resume())
+			thr->set_break(false);
 
 		goto loop;
 	}
 
-	pass->PerformDeallocationCallbacks();
+	pass->perform_deallocation_callbacks();
 
 	if (successful)
 	{
-		Registration::UnRegisterPass(pass);
-		Registration::UnRegisterExecutionThread(thr, successful);
+		cap::registration::unregister_pass(pass);
+		cap::registration::unregister_execution_thread(thr, successful);
 	}
 }
 
-ExecutionThread::ExecutionThread(u64 functionStart, u64* functionCallCount, executionFunctionStackList calls, ModBlockPass* pass)
-	:m_functionStart(functionStart), m_functionCallCount(functionCallCount), m_calls(calls), m_pass(pass)
+cap::execution_thread::execution_thread(u64 function_start, u64* function_call_count, cap::execution_thread::function_stack_list calls, cap::mod::block::pass* pass)
+	: m_function_start(function_start), m_function_call_count(function_call_count), m_calls(calls), m_pass(pass)
 {
 	m_finished = false;
 	m_kill = false;
@@ -94,70 +94,70 @@ ExecutionThread::ExecutionThread(u64 functionStart, u64* functionCallCount, exec
 	m_resume = nullptr;
 	m_step = false;
 
-	m_thread = std::thread(ThreadExecution, this);
+	m_thread = std::thread(thread_execution, this);
 }
 
-u64 ExecutionThread::GetFunctionStart()
+u64 cap::execution_thread::get_function_start()
 {
-	return m_functionStart;
+	return m_function_start;
 }
 
-const u64* ExecutionThread::GetFunctionCallCount()
+const u64* cap::execution_thread::get_function_call_count()
 {
-	return m_functionCallCount;
+	return m_function_call_count;
 }
 
-const executionFunctionStackList& ExecutionThread::GetCalls()
+const cap::execution_thread::function_stack_list& cap::execution_thread::get_calls()
 {
 	return m_calls;
 }
 
-const std::atomic<bool>& ExecutionThread::GetFinished()
+const std::atomic<bool>& cap::execution_thread::get_finished()
 {
 	return m_finished;
 }
 
-const std::atomic<bool>& ExecutionThread::GetKill()
+const std::atomic<bool>& cap::execution_thread::get_kill()
 {
 	return m_kill;
 }
 
-const std::atomic<bool>& ExecutionThread::GetBreaked()
+const std::atomic<bool>& cap::execution_thread::get_breaked()
 {
 	return m_breaked;
 }
 
-const std::atomic<bool>* ExecutionThread::GetResume()
+const std::atomic<bool>* cap::execution_thread::get_resume()
 {
 	return m_resume;
 }
 
-const std::atomic<bool>& ExecutionThread::GetStep()
+const std::atomic<bool>& cap::execution_thread::get_step()
 {
 	return m_step;
 }
 
-ModBlockPass* ExecutionThread::GetPass()
+cap::mod::block::pass* cap::execution_thread::get_pass()
 {
 	return m_pass;
 }
 
-void ExecutionThread::SetFinished(bool finished)
+void cap::execution_thread::set_finished(bool finished)
 {
 	m_finished = finished;
 }
 
-void ExecutionThread::SetStep(bool step)
+void cap::execution_thread::set_step(bool step)
 {
 	m_step = step;
 }
 
-void ExecutionThread::SetBreak(bool breaked)
+void cap::execution_thread::set_break(bool breaked)
 {
 	m_breaked = breaked;
 }
 
-void ExecutionThread::End()
+void cap::execution_thread::end()
 {
 	if (m_ended)
 		return;
@@ -173,14 +173,14 @@ void ExecutionThread::End()
 		printf("tried to join unjoinable thread\n");
 }
 
-void ExecutionThread::Break(std::atomic<bool>* resume)
+void cap::execution_thread::break_thread(std::atomic<bool>* resume)
 {
 	m_resume = resume;
 	m_breaked = true;
 	m_finished = true;
 }
 
-void ExecutionThread::Step()
+void cap::execution_thread::step()
 {
 	m_step = true;
 

@@ -16,7 +16,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockSystemWindowPullScroll::GetUnlocalizedName() const
+const char* BlockSystemWindowPullScroll::get_unlocalized_name() const
 {
 	return "vin_system_window_pull_scroll";
 }

@@ -21,7 +21,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	(*list)[pass->GetReal(1)] = &pass->GetReal(2);
 }
 
-const char* BlockUtilityListReplace::GetUnlocalizedName() const
+const char* BlockUtilityListReplace::get_unlocalized_name() const
 {
 	return "vin_utility_list_replace";
 }

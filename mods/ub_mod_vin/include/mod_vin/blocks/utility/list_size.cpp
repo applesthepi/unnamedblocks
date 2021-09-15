@@ -12,7 +12,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockUtilityListSize::GetUnlocalizedName() const
+const char* BlockUtilityListSize::get_unlocalized_name() const
 {
 	return "vin_utility_list_size";
 }

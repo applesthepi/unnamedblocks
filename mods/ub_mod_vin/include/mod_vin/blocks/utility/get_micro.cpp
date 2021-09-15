@@ -13,7 +13,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockUtilityGetMicro::GetUnlocalizedName() const
+const char* BlockUtilityGetMicro::get_unlocalized_name() const
 {
 	return "vin_utility_get_micro";
 }

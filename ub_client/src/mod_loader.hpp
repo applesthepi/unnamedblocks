@@ -3,6 +3,8 @@
 
 #include <espresso/mod/data.hpp>
 
+// TODO: fix case
+
 enum class ModLoaderStatus
 {
 	ModLoaderStatus_OK, ModLoaderStatus_ERROR
@@ -12,7 +14,7 @@ class RegMod
 {
 public:
 	RegMod(const std::string fileName)
-		: FileName(fileName), Data(new ModData()), Supported_WIN(false), Supported_LINUX(false) {}
+	: FileName(fileName), Data(new esp::mod::data()), Supported_WIN(false), Supported_LINUX(false) {}
 
 	void SupportWIN()
 	{
@@ -25,7 +27,7 @@ public:
 	}
 
 	std::string FileName;
-	ModData* Data;
+	esp::mod::data* Data;
 
 	bool Supported_WIN;
 	bool Supported_LINUX;

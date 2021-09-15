@@ -27,7 +27,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 		list->InsertValue(&pass->GetReal(1), pass->GetReal(2), false);
 }
 
-const char* BlockUtilityListInsert::GetUnlocalizedName() const
+const char* BlockUtilityListInsert::get_unlocalized_name() const
 {
 	return "vin_utility_list_insert";
 }

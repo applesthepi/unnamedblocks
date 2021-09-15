@@ -28,7 +28,7 @@ static bool RuntimeGlobalPreinit(PreProcessorData&)
 	return true;
 }
 
-const char* BlockSystemCreateWindow::GetUnlocalizedName() const
+const char* BlockSystemCreateWindow::get_unlocalized_name() const
 {
 	return "vin_system_create_window";
 }

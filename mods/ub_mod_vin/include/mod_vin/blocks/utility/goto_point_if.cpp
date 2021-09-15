@@ -15,7 +15,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
+static bool RuntimeInit(PreProcessorData& preData, cap::mod::block::data& blockData)
 {
 	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
 	i64 idx = finder->FindPoint(*(std::string*)blockData.GetData()[0]);
@@ -33,7 +33,7 @@ static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 	return true;
 }
 
-const char* BlockUtilityGotoPointIf::GetUnlocalizedName() const
+const char* BlockUtilityGotoPointIf::get_unlocalized_name() const
 {
 	return "vin_utility_goto_point_if";
 }

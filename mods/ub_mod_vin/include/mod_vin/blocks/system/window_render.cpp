@@ -17,7 +17,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockSystemWindowRender::GetUnlocalizedName() const
+const char* BlockSystemWindowRender::get_unlocalized_name() const
 {
 	return "vin_system_window_render";
 }

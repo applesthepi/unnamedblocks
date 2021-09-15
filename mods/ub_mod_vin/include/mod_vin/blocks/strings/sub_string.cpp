@@ -48,7 +48,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	finalStr = str.substr(idxAt, idxCount);
 }
 
-const char* BlockStringSubString::GetUnlocalizedName() const
+const char* BlockStringSubString::get_unlocalized_name() const
 {
 	return "vin_string_sub_string";
 }

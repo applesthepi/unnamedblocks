@@ -14,6 +14,8 @@
 #include <windows.h>
 #endif
 
+// TODO: fix case
+
 std::vector<RegMod>* mods;
 
 void registerMod(const std::string& fileName, const std::string& fileType)
@@ -47,7 +49,7 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 ModLoaderStatus run()
 {
 	rhr::handler::project::mods.clear();
-	typedef void(*f_initialize)(ModData*);
+	typedef void(*f_initialize)(esp::mod::data*);
 
 	mods = new std::vector<RegMod>();
 
@@ -62,7 +64,7 @@ ModLoaderStatus run()
 	}
 	catch (std::exception* e)
 	{
-		Logger::Warn("no mods folder present; starting base editor");
+		cap::logger::warn("no mods folder present; starting base editor");
 	}
 
 	for (u16 i = 0; i < mods->size(); i++)
@@ -70,7 +72,7 @@ ModLoaderStatus run()
 #if LINUX
 		if (!(*mods)[i].Supported_LINUX)
 		{
-			Logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
+			cap::logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
 			continue;
 		}
 
@@ -78,14 +80,14 @@ ModLoaderStatus run()
 
 		if (!so)
 		{
-			Logger::Error("failed to load mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::Error("failed to load mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
 		f_initialize initialize = (f_initialize)dlsym(so, "Initialization");
 		if (initialize == nullptr)
 		{
-			Logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
@@ -93,7 +95,7 @@ ModLoaderStatus run()
 #else
 		if (!(*mods)[i].Supported_WIN)
 		{
-			Logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
+			cap::logger::warn("mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
 			continue;
 		}
 
@@ -101,28 +103,28 @@ ModLoaderStatus run()
 
 		if (!hGetProcIDDLL)
 		{
-			Logger::Error("failed to load mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error("failed to load mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
 		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "Initialization");
 		if (initialize == nullptr)
 		{
-			Logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif
 		initialize((*mods)[i].Data);
 		
-		rhr::handler::project::mods.push_back((*mods)[i].Data->ModUnlocalizedName);
+		rhr::handler::project::mods.push_back((*mods)[i].Data->get_mod_unlocalized_name());
 
-		ModDataBaked baked = (*mods)[i].Data->Bake();
+		esp::mod::data* mod_data = (*mods)[i].Data;
 
-		for (u32 j = 0; j < baked.CategoriesLength; j++)
-			rhr::registry::block::get_registry().register_category(baked.Categories[j], mods->at(i).Data->ModUnlocalizedName);
+		for (u32 j = 0; j < mod_data->get_categories().size(); j++)
+			rhr::registry::block::get_registry().register_category(mod_data->get_categories()[j], mods->at(i).Data->get_mod_unlocalized_name());
 
-		for (u32 j = 0; j < baked.BlocksLength; j++)
-			rhr::registry::block::get_registry().register_block(baked.Blocks[j], mods->at(i).Data->ModUnlocalizedName);
+		for (u32 j = 0; j < mod_data->get_blocks().size(); j++)
+			rhr::registry::block::get_registry().register_block(mod_data->get_blocks()[j], mods->at(i).Data->get_mod_unlocalized_name());
 	}
 
 	return ModLoaderStatus::ModLoaderStatus_OK;

@@ -20,7 +20,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	pass->GetReal(2) = *(f64*)list->at(pass->GetReal(1));
 }
 
-const char* BlockUtilityListIndexReal::GetUnlocalizedName() const
+const char* BlockUtilityListIndexReal::get_unlocalized_name() const
 {
 	return "vin_utility_list_index_real";
 }

@@ -12,7 +12,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealRandom::GetUnlocalizedName() const
+const char* BlockRealRandom::get_unlocalized_name() const
 {
 	return "vin_real_random";
 }

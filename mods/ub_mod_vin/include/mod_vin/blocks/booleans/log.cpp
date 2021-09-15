@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockBooleanLog::GetUnlocalizedName() const
+const char* BlockBooleanLog::get_unlocalized_name() const
 {
 	return "vin_boolean_log";
 }

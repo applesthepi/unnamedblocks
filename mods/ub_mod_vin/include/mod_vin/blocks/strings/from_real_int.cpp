@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockStringFromRealInt::GetUnlocalizedName() const
+const char* BlockStringFromRealInt::get_unlocalized_name() const
 {
 	return "vin_string_from_real_int";
 }

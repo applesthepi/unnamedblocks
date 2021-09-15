@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	
 }
 
-static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
+static bool RuntimeInit(PreProcessorData& preData, cap::mod::block::data& blockData)
 {
 	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
 	finder->AddFunction(*(std::string*)blockData.GetData()[0], preData.StackIdx);
@@ -30,7 +30,7 @@ static bool RuntimeGlobalPostInit(PreProcessorData& data)
 	return true;
 }
 
-const char* BlockUtilityFunctionDefine::GetUnlocalizedName() const
+const char* BlockUtilityFunctionDefine::get_unlocalized_name() const
 {
 	return "vin_utility_function_define";
 }

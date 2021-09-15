@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealMultiply::GetUnlocalizedName() const
+const char* BlockRealMultiply::get_unlocalized_name() const
 {
 	return "vin_real_multiply";
 }

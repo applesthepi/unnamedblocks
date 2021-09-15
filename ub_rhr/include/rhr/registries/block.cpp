@@ -1,53 +1,53 @@
 #include "block.hpp"
 
-void rhr::registry::block::register_block(ModBlock* block, const std::string& mod_unlocalized_name)
+void rhr::registry::block::register_block(cap::mod::block::block* block, const std::string& mod_unlocalized_name)
 {
 	m_blocks.push_back({ block, mod_unlocalized_name });
 }
 
-void rhr::registry::block::register_category(ModCatagory* catagory, const std::string& mod_unlocalized_name)
+void rhr::registry::block::register_category(esp::mod::category* category, const std::string& mod_unlocalized_name)
 {
-	m_catagories.push_back({ catagory, mod_unlocalized_name });
+	m_categories.push_back({ category, mod_unlocalized_name });
 }
 
-const rhr::registry::block::BlockInfo* rhr::registry::block::get_block(const std::string& unlocalized_name)
+const rhr::registry::block::block_info* rhr::registry::block::get_block(const std::string& unlocalized_name)
 {
 	for (auto& info : m_blocks)
 	{
-		if (info.BlockModBlock->GetUnlocalizedName() == unlocalized_name)
+		if (info.block_mod_block->get_unlocalized_name() == unlocalized_name)
 			return &info;
 	}
 
 	for (auto& info : m_blocks)
 	{
-		if (info.BlockModBlock->GetUnlocalizedName() == "vin_null")
+		if (info.block_mod_block->get_unlocalized_name() == "vin_null")
 			return &info;
 	}
 
-	Logger::Error("Unexpected failure to receive vin_null block. Mod loading error?");
+	cap::logger::error("Unexpected failure to receive vin_null block. Mod loading error?");
 	return nullptr;
 }
 
-const rhr::registry::block::CatagoryInfo* rhr::registry::block::get_categories(const std::string& unlocalized_name)
+const rhr::registry::block::category_info* rhr::registry::block::get_categories(const std::string& unlocalized_name)
 {
-	for (auto& info : m_catagories)
+	for (auto& info : m_categories)
 	{
-		if (info.CatagoryModCatagory->GetUnlocalizedName() == unlocalized_name)
+		if (info.category_mod_category->get_unlocalized_name() == unlocalized_name)
 			return &info;
 	}
 
-	Logger::Error("Unexpected failure to get a catagory. Mod loading error?");
+	cap::logger::error("Unexpected failure to get a catagory. Mod loading error?");
 	return nullptr;
 }
 
-const std::vector<rhr::registry::block::BlockInfo>& rhr::registry::block::get_blocks()
+const std::vector<rhr::registry::block::block_info>& rhr::registry::block::get_blocks()
 {
 	return m_blocks;
 }
 
-const std::vector<rhr::registry::block::CatagoryInfo>& rhr::registry::block::get_categories()
+const std::vector<rhr::registry::block::category_info>& rhr::registry::block::get_categories()
 {
-	return m_catagories;
+	return m_categories;
 }
 
 void rhr::registry::block::create_block_registry()

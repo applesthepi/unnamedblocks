@@ -25,12 +25,12 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 	m_render_frame->enable_background(cap::color::background_color_2);
 	m_render_frame->disable_bar_movement();
 
-	const std::vector<rhr::registry::block::CatagoryInfo>& category_infos = rhr::registry::block::get_registry().get_categories();
-	const std::vector<rhr::registry::block::BlockInfo>& block_infos = rhr::registry::block::get_registry().get_blocks();
+	const std::vector<rhr::registry::block::category_info>& category_infos = rhr::registry::block::get_registry().get_categories();
+	const std::vector<rhr::registry::block::block_info>& block_infos = rhr::registry::block::get_registry().get_blocks();
 
 	//std::vector<std::string> binnedMods;
-	std::vector<std::vector<ModCatagory*>> binned_catagories;
-	std::vector<std::vector<std::vector<ModBlock*>>> binned_blocks;
+	std::vector<std::vector<esp::mod::category*>> binned_catagories;
+	std::vector<std::vector<std::vector<cap::mod::block::block*>>> binned_blocks;
 
 	bool found = false;
 
@@ -38,22 +38,23 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 
 	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
 	{
-		binned_catagories.push_back(std::vector<ModCatagory*>());
-		binned_blocks.push_back(std::vector<std::vector<ModBlock*>>());
+		binned_catagories.push_back(std::vector<esp::mod::category*>());
+		binned_blocks.push_back(std::vector<std::vector<cap::mod::block::block*>>());
 
 		for (usize a = 0; a < category_infos.size(); a++)
 		{
-			if (category_infos[a].CatagoryModUnlocalizedName == rhr::handler::project::mods[i])
+			if (category_infos[a].category_mod_unlocalized_name == rhr::handler::project::mods[i])
 			{
-				binned_catagories[i].push_back(category_infos[a].CatagoryModCatagory);
-				binned_blocks[i].push_back(std::vector<ModBlock*>());
+				binned_catagories[i].push_back(category_infos[a].category_mod_category);
+				binned_blocks[i].push_back(std::vector<cap::mod::block::block*>());
 
 				for (usize b = 0; b < block_infos.size(); b++)
 				{
-					if (block_infos[b].BlockModUnlocalizedName == rhr::handler::project::mods[i] &&
-						block_infos[b].BlockModBlock->GetCategory() == category_infos[a].CatagoryModCatagory->GetUnlocalizedName())
+					if (block_infos[b].block_mod_unlocalized_name == rhr::handler::project::mods[i] &&
+						block_infos[b].block_mod_block->get_category() ==
+						category_infos[a].category_mod_category->get_unlocalized_name())
 					{
-						binned_blocks[i][a].push_back(block_infos[b].BlockModBlock);
+						binned_blocks[i][a].push_back(block_infos[b].block_mod_block);
 					}
 				}
 			}
@@ -100,11 +101,12 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 			active_catagories[a].mod_group = static_cast<u16>(i);
 			active_catagories[a].mod_group_category = static_cast<u16>(a);
 
-			std::shared_ptr<rhr::render::object::button_text> button = std::make_shared<rhr::render::object::button_text>(cap::color::black, cap::color::background_color_3, binned_catagories[i][a]->GetDisplayName());
+			std::shared_ptr<rhr::render::object::button_text> button = std::make_shared<rhr::render::object::button_text>(cap::color::black, cap::color::background_color_3,
+																														  binned_catagories[i][a]->get_display_name());
 			button->set_weak(button);
 			button->set_size({ 200, 16 });
 			button->set_position({ 16, 0 });
-			button->set_color_secondary(binned_catagories[i][a]->GetColor());
+			button->set_color_secondary(binned_catagories[i][a]->get_color());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);
 
@@ -127,7 +129,8 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>();
 				stack->set_weak(stack);
 
-				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(binned_blocks[i][a][b]->GetUnlocalizedName());
+				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(
+				binned_blocks[i][a][b]->get_unlocalized_name());
 				block->set_weak(block);
 				
 				stack->add_block(block);
@@ -166,13 +169,17 @@ void rhr::handler::category::select_category(active active_category)
 
 	if (m_active_category.mod_group >= m_mod_groups.size())
 	{
-		Logger::Warn("Failed to load catagory. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " + std::to_string(m_mod_groups.size()) + ")");
+		cap::logger::warn(
+		"Failed to load catagory. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " +
+		std::to_string(m_mod_groups.size()) + ")");
 		return;
 	}
 
 	if (m_active_category.mod_group_category >= m_mod_groups[m_active_category.mod_group].mod_category.size())
 	{
-		Logger::Warn("Failed to load catagory. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) + " >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category.size()) + ")");
+		cap::logger::warn(
+		"Failed to load catagory. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) +
+		" >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category.size()) + ")");
 		return;
 	}
 
@@ -186,7 +193,7 @@ void rhr::handler::category::toggle_category(usize category_idx)
 {
 	if (category_idx >= m_mod_groups.size())
 	{
-		Logger::Warn("failed to toggle category out of bounds");
+		cap::logger::warn("failed to toggle category out of bounds");
 		return;
 	}
 

@@ -71,7 +71,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	pass->AddDeallocation(dealloc);
 }
 
-static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
+static bool RuntimeInit(PreProcessorData& preData, cap::mod::block::data& blockData)
 {
 	FunctionFinder* finder = (FunctionFinder*)preData.GetStructure(FUNCTION_FINDER_NAME);
 	u64* loc = new u64;
@@ -83,7 +83,7 @@ static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 	return true;
 }
 
-const char* BlockUtilityThreadSummon::GetUnlocalizedName() const
+const char* BlockUtilityThreadSummon::get_unlocalized_name() const
 {
 	return "vin_utility_thread_summon";
 }

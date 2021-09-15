@@ -35,7 +35,7 @@ private:
 class BlockUtilityMarkPoint : public ModBlock
 {
 public:
-	const char* GetUnlocalizedName() const override;
+	const char* get_unlocalized_name() const override;
 	const char* GetCategory() const override;
 
 	blockExecution PullExecuteDebug() const override;

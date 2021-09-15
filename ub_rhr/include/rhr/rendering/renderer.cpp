@@ -64,7 +64,7 @@ void rhr::render::renderer::initialize_window()
 	window = glfwCreateWindow(window_size.x, window_size.y, window_title, NULL, NULL);
 
 	if (window == NULL)
-		Logger::Fatal("Failed to create GLFW window");
+		cap::logger::fatal("Failed to create GLFW window");
 
 	glfwSetFramebufferSizeCallback(window, frame_buffer_resize_callback);
 	glfwSetKeyCallback(window, key_callback);
@@ -77,7 +77,7 @@ void rhr::render::renderer::initialize_window()
 	auto glfw_window_result = glfwCreateWindowSurface(instance, window, nullptr, &surface);
 
 	if (glfw_window_result != VK_SUCCESS)
-		Logger::Fatal(std::to_string(glfw_window_result));
+		cap::logger::fatal(std::to_string(glfw_window_result));
 }
 
 //static std::shared_ptr<vui::RenderRectangle> testObject = std::make_shared<vui::RenderRectangle>();
@@ -168,7 +168,7 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 	begin_info.pInheritanceInfo = nullptr; // Optional
 
 	if (vkBeginCommandBuffer(active_command_buffer, &begin_info) != VK_SUCCESS)
-		Logger::Fatal("failed to start the command buffer");
+		cap::logger::fatal("failed to start the command buffer");
 
 	vk::render_pass_begin_info render_pass_info{};
 	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -232,7 +232,7 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 	vkCmdEndRenderPass(active_command_buffer);
 
 	if (vkEndCommandBuffer(active_command_buffer) != VK_SUCCESS)
-		Logger::Fatal("failed to close the command buffer");
+		cap::logger::fatal("failed to close the command buffer");
 }
 
 void rhr::render::renderer::clean_up_swap_chain()
@@ -404,7 +404,7 @@ void rhr::render::renderer::init_instance()
 	}
 
 	if (vkCreateInstance(&create_info, nullptr, &instance) != VK_SUCCESS)
-		Logger::Fatal("vulkan failed to initialize");
+		cap::logger::fatal("vulkan failed to initialize");
 
 	u32 extension_count = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
@@ -413,7 +413,7 @@ void rhr::render::renderer::init_instance()
 	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
 
 	if (enable_validation_layers && !rhr::render::tools::check_validation_layer_support())
-		Logger::Fatal("vulkan validation layers unsupported");
+		cap::logger::fatal("vulkan validation layers unsupported");
 }
 
 void rhr::render::renderer::init_debug()
@@ -425,7 +425,7 @@ void rhr::render::renderer::init_debug()
 	rhr::render::tools::populate_debug_messenge_create_info(create_info);
 
 	if (rhr::render::tools::create_debug_utils_message_ext(&instance, &create_info, nullptr, &debug_messenger) != VK_SUCCESS)
-		Logger::Fatal("failed to create debug utils message EXT");
+		cap::logger::fatal("failed to create debug utils message EXT");
 }
 
 void rhr::render::renderer::init_device()
@@ -434,7 +434,7 @@ void rhr::render::renderer::init_device()
 	vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
 
 	if (device_count == 0)
-		Logger::Fatal("no supported vulkan devices found");
+		cap::logger::fatal("no supported vulkan devices found");
 
 	std::vector<vk::physical_device> devices(device_count);
 	vkEnumeratePhysicalDevices(instance, &device_count, devices.data());
@@ -449,7 +449,7 @@ void rhr::render::renderer::init_device()
 	}
 
 	if (physical_device == VK_NULL_HANDLE)
-		Logger::Fatal("failed to pick appropriate device");
+		cap::logger::fatal("failed to pick appropriate device");
 }
 
 void rhr::render::renderer::init_logical_device()
@@ -485,7 +485,7 @@ void rhr::render::renderer::init_logical_device()
 		create_info.enabledLayerCount = 0;
 
 	if (vkCreateDevice(physical_device, &create_info, nullptr, &device) != VK_SUCCESS)
-		Logger::Fatal("failed to create logical device link to gpu");
+		cap::logger::fatal("failed to create logical device link to gpu");
 
 	vkGetDeviceQueue(device, indices.graphics_family.value(), 0, &graphics_queue);
 }
@@ -537,7 +537,7 @@ void rhr::render::renderer::init_swap_chain()
 	create_info.oldSwapchain = VK_NULL_HANDLE;
 
 	if (vkCreateSwapchainKHR(device, &create_info, nullptr, &swap_chain) != VK_SUCCESS)
-		Logger::Fatal("failed to create swap chain");
+		cap::logger::fatal("failed to create swap chain");
 
 	vkGetSwapchainImagesKHR(device, swap_chain, &imageCount, nullptr);
 	swap_chain_images.resize(imageCount);
@@ -611,7 +611,7 @@ void rhr::render::renderer::init_render_pass()
 	render_pass_info.pDependencies = &dependency;
 
 	if (vkCreateRenderPass(device, &render_pass_info, nullptr, &render_pass) != VK_SUCCESS)
-		Logger::Fatal("failed to create render pass");
+		cap::logger::fatal("failed to create render pass");
 }
 
 void rhr::render::renderer::init_descriptor_set_layout()
@@ -637,7 +637,7 @@ void rhr::render::renderer::init_descriptor_set_layout()
 	layout_info.pBindings = bindings.data();
 
 	if (vkCreateDescriptorSetLayout(device, &layout_info, nullptr, &descriptor_set_layout) != VK_SUCCESS)
-		Logger::Fatal("failed to set descriptor layout");
+		cap::logger::fatal("failed to set descriptor layout");
 }
 
 void rhr::render::renderer::create_pipeline(const std::string& shader, VkPipeline* pipeline, VkPipelineLayout* layout)
@@ -760,7 +760,7 @@ void rhr::render::renderer::create_pipeline(const std::string& shader, VkPipelin
 	pipeline_layout_info.pPushConstantRanges = nullptr; // Optional
 
 	if (vkCreatePipelineLayout(device, &pipeline_layout_info, nullptr, layout) != VK_SUCCESS)
-		Logger::Fatal("failed to create pipeline layout");
+		cap::logger::fatal("failed to create pipeline layout");
 
 	VkPipelineDepthStencilStateCreateInfo depth_stencil{};
 	depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
@@ -794,7 +794,7 @@ void rhr::render::renderer::create_pipeline(const std::string& shader, VkPipelin
 	pipeline_info.basePipelineIndex = -1; // Optional
 
 	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, pipeline) != VK_SUCCESS)
-		Logger::Fatal("failed to create graphics pipeline");
+		cap::logger::fatal("failed to create graphics pipeline");
 }
 
 void rhr::render::renderer::init_pipelines()
@@ -814,7 +814,7 @@ void rhr::render::renderer::init_command_pool()
 	pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
 
 	if (vkCreateCommandPool(device, &pool_info, nullptr, &command_pool) != VK_SUCCESS)
-		Logger::Fatal("failed to create command pool");
+		cap::logger::fatal("failed to create command pool");
 }
 
 void rhr::render::renderer::init_frame_buffers()
@@ -838,7 +838,7 @@ void rhr::render::renderer::init_frame_buffers()
 		frame_buffer_info.layers = 1;
 
 		if (vkCreateFramebuffer(device, &frame_buffer_info, nullptr, &swap_chain_frame_buffers[i]) != VK_SUCCESS)
-			Logger::Fatal("failed to create frame buffers");
+			cap::logger::fatal("failed to create frame buffers");
 	}
 }
 
@@ -876,7 +876,7 @@ void rhr::render::renderer::init_texture_sampler()
 	sampler_info.maxLod = 0.0f;
 
 	if (vkCreateSampler(device, &sampler_info, nullptr, &texture_sampler) != VK_SUCCESS)
-		Logger::Fatal("failed to create texture sampler");
+		cap::logger::fatal("failed to create texture sampler");
 }
 
 void rhr::render::renderer::init_descriptor_pool()
@@ -897,7 +897,7 @@ void rhr::render::renderer::init_descriptor_pool()
 	pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
 	if (vkCreateDescriptorPool(device, &pool_info, nullptr, &descriptor_pool) != VK_SUCCESS)
-		Logger::Fatal("failed to create descriptor pool");
+		cap::logger::fatal("failed to create descriptor pool");
 }
 
 void rhr::render::renderer::init_command_buffers()
@@ -911,7 +911,7 @@ void rhr::render::renderer::init_command_buffers()
 	alloc_info.commandBufferCount = (u32)command_buffers.size();
 
 	if (vkAllocateCommandBuffers(device, &alloc_info, command_buffers.data()) != VK_SUCCESS)
-		Logger::Fatal("failed to create command buffers");
+		cap::logger::fatal("failed to create command buffers");
 
 	for (usize i = 0; i < command_buffers.size(); i++)
 	{
@@ -921,7 +921,7 @@ void rhr::render::renderer::init_command_buffers()
 		begin_info.pInheritanceInfo = nullptr; // Optional
 
 		if (vkBeginCommandBuffer(command_buffers[i], &begin_info) != VK_SUCCESS)
-			Logger::Fatal("failed to start the command buffer");
+			cap::logger::fatal("failed to start the command buffer");
 
 		vk::render_pass_begin_info render_pass_info{};
 		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -943,7 +943,7 @@ void rhr::render::renderer::init_command_buffers()
 		vkCmdEndRenderPass(command_buffers[i]);
 
 		if (vkEndCommandBuffer(command_buffers[i]) != VK_SUCCESS)
-			Logger::Fatal("failed to close the command buffer");
+			cap::logger::fatal("failed to close the command buffer");
 	}
 }
 
@@ -976,7 +976,7 @@ void rhr::render::renderer::init_sync_objects()
 	for (usize i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
 		if (vkCreateSemaphore(device, &semaphore_info, nullptr, &image_available_semaphores[i]) != VK_SUCCESS || vkCreateSemaphore(device, &semaphore_info, nullptr, &render_finished_semaphores[i]) != VK_SUCCESS || vkCreateFence(device, &fence_info, nullptr, &in_flight_fences[i]) != VK_SUCCESS)
-			Logger::Fatal("failed to create semaphores");
+			cap::logger::fatal("failed to create semaphores");
 	}
 }
 

@@ -15,7 +15,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockStringFind::GetUnlocalizedName() const
+const char* BlockStringFind::get_unlocalized_name() const
 {
 	return "vin_string_find";
 }

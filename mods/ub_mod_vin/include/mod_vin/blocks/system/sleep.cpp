@@ -31,7 +31,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	std::this_thread::sleep_for(std::chrono::milliseconds(msUint));
 }
 
-const char* BlockSystemSleep::GetUnlocalizedName() const
+const char* BlockSystemSleep::get_unlocalized_name() const
 {
 	return "vin_system_sleep";
 }

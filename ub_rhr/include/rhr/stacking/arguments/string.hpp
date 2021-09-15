@@ -19,7 +19,7 @@ public:
 
 	/// How to interpret the data.
 	/// \return Type of argument.
-	BlockArgumentType get_type() override;
+	cap::mod::block::block::argument::type get_type() override;
 
 	/// Get width for surrounding argument spacing.
 	/// \return Width of argument.
@@ -56,7 +56,7 @@ private:
 	void on_set_data() override;
 
 	///
-	void on_set_mode(BlockArgumentVariableMode mode) override;
+	void on_set_mode(cap::mod::block::block::argument::variable_mode mode) override;
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;

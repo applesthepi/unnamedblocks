@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealMinus::GetUnlocalizedName() const
+const char* BlockRealMinus::get_unlocalized_name() const
 {
 	return "vin_real_minus";
 }

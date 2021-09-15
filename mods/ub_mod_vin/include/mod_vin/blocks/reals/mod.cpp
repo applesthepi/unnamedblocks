@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealMod::GetUnlocalizedName() const
+const char* BlockRealMod::get_unlocalized_name() const
 {
 	return "vin_real_mod";
 }

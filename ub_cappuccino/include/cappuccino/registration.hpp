@@ -2,61 +2,130 @@
 #include "config.h"
 
 #include "cappuccino/utils.hpp"
-#include "cappuccino/mod_block/block.hpp"
-#include "cappuccino/mod_block/pass.hpp"
+#include "cappuccino/mod/block/block.hpp"
+#include "cappuccino/mod/block/pass.hpp"
 #include "cappuccino/execution_thread.hpp"
-#include "cappuccino/mod_block/data.hpp"
+#include "cappuccino/mod/block/data.hpp"
 
-class Registration
+namespace cap
+{
+///
+class registration
 {
 public:
-	static void Initialize();
+	///
+	static void initialize();
 
-	static void RegisterPass(ModBlockPass* pass);
-	static void UnRegisterPass(ModBlockPass* pass);
+	///
+	static void register_pass(cap::mod::block::pass* pass);
 
-	static void RegisterExecutionThread(ExecutionThread* thr);
-	static void UnRegisterExecutionThread(ExecutionThread* thr, bool join);
+	///
+	static void unregister_pass(cap::mod::block::pass* pass);
 
-	static void SetFunctionMain(u64 main);
-	static void SetFunctionCallCount(u64* functionCallCount);
-	static void SetFunctionTotalCount(u64 functionTotalCount);
-	static void SetCalls(executionFunctionStackList calls);
-	static void SetData(ModBlockData** data);
-	static void SetBlocks(ModBlock*** blocks);
-	static void SetDebug(bool debugBuild);
-	static void SetSuper(u8* super, i64* superData, void* superMutex);
+	///
+	static void register_execution_thread(cap::execution_thread* thr);
 
-	static void EndAll(ModBlockPass* whitelist = nullptr);
-	static void Stop();
+	///
+	static void unregister_execution_thread(cap::execution_thread* thr, bool join);
 
-	static std::atomic<bool>& GetUtilFinished();
-	static std::atomic<bool>& GetStop();
-	static u64* GetFunctionCallCount();
-	static u64 GetFunctionTotalCount();
-	static executionFunctionStackList GetCalls();
-	static void SetUtilReturnFinished(bool finished);
-	static void RunUtilityTick();
-	static void Run();
-	static bool IsAllDone();
+	///
+	static void set_function_main(u64 main);
 
-	static const std::vector<f64*>& GetRealTemplate();
-	static const std::vector<bool*>& GetBoolTemplate();
-	static const std::vector<std::string*>& GetStringTemplate();
+	///
+	static void set_function_call_count(u64* function_call_count);
 
-	static const std::vector<u64>* GetRealCount();
-	static const std::vector<u64>* GetBoolCount();
-	static const std::vector<u64>* GetStringCount();
+	///
+	static void set_function_total_count(u64 function_total_count);
 
-	static std::mutex* GetCustomMutex();
-	static std::vector<void*>* GetCustomRegistry();
-	static ModBlockData** GetData();
+	///
+	static void set_calls(cap::execution_thread::function_stack_list calls);
+
+	///
+	static void set_data(cap::mod::block::data** data);
+
+	///
+	static void set_blocks(cap::mod::block::block*** blocks);
+
+	///
+	static void set_debug(bool debug_build);
+
+	///
+	static void set_super(u8* super, i64* super_data, void* super_mutex);
+
+	///
+	static void end_all(cap::mod::block::pass* whitelist = nullptr);
+
+	///
+	static void stop();
+
+	///
+	static std::atomic<bool>& get_util_finished();
+
+	///
+	static std::atomic<bool>& get_stop();
+
+	///
+	static u64* get_function_call_count();
+
+	///
+	static u64 get_function_total_count();
+
+	///
+	static cap::execution_thread::function_stack_list get_calls();
+
+	///
+	static void set_util_return_finished(bool finished);
+
+	///
+	static void run_utility_tick();
+
+	///
+	static void run();
+
+	///
+	static bool is_all_done();
+
+	///
+	static const std::vector<f64*>& get_real_template();
+
+	///
+	static const std::vector<bool*>& get_bool_template();
+
+	///
+	static const std::vector<std::string*>& get_string_template();
+
+	///
+	static const std::vector<u64>* get_real_count();
+
+	///
+	static const std::vector<u64>* get_bool_count();
+
+	///
+	static const std::vector<u64>* get_string_count();
+
+	///
+	static std::mutex* get_custom_mutex();
+
+	///
+	static std::vector<void*>* get_custom_registry();
+
+	///
+	static cap::mod::block::data** get_data();
 private:
-	static bool GlobalPre(PreProcessorData& data);
-	static bool GlobalPost(PreProcessorData& data);
-	static bool LocalPre(PreProcessorData& data);
-	static bool LocalPost(PreProcessorData& data);
-	static bool Init(PreProcessorData& preData, ModBlockData** blockData);
+	///
+	static bool global_pre(cap::preprocessor_data& data);
+
+	///
+	static bool global_post(cap::preprocessor_data& data);
+
+	///
+	static bool local_pre(cap::preprocessor_data& data);
+
+	///
+	static bool local_post(cap::preprocessor_data& data);
+
+	///
+	static bool init(cap::preprocessor_data& pre_data, cap::mod::block::data** block_data);
 
 	/*
 		1 - [ R/D ] stop; kill all
@@ -69,58 +138,133 @@ private:
 		6 - [ __D ] resume single thread
 	*/
 
-	static bool TestSuperBase();
-	static bool TestSuperDebug();
+	///
+	static bool test_super_base();
 
-	static void CompileDataDebug();
-	static void CompileDataRelease();
-	static void RunContext();
+	///
+	static bool test_super_debug();
 
-	static std::mutex m_passesMutex;
-	static std::vector<ModBlockPass*> m_passes;
-	static std::vector<bool> m_passesFlagged;
+	///
+	static void compile_data_debug();
 
-	static std::mutex m_executionMutex;
-	static std::vector<ExecutionThread*> m_execution;
-	static std::vector<bool> m_executionFlagged;
-	static std::vector<bool> m_executionJoin;
+	///
+	static void compile_data_release();
 
-	static u64 m_functionMain;
-	static u64* m_functionCallCount;
-	static u64 m_functionTotalCount;
-	static executionFunctionStackList m_calls;
-	static ModBlockData** m_data;
-	static ModBlock*** m_blocks;
+	///
+	static void run_context();
 
-	static std::vector<u64> m_variableRealCount;
-	static std::vector<u64> m_variableBoolCount;
-	static std::vector<u64> m_variableStringCount;
+	///
+	static std::mutex m_passes_mutex;
 
-	static std::vector<f64*> m_variableRealTemplate;
-	static std::vector<bool*> m_variableBoolTemplate;
-	static std::vector<std::string*> m_variableStringTemplate;
+	///
+	static std::vector<cap::mod::block::pass*> m_passes;
 
-	static std::mutex m_customRegisterMutex;
-	static std::vector<void*> m_customRegister;
+	///
+	static std::vector<bool> m_passes_flagged;
 
-	static std::atomic<bool> m_utilFinished;
-	static std::atomic<bool> m_utilReturnFinished;
-	static std::atomic<bool> m_allDone;
+	///
+	static std::mutex m_execution_mutex;
+
+	///
+	static std::vector<cap::execution_thread*> m_execution;
+
+	///
+	static std::vector<bool> m_execution_flagged;
+
+	///
+	static std::vector<bool> m_execution_join;
+
+	///
+	static u64 m_function_main;
+
+	///
+	static u64* m_function_call_count;
+
+	///
+	static u64 m_function_total_count;
+
+	///
+	static cap::execution_thread::function_stack_list m_calls;
+
+	///
+	static cap::mod::block::data** m_data;
+
+	///
+	static cap::mod::block::block*** m_blocks;
+
+	///
+	static std::vector<u64> m_variable_real_count;
+
+	///
+	static std::vector<u64> m_variable_bool_count;
+
+	///
+	static std::vector<u64> m_variable_string_count;
+
+	///
+	static std::vector<f64*> m_variable_real_template;
+
+	///
+	static std::vector<bool*> m_variable_bool_template;
+
+	///
+	static std::vector<std::string*> m_variable_string_template;
+
+	///
+	static std::mutex m_custom_register_mutex;
+
+	///
+	static std::vector<void*> m_custom_register;
+
+	///
+	static std::atomic<bool> m_util_finished;
+
+	///
+	static std::atomic<bool> m_util_return_finished;
+
+	///
+	static std::atomic<bool> m_all_done;
+
+	///
 	static std::atomic<bool> m_stop;
-	static std::thread m_utilThread;
-	static bool m_debugBuild;
+
+	///
+	static std::thread m_util_thread;
+
+	///
+	static bool m_debug_build;
+
+	///
 	static u8* m_super;
-	static i64* m_superData;
-	static std::mutex* m_superMutex;
-	static std::chrono::steady_clock::time_point m_timeBegin;
 
-	static bool m_breakFull;
-	static bool m_breakSingle;
-	static i64 m_breakSingleData;
+	///
+	static i64* m_super_data;
 
-	static std::atomic<bool> m_breakFullResume;
-	static std::atomic<bool> m_breakSingleResume;
+	///
+	static std::mutex* m_super_mutex;
 
-	static std::vector<std::vector<std::string>> m_variableRegistry;
-	static std::vector<u64> m_variableRegistryOffsets;
+	///
+	static std::chrono::steady_clock::time_point m_time_begin;
+
+	///
+	static bool m_break_full;
+
+	///
+	static bool m_break_single;
+
+	///
+	static i64 m_break_single_data;
+
+	///
+	static std::atomic<bool> m_break_full_resume;
+
+	///
+	static std::atomic<bool> m_break_single_resume;
+
+	///
+	static std::vector<std::vector<std::string>> m_variable_registry;
+
+	///
+	static std::vector<u64> m_variable_registry_offsets;
 };
+}

@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealPi::GetUnlocalizedName() const
+const char* BlockRealPi::get_unlocalized_name() const
 {
 	return "vin_real_pi";
 }

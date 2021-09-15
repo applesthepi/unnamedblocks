@@ -2,20 +2,21 @@
 
 #include "cappuccino/registration.hpp"
 
-PreProcessorData::PreProcessorData(std::vector<void*>& vCustom)
-	:m_vReal(Registration::GetRealTemplate()), m_vBool(Registration::GetBoolTemplate()), m_vString(Registration::GetStringTemplate()), m_vCustom(vCustom)
+cap::preprocessor_data::preprocessor_data(std::vector<void*>& v_custom)
+	: m_v_real(cap::registration::get_real_template()), m_v_bool(cap::registration::get_bool_template()), m_v_string(
+cap::registration::get_string_template()), m_v_custom(v_custom)
 {
-	BlockIdx = 0;
-	StackIdx = 0;
+	block_idx = 0;
+	stack_idx = 0;
 }
 
-void PreProcessorData::AddStructure(const std::string& name, void* structure)
+void cap::preprocessor_data::add_structure(const std::string& name, void* structure)
 {
 	m_names.push_back(name);
 	m_structures.push_back(structure);
 }
 
-void* PreProcessorData::GetStructure(const std::string& name)
+void* cap::preprocessor_data::get_structure(const std::string& name)
 {
 	for (u64 i = 0; i < m_names.size(); i++)
 	{
@@ -23,27 +24,27 @@ void* PreProcessorData::GetStructure(const std::string& name)
 			return m_structures[i];
 	}
 
-	Logger::Error("failed to locate structure \"" + name + "\"");
+	cap::logger::error("failed to locate structure \"" + name + "\"");
 	return nullptr;
 }
 /*
-CAP_DLL f64& PreProcessorData::GetReal(u64 idx)
+CAP_DLL f64& cap::preprocessor_data::GetReal(u64 idx)
 {
 	return m_vReal[idx];
 }
 
-CAP_DLL bool& PreProcessorData::GetBool(u64 idx)
+CAP_DLL bool& cap::preprocessor_data::GetBool(u64 idx)
 {
 	return m_vBool[idx];
 }
 
-CAP_DLL std::string& PreProcessorData::GetString(u64 idx)
+CAP_DLL std::string& cap::preprocessor_data::GetString(u64 idx)
 {
 	return m_vString[idx];
 }
 */
-CAP_DLL u64 PreProcessorData::CustomPut(void* mem)
+CAP_DLL u64 cap::preprocessor_data::custom_put(void* mem)
 {
-	m_vCustom.push_back(mem);
-	return m_vCustom.size() - 1;
+	m_v_custom.push_back(mem);
+	return m_v_custom.size() - 1;
 }

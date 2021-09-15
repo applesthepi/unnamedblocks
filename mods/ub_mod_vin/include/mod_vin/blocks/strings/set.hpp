@@ -2,14 +2,14 @@
 #include "mod_vin/categories.hpp"
 #include <espresso/mod/data.hpp>
 
-class BlockStringSet : public ModBlock
+class BlockStringSet : public block
 {
 public:
-	const char* GetUnlocalizedName() const override;
-	const char* GetCategory() const override;
+	const char* get_unlocalized_name() const override;
+	const char* get_category() const override;
 
-	blockExecution PullExecuteRelease() const override;
-	blockExecution PullExecuteDebug() const override;
+	block_execution pull_execute_release() const override;
+	block_execution pull_execute_debug() const override;
 
-	const std::vector<BlockArgumentInitializer> GetArguments() const override;
+	const std::vector<initializer> get_arguments() const override;
 };

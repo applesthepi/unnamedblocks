@@ -10,7 +10,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockStringLength::GetUnlocalizedName() const
+const char* BlockStringLength::get_unlocalized_name() const
 {
 	return "vin_string_length";
 }

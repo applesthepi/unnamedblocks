@@ -15,7 +15,7 @@ static void block_update(void* data)
 }
 
 rhr::stack::block::block(const std::string& unlocalized_name)
-	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->BlockModBlock)
+	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->block_mod_block)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_function_stack_update(nullptr)
 {
@@ -26,9 +26,9 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 	};
 
 	m_size = { 100, rhr::stack::block::height };
-	m_mod_category = rhr::registry::block::get_registry().get_categories(m_mod_block->GetCategory())->CatagoryModCatagory;
+	m_mod_category = rhr::registry::block::get_registry().get_categories(m_mod_block->get_category())->category_mod_category;
 	m_background->set_weak(m_background);
-	m_background->set_color(m_mod_category->GetColor());
+	m_background->set_color(m_mod_category->get_color());
 	m_background->set_depth(rhr::render::renderer::depth_block);
 
 	update_arguments();
@@ -44,12 +44,12 @@ u32 rhr::stack::block::get_width()
 	return m_width;
 }
 
-const ModBlock* rhr::stack::block::get_mod_block()
+const cap::mod::block::block* rhr::stack::block::get_mod_block()
 {
 	return m_mod_block;
 }
 
-const ModCatagory* rhr::stack::block::get_mod_category()
+const esp::mod::category* rhr::stack::block::get_mod_category()
 {
 	return m_mod_category;
 }
@@ -99,16 +99,16 @@ void rhr::stack::block::post_position_update()
 void rhr::stack::block::update_arguments()
 {
 	m_arguments.clear();
-	m_arguments.reserve(m_mod_block->GetArguments().size());
+	m_arguments.reserve(m_mod_block->get_arguments().size());
 
-	std::vector<BlockArgumentInitializer> argumentInit = m_mod_block->GetArguments();
+	std::vector<cap::mod::block::block::argument::initializer> argumentInit = m_mod_block->get_arguments();
 
 	u32 width = rhr::stack::block::padding;
-	cap::color argColor = cap::color().from_normalized(m_mod_category->GetColor().get_normalized_scaled(0.25f, false));
+	cap::color argColor = cap::color().from_normalized(m_mod_category->get_color().get_normalized_scaled(0.25f, false));
 
 	for (usize i = 0; i < argumentInit.size(); i++)
 	{
-		if (argumentInit[i].Type == BlockArgumentType::TEXT)
+		if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::TEXT)
 		{
 			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
@@ -116,13 +116,13 @@ void rhr::stack::block::update_arguments()
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].DefaultValue);
-			arg->set_mode(argumentInit[i].Mode);
-			arg->set_mode_restriction(argumentInit[i].Restriction);
+			arg->set_data(argumentInit[i].get_default_value());
+			arg->set_mode(argumentInit[i].get_mode());
+			arg->set_mode_restriction(argumentInit[i].get_restriction());
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
-		else if (argumentInit[i].Type == BlockArgumentType::REAL)
+		else if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::REAL)
 		{
 			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
@@ -130,13 +130,13 @@ void rhr::stack::block::update_arguments()
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].DefaultValue);
-			arg->set_mode(argumentInit[i].Mode);
-			arg->set_mode_restriction(argumentInit[i].Restriction);
+			arg->set_data(argumentInit[i].get_default_value());
+			arg->set_mode(argumentInit[i].get_mode());
+			arg->set_mode_restriction(argumentInit[i].get_restriction());
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
-		else if (argumentInit[i].Type == BlockArgumentType::STRING)
+		else if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::STRING)
 		{
 			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
@@ -144,13 +144,13 @@ void rhr::stack::block::update_arguments()
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].DefaultValue);
-			arg->set_mode(argumentInit[i].Mode);
-			arg->set_mode_restriction(argumentInit[i].Restriction);
+			arg->set_data(argumentInit[i].get_default_value());
+			arg->set_mode(argumentInit[i].get_mode());
+			arg->set_mode_restriction(argumentInit[i].get_restriction());
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}
-		else if (argumentInit[i].Type == BlockArgumentType::BOOL)
+		else if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::BOOL)
 		{
 			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor, &m_function_block_update);
 			arg->set_weak(arg);
@@ -158,9 +158,9 @@ void rhr::stack::block::update_arguments()
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].DefaultValue);
-			arg->set_mode(argumentInit[i].Mode);
-			arg->set_mode_restriction(argumentInit[i].Restriction);
+			arg->set_data(argumentInit[i].get_default_value());
+			arg->set_mode(argumentInit[i].get_mode());
+			arg->set_mode_restriction(argumentInit[i].get_restriction());
 
 			width += arg->get_width() + rhr::stack::block::padding;
 		}

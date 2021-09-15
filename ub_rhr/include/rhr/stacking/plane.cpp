@@ -170,7 +170,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 
 										for (auto block : blocks)
 										{
-											std::shared_ptr<rhr::stack::block> cloned_block = std::make_shared<rhr::stack::block>(block->get_mod_block()->GetUnlocalizedName());
+											std::shared_ptr<rhr::stack::block> cloned_block = std::make_shared<rhr::stack::block>(block->get_mod_block()->get_unlocalized_name());
 											cloned_block->set_weak(cloned_block);
 
 											cloned_blocks.push_back(std::move(cloned_block));
@@ -184,7 +184,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 									{
 										if (m_toolbar)
 										{
-											Logger::Error("splitting stacks inside toolbar is not supported");
+											cap::logger::error("splitting stacks inside toolbar is not supported");
 											return;
 										}
 
@@ -224,7 +224,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 								}
 								else if (false/* left or right click */)
 								{
-									//Logger::Debug("opening context menu");
+									//cap::logger::Debug("opening context menu");
 
 									// startup context menu on block
 
@@ -419,12 +419,12 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 				pixel_position.y > plane_toolbar_position.y && pixel_position.y < plane_toolbar_position.y + plane_toolbar_size.y)
 			{
 				// TODO: undo support (or recently deleted)
-				Logger::Warn("letting stack deallocate; undo not supported yet");
+				cap::logger::warn("letting stack deallocate; undo not supported yet");
 			}
 			else if (pixel_position.x > plane_primary_position.x && pixel_position.x < plane_primary_position.x + plane_primary_size.x &&
 					 pixel_position.y > plane_primary_position.y && pixel_position.y < plane_primary_position.y + plane_primary_size.y)
 			{
-				Logger::Debug("dropping over primary plane");
+				cap::logger::debug("dropping over primary plane");
 				bool found = false;
 
 				for (u64 i = 0; i < rhr::stack::plane::primary_plane->get_collections().size(); i++)

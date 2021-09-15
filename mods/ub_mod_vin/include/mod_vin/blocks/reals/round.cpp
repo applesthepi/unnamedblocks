@@ -11,7 +11,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealRound::GetUnlocalizedName() const
+const char* BlockRealRound::get_unlocalized_name() const
 {
 	return "vin_real_round";
 }

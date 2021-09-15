@@ -16,7 +16,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockSystemWindowMouseY::GetUnlocalizedName() const
+const char* BlockSystemWindowMouseY::get_unlocalized_name() const
 {
 	return "vin_system_window_mouse_y";
 }

@@ -11,7 +11,7 @@ COMP_EXPORT uint64_t functionMain;
 COMP_EXPORT uint64_t* functionCallCount;
 COMP_EXPORT uint64_t functionTotalCount;
 COMP_EXPORT void (***calls)(ModBlockPass*);
-COMP_EXPORT ModBlockData** functionData;
+COMP_EXPORT cap::mod::block::data** functionData;
 COMP_EXPORT ModBlock*** modBlocks;
 COMP_EXPORT bool debugBuild;
 COMP_EXPORT uint8_t* superInstruction;

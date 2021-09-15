@@ -11,7 +11,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockRealFloor::GetUnlocalizedName() const
+const char* BlockRealFloor::get_unlocalized_name() const
 {
 	return "vin_real_floor";
 }

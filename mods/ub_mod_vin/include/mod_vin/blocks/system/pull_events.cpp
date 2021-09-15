@@ -32,7 +32,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockSystemPullEvents::GetUnlocalizedName() const
+const char* BlockSystemPullEvents::get_unlocalized_name() const
 {
 	return "vin_system_pull_events";
 }

@@ -16,7 +16,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockSystemWindowFps::GetUnlocalizedName() const
+const char* BlockSystemWindowFps::get_unlocalized_name() const
 {
 	return "vin_system_window_fps";
 }

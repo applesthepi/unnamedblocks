@@ -2,39 +2,39 @@
 
 #include <iostream>
 
-CAP_C_EXPORT void Logger::Info(const std::string& message)
+CAP_C_EXPORT void cap::logger::info(const std::string& message)
 {
-    m_logMutex.lock();
+    m_log_mutex.lock();
     std::cout << " [INFO] " << message << "\n" << std::flush;
-    m_logMutex.unlock();
+    m_log_mutex.unlock();
 }
 
-CAP_C_EXPORT void Logger::Warn(const std::string& message)
+CAP_C_EXPORT void cap::logger::warn(const std::string& message)
 {
-    m_logMutex.lock();
+    m_log_mutex.lock();
     std::cout << " [WARN] " << message << "\n" << std::flush;
-    m_logMutex.unlock();
+    m_log_mutex.unlock();
 }
 
-CAP_C_EXPORT void Logger::Error(const std::string& message)
+CAP_C_EXPORT void cap::logger::error(const std::string& message)
 {
-    m_logMutex.lock();
+    m_log_mutex.lock();
     std::cout << " [ERROR] " << message << "\n" << std::flush;
-    m_logMutex.unlock();
+    m_log_mutex.unlock();
 }
 
-CAP_C_EXPORT void Logger::Fatal(const std::string& message)
+CAP_C_EXPORT void cap::logger::fatal(const std::string& message)
 {
-    m_logMutex.lock();
+    m_log_mutex.lock();
     std::cout << " [FATAL] " << message << "\n" << std::flush;
 	abort();
 }
 
-CAP_C_EXPORT void Logger::Debug(const std::string& message)
+CAP_C_EXPORT void cap::logger::debug(const std::string& message)
 {
-    m_logMutex.lock();
+    m_log_mutex.lock();
     std::cout << " [DEBUG] " << message << "\n" << std::flush;
-    m_logMutex.unlock();
+    m_log_mutex.unlock();
 }
 
-std::mutex CAP_C_EXPORT Logger::m_logMutex;
+std::mutex CAP_C_EXPORT cap::logger::m_log_mutex;

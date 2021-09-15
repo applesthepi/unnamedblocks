@@ -26,9 +26,9 @@ rhr::stack::argument::real::real(const cap::color& color, std::function<void()>*
 	m_text->set_padding(rhr::stack::argument::argument::padding);
 }
 
-BlockArgumentType rhr::stack::argument::real::get_type()
+cap::mod::block::block::argument::type rhr::stack::argument::real::get_type()
 {
-	return BlockArgumentType::REAL;
+	return cap::mod::block::block::argument::type::REAL;
 }
 
 u32 rhr::stack::argument::real::get_width()

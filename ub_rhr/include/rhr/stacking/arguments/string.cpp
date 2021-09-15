@@ -12,10 +12,10 @@ rhr::stack::argument::string::string(const cap::color& color, std::function<void
 	{
 		if (button == MouseButton::MIDDLE && operation == MouseOperation::Press)
 		{
-			if (m_mode == BlockArgumentVariableMode::RAW)
-				set_mode(BlockArgumentVariableMode::VAR);
-			else if (m_mode == BlockArgumentVariableMode::VAR)
-				set_mode(BlockArgumentVariableMode::RAW);
+			if (m_mode == cap::mod::block::block::argument::variable_mode::RAW)
+				set_mode(cap::mod::block::block::argument::variable_mode::VAR);
+			else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
+				set_mode(cap::mod::block::block::argument::variable_mode::RAW);
 		}
 	};
 
@@ -28,9 +28,9 @@ rhr::stack::argument::string::string(const cap::color& color, std::function<void
 	m_text->set_mouse_button(m_mouse_button);
 }
 
-BlockArgumentType rhr::stack::argument::string::get_type()
+cap::mod::block::block::argument::type rhr::stack::argument::string::get_type()
 {
-	return BlockArgumentType::STRING;
+	return cap::mod::block::block::argument::type::STRING;
 }
 
 u32 rhr::stack::argument::string::get_width()
@@ -88,10 +88,10 @@ const std::string& rhr::stack::argument::string::get_data()
 	return m_text->get_text();
 }
 
-void rhr::stack::argument::string::on_set_mode(BlockArgumentVariableMode mode)
+void rhr::stack::argument::string::on_set_mode(cap::mod::block::block::argument::variable_mode mode)
 {
-	if (m_mode == BlockArgumentVariableMode::RAW)
+	if (m_mode == cap::mod::block::block::argument::variable_mode::RAW)
 		m_text->set_color_secondary(m_block_color);
-	else if (m_mode == BlockArgumentVariableMode::VAR)
+	else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
 		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
 }

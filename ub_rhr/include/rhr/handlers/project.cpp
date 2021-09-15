@@ -184,7 +184,7 @@ void ProjectHandler::LoadProject(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::Error("unable to open file \"" + path + "\"");
+		cap::logger::Error("unable to open file \"" + path + "\"");
 		return;
 	}
 	// Reset plane

@@ -21,7 +21,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	list->erase(list->begin() + pass->GetReal(1));
 }
 
-const char* BlockUtilityListRemove::GetUnlocalizedName() const
+const char* BlockUtilityListRemove::get_unlocalized_name() const
 {
 	return "vin_utility_list_remove";
 }

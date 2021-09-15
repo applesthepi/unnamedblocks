@@ -1,41 +1,41 @@
 #include "log.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void ExecuteRelease(pass* pass)
 {
-	pass->LogInfo(pass->GetString(0));
+	pass->log_info(pass->get_string(0));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void ExecuteDebug(pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
-const char* BlockStringLog::GetUnlocalizedName() const
+const char* BlockStringLog::get_unlocalized_name() const
 {
 	return "vin_string_log";
 }
 
-const char* BlockStringLog::GetCategory() const
+const char* BlockStringLog::get_category() const
 {
 	return CATEGORY_STRINGS;
 }
 
-blockExecution BlockStringLog::PullExecuteRelease() const
+block_execution BlockStringLog::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockStringLog::PullExecuteDebug() const
+block_execution BlockStringLog::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockStringLog::GetArguments() const
+const std::vector<initializer> BlockStringLog::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "log"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "variable"));
+	args.push_back(initializer(type::TEXT, variable_mode_restriction::NONE, variable_mode::RAW, "log"));
+	args.push_back(initializer(type::STRING, variable_mode_restriction::NONE, variable_mode::VAR, "variable"));
 
 	return args;
 }

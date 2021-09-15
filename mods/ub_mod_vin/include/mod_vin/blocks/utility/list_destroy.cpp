@@ -12,7 +12,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-const char* BlockUtilityListDestroy::GetUnlocalizedName() const
+const char* BlockUtilityListDestroy::get_unlocalized_name() const
 {
 	return "vin_utility_list_destroy";
 }

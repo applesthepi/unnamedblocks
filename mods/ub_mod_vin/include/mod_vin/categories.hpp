@@ -10,68 +10,68 @@
 #define CATEGORY_REALS "vin_reals"
 #define CATEGORY_STRINGS "vin_strings"
 
-class CategorySystem : public ModCatagory
+class CategorySystem : public esp::mod::category
 {
 public:
 	CategorySystem(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+		:esp::mod::category(modUnlocalizedName, modDisplayName) {}
 
-	cap::color GetColor() const override;
-	std::string GetUnlocalizedName() const override;
-	std::string GetDisplayName() const override;
+	cap::color get_color() const override;
+	std::string get_unlocalized_name() const override;
+	std::string get_display_name() const override;
 };
 
-class CategoryUtility : public ModCatagory
+class CategoryUtility : public esp::mod::category
 {
 public:
 	CategoryUtility(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+		:esp::mod::category(modUnlocalizedName, modDisplayName) {}
 
-	cap::color GetColor() const override;
-	std::string GetUnlocalizedName() const override;
-	std::string GetDisplayName() const override;
+	cap::color get_color() const override;
+	std::string get_unlocalized_name() const override;
+	std::string get_display_name() const override;
 };
 
-class CategoryGraphics : public ModCatagory
+class CategoryGraphics : public esp::mod::category
 {
 public:
 	CategoryGraphics(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+		:esp::mod::category(modUnlocalizedName, modDisplayName) {}
 
-	cap::color GetColor() const override;
-	std::string GetUnlocalizedName() const override;
-	std::string GetDisplayName() const override;
+	cap::color get_color() const override;
+	std::string get_unlocalized_name() const override;
+	std::string get_display_name() const override;
 };
 
-class CategoryBooleans : public ModCatagory
+class CategoryBooleans : public esp::mod::category
 {
 public:
 	CategoryBooleans(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+		:esp::mod::category(modUnlocalizedName, modDisplayName) {}
 
-	cap::color GetColor() const override;
-	std::string GetUnlocalizedName() const override;
-	std::string GetDisplayName() const override;
+	cap::color get_color() const override;
+	std::string get_unlocalized_name() const override;
+	std::string get_display_name() const override;
 };
 
-class CategoryReals : public ModCatagory
+class CategoryReals : public esp::mod::category
 {
 public:
 	CategoryReals(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+		:esp::mod::category(modUnlocalizedName, modDisplayName) {}
 
-	cap::color GetColor() const override;
-	std::string GetUnlocalizedName() const override;
-	std::string GetDisplayName() const override;
+	cap::color get_color() const override;
+	std::string get_unlocalized_name() const override;
+	std::string get_display_name() const override;
 };
 
-class CategoryStrings : public ModCatagory
+class CategoryStrings : public esp::mod::category
 {
 public:
 	CategoryStrings(const std::string& modUnlocalizedName, const std::string& modDisplayName)
-		:ModCatagory(modUnlocalizedName, modDisplayName) {}
+		:esp::mod::category(modUnlocalizedName, modDisplayName) {}
 
-	cap::color GetColor() const override;
-	std::string GetUnlocalizedName() const override;
-	std::string GetDisplayName() const override;
+	cap::color get_color() const override;
+	std::string get_unlocalized_name() const override;
+	std::string get_display_name() const override;
 };

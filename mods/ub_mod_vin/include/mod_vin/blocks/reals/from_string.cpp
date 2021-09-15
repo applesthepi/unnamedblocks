@@ -23,7 +23,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	pass->GetReal(0) = nd;
 }
 
-const char* BlockRealFromString::GetUnlocalizedName() const
+const char* BlockRealFromString::get_unlocalized_name() const
 {
 	return "vin_real_from_string";
 }

@@ -205,7 +205,7 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	if (idx >= m_text.size() || idx + size > m_text.size())
 		return false;
 
-	Logger::Debug("removing at " + std::to_string(idx) + " of size " + std::to_string(size));
+	cap::logger::debug("removing at " + std::to_string(idx) + " of size " + std::to_string(size));
 	m_text.erase(idx, size);
 	
 	update_size();
@@ -326,7 +326,7 @@ void rhr::render::object::text::on_update_buffers()
 
 	if (!m_read_only && m_registered)
 	{
-//		Logger::Debug("updating field size");
+//		cap::logger::Debug("updating field size");
 		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), m_size);
 	}
 }

@@ -12,7 +12,7 @@ void rhr::registry::char_texture::process_fonts()
 	error = FT_Init_FreeType(&m_library);
 	if (error)
 	{
-		Logger::Error("failed to init freetype \"" + std::to_string(error) + "\"");
+		cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
 		return;
 	}
 
@@ -30,21 +30,21 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 	error = FT_Init_FreeType(&m_library);
 	if (error)
 	{
-		Logger::Error("failed to init freetype \"" + std::to_string(error) + "\"");
+		cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
 		return;
 	}
 
 	error = FT_New_Face(m_library, font_path.c_str(), 0, &font_texture_data.face);
 	if (error)
 	{
-		Logger::Error("failed to init freetype font \"" + std::to_string(error) + "\"");
+		cap::logger::error("failed to init freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
 	error = FT_Set_Pixel_Sizes(font_texture_data.face, 0, rhr::stack::block::height - (rhr::stack::block::padding * 2));
 	if (error)
 	{
-		Logger::Error("failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
+		cap::logger::error("failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
@@ -61,14 +61,14 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 		error = FT_Load_Glyph(font_texture_data.face, glyph_index, FT_LOAD_DEFAULT);
 		if (error)
 		{
-			Logger::Error("failed load glyph \"" + std::to_string(error) + "\"");
+			cap::logger::error("failed load glyph \"" + std::to_string(error) + "\"");
 			continue;
 		}
 
 		error = FT_Render_Glyph(font_texture_data.face->glyph, FT_RENDER_MODE_NORMAL);
 		if (error)
 		{
-			Logger::Error("failed render glyph \"" + std::to_string(error) + "\"");
+			cap::logger::error("failed render glyph \"" + std::to_string(error) + "\"");
 			continue;
 		}
 

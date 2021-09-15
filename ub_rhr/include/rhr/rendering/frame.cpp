@@ -39,7 +39,7 @@ void rhr::render::frame::set_frame(std::shared_ptr<frame>& frame)
 {
 	if (m_has_content)
 	{
-		Logger::Error("can not set frame of frame that has content");
+		cap::logger::error("can not set frame of frame that has content");
 		return;
 	}
 
@@ -56,7 +56,7 @@ usize rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::
 {
 	if (m_has_content)
 	{
-		Logger::Error("can not add frame to frame that has content");
+		cap::logger::error("can not add frame to frame that has content");
 		return 0;
 	}
 
@@ -91,7 +91,7 @@ usize rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::
 		m_frames.insert(m_frames.end(), frame);
 	}
 	else
-		Logger::Error("wrong direction when adding a frame to a frame");
+		cap::logger::error("wrong direction when adding a frame to a frame");
 
 	m_frames_enabled.push_back(true);
 
@@ -111,7 +111,7 @@ void rhr::render::frame::enable_frame(usize idx, bool enabled)
 {
 	if (idx >= m_frames_enabled.size())
 	{
-		Logger::Error("frame idx out of range");
+		cap::logger::error("frame idx out of range");
 		return;
 	}
 
@@ -128,7 +128,7 @@ void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_re
 {
 	if (m_has_frame)
 	{
-		Logger::Error("can not add content to frame that has internal frames");
+		cap::logger::error("can not add content to frame that has internal frames");
 		return;
 	}
 
@@ -158,7 +158,7 @@ void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_re
 	else if (cardinal == rhr::render::cardinal::local::RIGHT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
 		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
 	else
-		Logger::Error("wrong direction when adding a frame to a frame");
+		cap::logger::error("wrong direction when adding a frame to a frame");
 
 	if (m_content.size() > 1)
 	{
@@ -239,7 +239,7 @@ void rhr::render::frame::update_links()
 {
 	if (m_has_content)
 	{
-		Logger::Error("can not update links of a frame that has content");
+		cap::logger::error("can not update links of a frame that has content");
 		return;
 	}
 

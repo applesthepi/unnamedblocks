@@ -4,29 +4,48 @@
 #include "espresso/mod/category.hpp"
 
 #include <cappuccino/utils.hpp>
-#include <cappuccino/mod_block/block.hpp>
+#include <cappuccino/mod/block/block.hpp>
 
-class ModDataBaked
+namespace esp::mod
+{
+///
+class data
 {
 public:
-	u32 BlocksLength;
-	ModBlock** Blocks;
+	///
+	void register_block(cap::mod::block::block* block);
 
-	u32 CategoriesLength;
-	ModCatagory** Categories;
+	///
+	void register_category(esp::mod::category* category);
+
+	///
+	const std::vector<cap::mod::block::block*>& get_blocks();
+
+	///
+	const std::vector<esp::mod::category*>& get_categories();
+
+	///
+	const std::string& get_mod_display_name();
+
+	///
+	const std::string& get_mod_unlocalized_name();
+
+	///
+	const std::string& get_version();
+private:
+	///
+	std::vector<cap::mod::block::block*> m_blocks;
+
+	///
+	std::vector<esp::mod::category*> m_categories;
+
+	///
+	std::string m_mod_display_name;
+
+	///
+	std::string m_mod_unlocalized_name;
+
+	///
+	std::string m_version;
 };
-
-class ModData
-{
-public:
-	ModDataBaked Bake();
-
-	void RegisterBlock(ModBlock* block);
-	void RegisterCategory(ModCatagory* category);
-
-	std::vector<ModBlock*> Blocks;
-	std::vector<ModCatagory*> Categories;
-	std::string ModDisplayName;
-	std::string ModUnlocalizedName;
-	std::string Version;
-};
+}

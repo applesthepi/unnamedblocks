@@ -28,7 +28,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	finalStr = str.at(idx);
 }
 
-const char* BlockStringCharAt::GetUnlocalizedName() const
+const char* BlockStringCharAt::get_unlocalized_name() const
 {
 	return "vin_string_char_at";
 }

@@ -19,7 +19,7 @@
 //     sf::Shader* shader = new sf::Shader();
 //     if (!shader->loadFromFile(path + ".vs", path + ".fs"))
 //     {
-//         Logger::Error("failed to load shader; shader \"" + path + "\" does not exist!");
+//         cap::logger::Error("failed to load shader; shader \"" + path + "\" does not exist!");
         
 //         m_mutex.unlock();
 //         return false;
@@ -43,7 +43,7 @@
 //             sf::Shader* shader = new sf::Shader();
 //             if (!shader->loadFromFile(path + ".vs", path + ".fs"))
 //             {
-//                 Logger::Error("failed to load shader; shaders \"" + path + "\" does not exist!");
+//                 cap::logger::Error("failed to load shader; shaders \"" + path + "\" does not exist!");
                 
 //                 m_mutex.unlock();
 //                 return false;

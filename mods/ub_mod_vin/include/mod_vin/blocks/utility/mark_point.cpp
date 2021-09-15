@@ -25,7 +25,7 @@ static bool RuntimeLocalPostInit(PreProcessorData& data)
 	return true;
 }
 
-static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
+static bool RuntimeInit(PreProcessorData& preData, cap::mod::block::data& blockData)
 {
 	PointFinder* finder = (PointFinder*)preData.GetStructure(POINT_FINDER_NAME + std::to_string(preData.StackIdx));
 	std::string* name = (std::string*)blockData.GetData()[0];
@@ -34,7 +34,7 @@ static bool RuntimeInit(PreProcessorData& preData, ModBlockData& blockData)
 	return true;
 }
 
-const char* BlockUtilityMarkPoint::GetUnlocalizedName() const
+const char* BlockUtilityMarkPoint::get_unlocalized_name() const
 {
 	return "vin_utility_mark_point";
 }

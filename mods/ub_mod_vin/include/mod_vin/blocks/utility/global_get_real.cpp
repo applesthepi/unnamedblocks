@@ -14,7 +14,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 	ExecuteRelease(pass);
 }
 
-static bool RuntimeInit0(PreProcessorData& preData, ModBlockData& blockData)
+static bool RuntimeInit0(PreProcessorData& preData, cap::mod::block::data& blockData)
 {
 	blockData.GetPreData().push_back(preData.GetStructure(GLOBAL_REAL_CUSTOM));
 	UtilityGlobalReal* global = (UtilityGlobalReal*)preData.GetStructure(GLOBAL_REAL_NAME);
@@ -24,7 +24,7 @@ static bool RuntimeInit0(PreProcessorData& preData, ModBlockData& blockData)
 	return true;
 }
 
-static bool RuntimeInit1(PreProcessorData& preData, ModBlockData& blockData)
+static bool RuntimeInit1(PreProcessorData& preData, cap::mod::block::data& blockData)
 {
 	u64* idx = new u64;
 	*idx = ((UtilityGlobalReal*)preData.GetStructure(GLOBAL_REAL_NAME))->GetIdx(*(std::string*)blockData.GetData()[0]);
@@ -34,7 +34,7 @@ static bool RuntimeInit1(PreProcessorData& preData, ModBlockData& blockData)
 	return true;
 }
 
-const char* BlockUtilityGlobalGetReal::GetUnlocalizedName() const
+const char* BlockUtilityGlobalGetReal::get_unlocalized_name() const
 {
 	return "vin_utility_global_get_real";
 }

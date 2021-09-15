@@ -9,7 +9,7 @@
 #include "rhr/rendering/objects/rectangle.hpp"
 
 #include <cappuccino/utils.hpp>
-#include <cappuccino/mod_block/block.hpp>
+#include <cappuccino/mod/block/block.hpp>
 #include <espresso/mod/category.hpp>
 
 namespace rhr::stack
@@ -28,10 +28,10 @@ public:
 	u32 get_width();
 
 	///
-	const ModBlock* get_mod_block();
+	const cap::mod::block::block* get_mod_block();
 
 	///
-	const ModCatagory* get_mod_category();
+	const esp::mod::category* get_mod_category();
 
 	///
 	void frame_update(f64 delta_time) override;
@@ -76,10 +76,10 @@ private:
 	std::vector<std::shared_ptr<rhr::stack::argument::argument>> m_arguments;
 
 	///
-	const ModBlock* m_mod_block;
+	const cap::mod::block::block* m_mod_block;
 
 	///
-	const ModCatagory* m_mod_category;
+	const esp::mod::category* m_mod_category;
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;

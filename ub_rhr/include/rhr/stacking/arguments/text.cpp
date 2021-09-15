@@ -15,9 +15,9 @@ rhr::stack::argument::text::text(const cap::color& color, std::function<void()>*
 	m_text->enable_background(false);
 }
 
-BlockArgumentType rhr::stack::argument::text::get_type()
+cap::mod::block::block::argument::type rhr::stack::argument::text::get_type()
 {
-	return BlockArgumentType::TEXT;
+	return cap::mod::block::block::argument::type::TEXT;
 }
 
 u32 rhr::stack::argument::text::get_width()

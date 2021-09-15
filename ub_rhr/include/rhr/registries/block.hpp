@@ -2,7 +2,7 @@
 #include "config.h"
 
 #include <cappuccino/utils.hpp>
-#include <cappuccino/mod_block/block.hpp>
+#include <cappuccino/mod/block/block.hpp>
 #include <cappuccino/execution_thread.hpp>
 #include <espresso/mod/category.hpp>
 
@@ -15,49 +15,58 @@ class block
 public:
 	// TODO: fix location/case
 	///
-	class BlockArgumentCaller
+	class block_argument_caller
 	{
 	public:
-		BlockArgumentCaller(const BlockArgumentVariableMode mode, const std::string value)
-			:Mode(mode), Value(value) {}
+		block_argument_caller(const cap::mod::block::block::argument::variable_mode mode, const std::string& value)
+		: m_mode(mode), m_value(value) {}
 
-		BlockArgumentVariableMode Mode;
-		std::string Value;
+		///
+		cap::mod::block::block::argument::variable_mode get_mode() { return m_mode; };
+
+		///
+		const std::string& get_value() { return m_value; };
+	private:
+		///
+		cap::mod::block::block::argument::variable_mode m_mode;
+
+		///
+		std::string m_value;
 	};
 
 	// TODO: fix location/case
 	///
-	struct BlockInfo
+	struct block_info
 	{
-		ModBlock* BlockModBlock;
-		std::string BlockModUnlocalizedName;
+		cap::mod::block::block* block_mod_block;
+		std::string block_mod_unlocalized_name;
 	};
 
 	// TODO: fix location/case
 	///
-	struct CatagoryInfo
+	struct category_info
 	{
-		ModCatagory* CatagoryModCatagory;
-		std::string CatagoryModUnlocalizedName;
+		esp::mod::category* category_mod_category;
+		std::string category_mod_unlocalized_name;
 	};
 
 	///
-	void register_block(ModBlock* block, const std::string& mod_unlocalized_name);
+	void register_block(cap::mod::block::block* block, const std::string& mod_unlocalized_name);
 
 	///
-	void register_category(ModCatagory* catagory, const std::string& mod_unlocalized_name);
+	void register_category(esp::mod::category* category, const std::string& mod_unlocalized_name);
 
 	///
-	const BlockInfo* get_block(const std::string& unlocalized_name);
+	const block_info* get_block(const std::string& unlocalized_name);
 
 	///
-	const CatagoryInfo* get_categories(const std::string& unlocalized_name);
+	const category_info* get_categories(const std::string& unlocalized_name);
 
 	///
-	const std::vector<BlockInfo>& get_blocks();
+	const std::vector<block_info>& get_blocks();
 
 	///
-	const std::vector<CatagoryInfo>& get_categories();
+	const std::vector<category_info>& get_categories();
 
 	///
 	static void create_block_registry();
@@ -69,9 +78,9 @@ private:
 	static block* m_registry;
 
 	///
-	std::vector<BlockInfo> m_blocks;
+	std::vector<block_info> m_blocks;
 
 	///
-	std::vector<CatagoryInfo> m_catagories;
+	std::vector<category_info> m_categories;
 };
 }
