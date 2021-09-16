@@ -15,24 +15,12 @@ void rhr::registry::char_texture::process_fonts()
 		cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
 		return;
 	}
-
-	process_font("res/CascadiaMono-Light.ttf", texture_type::LIGHT_NORMAL);
-	process_font("res/CascadiaMono-Bold.ttf", texture_type::BOLD_NORMAL);
-	process_font("res/CascadiaMonoItalic-LightItalic.ttf", texture_type::LIGHT_ITALIC);
-	process_font("res/CascadiaMonoItalic-BoldItalic.ttf", texture_type::BOLD_ITALIC);
 }
 
-void rhr::registry::char_texture::process_font(const std::string& font_path, texture_type type)
+void rhr::registry::char_texture::process_font(const std::string& font_path, texture_type type, u16 size)
 {
 	texture_data font_texture_data;
 	ft::error error;
-
-	error = FT_Init_FreeType(&m_library);
-	if (error)
-	{
-		cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
-		return;
-	}
 
 	error = FT_New_Face(m_library, font_path.c_str(), 0, &font_texture_data.face);
 	if (error)
@@ -161,9 +149,46 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 #endif
 
 	font_texture_data.image = rhr::render::tools::create_texture_image({ image_side_length * highest_width, image_side_length * highest_height }, texture_sheet, &font_texture_data.memory);
-	texture_map[type] = font_texture_data;
+
+	for (auto font : m_texture_maps)
+	{
+		if (font->texture_size == size)
+		{
+			font->map[type] = font_texture_data;
+			return;
+		}
+	}
+
+	auto* new_map = new rhr::registry::char_texture::texture_map(size);
+	new_map->map[type] = font_texture_data;
+
+	m_texture_maps.push_back(new_map);
+}
+
+rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_texture_map(u16 size)
+{
+	cap::logger::debug("size: " + std::to_string(size));
+
+	for (auto font : m_texture_maps)
+	{
+		if (font->texture_size == size)
+			return font;
+	}
+
+	process_font("res/CascadiaMono-Regular.ttf", texture_type::LIGHT_NORMAL, size);
+	process_font("res/CascadiaMono-Bold.ttf", texture_type::BOLD_NORMAL, size);
+	process_font("res/CascadiaMono-Italic.ttf", texture_type::LIGHT_ITALIC, size);
+	process_font("res/CascadiaMono-BoldItalic.ttf", texture_type::BOLD_ITALIC, size);
+
+	for (auto font : m_texture_maps)
+	{
+		if (font->texture_size == size)
+			return font;
+	}
+
+	cap::logger::error("failed to generate char texture");
 }
 
 ft::library rhr::registry::char_texture::m_library;
 
-std::unordered_map<rhr::registry::char_texture::texture_type, rhr::registry::char_texture::texture_data> rhr::registry::char_texture::texture_map;
+std::vector<rhr::registry::char_texture::texture_map*> rhr::registry::char_texture::m_texture_maps;

@@ -34,7 +34,10 @@ public:
 	void set_texture(const std::string& texture);
 
 	///
-	void set_texture_char(rhr::registry::char_texture::texture_type texture_type);
+	void set_texture_char(rhr::registry::char_texture::texture_type texture_type, u16 font_size);
+
+	///
+	void set_texture_char_size(u16 font_size);
 
 	///
 	void update_vertices(const std::vector<rhr::render::vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now = false);
@@ -125,6 +128,9 @@ private:
 
 	///
 	texture_type m_texture_type;
+
+	///
+	u16 m_font_size;
 
 	///
 	rhr::registry::char_texture::texture_type m_char_texture_type;

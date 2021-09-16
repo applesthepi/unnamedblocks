@@ -31,12 +31,12 @@ void rhr::render::object::rectangle::set_texture(const std::string& texture)
 	mark_dirty();
 }
 
-void rhr::render::object::rectangle::set_texture(rhr::registry::char_texture::texture_type type)
+void rhr::render::object::rectangle::set_texture(rhr::registry::char_texture::texture_type type, u16 font_size)
 {
 	m_has_texture = true;
 	m_texture.clear();
 	m_texture_type = rhr::render::object::object::texture_type::TEXT_SHEET;
-	m_render_object->set_texture_char(type);
+	m_render_object->set_texture_char(type, font_size);
 
 	mark_dirty();
 }

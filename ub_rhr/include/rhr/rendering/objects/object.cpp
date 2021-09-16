@@ -28,6 +28,7 @@ rhr::render::object::object::object(bool ui)
     , m_index_staging_buffer(nullptr)
     , m_index_staging_buffer_memory(nullptr)
 	, m_texture_type(texture_type::CUSTOM)
+	, m_font_size(4)
 {
 }
 
@@ -55,12 +56,19 @@ void rhr::render::object::object::set_texture(const std::string& texture)
 	m_texture_type = texture_type::CUSTOM;
 }
 
-void rhr::render::object::object::set_texture_char(rhr::registry::char_texture::texture_type texture_type)
+void rhr::render::object::object::set_texture_char(rhr::registry::char_texture::texture_type texture_type, u16 font_size)
 {
 	m_has_texture = true;
 	m_texture_path.clear();
 	m_texture_type = texture_type::TEXT_SHEET;
 	m_char_texture_type = texture_type;
+	m_font_size = font_size;
+}
+
+void rhr::render::object::object::set_texture_char_size(u16 font_size)
+{
+	m_font_size = font_size;
+	mark_dirty();
 }
 
 void rhr::render::object::object::update_vertices(const std::vector<rhr::render::vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now)
@@ -292,7 +300,7 @@ void rhr::render::object::object::on_update_buffers()
 			}
 			else if (m_texture_type == texture_type::TEXT_SHEET)
 			{
-				m_image = rhr::registry::char_texture::texture_map[m_char_texture_type].image;
+				m_image = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_char_texture_type].image;
 				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 		}

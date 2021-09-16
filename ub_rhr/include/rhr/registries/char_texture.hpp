@@ -53,16 +53,32 @@ public:
 		BOLD_ITALIC
 	};
 
+	///
+	struct texture_map
+	{
+		texture_map(u16 size)
+		: texture_size(size) {}
+
+		///
+		u16 texture_size;
+
+		///
+		std::unordered_map<texture_type, texture_data> map;
+	};
+
 	/// Loads and processes fonts.
 	static void process_fonts();
 
-	/// Map of font texture's data.
-	static std::unordered_map<texture_type, texture_data> texture_map;
+	///
+	static texture_map* get_texture_map(u16 size);
 private:
 	///
-	static void process_font(const std::string& font_path, texture_type type);
+	static void process_font(const std::string& font_path, texture_type type, u16 size);
 
 	/// Used to load ttf fonts.
 	static ft::library m_library;
+
+	///
+	static std::vector<texture_map*> m_texture_maps;
 };
 }

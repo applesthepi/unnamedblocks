@@ -6,7 +6,7 @@
 
 rhr::stack::argument::string::string(const cap::color& color, std::function<void()>* function_collection_update)
 	: rhr::stack::argument::argument(color, function_collection_update)
-	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, function_collection_update, false, true))
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, function_collection_update, false, true))
 {
 	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 	{

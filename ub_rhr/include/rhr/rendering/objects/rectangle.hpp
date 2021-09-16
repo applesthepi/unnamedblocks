@@ -25,7 +25,7 @@ public:
 
 	/// Sets internal texture of rectangle.
 	/// \param Internal texture.
-	void set_texture(rhr::registry::char_texture::texture_type type);
+	void set_texture(rhr::registry::char_texture::texture_type type, u16 font_size);
 
 	/// Sets Z depth.
 	/// \param Z depth.

@@ -8,7 +8,7 @@
 
 #define EDGE_CLICK_OVERHANG 5
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, std::function<void()>* function_update, bool read_only, bool force_register)
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
 	, i_enableable(true)
 	, m_depth(10)
@@ -18,13 +18,13 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	, m_function_update(function_update)
 	, m_read_only(read_only)
 	, m_mouse_button(nullptr)
-	, m_font_size(16)
+	, m_font_size(font_size)
 	, m_registered(false)
 	, m_force_register(force_register)
 {
 	m_render_object_background->set_weak(m_render_object_background);
 	m_render_object_text->set_weak(m_render_object_text);
-	m_render_object_text->set_texture_char(texture_type);
+	m_render_object_text->set_texture_char(texture_type, m_font_size);
 	m_render_object_text->set_enabled(false);
 }
 
@@ -227,14 +227,14 @@ void rhr::render::object::text::update_size()
 
 	for (usize i = 0; i < m_text.size(); i++)
 	{
-		i16 char_width = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
+		i16 char_width = rhr::registry::char_texture::get_texture_map(m_font_size)->map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i]].advance.x >> 6;
 
 		running_char_offsets += static_cast<f32>(char_width) * font_size_scale;
 		running_char_contacts += static_cast<f32>(char_width) * font_size_scale / 2.0f;
 
 		if (i > 0)
 		{
-			i16 last_char_width = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i - 1]].advance.x >> 6;
+			i16 last_char_width = rhr::registry::char_texture::get_texture_map(m_font_size)->map[rhr::registry::char_texture::texture_type::LIGHT_NORMAL].char_map[m_text[i - 1]].advance.x >> 6;
 			running_char_contacts += static_cast<f32>(last_char_width) * font_size_scale / 2.0f;
 		}
 		
@@ -300,7 +300,7 @@ void rhr::render::object::text::on_update_buffers()
 
 		for (usize i = 0; i < m_text.size(); i++)
 		{
-			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::texture_map[rhr::registry::char_texture::texture_type::BOLD_NORMAL].char_map[m_text[i]];
+			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::get_texture_map(m_font_size)->map[rhr::registry::char_texture::texture_type::BOLD_NORMAL].char_map[m_text[i]];
 			f32 y_offset = static_cast<f32>(m_font_size) + (-1.0f * static_cast<f32>(char_data.offset.y) * font_size_scale) - static_cast<f32>(rhr::stack::block::padding);
 
 			vertices[i * 4 + 0] = rhr::render::vertex({ static_cast<f32>(running_x + char_data.offset.x) * font_size_scale, y_offset, 0.0f }, m_color_primary.get_normalized(), { char_data.first.x, char_data.first.y });
@@ -379,6 +379,7 @@ void rhr::render::object::text::post_color_update()
 void rhr::render::object::text::set_font_size(u16 font_size)
 {
 	m_font_size = font_size;
+	m_render_object_text->set_texture_char_size(font_size);
 
 	update_size();
 	mark_dirty();
