@@ -57,13 +57,24 @@ public:
 	struct texture_map
 	{
 		texture_map(u16 size)
-		: texture_size(size) {}
+		: texture_size(size)
+		{
+			ft::error error = FT_Init_FreeType(&library);
+			if (error)
+			{
+				cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
+				return;
+			}
+		}
 
 		///
 		u16 texture_size;
 
 		///
 		std::unordered_map<texture_type, texture_data> map;
+
+		///
+		ft::library library;
 	};
 
 	/// Loads and processes fonts.
@@ -76,7 +87,7 @@ private:
 	static void process_font(const std::string& font_path, texture_type type, u16 size);
 
 	/// Used to load ttf fonts.
-	static ft::library m_library;
+//	static ft::library m_library;
 
 	///
 	static std::vector<texture_map*> m_texture_maps;

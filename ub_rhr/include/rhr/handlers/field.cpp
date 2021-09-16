@@ -30,11 +30,13 @@ std::make_shared<rhr::render::object::rectangle>())
 
 	m_rectangle_cursor->set_weak(m_rectangle_cursor);
 	m_rectangle_highlight->set_weak(m_rectangle_highlight);
+	m_rectangle_highlight->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
-	m_rectangle_cursor->set_color(cap::color::text_secondary_color);
-	m_rectangle_cursor->set_size({ 2, rhr::stack::block::height_content - 4 });
+	m_rectangle_cursor->set_color(cap::color::text_primary_color);
+	m_rectangle_cursor->set_size({ 1, rhr::stack::block::height_content });
+	m_rectangle_cursor->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
-	m_rectangle_highlight->set_color(cap::color().from_u8({ 95, 165, 255, 60 }));
+	m_rectangle_highlight->set_color(cap::color().from_u8({ 30, 70, 210, 80 }));
 
 	InputHandler::RegisterMouseCallback(mouse_button_caller, this);
 	InputHandler::RegisterTextCallback(text_button_caller, this);
@@ -615,7 +617,7 @@ glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2
 
 void rhr::handler::field::update_cursor()
 {
-	m_rectangle_cursor->set_position({ m_cursor_position.x - 1, m_cursor_position.y + 2 });
+	m_rectangle_cursor->set_position({ m_cursor_position.x - 1, m_cursor_position.y });
 }
 
 void rhr::handler::field::update_highlight()

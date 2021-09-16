@@ -3,7 +3,11 @@
 static void execute_release(cap::mod::block::pass* pass)
 {
 	pass->get_string(0) = pass->get_string(1);
+
+
+
 //	l_output_5_23 = r_0;
+	// print l_output_5_23
 }
 
 static void execute_debug(cap::mod::block::pass* pass)

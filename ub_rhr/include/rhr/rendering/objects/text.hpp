@@ -142,5 +142,8 @@ private:
 
 	///
 	bool m_force_register;
+
+	///
+	rhr::registry::char_texture::texture_type m_texture_type;
 };
 }
