@@ -15,7 +15,8 @@ static void block_update(void* data)
 }
 
 rhr::stack::block::block(const std::string& unlocalized_name)
-	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->block_mod_block)
+	: rhr::render::interfaces::i_enableable(true)
+	, m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->block_mod_block)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_function_stack_update(nullptr)
 {
@@ -96,73 +97,89 @@ void rhr::stack::block::post_position_update()
 		arg->set_super_position(m_position + m_super_position);
 }
 
+void rhr::stack::block::post_enable_update(bool enabled)
+{
+	for (auto& arg : m_arguments)
+		arg->set_enabled(enabled);
+}
+
 void rhr::stack::block::update_arguments()
 {
 	m_arguments.clear();
 	m_arguments.reserve(m_mod_block->get_arguments().size());
 
-	std::vector<cap::mod::block::block::argument::initializer> argumentInit = m_mod_block->get_arguments();
+	std::vector<cap::mod::block::block::argument::initializer> argument_init = m_mod_block->get_arguments();
 
-	u32 width = rhr::stack::block::padding;
-	cap::color argColor = cap::color().from_normalized(m_mod_category->get_color().get_normalized_scaled(0.25f, false));
+	u32 width = 0;
+	cap::color arg_color = cap::color().from_normalized(m_mod_category->get_color().get_normalized_scaled(0.25f, false));
 
-	for (usize i = 0; i < argumentInit.size(); i++)
+	std::shared_ptr<rhr::stack::argument::argument> last_arg;
+
+	for (usize i = 0; i < argument_init.size(); i++)
 	{
-		if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::TEXT)
+		if (argument_init[i].get_type() == cap::mod::block::block::argument::type::TEXT)
 		{
-			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(argColor, &m_function_block_update);
+			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(arg_color, &m_function_block_update);
 			arg->set_weak(arg);
+
 			m_arguments.push_back(arg);
+			last_arg = arg;
+
+			pad_arguments(width, i, last_arg, arg);
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].get_default_value());
-			arg->set_mode(argumentInit[i].get_mode());
-			arg->set_mode_restriction(argumentInit[i].get_restriction());
-
-			width += arg->get_width() + rhr::stack::block::padding;
+			arg->set_data(argument_init[i].get_default_value());
+			arg->set_mode(argument_init[i].get_mode());
+			arg->set_mode_restriction(argument_init[i].get_restriction());
 		}
-		else if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::REAL)
+		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::REAL)
 		{
-			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(argColor, &m_function_block_update);
+			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(arg_color, &m_function_block_update);
 			arg->set_weak(arg);
+
 			m_arguments.push_back(arg);
+			last_arg = arg;
+
+			pad_arguments(width, i, last_arg, arg);
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].get_default_value());
-			arg->set_mode(argumentInit[i].get_mode());
-			arg->set_mode_restriction(argumentInit[i].get_restriction());
-
-			width += arg->get_width() + rhr::stack::block::padding;
+			arg->set_data(argument_init[i].get_default_value());
+			arg->set_mode(argument_init[i].get_mode());
+			arg->set_mode_restriction(argument_init[i].get_restriction());
 		}
-		else if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::STRING)
+		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::STRING)
 		{
-			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(argColor, &m_function_block_update);
+			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(arg_color, &m_function_block_update);
 			arg->set_weak(arg);
+
 			m_arguments.push_back(arg);
+			last_arg = arg;
+
+			pad_arguments(width, i, last_arg, arg);
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].get_default_value());
-			arg->set_mode(argumentInit[i].get_mode());
-			arg->set_mode_restriction(argumentInit[i].get_restriction());
-
-			width += arg->get_width() + rhr::stack::block::padding;
+			arg->set_data(argument_init[i].get_default_value());
+			arg->set_mode(argument_init[i].get_mode());
+			arg->set_mode_restriction(argument_init[i].get_restriction());
 		}
-		else if (argumentInit[i].get_type() == cap::mod::block::block::argument::type::BOOL)
+		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::BOOL)
 		{
-			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(argColor, &m_function_block_update);
+			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(arg_color, &m_function_block_update);
 			arg->set_weak(arg);
+
 			m_arguments.push_back(arg);
+
+			pad_arguments(width, i, last_arg, arg);
+			last_arg = arg;
 
 			arg->set_position({ width, rhr::stack::block::padding });
 			arg->set_super_position(m_position + m_super_position);
-			arg->set_data(argumentInit[i].get_default_value());
-			arg->set_mode(argumentInit[i].get_mode());
-			arg->set_mode_restriction(argumentInit[i].get_restriction());
-
-			width += arg->get_width() + rhr::stack::block::padding;
+			arg->set_data(argument_init[i].get_default_value());
+			arg->set_mode(argument_init[i].get_mode());
+			arg->set_mode_restriction(argument_init[i].get_restriction());
 		}
 	}
 
@@ -171,18 +188,23 @@ void rhr::stack::block::update_arguments()
 
 void rhr::stack::block::update_width()
 {
-	m_width = rhr::stack::block::padding;
+	m_width = 0;
+	std::shared_ptr<argument::argument> last_arg;
 
 	for (usize i = 0; i < m_arguments.size(); i++)
 	{
-		m_arguments[i]->set_position({ m_width, rhr::stack::block::padding });
+		std::shared_ptr<argument::argument>& arg = m_arguments[i];
 
+		pad_arguments(m_width, i, last_arg, arg);
+		last_arg = arg;
+
+		arg->set_position({ m_width, rhr::stack::block::padding });
 		m_width += m_arguments[i]->get_width();
-		m_width += rhr::stack::block::padding;
 	}
 
-	m_size.x = m_width;
+	pad_arguments(m_width, 0, last_arg, last_arg, true);
 
+	m_size.x = m_width;
 	m_background->set_size(m_size);
 }
 
@@ -200,4 +222,105 @@ bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 void rhr::stack::block::set_stack_update_function(std::function<void()>* function_stack_update)
 {
 	m_function_stack_update = function_stack_update;
+}
+
+void
+rhr::stack::block::pad_arguments(u32& width, usize i, const std::shared_ptr<rhr::stack::argument::argument>& last_arg,
+								 const std::shared_ptr<rhr::stack::argument::argument>& arg, bool last)
+{
+	static const u32 full_padding = rhr::stack::argument::argument::padding;
+	static const u32 no_padding = rhr::stack::block::padding;
+
+	if (last)
+	{
+		switch (arg->get_padding_style())
+		{
+		case rhr::stack::argument::argument::padding_style::HARD:
+		{
+			width += no_padding;
+			break;
+		}
+		case rhr::stack::argument::argument::padding_style::SOFT:
+		{
+			width += full_padding;
+			break;
+		}
+		case rhr::stack::argument::argument::padding_style::NONE:
+		{
+			width += no_padding;
+			break;
+		}
+		}
+
+		return;
+	}
+
+	switch (arg->get_padding_style())
+	{
+	case rhr::stack::argument::argument::padding_style::HARD:
+	{
+		if (i == 0)
+			width += no_padding;
+		else
+			width += full_padding;
+
+		break;
+	}
+	case rhr::stack::argument::argument::padding_style::SOFT:
+	{
+		if (i == 0)
+			width += full_padding;
+		else
+		{
+			switch (last_arg->get_padding_style())
+			{
+			case rhr::stack::argument::argument::padding_style::HARD:
+			{
+				width += full_padding;
+				break;
+			}
+			case rhr::stack::argument::argument::padding_style::SOFT:
+			{
+				width += full_padding;
+				break;
+			}
+			case rhr::stack::argument::argument::padding_style::NONE:
+			{
+				width += no_padding;
+				break;
+			}
+			}
+		}
+
+		break;
+	}
+	case rhr::stack::argument::argument::padding_style::NONE:
+	{
+		if (i == 0)
+			width += no_padding;
+		else
+		{
+			switch (last_arg->get_padding_style())
+			{
+			case rhr::stack::argument::argument::padding_style::HARD:
+			{
+				width += full_padding;
+				break;
+			}
+			case rhr::stack::argument::argument::padding_style::SOFT:
+			{
+				width += no_padding;
+				break;
+			}
+			case rhr::stack::argument::argument::padding_style::NONE:
+			{
+				width += no_padding;
+				break;
+			}
+			}
+		}
+
+		break;
+	}
+	}
 }

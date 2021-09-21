@@ -2,14 +2,17 @@
 #include "mod_vin/categories.hpp"
 #include <espresso/mod/data.hpp>
 
-class BlockRealFromBool : public ModBlock
+namespace mod_vin::block::real
+{
+class from_bool : public cap::mod::block::block
 {
 public:
 	const char* get_unlocalized_name() const override;
-	const char* GetCategory() const override;
+	const char* get_category() const override;
 
-	blockExecution PullExecuteRelease() const override;
-	blockExecution PullExecuteDebug() const override;
+	cap::mod::block::block::execution pull_execute_release() const override;
+	cap::mod::block::block::execution pull_execute_debug() const override;
 
-	const std::vector<BlockArgumentInitializer> GetArguments() const override;
+	std::vector<cap::mod::block::block::argument::initializer> get_arguments() const override;
 };
+}

@@ -12,7 +12,7 @@ rhr::stack::argument::text::text(const cap::color& color, std::function<void()>*
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
 	m_text->set_color_primary(cap::color::black);
 	m_text->set_color_secondary(color);
-	m_text->set_padding(rhr::stack::argument::text::padding);
+	m_text->set_padding(0);
 	m_text->enable_background(false);
 }
 
@@ -29,6 +29,11 @@ u32 rhr::stack::argument::text::get_width()
 bool rhr::stack::argument::text::has_data()
 {
 	return true;
+}
+
+rhr::stack::argument::argument::padding_style rhr::stack::argument::text::get_padding_style()
+{
+	return rhr::stack::argument::argument::padding_style::SOFT;
 }
 
 void rhr::stack::argument::text::on_render()
@@ -59,4 +64,9 @@ void rhr::stack::argument::text::post_position_update()
 void rhr::stack::argument::text::on_set_data()
 {
 	m_text->set_text(m_data);
+}
+
+void rhr::stack::argument::text::post_enable_update(bool enabled)
+{
+	m_text->set_enabled(enabled);
 }

@@ -78,6 +78,9 @@ private:
 	void post_size_update() override;
 
 	///
+	void post_enable_update(bool enabled) override;
+
+	///
 	std::vector<std::shared_ptr<rhr::stack::stack>> m_stacks;
 
 	///

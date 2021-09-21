@@ -11,4 +11,4 @@
 #define UB_EXPORT extern "C" __declspec(dllexport)
 #endif
 
-UB_EXPORT void Initialization(ModData* data);
+UB_EXPORT void Initialization(esp::mod::data* data);

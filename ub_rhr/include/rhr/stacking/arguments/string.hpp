@@ -35,6 +35,9 @@ public:
 
 	///
 	bool drag_bounds(glm::vec<2, i32> position) override;
+
+	///
+	rhr::stack::argument::argument::padding_style get_padding_style() override;
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void on_render() override;
@@ -57,6 +60,9 @@ private:
 
 	///
 	void on_set_mode(cap::mod::block::block::argument::variable_mode mode) override;
+
+	///
+	void post_enable_update(bool enabled) override;
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;

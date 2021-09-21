@@ -3,7 +3,7 @@
 
 #include <Cappuccino/Registration.hpp>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	ModBlockPassInitializer init;
 
@@ -19,17 +19,17 @@ static void ExecuteRelease(ModBlockPass* pass)
 	init.DebugMode = false;
 	init.BeginTime = pass->GetBeginTime();
 
-	ModBlockPass* np = new ModBlockPass(init);
+	cap::mod::block::pass* np = new cap::mod::block::pass(init);
 	Registration::RegisterPass(np);
 
 	ExecutionThread* thr = new ExecutionThread(*(u64*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
 	u64 putIdx = pass->CustomPut(thr);
-	pass->GetReal(0) = putIdx;
+	pass->get_real(0) = putIdx;
 
-	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
-	*dealloc = [putIdx](ModBlockPass* pass)
+	std::function<void(cap::mod::block::pass*)>* dealloc = new std::function<void(cap::mod::block::pass*)>();
+	*dealloc = [putIdx](cap::mod::block::pass* pass)
 	{
 		pass->CustomFree(putIdx, false);
 	};
@@ -37,7 +37,7 @@ static void ExecuteRelease(ModBlockPass* pass)
 	pass->AddDeallocation(dealloc);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
 	ModBlockPassInitializer init;
 
@@ -53,17 +53,17 @@ static void ExecuteDebug(ModBlockPass* pass)
 	init.DebugMode = true;
 	init.BeginTime = pass->GetBeginTime();
 
-	ModBlockPass* np = new ModBlockPass(init);
+	cap::mod::block::pass* np = new cap::mod::block::pass(init);
 	Registration::RegisterPass(np);
 
 	ExecutionThread* thr = new ExecutionThread(*(u64*)(pass->GetPreData(0)), Registration::GetFunctionCallCount(), Registration::GetCalls(), np);
 	Registration::RegisterExecutionThread(thr);
 
 	u64 putIdx = pass->CustomPut(thr);
-	pass->GetReal(0) = putIdx;
+	pass->get_real(0) = putIdx;
 
-	std::function<void(ModBlockPass*)>* dealloc = new std::function<void(ModBlockPass*)>();
-	*dealloc = [putIdx](ModBlockPass* pass)
+	std::function<void(cap::mod::block::pass*)>* dealloc = new std::function<void(cap::mod::block::pass*)>();
+	*dealloc = [putIdx](cap::mod::block::pass* pass)
 	{
 		pass->CustomFree(putIdx, false);
 	};
@@ -88,19 +88,19 @@ const char* BlockUtilityThreadSummon::get_unlocalized_name() const
 	return "vin_utility_thread_summon";
 }
 
-const char* BlockUtilityThreadSummon::GetCategory() const
+const char* BlockUtilityThreadSummon::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityThreadSummon::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityThreadSummon::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityThreadSummon::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityThreadSummon::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
 std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityThreadSummon::GetRuntimeStages() const
@@ -110,14 +110,14 @@ std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityThreadSummon::G
 	return stages;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityThreadSummon::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityThreadSummon::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "summon thread"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "thread"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "at"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::RAW, "function"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "summon thread"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "thread"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "at"));
+	{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::RAW, "function"));
 
 	return args;
 }

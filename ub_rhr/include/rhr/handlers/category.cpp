@@ -62,7 +62,6 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 	}
 
 	m_mod_groups.reserve(rhr::handler::project::mods.size());
-
 	i32 offset = rhr::stack::block::padding / 2;
 
 	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
@@ -136,6 +135,8 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 				stack->add_block(block);
 				collection->add_stack(stack);
 
+				collection->set_enabled(false);
+
 				group.mod_category_collections.back().push_back(collection);
 				group.mod_category_stacks.back().push_back(stack);
 				group.mod_category_blocks.back().push_back(block);
@@ -158,19 +159,21 @@ void rhr::handler::category::render()
 	{
 		group.mod_button->render();
 
-		for (auto& catagory : group.mod_category)
-			catagory->render();
+		for (auto& category : group.mod_category)
+			category->render();
 	}
 }
 
 void rhr::handler::category::select_category(active active_category)
 {
+	cap::logger::debug("void rhr::handler::category::select_category(active active_category) " + std::to_string(active_category.mod_group_category));
+
 	m_active_category = active_category;
 
 	if (m_active_category.mod_group >= m_mod_groups.size())
 	{
 		cap::logger::warn(
-		"Failed to load catagory. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " +
+		"Failed to load category. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " +
 		std::to_string(m_mod_groups.size()) + ")");
 		return;
 	}
@@ -178,15 +181,18 @@ void rhr::handler::category::select_category(active active_category)
 	if (m_active_category.mod_group_category >= m_mod_groups[m_active_category.mod_group].mod_category.size())
 	{
 		cap::logger::warn(
-		"Failed to load catagory. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) +
+		"Failed to load category. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) +
 		" >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category.size()) + ")");
 		return;
 	}
 
-	rhr::stack::plane::toolbar_plane->delete_contents();
+	rhr::stack::plane::toolbar_plane->delete_contents(true);
 
 	for (auto collection : m_mod_groups[m_active_category.mod_group].mod_category_collections[m_active_category.mod_group_category])
+	{
+		collection->set_enabled(true);
 		rhr::stack::plane::toolbar_plane->add_collection(collection, false);
+	}
 }
 
 void rhr::handler::category::toggle_category(usize category_idx)
@@ -198,6 +204,12 @@ void rhr::handler::category::toggle_category(usize category_idx)
 	}
 
 	m_mod_groups[category_idx].toggle();
+}
+
+void rhr::handler::category::reload_swap_chain()
+{
+	for (auto& mod_group : m_mod_groups)
+		mod_group.reload_swap_chain();
 }
 
 std::vector<rhr::handler::category::mod_group> rhr::handler::category::m_mod_groups;

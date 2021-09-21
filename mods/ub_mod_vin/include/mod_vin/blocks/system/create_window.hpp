@@ -9,7 +9,7 @@
 //class WindowHandler
 //{
 //public:
-//    WindowHandler(ModBlockPass* pass, sf::RenderWindow* window)
+//    WindowHandler(cap::mod::block::pass* pass, sf::RenderWindow* window)
 //        :m_window(window), m_lastScroll(0.0)
 //    {
 //        m_textCallback = [](const sf::Event::TextEvent& ev)
@@ -17,8 +17,8 @@
 //            Logger::Info(std::to_string(ev.unicode));
 //        };
 //
-//        m_dealocationCallback = new std::function<void(ModBlockPass*)>();
-//        *m_dealocationCallback = [this](ModBlockPass*)
+//        m_dealocationCallback = new std::function<void(cap::mod::block::pass*)>();
+//        *m_dealocationCallback = [this](cap::mod::block::pass*)
 //        {
 //            InputHandler::UnregisterTextCallback(&m_textCallback);
 //            RemoveAllRenderables();
@@ -121,7 +121,7 @@
 //    double m_lastScroll;
 //
 //    std::function<void(const sf::Event::TextEvent&)> m_textCallback;
-//    std::function<void(ModBlockPass*)>* m_dealocationCallback;
+//    std::function<void(cap::mod::block::pass*)>* m_dealocationCallback;
 //
 //    std::vector<sf::Drawable*> m_renderables;
 //    std::vector<double*> m_renderableIndex;
@@ -132,12 +132,12 @@ class BlockSystemCreateWindow : public ModBlock
 {
 public:
     const char* get_unlocalized_name() const override;
-    const char* GetCategory() const override;
+    const char* get_category() const override;
 
-    blockExecution PullExecuteDebug() const override;
-    blockExecution PullExecuteRelease() const override;
+    cap::mod::block::block::execution pull_execute_debug() const override;
+    cap::mod::block::block::execution pull_execute_release() const override;
 
     blockInitialization GetRuntimeGlobalPreInit() const override;
     
-    const std::vector<BlockArgumentInitializer> GetArguments() const override;
+    std::vector<cap::mod::block::block::argument::initializer> get_arguments() const override;
 };

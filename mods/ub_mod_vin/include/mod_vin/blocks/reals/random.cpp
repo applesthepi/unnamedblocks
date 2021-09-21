@@ -1,44 +1,41 @@
-#include "BlockRealRandom.hpp"
-#include <cmath>
+#include "random.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	std::uniform_real_distribution<f64> draw(0.0, 1.0);
-	pass->GetReal(0) = draw(pass->GetRandomGenerator());
+	pass->get_real(0) = draw(pass->get_random_generator());
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
-const char* BlockRealRandom::get_unlocalized_name() const
+const char* mod_vin::block::real::random::get_unlocalized_name() const
 {
 	return "vin_real_random";
 }
 
-const char* BlockRealRandom::GetCategory() const
+const char* mod_vin::block::real::random::get_category() const
 {
 	return CATEGORY_REALS;
 }
 
-blockExecution BlockRealRandom::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::real::random::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockRealRandom::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::real::random::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockRealRandom::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::real::random::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "set"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to random"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "set" },
+		{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "to random" }
+	};
 }

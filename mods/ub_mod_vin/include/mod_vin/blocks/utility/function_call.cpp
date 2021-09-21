@@ -1,14 +1,14 @@
 #include "BlockUtilityFunctionCall.hpp"
 #include "BlockUtilityFunctionDefine.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	pass->AddCallstack(*(u64*)(pass->GetPreData(0)), 0);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 static bool RuntimeInit(PreProcessorData& preData, cap::mod::block::data& blockData)
@@ -28,19 +28,19 @@ const char* BlockUtilityFunctionCall::get_unlocalized_name() const
 	return "vin_utility_function_call";
 }
 
-const char* BlockUtilityFunctionCall::GetCategory() const
+const char* BlockUtilityFunctionCall::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityFunctionCall::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityFunctionCall::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityFunctionCall::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityFunctionCall::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
 std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityFunctionCall::GetRuntimeStages() const
@@ -50,12 +50,12 @@ std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityFunctionCall::G
 	return stages;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityFunctionCall::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityFunctionCall::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "call function"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::RAW, "function"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "call function"));
+	{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::RAW, "function"));
 
 	return args;
 }

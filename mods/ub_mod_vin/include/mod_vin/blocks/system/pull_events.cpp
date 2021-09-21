@@ -5,9 +5,9 @@
 #include <chrono>
 #include <thread>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->get_real(0));
 	//sf::RenderWindow* window = handler->GetWindow();
 	//
 	//sf::Event ev;
@@ -27,9 +27,9 @@ static void ExecuteRelease(ModBlockPass* pass)
 	//}
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockSystemPullEvents::get_unlocalized_name() const
@@ -37,27 +37,27 @@ const char* BlockSystemPullEvents::get_unlocalized_name() const
 	return "vin_system_pull_events";
 }
 
-const char* BlockSystemPullEvents::GetCategory() const
+const char* BlockSystemPullEvents::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemPullEvents::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemPullEvents::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockSystemPullEvents::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemPullEvents::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemPullEvents::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemPullEvents::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "window pull events"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "window"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "window pull events"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "window"));
 
 	return args;
 }

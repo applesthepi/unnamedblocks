@@ -6,6 +6,7 @@
 #include "rhr/rendering/interfaces/i_updateable.hpp"
 #include "rhr/rendering/interfaces/i_positionable.hpp"
 #include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -15,7 +16,7 @@
 namespace rhr::stack
 {
 ///
-class block : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>
+class block : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_enableable
 {
 public:
 	///
@@ -67,7 +68,13 @@ private:
 	void post_position_update() override;
 
 	///
+	void post_enable_update(bool enabled) override;
+
+	///
 	void update_arguments();
+
+	///
+	static void pad_arguments(u32& width, usize i, const std::shared_ptr<rhr::stack::argument::argument>& last_arg, const std::shared_ptr<rhr::stack::argument::argument>& arg, bool last = false);
 
 	///
 	u32 m_width;

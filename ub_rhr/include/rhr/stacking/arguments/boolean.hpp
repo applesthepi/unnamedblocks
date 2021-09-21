@@ -28,8 +28,15 @@ public:
 	/// \return Has data.
 	bool has_data() override;
 
+	/// Gets data. Data of the argument is stored as a string.
+	/// \return Data from the argument.
+	const std::string& get_data() override;
+
 	///
 	bool drag_bounds(glm::vec<2, i32> position) override;
+
+	///
+	rhr::stack::argument::argument::padding_style get_padding_style() override;
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void on_render() override;
@@ -49,6 +56,12 @@ private:
 	/// Sets data. Data of the argument is stored as a string.
 	void on_set_data() override;
 
+	///
+	void on_set_mode(cap::mod::block::block::argument::variable_mode mode) override;
+
+	///
+	void post_enable_update(bool enabled) override;
+
 	/// Left decoration.
 	std::shared_ptr<rhr::render::object::object> m_decor_left;
 
@@ -57,5 +70,8 @@ private:
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;
+
+	///
+	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
 };
 }

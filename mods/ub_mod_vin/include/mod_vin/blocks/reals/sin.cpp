@@ -1,42 +1,39 @@
-#include "BlockRealSin.hpp"
-#include <cmath>
+#include "sin.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->GetReal(0) = std::sin(pass->GetReal(0) * (3.141592653589793 / 180.0));
+	pass->get_real(0) = std::sin(pass->get_real(0) * (3.141592653589793 / 180.0));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
-const char* BlockRealSin::get_unlocalized_name() const
+const char* mod_vin::block::real::sin::get_unlocalized_name() const
 {
 	return "vin_real_sin";
 }
 
-const char* BlockRealSin::GetCategory() const
+const char* mod_vin::block::real::sin::get_category() const
 {
 	return CATEGORY_REALS;
 }
 
-blockExecution BlockRealSin::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::real::sin::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockRealSin::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::real::sin::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockRealSin::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::real::sin::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "sin"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "sin" },
+		{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" }
+	};
 }

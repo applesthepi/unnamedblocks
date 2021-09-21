@@ -1,44 +1,42 @@
-#include "BlockStringCompEq.hpp"
+#include "comp_eq.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->GetBool(2) = pass->GetString(0) == pass->GetString(1);
+	pass->get_bool(2) = pass->get_string(0) == pass->get_string(1);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
-const char* BlockStringCompEq::get_unlocalized_name() const
+const char* mod_vin::block::string::comp_eq::get_unlocalized_name() const
 {
 	return "vin_string_comp_eq";
 }
 
-const char* BlockStringCompEq::GetCategory() const
+const char* mod_vin::block::string::comp_eq::get_category() const
 {
 	return CATEGORY_STRINGS;
 }
 
-blockExecution BlockStringCompEq::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::string::comp_eq::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockStringCompEq::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::string::comp_eq::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockStringCompEq::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::string::comp_eq::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "=="));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, ""));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::VAR, "variable" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "==" },
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "for" },
+		{ cap::mod::block::block::argument::type::BOOL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" }
+	};
 }

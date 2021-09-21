@@ -28,6 +28,9 @@ public:
 	/// Whether or not the argument contains data for storing.
 	/// \return Has data.
 	bool has_data() override;
+
+	///
+	rhr::stack::argument::argument::padding_style get_padding_style() override;
 private:
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void on_render() override;
@@ -47,6 +50,9 @@ private:
 
 	/// Sets data. Data of the argument is stored as a string.
 	void on_set_data() override;
+
+	///
+	void post_enable_update(bool enabled) override;
 
 	/// Renderable text element.
 	std::shared_ptr<rhr::render::object::text> m_text;

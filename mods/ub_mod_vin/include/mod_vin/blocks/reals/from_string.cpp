@@ -1,56 +1,53 @@
-#include "BlockRealFromString.hpp"
-#include <string>
+#include "from_string.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->GetReal(0) = std::stod(pass->GetString(1));
+	pass->get_real(0) = std::stod(pass->get_string(1));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
 	f64 nd = 0.0;
 
 	try
 	{
-		nd = std::stod(pass->GetString(1));
+		nd = std::stod(pass->get_string(1));
 	}
 	catch (std::invalid_argument&)
 	{
-		pass->LogError("failed to set real \"" + std::to_string(pass->GetReal(0)) + "\" to string \"" + pass->GetString(1) + "\"; the string could not be parsed into a real", LoggerFatality::BREAK);
+		pass->log_error("failed to set real \"" + std::to_string(pass->get_real(0)) + "\" to string \"" + pass->get_string(1) + "\"; the string could not be parsed into a real", cap::mod::block::pass::logger_fatality::BREAK);
 		return;
 	}
 
-	pass->GetReal(0) = nd;
+	pass->get_real(0) = nd;
 }
 
-const char* BlockRealFromString::get_unlocalized_name() const
+const char* mod_vin::block::real::from_string::get_unlocalized_name() const
 {
 	return "vin_real_from_string";
 }
 
-const char* BlockRealFromString::GetCategory() const
+const char* mod_vin::block::real::from_string::get_category() const
 {
 	return CATEGORY_REALS;
 }
 
-blockExecution BlockRealFromString::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::real::from_string::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockRealFromString::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::real::from_string::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockRealFromString::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::real::from_string::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "set"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "set" },
+		{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "to" },
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" }
+	};
 }

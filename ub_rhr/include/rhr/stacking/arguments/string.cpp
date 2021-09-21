@@ -83,6 +83,11 @@ bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
 	);
 }
 
+rhr::stack::argument::argument::padding_style rhr::stack::argument::string::get_padding_style()
+{
+	return rhr::stack::argument::argument::padding_style::HARD;
+}
+
 const std::string& rhr::stack::argument::string::get_data()
 {
 	return m_text->get_text();
@@ -94,4 +99,9 @@ void rhr::stack::argument::string::on_set_mode(cap::mod::block::block::argument:
 		m_text->set_color_secondary(m_block_color);
 	else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
 		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
+}
+
+void rhr::stack::argument::string::post_enable_update(bool enabled)
+{
+	m_text->set_enabled(enabled);
 }

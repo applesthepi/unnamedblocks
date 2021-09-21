@@ -294,3 +294,9 @@ void rhr::stack::collection::post_size_update()
 	m_background->set_super_bounds(m_size);
 	m_background->set_size_max();
 }
+
+void rhr::stack::collection::post_enable_update(bool enabled)
+{
+	for (auto& stack : m_stacks)
+		stack->set_enabled(enabled);
+}

@@ -3,28 +3,28 @@
 
 #include <Cappuccino/Registration.hpp>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	if (pass->GetBool(3))
-		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->InsertValue(new f64(pass->GetReal(1)), pass->GetReal(2), true);
+	if (pass->get_bool(3))
+		((UtilityList*)pass->CustomGet(pass->get_real(0)))->InsertValue(new f64(pass->get_real(1)), pass->get_real(2), true);
 	else
-		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->InsertValue(&pass->GetReal(1), pass->GetReal(2), false);
+		((UtilityList*)pass->CustomGet(pass->get_real(0)))->InsertValue(&pass->get_real(1), pass->get_real(2), false);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	UtilityList* list = (UtilityList*)pass->CustomGet(pass->GetReal(0));
+	UtilityList* list = (UtilityList*)pass->CustomGet(pass->get_real(0));
 
-	if (pass->GetReal(2) >= list->Size() || pass->GetReal(2) < 0 || std::floor(pass->GetReal(2)) != pass->GetReal(2))
+	if (pass->get_real(2) >= list->Size() || pass->get_real(2) < 0 || std::floor(pass->get_real(2)) != pass->get_real(2))
 	{
-		pass->LogError("failed to insert index \"" + std::to_string(pass->GetReal(1)) + "\" of a list; index is invalid", LoggerFatality::BREAK);
+		pass->log_error("failed to insert index \"" + std::to_string(pass->get_real(1)) + "\" of a list; index is invalid", cap::mod::block::pass::logger_fatality::BREAK);
 		return;
 	}
 
-	if (pass->GetBool(3))
-		list->InsertValue(new f64(pass->GetReal(1)), pass->GetReal(2), true);
+	if (pass->get_bool(3))
+		list->InsertValue(new f64(pass->get_real(1)), pass->get_real(2), true);
 	else
-		list->InsertValue(&pass->GetReal(1), pass->GetReal(2), false);
+		list->InsertValue(&pass->get_real(1), pass->get_real(2), false);
 }
 
 const char* BlockUtilityListInsert::get_unlocalized_name() const
@@ -32,33 +32,33 @@ const char* BlockUtilityListInsert::get_unlocalized_name() const
 	return "vin_utility_list_insert";
 }
 
-const char* BlockUtilityListInsert::GetCategory() const
+const char* BlockUtilityListInsert::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityListInsert::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityListInsert::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityListInsert::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityListInsert::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityListInsert::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityListInsert::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "list"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "list"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "insert"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::ANY, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "at"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "copy"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "list"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "list"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "insert"));
+	{ cap::mod::block::block::argument::type::ANY, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "at"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "0"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "copy"));
+	{ cap::mod::block::block::argument::type::BOOL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "1"));
 
 	return args;
 }

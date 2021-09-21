@@ -1,11 +1,11 @@
 #include "BlockUtilityFunctionDefine.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
 	
 }
@@ -35,7 +35,7 @@ const char* BlockUtilityFunctionDefine::get_unlocalized_name() const
 	return "vin_utility_function_define";
 }
 
-const char* BlockUtilityFunctionDefine::GetCategory() const
+const char* BlockUtilityFunctionDefine::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
@@ -45,14 +45,14 @@ bool BlockUtilityFunctionDefine::IsTopical() const
 	return true;
 }
 
-blockExecution BlockUtilityFunctionDefine::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityFunctionDefine::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityFunctionDefine::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityFunctionDefine::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
 blockInitialization BlockUtilityFunctionDefine::GetRuntimeGlobalPreInit() const
@@ -72,12 +72,12 @@ std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityFunctionDefine:
 	return stages;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityFunctionDefine::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityFunctionDefine::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "define function"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::RAW, "function"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "define function"));
+	{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::RAW, "function"));
 
 	return args;
 }

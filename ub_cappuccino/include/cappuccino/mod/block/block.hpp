@@ -102,36 +102,36 @@ public:
 	typedef bool(*data_initialization)(cap::preprocessor_data&, cap::mod::block::data&);
 
 	/// How the block will be identified as. Convention example: "mymod_some_block_name".
-	[[nodiscard]] CAP_DLL virtual const char* get_unlocalized_name() const;
+	CAP_DLL virtual const char* get_unlocalized_name() const;
 
 	/// Category of the block.
-	[[nodiscard]] CAP_DLL virtual const char* get_category() const;
+	CAP_DLL virtual const char* get_category() const;
 
 	/// Does the block start a stack.
-	[[nodiscard]] CAP_DLL virtual bool is_topical() const;
+	CAP_DLL virtual bool is_topical() const;
 
 	/// What will be executed in a release build.
-	[[nodiscard]] CAP_DLL virtual execution pull_execute_release() const;
+	CAP_DLL virtual execution pull_execute_release() const;
 
 	/// What will be executed in a debug build.
-	[[nodiscard]] CAP_DLL virtual execution pull_execute_debug() const;
+	CAP_DLL virtual execution pull_execute_debug() const;
 
 	/// Actions to run once per block type; during runtime before Initialization.
-	[[nodiscard]] CAP_DLL virtual initialization get_runtime_global_pre_init() const;
+	CAP_DLL virtual initialization get_runtime_global_pre_init() const;
 
 	/// Actions to run once per block type; during runtime after Initialization.
-	[[nodiscard]] CAP_DLL virtual initialization get_runtime_global_post_init() const;
+	CAP_DLL virtual initialization get_runtime_global_post_init() const;
 
 	/// Actions to run once per block type per stack; during runtime before Initialization.
-	[[nodiscard]] CAP_DLL virtual initialization get_runtime_local_pre_init() const;
+	CAP_DLL virtual initialization get_runtime_local_pre_init() const;
 
 	/// Actions to run once per block type per stack; during runtime after Initialization.
-	[[nodiscard]] CAP_DLL virtual initialization get_runtime_local_post_init() const;
+	CAP_DLL virtual initialization get_runtime_local_post_init() const;
 
 	/// Actions to run on each block preprocessed; during Initialization.
-	[[nodiscard]] CAP_DLL virtual std::vector<std::pair<data_initialization, u16>> get_runtime_stages() const;
+	CAP_DLL virtual std::vector<std::pair<data_initialization, u16>> get_runtime_stages() const;
 
 	/// Block arguments, including text.
-	[[nodiscard]] CAP_DLL virtual std::vector<argument::initializer> get_arguments() const;
+	CAP_DLL virtual std::vector<argument::initializer> get_arguments() const;
 };
 }

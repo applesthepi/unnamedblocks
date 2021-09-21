@@ -38,6 +38,9 @@ public:
 
 	///
 	static void toggle_category(usize category_idx);
+
+	///
+	static void reload_swap_chain();
 private:
 	///
 	struct mod_group
@@ -58,6 +61,22 @@ private:
 				button->set_enabled(enabled);
 
 			m_render_frame->enable_frame(categories_frame_idx, enabled);
+		}
+
+		void reload_swap_chain()
+		{
+			mod_button->reload_swap_chain();
+			categories_render_frame->reload_swap_chain();
+			mod_button_render_frame->reload_swap_chain();
+
+			for (auto& button : mod_category)
+				button->reload_swap_chain();
+
+			for (auto& category : mod_category_collections)
+			{
+				for (auto& collection : category)
+					collection->reload_swap_chain();
+			}
 		}
 
 		///

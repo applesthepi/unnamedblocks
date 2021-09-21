@@ -39,7 +39,7 @@ public:
 	bool is_toolbar();
 
 	///
-	void delete_contents();
+	void delete_contents(bool disable_collections = false);
 
 	///
 	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);

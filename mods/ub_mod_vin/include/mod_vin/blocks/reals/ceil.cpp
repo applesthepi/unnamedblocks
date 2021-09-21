@@ -1,42 +1,39 @@
-#include "BlockRealCeil.hpp"
-#include <cmath>
+#include "ceil.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->GetReal(0) = std::ceil(pass->GetReal(0));
+	pass->get_real(0) = std::ceil(pass->get_real(0));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
-const char* BlockRealCeil::get_unlocalized_name() const
+const char* mod_vin::block::real::ceil::get_unlocalized_name() const
 {
 	return "vin_real_ceil";
 }
 
-const char* BlockRealCeil::GetCategory() const
+const char* mod_vin::block::real::ceil::get_category() const
 {
 	return CATEGORY_REALS;
 }
 
-blockExecution BlockRealCeil::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::real::ceil::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockRealCeil::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::real::ceil::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockRealCeil::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::real::ceil::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "ceil"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "ceil" },
+		{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" }
+	};
 }

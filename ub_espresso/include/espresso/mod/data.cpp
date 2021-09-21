@@ -1,39 +1,5 @@
 #include "data.hpp"
 
-//ModDataBaked ModData::Bake()
-//{
-//	if (Blocks.size() == 0 || Categories.size() == 0)
-//	{
-//		cap::logger::Error("must have atleast 1 category and 1 block to bake!");
-//		return ModDataBaked();
-//	}
-//
-//	ModDataBaked baked;
-//
-//	baked.BlocksLength = Blocks.size();
-//	baked.CategoriesLength = Categories.size();
-//
-//	baked.Blocks = (ModBlock**)malloc(sizeof(ModBlock*) * Blocks.size());
-//	baked.Categories = (esp::mod::category**)malloc(sizeof(esp::mod::category*) * Categories.size());
-//
-//	if (baked.Blocks == nullptr || baked.Categories == nullptr)
-//	{
-//		printf("failed to allocate memory during baking process!\n");
-//		return baked;
-//	}
-//
-//	for (u32 i = 0; i < Blocks.size(); i++)
-//		baked.Blocks[i] = Blocks[i];
-//
-//	for (u32 i = 0; i < Categories.size(); i++)
-//		baked.Categories[i] = Categories[i];
-//
-//	Blocks.clear();
-//	Categories.clear();
-//
-//	return baked;
-//}
-
 void esp::mod::data::register_block(cap::mod::block::block* block)
 {
 	m_blocks.push_back(block);
@@ -67,4 +33,19 @@ const std::string& esp::mod::data::get_mod_unlocalized_name()
 const std::string& esp::mod::data::get_version()
 {
 	return m_version;
+}
+
+void esp::mod::data::set_mod_display_name(const std::string& display_name)
+{
+	m_mod_display_name = display_name;
+}
+
+void esp::mod::data::set_mod_unlocalized_name(const std::string& unlocalized_name)
+{
+	m_mod_unlocalized_name = unlocalized_name;
+}
+
+void esp::mod::data::set_version(const std::string& version)
+{
+	m_version = version;
 }

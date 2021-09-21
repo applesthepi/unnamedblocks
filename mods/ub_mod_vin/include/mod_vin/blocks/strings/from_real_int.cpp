@@ -1,43 +1,41 @@
-#include "BlockStringFromRealInt.hpp"
+#include "from_real_int.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->GetString(0) = std::to_string((i64)pass->GetReal(1));
+	pass->get_string(0) = std::to_string(static_cast<i64>(pass->get_real(1)));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
-const char* BlockStringFromRealInt::get_unlocalized_name() const
+const char* mod_vin::block::string::from_real_int::get_unlocalized_name() const
 {
 	return "vin_string_from_real_int";
 }
 
-const char* BlockStringFromRealInt::GetCategory() const
+const char* mod_vin::block::string::from_real_int::get_category() const
 {
 	return CATEGORY_STRINGS;
 }
 
-blockExecution BlockStringFromRealInt::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::string::from_real_int::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockStringFromRealInt::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::string::from_real_int::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockStringFromRealInt::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::string::from_real_int::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "set"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to int"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "set" },
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "to int" },
+		{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::VAR, "variable" }
+	};
 }

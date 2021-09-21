@@ -4,14 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include <chrono>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	pass->SetBlockIdx(*(i64*)pass->GetPreData(0));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 static bool RuntimeInit(PreProcessorData& preData, cap::mod::block::data& blockData)
@@ -37,19 +37,19 @@ const char* BlockUtilityGotoPoint::get_unlocalized_name() const
 	return "vin_utility_goto_point";
 }
 
-const char* BlockUtilityGotoPoint::GetCategory() const
+const char* BlockUtilityGotoPoint::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityGotoPoint::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityGotoPoint::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityGotoPoint::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityGotoPoint::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
 std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityGotoPoint::GetRuntimeStages() const
@@ -59,13 +59,13 @@ std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityGotoPoint::GetR
 	return stages;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityGotoPoint::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityGotoPoint::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "goto"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "point"));
-	//args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "idx"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "goto"));
+	{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "point"));
+	//{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "idx"));
 
 	return args;
 }

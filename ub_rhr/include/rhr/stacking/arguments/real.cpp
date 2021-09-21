@@ -13,6 +13,17 @@ rhr::stack::argument::real::real(const cap::color& color, std::function<void()>*
 	, m_decor_right_top(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right_bottom(std::make_shared<rhr::render::object::object>(true))
 {
+	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+	{
+		if (button == MouseButton::MIDDLE && operation == MouseOperation::Press)
+		{
+			if (m_mode == cap::mod::block::block::argument::variable_mode::RAW)
+				set_mode(cap::mod::block::block::argument::variable_mode::VAR);
+			else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
+				set_mode(cap::mod::block::block::argument::variable_mode::RAW);
+		}
+	};
+
 	m_decor_left_top->set_weak(m_decor_left_top);
 	m_decor_left_bottom->set_weak(m_decor_left_bottom);
 	m_decor_right_top->set_weak(m_decor_right_top);
@@ -24,6 +35,7 @@ rhr::stack::argument::real::real(const cap::color& color, std::function<void()>*
 	m_text->set_color_primary(cap::color::text_primary_color);
 	m_text->set_color_secondary(color);
 	m_text->set_padding(rhr::stack::argument::argument::padding);
+	m_text->set_mouse_button(m_mouse_button);
 }
 
 cap::mod::block::block::argument::type rhr::stack::argument::real::get_type()
@@ -60,21 +72,25 @@ void rhr::stack::argument::real::on_update_buffers()
 	rhr::render::vertex vertices[12];
 	f32 other_side = ARG_REAL_DECORE_WIDTH + m_text->get_size().x;
 
-	vertices[0] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[1] = rhr::render::vertex({ 0, 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[2] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	cap::color use_color = m_block_color;
+	if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
+		use_color = cap::color().from_u8({ 100, 0, 40, 255 });
 
-	vertices[3] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[4] = rhr::render::vertex({ 0, static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[5] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[0] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[1] = rhr::render::vertex({ 0, 0, 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[2] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[6] = rhr::render::vertex({ other_side, 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[7] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[8] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[3] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[4] = rhr::render::vertex({ 0, static_cast<f32>(rhr::stack::block::height_content), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[5] = rhr::render::vertex({ static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
 
-	vertices[9] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[10] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
-	vertices[11] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content), 0 }, m_block_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[6] = rhr::render::vertex({ other_side, 0, 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[7] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[8] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+
+	vertices[9] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[10] = rhr::render::vertex({ other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
+	vertices[11] = rhr::render::vertex({ other_side, static_cast<f32>(rhr::stack::block::height_content), 0 }, use_color.get_normalized(), { 0.0f, 0.0f });
 
 	m_decor_left_top->update_vertices(vertices + 0, 3, true);
 	m_decor_left_bottom->update_vertices(vertices + 3, 3, true);
@@ -124,4 +140,27 @@ bool rhr::stack::argument::real::drag_bounds(glm::vec<2, i32> position)
             position.x > arg_position.x && position.x < arg_position.x + get_width() &&
             position.y > arg_position.y && position.y < arg_position.y + rhr::stack::block::height_content
             );
+}
+
+rhr::stack::argument::argument::padding_style rhr::stack::argument::real::get_padding_style()
+{
+	return rhr::stack::argument::argument::padding_style::HARD;
+}
+
+const std::string& rhr::stack::argument::real::get_data()
+{
+	return m_text->get_text();
+}
+
+void rhr::stack::argument::real::on_set_mode(cap::mod::block::block::argument::variable_mode mode)
+{
+	if (m_mode == cap::mod::block::block::argument::variable_mode::RAW)
+		m_text->set_color_secondary(m_block_color);
+	else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
+		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
+}
+
+void rhr::stack::argument::real::post_enable_update(bool enabled)
+{
+	m_text->set_enabled(enabled);
 }

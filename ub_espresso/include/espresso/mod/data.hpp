@@ -32,6 +32,15 @@ public:
 
 	///
 	const std::string& get_version();
+
+	///
+	void set_mod_display_name(const std::string& display_name);
+
+	///
+	void set_mod_unlocalized_name(const std::string& unlocalized_name);
+
+	///
+	void set_version(const std::string& version);
 private:
 	///
 	std::vector<cap::mod::block::block*> m_blocks;

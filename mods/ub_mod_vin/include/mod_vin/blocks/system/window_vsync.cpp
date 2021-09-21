@@ -5,15 +5,15 @@
 #include <chrono>
 #include <thread>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
-	//handler->GetWindow()->setVerticalSyncEnabled(pass->GetBool(1));
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->get_real(0));
+	//handler->GetWindow()->setVerticalSyncEnabled(pass->get_bool(1));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockSystemWindowVsync::get_unlocalized_name() const
@@ -21,28 +21,28 @@ const char* BlockSystemWindowVsync::get_unlocalized_name() const
 	return "vin_system_window_vsync";
 }
 
-const char* BlockSystemWindowVsync::GetCategory() const
+const char* BlockSystemWindowVsync::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemWindowVsync::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemWindowVsync::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockSystemWindowVsync::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemWindowVsync::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemWindowVsync::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemWindowVsync::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "enable vsync"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "window"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "enable vsync"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "window"));
+	{ cap::mod::block::block::argument::type::BOOL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "0"));
 
 	return args;
 }

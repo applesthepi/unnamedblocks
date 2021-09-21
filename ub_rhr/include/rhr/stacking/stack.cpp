@@ -1,7 +1,8 @@
 #include "stack.hpp"
 
 rhr::stack::stack::stack()
-	: m_function_collection_update(nullptr)
+	: rhr::render::interfaces::i_enableable(true)
+	, m_function_collection_update(nullptr)
 {
 	m_function_stack_update = [&]()
 	{
@@ -129,4 +130,10 @@ void rhr::stack::stack::post_position_update()
 void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
 {
 	m_function_collection_update = function_collection_update;
+}
+
+void rhr::stack::stack::post_enable_update(bool enabled)
+{
+	for (auto& block : m_blocks)
+		block->set_enabled(enabled);
 }

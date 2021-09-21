@@ -3,15 +3,15 @@
 
 #include <Cappuccino/Registration.hpp>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	UtilityGlobalReal* global = (UtilityGlobalReal*)pass->CustomGet(*(u64*)pass->GetPreData(0));
-	global->Get(*(u64*)pass->GetPreData(1)) = pass->GetReal(1);
+	global->Get(*(u64*)pass->GetPreData(1)) = pass->get_real(1);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 static bool RuntimeGlobalPreInit(PreProcessorData& data)
@@ -60,19 +60,19 @@ const char* BlockUtilityGlobalSetReal::get_unlocalized_name() const
 	return "vin_utility_global_set_real";
 }
 
-const char* BlockUtilityGlobalSetReal::GetCategory() const
+const char* BlockUtilityGlobalSetReal::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityGlobalSetReal::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityGlobalSetReal::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityGlobalSetReal::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityGlobalSetReal::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
 blockInitialization BlockUtilityGlobalSetReal::GetRuntimeGlobalPreInit() const
@@ -95,14 +95,14 @@ std::vector<std::pair<blockDataInitialization, u16>> BlockUtilityGlobalSetReal::
 	return stages;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityGlobalSetReal::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityGlobalSetReal::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "global set"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::RAW, "global"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "to"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "variable"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "global set"));
+	{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::RAW, "global"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "to"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::VAR, "variable"));
 
 	return args;
 }

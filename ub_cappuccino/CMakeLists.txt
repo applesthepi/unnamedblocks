@@ -58,7 +58,7 @@ endif()
 target_link_libraries(UB_CAPPUCCINO PUBLIC
 	glad::glad
 	glfw
-#	imgui::imgui
+	imgui::imgui
 	Vulkan::Vulkan
 	freetype
 )

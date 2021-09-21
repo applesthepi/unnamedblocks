@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {	
 	//sf::RenderWindow* window = new sf::RenderWindow();
 
@@ -14,12 +14,12 @@ static void ExecuteRelease(ModBlockPass* pass)
 	//window->display();
 
 	//WindowHandler* handler = new WindowHandler(pass, window);
-	//pass->GetReal(0) = pass->CustomPut(handler);
+	//pass->get_real(0) = pass->CustomPut(handler);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 static bool RuntimeGlobalPreinit(PreProcessorData&)
@@ -33,19 +33,19 @@ const char* BlockSystemCreateWindow::get_unlocalized_name() const
 	return "vin_system_create_window";
 }
 
-const char* BlockSystemCreateWindow::GetCategory() const
+const char* BlockSystemCreateWindow::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemCreateWindow::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemCreateWindow::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockSystemCreateWindow::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemCreateWindow::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
 blockInitialization BlockSystemCreateWindow::GetRuntimeGlobalPreInit() const
@@ -53,12 +53,12 @@ blockInitialization BlockSystemCreateWindow::GetRuntimeGlobalPreInit() const
 	return RuntimeGlobalPreinit;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemCreateWindow::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemCreateWindow::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "create window"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "window"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "create window"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "window"));
 
 	return args;
 }

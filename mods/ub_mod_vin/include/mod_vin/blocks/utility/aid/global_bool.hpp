@@ -11,9 +11,9 @@ public:
 	void Bake();
 	
 
-	double* GetReal(uint64_t idx);
-	bool* GetBool(uint64_t idx);
-	std::string* GetString(uint64_t idx);
+	double* get_real(uint64_t idx);
+	bool* get_bool(uint64_t idx);
+	std::string* get_string(uint64_t idx);
 private:
 	std::vector<std::string> m_varNames;
 	void** m_variables;

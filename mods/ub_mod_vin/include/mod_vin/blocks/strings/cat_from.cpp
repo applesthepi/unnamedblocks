@@ -1,43 +1,41 @@
-#include "BlockStringCatFrom.hpp"
+#include "cat_from.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
 	pass->get_string(0) += pass->get_string(1);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
 	execute_release(pass);
 }
 
-const char* BlockStringCatFrom::get_unlocalized_name() const
+const char* mod_vin::block::string::cat_from::get_unlocalized_name() const
 {
 	return "vin_string_cat_from";
 }
 
-const char* BlockStringCatFrom::GetCategory() const
+const char* mod_vin::block::string::cat_from::get_category() const
 {
 	return CATEGORY_STRINGS;
 }
 
-blockExecution BlockStringCatFrom::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::string::cat_from::pull_execute_release() const
 {
 	return execute_release;
 }
 
-blockExecution BlockStringCatFrom::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::string::cat_from::pull_execute_debug() const
 {
 	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockStringCatFrom::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::string::cat_from::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "cat"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "from"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "cat" },
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "from" },
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::VAR, "variable" }	
+	};
 }

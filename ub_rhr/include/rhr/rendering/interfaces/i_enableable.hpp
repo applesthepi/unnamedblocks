@@ -19,6 +19,9 @@ public:
 	bool get_enabled();
 protected:
 	///
+	virtual void post_enable_update(bool enabled);
+
+	///
 	bool m_enabled;
 };
 }

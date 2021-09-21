@@ -86,8 +86,14 @@ bool rhr::stack::plane::is_toolbar()
 	return m_toolbar;
 }
 
-void rhr::stack::plane::delete_contents()
+void rhr::stack::plane::delete_contents(bool disable_collections)
 {
+	if (disable_collections)
+	{
+		for (auto& collection : m_collections)
+			collection->set_enabled(false);
+	}
+
 	m_collections.clear();
 }
 
@@ -328,6 +334,7 @@ void rhr::stack::plane::post_position_update()
 
 void rhr::stack::plane::post_size_update()
 {
+//	cap::logger::debug("void rhr::stack::plane::post_size_update() " + std::to_string(m_size.y));
 	m_background->set_size(m_size);
 }
 

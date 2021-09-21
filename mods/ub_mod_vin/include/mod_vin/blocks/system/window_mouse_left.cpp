@@ -4,14 +4,14 @@
 #include <chrono>
 #include <thread>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	//pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
+	//pass->get_bool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockSystemWindowMouseLeft::get_unlocalized_name() const
@@ -19,27 +19,27 @@ const char* BlockSystemWindowMouseLeft::get_unlocalized_name() const
 	return "vin_system_window_mouse_left";
 }
 
-const char* BlockSystemWindowMouseLeft::GetCategory() const
+const char* BlockSystemWindowMouseLeft::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemWindowMouseLeft::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemWindowMouseLeft::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockSystemWindowMouseLeft::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemWindowMouseLeft::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemWindowMouseLeft::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemWindowMouseLeft::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse left for"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "mouse left for"));
+	{ cap::mod::block::block::argument::type::BOOL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable"));
 
 	return args;
 }

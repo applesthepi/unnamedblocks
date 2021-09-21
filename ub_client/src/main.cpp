@@ -8,7 +8,8 @@
 #include "rhr/registries/char_texture.hpp"
 #include "rhr/handlers/build.hpp"
 #include "rhr/rendering/objects/button_image.hpp"
-//#include "imgui/imgui.h"
+
+#include <imgui.h>
 
 #if LINUX
 #include <dlfcn.h>
@@ -251,6 +252,19 @@ int main()
 			rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
 			rhr::render::renderer::reload_layer_swap_chains();
+			frameBase->set_size(rhr::render::renderer::window_size);
+			frameBackground->set_size(rhr::render::renderer::window_size);
+
+			rectBackground->set_size_max();
+
+			frameOptionsContent->set_size_max();
+			frameOptions->set_size_max();
+			frameSidebarPrimary->set_size_max();
+			frameSidebarCategories->set_size_max();
+			framePrimary->set_size_max();
+			frameCategories->set_size_max();
+			frameToolbar->set_size_max();
+
             reload_render_objects = false;
 		}
 

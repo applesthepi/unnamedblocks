@@ -3,18 +3,18 @@
 #include <chrono>
 #include <cmath>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	std::this_thread::sleep_for(std::chrono::milliseconds((u64)pass->GetReal(0)));
+	std::this_thread::sleep_for(std::chrono::milliseconds((u64)pass->get_real(0)));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	f64 ms = pass->GetReal(0);
+	f64 ms = pass->get_real(0);
 
 	if (std::floor(ms) != ms)
 	{
-		pass->LogError("failed to sleep for \"" + std::to_string(ms) + "\" seconds; milliseconds is a decimal", LoggerFatality::BREAK);
+		pass->log_error("failed to sleep for \"" + std::to_string(ms) + "\" seconds; milliseconds is a decimal", cap::mod::block::pass::logger_fatality::BREAK);
 		return;
 	}
 
@@ -22,7 +22,7 @@ static void ExecuteDebug(ModBlockPass* pass)
 
 	if (msInt < 0)
 	{
-		pass->LogError("cannot sleep for \"" + std::to_string(msInt) + "\" milliseconds; milliseconds is negitive", LoggerFatality::BREAK);
+		pass->log_error("cannot sleep for \"" + std::to_string(msInt) + "\" milliseconds; milliseconds is negitive", cap::mod::block::pass::logger_fatality::BREAK);
 		return;
 	}
 
@@ -36,27 +36,27 @@ const char* BlockSystemSleep::get_unlocalized_name() const
 	return "vin_system_sleep";
 }
 
-const char* BlockSystemSleep::GetCategory() const
+const char* BlockSystemSleep::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemSleep::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemSleep::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockSystemSleep::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemSleep::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemSleep::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemSleep::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "sleep"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1000"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "sleep"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "1000"));
 
 	return args;
 }

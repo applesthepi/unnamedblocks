@@ -5,8 +5,10 @@
 #include "rhr/rendering/objects/rectangle.hpp"
 #include "rhr/rendering/vertex.hpp"
 #include "rhr/stacking/plane.hpp"
+#include "rhr/handlers/category.hpp"
 
 #include <espresso/input_handler.hpp>
+#include <cappuccino/utils.hpp>
 
 //#define STB_IMAGE_IMPLEMENTATION
 //#include <stb_image.h>
@@ -196,6 +198,38 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 
 	vkCmdBeginRenderPass(active_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
+	static bool my_tool_active;
+	static glm::vec<4, float> my_color;
+
+	// Create a window called "My First Tool", with a menu bar.
+	ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
+	if (ImGui::BeginMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
+			if (ImGui::MenuItem("Save", "Ctrl+S"))   { /* Do stuff */ }
+			if (ImGui::MenuItem("Close", "Ctrl+W"))  { my_tool_active = false; }
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+
+	// Edit a color (stored as ~4 floats)
+	ImGui::ColorEdit4("Color", (float*)&my_color);
+
+	// Plot some values
+	const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
+	ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
+
+	// Display contents in a scrolling region
+	ImGui::TextColored(ImVec4(1,1,0,1), "Important Stuff");
+	ImGui::BeginChild("Scrolling");
+	for (int n = 0; n < 50; n++)
+		ImGui::Text("%04d: Some text", n);
+	ImGui::EndChild();
+	ImGui::End();
+
 	// if (!setup)
 	// {
 	// 	// ChunkManager binds BlocksPipeline
@@ -362,6 +396,8 @@ void rhr::render::renderer::reload_layer_swap_chains()
 			erased = true;
 		}
 	}
+
+	rhr::handler::category::reload_swap_chain();
 }
 
 void rhr::render::renderer::init_instance()

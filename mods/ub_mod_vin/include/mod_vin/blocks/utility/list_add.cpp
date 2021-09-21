@@ -4,17 +4,17 @@
 #include <Cappuccino/Registration.hpp>
 #include <vector>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	if (pass->GetBool(2))
-		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->AddValue(new f64(pass->GetReal(1)), true);
+	if (pass->get_bool(2))
+		((UtilityList*)pass->CustomGet(pass->get_real(0)))->AddValue(new f64(pass->get_real(1)), true);
 	else
-		((UtilityList*)pass->CustomGet(pass->GetReal(0)))->AddValue(&pass->GetReal(1), false);
+		((UtilityList*)pass->CustomGet(pass->get_real(0)))->AddValue(&pass->get_real(1), false);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockUtilityListAdd::get_unlocalized_name() const
@@ -22,31 +22,31 @@ const char* BlockUtilityListAdd::get_unlocalized_name() const
 	return "vin_utility_list_add";
 }
 
-const char* BlockUtilityListAdd::GetCategory() const
+const char* BlockUtilityListAdd::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityListAdd::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityListAdd::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityListAdd::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityListAdd::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityListAdd::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityListAdd::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "list"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "list"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "add"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::ANY, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "copy"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "1"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "list"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "list"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "add"));
+	{ cap::mod::block::block::argument::type::ANY, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "copy"));
+	{ cap::mod::block::block::argument::type::BOOL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "1"));
 
 	return args;
 }

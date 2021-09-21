@@ -1,62 +1,60 @@
-#include "BlockStringCharAt.hpp"
+#include "char_at.hpp"
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->GetString(2) = pass->GetString(0).at((u64)pass->GetReal(1));
+	pass->get_string(2) = pass->get_string(0).at((u64)pass->get_real(1));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	std::string& str = pass->GetString(0);
-	f64& chAt = pass->GetReal(1);
-	std::string& finalStr = pass->GetString(2);
+	std::string& str = pass->get_string(0);
+	f64& ch_at = pass->get_real(1);
+	std::string& final_str = pass->get_string(2);
 
-	if (std::floor(chAt) != chAt)
+	if (std::floor(ch_at) != ch_at)
 	{
-		pass->LogError("failed to get char at \"" + std::to_string(chAt) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; index is a decimal", LoggerFatality::BREAK);
+		pass->log_error("failed to get char at \"" + std::to_string(ch_at) + "\" from string \"" + str + "\" to replacing string \"" + final_str + "\"; index is a decimal", cap::mod::block::pass::logger_fatality::BREAK);
 		return;
 	}
 
-	i64 idx = chAt;
+	i64 idx = ch_at;
 
 	if (idx >= static_cast<i64>(str.length()) || idx < 0)
 	{
-		pass->LogError("failed to get char at \"" + std::to_string(idx) + "\" from string \"" + str + "\" to replacing string \"" + finalStr + "\"; index out of range", LoggerFatality::BREAK);
+		pass->log_error("failed to get char at \"" + std::to_string(idx) + "\" from string \"" + str + "\" to replacing string \"" + final_str + "\"; index out of range", cap::mod::block::pass::logger_fatality::BREAK);
 		return;
 	}
 
-	finalStr = str.at(idx);
+	final_str = str.at(idx);
 }
 
-const char* BlockStringCharAt::get_unlocalized_name() const
+const char* mod_vin::block::string::char_at::get_unlocalized_name() const
 {
 	return "vin_string_char_at";
 }
 
-const char* BlockStringCharAt::GetCategory() const
+const char* mod_vin::block::string::char_at::get_category() const
 {
 	return CATEGORY_STRINGS;
 }
 
-blockExecution BlockStringCharAt::PullExecuteRelease() const
+cap::mod::block::block::execution mod_vin::block::string::char_at::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-blockExecution BlockStringCharAt::PullExecuteDebug() const
+cap::mod::block::block::execution mod_vin::block::string::char_at::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-const std::vector<BlockArgumentInitializer> BlockStringCharAt::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> mod_vin::block::string::char_at::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
-
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::VAR, "variable"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "at"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "0"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "for"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::STRING, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
-
-	return args;
+	return {
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::VAR, "variable" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "at" },
+		{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "0" },
+		{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "for" },
+		{ cap::mod::block::block::argument::type::STRING, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable" }
+	};
 }

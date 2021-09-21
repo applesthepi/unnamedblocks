@@ -4,14 +4,14 @@
 #include <chrono>
 #include <thread>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	//pass->GetBool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
+	//pass->get_bool(0) = sf::Mouse::isButtonPressed(sf::Mouse::Button::Right);
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockSystemWindowMouseRight::get_unlocalized_name() const
@@ -19,27 +19,27 @@ const char* BlockSystemWindowMouseRight::get_unlocalized_name() const
 	return "vin_system_window_mouse_right";
 }
 
-const char* BlockSystemWindowMouseRight::GetCategory() const
+const char* BlockSystemWindowMouseRight::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemWindowMouseRight::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemWindowMouseRight::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockSystemWindowMouseRight::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemWindowMouseRight::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemWindowMouseRight::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemWindowMouseRight::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "mouse right for"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::BOOL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "variable"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "mouse right for"));
+	{ cap::mod::block::block::argument::type::BOOL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "variable"));
 
 	return args;
 }

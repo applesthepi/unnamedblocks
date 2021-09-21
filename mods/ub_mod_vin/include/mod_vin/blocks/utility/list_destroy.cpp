@@ -2,14 +2,14 @@
 
 #include <Cappuccino/Registration.hpp>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {
-	pass->CustomFree(pass->GetReal(0));
+	pass->CustomFree(pass->get_real(0));
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockUtilityListDestroy::get_unlocalized_name() const
@@ -17,27 +17,27 @@ const char* BlockUtilityListDestroy::get_unlocalized_name() const
 	return "vin_utility_list_destroy";
 }
 
-const char* BlockUtilityListDestroy::GetCategory() const
+const char* BlockUtilityListDestroy::get_category() const
 {
 	return CATEGORY_UTILITY;
 }
 
-blockExecution BlockUtilityListDestroy::PullExecuteDebug() const
+cap::mod::block::block::execution BlockUtilityListDestroy::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockUtilityListDestroy::PullExecuteRelease() const
+cap::mod::block::block::execution BlockUtilityListDestroy::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockUtilityListDestroy::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockUtilityListDestroy::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "list destroy"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "list"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "list destroy"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "list"));
 
 	return args;
 }

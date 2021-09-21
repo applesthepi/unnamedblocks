@@ -3,18 +3,18 @@
 
 #include <SFML/Graphics.hpp>
 
-static void ExecuteRelease(ModBlockPass* pass)
+static void execute_release(cap::mod::block::pass* pass)
 {	
-	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->GetReal(0));
+	//WindowHandler* handler = (WindowHandler*)pass->CustomGet(pass->get_real(0));
 
 	//handler->GetWindow()->clear(sf::Color(30, 30, 40));
 	//handler->DrawAll();
 	//handler->GetWindow()->display();
 }
 
-static void ExecuteDebug(ModBlockPass* pass)
+static void execute_debug(cap::mod::block::pass* pass)
 {
-	ExecuteRelease(pass);
+	execute_release(pass);
 }
 
 const char* BlockSystemWindowRender::get_unlocalized_name() const
@@ -22,27 +22,27 @@ const char* BlockSystemWindowRender::get_unlocalized_name() const
 	return "vin_system_window_render";
 }
 
-const char* BlockSystemWindowRender::GetCategory() const
+const char* BlockSystemWindowRender::get_category() const
 {
 	return CATEGORY_SYSTEM;
 }
 
-blockExecution BlockSystemWindowRender::PullExecuteDebug() const
+cap::mod::block::block::execution BlockSystemWindowRender::pull_execute_debug() const
 {
-	return ExecuteDebug;
+	return execute_debug;
 }
 
-blockExecution BlockSystemWindowRender::PullExecuteRelease() const
+cap::mod::block::block::execution BlockSystemWindowRender::pull_execute_release() const
 {
-	return ExecuteRelease;
+	return execute_release;
 }
 
-const std::vector<BlockArgumentInitializer> BlockSystemWindowRender::GetArguments() const
+std::vector<cap::mod::block::block::argument::initializer> BlockSystemWindowRender::get_arguments() const
 {
-	std::vector<BlockArgumentInitializer> args;
+	std::vector<cap::mod::block::block::argument::initializer> args;
 
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::TEXT, BlockArgumentVariableModeRestriction::NONE, BlockArgumentVariableMode::RAW, "render window"));
-	args.push_back(BlockArgumentInitializer(BlockArgumentType::REAL, BlockArgumentVariableModeRestriction::RESTRICTED, BlockArgumentVariableMode::VAR, "window"));
+	{ cap::mod::block::block::argument::type::TEXT, cap::mod::block::block::argument::variable_mode_restriction::NONE, cap::mod::block::block::argument::variable_mode::RAW, "render window"));
+	{ cap::mod::block::block::argument::type::REAL, cap::mod::block::block::argument::variable_mode_restriction::RESTRICTED, cap::mod::block::block::argument::variable_mode::VAR, "window"));
 
 	return args;
 }

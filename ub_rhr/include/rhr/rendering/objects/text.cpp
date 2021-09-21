@@ -8,6 +8,8 @@
 
 #define EDGE_CLICK_OVERHANG 5
 
+static i64 DEBUG_COUNT = 0;
+
 rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
 	, i_enableable(true)
@@ -27,6 +29,11 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	m_render_object_text->set_weak(m_render_object_text);
 	m_render_object_text->set_texture_char(texture_type, m_font_size);
 	m_render_object_text->set_enabled(false);
+}
+
+rhr::render::object::text::~text()
+{
+	unregister_field();
 }
 
 void rhr::render::object::text::set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field)
@@ -384,12 +391,39 @@ void rhr::render::object::text::set_font_size(u16 font_size)
 	mark_dirty();
 }
 
+void rhr::render::object::text::post_enable_update(bool enabled)
+{
+//	cap::logger::debug("void rhr::render::object::text::post_enable_update(bool enabled) " + (enabled ? std::string("true") : std::string("false")));
+
+	if (enabled)
+		register_field();
+	else
+		unregister_field();
+}
+
 void rhr::render::object::text::register_field()
 {
 	if (!m_registered)
 	{
 		m_registered = true;
 		if (!m_read_only)
+		{
 			m_location = rhr::stack::plane::primary_plane->get_field().register_field(std::move(m_weak_field), m_position + m_super_position, m_size, InputHandler::BullishLayerArguments);
+
+//			DEBUG_COUNT++;
+//			cap::logger::debug("DEBUG_COUNT: " + std::to_string(DEBUG_COUNT));
+		}
+	}
+}
+
+void rhr::render::object::text::unregister_field()
+{
+	if (!m_read_only && m_registered)
+	{
+		m_registered = false;
+		rhr::stack::plane::primary_plane->get_field().unregister_field(m_location.value());
+
+//		DEBUG_COUNT--;
+//		cap::logger::debug("DEBUG_COUNT: " + std::to_string(DEBUG_COUNT));
 	}
 }

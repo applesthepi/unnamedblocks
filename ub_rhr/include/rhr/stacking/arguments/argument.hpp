@@ -5,6 +5,7 @@
 #include "rhr/rendering/interfaces/i_renderable.hpp"
 #include "rhr/rendering/interfaces/i_updateable.hpp"
 #include "rhr/rendering/interfaces/i_positionable.hpp"
+#include "rhr/rendering/interfaces/i_enableable.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <cappuccino/mod/block/block.hpp>
@@ -13,9 +14,16 @@
 namespace rhr::stack::argument
 {
 /// Base class for visual block arguments.
-class argument : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_positionable<2, i32>
+class argument : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_enableable
 {
 public:
+	/// See "dev/padding.png" for information on how argument padding works.
+	enum class padding_style
+	{
+		///
+		NONE, SOFT, HARD
+	};
+
 	///
 	argument(const cap::color& block_color, std::function<void()>* function_collection_update);
 
@@ -60,6 +68,9 @@ public:
 
 	///
 	virtual bool drag_bounds(glm::vec<2, i32> position);
+
+	///
+	virtual padding_style get_padding_style();
 
 	///
 	static i32 padding;

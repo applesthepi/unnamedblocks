@@ -18,8 +18,8 @@ namespace rhr::render::object
 class text : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_dicolorable, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_field
 {
 public:
-	///
 	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register);
+	~text();
 
 	///
 	void set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field);
@@ -93,7 +93,13 @@ private:
 	void post_color_update() override;
 
 	///
+	void post_enable_update(bool enabled) override;
+
+	///
 	void register_field();
+
+	///
+	void unregister_field();
 
 	/// Object to render the background rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object_background;
