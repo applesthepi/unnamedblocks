@@ -128,6 +128,67 @@ void rhr::render::renderer::initialize()
 	init_sync_objects();
 
 	rhr::render::tools::create_aux_command_buffer();
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
+
+	imgui_local->data.Width = rhr::render::renderer::window_size.x;
+	imgui_local->data.Height = rhr::render::renderer::window_size.y;
+	imgui_local->data.Swapchain = swap_chain;
+	imgui_local->data.Surface = surface;
+	imgui_local->data.SurfaceFormat = surface_format;
+	imgui_local->data.PresentMode = present_mode;
+	imgui_local->data.RenderPass = render_pass;
+	imgui_local->data.Pipeline = ui_pipeline;
+	imgui_local->data.ClearEnable = false;
+	imgui_local->data.ClearValue = VkClearValue();
+	imgui_local->data.FrameIndex = 0;
+	imgui_local->data.ImageCount = swap_chain_images.size();
+	imgui_local->data.SemaphoreIndex = 0;
+	imgui_local->data.Frames = ;
+	imgui_local->data.FrameSemaphores = ;
+
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+	//io.ConfigViewportsNoAutoMerge = true;
+	//io.ConfigViewportsNoTaskBarIcon = true;
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
+	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	ImGui_ImplVulkan_InitInfo imgui_info{
+		.Instance = instance,
+		.PhysicalDevice = physical_device,
+		.Device = device,
+		.QueueFamily = static_cast<uint32_t>(indices.graphics_family.value()),
+		.Queue = graphics_queue,
+		.PipelineCache = nullptr,
+		.DescriptorPool = descriptor_pool,
+		.Subpass = 0,
+		.MinImageCount = swap_chain_support.capabilities.minImageCount,
+		.ImageCount = static_cast<uint32_t>(swap_chain_images.size()),
+		.MSAASamples = VK_SAMPLE_COUNT_1_BIT,
+		.Allocator = nullptr,
+		.CheckVkResultFn = [](VkResult result) {
+			cap::logger::fatal("failed to initialize imgui");
+		}
+	};
+
+	ImGui_ImplGlfw_InitForVulkan(window, true);
+	ImGui_ImplVulkan_Init(&imgui_info, render_pass);
+
+	imgui_local = new imgui_data(io, style);
 }
 
 void rhr::render::renderer::add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable)
@@ -202,33 +263,33 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 	static glm::vec<4, float> my_color;
 
 	// Create a window called "My First Tool", with a menu bar.
-	ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
-	if (ImGui::BeginMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
-			if (ImGui::MenuItem("Save", "Ctrl+S"))   { /* Do stuff */ }
-			if (ImGui::MenuItem("Close", "Ctrl+W"))  { my_tool_active = false; }
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
-	}
-
-	// Edit a color (stored as ~4 floats)
-	ImGui::ColorEdit4("Color", (float*)&my_color);
-
-	// Plot some values
-	const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
-	ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
-
-	// Display contents in a scrolling region
-	ImGui::TextColored(ImVec4(1,1,0,1), "Important Stuff");
-	ImGui::BeginChild("Scrolling");
-	for (int n = 0; n < 50; n++)
-		ImGui::Text("%04d: Some text", n);
-	ImGui::EndChild();
-	ImGui::End();
+//	ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
+//	if (ImGui::BeginMenuBar())
+//	{
+//		if (ImGui::BeginMenu("File"))
+//		{
+//			if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
+//			if (ImGui::MenuItem("Save", "Ctrl+S"))   { /* Do stuff */ }
+//			if (ImGui::MenuItem("Close", "Ctrl+W"))  { my_tool_active = false; }
+//			ImGui::EndMenu();
+//		}
+//		ImGui::EndMenuBar();
+//	}
+//
+//	// Edit a color (stored as ~4 floats)
+//	ImGui::ColorEdit4("Color", (float*)&my_color);
+//
+//	// Plot some values
+//	const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
+//	ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
+//
+//	// Display contents in a scrolling region
+//	ImGui::TextColored(ImVec4(1,1,0,1), "Important Stuff");
+//	ImGui::BeginChild("Scrolling");
+//	for (int n = 0; n < 50; n++)
+//		ImGui::Text("%04d: Some text", n);
+//	ImGui::EndChild();
+//	ImGui::End();
 
 	// if (!setup)
 	// {
@@ -260,6 +321,23 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 			erased = true;
 		}
 	}
+
+	ImGui_ImplVulkan_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	static bool show_demo_window = true;
+	if (show_demo_window)
+		ImGui::ShowDemoWindow(&show_demo_window);
+
+	ImGui::Render();
+
+	if (imgui_local->io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
+
 
 	//testObject->render();
 
@@ -307,6 +385,10 @@ void rhr::render::renderer::clean_up_swap_chain()
 void rhr::render::renderer::clean_up()
 {
 	clean_up_swap_chain();
+
+	ImGui_ImplVulkan_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	vkDestroySampler(device, texture_sampler, nullptr);
 	//vkDestroyImageView(m_Device, m_TextureImageView, nullptr);
@@ -369,6 +451,27 @@ void rhr::render::renderer::recreate_swap_chain()
 	init_descriptor_pool();
 	init_command_buffers();
 	init_sync_objects();
+
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
+	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
+
+	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
+
+	imgui_local->data.Width = width;
+	imgui_local->data.Height = height;
+
+	ImGui_ImplVulkan_SetMinImageCount(swap_chain_support.capabilities.minImageCount);
+	ImGui_ImplVulkanH_CreateOrResizeWindow(
+		instance,
+		physical_device,
+		device,
+		&imgui_local->data,
+		static_cast<u32>(indices.graphics_family.value()),
+		nullptr,
+		width,
+		height,
+		swap_chain_support.capabilities.minImageCount
+		);
 }
 
 void rhr::render::renderer::add_layer(std::weak_ptr<rhr::render::layer> layer)
@@ -530,8 +633,8 @@ void rhr::render::renderer::init_swap_chain()
 {
 	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
 
-	vk::surface_format_khr surfaceFormat = rhr::render::tools::choose_swap_surface_format(swap_chain_support.formats);
-	vk::present_mode_khr presentMode = rhr::render::tools::choose_swap_present_mode(swap_chain_support.present_modes);
+	surface_format = rhr::render::tools::choose_swap_surface_format(swap_chain_support.formats);
+	present_mode = rhr::render::tools::choose_swap_present_mode(swap_chain_support.present_modes);
 	vk::extent_2d extent = rhr::render::tools::choose_swap_extent(swap_chain_support.capabilities);
 
 	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
@@ -544,8 +647,8 @@ void rhr::render::renderer::init_swap_chain()
 	create_info.surface = surface;
 
 	create_info.minImageCount = imageCount;
-	create_info.imageFormat = surfaceFormat.format;
-	create_info.imageColorSpace = surfaceFormat.colorSpace;
+	create_info.imageFormat = surface_format.format;
+	create_info.imageColorSpace = surface_format.colorSpace;
 	create_info.imageExtent = extent;
 	create_info.imageArrayLayers = 1;
 	create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
@@ -568,7 +671,7 @@ void rhr::render::renderer::init_swap_chain()
 
 	create_info.preTransform = swap_chain_support.capabilities.currentTransform;
 	create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	create_info.presentMode = presentMode;
+	create_info.presentMode = present_mode;
 	create_info.clipped = VK_TRUE;
 	create_info.oldSwapchain = VK_NULL_HANDLE;
 
@@ -579,7 +682,7 @@ void rhr::render::renderer::init_swap_chain()
 	swap_chain_images.resize(imageCount);
 	vkGetSwapchainImagesKHR(device, swap_chain, &imageCount, swap_chain_images.data());
 
-	swap_chain_image_format = surfaceFormat.format;
+	swap_chain_image_format = surface_format.format;
 	swap_chain_extent = extent;
 }
 

@@ -9,8 +9,6 @@
 #include "rhr/handlers/build.hpp"
 #include "rhr/rendering/objects/button_image.hpp"
 
-#include <imgui.h>
-
 #if LINUX
 #include <dlfcn.h>
 #else

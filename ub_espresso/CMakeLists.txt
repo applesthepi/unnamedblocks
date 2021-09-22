@@ -29,18 +29,21 @@ target_link_libraries(UB_ESPRESSO PUBLIC
 	
 	glad::glad
 	glfw
-	imgui::imgui
+	imgui
 	Vulkan::Vulkan
 	freetype
+
+	imm32.lib
 )
 
 target_include_directories(UB_ESPRESSO PUBLIC
 	"${PROJECT_BINARY_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+		"${CMAKE_SOURCE_DIR}/imgui"
 
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
-	${VULKAN_INCLUDE_DIRS}
+	${Vulkan_INCLUDE_DIR}
 	${CMAKE_INCLUDES}
 )

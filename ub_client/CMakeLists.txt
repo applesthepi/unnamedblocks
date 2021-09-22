@@ -34,9 +34,11 @@ target_link_libraries(UB_CLIENT PUBLIC
 	
 	glad::glad
 	glfw
-	imgui::imgui
+	imgui
 	Vulkan::Vulkan
 	freetype
+
+	imm32.lib
 )
 
 target_include_directories(UB_CLIENT PUBLIC
@@ -45,10 +47,11 @@ target_include_directories(UB_CLIENT PUBLIC
     "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
     "${CMAKE_SOURCE_DIR}/ub_espresso/include"
     "${CMAKE_SOURCE_DIR}/ub_rhr/include"
+	"${CMAKE_SOURCE_DIR}/imgui"
 
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
-	${VULKAN_INCLUDE_DIRS}
+	${Vulkan_INCLUDE_DIR}
 	${CMAKE_INCLUDES}
 )
 

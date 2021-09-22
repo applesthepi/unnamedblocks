@@ -28,7 +28,6 @@ endif()
 
 find_package(glm CONFIG REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
-find_package(imgui CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 find_package(Vulkan REQUIRED)
 find_package(zstd CONFIG REQUIRED)
@@ -41,7 +40,9 @@ find_package(glad CONFIG REQUIRED)
 #set(TCC_INCLUDE "${CMAKE_SOURCE_DIR}/tcc/libtcc")
 
 find_library(TCC_LIBRARY NAMES tcc libtcc PATHS "${CMAKE_SOURCE_DIR}/cmake/lib")
+
 set(CMAKE_INCLUDES "${CMAKE_SOURCE_DIR}/cmake/include")
+set(VULKAN_LIB_LIST, "vulkan-1")
 
 #message("${TCC_LIBRARY}")
 #message("${CMAKE_INCLUDES}")
@@ -69,3 +70,28 @@ add_subdirectory("ub_rhr")
 if (MODS)
 	add_subdirectory("mods/ub_mod_vin")
 endif()
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+add_library(imgui STATIC)
+target_sources(imgui PRIVATE
+		"imgui/imgui_demo.cpp"
+		"imgui/imgui_draw.cpp"
+		"imgui/imgui_tables.cpp"
+		"imgui/imgui_widgets.cpp"
+		"imgui/imgui.cpp"
+
+		"imgui/backends/imgui_impl_vulkan.cpp"
+		"imgui/backends/imgui_impl_glfw.cpp"
+)
+
+target_include_directories(imgui PUBLIC
+		imgui
+		imgui/backends
+#		${GLFW_SOURCE_DIR}/include
+		${Vulkan_INCLUDE_DIR}
+		${CMAKE_INCLUDES}
+		"vcpkg/installed/x64-windows/include"
+)

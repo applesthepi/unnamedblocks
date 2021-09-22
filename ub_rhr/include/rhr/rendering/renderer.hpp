@@ -6,6 +6,9 @@
 #include "rhr/rendering/interfaces/i_renderable.hpp"
 
 #include <cappuccino/utils.hpp>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
 
 /*
 
@@ -22,6 +25,18 @@ namespace rhr::render
 class renderer
 {
 public:
+	///
+	struct imgui_data
+	{
+		imgui_data(ImGuiIO& a_io, ImGuiStyle& a_style)
+		: io(a_io)
+		, style(a_style) {}
+
+		ImGuiIO& io;
+		ImGuiStyle& style;
+		ImGui_ImplVulkanH_Window data;
+	};
+
 	///
 	static void initialize_window();
 
@@ -175,6 +190,15 @@ public:
 	static u32 depth_argument_text;
 	static u32 depth_ui_background;
 	static u32 depth_ui_text;
+
+	///
+	static imgui_data* imgui_local;
+
+	///
+	static vk::present_mode_khr present_mode;
+
+	///
+	static vk::surface_format_khr surface_format;
 
 	///
 #ifdef NDEBUG

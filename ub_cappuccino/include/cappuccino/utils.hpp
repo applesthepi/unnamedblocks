@@ -38,9 +38,12 @@
 #include <rapidjson/prettywriter.h>
 #include <zstd.h>
 
-#include "cappuccino/imgui/imgui.h"
-#include "cappuccino/imgui/imgui_impl_glfw.h"
-#include "cappuccino/imgui/imgui_impl_vulkan.h"
+//#include "cappuccino/imgui/imgui.h"
+//#include "cappuccino/imgui/imgui_impl_glfw.h"
+//#include "cappuccino/imgui/imgui_impl_vulkan.h"
+//
+//#define GLFW_INCLUDE_NONE
+//#define GLFW_INCLUDE_VULKAN
 
 #define GLFW_INCLUDE_NONE
 #define GLFW_INCLUDE_VULKAN

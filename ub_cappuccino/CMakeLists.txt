@@ -58,51 +58,23 @@ endif()
 target_link_libraries(UB_CAPPUCCINO PUBLIC
 	glad::glad
 	glfw
-	imgui::imgui
+	imgui
 	Vulkan::Vulkan
 	freetype
-)
 
-#target_link_libraries(UB_CAPPUCCINO_TCC PUBLIC
-#		glad::glad
-#		glfw
-#		imgui::imgui
-#		Vulkan::Vulkan
-#		freetype
-#		${TCC_LIBRARY}
-#		)
+	imm32.lib
+)
 
 target_include_directories(UB_CAPPUCCINO PUBLIC
 	${PROJECT_BINARY_DIR}
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
+	"${CMAKE_SOURCE_DIR}/imgui"
 
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
-	${VULKAN_INCLUDE_DIRS}
+	${Vulkan_INCLUDE_DIR}
 	${CMAKE_INCLUDES}
 )
 
-#target_include_directories(UB_CAPPUCCINO_TCC PUBLIC
-#		${PROJECT_BINARY_DIR}
-#		"${CMAKE_CURRENT_SOURCE_DIR}/include"
-#
-#		${STB_INCLUDE_DIRS}
-#		${RAPIDJSON_INCLUDE_DIRS}
-#		${VULKAN_INCLUDE_DIRS}
-#		${CMAKE_INCLUDES}
-#		)
-
 # TODO: what is this for?
 set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")
-
-#add_custom_command(
-#	TARGET UB_CAPPUCCINO POST_BUILD
-#	COMMAND ${CMAKE_COMMAND} -E touch
-#	"${CMAKE_SOURCE_DIR}/UB_Client/src/main.cpp"
-#)
-
-
-#configure_file (
-#		"${PROJECT_SOURCE_DIR}/config.h.in"
-#		"${PROJECT_BINARY_DIR}/cap_config.h"
-#)
