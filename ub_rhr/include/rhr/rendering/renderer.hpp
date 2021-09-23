@@ -35,6 +35,8 @@ public:
 		ImGuiIO& io;
 		ImGuiStyle& style;
 		ImGui_ImplVulkanH_Window data;
+		ImGui_ImplVulkanH_Frame* frames;
+		ImGui_ImplVulkanH_FrameSemaphores* semaphores;
 	};
 
 	///
@@ -50,7 +52,10 @@ public:
 	static void process_dirty();
 
 	///
-	static void render(usize idx, f64 deltaTime, bool setup, TIME_POINT& diagnosticsTime);
+	static void render();
+
+	///
+	static void frame_present();
 
 	///
 	static void clean_up_swap_chain();
@@ -199,6 +204,12 @@ public:
 
 	///
 	static vk::surface_format_khr surface_format;
+
+	///
+	static bool reload_swap_chain_flag;
+
+	///
+	static ImDrawData* imgui_draw_data;
 
 	///
 #ifdef NDEBUG

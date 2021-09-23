@@ -4,7 +4,7 @@
 #include <cappuccino/utils.hpp>
 #include <cappuccino/color.hpp>
 
-#define MAX_FRAMES_IN_FLIGHT 2
+#define MAX_FRAMES_IN_FLIGHT 3
 
 namespace rhr::render
 {

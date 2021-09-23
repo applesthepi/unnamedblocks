@@ -208,13 +208,100 @@ int main()
 	std::vector<f64> fps_average;
 	bool reload_render_objects = false;
 
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 	while (!glfwWindowShouldClose(rhr::render::renderer::window))
 	{
-		// temporary
+		// TODO: config
 		std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
 
 		glfwPollEvents();
 
+		if (rhr::render::renderer::reload_swap_chain_flag)
+		{
+			int width, height;
+			glfwGetFramebufferSize(rhr::render::renderer::window, &width, &height);
+			if (width > 0 && height > 0)
+			{
+				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::renderer::physical_device, &rhr::render::renderer::surface);
+				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::renderer::physical_device, &rhr::render::renderer::surface);
+
+				ImGui_ImplVulkan_SetMinImageCount(swap_chain_support.capabilities.minImageCount);
+				ImGui_ImplVulkanH_CreateOrResizeWindow(
+					rhr::render::renderer::instance,
+					rhr::render::renderer::physical_device,
+					rhr::render::renderer::device,
+					&rhr::render::renderer::imgui_local->data,
+					indices.graphics_family.value(),
+					nullptr,
+					width,
+					height,
+					swap_chain_support.capabilities.minImageCount
+					);
+
+				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
+				rhr::render::renderer::reload_swap_chain_flag = false;
+
+				// reload swap chain
+
+				rhr::stack::plane::primary_plane->reload_swap_chain();
+				rhr::stack::plane::toolbar_plane->reload_swap_chain();
+
+				rhr::render::renderer::reload_layer_swap_chains();
+				frameBase->set_size(rhr::render::renderer::window_size);
+				frameBackground->set_size(rhr::render::renderer::window_size);
+
+				rectBackground->set_size_max();
+
+				frameOptionsContent->set_size_max();
+				frameOptions->set_size_max();
+				frameSidebarPrimary->set_size_max();
+				frameSidebarCategories->set_size_max();
+				framePrimary->set_size_max();
+				frameCategories->set_size_max();
+				frameToolbar->set_size_max();
+			}
+		}
+
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		static bool show_demo_window = true;
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
+
+		ImGui::Begin("plane");
+		
+		ImGui::End();
+
+		ImGui::Render();
+		ImDrawData* main_draw_data = ImGui::GetDrawData();
+		const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
+		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[0] = clear_color.x * clear_color.w;
+		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[1] = clear_color.y * clear_color.w;
+		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[2] = clear_color.z * clear_color.w;
+		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[3] = clear_color.w;
+
+		if (!main_is_minimized)
+		{
+			rhr::render::renderer::imgui_draw_data = main_draw_data;
+			rhr::render::renderer::render();
+		}
+
+		// Update and Render additional Platform Windows
+		if (rhr::render::renderer::imgui_local->io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
+
+		// Present Main Platform Window
+		if (!main_is_minimized)
+			rhr::render::renderer::frame_present();
+
+
+#if 0
 		vkWaitForFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[current_frame], VK_TRUE, UINT64_MAX);
 		vkResetFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[current_frame]);
 
@@ -239,6 +326,9 @@ int main()
 
 		// Mark the image as now being in use by this frame
 		rhr::render::renderer::images_in_flight[image_index] = rhr::render::renderer::in_flight_fences[current_frame];
+
+		rhr::render::renderer::imgui_local->data.FrameIndex = current_frame;
+		rhr::render::renderer::imgui_local->data.SemaphoreIndex = current_frame;
 
 		capture = std::chrono::high_resolution_clock::now();
         delta_time = static_cast<f64>(std::chrono::duration_cast<std::chrono::microseconds>(capture - last).count()) / 1000000.0;
@@ -291,6 +381,8 @@ int main()
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+
+
 		VkSemaphore waitSemaphores[] = { rhr::render::renderer::image_available_semaphores[current_frame] };
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submitInfo.waitSemaphoreCount = 1;
@@ -342,6 +434,7 @@ int main()
 
 		vkQueueWaitIdle(rhr::render::renderer::present_queue);
         current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
+#endif
 	}
 
 	return 0;

@@ -13,6 +13,12 @@
 //#define STB_IMAGE_IMPLEMENTATION
 //#include <stb_image.h>
 
+static void check_vk_result(VkResult err)
+{
+	if (err != VK_SUCCESS)
+		cap::logger::error("vulkan error code \"" + std::to_string(err) + "\"");
+}
+
 void frame_buffer_resize_callback(GLFWwindow* window, i32 width, i32 height)
 {
 	rhr::render::renderer::frame_buffer_resized = true;
@@ -130,21 +136,7 @@ void rhr::render::renderer::initialize()
 	rhr::render::tools::create_aux_command_buffer();
 	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
 
-	imgui_local->data.Width = rhr::render::renderer::window_size.x;
-	imgui_local->data.Height = rhr::render::renderer::window_size.y;
-	imgui_local->data.Swapchain = swap_chain;
-	imgui_local->data.Surface = surface;
-	imgui_local->data.SurfaceFormat = surface_format;
-	imgui_local->data.PresentMode = present_mode;
-	imgui_local->data.RenderPass = render_pass;
-	imgui_local->data.Pipeline = ui_pipeline;
-	imgui_local->data.ClearEnable = false;
-	imgui_local->data.ClearValue = VkClearValue();
-	imgui_local->data.FrameIndex = 0;
-	imgui_local->data.ImageCount = swap_chain_images.size();
-	imgui_local->data.SemaphoreIndex = 0;
-	imgui_local->data.Frames = ;
-	imgui_local->data.FrameSemaphores = ;
+	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
 
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -167,6 +159,43 @@ void rhr::render::renderer::initialize()
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
 
+	imgui_local = new imgui_data(io, style);
+
+	imgui_local->frames = new ImGui_ImplVulkanH_Frame[imageCount];
+	imgui_local->semaphores = new ImGui_ImplVulkanH_FrameSemaphores[imageCount];
+
+	for (u32 i = 0; i < imageCount; i++)
+	{
+		imgui_local->frames[i].CommandPool = command_pool;
+		imgui_local->frames[i].CommandBuffer = command_buffers[i];
+		imgui_local->frames[i].Fence = in_flight_fences[i];
+		imgui_local->frames[i].Backbuffer = swap_chain_images[i];
+		imgui_local->frames[i].BackbufferView = swap_chain_image_views[i];
+		imgui_local->frames[i].Framebuffer = swap_chain_frame_buffers[i];
+	}
+
+	for (u32 i = 0; i < imageCount; i++)
+	{
+		imgui_local->semaphores[i].ImageAcquiredSemaphore = image_available_semaphores[i];
+		imgui_local->semaphores[i].RenderCompleteSemaphore = render_finished_semaphores[i];
+	}
+
+	imgui_local->data.Width = rhr::render::renderer::window_size.x;
+	imgui_local->data.Height = rhr::render::renderer::window_size.y;
+	imgui_local->data.Swapchain = swap_chain;
+	imgui_local->data.Surface = surface;
+	imgui_local->data.SurfaceFormat = surface_format;
+	imgui_local->data.PresentMode = present_mode;
+	imgui_local->data.RenderPass = render_pass;
+	imgui_local->data.Pipeline = ui_pipeline;
+//	imgui_local->data.ClearEnable = false;
+//	imgui_local->data.ClearValue = VkClearValue(0.0f, 0.0f, 0.0f, 1.0f);
+	imgui_local->data.FrameIndex = 0;
+	imgui_local->data.ImageCount = swap_chain_images.size();
+	imgui_local->data.SemaphoreIndex = 0;
+	imgui_local->data.Frames = imgui_local->frames;
+	imgui_local->data.FrameSemaphores = imgui_local->semaphores;
+
 	ImGui_ImplVulkan_InitInfo imgui_info{
 		.Instance = instance,
 		.PhysicalDevice = physical_device,
@@ -175,20 +204,49 @@ void rhr::render::renderer::initialize()
 		.Queue = graphics_queue,
 		.PipelineCache = nullptr,
 		.DescriptorPool = descriptor_pool,
-		.Subpass = 0,
 		.MinImageCount = swap_chain_support.capabilities.minImageCount,
 		.ImageCount = static_cast<uint32_t>(swap_chain_images.size()),
 		.MSAASamples = VK_SAMPLE_COUNT_1_BIT,
 		.Allocator = nullptr,
 		.CheckVkResultFn = [](VkResult result) {
-			cap::logger::fatal("failed to initialize imgui");
+			if (result != VK_SUCCESS)
+				cap::logger::fatal("failed to initialize imgui");
 		}
 	};
 
 	ImGui_ImplGlfw_InitForVulkan(window, true);
 	ImGui_ImplVulkan_Init(&imgui_info, render_pass);
 
-	imgui_local = new imgui_data(io, style);
+	{
+		VkResult err;
+
+		// Use any command queue
+		VkCommandPool command_pool = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandPool;
+		VkCommandBuffer command_buffer = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandBuffer;
+
+		err = vkResetCommandPool(device, command_pool, 0);
+		check_vk_result(err);
+		VkCommandBufferBeginInfo begin_info = {};
+		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		err = vkBeginCommandBuffer(command_buffer, &begin_info);
+		check_vk_result(err);
+
+		ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
+
+		VkSubmitInfo end_info = {};
+		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		end_info.commandBufferCount = 1;
+		end_info.pCommandBuffers = &command_buffer;
+		err = vkEndCommandBuffer(command_buffer);
+		check_vk_result(err);
+		err = vkQueueSubmit(graphics_queue, 1, &end_info, VK_NULL_HANDLE);
+		check_vk_result(err);
+
+		err = vkDeviceWaitIdle(device);
+		check_vk_result(err);
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
 }
 
 void rhr::render::renderer::add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable)
@@ -210,19 +268,109 @@ void rhr::render::renderer::process_dirty()
 	m_dirty_renderable.clear();
 }
 
-void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_POINT& diagnostics_time)
+void rhr::render::renderer::render()
 {
-	// External Frame Updating
-
-	// if (!setup)
-	// {
-	// 	Client::Instance->GetPlayer()->UpdateCamera(mousePosition);
-	// 	rhr::render::renderer::ViewMatrix = glm::mat4(1.0);
-	// 	rhr::render::renderer::ProjectionMatrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
-	// }
-
 	rhr::render::renderer::ui_projection_matrix = glm::ortho(0.0f, static_cast<f32>(window_size.x), 0.0f, static_cast<f32>(window_size.y), -10000.0f, 10000.0f);
 
+	VkResult err;
+
+	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
+	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+
+	err = vkAcquireNextImageKHR(device, imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
+
+	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+	{
+		reload_swap_chain_flag = true;
+		return;
+	}
+
+	check_vk_result(err);
+
+	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
+
+	// frame sync
+	{
+		err = vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+		check_vk_result(err);
+
+		err = vkResetFences(device, 1, &fd->Fence);
+		check_vk_result(err);
+	}
+
+	// initialize command buffer for render
+	{
+		err = vkResetCommandPool(device, fd->CommandPool, 0);
+		check_vk_result(err);
+
+		VkCommandBufferBeginInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
+		active_command_buffer = fd->CommandBuffer;
+		check_vk_result(err);
+	}
+
+	// initialize render pass
+	{
+		VkRenderPassBeginInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		info.renderPass = imgui_local->data.RenderPass;
+		info.framebuffer = fd->Framebuffer;
+		info.renderArea.extent.width = imgui_local->data.Width;
+		info.renderArea.extent.height = imgui_local->data.Height;
+		info.clearValueCount = 1;
+		info.pClearValues = &imgui_local->data.ClearValue;
+
+		vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+	}
+
+	ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, fd->CommandBuffer);
+
+	rhr::stack::plane::primary_plane->render();
+	rhr::stack::plane::toolbar_plane->render();
+
+	bool erased = false;
+
+	for (usize i = 0; i < m_layers.size(); i++)
+	{
+		if (erased)
+		{
+			erased = false;
+			i--;
+		}
+
+		if (auto layer = m_layers[i].lock())
+			layer->render();
+		else
+		{
+			m_layers.erase(m_layers.begin() + i);
+			erased = true;
+		}
+	}
+
+	vkCmdEndRenderPass(fd->CommandBuffer);
+
+	// submit command buffer and queue to gpu
+	{
+		VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		VkSubmitInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+		info.waitSemaphoreCount = 1;
+		info.pWaitSemaphores = &image_acquired_semaphore;
+		info.pWaitDstStageMask = &wait_stage;
+		info.commandBufferCount = 1;
+		info.pCommandBuffers = &fd->CommandBuffer;
+		info.signalSemaphoreCount = 1;
+		info.pSignalSemaphores = &render_complete_semaphore;
+
+		err = vkEndCommandBuffer(fd->CommandBuffer);
+		check_vk_result(err);
+		err = vkQueueSubmit(graphics_queue, 1, &info, fd->Fence);
+		check_vk_result(err);
+	}
+#if 0
 	// render Frame
 
 	vk::command_buffer_begin_info begin_info{};
@@ -332,19 +480,61 @@ void rhr::render::renderer::render(usize idx, f64 deltaTime, bool setup, TIME_PO
 
 	ImGui::Render();
 
-	if (imgui_local->io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-	}
+//	ImDrawData* main_draw_data = ImGui::GetDrawData();
+//	const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
+//	imgui_local->data.ClearValue.color.float32[0] = clear_color.x * clear_color.w;
+//	imgui_local->data.ClearValue.color.float32[1] = clear_color.y * clear_color.w;
+//	imgui_local->data.ClearValue.color.float32[2] = clear_color.z * clear_color.w;
+//	imgui_local->data.ClearValue.color.float32[3] = clear_color.w;
+//	if (!main_is_minimized)
+//		FrameRender(wd, main_draw_data);
+//
+//	// Update and Render additional Platform Windows
+//	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+//	{
+//		ImGui::UpdatePlatformWindows();
+//		ImGui::RenderPlatformWindowsDefault();
+//	}
+//
+//	// Present Main Platform Window
+//	if (!main_is_minimized)
+//		FramePresent(wd);
 
 
 	//testObject->render();
-
+//#if 0
 	vkCmdEndRenderPass(active_command_buffer);
 
 	if (vkEndCommandBuffer(active_command_buffer) != VK_SUCCESS)
 		cap::logger::fatal("failed to close the command buffer");
+#endif
+}
+
+void rhr::render::renderer::frame_present()
+{
+	if (reload_swap_chain_flag)
+		return;
+	
+	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+
+	VkPresentInfoKHR info = {};
+	info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	info.waitSemaphoreCount = 1;
+	info.pWaitSemaphores = &render_complete_semaphore;
+	info.swapchainCount = 1;
+	info.pSwapchains = &imgui_local->data.Swapchain;
+	info.pImageIndices = &imgui_local->data.FrameIndex;
+
+	VkResult err = vkQueuePresentKHR(graphics_queue, &info);
+
+	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+	{
+		reload_swap_chain_flag = true;
+		return;
+	}
+
+	check_vk_result(err);
+	imgui_local->data.SemaphoreIndex = (imgui_local->data.SemaphoreIndex + 1) % imgui_local->data.ImageCount;
 }
 
 void rhr::render::renderer::clean_up_swap_chain()
@@ -1160,6 +1350,12 @@ VkPipelineLayout rhr::render::renderer::ui_texture_pipeline_layout;
 
 VkPipeline rhr::render::renderer::ui_pipeline;
 VkPipeline rhr::render::renderer::ui_texture_pipeline;
+
+rhr::render::renderer::imgui_data* rhr::render::renderer::imgui_local;
+vk::present_mode_khr rhr::render::renderer::present_mode;
+vk::surface_format_khr rhr::render::renderer::surface_format;
+bool rhr::render::renderer::reload_swap_chain_flag = false;
+ImDrawData* rhr::render::renderer::imgui_draw_data;
 
 u32 rhr::render::renderer::depth_background = 100;
 u32 rhr::render::renderer::depth_plane = 95;
