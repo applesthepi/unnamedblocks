@@ -715,9 +715,9 @@ bool rhr::render::tools::is_device_suitable(vk::physical_device* physical_device
 VKAPI_ATTR vk::bool32 VKAPI_CALL rhr::render::tools::debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type, const VkDebugUtilsMessengerCallbackDataEXT* callback_data, void* user_data)
 {
 	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-		cap::logger::warn(callback_data->pMessage);
+		cap::logger::warn("vulkan error: " + std::string(callback_data->pMessage));
 	else if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-		cap::logger::error(callback_data->pMessage);
+		cap::logger::error("vulkan error: " + std::string(callback_data->pMessage));
 
 	return VK_FALSE;
 }

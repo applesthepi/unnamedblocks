@@ -10,21 +10,28 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 
-/*
-
-To make a new pipeline:
-	- add var to Render class
-	- add creation to InitPipelines()
-	- add destruction to CleanupSwapChain()
-
-*/
-
 namespace rhr::render
 {
 ///
 class renderer
 {
 public:
+	///
+	struct frame_buffer_attachment {
+		VkImage image;
+		VkDeviceMemory mem;
+		VkImageView view;
+	};
+
+	///
+	struct offscreen_pass {
+		VkFramebuffer frame_buffer;
+		frame_buffer_attachment color, depth;
+		VkRenderPass render_pass;
+		VkSampler sampler;
+		VkDescriptorImageInfo descriptor;
+	};
+
 	///
 	struct imgui_data
 	{
@@ -210,6 +217,9 @@ public:
 
 	///
 	static ImDrawData* imgui_draw_data;
+
+	///
+	static offscreen_pass offscreen_pass_local;
 
 	///
 #ifdef NDEBUG

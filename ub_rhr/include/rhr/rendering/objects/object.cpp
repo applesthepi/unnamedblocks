@@ -296,12 +296,12 @@ void rhr::render::object::object::on_update_buffers()
 			if (m_texture_type == texture_type::CUSTOM)
 			{
 				m_image = rhr::render::tools::create_texture_image(m_texture_path, &m_image_memory);
-				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 			else if (m_texture_type == texture_type::TEXT_SHEET)
 			{
 				m_image = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_char_texture_type].image;
-				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 		}
 

@@ -13,6 +13,8 @@
 //#define STB_IMAGE_IMPLEMENTATION
 //#include <stb_image.h>
 
+static bool run_first_render_pass = false;
+
 static void check_vk_result(VkResult err)
 {
 	if (err != VK_SUCCESS)
@@ -27,6 +29,9 @@ void frame_buffer_resize_callback(GLFWwindow* window, i32 width, i32 height)
 
 void key_callback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mode)
 {
+	if (action == GLFW_PRESS && key == GLFW_KEY_Q)
+		run_first_render_pass = !run_first_render_pass;
+
 	InputHandler::FireKey(key, action);
 }
 
@@ -103,7 +108,6 @@ void rhr::render::renderer::initialize()
 	init_device();
 
 	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
-
 	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
 
 	f32 queue_priority = 1.0f;
@@ -119,21 +123,61 @@ void rhr::render::renderer::initialize()
 
 	init_logical_device();
 	vkGetDeviceQueue(device, indices.present_family.value(), 0, &present_queue);
-
 	init_swap_chain();
+
+
+
 	init_image_views();
 	init_render_pass();
 	init_descriptor_set_layout();
 	init_pipelines();
 	init_command_pool();
 	init_depth_resources();
+
+	// offscreen frame buffer image
+
+	rhr::render::tools::create_image(
+		swap_chain_extent.width,
+		swap_chain_extent.height,
+		VK_FORMAT_R8G8B8A8_UNORM,
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		offscreen_pass_local.color.image,
+		offscreen_pass_local.color.mem
+		);
+
+	rhr::render::tools::create_image(
+		swap_chain_extent.width,
+		swap_chain_extent.height,
+		rhr::render::tools::find_depth_format(),
+		VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		offscreen_pass_local.depth.image,
+		offscreen_pass_local.depth.mem
+		);
+
+	// offscreen frame buffer image view
+
+	offscreen_pass_local.color.view = rhr::render::tools::create_image_view(
+		offscreen_pass_local.color.image,
+		VK_FORMAT_R8G8B8A8_UNORM,
+		VK_IMAGE_ASPECT_COLOR_BIT
+		);
+
+	offscreen_pass_local.depth.view = rhr::render::tools::create_image_view(
+		offscreen_pass_local.depth.image,
+		rhr::render::tools::find_depth_format(),
+		VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
+		);
+
 	init_frame_buffers();
 	init_texture_sampler();
 	init_descriptor_pool();
 	init_command_buffers();
 	init_sync_objects();
 
-	rhr::render::tools::create_aux_command_buffer();
 	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
 
 	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
@@ -148,7 +192,7 @@ void rhr::render::renderer::initialize()
 	//io.ConfigViewportsNoTaskBarIcon = true;
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
+//	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsClassic();
 
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
@@ -157,6 +201,91 @@ void rhr::render::renderer::initialize()
 	{
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	{
+		ImFontAtlas *fontAtlas = io.Fonts;
+		ImFontConfig fontConfig;
+		fontConfig.GlyphRanges = fontAtlas->GetGlyphRangesCyrillic();
+		fontConfig.MergeMode = false;
+		fontConfig.PixelSnapH = false;
+
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Roboto-Regular.ttf", 14, &fontConfig);
+	}
+
+	{
+		ImGuiStyle &style = ImGui::GetStyle();
+
+		const ImVec4 dockBgColor = ImVec4(0.098f, 0.098f, 0.1019f, 1.0f);
+		const ImVec4 bgColor = ImVec4(0.145f, 0.145f, 0.149f, 1.0f);
+		const ImVec4 lightBgColor = ImVec4(0.321f, 0.321f, 0.333f, 1.0f);
+		const ImVec4 lighterBgColor = ImVec4(0.353f, 0.353f, 0.372f, 1.0f);
+
+		const ImVec4 panelColor = ImVec4(0.2f, 0.2f, 0.21f, 1.0f);
+		const ImVec4 panelHoverColor = ImVec4(0.114f, 0.592f, 0.925f, 1.0f);
+		const ImVec4 panelActiveColor = ImVec4(0.0f, 0.466f, 0.784f, 1.0f);
+
+		const ImVec4 textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		const ImVec4 textDisabledColor = ImVec4(0.592f, 0.592f, 0.592f, 1.0f);
+		const ImVec4 borderColor = ImVec4(0.305f, 0.305f, 0.305f, 1.0f);
+
+		style.Colors[ImGuiCol_Text] = textColor;
+		style.Colors[ImGuiCol_TextDisabled] = textDisabledColor;
+		style.Colors[ImGuiCol_TextSelectedBg] = panelActiveColor;
+		style.Colors[ImGuiCol_WindowBg] = bgColor;
+		style.Colors[ImGuiCol_ChildBg] = bgColor;
+		style.Colors[ImGuiCol_PopupBg] = bgColor;
+		style.Colors[ImGuiCol_Border] = borderColor;
+		style.Colors[ImGuiCol_BorderShadow] = borderColor;
+		style.Colors[ImGuiCol_FrameBg] = panelColor;
+		style.Colors[ImGuiCol_FrameBgHovered] = panelHoverColor;
+		style.Colors[ImGuiCol_FrameBgActive] = panelActiveColor;
+		style.Colors[ImGuiCol_TitleBg] = bgColor;
+		style.Colors[ImGuiCol_TitleBgActive] = bgColor;
+		style.Colors[ImGuiCol_TitleBgCollapsed] = bgColor;
+		style.Colors[ImGuiCol_MenuBarBg] = panelColor;
+		style.Colors[ImGuiCol_ScrollbarBg] = panelColor;
+		style.Colors[ImGuiCol_ScrollbarGrab] = lightBgColor;
+		style.Colors[ImGuiCol_ScrollbarGrabHovered] = lighterBgColor;
+		style.Colors[ImGuiCol_ScrollbarGrabActive] = lighterBgColor;
+		style.Colors[ImGuiCol_CheckMark] = panelActiveColor;
+		style.Colors[ImGuiCol_SliderGrab] = panelHoverColor;
+		style.Colors[ImGuiCol_SliderGrabActive] = panelActiveColor;
+		style.Colors[ImGuiCol_Button] = panelColor;
+		style.Colors[ImGuiCol_ButtonHovered] = panelHoverColor;
+		style.Colors[ImGuiCol_ButtonActive] = panelHoverColor;
+		style.Colors[ImGuiCol_Header] = panelColor;
+		style.Colors[ImGuiCol_HeaderHovered] = panelHoverColor;
+		style.Colors[ImGuiCol_HeaderActive] = panelActiveColor;
+		style.Colors[ImGuiCol_Separator] = borderColor;
+		style.Colors[ImGuiCol_SeparatorHovered] = borderColor;
+		style.Colors[ImGuiCol_SeparatorActive] = borderColor;
+		style.Colors[ImGuiCol_ResizeGrip] = bgColor;
+		style.Colors[ImGuiCol_ResizeGripHovered] = panelColor;
+		style.Colors[ImGuiCol_ResizeGripActive] = lightBgColor;
+		style.Colors[ImGuiCol_PlotLines] = panelActiveColor;
+		style.Colors[ImGuiCol_PlotLinesHovered] = panelHoverColor;
+		style.Colors[ImGuiCol_PlotHistogram] = panelActiveColor;
+		style.Colors[ImGuiCol_PlotHistogramHovered] = panelHoverColor;
+		style.Colors[ImGuiCol_DragDropTarget] = bgColor;
+		style.Colors[ImGuiCol_NavHighlight] = bgColor;
+		style.Colors[ImGuiCol_Tab] = bgColor;
+		style.Colors[ImGuiCol_TabActive] = panelActiveColor;
+		style.Colors[ImGuiCol_TabUnfocused] = bgColor;
+		style.Colors[ImGuiCol_TabUnfocusedActive] = panelActiveColor;
+		style.Colors[ImGuiCol_TabHovered] = panelHoverColor;
+
+		style.Colors[ImGuiCol_DockingEmptyBg] = dockBgColor;
+
+		style.ScrollbarSize = 10.0f;
+		style.WindowRounding = 1.0f;
+		style.ChildRounding = 1.0f;
+		style.FrameRounding = 1.0f;
+		style.GrabRounding = 1.0f;
+		style.PopupRounding = 1.0f;
+		style.ScrollbarRounding = 1.0f;
+		style.TabRounding = 1.0f;
+		style.WindowMenuButtonPosition = ImGuiDir_Right;
 	}
 
 	imgui_local = new imgui_data(io, style);
@@ -210,7 +339,7 @@ void rhr::render::renderer::initialize()
 		.Allocator = nullptr,
 		.CheckVkResultFn = [](VkResult result) {
 			if (result != VK_SUCCESS)
-				cap::logger::fatal("failed to initialize imgui");
+				cap::logger::fatal("imgui fatal error: " + std::to_string(static_cast<i32>(result)));
 		}
 	};
 
@@ -220,15 +349,19 @@ void rhr::render::renderer::initialize()
 	{
 		VkResult err;
 
+		err = vkResetCommandPool(device, command_pool, 0);
+		check_vk_result(err);
+
 		// Use any command queue
 		VkCommandPool command_pool = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandPool;
 		VkCommandBuffer command_buffer = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandBuffer;
 
-		err = vkResetCommandPool(device, command_pool, 0);
-		check_vk_result(err);
+//		err = vkResetCommandPool(device, command_pool, 0);
+//		check_vk_result(err);
 		VkCommandBufferBeginInfo begin_info = {};
 		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		begin_info.flags = 0;
+
 		err = vkBeginCommandBuffer(command_buffer, &begin_info);
 		check_vk_result(err);
 
@@ -238,14 +371,47 @@ void rhr::render::renderer::initialize()
 		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		end_info.commandBufferCount = 1;
 		end_info.pCommandBuffers = &command_buffer;
+
 		err = vkEndCommandBuffer(command_buffer);
 		check_vk_result(err);
+
 		err = vkQueueSubmit(graphics_queue, 1, &end_info, VK_NULL_HANDLE);
 		check_vk_result(err);
 
 		err = vkDeviceWaitIdle(device);
 		check_vk_result(err);
+
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
+
+	// offscreen frame buffer texture sampler
+
+	{
+		VkPhysicalDeviceProperties properties{};
+		vkGetPhysicalDeviceProperties(physical_device, &properties);
+
+		VkSamplerCreateInfo sampler_info{};
+		sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+		sampler_info.magFilter = VK_FILTER_NEAREST;
+		sampler_info.minFilter = VK_FILTER_NEAREST;
+		sampler_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		sampler_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+
+		sampler_info.anisotropyEnable = VK_TRUE;
+		sampler_info.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+		sampler_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+		sampler_info.unnormalizedCoordinates = VK_FALSE;
+		sampler_info.compareEnable = VK_FALSE;
+		sampler_info.compareOp = VK_COMPARE_OP_ALWAYS;
+
+		sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		sampler_info.mipLodBias = 0.0f;
+		sampler_info.minLod = 0.0f;
+		sampler_info.maxLod = 0.0f;
+
+		if (vkCreateSampler(device, &sampler_info, nullptr, &offscreen_pass_local.sampler) != VK_SUCCESS)
+			cap::logger::fatal("failed to create texture sampler");
 	}
 }
 
@@ -290,6 +456,7 @@ void rhr::render::renderer::render()
 	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
 
 	// frame sync
+
 	{
 		err = vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
 		check_vk_result(err);
@@ -299,20 +466,76 @@ void rhr::render::renderer::render()
 	}
 
 	// initialize command buffer for render
+
 	{
-		err = vkResetCommandPool(device, fd->CommandPool, 0);
+		err = vkResetCommandPool(device, command_pool, 0);
 		check_vk_result(err);
 
 		VkCommandBufferBeginInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		info.flags = 0;
 
 		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
 		active_command_buffer = fd->CommandBuffer;
 		check_vk_result(err);
 	}
 
-	// initialize render pass
+	rhr::stack::plane::primary_plane->frame_update(1.0);
+	rhr::stack::plane::toolbar_plane->frame_update(1.0);
+
+	process_dirty();
+
+	VkClearValue clear_values[2];
+	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+	clear_values[1].depthStencil = { 1.0f, 0 };
+
+	// plane render pass
+
+	{
+		VkRenderPassBeginInfo info;
+		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		info.renderPass = offscreen_pass_local.render_pass;
+		info.framebuffer = offscreen_pass_local.frame_buffer;
+		info.renderArea.extent.width = imgui_local->data.Width;
+		info.renderArea.extent.height = imgui_local->data.Height;
+		info.clearValueCount = 2;
+		info.pClearValues = clear_values;
+
+		vkCmdBeginRenderPass(active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+
+//		VkViewport viewport;// = vks::initializers::viewport((float)offscreenPass.width, (float)offscreenPass.height, 0.0f, 1.0f);
+//		vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
+//
+//		VkRect2D scissor;// = vks::initializers::rect2D(offscreenPass.width, offscreenPass.height, 0, 0);
+//		vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
+
+		bool erased = false;
+
+		for (usize i = 0; i < m_layers.size(); i++)
+		{
+			if (erased)
+			{
+				erased = false;
+				i--;
+			}
+
+			if (auto layer = m_layers[i].lock())
+				layer->render();
+			else
+			{
+				m_layers.erase(m_layers.begin() + i);
+				erased = true;
+			}
+		}
+
+		rhr::stack::plane::primary_plane->render();
+		rhr::stack::plane::toolbar_plane->render();
+
+		vkCmdEndRenderPass(active_command_buffer);
+	}
+
+	// final render pass
+
 	{
 		VkRenderPassBeginInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -320,39 +543,18 @@ void rhr::render::renderer::render()
 		info.framebuffer = fd->Framebuffer;
 		info.renderArea.extent.width = imgui_local->data.Width;
 		info.renderArea.extent.height = imgui_local->data.Height;
-		info.clearValueCount = 1;
-		info.pClearValues = &imgui_local->data.ClearValue;
+		info.clearValueCount = 2;
+		info.pClearValues = clear_values;
 
-		vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+
+		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, active_command_buffer);
+
+		vkCmdEndRenderPass(active_command_buffer);
 	}
-
-	ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, fd->CommandBuffer);
-
-	rhr::stack::plane::primary_plane->render();
-	rhr::stack::plane::toolbar_plane->render();
-
-	bool erased = false;
-
-	for (usize i = 0; i < m_layers.size(); i++)
-	{
-		if (erased)
-		{
-			erased = false;
-			i--;
-		}
-
-		if (auto layer = m_layers[i].lock())
-			layer->render();
-		else
-		{
-			m_layers.erase(m_layers.begin() + i);
-			erased = true;
-		}
-	}
-
-	vkCmdEndRenderPass(fd->CommandBuffer);
 
 	// submit command buffer and queue to gpu
+
 	{
 		VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkSubmitInfo info = {};
@@ -370,144 +572,6 @@ void rhr::render::renderer::render()
 		err = vkQueueSubmit(graphics_queue, 1, &info, fd->Fence);
 		check_vk_result(err);
 	}
-#if 0
-	// render Frame
-
-	vk::command_buffer_begin_info begin_info{};
-	begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	begin_info.flags = 0; // Optional
-	begin_info.pInheritanceInfo = nullptr; // Optional
-
-	if (vkBeginCommandBuffer(active_command_buffer, &begin_info) != VK_SUCCESS)
-		cap::logger::fatal("failed to start the command buffer");
-
-	vk::render_pass_begin_info render_pass_info{};
-	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	render_pass_info.renderPass = render_pass;
-	render_pass_info.framebuffer = swap_chain_frame_buffers[idx];
-
-	render_pass_info.renderArea.offset = { 0, 0 };
-	render_pass_info.renderArea.extent = swap_chain_extent;
-
-	std::array<vk::clear_value, 2> clear_values{};
-	clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
-	clear_values[1].depthStencil = { 1.0f, 0 };
-
-	render_pass_info.clearValueCount = static_cast<u32>(clear_values.size());
-	render_pass_info.pClearValues = clear_values.data();
-
-	// Client::Instance->GetDiagnostics()->SetRenderTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
-	// diagnosticsTime = std::chrono::high_resolution_clock::now();
-	rhr::stack::plane::primary_plane->frame_update(deltaTime);
-	rhr::stack::plane::toolbar_plane->frame_update(deltaTime);
-
-	process_dirty();
-	// Client::Instance->GetDiagnostics()->SetDirtyTime(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - diagnosticsTime).count());
-	// diagnosticsTime = std::chrono::high_resolution_clock::now();
-
-	vkCmdBeginRenderPass(active_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-
-	static bool my_tool_active;
-	static glm::vec<4, float> my_color;
-
-	// Create a window called "My First Tool", with a menu bar.
-//	ImGui::Begin("My First Tool", &my_tool_active, ImGuiWindowFlags_MenuBar);
-//	if (ImGui::BeginMenuBar())
-//	{
-//		if (ImGui::BeginMenu("File"))
-//		{
-//			if (ImGui::MenuItem("Open..", "Ctrl+O")) { /* Do stuff */ }
-//			if (ImGui::MenuItem("Save", "Ctrl+S"))   { /* Do stuff */ }
-//			if (ImGui::MenuItem("Close", "Ctrl+W"))  { my_tool_active = false; }
-//			ImGui::EndMenu();
-//		}
-//		ImGui::EndMenuBar();
-//	}
-//
-//	// Edit a color (stored as ~4 floats)
-//	ImGui::ColorEdit4("Color", (float*)&my_color);
-//
-//	// Plot some values
-//	const float my_values[] = { 0.2f, 0.1f, 1.0f, 0.5f, 0.9f, 2.2f };
-//	ImGui::PlotLines("Frame Times", my_values, IM_ARRAYSIZE(my_values));
-//
-//	// Display contents in a scrolling region
-//	ImGui::TextColored(ImVec4(1,1,0,1), "Important Stuff");
-//	ImGui::BeginChild("Scrolling");
-//	for (int n = 0; n < 50; n++)
-//		ImGui::Text("%04d: Some text", n);
-//	ImGui::EndChild();
-//	ImGui::End();
-
-	// if (!setup)
-	// {
-	// 	// ChunkManager binds BlocksPipeline
-	// 	Client::Instance->GetChunkManager()->render(deltaTime);
-	// 	Client::Instance->GetDispatcher()->UpdateDiagnosticData();
-	// 	Client::Instance->GetDiagnostics()->UpdateProgressBars();
-	// }
-
-	rhr::stack::plane::primary_plane->render();
-	rhr::stack::plane::toolbar_plane->render();
-
-
-	bool erased = false;
-
-	for (usize i = 0; i < m_layers.size(); i++)
-	{
-		if (erased)
-		{
-			erased = false;
-			i--;
-		}
-
-		if (auto layer = m_layers[i].lock())
-			layer->render();
-		else
-		{
-			m_layers.erase(m_layers.begin() + i);
-			erased = true;
-		}
-	}
-
-	ImGui_ImplVulkan_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	static bool show_demo_window = true;
-	if (show_demo_window)
-		ImGui::ShowDemoWindow(&show_demo_window);
-
-	ImGui::Render();
-
-//	ImDrawData* main_draw_data = ImGui::GetDrawData();
-//	const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
-//	imgui_local->data.ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-//	imgui_local->data.ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-//	imgui_local->data.ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-//	imgui_local->data.ClearValue.color.float32[3] = clear_color.w;
-//	if (!main_is_minimized)
-//		FrameRender(wd, main_draw_data);
-//
-//	// Update and Render additional Platform Windows
-//	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-//	{
-//		ImGui::UpdatePlatformWindows();
-//		ImGui::RenderPlatformWindowsDefault();
-//	}
-//
-//	// Present Main Platform Window
-//	if (!main_is_minimized)
-//		FramePresent(wd);
-
-
-	//testObject->render();
-//#if 0
-	vkCmdEndRenderPass(active_command_buffer);
-
-	if (vkEndCommandBuffer(active_command_buffer) != VK_SUCCESS)
-		cap::logger::fatal("failed to close the command buffer");
-#endif
 }
 
 void rhr::render::renderer::frame_present()
@@ -525,7 +589,7 @@ void rhr::render::renderer::frame_present()
 	info.pSwapchains = &imgui_local->data.Swapchain;
 	info.pImageIndices = &imgui_local->data.FrameIndex;
 
-	VkResult err = vkQueuePresentKHR(graphics_queue, &info);
+	VkResult err = vkQueuePresentKHR(present_queue, &info);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
@@ -533,6 +597,7 @@ void rhr::render::renderer::frame_present()
 		return;
 	}
 
+//	vkQueueWaitIdle(present_queue);
 	check_vk_result(err);
 	imgui_local->data.SemaphoreIndex = (imgui_local->data.SemaphoreIndex + 1) % imgui_local->data.ImageCount;
 }
@@ -720,6 +785,9 @@ void rhr::render::renderer::init_instance()
 	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
 	if (enable_validation_layers)
 	{
+//		rhr::render::tools::validation_layers.push_back("VK_LAYER_LUNARG_standard_validation");
+//		rhr::render::tools::validation_layers.push_back("VK_EXT_debug_report");
+
 		create_info.enabledLayerCount = static_cast<u32>(rhr::render::tools::validation_layers.size());
 		create_info.ppEnabledLayerNames = rhr::render::tools::validation_layers.data();
 
@@ -881,66 +949,141 @@ void rhr::render::renderer::init_image_views()
 	swap_chain_image_views.resize(swap_chain_images.size());
 
 	for (u32 i = 0; i < swap_chain_images.size(); i++)
-		swap_chain_image_views[i] = rhr::render::tools::create_image_view(swap_chain_images[i], swap_chain_image_format, VK_IMAGE_ASPECT_COLOR_BIT);
+		swap_chain_image_views[i] = rhr::render::tools::create_image_view(
+			swap_chain_images[i],
+			swap_chain_image_format,
+			VK_IMAGE_ASPECT_COLOR_BIT
+			);
 }
 
 void rhr::render::renderer::init_render_pass()
 {
-	VkSubpassDependency dependency{};
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcAccessMask = 0;
-	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	{
+		std::array<VkSubpassDependency, 2> dependencies{};
 
-	VkAttachmentDescription color_attachment{};
-	color_attachment.format = swap_chain_image_format;
-	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-	VkAttachmentDescription depth_attachment{};
-	depth_attachment.format = rhr::render::tools::find_depth_format();
-	depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-	depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		dependencies[1].srcSubpass = 0;
+		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-	VkAttachmentReference color_attachment_ref{};
-	color_attachment_ref.attachment = 0;
-	color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		VkAttachmentDescription color_attachment{};
+		color_attachment.format = swap_chain_image_format;
+		color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-	VkAttachmentReference depth_attachment_ref{};
-	depth_attachment_ref.attachment = 1;
-	depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		VkAttachmentDescription depth_attachment{};
+		depth_attachment.format = rhr::render::tools::find_depth_format();
+		depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkSubpassDescription subpass{};
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-	subpass.pColorAttachments = &color_attachment_ref;
-	subpass.pDepthStencilAttachment = &depth_attachment_ref;
+		VkAttachmentReference color_attachment_ref{};
+		color_attachment_ref.attachment = 0;
+		color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-	std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
+		VkAttachmentReference depth_attachment_ref{};
+		depth_attachment_ref.attachment = 1;
+		depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-	VkRenderPassCreateInfo render_pass_info{};
-	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	render_pass_info.attachmentCount = static_cast<u32>(attachments.size());
-	render_pass_info.pAttachments = attachments.data();
-	render_pass_info.subpassCount = 1;
-	render_pass_info.pSubpasses = &subpass;
-	render_pass_info.dependencyCount = 1;
-	render_pass_info.pDependencies = &dependency;
+		VkSubpassDescription subpass{};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &color_attachment_ref;
+		subpass.pDepthStencilAttachment = &depth_attachment_ref;
 
-	if (vkCreateRenderPass(device, &render_pass_info, nullptr, &render_pass) != VK_SUCCESS)
-		cap::logger::fatal("failed to create render pass");
+		std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
+
+		VkRenderPassCreateInfo render_pass_info{};
+		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		render_pass_info.attachmentCount = static_cast<u32>(attachments.size());
+		render_pass_info.pAttachments = attachments.data();
+		render_pass_info.subpassCount = 1;
+		render_pass_info.pSubpasses = &subpass;
+		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
+		render_pass_info.pDependencies = dependencies.data();
+
+		if (vkCreateRenderPass(device, &render_pass_info, nullptr, &offscreen_pass_local.render_pass) != VK_SUCCESS)
+			cap::logger::fatal("failed to create render pass");
+	}
+
+	{
+		std::array<VkSubpassDependency, 1> dependencies{};
+
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcAccessMask = 0;
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+		VkAttachmentDescription color_attachment{};
+		color_attachment.format = swap_chain_image_format;
+		color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+		VkAttachmentDescription depth_attachment{};
+		depth_attachment.format = rhr::render::tools::find_depth_format();
+		depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentReference color_attachment_ref{};
+		color_attachment_ref.attachment = 0;
+		color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentReference depth_attachment_ref{};
+		depth_attachment_ref.attachment = 1;
+		depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		VkSubpassDescription subpass{};
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpass.colorAttachmentCount = 1;
+		subpass.pColorAttachments = &color_attachment_ref;
+		subpass.pDepthStencilAttachment = &depth_attachment_ref;
+
+		std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
+
+		VkRenderPassCreateInfo render_pass_info{};
+		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+		render_pass_info.attachmentCount = static_cast<u32>(attachments.size());
+		render_pass_info.pAttachments = attachments.data();
+		render_pass_info.subpassCount = 1;
+		render_pass_info.pSubpasses = &subpass;
+		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
+		render_pass_info.pDependencies = dependencies.data();
+
+		if (vkCreateRenderPass(device, &render_pass_info, nullptr, &render_pass) != VK_SUCCESS)
+			cap::logger::fatal("failed to create render pass");
+	}
 }
 
 void rhr::render::renderer::init_descriptor_set_layout()
@@ -1169,6 +1312,27 @@ void rhr::render::renderer::init_frame_buffers()
 		if (vkCreateFramebuffer(device, &frame_buffer_info, nullptr, &swap_chain_frame_buffers[i]) != VK_SUCCESS)
 			cap::logger::fatal("failed to create frame buffers");
 	}
+
+	std::array<VkImageView, 2> attachments = {
+		offscreen_pass_local.color.view,
+		offscreen_pass_local.depth.view
+	};
+
+	VkFramebufferCreateInfo frame_buffer_info{};
+	frame_buffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+	frame_buffer_info.renderPass = offscreen_pass_local.render_pass;
+	frame_buffer_info.attachmentCount = static_cast<u32>(attachments.size());
+	frame_buffer_info.pAttachments = attachments.data();
+	frame_buffer_info.width = swap_chain_extent.width;
+	frame_buffer_info.height = swap_chain_extent.height;
+	frame_buffer_info.layers = 1;
+
+	if (vkCreateFramebuffer(device, &frame_buffer_info, nullptr, &offscreen_pass_local.frame_buffer) != VK_SUCCESS)
+		cap::logger::fatal("failed to create frame buffers");
+
+	offscreen_pass_local.descriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	offscreen_pass_local.descriptor.imageView = offscreen_pass_local.color.view;
+	offscreen_pass_local.descriptor.sampler = offscreen_pass_local.sampler;
 }
 
 void rhr::render::renderer::init_depth_resources()
@@ -1356,6 +1520,7 @@ vk::present_mode_khr rhr::render::renderer::present_mode;
 vk::surface_format_khr rhr::render::renderer::surface_format;
 bool rhr::render::renderer::reload_swap_chain_flag = false;
 ImDrawData* rhr::render::renderer::imgui_draw_data;
+rhr::render::renderer::offscreen_pass rhr::render::renderer::offscreen_pass_local;
 
 u32 rhr::render::renderer::depth_background = 100;
 u32 rhr::render::renderer::depth_plane = 95;

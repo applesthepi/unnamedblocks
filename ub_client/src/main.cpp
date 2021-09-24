@@ -272,7 +272,17 @@ int main()
 			ImGui::ShowDemoWindow(&show_demo_window);
 
 		ImGui::Begin("plane");
-		
+		ImGui::Image(
+			ImGui_ImplVulkan_AddTexture(
+				rhr::render::renderer::offscreen_pass_local.sampler,
+				rhr::render::renderer::offscreen_pass_local.color.view,
+				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+			),
+			{
+				static_cast<f32>(rhr::render::renderer::window_size.x),
+				static_cast<f32>(rhr::render::renderer::window_size.y)
+			}
+		);
 		ImGui::End();
 
 		ImGui::Render();
