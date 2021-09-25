@@ -210,6 +210,9 @@ int main()
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	static glm::vec<2, f32> last_plane_size = { 0.0f, 0.0f };
+	static glm::vec<2, f32> last_plane_position = { 0.0f, 0.0f };
+
 	while (!glfwWindowShouldClose(rhr::render::renderer::window))
 	{
 		// TODO: config
@@ -248,8 +251,8 @@ int main()
 				rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
 				rhr::render::renderer::reload_layer_swap_chains();
-				frameBase->set_size(rhr::render::renderer::window_size);
-				frameBackground->set_size(rhr::render::renderer::window_size);
+				frameBase->set_size(last_plane_size);
+				frameBackground->set_size(last_plane_size);
 
 				rectBackground->set_size_max();
 
@@ -272,6 +275,38 @@ int main()
 			ImGui::ShowDemoWindow(&show_demo_window);
 
 		ImGui::Begin("plane");
+
+		ImVec2 plane_size = ImGui::GetWindowSize();
+		ImVec2 plane_position = ImGui::GetWindowPos();
+
+		if (plane_size.x != last_plane_size.x ||
+			plane_size.y != last_plane_size.y)
+		{
+			last_plane_size = { plane_size.x, plane_size.y };
+
+			frameBase->set_size(last_plane_size);
+			frameBackground->set_size(last_plane_size);
+
+			rectBackground->set_size_max();
+
+			frameOptionsContent->set_size_max();
+			frameOptions->set_size_max();
+			frameSidebarPrimary->set_size_max();
+			frameSidebarCategories->set_size_max();
+			framePrimary->set_size_max();
+			frameCategories->set_size_max();
+			frameToolbar->set_size_max();
+		}
+
+		if (plane_position.x != last_plane_position.x ||
+			plane_position.y != last_plane_position.y)
+		{
+			last_plane_position = { plane_position.x, plane_position.y };
+
+			frameBase->set_super_position(last_plane_position);
+			frameBackground->set_super_position(last_plane_position);
+		}
+
 		ImGui::Image(
 			ImGui_ImplVulkan_AddTexture(
 				rhr::render::renderer::offscreen_pass_local.sampler,
