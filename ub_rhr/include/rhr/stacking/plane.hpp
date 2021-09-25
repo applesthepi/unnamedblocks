@@ -6,6 +6,7 @@
 #include "rhr/rendering/interfaces/i_updateable.hpp"
 #include "rhr/rendering/interfaces/i_renderable.hpp"
 #include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 #include "rhr/rendering/objects/text.hpp"
 #include "rhr/handlers/field.hpp"
@@ -20,7 +21,10 @@
 namespace rhr::stack
 {
 ///
-class plane : public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable
+class plane :
+	public rhr::render::interfaces::i_ui,
+	public rhr::render::interfaces::i_renderable,
+	public rhr::render::interfaces::i_updateable
 {
 public:
 	///
@@ -66,10 +70,7 @@ private:
 	void on_reload_swap_chain() override;
 
 	///
-	void post_position_update() override;
-
-	///
-	void post_size_update() override;
+	void post_transform_update() override;
 
 	///
 	void select(u64 collection, u64 stack, u64 block, u64 argument);

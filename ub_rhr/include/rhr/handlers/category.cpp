@@ -74,7 +74,7 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
  		mod_group group = mod_group(cap::color::text_primary_color, cap::color::background_color_3);
  		group.mod_category.reserve(binned_catagories[i].size());
 
-		group.mod_button->set_size({ 100, 16 });
+		group.mod_button->set_size_local({ 100, 16 });
 		group.mod_button->enable_fill_width(true);
 		group.mod_button->set_callback(button_callback_mod, category_idx);
 
@@ -89,7 +89,7 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 //		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
 //		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
 
-		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
+		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
 
 		offset += rhr::stack::block::padding / 2;
  		
@@ -103,15 +103,15 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 			std::shared_ptr<rhr::render::object::button_text> button = std::make_shared<rhr::render::object::button_text>(cap::color::black, cap::color::background_color_3,
 																														  binned_catagories[i][a]->get_display_name());
 			button->set_weak(button);
-			button->set_size({ 200, 16 });
-			button->set_position({ 16, 0 });
 			button->set_color_secondary(binned_catagories[i][a]->get_color());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);
+			button->set_size_local({ 200, 16 }, false);
+			button->set_position_local_physical({ 16, 0 }, false);
 
-			group.categories_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, button, rhr::render::cardinal::local::DOWN);
+			group.categories_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, rhr::render::cardinal::local::DOWN);
 
-			offset += rhr::stack::block::padding / 2 + button->get_size().y;
+			offset += rhr::stack::block::padding / 2 + button->get_size_local().y;
 			group.mod_category.push_back(std::move(button));
 
 			group.mod_category_collections.push_back(std::vector<std::shared_ptr<rhr::stack::collection>>());
@@ -123,7 +123,7 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>();
 				collection->set_weak(collection);
 				collection->display_vanity(false);
-				collection->set_position({ 0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b });
+				collection->set_position_local_physical({ 0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b });
 
 				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>();
 				stack->set_weak(stack);

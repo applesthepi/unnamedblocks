@@ -23,7 +23,7 @@ cap::mod::block::block::argument::type rhr::stack::argument::text::get_type()
 
 u32 rhr::stack::argument::text::get_width()
 {
-	return m_text->get_size().x;
+	return m_text->get_size_local().x;
 }
 
 bool rhr::stack::argument::text::has_data()
@@ -56,9 +56,9 @@ void rhr::stack::argument::text::on_frame_update(f64 delta_time)
 	
 }
 
-void rhr::stack::argument::text::post_position_update()
+void rhr::stack::argument::text::post_transform_update()
 {
-	m_text->set_super_position(m_position + m_super_position);
+	update_child_transform(m_text);
 }
 
 void rhr::stack::argument::text::on_set_data()

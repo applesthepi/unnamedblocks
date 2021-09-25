@@ -33,7 +33,7 @@ std::make_shared<rhr::render::object::rectangle>())
 	m_rectangle_highlight->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_cursor->set_color(cap::color::text_primary_color);
-	m_rectangle_cursor->set_size({ 1, rhr::stack::block::height_content });
+	m_rectangle_cursor->set_size_local({ 1, rhr::stack::block::height_content });
 	m_rectangle_cursor->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_highlight->set_color(cap::color().from_u8({ 30, 70, 210, 80 }));
@@ -617,13 +617,13 @@ glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2
 
 void rhr::handler::field::update_cursor()
 {
-	m_rectangle_cursor->set_position({ m_cursor_position.x - 1, m_cursor_position.y });
+	m_rectangle_cursor->set_position_local_physical({ m_cursor_position.x - 1, m_cursor_position.y });
 }
 
 void rhr::handler::field::update_highlight()
 {
-	m_rectangle_highlight->set_position({ m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2 });
-	m_rectangle_highlight->set_size(
+	m_rectangle_highlight->set_position_local_physical({ m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2 });
+	m_rectangle_highlight->set_size_local(
 	{ m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4 });
 }
 

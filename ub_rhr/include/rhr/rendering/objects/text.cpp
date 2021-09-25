@@ -86,11 +86,11 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 {
 	if (ignore_y)
 	{
-		i32 field_position = m_position.x + m_super_position.x;
+		i32 field_position = get_position_virtual_offset().x;
 		i32 delta_position = position.x - field_position;
 
 		if (/*m_char_contacts.size() == 0 ||*/
-			delta_position < -EDGE_CLICK_OVERHANG || delta_position > m_size.x + EDGE_CLICK_OVERHANG)
+		delta_position < -EDGE_CLICK_OVERHANG || delta_position > get_size_local().x + EDGE_CLICK_OVERHANG)
 			return std::nullopt;
 
 		//f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
@@ -111,11 +111,11 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 	}
 	else
 	{
-		glm::vec<2, i32> field_position = m_position + m_super_position;
+		glm::vec<2, i32> field_position = get_position_virtual_offset();
 		glm::vec<2, i32> delta_position = position - field_position;
 
-		if (delta_position.x < -EDGE_CLICK_OVERHANG || delta_position.x > m_size.x + EDGE_CLICK_OVERHANG ||
-			delta_position.y < 0 || delta_position.y > m_size.y)
+		if (delta_position.x < -EDGE_CLICK_OVERHANG || delta_position.x > get_size_local().x + EDGE_CLICK_OVERHANG ||
+			delta_position.y < 0 || delta_position.y > get_size_local().y)
 			return std::nullopt;
 
 		//f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
@@ -141,7 +141,7 @@ std::optional<glm::vec<2, i32>> rhr::render::object::text::get_index_position(us
 	if (/*m_char_offsets.size() == 0 ||*/ idx > m_char_offsets.size())
 		return std::nullopt;
 
-	glm::vec<2, i32> field_position = m_position + m_super_position;
+	glm::vec<2, i32> field_position = get_position_virtual_offset();
 
 	if (idx > 0)
 		field_position.x += static_cast<i32>(m_char_offsets[idx - 1]);
@@ -149,16 +149,6 @@ std::optional<glm::vec<2, i32>> rhr::render::object::text::get_index_position(us
 		field_position.x += m_padding;
 
 	return field_position;
-
-	//i32 running_x = 0;
-
-	//for (usize i = 0; i < idx; i++)
-	//	running_x += static_cast<i32>(m_char_widths[i]);
-
-	//glm::vec<2, i32> field_position = m_position + m_super_position;
-	//field_position.x += running_x;
-	//
-	//return field_position;
 }
 
 usize rhr::render::object::text::get_index_count()
@@ -254,8 +244,8 @@ void rhr::render::object::text::update_size()
 		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
 		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
 	}
-	
-	m_size = { static_cast<i32>(running_char_offsets) + m_padding, m_font_size };
+
+	set_size_local({ static_cast<i32>(running_char_offsets) + m_padding, m_font_size });
 }
 
 void rhr::render::object::text::on_render()
@@ -275,16 +265,18 @@ void rhr::render::object::text::on_render()
 
 void rhr::render::object::text::on_update_buffers()
 {
-	update_size();
+//	update_size();
+
+	const glm::vec<2, i32>& size_local = get_size_local();
 
 	{
 		rhr::render::vertex vertices[4];
 		u32 indices[6];
 
 		vertices[0] = rhr::render::vertex({ 0.0f, 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 0.0f });
-		vertices[1] = rhr::render::vertex({ static_cast<f32>(m_size.x), 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 0.0f });
-		vertices[2] = rhr::render::vertex({ static_cast<f32>(m_size.x), static_cast<f32>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 1.0f });
-		vertices[3] = rhr::render::vertex({ 0.0f, static_cast<f32>(m_size.y), 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 1.0f });
+		vertices[1] = rhr::render::vertex({ static_cast<f32>(size_local.x), 0.0f, 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 0.0f });
+		vertices[2] = rhr::render::vertex({ static_cast<f32>(size_local.x), static_cast<f32>(size_local.y), 0.0f }, m_color_secondary.get_normalized(), { 1.0f, 1.0f });
+		vertices[3] = rhr::render::vertex({ 0.0f, static_cast<f32>(size_local.y), 0.0f }, m_color_secondary.get_normalized(), { 0.0f, 1.0f });
 
 		indices[0] = 1;
 		indices[1] = 0;
@@ -325,16 +317,13 @@ void rhr::render::object::text::on_update_buffers()
 		}
 
 		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);
-		m_size = { (running_x + static_cast<f32>(m_padding)), rhr::stack::block::height_content };
+		set_size_local({ (running_x + static_cast<f32>(m_padding)), rhr::stack::block::height_content }, false);
 	}
 	else
-		m_size = { (static_cast<f32>(m_padding) * 2.0f), rhr::stack::block::height_content };
+		set_size_local({ (static_cast<f32>(m_padding) * 2.0f), rhr::stack::block::height_content }, false);
 
 	if (!m_read_only && m_registered)
-	{
-//		cap::logger::Debug("updating field size");
-		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), m_size);
-	}
+		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), size_local);
 }
 
 void rhr::render::object::text::on_reload_swap_chain()
@@ -343,20 +332,17 @@ void rhr::render::object::text::on_reload_swap_chain()
 	m_render_object_text->reload_swap_chain();
 }
 
-void rhr::render::object::text::post_position_update()
+void rhr::render::object::text::post_transform_update()
 {
-	glm::vec<2, i32> position = m_position + m_super_position;
-	m_render_object_background->set_super_position({static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) });
-	m_render_object_text->set_super_position({ static_cast<f64>(position.x), static_cast<f64>(position.y), static_cast<f64>(m_depth) - 0.1 });
+	const glm::vec<2, i32>& position_physical = get_position_physical_absolute();
+	const glm::vec<2, i32>& position_virtual = get_position_virtual_offset();
+
+	m_render_object_background->set_super_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) });
+	m_render_object_text->set_super_position({ static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1 });
 
 	if (!m_read_only && m_registered)
-	    m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), m_position + m_super_position);
+		m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
 
-	mark_dirty();
-}
-
-void rhr::render::object::text::post_size_update()
-{
 	mark_dirty();
 }
 
@@ -406,12 +392,14 @@ void rhr::render::object::text::register_field()
 	if (!m_registered)
 	{
 		m_registered = true;
+
 		if (!m_read_only)
 		{
-			m_location = rhr::stack::plane::primary_plane->get_field().register_field(std::move(m_weak_field), m_position + m_super_position, m_size, InputHandler::BullishLayerArguments);
-
-//			DEBUG_COUNT++;
-//			cap::logger::debug("DEBUG_COUNT: " + std::to_string(DEBUG_COUNT));
+			m_location = rhr::stack::plane::primary_plane->get_field().register_field(
+				std::move(m_weak_field), get_position_virtual_offset(),
+				get_size_local(),
+				InputHandler::BullishLayerArguments
+			);
 		}
 	}
 }
@@ -422,8 +410,5 @@ void rhr::render::object::text::unregister_field()
 	{
 		m_registered = false;
 		rhr::stack::plane::primary_plane->get_field().unregister_field(m_location.value());
-
-//		DEBUG_COUNT--;
-//		cap::logger::debug("DEBUG_COUNT: " + std::to_string(DEBUG_COUNT));
 	}
 }

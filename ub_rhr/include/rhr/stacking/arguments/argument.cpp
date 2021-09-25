@@ -55,16 +55,6 @@ bool rhr::stack::argument::argument::has_data()
 	return false;
 }
 
-void rhr::stack::argument::argument::select()
-{
-
-}
-
-void rhr::stack::argument::argument::unselect()
-{
-
-}
-
 bool rhr::stack::argument::argument::drag_bounds(glm::vec<2, i32> position)
 {
 	return false;

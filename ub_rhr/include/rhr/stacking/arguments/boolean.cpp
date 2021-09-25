@@ -41,7 +41,7 @@ cap::mod::block::block::argument::type rhr::stack::argument::boolean::get_type()
 
 u32 rhr::stack::argument::boolean::get_width()
 {
-	return m_text->get_size().x + (2 * ARG_BOOL_DECORE_WIDTH);
+	return m_text->get_size_local().x + (2 * ARG_BOOL_DECORE_WIDTH);
 }
 
 bool rhr::stack::argument::boolean::has_data()
@@ -94,12 +94,12 @@ void rhr::stack::argument::boolean::on_frame_update(f64 delta_time)
 
 }
 
-void rhr::stack::argument::boolean::post_position_update()
+void rhr::stack::argument::boolean::post_transform_update()
 {
-	m_text->set_super_position(m_position + m_super_position);
-	m_text->set_position({ ARG_BOOL_DECORE_WIDTH, 0 });
+	update_child_transform(m_text);
+	m_text->set_position_local_physical({ ARG_BOOL_DECORE_WIDTH, 0 });
 
-	glm::vec<2, f64> pos = m_position + m_super_position;
+	glm::vec<2, f64> pos = get_position_physical_absolute();
 	m_decor_left->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
 	m_decor_right->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
 
@@ -113,7 +113,7 @@ void rhr::stack::argument::boolean::on_set_data()
 
 bool rhr::stack::argument::boolean::drag_bounds(glm::vec<2, i32> position)
 {
-    glm::vec<2, i32> arg_position = m_position + m_super_position;
+    glm::vec<2, i32> arg_position = get_position_virtual_absolute();
 
     return (
             position.x > arg_position.x && position.x < arg_position.x + get_width() &&

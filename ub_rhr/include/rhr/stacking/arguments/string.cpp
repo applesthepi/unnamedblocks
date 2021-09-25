@@ -35,7 +35,7 @@ cap::mod::block::block::argument::type rhr::stack::argument::string::get_type()
 
 u32 rhr::stack::argument::string::get_width()
 {
-	return m_text->get_size().x;
+	return m_text->get_size_local().x;
 }
 
 bool rhr::stack::argument::string::has_data()
@@ -63,9 +63,9 @@ void rhr::stack::argument::string::on_frame_update(f64 delta_time)
 
 }
 
-void rhr::stack::argument::string::post_position_update()
+void rhr::stack::argument::string::post_transform_update()
 {
-	m_text->set_super_position(m_position + m_super_position);
+	update_child_transform(m_text);
 }
 
 void rhr::stack::argument::string::on_set_data()
@@ -75,7 +75,7 @@ void rhr::stack::argument::string::on_set_data()
 
 bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
 {
-	glm::vec<2, i32> arg_position = m_position + m_super_position;
+	const glm::vec<2, i32>& arg_position = get_position_virtual_absolute();
 
 	return (
 		position.x > arg_position.x && position.x < arg_position.x + get_width() &&

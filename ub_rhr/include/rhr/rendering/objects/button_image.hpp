@@ -25,10 +25,7 @@ private:
 	void on_reload_swap_chain() override;
 
 	///
-	void post_position_update() override;
-
-	///
-	void post_size_update() override;
+	void post_transform_update() override;
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_rectangle;

@@ -6,6 +6,7 @@
 #include "rhr/rendering/interfaces/i_updateable.hpp"
 #include "rhr/rendering/interfaces/i_positionable.hpp"
 #include "rhr/rendering/interfaces/i_sizeable.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -14,7 +15,10 @@
 namespace rhr::render
 {
 ///
-class frame : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>
+class frame :
+	public rhr::render::interfaces::i_ui,
+	public rhr::render::interfaces::i_renderable,
+	public rhr::render::interfaces::i_updateable
 {
 public:
 	///
@@ -35,8 +39,7 @@ public:
 	///
 	void add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
 					 std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
-					 std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>>&& positionable,
-					 std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>>&& sizeable,
+					 std::weak_ptr<rhr::render::interfaces::i_ui>&& ui,
 					 std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
 					 rhr::render::cardinal::local cardinal);
 
@@ -75,12 +78,6 @@ protected:
 
 	///
 	void on_set_weak() override;
-
-	///
-	void post_position_update() override;
-
-	///
-	void post_size_update() override;
 private:
 	///
 	struct content
@@ -88,8 +85,7 @@ private:
 		/// Weak pointers to the content's interfaces. Used to call common functions for the content.
 		std::weak_ptr<rhr::render::interfaces::i_renderable> renderable;
 		std::weak_ptr<rhr::render::interfaces::i_updateable> updateable;
-		std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>> positionable;
-		std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>> sizeable;
+		std::weak_ptr<rhr::render::interfaces::i_ui> ui;
 		std::weak_ptr<rhr::render::interfaces::i_enableable> enableable;
 	};
 
@@ -112,6 +108,9 @@ private:
 		///
 		glm::vec<2, i32> size;
 	};
+
+	///
+	void post_transform_update() override;
 
 	///
 	void submit_new_bar_position(rhr::render::cardinal::local cardinal);

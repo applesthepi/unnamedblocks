@@ -7,13 +7,18 @@
 #include "rhr/rendering/interfaces/i_updateable.hpp"
 #include "rhr/rendering/interfaces/i_sizeable.hpp"
 #include "rhr/rendering/interfaces/i_enableable.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
 
 #include <cappuccino/utils.hpp>
 
 namespace rhr::stack
 {
 ///
-class stack : public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_updateable, public rhr::render::interfaces::i_enableable
+class stack :
+	public rhr::render::interfaces::i_ui,
+	public rhr::render::interfaces::i_renderable,
+	public rhr::render::interfaces::i_updateable,
+	public rhr::render::interfaces::i_enableable
 {
 public:
 	///
@@ -56,7 +61,7 @@ private:
 	void on_reload_swap_chain() override;
 
 	///
-	void post_position_update() override;
+	void post_transform_update() override;
 
 	///
 	void post_enable_update(bool enabled) override;

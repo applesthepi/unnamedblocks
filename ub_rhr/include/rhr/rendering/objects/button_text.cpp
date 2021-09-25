@@ -34,14 +34,17 @@ void rhr::render::object::button_text::on_reload_swap_chain()
 	m_text->reload_swap_chain();
 }
 
-void rhr::render::object::button_text::post_position_update()
+void rhr::render::object::button_text::post_transform_update()
 {
-	rhr::render::object::button::post_position_update();
-	m_text->set_super_position(m_position + m_super_position + glm::vec<2, i32>(0, 2));
-}
+	rhr::render::object::button::post_transform_update();
 
-void rhr::render::object::button_text::post_size_update()
-{
-	rhr::render::object::button::post_size_update();
-	m_text->set_font_size(m_size.y - 4);
+	update_child_transform(m_text, false);
+	m_text->set_position_parent_physical(m_text->get_position_parent_physical() + glm::vec<2, i32>(0, 2), false);
+
+	i32 font_size = get_size_local().y - 4;
+
+	if (font_size <= 4)
+		m_text->set_font_size(static_cast<u16>(get_size_local().y));
+	else
+		m_text->set_font_size(get_size_local().y - 4);
 }

@@ -44,6 +44,7 @@ void rhr::render::frame::set_frame(std::shared_ptr<frame>& frame)
 	}
 
 	reset_drag();
+	update_child_transform(frame);
 
 	m_has_space = false;
 	m_has_frame = true;
@@ -61,6 +62,7 @@ usize rhr::render::frame::add_frame(std::shared_ptr<frame>& frame, rhr::render::
 	}
 
 	reset_drag();
+	update_child_transform(frame);
 
 	m_has_frame = true;
 
@@ -119,12 +121,12 @@ void rhr::render::frame::enable_frame(usize idx, bool enabled)
 	update_content_dimentions();
 }
 
-void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
-									 std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
-									 std::weak_ptr<rhr::render::interfaces::i_positionable<2, i32>>&& positionable,
-									 std::weak_ptr<rhr::render::interfaces::i_sizeable<2, i32>>&& sizeable,
-									 std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
-									 rhr::render::cardinal::local cardinal)
+void rhr::render::frame::add_content(
+	std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
+	std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
+	std::weak_ptr<rhr::render::interfaces::i_ui>&& ui,
+	std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
+	rhr::render::cardinal::local cardinal)
 {
 	if (m_has_frame)
 	{
@@ -146,17 +148,17 @@ void rhr::render::frame::add_content(std::weak_ptr<rhr::render::interfaces::i_re
 			m_plane = rhr::render::cardinal::plane::HORIZONTAL;
 	}
 
-	if (auto weak = positionable.lock())
-		weak->set_super_position(m_position + m_super_position);
+	if (auto weak = ui.lock())
+		update_child_transform(weak);
 
 	if (cardinal == rhr::render::cardinal::local::UP && m_plane == rhr::render::cardinal::plane::VERTICAL)
-		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
+		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
 	else if (cardinal == rhr::render::cardinal::local::DOWN && m_plane == rhr::render::cardinal::plane::VERTICAL)
-		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
+		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
 	else if (cardinal == rhr::render::cardinal::local::LEFT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
+		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
 	else if (cardinal == rhr::render::cardinal::local::RIGHT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(positionable), std::move(sizeable), std::move(enableable) });
+		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
 	else
 		cap::logger::error("wrong direction when adding a frame to a frame");
 
@@ -433,22 +435,19 @@ void rhr::render::frame::on_set_weak()
 	
 }
 
-void rhr::render::frame::post_position_update()
+void rhr::render::frame::post_transform_update()
 {
-	set_size_max();
-	update_content_dimentions();
-}
-
-void rhr::render::frame::post_size_update()
-{
+	set_size_max(false);
 	update_content_dimentions();
 }
 
 void rhr::render::frame::update_content_dimentions()
 {
+	const glm::vec<2, i32>& size_local = get_size_local();
+
 	if (m_has_frame)
 	{
-		glm::vec<2, i32> running_position = m_position + m_super_position;
+		glm::vec<2, i32> running_position = get_position_physical_absolute();
 		glm::vec<2, i32> running_size;
 
 		for (usize i = 0; i < m_frames.size(); i++)
@@ -459,9 +458,9 @@ void rhr::render::frame::update_content_dimentions()
 			if (i > 0)
 			{
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-					running_position.x = m_position.x + m_super_position.x + m_bars[i - 1].offset;
+					running_position.x = get_position_physical_absolute().x + m_bars[i - 1].offset;
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
-					running_position.y = m_position.y + m_super_position.y + m_bars[i - 1].offset;
+					running_position.y = get_position_physical_absolute().y + m_bars[i - 1].offset;
 			}
 
 			if (m_frames.size() > 1)
@@ -471,49 +470,49 @@ void rhr::render::frame::update_content_dimentions()
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
 				{
 					if (i == m_frames.size() - 1)
-						offset = m_size.x - m_bars[i - 1].offset;
+						offset = size_local.x - m_bars[i - 1].offset;
 					else if (i == 0)
 						offset = m_bars[i].offset;
 					else
 						offset = m_bars[i].offset - m_bars[i - 1].offset;
 
-					running_size = { offset, m_size.y };
+					running_size = { offset, size_local.y };
 				}
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
 				{
 					if (i == m_frames.size() - 1)
-						offset = m_size.y - m_bars[i - 1].offset;
+						offset = size_local.y - m_bars[i - 1].offset;
 					else if (i == 0)
 						offset = m_bars[i].offset;
 					else
 						offset = m_bars[i].offset - m_bars[i - 1].offset;
 
-					running_size = { m_size.x - (static_cast<i32>(0) * 2), offset - static_cast<i32>(static_cast<f32>(0) * 1.5) };
+					running_size = { size_local.x - (static_cast<i32>(0) * 2), offset - static_cast<i32>(static_cast<f32>(0) * 1.5) };
 				}
 			}
 			else
 			{
-				running_size = m_size - (static_cast<i32>(0) * 2);
+				running_size = size_local - (static_cast<i32>(0) * 2);
 			}
 
 			if (i == 0)
-				m_frames[i]->set_super_position(running_position + static_cast<i32>(0));
+				m_frames[i]->set_position_parent_physical(running_position + static_cast<i32>(0));
 			else
 			{
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-					m_frames[i]->set_super_position(running_position + glm::vec<2, i32>(static_cast<i32>(0) / 2, static_cast<i32>(0)));
+					m_frames[i]->set_position_parent_physical(running_position + glm::vec<2, i32>(static_cast<i32>(0) / 2, static_cast<i32>(0)));
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
-					m_frames[i]->set_super_position(running_position + glm::vec<2, i32>(static_cast<i32>(0), static_cast<i32>(0) / 2));
+					m_frames[i]->set_position_parent_physical(running_position + glm::vec<2, i32>(static_cast<i32>(0), static_cast<i32>(0) / 2));
 			}
 
-			m_frames[i]->set_super_bounds(running_size);
+			m_frames[i]->set_position_parent_physical(running_size);
 		}
 	}
 	else if (m_has_content)
 	{
 		bool erased = false;
 
-		glm::vec<2, i32> running_position = m_position + m_super_position + (static_cast<i32>(m_padding) * 2);
+		glm::vec<2, i32> running_position = get_position_physical_absolute() + (static_cast<i32>(m_padding) * 2);
 		glm::vec<2, i32> running_size;
 
 		for (usize i = 0; i < m_content.size(); i++)
@@ -527,16 +526,16 @@ void rhr::render::frame::update_content_dimentions()
 			if (i > 0)
 			{
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-					running_position.x = m_position.x + m_super_position.x + m_bars[i - 1].offset + (static_cast<i32>(m_padding) * (2));
+					running_position.x = get_position_physical_absolute().x + m_bars[i - 1].offset + (static_cast<i32>(m_padding) * (2));
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
-					running_position.y = m_position.y + m_super_position.y + m_bars[i - 1].offset + (static_cast<i32>(m_padding) * (2));
+					running_position.y = get_position_physical_absolute().y + m_bars[i - 1].offset + (static_cast<i32>(m_padding) * (2));
 			}
 			else
 			{
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-					running_position.x = m_position.x + m_super_position.x + (static_cast<i32>(m_padding) * 2);
+					running_position.x = get_position_physical_absolute().x + (static_cast<i32>(m_padding) * 2);
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
-					running_position.y = m_position.y + m_super_position.y + (static_cast<i32>(m_padding) * 2);
+					running_position.y = get_position_physical_absolute().y + (static_cast<i32>(m_padding) * 2);
 			}
 
 			if (m_content.size() > 1)
@@ -546,43 +545,38 @@ void rhr::render::frame::update_content_dimentions()
 				if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
 				{
 					if (i == m_content.size() - 1)
-						offset = m_size.x - m_bars[i - 1].offset;
+						offset = size_local.x - m_bars[i - 1].offset;
 					else if (i == 0)
 						offset = m_bars[i].offset;
 					else
 						offset = m_bars[i].offset - m_bars[i - 1].offset;
 
-					running_size = { offset, m_size.y };
+					running_size = { offset, size_local.y };
 				}
 				else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
 				{
 					if (i == m_content.size() - 1)
-						offset = m_size.y - m_bars[i - 1].offset;
+						offset = size_local.y - m_bars[i - 1].offset;
 					else if (i == 0)
 						offset = m_bars[i].offset;
 					else
 						offset = m_bars[i].offset - m_bars[i - 1].offset;
 
-					running_size = { m_size.x, offset };
+					running_size = { size_local.x, offset };
 				}
 			}
 			else
 			{
-				running_size = m_size;
+				running_size = size_local;
 			}
 
 			running_size -= static_cast<i32>(m_padding) * 4;
 
-			if (auto lock = m_content[i].positionable.lock())
-				lock->set_super_position(running_position);
-			else
+			if (auto lock = m_content[i].ui.lock())
 			{
-				m_content.erase(m_content.begin() + i);
-				erased = true;
+				lock->set_position_parent_physical(running_position);
+				lock->set_size_parent(running_size);
 			}
-
-			if (auto lock = m_content[i].sizeable.lock())
-				lock->set_super_bounds(running_size);
 			else
 			{
 				m_content.erase(m_content.begin() + i);
@@ -597,21 +591,23 @@ void rhr::render::frame::update_content_dimentions()
 
 void rhr::render::frame::submit_new_bar_position(rhr::render::cardinal::local cardinal)
 {
+	const glm::vec<2, i32>& size_local = get_size_local();
+
 	if (m_bars.size() == 0)
 	{
 		if (cardinal == rhr::render::cardinal::local::LEFT || cardinal == rhr::render::cardinal::local::RIGHT)
-			m_bars.push_back(bar(m_size.x / 2));
+			m_bars.push_back(bar(size_local.x / 2));
 		else if (cardinal == rhr::render::cardinal::local::DOWN || cardinal == rhr::render::cardinal::local::UP)
-			m_bars.push_back(bar(m_size.y / 2));
+			m_bars.push_back(bar(size_local.y / 2));
 	}
 	else
 	{
 		if (cardinal == rhr::render::cardinal::local::RIGHT)
-			m_bars.insert(m_bars.end(), (m_size.x - m_bars.back().offset) / 2 + m_bars.back().offset);
+			m_bars.insert(m_bars.end(), (size_local.x - m_bars.back().offset) / 2 + m_bars.back().offset);
 		else if (cardinal == rhr::render::cardinal::local::LEFT)
 			m_bars.insert(m_bars.begin(), m_bars.front().offset / 2);
 		else if (cardinal == rhr::render::cardinal::local::DOWN)
-			m_bars.insert(m_bars.end(), (m_size.y - m_bars.back().offset) / 2 + m_bars.back().offset);
+			m_bars.insert(m_bars.end(), (size_local.y - m_bars.back().offset) / 2 + m_bars.back().offset);
 		else if (cardinal == rhr::render::cardinal::local::UP)
 			m_bars.insert(m_bars.begin(), m_bars.front().offset / 2);
 	}
@@ -622,6 +618,8 @@ void rhr::render::frame::submit_new_bar_position(rhr::render::cardinal::local ca
 
 void rhr::render::frame::equalize_bars(bool size_to_content)
 {
+	const glm::vec<2, i32>& size_local = get_size_local();
+
 	if (size_to_content)
 	{
 		i32 offset = 0;
@@ -630,8 +628,8 @@ void rhr::render::frame::equalize_bars(bool size_to_content)
 		{
 			for (usize i = 0; i < m_bars.size(); i++)
 			{
-				if (auto lock = m_content[i].sizeable.lock())
-					offset += lock->get_size().x + static_cast<i32>(m_padding);
+				if (auto lock = m_content[i].ui.lock())
+					offset += lock->get_size_local().x + static_cast<i32>(m_padding);
 
 				m_bars[i].offset = offset;
 			}
@@ -640,8 +638,8 @@ void rhr::render::frame::equalize_bars(bool size_to_content)
 		{
 			for (usize i = 0; i < m_bars.size(); i++)
 			{
-				if (auto lock = m_content[i].sizeable.lock())
-					offset += lock->get_size().y + static_cast<i32>(m_padding);
+				if (auto lock = m_content[i].ui.lock())
+					offset += lock->get_size_local().y + static_cast<i32>(m_padding);
 
 				m_bars[i].offset = offset;
 			}
@@ -652,12 +650,12 @@ void rhr::render::frame::equalize_bars(bool size_to_content)
 		if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
 		{
 			for (usize i = 0; i < m_bars.size(); i++)
-				m_bars[i].offset = (static_cast<f32>(i + 1) / static_cast<f32>(m_bars.size() + 1)) * m_size.x;
+				m_bars[i].offset = (static_cast<f32>(i + 1) / static_cast<f32>(m_bars.size() + 1)) * size_local.x;
 		}
 		else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
 		{
 			for (usize i = 0; i < m_bars.size(); i++)
-				m_bars[i].offset = (static_cast<f32>(i + 1) / static_cast<f32>(m_bars.size() + 1)) * m_size.y;
+				m_bars[i].offset = (static_cast<f32>(i + 1) / static_cast<f32>(m_bars.size() + 1)) * size_local.y;
 		}
 	}
 
@@ -697,14 +695,14 @@ void rhr::render::frame::update_bars_from_relative()
 {
 	for (auto& bar : m_bars)
 	{
-		bar.absolute_position = m_position + m_super_position;
+		bar.absolute_position = get_position_physical_absolute();
 
 		if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
 		{
 			bar.absolute_position.x += bar.offset;
 			bar.absolute_position.x -= static_cast<i32>(m_padding) / 2;
 
-			bar.size = { static_cast<i32>(m_padding), m_size.y };
+			bar.size = { static_cast<i32>(m_padding), get_size_local().y };
 
 			if (m_link_up)
 				bar.size.y -= static_cast<i32>(m_padding) / 2;
@@ -723,7 +721,7 @@ void rhr::render::frame::update_bars_from_relative()
 			bar.absolute_position.y += bar.offset;
 			bar.absolute_position.y -= static_cast<i32>(m_padding) / 2;
 
-			bar.size = { m_size.x, static_cast<i32>(m_padding) };
+			bar.size = { get_size_local().x, static_cast<i32>(m_padding) };
 
 			if (m_link_left)
 				bar.size.x -= static_cast<i32>(m_padding) / 2;
@@ -743,9 +741,9 @@ void rhr::render::frame::update_bars_from_absolute()
 	for (auto& bar : m_bars)
 	{
 		if (m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-			bar.offset = bar.absolute_position.x - m_position.x - m_super_position.x + (static_cast<i32>(m_padding) / 2);
+			bar.offset = bar.absolute_position.x - get_position_physical_absolute().x + (static_cast<i32>(m_padding) / 2);
 		else if (m_plane == rhr::render::cardinal::plane::VERTICAL)
-			bar.offset = bar.absolute_position.y - m_position.y - m_super_position.y + (static_cast<i32>(m_padding) / 2);
+			bar.offset = bar.absolute_position.y - get_position_physical_absolute().y + (static_cast<i32>(m_padding) / 2);
 	}
 }
 
@@ -759,6 +757,6 @@ void rhr::render::frame::reset_drag()
 
 void rhr::render::frame::update_background()
 {
-	m_background->set_super_position(m_position + m_super_position + static_cast<i32>(m_padding));
-	m_background->set_size(m_size - (static_cast<i32>(m_padding) * 2));
+	m_background->set_position_parent_physical(get_position_physical_absolute() + static_cast<i32>(m_padding));
+	m_background->set_size_local(get_size_local() - (static_cast<i32>(m_padding) * 2));
 }

@@ -20,7 +20,7 @@ rhr::stack::collection::collection()
 
 void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size)
 {
-	stack->set_super_position(m_position + m_super_position);
+	update_child_transform(stack);
 	stack->set_collection_update_function(&m_function_collection_update);
 	m_stacks.push_back(stack);
 
@@ -31,8 +31,8 @@ void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack,
 		if (!m_display_vanity)
 			empty_space = 0;
 
-		glm::vec<2, i32> size = get_size();
-		glm::vec<2, i32> position = get_position();
+		glm::vec<2, i32> size = get_size_local();
+		glm::vec<2, i32> position = get_position_local_physical();
 
 		if (size.x < empty_space)
 			size.x = empty_space;
@@ -40,39 +40,31 @@ void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack,
 		if (size.y < empty_space)
 			size.y = empty_space;
 
-		if (stack->get_position().x + stack->get_widest_block() > size.x - empty_space)
-			size.x = stack->get_position().x + stack->get_widest_block() + empty_space;
+		if (stack->get_position_local_physical().x + stack->get_widest_block() > size.x - empty_space)
+			size.x = stack->get_position_local_physical().x + static_cast<i32>(stack->get_widest_block()) + empty_space;
 
-		if (stack->get_position().x < empty_space)
+		if (stack->get_position_local_physical().x < empty_space)
 		{
-			i32 diff = empty_space - stack->get_position().x;
+			i32 diff = empty_space - stack->get_position_local_physical().x;
 			position.x -= diff;
 			size.x += diff;
-			stack->set_position(stack->get_position() + glm::vec<2, i32>(diff, 0));
+			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(diff, 0));
 		}
 
-		if (stack->get_position().y + (stack->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
-			size.y = stack->get_position().y + (stack->get_blocks().size() * rhr::stack::block::height) + empty_space;
+		if (stack->get_position_local_physical().y + (stack->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
+			size.y = stack->get_position_local_physical().y + (static_cast<i32>(stack->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
 
-		if (stack->get_position().y < empty_space)
+		if (stack->get_position_local_physical().y < empty_space)
 		{
-			i32 diff = empty_space - stack->get_position().y;
+			i32 diff = empty_space - stack->get_position_local_physical().y;
 			position.y -= diff;
 			size.y += diff;
-			stack->set_position(stack->get_position() + glm::vec<2, i32>(0, diff));
+			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(0, diff));
 		}
 
-		set_size(size);
-		set_position(position);
+		set_size_local(size);
+		set_position_local_physical(position);
 	}
-
-	//glm::vec<2, i32> maxBounds = /*m_position + m_super_position + */m_Size;
-	//glm::vec<2, i32> queryPosition = stack->get_position()/* + stack->GetSuperOffset()*/;
-	//queryPosition.x += stack->get_widest_block();
-	//queryPosition.y += stack->get_blocks().size() * rhr::stack::block::height;
-
-	//if (queryPosition.x > maxBounds.x || queryPosition.y > maxBounds.y)
-	//	set_size(queryPosition - m_position - m_super_position + 100);
 }
 
 void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::stack::stack>>& stacks, bool auto_size)
@@ -87,45 +79,37 @@ void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::s
 
 	for (u64 i = 0; i < stacks.size(); i++)
 	{
-		stacks[i]->set_super_position(m_position + m_super_position);
+		update_child_transform(stacks[i]);
 		m_stacks.push_back(stacks[i]);
 
 		if (auto_size)
 		{
-			glm::vec<2, i32> size = get_size();
-			glm::vec<2, i32> position = get_position();
+			glm::vec<2, i32> size = get_size_local();
+			glm::vec<2, i32> position = get_position_local_physical();
 
-			if (stacks[i]->get_position().x + stacks[i]->get_widest_block() > size.x - empty_space)
-				size.x = stacks[i]->get_position().x + stacks[i]->get_widest_block() + empty_space;
+			if (stacks[i]->get_position_local_physical().x + stacks[i]->get_widest_block() > size.x - empty_space)
+				size.x = stacks[i]->get_position_local_physical().x + static_cast<i32>(stacks[i]->get_widest_block()) + empty_space;
 
-			if (stacks[i]->get_position().x < empty_space)
+			if (stacks[i]->get_position_local_physical().x < empty_space)
 			{
-				i32 diff = empty_space - stacks[i]->get_position().x;
+				i32 diff = empty_space - stacks[i]->get_position_local_physical().x;
 				position.x -= diff;
 				size.x += diff;
 			}
 
-			if (stacks[i]->get_position().y + (stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
-				size.y = stacks[i]->get_position().y + (stacks[i]->get_blocks().size() * rhr::stack::block::height) + empty_space;
+			if (stacks[i]->get_position_local_physical().y + (stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
+				size.y = stacks[i]->get_position_local_physical().y + (static_cast<i32>(stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
 
-			if (stacks[i]->get_position().y < empty_space)
+			if (stacks[i]->get_position_local_physical().y < empty_space)
 			{
-				i32 diff = empty_space - stacks[i]->get_position().y;
+				i32 diff = empty_space - stacks[i]->get_position_local_physical().y;
 				position.y -= diff;
 				size.y += diff;
 			}
 
-			set_size(size);
-			set_position(position);
+			set_size_local(size);
+			set_position_local_physical(position);
 		}
-
-		//glm::vec<2, i32> maxBounds = m_position + m_super_position + m_Size;
-		//glm::vec<2, i32> queryPosition = stacks[i]->get_position();
-		//queryPosition.x += stacks[i]->get_widest_block();
-		//queryPosition.y += stacks[i]->get_blocks().size() * rhr::stack::block::height;
-
-		//if (queryPosition.x > maxBounds.x || queryPosition.y > maxBounds.y)
-		//	set_size(queryPosition - m_position - m_super_position + 100);
 	}
 }
 
@@ -141,15 +125,15 @@ void rhr::stack::collection::size_to_stacks(bool offset_stacks, bool use_padding
 	if (use_padding && m_display_vanity)
 		padding = COLLECTION_EMPTY_SPACE;
 
-	glm::vec<2, i32> earliest_position = m_stacks.front()->get_position();
+	glm::vec<2, i32> earliest_position = m_stacks.front()->get_position_local_physical();
 
 	for (auto& stack : m_stacks)
 	{
-		if (stack->get_position().x < earliest_position.x)
-			earliest_position.x = stack->get_position().x;
+		if (stack->get_position_local_physical().x < earliest_position.x)
+			earliest_position.x = stack->get_position_local_physical().x;
 
-		if (stack->get_position().y < earliest_position.y)
-			earliest_position.y = stack->get_position().y;
+		if (stack->get_position_local_physical().y < earliest_position.y)
+			earliest_position.y = stack->get_position_local_physical().y;
 	}
 
 	// Position
@@ -160,25 +144,25 @@ void rhr::stack::collection::size_to_stacks(bool offset_stacks, bool use_padding
 
 		for (auto& stack : m_stacks)
 		{
-			stack->set_position(stack->get_position() + shift);
+			stack->set_position_local_physical(stack->get_position_local_physical() + shift);
 		}
 	}
 	else
 	{
 		glm::vec<2, i32> shift = earliest_position - glm::vec<2, i32>(padding, padding);
-		set_position(get_position() + shift);
+		set_position_local_physical(get_position_local_physical() + shift);
 
 		for (auto& stack : m_stacks)
 		{
-			stack->set_position(stack->get_position() - shift);
+			stack->set_position_local_physical(stack->get_position_local_physical() - shift);
 		}
 	}
 
-	glm::vec<2, i32> latest_position = m_stacks.front()->get_position();
+	glm::vec<2, i32> latest_position = m_stacks.front()->get_position_local_physical();
 
 	for (auto& stack : m_stacks)
 	{
-		glm::vec<2, i32> stack_last_bounds = stack->get_position() + stack->get_size();
+		glm::vec<2, i32> stack_last_bounds = stack->get_position_local_physical() + stack->get_size_local();
 
 		if (stack_last_bounds.x > latest_position.x)
 			latest_position.x = stack_last_bounds.x;
@@ -190,7 +174,7 @@ void rhr::stack::collection::size_to_stacks(bool offset_stacks, bool use_padding
 	// Size
 
 	glm::vec<2, i32> size = latest_position + glm::vec<2, i32>(padding, padding);
-	set_size(size);
+	set_size_local(size);
 }
 
 void rhr::stack::collection::check_bounds()
@@ -202,37 +186,37 @@ void rhr::stack::collection::check_bounds()
 
 	for (usize i = 0; i < m_stacks.size(); i++)
 	{
-		glm::vec<2, i32> size = get_size();
-		glm::vec<2, i32> position = get_position();
+		glm::vec<2, i32> size = get_size_local();
+		glm::vec<2, i32> position = get_position_local_physical();
 
-		if (m_stacks[i]->get_position().x + m_stacks[i]->get_widest_block() > size.x - empty_space)
-			size.x = m_stacks[i]->get_position().x + m_stacks[i]->get_widest_block() + empty_space;
+		if (m_stacks[i]->get_position_local_physical().x + m_stacks[i]->get_widest_block() > size.x - empty_space)
+			size.x = m_stacks[i]->get_position_local_physical().x + static_cast<i32>(m_stacks[i]->get_widest_block()) + empty_space;
 
-		if (m_stacks[i]->get_position().x < empty_space)
+		if (m_stacks[i]->get_position_local_physical().x < empty_space)
 		{
-			i32 diff = empty_space - m_stacks[i]->get_position().x;
+			i32 diff = empty_space - m_stacks[i]->get_position_local_physical().x;
 			position.x -= diff;
 			size.x += diff;
 		}
 
-		if (m_stacks[i]->get_position().y + (m_stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
-			size.y = m_stacks[i]->get_position().y + (m_stacks[i]->get_blocks().size() * rhr::stack::block::height) + empty_space;
+		if (m_stacks[i]->get_position_local_physical().y + (m_stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
+			size.y = m_stacks[i]->get_position_local_physical().y + (static_cast<i32>(m_stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
 
-		if (m_stacks[i]->get_position().y < empty_space)
+		if (m_stacks[i]->get_position_local_physical().y < empty_space)
 		{
-			i32 diff = empty_space - m_stacks[i]->get_position().y;
+			i32 diff = empty_space - m_stacks[i]->get_position_local_physical().y;
 			position.y -= diff;
 			size.y += diff;
 		}
 
-		set_size(size);
-		set_position(position);
+		set_size_local(size);
+		set_position_local_physical(position);
 	}
 }
 
 void rhr::stack::collection::remove_stack(u64 idx)
 {
-	m_stacks.erase(m_stacks.begin() + idx);
+	m_stacks.erase(m_stacks.begin() + static_cast<usize>(idx));
 }
 
 void rhr::stack::collection::remove_all()
@@ -258,41 +242,36 @@ void rhr::stack::collection::frame_update(f64 delta_time)
 
 void rhr::stack::collection::on_render()
 {
-	for (auto& stack : m_stacks)
-		stack->render();
-
 	if (m_display_vanity)
 		m_background->render();
+
+	for (auto& stack : m_stacks)
+		stack->render();
 }
 
 void rhr::stack::collection::on_update_buffers()
 {
+	m_background->update_buffers();
+
 	for (auto& stack : m_stacks)
 		stack->update_buffers();
-
-	m_background->update_buffers();
 }
 
 void rhr::stack::collection::on_reload_swap_chain()
 {
+	m_background->reload_swap_chain();
+
 	for (auto& stack : m_stacks)
 		stack->reload_swap_chain();
-
-	m_background->reload_swap_chain();
 }
 
-void rhr::stack::collection::post_position_update()
+void rhr::stack::collection::post_transform_update()
 {
-	for (auto& stack : m_stacks)
-		stack->set_super_position(m_position + m_super_position);
-
-	m_background->set_super_position(m_position + m_super_position);
-}
-
-void rhr::stack::collection::post_size_update()
-{
-	m_background->set_super_bounds(m_size);
+	update_child_transform(m_background, false);
 	m_background->set_size_max();
+
+	for (auto& stack : m_stacks)
+		update_child_transform(stack);
 }
 
 void rhr::stack::collection::post_enable_update(bool enabled)

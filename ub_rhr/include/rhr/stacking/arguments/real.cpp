@@ -45,7 +45,7 @@ cap::mod::block::block::argument::type rhr::stack::argument::real::get_type()
 
 u32 rhr::stack::argument::real::get_width()
 {
-	return m_text->get_size().x + (2 * ARG_REAL_DECORE_WIDTH);
+	return m_text->get_size_local().x + (2 * ARG_REAL_DECORE_WIDTH);
 }
 
 bool rhr::stack::argument::real::has_data()
@@ -70,7 +70,7 @@ void rhr::stack::argument::real::on_update_buffers()
 	i32 full_width = get_width();
 
 	rhr::render::vertex vertices[12];
-	f32 other_side = ARG_REAL_DECORE_WIDTH + m_text->get_size().x;
+	f32 other_side = ARG_REAL_DECORE_WIDTH + m_text->get_size_local().x;
 
 	cap::color use_color = m_block_color;
 	if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
@@ -113,12 +113,12 @@ void rhr::stack::argument::real::on_frame_update(f64 delta_time)
 
 }
 
-void rhr::stack::argument::real::post_position_update()
+void rhr::stack::argument::real::post_transform_update()
 {
-	m_text->set_super_position(m_position + m_super_position);
-	m_text->set_position({ ARG_REAL_DECORE_WIDTH, 0 });
+	update_child_transform(m_text);
+	m_text->set_position_local_physical({ ARG_REAL_DECORE_WIDTH, 0 });
 
-	glm::vec<2, f64> pos = m_position + m_super_position;
+	glm::vec<2, f64> pos = get_position_physical_absolute();
 	m_decor_left_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
 	m_decor_left_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
 	m_decor_right_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
@@ -134,7 +134,7 @@ void rhr::stack::argument::real::on_set_data()
 
 bool rhr::stack::argument::real::drag_bounds(glm::vec<2, i32> position)
 {
-    glm::vec<2, i32> arg_position = m_position + m_super_position;
+    glm::vec<2, i32> arg_position = get_position_virtual_absolute();
 
     return (
             position.x > arg_position.x && position.x < arg_position.x + get_width() &&

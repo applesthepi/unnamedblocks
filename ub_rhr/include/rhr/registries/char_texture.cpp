@@ -19,6 +19,12 @@ void rhr::registry::char_texture::process_fonts()
 
 void rhr::registry::char_texture::process_font(const std::string& font_path, texture_type type, u16 size)
 {
+	if (size < 2 || size > 1000)
+	{
+		cap::logger::error("size to big; error processing font \"" + font_path + "\" of size \"" + std::to_string(size) + "\"");
+		return;
+	}
+
 	rhr::registry::char_texture::texture_map* local_map = nullptr;
 	bool found = false;
 	ft::error error;

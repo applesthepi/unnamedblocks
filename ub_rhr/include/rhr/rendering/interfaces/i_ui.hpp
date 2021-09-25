@@ -16,60 +16,84 @@ public:
 	void set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child = true);
 
 	///
-	void set_position_local_virtual(const glm::vec<2, i32>& offset, bool update_child = true);
+	void set_position_local_virtual_offset(const glm::vec<2, i32>& offset, bool update_child = true);
 
 	///
 	void set_position_parent_physical(const glm::vec<2, i32>& offset, bool update_child = true);
 
 	///
-	void set_position_parent_virtual(const glm::vec<2, i32>& offset, bool update_child = true);
+	void set_position_parent_virtual_offset(const glm::vec<2, i32>& offset, bool update_child = true);
 
 	///
-	glm::vec<2, i32> get_position_local_physical();
+	void set_size_local(const glm::vec<2, i32>& size, bool update_child = true);
 
 	///
-	glm::vec<2, i32> get_position_local_virtual();
+	void set_size_parent(const glm::vec<2, i32>& size, bool update_child = true);
 
 	///
-	glm::vec<2, i32> get_position_parent_physical();
+	void set_size_max(bool update_child = true);
 
 	///
-	glm::vec<2, i32> get_position_parent_virtual();
+	const glm::vec<2, i32>& get_position_local_physical();
 
 	///
-	glm::vec<2, i32> get_position_physical();
+	const glm::vec<2, i32>& get_position_local_virtual_offset();
 
 	///
-	glm::vec<2, i32> get_position();
+	const glm::vec<2, i32>& get_position_parent_physical();
 
 	///
-	void update_child();
+	const glm::vec<2, i32>& get_position_parent_virtual_offset();
+
+	///
+	const glm::vec<2, i32>& get_position_physical_absolute();
+
+	///
+	const glm::vec<2, i32>& get_position_virtual_offset();
+
+	///
+	const glm::vec<2, i32>& get_position_virtual_absolute();
+
+	///
+	const glm::vec<2, i32>& get_size_local();
+
+	///
+	const glm::vec<2, i32>& get_size_parent();
+
+	///
+	void update_transform();
+
+	///
+	void update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, bool update_child = true);
 protected:
-	/// Event called when i_positionable<T>::set_position() or i_positionable<T>::set_super_position() gets involked.
-	/// \param Position of i_positionable.
-	/// \param Super position of i_positionable.
-	/// \return Condition to allow i_positionable<T>::set_position() or i_positionable<T>::set_super_position() to run.
-//	virtual bool pre_position_update(const glm::vec<S, T>& position, const glm::vec<S, T>& super_position);
-
-	/// Event called after any position update function gets run.
-	virtual void post_position_update();
+	/// Event called after any position or size update functions get run.
+	virtual void post_transform_update();
 private:
 	///
 	glm::vec<2, i32> m_position_local_physical;
 
 	///
-	glm::vec<2, i32> m_position_local_virtual;
+	glm::vec<2, i32> m_position_local_virtual_offset;
 
 	///
 	glm::vec<2, i32> m_position_parent_physical;
 
 	///
-	glm::vec<2, i32> m_position_parent_virtual;
+	glm::vec<2, i32> m_position_parent_virtual_offset;
 
 	///
-	glm::vec<2, i32> m_position_physical;
+	glm::vec<2, i32> m_position_physical_absolute;
 
 	///
-	glm::vec<2, i32> m_position;
+	glm::vec<2, i32> m_position_virtual_offset;
+
+	///
+	glm::vec<2, i32> m_position_virtual_absolute;
+
+	///
+	glm::vec<2, i32> m_size_local;
+
+	///
+	glm::vec<2, i32> m_size_parent;
 };
 }

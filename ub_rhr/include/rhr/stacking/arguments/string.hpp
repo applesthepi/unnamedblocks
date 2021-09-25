@@ -53,7 +53,7 @@ private:
 	void on_frame_update(f64 delta_time) override;
 
 	///
-	void post_position_update() override;
+	void post_transform_update() override;
 
 	/// Sets data. Data of the argument is stored as a string.
 	void on_set_data() override;

@@ -20,8 +20,7 @@ rhr::render::object::button::button(const cap::color& primary_color, const cap::
 	m_background->set_color(m_color_secondary);
 	m_background->set_depth(rhr::render::renderer::depth_ui_background);
 
-	set_position({ 0, 0 });
-	set_size({ 100, 20 });
+	set_size_local({ 100, 20 });
 
 	InputHandler::RegisterMouseCallback(mouse_update_caller, this);
 }
@@ -49,10 +48,10 @@ void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 sc
 
 	if (operation == MouseOperation::Click)
 	{
-		glm::vec<2, i32> button_position = m_position + m_super_position;
+		glm::vec<2, i32> button_position = get_position_physical_absolute();
 
-		if (position.x >= button_position.x && position.x < button_position.x + m_size.x &&
-			position.y >= button_position.y && position.y < button_position.y + m_size.y)
+		if (position.x >= button_position.x && position.x < button_position.x + get_size_local().x &&
+			position.y >= button_position.y && position.y < button_position.y + get_size_local().y)
 		{
 			if (m_callback == nullptr)
 				cap::logger::warn("button callback is nullptr");
@@ -82,17 +81,13 @@ void rhr::render::object::button::on_reload_swap_chain()
 	m_background->reload_swap_chain();
 }
 
-void rhr::render::object::button::post_position_update()
-{
-	m_background->set_super_position(m_position + m_super_position);
-}
-
-void rhr::render::object::button::post_size_update()
+void rhr::render::object::button::post_transform_update()
 {
 	if (m_enable_fill_width)
-		m_size.x = m_super_bounds.x - m_position.x;
+		set_size_local(get_size_local() + glm::vec<2, i32>(get_size_parent().x - get_position_local_physical().x, 0), false);
 
-	m_background->set_size(m_size);
+	update_child_transform(m_background, false);
+	m_background->set_size_max();
 }
 
 void rhr::render::object::button::post_color_update()

@@ -61,19 +61,13 @@ void rhr::render::object::rectangle::on_update_buffers()
 	vertices.reserve(4);
 	indices.reserve(6);
 
-	glm::vec<2, f32> position = static_cast<glm::vec<2, f32>>(m_position) + static_cast<glm::vec<2, f32>>(m_super_position);
-	glm::vec<2, f32> size = static_cast<glm::vec<2, f32>>(m_use_size);
+	glm::vec<2, f32> position_physical = static_cast<glm::vec<2, f32>>(get_position_physical_absolute());
+	glm::vec<2, f32> use_size = static_cast<glm::vec<2, f32>>(m_use_size);
 
-	// TODO: remove
-	//std::cout << m_SuperOffset.x << ", " << m_SuperOffset.y << std::endl;
-
-	//cap::logger::Debug(std::to_string(m_color.get_normalized().r) + ", " + std::to_string(m_color.get_normalized().g) + ", " + std::to_string(m_color.get_normalized().b));
-	//cap::logger::Debug(std::to_string(m_use_size.x) + ", " + std::to_string(m_use_size.y));
-
-	rhr::render::vertex v0 = rhr::render::vertex({ static_cast<f32>(position.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 0.0f });
-	rhr::render::vertex v1 = rhr::render::vertex({ static_cast<f32>(position.x + m_use_size.x), static_cast<f32>(position.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 0.0f });
-	rhr::render::vertex v2 = rhr::render::vertex({ static_cast<f32>(position.x + m_use_size.x), static_cast<f32>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 1.0f });
-	rhr::render::vertex v3 = rhr::render::vertex({ static_cast<f32>(position.x), static_cast<f32>(position.y + m_use_size.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 1.0f });
+	rhr::render::vertex v0 = rhr::render::vertex({ static_cast<f32>(position_physical.x), static_cast<f32>(position_physical.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 0.0f });
+	rhr::render::vertex v1 = rhr::render::vertex({ static_cast<f32>(position_physical.x + use_size.x), static_cast<f32>(position_physical.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 0.0f });
+	rhr::render::vertex v2 = rhr::render::vertex({ static_cast<f32>(position_physical.x + use_size.x), static_cast<f32>(position_physical.y + use_size.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 1.0f, 1.0f });
+	rhr::render::vertex v3 = rhr::render::vertex({ static_cast<f32>(position_physical.x), static_cast<f32>(position_physical.y + use_size.y), static_cast<i32>(m_depth) * -1 }, m_color.get_normalized(), { 0.0f, 1.0f });
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);
@@ -98,54 +92,58 @@ void rhr::render::object::rectangle::on_update_buffers()
 		{
 			// overhang border to the left
 
-			v_left0 = rhr::render::vertex({ position.x - 1.0f, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_left1 = rhr::render::vertex({ position.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_left2 = rhr::render::vertex({ position.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_left3 = rhr::render::vertex({ position.x - 1.0f, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			v_left0 = rhr::render::vertex({ position_physical.x - 1.0f, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_left1 = rhr::render::vertex({ position_physical.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_left2 = rhr::render::vertex({ position_physical.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_left3 = rhr::render::vertex({ position_physical.x - 1.0f, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
 
-			v_right0 = rhr::render::vertex({ position.x + size.x - 1.0f, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_right1 = rhr::render::vertex({ position.x + size.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_right2 = rhr::render::vertex({ position.x + size.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_right3 = rhr::render::vertex({ position.x + size.x - 1.0f, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			v_right0 = rhr::render::vertex({ position_physical.x + use_size.x - 1.0f, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_right1 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_right2 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_right3 = rhr::render::vertex({ position_physical.x + use_size.x - 1.0f, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
 		}
 		else if (m_overhang_horizontal == cardinal::local_horizontal::RIGHT)
 		{
 			// overhang border to the right
 
-			v_left0 = rhr::render::vertex({ position.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_left1 = rhr::render::vertex({ position.x + 1.0f, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_left2 = rhr::render::vertex({ position.x + 1.0f, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_left3 = rhr::render::vertex({ position.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			v_left0 = rhr::render::vertex({ position_physical.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_left1 = rhr::render::vertex({ position_physical.x + 1.0f, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_left2 = rhr::render::vertex({ position_physical.x + 1.0f, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_left3 = rhr::render::vertex({ position_physical.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
 
-			v_right0 = rhr::render::vertex({ position.x + size.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_right1 = rhr::render::vertex({ position.x + size.x + 1.0f, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_right2 = rhr::render::vertex({ position.x + size.x + 1.0f, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_right3 = rhr::render::vertex({ position.x + size.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			v_right0 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_right1 = rhr::render::vertex({ position_physical.x + use_size.x + 1.0f, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_right2 = rhr::render::vertex({ position_physical.x + use_size.x + 1.0f, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_right3 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
 		}
 
 		if (m_overhang_vertical == cardinal::local_vertical::UP)
 		{
-			v_up0 = rhr::render::vertex({ position.x, position.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_up1 = rhr::render::vertex({ position.x + size.x, position.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_up2 = rhr::render::vertex({ position.x + size.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_up3 = rhr::render::vertex({ position.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			// overhang border up
 
-			v_down0 = rhr::render::vertex({ position.x, position.y + size.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_down1 = rhr::render::vertex({ position.x + size.x, position.y + size.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_down2 = rhr::render::vertex({ position.x + size.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_down3 = rhr::render::vertex({ position.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			v_up0 = rhr::render::vertex({ position_physical.x, position_physical.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_up1 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_up2 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_up3 = rhr::render::vertex({ position_physical.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+
+			v_down0 = rhr::render::vertex({ position_physical.x, position_physical.y + use_size.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_down1 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + use_size.y - 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_down2 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_down3 = rhr::render::vertex({ position_physical.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
 		}
 		else if (m_overhang_vertical == cardinal::local_vertical::DOWN)
 		{
-			v_up0 = rhr::render::vertex({ position.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_up1 = rhr::render::vertex({ position.x + size.x, position.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_up2 = rhr::render::vertex({ position.x + size.x, position.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_up3 = rhr::render::vertex({ position.x, position.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			// overhang border down
 
-			v_down0 = rhr::render::vertex({ position.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
-			v_down1 = rhr::render::vertex({ position.x + size.x, position.y + size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
-			v_down2 = rhr::render::vertex({ position.x + size.x, position.y + size.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
-			v_down3 = rhr::render::vertex({ position.x, position.y + size.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+			v_up0 = rhr::render::vertex({ position_physical.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_up1 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_up2 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_up3 = rhr::render::vertex({ position_physical.x, position_physical.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
+
+			v_down0 = rhr::render::vertex({ position_physical.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 0.0f });
+			v_down1 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + use_size.y, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 0.0f });
+			v_down2 = rhr::render::vertex({ position_physical.x + use_size.x, position_physical.y + use_size.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 1.0f, 1.0f });
+			v_down3 = rhr::render::vertex({ position_physical.x, position_physical.y + use_size.y + 1.0f, static_cast<f32>(m_depth - 1) * -1.0f}, cap::color::black.get_normalized(), { 0.0f, 1.0f });
 		}
 
 		vertices.push_back(v_left0);
@@ -187,47 +185,44 @@ void rhr::render::object::rectangle::on_reload_swap_chain()
 	m_render_object->reload_swap_chain();
 }
 
-void rhr::render::object::rectangle::post_position_update()
+void rhr::render::object::rectangle::post_transform_update()
 {
 	mark_dirty();
-}
 
-void rhr::render::object::rectangle::post_color_update()
-{
-	mark_dirty();
-}
+	const glm::vec<2, i32>& size_local = get_size_local();
+	const glm::vec<2, i32>& size_parent = get_size_parent();
+	const glm::vec<2, i32>& position_local = get_position_local_physical();
 
-void rhr::render::object::rectangle::post_size_update()
-{
-	if (m_super_bounds.x == 0 && m_super_bounds.y == 0)
+	if (size_parent == glm::vec<2, i32>())
 	{
-		m_use_size = m_size;
+		m_use_size = size_local;
 		m_in_bounds = true;
-
-		mark_dirty();
 	}
 	else
 	{
-		if (m_position.x > m_super_bounds.x ||
-			m_position.y > m_super_bounds.y)
+		if (position_local.x > size_parent.x ||
+		position_local.y > size_parent.y)
 		{
 			m_use_size = { 0, 0 };
 			m_in_bounds = false;
 		}
 		else
 		{
-			m_use_size = m_size;
+			m_use_size = size_local;
 			m_in_bounds = true;
 
-			if (m_position.x + m_size.x > m_super_bounds.x)
-				m_use_size.x = m_super_bounds.x - m_position.x;
+			if (position_local.x + size_local.x > size_parent.x)
+				m_use_size.x = size_parent.x - position_local.x;
 
-			if (m_position.y + m_size.y > m_super_bounds.y)
-				m_use_size.y = m_super_bounds.y - m_position.y;
-
-			mark_dirty();
+			if (position_local.y + size_local.y > size_parent.y)
+				m_use_size.y = size_parent.y - position_local.y;
 		}
 	}
+}
+
+void rhr::render::object::rectangle::post_color_update()
+{
+	mark_dirty();
 }
 
 void rhr::render::object::rectangle::enable_border(bool enable_border, rhr::render::cardinal::local_horizontal overhang_horizontal, rhr::render::cardinal::local_vertical overhang_vertical)

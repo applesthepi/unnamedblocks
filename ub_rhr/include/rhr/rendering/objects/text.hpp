@@ -7,6 +7,7 @@
 #include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_dicolorable.hpp"
 #include "rhr/rendering/interfaces/i_field.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/object.hpp"
 #include "rhr/handlers/field.hpp"
 
@@ -15,7 +16,12 @@
 namespace rhr::render::object
 {
 ///
-class text : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_positionable<2, i32>, public rhr::render::interfaces::i_sizeable<2, i32>, public rhr::render::interfaces::i_dicolorable, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_field
+class text :
+	public rhr::render::interfaces::i_ui,
+	public rhr::render::interfaces::i_renderable,
+	public rhr::render::interfaces::i_dicolorable,
+	public rhr::render::interfaces::i_enableable,
+	public rhr::render::interfaces::i_field
 {
 public:
 	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register);
@@ -84,10 +90,7 @@ private:
 	void on_reload_swap_chain() override;
 
 	///
-	void post_position_update() override;
-
-	///
-	void post_size_update() override;
+	void post_transform_update() override;
 
 	///
 	void post_color_update() override;

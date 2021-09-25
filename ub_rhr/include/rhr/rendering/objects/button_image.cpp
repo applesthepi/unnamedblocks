@@ -27,12 +27,8 @@ void rhr::render::object::button_image::on_reload_swap_chain()
 	m_rectangle->reload_swap_chain();
 }
 
-void rhr::render::object::button_image::post_position_update()
+void rhr::render::object::button_image::post_transform_update()
 {
-	m_rectangle->set_super_position(m_position + m_super_position);
-}
-
-void rhr::render::object::button_image::post_size_update()
-{
-	m_rectangle->set_size(m_size);
+	update_child_transform(m_rectangle, false);
+	m_rectangle->set_size_max();
 }
