@@ -198,8 +198,7 @@ void rhr::stack::block::update_width()
 
 	pad_arguments(m_width, 0, last_arg, last_arg, true);
 
-	set_size_local(get_size_local() + glm::vec<2, i32>(m_width, 0));
-	cap::logger::debug(get_size_local());
+	set_size_local(glm::vec<2, i32>(m_width, get_size_local().y));
 	m_background->set_size_local(get_size_local());
 }
 

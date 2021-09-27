@@ -106,8 +106,6 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 		(!m_toolbar && rhr::stack::plane::toolbar_plane->dragging_stack()))
 		return;
 
-	cap::logger::debug(position);
-
 	if (dragging_stack())
 	{
 		if (operation == MouseOperation::Release && !m_dragging_up)
@@ -121,6 +119,8 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 			undrag(position);
 		}
 	}
+
+	cap::logger::debug("mouse pos", position);
 
 	for (i64 i = /*collectionMax - 1*/0; i < m_collections.size(); i++)
 	{
@@ -145,6 +145,8 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 					{
 						glm::vec<2, i32> block_size = m_collections[i]->get_stacks()[a]->get_blocks()[b]->get_size_local();
 						glm::vec<2, i32> block_position = m_collections[i]->get_stacks()[a]->get_blocks()[b]->get_position_virtual_absolute();
+
+//						cap::logger::debug("virtual offset of block", m_collections[i]->get_stacks()[a]->get_blocks()[b]->get_position_virtual_offset());
 
 						if (position.x >= block_position.x && position.x < block_position.x + block_size.x &&
 							position.y >= block_position.y && position.y < block_position.y + block_size.y)
@@ -212,9 +214,6 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 										m_collections[i]->add_stack(left_stack, false);
 										stack_position += glm::vec<2, i32>(0, static_cast<i32>(b) * static_cast<i32>(rhr::stack::block::height));
 									}
-
-									cap::logger::debug("virtual absolute stack position: ");
-									cap::logger::debug(stack_position);
 
 									active_collection->set_position_parent_physical({ 0, 0 }, false);
 									active_collection->set_position_local_physical(stack_position - active_collection->get_position_virtual_offset(), false);
@@ -478,14 +477,8 @@ void rhr::stack::plane::dragging_stack_update()
 
 	glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_virtual_absolute();
 
-	cap::logger::debug("collection virtual absolute position: ");
-	cap::logger::debug(pixel_position);
-
 	m_dragging_collection->set_position_parent_physical({ 0, 0 }, false);
 	m_dragging_collection->set_position_local_physical(InputHandler::GetMousePosition() - m_dragging_begin_mouse + m_dragging_begin_object);
-
-	cap::logger::debug("collection pos is now: ");
-	cap::logger::debug(m_dragging_collection->get_position_virtual_absolute());
 
 	if (!(pixel_position.x >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().x && pixel_position.x < rhr::stack::plane::primary_plane->get_size_local().x + rhr::stack::plane::primary_plane->get_position_virtual_absolute().x &&
 		pixel_position.y >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().y && pixel_position.y < rhr::stack::plane::primary_plane->get_size_local().y + rhr::stack::plane::primary_plane->get_position_virtual_absolute().y))

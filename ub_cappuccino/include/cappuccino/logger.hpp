@@ -30,7 +30,7 @@ public:
 	static CAP_C_EXPORT void debug(const std::string& message);
 
 	///
-	static CAP_C_EXPORT void debug(glm::vec<2, int32_t> message);
+	static CAP_C_EXPORT void debug(const std::string& tag, glm::vec<2, int32_t> message);
 private:
 	///
 	static CAP_C_EXPORT std::mutex m_log_mutex;

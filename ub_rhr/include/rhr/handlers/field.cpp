@@ -447,6 +447,12 @@ rhr::handler::field_data::location
 rhr::handler::field::update_field_position(const rhr::handler::field_data::location& location,
 										   glm::vec<2, i32> position)
 {
+	if (position.x < 0 || position.y < 0)
+	{
+		cap::logger::error("failed to update field position");
+		return location;
+	}
+
 	glm::vec<2, usize> cell_position = location.get_cell();
 	cell_position.x *= FIELD_CELL_SIZE;
 	cell_position.y *= FIELD_CELL_SIZE;

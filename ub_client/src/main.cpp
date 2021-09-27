@@ -342,8 +342,9 @@ int main()
 //		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("plane");
 
-		ImVec2 plane_size = ImGui::GetWindowSize();
-		ImVec2 plane_position = ImGui::GetWindowPos();
+		glm::vec<2, i32> plane_size = { ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
+		glm::vec<2, i32> plane_position = { ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x, ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y };
+
 
 		if (plane_size.x != last_plane_size.x ||
 			plane_size.y != last_plane_size.y)
@@ -369,17 +370,15 @@ int main()
 //			frameToolbar->set_size_max();
 		}
 
-		if (static_cast<i32>(plane_position.x) != last_plane_position.x ||
-			static_cast<i32>(plane_position.y) != last_plane_position.y)
+		if (plane_position.x != last_plane_position.x ||
+			plane_position.y != last_plane_position.y)
 		{
-			last_plane_position.x = static_cast<i32>(plane_position.x);
-			last_plane_position.y = static_cast<i32>(plane_position.y);
+			last_plane_position.x = plane_position.x;
+			last_plane_position.y = plane_position.y;
 
-			cap::logger::debug(last_plane_position - window_position);
+			cap::logger::debug("imgui window realitive position", last_plane_position - window_position);
 
-			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(last_plane_position - window_position, false);
-			rhr::stack::plane::primary_plane->set_position_local_virtual_offset(last_plane_position - window_position, false);
-			rhr::stack::plane::primary_plane->update_transform();
+			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(last_plane_position - window_position);
 		}
 
 //		static bool descriptor_set_init = false;

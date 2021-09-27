@@ -244,19 +244,29 @@ void rhr::render::object::text::update_size()
 		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
 	}
 
+	cap::logger::debug("text width: " + std::to_string(running_char_offsets));
+
 	set_size_local({ static_cast<i32>(running_char_offsets) + m_padding, m_font_size });
 }
 
 void rhr::render::object::text::ui_transform_update()
 {
 	const glm::vec<2, i32>& position_physical = get_position_physical_absolute();
-	const glm::vec<2, i32>& position_virtual = get_position_virtual_offset();
+	const glm::vec<2, i32>& position_virtual = get_position_virtual_absolute();
 
 	m_render_object_background->set_super_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) });
 	m_render_object_text->set_super_position({ static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1 });
 
+	if (!m_read_only && !m_registered && position_virtual.x >= 0 && position_virtual.y >= 0)
+		register_field();
+
 	if (!m_read_only && m_registered)
-		m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
+	{
+		if (position_virtual.x < 0 || position_virtual.y < 0)
+			unregister_field();
+		else
+			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
+	}
 
 	mark_dirty();
 }
@@ -390,7 +400,7 @@ void rhr::render::object::text::register_field()
 		if (!m_read_only)
 		{
 			m_location = rhr::stack::plane::primary_plane->get_field().register_field(
-				std::move(m_weak_field), get_position_virtual_offset(),
+				std::move(m_weak_field), get_position_virtual_absolute(),
 				get_size_local(),
 				InputHandler::BullishLayerArguments
 			);
