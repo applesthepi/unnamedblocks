@@ -1,8 +1,7 @@
 #include "stack.hpp"
 
 rhr::stack::stack::stack()
-	: rhr::render::interfaces::i_enableable(true)
-	, m_function_collection_update(nullptr)
+	: m_function_collection_update(nullptr)
 {
 	m_function_stack_update = [&]()
 	{
@@ -94,31 +93,7 @@ const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_bl
 	return m_blocks;
 }
 
-void rhr::stack::stack::frame_update(f64 delta_time)
-{
-	for (auto& block : m_blocks)
-		block->frame_update(delta_time);
-}
-
-void rhr::stack::stack::on_render()
-{
-	for (auto& block : m_blocks)
-		block->render();
-}
-
-void rhr::stack::stack::on_update_buffers()
-{
-	for (auto& block : m_blocks)
-		block->update_buffers();
-}
-
-void rhr::stack::stack::on_reload_swap_chain()
-{
-	for (auto& block : m_blocks)
-		block->reload_swap_chain();
-}
-
-void rhr::stack::stack::post_transform_update()
+void rhr::stack::stack::ui_transform_update()
 {
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
@@ -127,13 +102,31 @@ void rhr::stack::stack::post_transform_update()
 	}
 }
 
+void rhr::stack::stack::ui_render()
+{
+	for (auto& block : m_blocks)
+		block->render();
+}
+
+void rhr::stack::stack::ui_reload_swap_chain()
+{
+	for (auto& block : m_blocks)
+		block->reload_swap_chain();
+}
+
+void rhr::stack::stack::ui_update_buffers()
+{
+	for (auto& block : m_blocks)
+		block->update_buffers();
+}
+
+void rhr::stack::stack::ui_frame_update(f64 delta_time)
+{
+	for (auto& block : m_blocks)
+		block->frame_update(delta_time);
+}
+
 void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
 {
 	m_function_collection_update = function_collection_update;
-}
-
-void rhr::stack::stack::post_enable_update(bool enabled)
-{
-	for (auto& block : m_blocks)
-		block->set_enabled(enabled);
 }

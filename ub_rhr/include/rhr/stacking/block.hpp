@@ -2,11 +2,6 @@
 #include "config.h"
 
 #include "rhr/stacking/arguments/argument.hpp"
-#include "rhr/rendering/interfaces/i_renderable.hpp"
-#include "rhr/rendering/interfaces/i_updateable.hpp"
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_sizeable.hpp"
-#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 
@@ -17,11 +12,7 @@
 namespace rhr::stack
 {
 ///
-class block :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_updateable,
-	public rhr::render::interfaces::i_enableable
+class block : public rhr::render::interfaces::i_ui
 {
 public:
 	///
@@ -38,9 +29,6 @@ public:
 
 	///
 	const esp::mod::category* get_mod_category();
-
-	///
-	void frame_update(f64 delta_time) override;
 
 	///
 	bool drag_bounds(glm::vec<2, i32> position);
@@ -61,19 +49,19 @@ public:
 	static i16 height_content;
 private:
 	///
-	void on_render() override;
+	void ui_transform_update() override;
 
 	///
-	void on_update_buffers() override;
+	void ui_render() override;
 
 	///
-	void on_reload_swap_chain() override;
+	void ui_reload_swap_chain() override;
 
 	///
-	void post_transform_update() override;
+	void ui_update_buffers() override;
 
 	///
-	void post_enable_update(bool enabled) override;
+	void ui_frame_update(f64 delta_time) override;
 
 	///
 	void update_arguments();

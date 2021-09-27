@@ -9,6 +9,7 @@
 
 #include <espresso/input_handler.hpp>
 #include <cappuccino/utils.hpp>
+#include <iostream>
 
 //#define STB_IMAGE_IMPLEMENTATION
 //#include <stb_image.h>
@@ -122,7 +123,7 @@ void rhr::render::renderer::initialize()
 	}
 
 	init_logical_device();
-	vkGetDeviceQueue(device, indices.present_family.value(), 0, &present_queue);
+//	vkGetDeviceQueue(device, indices.present_family.value(), 0, &present_queue);
 	init_swap_chain();
 
 
@@ -210,7 +211,7 @@ void rhr::render::renderer::initialize()
 		fontConfig.MergeMode = false;
 		fontConfig.PixelSnapH = false;
 
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Roboto-Regular.ttf", 14, &fontConfig);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Roboto-Regular.ttf", 16, &fontConfig);
 	}
 
 	{
@@ -356,8 +357,9 @@ void rhr::render::renderer::initialize()
 		VkCommandPool command_pool = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandPool;
 		VkCommandBuffer command_buffer = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandBuffer;
 
-//		err = vkResetCommandPool(device, command_pool, 0);
-//		check_vk_result(err);
+		err = vkResetCommandPool(device, command_pool, 0);
+		check_vk_result(err);
+
 		VkCommandBufferBeginInfo begin_info = {};
 		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		begin_info.flags = 0;
@@ -421,20 +423,33 @@ void rhr::render::renderer::add_dirty(std::weak_ptr<rhr::render::interfaces::i_r
 	m_dirty_renderable.push_back(renderable);
 }
 
+void rhr::render::renderer::add_dirty(std::weak_ptr<rhr::render::interfaces::i_ui> ui)
+{
+	std::unique_lock lock(m_dirty_mutex);
+	m_dirty_ui.push_back(ui);
+}
+
 void rhr::render::renderer::process_dirty()
 {
 	std::unique_lock lock(m_dirty_mutex);
 
-	for (auto renderable : m_dirty_renderable)
+	for (const auto& renderable : m_dirty_renderable)
 	{
 		if (auto object = renderable.lock())
 			object->update_buffers();
 	}
 
+	for (const auto& ui : m_dirty_ui)
+	{
+		if (auto object = ui.lock())
+			object->update_buffers();
+	}
+
 	m_dirty_renderable.clear();
+	m_dirty_ui.clear();
 }
 
-void rhr::render::renderer::render()
+void rhr::render::renderer::render_pass_plane()
 {
 	rhr::render::renderer::ui_projection_matrix = glm::ortho(0.0f, static_cast<f32>(window_size.x), 0.0f, static_cast<f32>(window_size.y), -10000.0f, 10000.0f);
 
@@ -457,26 +472,32 @@ void rhr::render::renderer::render()
 
 	// frame sync
 
-	{
-		err = vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
-		check_vk_result(err);
+	err = vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+	check_vk_result(err);
 
-		err = vkResetFences(device, 1, &fd->Fence);
-		check_vk_result(err);
-	}
+	err = vkResetFences(device, 1, &fd->Fence);
+	check_vk_result(err);
 
 	// initialize command buffer for render
 
-	{
-		err = vkResetCommandPool(device, command_pool, 0);
-		check_vk_result(err);
+	//	VkResult err;
 
+	std::array<VkClearValue, 2> clear_values{};
+	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+	clear_values[1].depthStencil = { 1.0f, 0 };
+
+	//	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
+	//	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+
+	//	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
+
+	{
 		VkCommandBufferBeginInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		info.flags = 0;
 
 		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-		active_command_buffer = fd->CommandBuffer;
+		active_command_buffer = &(fd->CommandBuffer);
 		check_vk_result(err);
 	}
 
@@ -485,54 +506,38 @@ void rhr::render::renderer::render()
 
 	process_dirty();
 
-	VkClearValue clear_values[2];
-	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-	clear_values[1].depthStencil = { 1.0f, 0 };
-
 	// plane render pass
 
 	{
-		VkRenderPassBeginInfo info;
+		VkRenderPassBeginInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		info.renderPass = offscreen_pass_local.render_pass;
 		info.framebuffer = offscreen_pass_local.frame_buffer;
 		info.renderArea.extent.width = imgui_local->data.Width;
 		info.renderArea.extent.height = imgui_local->data.Height;
-		info.clearValueCount = 2;
-		info.pClearValues = clear_values;
+		info.clearValueCount = clear_values.size();
+		info.pClearValues = clear_values.data();
 
-		vkCmdBeginRenderPass(active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-
-//		VkViewport viewport;// = vks::initializers::viewport((float)offscreenPass.width, (float)offscreenPass.height, 0.0f, 1.0f);
-//		vkCmdSetViewport(drawCmdBuffers[i], 0, 1, &viewport);
-//
-//		VkRect2D scissor;// = vks::initializers::rect2D(offscreenPass.width, offscreenPass.height, 0, 0);
-//		vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
-
-		bool erased = false;
-
-		for (usize i = 0; i < m_layers.size(); i++)
-		{
-			if (erased)
-			{
-				erased = false;
-				i--;
-			}
-
-			if (auto layer = m_layers[i].lock())
-				layer->render();
-			else
-			{
-				m_layers.erase(m_layers.begin() + i);
-				erased = true;
-			}
-		}
+		vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 
 		rhr::stack::plane::primary_plane->render();
-		rhr::stack::plane::toolbar_plane->render();
 
-		vkCmdEndRenderPass(active_command_buffer);
+		vkCmdEndRenderPass(fd->CommandBuffer);
 	}
+}
+
+void rhr::render::renderer::render_pass_master()
+{
+	VkResult err;
+
+	std::array<VkClearValue, 2> clear_values{};
+	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+	clear_values[1].depthStencil = { 1.0f, 0 };
+
+	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
+
+	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
+	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 
 	// final render pass
 
@@ -543,14 +548,14 @@ void rhr::render::renderer::render()
 		info.framebuffer = fd->Framebuffer;
 		info.renderArea.extent.width = imgui_local->data.Width;
 		info.renderArea.extent.height = imgui_local->data.Height;
-		info.clearValueCount = 2;
-		info.pClearValues = clear_values;
+		info.clearValueCount = clear_values.size();
+		info.pClearValues = clear_values.data();
 
-		vkCmdBeginRenderPass(active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+		vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 
-		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, active_command_buffer);
+		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, fd->CommandBuffer);
 
-		vkCmdEndRenderPass(active_command_buffer);
+		vkCmdEndRenderPass(fd->CommandBuffer);
 	}
 
 	// submit command buffer and queue to gpu
@@ -569,6 +574,7 @@ void rhr::render::renderer::render()
 
 		err = vkEndCommandBuffer(fd->CommandBuffer);
 		check_vk_result(err);
+
 		err = vkQueueSubmit(graphics_queue, 1, &info, fd->Fence);
 		check_vk_result(err);
 	}
@@ -589,7 +595,7 @@ void rhr::render::renderer::frame_present()
 	info.pSwapchains = &imgui_local->data.Swapchain;
 	info.pImageIndices = &imgui_local->data.FrameIndex;
 
-	VkResult err = vkQueuePresentKHR(present_queue, &info);
+	VkResult err = vkQueuePresentKHR(graphics_queue, &info);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
@@ -597,8 +603,12 @@ void rhr::render::renderer::frame_present()
 		return;
 	}
 
-//	vkQueueWaitIdle(present_queue);
+	vkQueueWaitIdle(graphics_queue);
 	check_vk_result(err);
+
+	err = vkResetCommandPool(device, command_pool, 0);
+	check_vk_result(err);
+
 	imgui_local->data.SemaphoreIndex = (imgui_local->data.SemaphoreIndex + 1) % imgui_local->data.ImageCount;
 }
 
@@ -731,31 +741,31 @@ void rhr::render::renderer::recreate_swap_chain()
 
 void rhr::render::renderer::add_layer(std::weak_ptr<rhr::render::layer> layer)
 {
-	m_layers.push_back(layer);
+//	m_layers.push_back(layer);
 }
 
 void rhr::render::renderer::reload_layer_swap_chains()
 {
-	bool erased = false;
-
-	for (usize i = 0; i < m_layers.size(); i++)
-	{
-		if (erased)
-		{
-			erased = false;
-			i--;
-		}
-
-		if (auto layer = m_layers[i].lock())
-			layer->reload_swap_chain();
-		else
-		{
-			m_layers.erase(m_layers.begin() + i);
-			erased = true;
-		}
-	}
-
-	rhr::handler::category::reload_swap_chain();
+//	bool erased = false;
+//
+//	for (usize i = 0; i < m_layers.size(); i++)
+//	{
+//		if (erased)
+//		{
+//			erased = false;
+//			i--;
+//		}
+//
+//		if (auto layer = m_layers[i].lock())
+//			layer->reload_swap_chain();
+//		else
+//		{
+//			m_layers.erase(m_layers.begin() + i);
+//			erased = true;
+//		}
+//	}
+//
+//	rhr::handler::category::reload_swap_chain();
 }
 
 void rhr::render::renderer::init_instance()
@@ -1283,7 +1293,7 @@ void rhr::render::renderer::init_command_pool()
 	VkCommandPoolCreateInfo pool_info{};
 	pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	pool_info.queueFamilyIndex = queue_family_indices.graphics_family.value();
-	pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
+	pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
 	if (vkCreateCommandPool(device, &pool_info, nullptr, &command_pool) != VK_SUCCESS)
 		cap::logger::fatal("failed to create command pool");
@@ -1488,7 +1498,7 @@ VkFormat rhr::render::renderer::swap_chain_image_format;
 VkExtent2D rhr::render::renderer::swap_chain_extent;
 std::vector<VkFramebuffer> rhr::render::renderer::swap_chain_frame_buffers;
 std::vector<VkCommandBuffer> rhr::render::renderer::command_buffers;
-VkCommandBuffer rhr::render::renderer::active_command_buffer;
+VkCommandBuffer* rhr::render::renderer::active_command_buffer = nullptr;
 std::vector<vk::device_queue_create_info> rhr::render::renderer::queue_create_infos;
 VkRenderPass rhr::render::renderer::render_pass;
 VkDescriptorSetLayout rhr::render::renderer::descriptor_set_layout;
@@ -1506,7 +1516,7 @@ glm::mat4 rhr::render::renderer::projection_matrix;
 glm::mat4 rhr::render::renderer::ui_projection_matrix;
 bool rhr::render::renderer::vsync_enabled;
 glm::vec<2, i32> rhr::render::renderer::window_size;
-std::shared_ptr<rhr::render::frame> rhr::render::renderer::debug_frame;
+//std::shared_ptr<rhr::render::frame> rhr::render::renderer::debug_frame;
 
 VkPipelineLayout rhr::render::renderer::blocks_pipeline_layout;
 VkPipelineLayout rhr::render::renderer::ui_pipeline_layout;
@@ -1534,5 +1544,6 @@ u32 rhr::render::renderer::depth_ui_background = 65;
 u32 rhr::render::renderer::depth_ui_text = 60;
 
 std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> rhr::render::renderer::m_dirty_renderable;
-std::vector<std::weak_ptr<rhr::render::layer>> rhr::render::renderer::m_layers;
+std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> rhr::render::renderer::m_dirty_ui;
+//std::vector<std::weak_ptr<rhr::render::layer>> rhr::render::renderer::m_layers;
 std::shared_mutex rhr::render::renderer::m_dirty_mutex;

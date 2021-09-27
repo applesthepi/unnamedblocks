@@ -2,11 +2,6 @@
 #include "config.h"
 
 #include "rhr/stacking/block.hpp"
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_renderable.hpp"
-#include "rhr/rendering/interfaces/i_updateable.hpp"
-#include "rhr/rendering/interfaces/i_sizeable.hpp"
-#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -14,11 +9,7 @@
 namespace rhr::stack
 {
 ///
-class stack :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_updateable,
-	public rhr::render::interfaces::i_enableable
+class stack : public rhr::render::interfaces::i_ui
 {
 public:
 	///
@@ -46,25 +37,22 @@ public:
 	const std::vector<std::shared_ptr<rhr::stack::block>>& get_blocks();
 
 	///
-	void frame_update(f64 delta_time) override;
-
-	///
 	void set_collection_update_function(std::function<void()>* function_collection_update);
 private:
 	///
-	void on_render() override;
-	
-	///
-	void on_update_buffers() override;
+	void ui_transform_update() override;
 
 	///
-	void on_reload_swap_chain() override;
+	void ui_render() override;
 
 	///
-	void post_transform_update() override;
+	void ui_reload_swap_chain() override;
 
 	///
-	void post_enable_update(bool enabled) override;
+	void ui_update_buffers() override;
+
+	///
+	void ui_frame_update(f64 delta_time) override;
 
 	///
 	std::vector<std::shared_ptr<rhr::stack::block>> m_blocks;

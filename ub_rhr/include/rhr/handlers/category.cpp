@@ -5,7 +5,7 @@
 #include "rhr/handlers/message.hpp"
 #include "rhr/handlers/build.hpp"
 #include "rhr/stacking/plane.hpp"
-
+#if 0
 static void button_callback_category(void* data)
 {
 	rhr::handler::category::active* active_catagory = (rhr::handler::category::active*)data;
@@ -153,6 +153,7 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 	select_category(m_active_category);
 }
 
+
 void rhr::handler::category::render()
 {
 	for (auto& group : m_mod_groups)
@@ -217,3 +218,4 @@ std::vector<rhr::handler::category::mod_group> rhr::handler::category::m_mod_gro
 std::shared_ptr<rhr::render::frame> rhr::handler::category::m_render_frame;
 
 rhr::handler::category::active rhr::handler::category::m_active_category = { 0, 0 };
+#endif

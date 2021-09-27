@@ -2,10 +2,6 @@
 #include "config.h"
 
 #include "rhr/stacking/collection.hpp"
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_updateable.hpp"
-#include "rhr/rendering/interfaces/i_renderable.hpp"
-#include "rhr/rendering/interfaces/i_sizeable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 #include "rhr/rendering/objects/text.hpp"
@@ -21,10 +17,7 @@
 namespace rhr::stack
 {
 ///
-class plane :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_updateable
+class plane : public rhr::render::interfaces::i_ui
 {
 public:
 	///
@@ -53,24 +46,24 @@ public:
 
 	///
 	static std::shared_ptr<rhr::stack::plane> toolbar_plane;
-	
-	///
-	void frame_update(f64 delta_time) override;
 
 	///
 	rhr::handler::field& get_field();
 private:
 	///
-	void on_render() override;
+	void ui_transform_update() override;
 
 	///
-	void on_update_buffers() override;
+	void ui_render() override;
 
 	///
-	void on_reload_swap_chain() override;
+	void ui_reload_swap_chain() override;
 
 	///
-	void post_transform_update() override;
+	void ui_update_buffers() override;
+
+	///
+	void ui_frame_update(f64 delta_time) override;
 
 	///
 	void select(u64 collection, u64 stack, u64 block, u64 argument);

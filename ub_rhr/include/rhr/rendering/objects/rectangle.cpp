@@ -4,8 +4,7 @@
 #include "rhr/rendering/vertex.hpp"
 
 rhr::render::object::rectangle::rectangle()
-	: i_enableable(true)
-	, i_colorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
+	: i_colorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
 	, m_depth(10)
 	, m_has_color(false)
 	, m_has_texture(false)
@@ -47,13 +46,53 @@ void rhr::render::object::rectangle::set_depth(i32 depth)
 	mark_dirty();
 }
 
-void rhr::render::object::rectangle::on_render()
+void rhr::render::object::rectangle::ui_transform_update()
 {
-	if (m_enabled && m_in_bounds)
+	mark_dirty();
+
+	const glm::vec<2, i32>& size_local = get_size_local();
+	const glm::vec<2, i32>& size_parent = get_size_parent();
+	const glm::vec<2, i32>& position_local = get_position_local_physical();
+
+	if (size_parent == glm::vec<2, i32>())
+	{
+		m_use_size = size_local;
+		m_in_bounds = true;
+	}
+	else
+	{
+		if (position_local.x > size_parent.x ||
+			position_local.y > size_parent.y)
+		{
+			m_use_size = { 0, 0 };
+			m_in_bounds = false;
+		}
+		else
+		{
+			m_use_size = size_local;
+			m_in_bounds = true;
+
+			if (position_local.x + size_local.x > size_parent.x)
+				m_use_size.x = size_parent.x - position_local.x;
+
+			if (position_local.y + size_local.y > size_parent.y)
+				m_use_size.y = size_parent.y - position_local.y;
+		}
+	}
+}
+
+void rhr::render::object::rectangle::ui_render()
+{
+	if (m_in_bounds)
 		m_render_object->render();
 }
 
-void rhr::render::object::rectangle::on_update_buffers()
+void rhr::render::object::rectangle::ui_reload_swap_chain()
+{
+	m_render_object->reload_swap_chain();
+}
+
+void rhr::render::object::rectangle::ui_update_buffers()
 {
 	std::vector<rhr::render::vertex> vertices;
 	std::vector<u32> indices;
@@ -178,46 +217,6 @@ void rhr::render::object::rectangle::on_update_buffers()
 	}
 
 	m_render_object->update_vertices(&vertices, &indices, true);
-}
-
-void rhr::render::object::rectangle::on_reload_swap_chain()
-{
-	m_render_object->reload_swap_chain();
-}
-
-void rhr::render::object::rectangle::post_transform_update()
-{
-	mark_dirty();
-
-	const glm::vec<2, i32>& size_local = get_size_local();
-	const glm::vec<2, i32>& size_parent = get_size_parent();
-	const glm::vec<2, i32>& position_local = get_position_local_physical();
-
-	if (size_parent == glm::vec<2, i32>())
-	{
-		m_use_size = size_local;
-		m_in_bounds = true;
-	}
-	else
-	{
-		if (position_local.x > size_parent.x ||
-		position_local.y > size_parent.y)
-		{
-			m_use_size = { 0, 0 };
-			m_in_bounds = false;
-		}
-		else
-		{
-			m_use_size = size_local;
-			m_in_bounds = true;
-
-			if (position_local.x + size_local.x > size_parent.x)
-				m_use_size.x = size_parent.x - position_local.x;
-
-			if (position_local.y + size_local.y > size_parent.y)
-				m_use_size.y = size_parent.y - position_local.y;
-		}
-	}
 }
 
 void rhr::render::object::rectangle::post_color_update()

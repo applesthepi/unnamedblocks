@@ -1,10 +1,6 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/interfaces/i_renderable.hpp"
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_sizeable.hpp"
-#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_dicolorable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
@@ -18,8 +14,6 @@ namespace rhr::render::object
 ///
 class button :
 	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_enableable,
 	public rhr::render::interfaces::i_dicolorable
 {
 public:
@@ -44,16 +38,19 @@ public:
 	void enable_fill_width(bool enable);
 protected:
 	///
-	void on_render() override;
+	void ui_transform_update() override;
 
 	///
-	void on_update_buffers() override;
+	void ui_render() override;
 
 	///
-	void on_reload_swap_chain() override;
+	void ui_reload_swap_chain() override;
 
 	///
-	void post_transform_update() override;
+	void ui_update_buffers() override;
+
+	///
+	void ui_frame_update(f64 delta_time) override;
 
 	///
 	void post_color_update() override;

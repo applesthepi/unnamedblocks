@@ -16,16 +16,19 @@ public:
 	button_text(const cap::color& primary_color, const cap::color& secondary_color, const std::string& text);
 private:
 	///
-	void on_render() override;
+	virtual void ui_transform_update();
 
 	///
-	void on_update_buffers() override;
+	virtual void ui_render();
 
 	///
-	void on_reload_swap_chain() override;
+	virtual void ui_reload_swap_chain();
 
 	///
-	void post_transform_update() override;
+	virtual void ui_update_buffers();
+
+	///
+	virtual void ui_frame_update(f64 delta_time);
 
 	///
 	std::shared_ptr<rhr::render::object::text> m_text;

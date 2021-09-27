@@ -13,6 +13,9 @@ public:
 	i_ui();
 
 	///
+	void set_weak(std::weak_ptr<i_ui>&& weak);
+
+	///
 	void set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child = true);
 
 	///
@@ -65,10 +68,46 @@ public:
 
 	///
 	void update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, bool update_child = true);
+
+	///
+	void set_enabled(bool enabled);
+
+	///
+	bool get_enabled();
+
+	///
+	void render();
+
+	///
+	void reload_swap_chain();
+
+	///
+	void update_buffers();
+
+	///
+	void frame_update(f64 delta_time);
 protected:
+	///
+	void mark_dirty();
+
 	/// Event called after any position or size update functions get run.
-	virtual void post_transform_update();
+	virtual void ui_transform_update();
+
+	///
+	virtual void ui_render();
+
+	///
+	virtual void ui_reload_swap_chain();
+
+	///
+	virtual void ui_update_buffers();
+
+	///
+	virtual void ui_frame_update(f64 delta_time);
 private:
+	///
+	bool is_weak();
+
 	///
 	glm::vec<2, i32> m_position_local_physical;
 
@@ -95,5 +134,17 @@ private:
 
 	///
 	glm::vec<2, i32> m_size_parent;
+
+	///
+	bool m_enabled;
+
+	///
+	bool m_dirty;
+
+	///
+	bool m_weak_set;
+
+	///
+	std::weak_ptr<i_ui> m_weak;
 };
 }

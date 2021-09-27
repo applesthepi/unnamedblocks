@@ -16,27 +16,9 @@ rhr::render::object::button_text::button_text(const cap::color& primary_color, c
 	m_text->set_text(text);
 }
 
-void rhr::render::object::button_text::on_render()
+void rhr::render::object::button_text::ui_transform_update()
 {
-	rhr::render::object::button::on_render();
-	m_text->render();
-}
-
-void rhr::render::object::button_text::on_update_buffers()
-{
-	rhr::render::object::button::on_update_buffers();
-	m_text->update_buffers();
-}
-
-void rhr::render::object::button_text::on_reload_swap_chain()
-{
-	rhr::render::object::button::on_reload_swap_chain();
-	m_text->reload_swap_chain();
-}
-
-void rhr::render::object::button_text::post_transform_update()
-{
-	rhr::render::object::button::post_transform_update();
+	rhr::render::object::button::ui_transform_update();
 
 	update_child_transform(m_text, false);
 	m_text->set_position_parent_physical(m_text->get_position_parent_physical() + glm::vec<2, i32>(0, 2), false);
@@ -47,4 +29,27 @@ void rhr::render::object::button_text::post_transform_update()
 		m_text->set_font_size(static_cast<u16>(get_size_local().y));
 	else
 		m_text->set_font_size(get_size_local().y - 4);
+}
+
+void rhr::render::object::button_text::ui_render()
+{
+	rhr::render::object::button::ui_render();
+	m_text->render();
+}
+
+void rhr::render::object::button_text::ui_reload_swap_chain()
+{
+	rhr::render::object::button::ui_reload_swap_chain();
+	m_text->reload_swap_chain();
+}
+
+void rhr::render::object::button_text::ui_update_buffers()
+{
+	rhr::render::object::button::ui_update_buffers();
+	m_text->update_buffers();
+}
+
+void rhr::render::object::button_text::ui_frame_update(f64 delta_time)
+{
+	rhr::render::object::button::ui_frame_update(delta_time);
 }

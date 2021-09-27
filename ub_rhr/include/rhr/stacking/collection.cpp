@@ -3,8 +3,7 @@
 #include "rhr/rendering/renderer.hpp"
 
 rhr::stack::collection::collection()
-	: rhr::render::interfaces::i_enableable(true)
-	, m_background(std::make_shared<rhr::render::object::rectangle>())
+	: m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_display_vanity(true)
 {
 	m_function_collection_update = [&]()
@@ -234,38 +233,7 @@ const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::g
 	return m_stacks;
 }
 
-void rhr::stack::collection::frame_update(f64 delta_time)
-{
-	for (auto& stack : m_stacks)
-		stack->frame_update(delta_time);
-}
-
-void rhr::stack::collection::on_render()
-{
-	if (m_display_vanity)
-		m_background->render();
-
-	for (auto& stack : m_stacks)
-		stack->render();
-}
-
-void rhr::stack::collection::on_update_buffers()
-{
-	m_background->update_buffers();
-
-	for (auto& stack : m_stacks)
-		stack->update_buffers();
-}
-
-void rhr::stack::collection::on_reload_swap_chain()
-{
-	m_background->reload_swap_chain();
-
-	for (auto& stack : m_stacks)
-		stack->reload_swap_chain();
-}
-
-void rhr::stack::collection::post_transform_update()
+void rhr::stack::collection::ui_transform_update()
 {
 	update_child_transform(m_background, false);
 	m_background->set_size_max();
@@ -274,8 +242,33 @@ void rhr::stack::collection::post_transform_update()
 		update_child_transform(stack);
 }
 
-void rhr::stack::collection::post_enable_update(bool enabled)
+void rhr::stack::collection::ui_render()
+{
+	if (m_display_vanity)
+		m_background->render();
+
+	for (auto& stack : m_stacks)
+		stack->render();
+}
+
+void rhr::stack::collection::ui_reload_swap_chain()
+{
+	m_background->reload_swap_chain();
+
+	for (auto& stack : m_stacks)
+		stack->reload_swap_chain();
+}
+
+void rhr::stack::collection::ui_update_buffers()
+{
+	m_background->update_buffers();
+
+	for (auto& stack : m_stacks)
+		stack->update_buffers();
+}
+
+void rhr::stack::collection::ui_frame_update(f64 delta_time)
 {
 	for (auto& stack : m_stacks)
-		stack->set_enabled(enabled);
+		stack->frame_update(delta_time);
 }

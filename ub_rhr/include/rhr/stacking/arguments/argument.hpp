@@ -2,10 +2,6 @@
 #include "config.h"
 
 #include "rhr/rendering/vertex.hpp"
-#include "rhr/rendering/interfaces/i_renderable.hpp"
-#include "rhr/rendering/interfaces/i_updateable.hpp"
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -15,11 +11,7 @@
 namespace rhr::stack::argument
 {
 /// Base class for visual block arguments.
-class argument :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_updateable,
-	public rhr::render::interfaces::i_enableable
+class argument : public rhr::render::interfaces::i_ui
 {
 public:
 	/// See "dev/padding.png" for information on how argument padding works.
@@ -72,19 +64,6 @@ public:
 	///
 	static i32 padding;
 protected:
-	/// Add draw calls to cmd buffer prebound by Renderer.
-	virtual void on_render();
-
-	/// Updates mesh on cpu side.
-	virtual void on_update_buffers();
-
-	/// Regenerates descriptor sets including uniforms.
-	virtual void on_reload_swap_chain();
-
-	/// Runs every frame before rendering.
-	/// \param Seconds since last frame.
-	virtual void on_frame_update(f64 delta_time);
-
 	/// Sets data. Data of the argument is stored as a string.
 	virtual void on_set_data();
 

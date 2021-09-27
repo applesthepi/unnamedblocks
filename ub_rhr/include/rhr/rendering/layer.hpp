@@ -1,3 +1,4 @@
+#if 1
 #pragma once
 #include "config.h"
 
@@ -31,3 +32,4 @@ private:
 	std::vector<std::weak_ptr<rhr::render::frame>> m_frames;
 };
 }
+#endif

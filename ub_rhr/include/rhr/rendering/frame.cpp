@@ -1,3 +1,4 @@
+#if 1
 #include "frame.hpp"
 
 #include "rhr/rendering/renderer.hpp"
@@ -122,10 +123,7 @@ void rhr::render::frame::enable_frame(usize idx, bool enabled)
 }
 
 void rhr::render::frame::add_content(
-	std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
-	std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
 	std::weak_ptr<rhr::render::interfaces::i_ui>&& ui,
-	std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
 	rhr::render::cardinal::local cardinal)
 {
 	if (m_has_frame)
@@ -152,13 +150,13 @@ void rhr::render::frame::add_content(
 		update_child_transform(weak);
 
 	if (cardinal == rhr::render::cardinal::local::UP && m_plane == rhr::render::cardinal::plane::VERTICAL)
-		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
+		m_content.insert(m_content.begin(), { std::move(ui) });
 	else if (cardinal == rhr::render::cardinal::local::DOWN && m_plane == rhr::render::cardinal::plane::VERTICAL)
-		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
+		m_content.insert(m_content.end(), { std::move(ui) });
 	else if (cardinal == rhr::render::cardinal::local::LEFT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-		m_content.insert(m_content.begin(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
+		m_content.insert(m_content.begin(), { std::move(ui) });
 	else if (cardinal == rhr::render::cardinal::local::RIGHT && m_plane == rhr::render::cardinal::plane::HORIZONTAL)
-		m_content.insert(m_content.end(), { std::move(renderable), std::move(updatable), std::move(ui), std::move(enableable) });
+		m_content.insert(m_content.end(), { std::move(ui) });
 	else
 		cap::logger::error("wrong direction when adding a frame to a frame");
 
@@ -329,14 +327,20 @@ void rhr::render::frame::disable_bar_movement()
 	m_disable_bar_movement = true;
 }
 
-void rhr::render::frame::on_render()
+void rhr::render::frame::ui_transform_update()
+{
+	set_size_max(false);
+	update_content_dimentions();
+}
+
+void rhr::render::frame::ui_render()
 {
 	if (m_has_frame)
 	{
 		for (usize i = 0; i < m_frames.size(); i++)
 		{
 			if (m_frames_enabled[i])
-				((rhr::render::interfaces::i_renderable*)m_frames[i].get())->render();
+				((rhr::render::interfaces::i_ui*)m_frames[i].get())->render();
 		}
 	}
 	else if (m_has_content)
@@ -351,11 +355,13 @@ void rhr::render::frame::on_render()
 				i--;
 			}
 
-			if (auto enabled = m_content[i].enableable.lock())
+			if (auto enabled = m_content[i].ui.lock())
+			{
 				if (!enabled->get_enabled())
 					continue;
+			}
 
-			if (auto content = m_content[i].renderable.lock())
+			if (auto content = m_content[i].ui.lock())
 				content->render();
 			else
 			{
@@ -369,40 +375,14 @@ void rhr::render::frame::on_render()
 		m_background->render();
 }
 
-void rhr::render::frame::on_update_buffers()
-{
-	clear_dirty();
-	bool erased = false;
-
-	for (usize i = 0; i < m_content.size(); i++)
-	{
-		if (erased)
-		{
-			erased = false;
-			i--;
-		}
-
-		if (auto content = m_content[i].renderable.lock())
-			content->update_buffers();
-		else
-		{
-			m_content.erase(m_content.begin() + i);
-			erased = true;
-		}
-	}
-
-	if (m_background_enabled)
-		m_background->update_buffers();
-}
-
-void rhr::render::frame::on_reload_swap_chain()
+void rhr::render::frame::ui_reload_swap_chain()
 {
 	if (m_has_frame)
 	{
 		bool erased = false;
 
 		for (auto& frame : m_frames)
-			((rhr::render::interfaces::i_renderable*)frame.get())->reload_swap_chain();
+			((rhr::render::interfaces::i_ui*)frame.get())->reload_swap_chain();
 	}
 	else if (m_has_content)
 	{
@@ -416,7 +396,7 @@ void rhr::render::frame::on_reload_swap_chain()
 				i--;
 			}
 
-			if (auto content = m_content[i].renderable.lock())
+			if (auto content = m_content[i].ui.lock())
 				content->reload_swap_chain();
 			else
 			{
@@ -430,15 +410,29 @@ void rhr::render::frame::on_reload_swap_chain()
 		m_background->reload_swap_chain();
 }
 
-void rhr::render::frame::on_set_weak()
+void rhr::render::frame::ui_update_buffers()
 {
-	
-}
+	bool erased = false;
 
-void rhr::render::frame::post_transform_update()
-{
-	set_size_max(false);
-	update_content_dimentions();
+	for (usize i = 0; i < m_content.size(); i++)
+	{
+		if (erased)
+		{
+			erased = false;
+			i--;
+		}
+
+		if (auto content = m_content[i].ui.lock())
+			content->update_buffers();
+		else
+		{
+			m_content.erase(m_content.begin() + i);
+			erased = true;
+		}
+	}
+
+	if (m_background_enabled)
+		m_background->update_buffers();
 }
 
 void rhr::render::frame::update_content_dimentions()
@@ -676,8 +670,8 @@ void rhr::render::frame::push_links(std::shared_ptr<frame>& frame)
 
 void rhr::render::frame::update_mouse_button_status(bool enabled)
 {
-	if (!is_weak())
-		return;
+//	if (!is_weak())
+//		return;
 
 	if (enabled && !m_mouse_button_registered)
 	{
@@ -760,3 +754,4 @@ void rhr::render::frame::update_background()
 	m_background->set_position_parent_physical(get_position_physical_absolute() + static_cast<i32>(m_padding));
 	m_background->set_size_local(get_size_local() - (static_cast<i32>(m_padding) * 2));
 }
+#endif

@@ -3,8 +3,7 @@
 #include "rhr/stacking/block.hpp"
 
 rhr::stack::argument::argument::argument(const cap::color& block_color, std::function<void()>* function_collection_update)
-	: rhr::render::interfaces::i_enableable(true)
-	, m_mode(cap::mod::block::block::argument::variable_mode::RAW)
+	: m_mode(cap::mod::block::block::argument::variable_mode::RAW)
 	, m_block_color(block_color)
 	, m_function_collection_update(function_collection_update)
 	, m_mode_restriction(cap::mod::block::block::argument::variable_mode_restriction::NONE)
@@ -66,26 +65,6 @@ rhr::stack::argument::argument::padding_style rhr::stack::argument::argument::ge
 }
 
 i32 rhr::stack::argument::argument::padding = rhr::stack::block::padding * 4;
-
-void rhr::stack::argument::argument::on_render()
-{
-
-}
-
-void rhr::stack::argument::argument::on_update_buffers()
-{
-
-}
-
-void rhr::stack::argument::argument::on_reload_swap_chain()
-{
-
-}
-
-void rhr::stack::argument::argument::on_frame_update(f64 delta_time)
-{
-
-}
 
 void rhr::stack::argument::argument::on_set_data()
 {

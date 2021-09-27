@@ -15,8 +15,7 @@ static void block_update(void* data)
 }
 
 rhr::stack::block::block(const std::string& unlocalized_name)
-	: rhr::render::interfaces::i_enableable(true)
-	, m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->block_mod_block)
+	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->block_mod_block)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_function_stack_update(nullptr)
 {
@@ -60,37 +59,7 @@ i16 rhr::stack::block::padding = 2;
 i16 rhr::stack::block::height = 20;
 i16 rhr::stack::block::height_content = height - (padding * 2);
 
-void rhr::stack::block::frame_update(f64 delta_time)
-{
-	for (auto& arg : m_arguments)
-		arg->frame_update(delta_time);
-}
-
-void rhr::stack::block::on_render()
-{
-	m_background->render();
-
-	for (auto& arg : m_arguments)
-		arg->render();
-}
-
-void rhr::stack::block::on_update_buffers()
-{
-	m_background->update_buffers();
-
-	for (auto& arg : m_arguments)
-		arg->update_buffers();
-}
-
-void rhr::stack::block::on_reload_swap_chain()
-{
-	m_background->reload_swap_chain();
-
-	for (auto& arg : m_arguments)
-		arg->reload_swap_chain();
-}
-
-void rhr::stack::block::post_transform_update()
+void rhr::stack::block::ui_transform_update()
 {
 	update_child_transform(m_background);
 
@@ -98,10 +67,34 @@ void rhr::stack::block::post_transform_update()
 		update_child_transform(arg);
 }
 
-void rhr::stack::block::post_enable_update(bool enabled)
+void rhr::stack::block::ui_render()
+{
+	m_background->render();
+
+	for (auto& arg : m_arguments)
+		arg->render();
+}
+
+void rhr::stack::block::ui_reload_swap_chain()
+{
+	m_background->reload_swap_chain();
+
+	for (auto& arg : m_arguments)
+		arg->reload_swap_chain();
+}
+
+void rhr::stack::block::ui_update_buffers()
+{
+	m_background->update_buffers();
+
+	for (auto& arg : m_arguments)
+		arg->update_buffers();
+}
+
+void rhr::stack::block::ui_frame_update(f64 delta_time)
 {
 	for (auto& arg : m_arguments)
-		arg->set_enabled(enabled);
+		arg->frame_update(delta_time);
 }
 
 void rhr::stack::block::update_arguments()
@@ -206,6 +199,7 @@ void rhr::stack::block::update_width()
 	pad_arguments(m_width, 0, last_arg, last_arg, true);
 
 	set_size_local(get_size_local() + glm::vec<2, i32>(m_width, 0));
+	cap::logger::debug(get_size_local());
 	m_background->set_size_local(get_size_local());
 }
 

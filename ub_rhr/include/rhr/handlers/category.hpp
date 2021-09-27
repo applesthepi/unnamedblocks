@@ -10,7 +10,7 @@
 #include "rhr/rendering/frame.hpp"
 
 #include <cappuccino/utils.hpp>
-
+#if 0
 namespace rhr::handler
 {
 ///
@@ -117,3 +117,4 @@ private:
 	static active m_active_category;
 };
 }
+#endif

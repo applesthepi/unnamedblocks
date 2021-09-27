@@ -36,29 +36,29 @@ rhr::stack::argument::argument::padding_style rhr::stack::argument::text::get_pa
 	return rhr::stack::argument::argument::padding_style::SOFT;
 }
 
-void rhr::stack::argument::text::on_render()
+void rhr::stack::argument::text::ui_transform_update()
+{
+	update_child_transform(m_text);
+}
+
+void rhr::stack::argument::text::ui_render()
 {
 	m_text->render();
 }
 
-void rhr::stack::argument::text::on_update_buffers()
-{
-	m_text->update_buffers();
-}
-
-void rhr::stack::argument::text::on_reload_swap_chain()
+void rhr::stack::argument::text::ui_reload_swap_chain()
 {
 	m_text->reload_swap_chain();
 }
 
-void rhr::stack::argument::text::on_frame_update(f64 delta_time)
+void rhr::stack::argument::text::ui_update_buffers()
 {
-	
+	m_text->update_buffers();
 }
 
-void rhr::stack::argument::text::post_transform_update()
+void rhr::stack::argument::text::ui_frame_update(f64 delta_time)
 {
-	update_child_transform(m_text);
+
 }
 
 void rhr::stack::argument::text::on_set_data()
@@ -66,7 +66,3 @@ void rhr::stack::argument::text::on_set_data()
 	m_text->set_text(m_data);
 }
 
-void rhr::stack::argument::text::post_enable_update(bool enabled)
-{
-	m_text->set_enabled(enabled);
-}

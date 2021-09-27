@@ -1,3 +1,4 @@
+#if 1
 #include "layer.hpp"
 
 rhr::render::layer::layer()
@@ -60,3 +61,4 @@ void rhr::render::layer::reload_swap_chain()
 		}
 	}
 }
+#endif

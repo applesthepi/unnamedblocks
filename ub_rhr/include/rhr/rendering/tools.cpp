@@ -7,7 +7,19 @@
 
 void rhr::render::tools::initialize()
 {
-	validation_layers.push_back("VK_LAYER_KHRONOS_validation");
+//	validation_layers.push_back("VK_LAYER_KHRONOS_validation");
+
+	validation_layers = {
+		"VK_LAYER_GOOGLE_threading",
+		"VK_LAYER_LUNARG_parameter_validation",
+		"VK_LAYER_LUNARG_device_limits",
+		"VK_LAYER_LUNARG_object_tracker",
+		"VK_LAYER_LUNARG_image",
+		"VK_LAYER_LUNARG_core_validation",
+		"VK_LAYER_LUNARG_swapchain",
+		"VK_LAYER_GOOGLE_unique_objects"
+	};
+
 	device_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
 }
 
@@ -365,14 +377,14 @@ void rhr::render::tools::copy_buffer(vk::buffer src_buffer, vk::buffer dst_buffe
 {
 	vk::buffer_copy copy_region {};
 	copy_region.size = size;
-	vkCmdCopyBuffer(rhr::render::renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+	vkCmdCopyBuffer(*rhr::render::renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
 }
 
 void rhr::render::tools::copy_buffer(vk::device_memory src_memory, vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size)
 {
 	vk::buffer_copy copy_region {};
 	copy_region.size = size;
-	vkCmdCopyBuffer(rhr::render::renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+	vkCmdCopyBuffer(*rhr::render::renderer::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
 
 	//rhr::render::renderer::AuxBufferMemory.push_back(srcBuffer);
 	//rhr::render::renderer::AuxDeviceMemory.push_back(srcMemory);

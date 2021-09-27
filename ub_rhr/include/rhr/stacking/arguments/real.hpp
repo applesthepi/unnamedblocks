@@ -38,29 +38,26 @@ public:
 	///
 	rhr::stack::argument::argument::padding_style get_padding_style() override;
 private:
-	/// Add draw calls to cmd buffer prebound by Renderer.
-	void on_render() override;
+	///
+	void ui_transform_update() override;
 
-	/// Updates mesh on cpu side.
-	void on_update_buffers() override;
+	///
+	void ui_render() override;
 
-	/// Regenerates descriptor sets including uniforms.
-	void on_reload_swap_chain() override;
+	///
+	void ui_reload_swap_chain() override;
 
-	/// Runs every frame before rendering.
-	/// \param Seconds since last frame.
-	void on_frame_update(f64 delta_time) override;
+	///
+	void ui_update_buffers() override;
 
-	void post_transform_update() override;
+	///
+	void ui_frame_update(f64 delta_time) override;
 
 	/// Sets data. Data of the argument is stored as a string.
 	void on_set_data() override;
 
 	///
 	void on_set_mode(cap::mod::block::block::argument::variable_mode mode) override;
-
-	///
-	void post_enable_update(bool enabled) override;
 
 	/// Decoration.
 	std::shared_ptr<rhr::render::object::object> m_decor_left_top;

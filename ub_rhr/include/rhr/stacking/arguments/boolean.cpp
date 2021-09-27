@@ -49,7 +49,19 @@ bool rhr::stack::argument::boolean::has_data()
 	return true;
 }
 
-void rhr::stack::argument::boolean::on_render()
+void rhr::stack::argument::boolean::ui_transform_update()
+{
+	update_child_transform(m_text);
+	m_text->set_position_local_physical({ ARG_BOOL_DECORE_WIDTH, 0 });
+
+	glm::vec<2, f64> pos = get_position_physical_absolute();
+	m_decor_left->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_right->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+
+	mark_dirty();
+}
+
+void rhr::stack::argument::boolean::ui_render()
 {
 	m_text->render();
 
@@ -57,7 +69,15 @@ void rhr::stack::argument::boolean::on_render()
 	m_decor_right->render();
 }
 
-void rhr::stack::argument::boolean::on_update_buffers()
+void rhr::stack::argument::boolean::ui_reload_swap_chain()
+{
+	m_text->reload_swap_chain();
+
+	m_decor_left->reload_swap_chain();
+	m_decor_right->reload_swap_chain();
+}
+
+void rhr::stack::argument::boolean::ui_update_buffers()
 {
 	m_text->update_buffers();
 
@@ -81,29 +101,9 @@ void rhr::stack::argument::boolean::on_update_buffers()
 	m_decor_right->update_vertices(vertices + 3, 3, true);
 }
 
-void rhr::stack::argument::boolean::on_reload_swap_chain()
-{
-	m_text->reload_swap_chain();
-
-	m_decor_left->reload_swap_chain();
-	m_decor_right->reload_swap_chain();
-}
-
-void rhr::stack::argument::boolean::on_frame_update(f64 delta_time)
+void rhr::stack::argument::boolean::ui_frame_update(f64 delta_time)
 {
 
-}
-
-void rhr::stack::argument::boolean::post_transform_update()
-{
-	update_child_transform(m_text);
-	m_text->set_position_local_physical({ ARG_BOOL_DECORE_WIDTH, 0 });
-
-	glm::vec<2, f64> pos = get_position_physical_absolute();
-	m_decor_left->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
-	m_decor_right->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
-
-	mark_dirty();
 }
 
 void rhr::stack::argument::boolean::on_set_data()
@@ -137,9 +137,4 @@ void rhr::stack::argument::boolean::on_set_mode(cap::mod::block::block::argument
 		m_text->set_color_secondary(m_block_color);
 	else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
 		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
-}
-
-void rhr::stack::argument::boolean::post_enable_update(bool enabled)
-{
-	m_text->set_enabled(enabled);
 }

@@ -56,10 +56,16 @@ public:
 	static void add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable);
 
 	///
+	static void add_dirty(std::weak_ptr<rhr::render::interfaces::i_ui> ui);
+
+	///
 	static void process_dirty();
 
 	///
-	static void render();
+	static void render_pass_plane();
+
+	///
+	static void render_pass_master();
 
 	///
 	static void frame_present();
@@ -125,7 +131,7 @@ public:
 	static std::vector<VkCommandBuffer> command_buffers;
 
 	///
-	static VkCommandBuffer active_command_buffer;
+	static VkCommandBuffer* active_command_buffer;
 
 	///
 	static std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
@@ -179,7 +185,7 @@ public:
 	static glm::vec<2, i32> window_size;
 
 	///
-	static std::shared_ptr<rhr::render::frame> debug_frame;
+//	static std::shared_ptr<rhr::render::frame> debug_frame;
 
 	///
 	static VkPipelineLayout blocks_pipeline_layout;
@@ -284,7 +290,10 @@ private:
 	static std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> m_dirty_renderable;
 
 	///
-	static std::vector<std::weak_ptr<rhr::render::layer>> m_layers;
+	static std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> m_dirty_ui;
+
+	///
+//	static std::vector<std::weak_ptr<rhr::render::layer>> m_layers;
 
 	///
 	static std::shared_mutex m_dirty_mutex;

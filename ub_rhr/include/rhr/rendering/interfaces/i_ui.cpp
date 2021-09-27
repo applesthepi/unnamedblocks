@@ -1,5 +1,7 @@
 #include "i_ui.hpp"
 
+#include "rhr/rendering/renderer.hpp"
+
 rhr::render::interfaces::i_ui::i_ui()
 	: m_position_local_physical({})
 	, m_position_local_virtual_offset({})
@@ -9,14 +11,24 @@ rhr::render::interfaces::i_ui::i_ui()
 	, m_position_virtual_offset({})
 	, m_size_local({})
 	, m_size_parent({})
+	, m_enabled(true)
+	, m_dirty(false)
+	, m_weak_set(false)
 {
 
+}
+
+void rhr::render::interfaces::i_ui::set_weak(std::weak_ptr<i_ui>&& weak)
+{
+	m_weak = std::move(weak);
+	m_weak_set = true;
 }
 
 void rhr::render::interfaces::i_ui::set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child)
 {
 	m_position_local_physical = offset;
 	m_position_physical_absolute = m_position_local_physical + m_position_parent_physical;
+	m_position_virtual_absolute = m_position_virtual_offset + m_position_physical_absolute;
 
 	if (update_child)
 		update_transform();
@@ -36,6 +48,7 @@ void rhr::render::interfaces::i_ui::set_position_parent_physical(const glm::vec<
 {
 	m_position_parent_physical = offset;
 	m_position_physical_absolute = m_position_local_physical + m_position_parent_physical;
+	m_position_virtual_absolute = m_position_virtual_offset + m_position_physical_absolute;
 
 	if (update_child)
 		update_transform();
@@ -122,7 +135,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_parent()
 
 void rhr::render::interfaces::i_ui::update_transform()
 {
-	post_transform_update();
+	ui_transform_update();
 }
 
 void rhr::render::interfaces::i_ui::update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, bool update_child)
@@ -135,7 +148,80 @@ void rhr::render::interfaces::i_ui::update_child_transform(const std::shared_ptr
 		ui->update_transform();
 }
 
-void rhr::render::interfaces::i_ui::post_transform_update()
+void rhr::render::interfaces::i_ui::set_enabled(bool enabled)
+{
+	m_enabled = enabled;
+}
+
+bool rhr::render::interfaces::i_ui::get_enabled()
+{
+	return m_enabled;
+}
+
+void rhr::render::interfaces::i_ui::render()
+{
+	if (m_enabled)
+		ui_render();
+}
+
+void rhr::render::interfaces::i_ui::reload_swap_chain()
+{
+	ui_reload_swap_chain();
+}
+
+void rhr::render::interfaces::i_ui::update_buffers()
+{
+	m_dirty = false;
+	ui_update_buffers();
+}
+
+void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
+{
+	if (m_enabled)
+		ui_frame_update(delta_time);
+}
+
+void rhr::render::interfaces::i_ui::mark_dirty()
+{
+	if (!is_weak() || m_dirty)
+		return;
+
+	m_dirty = true;
+	rhr::render::renderer::add_dirty(m_weak);
+}
+
+void rhr::render::interfaces::i_ui::ui_transform_update()
 {
 
+}
+
+void rhr::render::interfaces::i_ui::ui_render()
+{
+
+}
+
+void rhr::render::interfaces::i_ui::ui_reload_swap_chain()
+{
+
+}
+
+void rhr::render::interfaces::i_ui::ui_update_buffers()
+{
+
+}
+
+void rhr::render::interfaces::i_ui::ui_frame_update(f64 delta_time)
+{
+
+}
+
+bool rhr::render::interfaces::i_ui::is_weak()
+{
+	if (!m_weak_set)
+	{
+		cap::logger::warn("rhr::render::interfaces::i_ui::is_weak() returning false");
+		return false;
+	}
+
+	return true;
 }

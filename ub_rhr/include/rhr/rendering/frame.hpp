@@ -1,3 +1,4 @@
+#if 1
 #pragma once
 #include "config.h"
 
@@ -15,10 +16,7 @@
 namespace rhr::render
 {
 ///
-class frame :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_updateable
+class frame : public rhr::render::interfaces::i_ui
 {
 public:
 	///
@@ -37,11 +35,7 @@ public:
 	void enable_frame(usize idx, bool enabled);
 
 	///
-	void add_content(std::weak_ptr<rhr::render::interfaces::i_renderable>&& renderable,
-					 std::weak_ptr<rhr::render::interfaces::i_updateable>&& updatable,
-					 std::weak_ptr<rhr::render::interfaces::i_ui>&& ui,
-					 std::weak_ptr<rhr::render::interfaces::i_enableable>&& enableable,
-					 rhr::render::cardinal::local cardinal);
+	void add_content(std::weak_ptr<rhr::render::interfaces::i_ui>&& ui, rhr::render::cardinal::local cardinal);
 
 	///
 	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
@@ -66,27 +60,11 @@ public:
 
 	///
 	void update_content_dimentions();
-protected:
-	///
-	void on_render() override;
-
-	///
-	void on_update_buffers() override;
-
-	///
-	void on_reload_swap_chain() override;
-
-	///
-	void on_set_weak() override;
 private:
 	///
 	struct content
 	{
-		/// Weak pointers to the content's interfaces. Used to call common functions for the content.
-		std::weak_ptr<rhr::render::interfaces::i_renderable> renderable;
-		std::weak_ptr<rhr::render::interfaces::i_updateable> updateable;
 		std::weak_ptr<rhr::render::interfaces::i_ui> ui;
-		std::weak_ptr<rhr::render::interfaces::i_enableable> enableable;
 	};
 
 	///
@@ -110,7 +88,16 @@ private:
 	};
 
 	///
-	void post_transform_update() override;
+	void ui_transform_update() override;
+
+	///
+	void ui_render() override;
+
+	///
+	void ui_reload_swap_chain() override;
+
+	///
+	void ui_update_buffers() override;
 
 	///
 	void submit_new_bar_position(rhr::render::cardinal::local cardinal);
@@ -191,3 +178,4 @@ private:
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
 };
 }
+#endif

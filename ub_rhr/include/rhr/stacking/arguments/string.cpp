@@ -43,29 +43,29 @@ bool rhr::stack::argument::string::has_data()
 	return true;
 }
 
-void rhr::stack::argument::string::on_render()
+void rhr::stack::argument::string::ui_transform_update()
+{
+	update_child_transform(m_text);
+}
+
+void rhr::stack::argument::string::ui_render()
 {
 	m_text->render();
 }
 
-void rhr::stack::argument::string::on_update_buffers()
-{
-	m_text->update_buffers();
-}
-
-void rhr::stack::argument::string::on_reload_swap_chain()
+void rhr::stack::argument::string::ui_reload_swap_chain()
 {
 	m_text->reload_swap_chain();
 }
 
-void rhr::stack::argument::string::on_frame_update(f64 delta_time)
+void rhr::stack::argument::string::ui_update_buffers()
 {
-
+	m_text->update_buffers();
 }
 
-void rhr::stack::argument::string::post_transform_update()
+void rhr::stack::argument::string::ui_frame_update(f64 delta_time)
 {
-	update_child_transform(m_text);
+
 }
 
 void rhr::stack::argument::string::on_set_data()
@@ -99,9 +99,4 @@ void rhr::stack::argument::string::on_set_mode(cap::mod::block::block::argument:
 		m_text->set_color_secondary(m_block_color);
 	else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
 		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
-}
-
-void rhr::stack::argument::string::post_enable_update(bool enabled)
-{
-	m_text->set_enabled(enabled);
 }

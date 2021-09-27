@@ -256,30 +256,30 @@ void rhr::render::object::object::on_render()
 	{
 		if (m_has_texture)
 		{
-			vkCmdBindDescriptorSets(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-			vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
+			vkCmdBindDescriptorSets(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
+			vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
 		}
 		else
 		{
-			vkCmdBindDescriptorSets(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-			vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
+			vkCmdBindDescriptorSets(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
+			vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
 		}
 	}
 	else
 	{
-		vkCmdBindDescriptorSets(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::blocks_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-		vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
+		vkCmdBindDescriptorSets(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::blocks_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
+		vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
 	}
 
-	vkCmdBindVertexBuffers(rhr::render::renderer::active_command_buffer, 0, 1, vb, offsets);
+	vkCmdBindVertexBuffers(*rhr::render::renderer::active_command_buffer, 0, 1, vb, offsets);
 
 	if (m_has_indices)
 	{
-		vkCmdBindIndexBuffer(rhr::render::renderer::active_command_buffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
-		vkCmdDrawIndexed(rhr::render::renderer::active_command_buffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
+		vkCmdBindIndexBuffer(*rhr::render::renderer::active_command_buffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdDrawIndexed(*rhr::render::renderer::active_command_buffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
 	}
 	else
-		vkCmdDraw(rhr::render::renderer::active_command_buffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
+		vkCmdDraw(*rhr::render::renderer::active_command_buffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
 }
 
 void rhr::render::object::object::on_update_buffers()

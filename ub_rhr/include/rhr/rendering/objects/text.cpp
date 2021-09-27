@@ -12,7 +12,6 @@ static i64 DEBUG_COUNT = 0;
 
 rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register)
 	: i_dicolorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }), cap::color().from_u8({ 25, 25, 25, 255 }))
-	, i_enableable(true)
 	, m_depth(10)
 	, m_render_object_background(std::make_shared<rhr::render::object::object>(true))
 	, m_render_object_text(std::make_shared<rhr::render::object::object>(true))
@@ -248,22 +247,42 @@ void rhr::render::object::text::update_size()
 	set_size_local({ static_cast<i32>(running_char_offsets) + m_padding, m_font_size });
 }
 
-void rhr::render::object::text::on_render()
+void rhr::render::object::text::ui_transform_update()
 {
-	if (m_enabled)
+	const glm::vec<2, i32>& position_physical = get_position_physical_absolute();
+	const glm::vec<2, i32>& position_virtual = get_position_virtual_offset();
+
+	m_render_object_background->set_super_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) });
+	m_render_object_text->set_super_position({ static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1 });
+
+	if (!m_read_only && m_registered)
+		m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
+
+	mark_dirty();
+}
+
+void rhr::render::object::text::ui_render()
+{
+	if (get_enabled())
 	{
 		if (m_enable_background)
 		{
-			vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
+			vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
 			m_render_object_background->render();
 		}
 
-		vkCmdBindPipeline(rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
+		vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
 		m_render_object_text->render();
 	}
 }
 
-void rhr::render::object::text::on_update_buffers()
+void rhr::render::object::text::ui_reload_swap_chain()
+{
+	m_render_object_background->reload_swap_chain();
+	m_render_object_text->reload_swap_chain();
+}
+
+void rhr::render::object::text::ui_update_buffers()
 {
 //	update_size();
 
@@ -326,24 +345,9 @@ void rhr::render::object::text::on_update_buffers()
 		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), size_local);
 }
 
-void rhr::render::object::text::on_reload_swap_chain()
+void rhr::render::object::text::ui_frame_update(f64 delta_time)
 {
-	m_render_object_background->reload_swap_chain();
-	m_render_object_text->reload_swap_chain();
-}
 
-void rhr::render::object::text::post_transform_update()
-{
-	const glm::vec<2, i32>& position_physical = get_position_physical_absolute();
-	const glm::vec<2, i32>& position_virtual = get_position_virtual_offset();
-
-	m_render_object_background->set_super_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) });
-	m_render_object_text->set_super_position({ static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1 });
-
-	if (!m_read_only && m_registered)
-		m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
-
-	mark_dirty();
 }
 
 const std::string& rhr::render::object::text::get_text()
@@ -375,16 +379,6 @@ void rhr::render::object::text::set_font_size(u16 font_size)
 
 	update_size();
 	mark_dirty();
-}
-
-void rhr::render::object::text::post_enable_update(bool enabled)
-{
-//	cap::logger::debug("void rhr::render::object::text::post_enable_update(bool enabled) " + (enabled ? std::string("true") : std::string("false")));
-
-	if (enabled)
-		register_field();
-	else
-		unregister_field();
 }
 
 void rhr::render::object::text::register_field()

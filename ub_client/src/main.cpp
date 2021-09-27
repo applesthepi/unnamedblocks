@@ -8,6 +8,7 @@
 #include "rhr/registries/char_texture.hpp"
 #include "rhr/handlers/build.hpp"
 #include "rhr/rendering/objects/button_image.hpp"
+#include "rhr/rendering/frame.hpp"
 
 #if LINUX
 #include <dlfcn.h>
@@ -60,8 +61,6 @@ int main()
 #endif
 
 	cap::logger::info("all unsaved progress will be lost if this window is closed");
-	
-	// Frames and Layers
 
 	rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
 	rhr::stack::plane::primary_plane->set_weak(rhr::stack::plane::primary_plane);
@@ -69,6 +68,9 @@ int main()
 	rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
 	rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
 
+	// Frames and Layers
+
+//#if 0
 	std::shared_ptr<rhr::render::frame> frameBase = std::make_shared<rhr::render::frame>();
 	frameBase->set_weak(frameBase);
 	frameBase->set_size_local({ 1280, 720 });
@@ -83,7 +85,7 @@ int main()
 	rectBackground->set_color(cap::color::background_color_1);
 	rectBackground->set_depth(rhr::render::renderer::depth_background);
 
-	frameBackground->add_content(rectBackground, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectBackground, rectBackground, rhr::render::cardinal::local::RIGHT);
+	frameBackground->add_content(rectBackground, rhr::render::cardinal::local::RIGHT);
 	rectBackground->set_size_max();
 
 	std::shared_ptr<rhr::render::layer> layer = std::make_shared<rhr::render::layer>();
@@ -150,14 +152,15 @@ int main()
     button_debug->set_weak(button_debug);
     button_debug->set_size_local({16, 16});
     button_debug->set_callback(button_callback_build_debug, nullptr);
-    frameOptions->add_content(button_debug, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button_debug, button_debug, rhr::render::cardinal::local::LEFT);
+    frameOptions->add_content(button_debug, rhr::render::cardinal::local::LEFT);
 
-	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, rhr::stack::plane::primary_plane, std::weak_ptr<rhr::render::interfaces::i_enableable>(), rhr::render::cardinal::local::RIGHT);
-	rhr::stack::plane::primary_plane->set_size_max();
-	frameToolbar->add_content(rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, rhr::stack::plane::toolbar_plane, std::weak_ptr<rhr::render::interfaces::i_enableable>(), rhr::render::cardinal::local::RIGHT);
-	rhr::stack::plane::toolbar_plane->set_size_max();
+//	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::render::cardinal::local::RIGHT);
+//	rhr::stack::plane::primary_plane->set_size_max();
+//	frameToolbar->add_content(rhr::stack::plane::toolbar_plane, rhr::render::cardinal::local::RIGHT);
+//	rhr::stack::plane::toolbar_plane->set_size_max();
 
-	rhr::render::renderer::add_layer(layer);
+//	rhr::render::renderer::add_layer(layer);
+//#endif
 
 	// Critical Setup
 
@@ -171,7 +174,13 @@ int main()
 	//rhr::handler::field::initialize();
 
 	run();
-	rhr::handler::category::populate(frameCategories);
+//	rhr::handler::category::populate(frameCategories);
+
+	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::window_size, false);
+	rhr::stack::plane::primary_plane->set_size_max();
+
+	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::window_size, false);
+	rhr::stack::plane::toolbar_plane->set_size_max();
 
 	// Debug
 
@@ -195,9 +204,6 @@ int main()
 	testCollection->add_stack(testStack1);
 	rhr::stack::plane::primary_plane->add_collection(testCollection, true);
 
-	usize current_frame = 0;
-	f64 delta_time = 0.0;
-
 	TIME_POINT capture = std::chrono::high_resolution_clock::now();
 	TIME_POINT last = std::chrono::high_resolution_clock::now();
 	TIME_POINT begin = std::chrono::high_resolution_clock::now();
@@ -206,12 +212,12 @@ int main()
 	TIME_POINT diagnostics_time = std::chrono::high_resolution_clock::now();
 
 	std::vector<f64> fps_average;
-	bool reload_render_objects = false;
 
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	static glm::vec<2, f32> last_plane_size = { 0.0f, 0.0f };
-	static glm::vec<2, f32> last_plane_position = { 0.0f, 0.0f };
+	static glm::vec<2, i32> last_plane_size = { 0, 0 };
+	static glm::vec<2, i32> last_plane_position = { 0, 0 };
+	static glm::vec<2, i32> window_position = { 0, 0 };
 
 	while (!glfwWindowShouldClose(rhr::render::renderer::window))
 	{
@@ -219,6 +225,7 @@ int main()
 		std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
 
 		glfwPollEvents();
+		glfwGetWindowPos(rhr::render::renderer::window, &window_position.x, &window_position.y);
 
 		if (rhr::render::renderer::reload_swap_chain_flag)
 		{
@@ -269,11 +276,70 @@ int main()
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+#if 1
+		{
+			static bool opt_fullscreen_persistant = true;
+			bool opt_fullscreen = opt_fullscreen_persistant;
+			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-		static bool show_demo_window = true;
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
+			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+			// because it would be confusing to have two docking targets within each others.
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+			if (opt_fullscreen)
+			{
+				ImGuiViewport* viewport = ImGui::GetMainViewport();
+				ImGui::SetNextWindowPos(viewport->Pos);
+				ImGui::SetNextWindowSize(viewport->Size);
+				ImGui::SetNextWindowViewport(viewport->ID);
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+				window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+				window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			}
 
+			// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
+			// and handle the pass-thru hole, so we ask Begin() to not render a background.
+			if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+				window_flags |= ImGuiWindowFlags_NoBackground;
+
+			// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+			// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
+			// all active windows docked into it will lose their parent and become undocked.
+			// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
+			// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			static bool p_open = true;
+			ImGui::Begin("###DockSpace", &p_open, window_flags);
+			ImGui::PopStyleVar();
+
+			if (opt_fullscreen)
+				ImGui::PopStyleVar(2);
+
+			// DockSpace
+			ImGuiIO& io = ImGui::GetIO();
+			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+			{
+				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+			}
+			else
+			{
+				//ShowDockingDisabledMessage();
+			}
+
+
+			ImGui::End();
+		}
+#endif
+//		static bool show_demo_window = true;
+//		if (show_demo_window)
+//			ImGui::ShowDemoWindow(&show_demo_window);
+
+		rhr::render::renderer::render_pass_plane();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+//		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
+//		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("plane");
 
 		ImVec2 plane_size = ImGui::GetWindowSize();
@@ -282,47 +348,73 @@ int main()
 		if (plane_size.x != last_plane_size.x ||
 			plane_size.y != last_plane_size.y)
 		{
-			last_plane_size = { plane_size.x, plane_size.y };
+			last_plane_size.x = plane_size.x;
+			last_plane_size.y = plane_size.y;
 
-			frameBase->set_size_local(last_plane_size);
-			frameBackground->set_size_local(last_plane_size);
+			rhr::stack::plane::primary_plane->set_size_parent(last_plane_size);
+			rhr::stack::plane::primary_plane->set_size_max();
 
-			rectBackground->set_size_max();
 
-			frameOptionsContent->set_size_max();
-			frameOptions->set_size_max();
-			frameSidebarPrimary->set_size_max();
-			frameSidebarCategories->set_size_max();
-			framePrimary->set_size_max();
-			frameCategories->set_size_max();
-			frameToolbar->set_size_max();
+//			frameBase->set_size_local(last_plane_size);
+//			frameBackground->set_size_local(last_plane_size);
+//
+//			rectBackground->set_size_max();
+//
+//			frameOptionsContent->set_size_max();
+//			frameOptions->set_size_max();
+//			frameSidebarPrimary->set_size_max();
+//			frameSidebarCategories->set_size_max();
+//			framePrimary->set_size_max();
+//			frameCategories->set_size_max();
+//			frameToolbar->set_size_max();
 		}
 
-		if (plane_position.x != last_plane_position.x ||
-			plane_position.y != last_plane_position.y)
+		if (static_cast<i32>(plane_position.x) != last_plane_position.x ||
+			static_cast<i32>(plane_position.y) != last_plane_position.y)
 		{
-			last_plane_position = { plane_position.x, plane_position.y };
+			last_plane_position.x = static_cast<i32>(plane_position.x);
+			last_plane_position.y = static_cast<i32>(plane_position.y);
 
-			frameBase->set_position_parent_physical(last_plane_position);
-			frameBackground->set_position_parent_physical(last_plane_position);
+			cap::logger::debug(last_plane_position - window_position);
+
+			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(last_plane_position - window_position, false);
+			rhr::stack::plane::primary_plane->set_position_local_virtual_offset(last_plane_position - window_position, false);
+			rhr::stack::plane::primary_plane->update_transform();
 		}
 
+//		static bool descriptor_set_init = false;
+//		static ImTextureID descriptor_set;
+
+//		if (!descriptor_set_init)
+//		{
+//			descriptor_set_init = true;
+//			descriptor_set = ImGui_ImplVulkan_AddTexture(
+//				rhr::render::renderer::offscreen_pass_local.sampler,
+//				rhr::render::renderer::offscreen_pass_local.color.view,
+//				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+//				);
+//		}
+//
 		ImGui::Image(
 			ImGui_ImplVulkan_AddTexture(
 				rhr::render::renderer::offscreen_pass_local.sampler,
 				rhr::render::renderer::offscreen_pass_local.color.view,
-				VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-			),
+				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+				),
 			{
 				static_cast<f32>(rhr::render::renderer::window_size.x),
 				static_cast<f32>(rhr::render::renderer::window_size.y)
 			}
 		);
 		ImGui::End();
+		ImGui::PopStyleVar();
+//		ImGui::PopStyleVar();
+//		ImGui::PopStyleVar();
 
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();
-		const bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
+		bool main_is_minimized = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
+
 		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[0] = clear_color.x * clear_color.w;
 		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[1] = clear_color.y * clear_color.w;
 		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[2] = clear_color.z * clear_color.w;
@@ -331,7 +423,7 @@ int main()
 		if (!main_is_minimized)
 		{
 			rhr::render::renderer::imgui_draw_data = main_draw_data;
-			rhr::render::renderer::render();
+			rhr::render::renderer::render_pass_master();
 		}
 
 		// Update and Render additional Platform Windows

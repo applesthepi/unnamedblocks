@@ -1,10 +1,6 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_renderable.hpp"
-#include "rhr/rendering/interfaces/i_sizeable.hpp"
-#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_dicolorable.hpp"
 #include "rhr/rendering/interfaces/i_field.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
@@ -18,9 +14,7 @@ namespace rhr::render::object
 ///
 class text :
 	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
 	public rhr::render::interfaces::i_dicolorable,
-	public rhr::render::interfaces::i_enableable,
 	public rhr::render::interfaces::i_field
 {
 public:
@@ -80,23 +74,23 @@ private:
 	///
 	void update_size();
 
-	/// Add draw calls to cmd buffer prebound by Renderer.
-	void on_render() override;
-
-	/// Updates mesh on cpu side.
-	void on_update_buffers() override;
-
-	/// Regenerates descriptor sets including uniforms.
-	void on_reload_swap_chain() override;
+	///
+	void ui_transform_update() override;
 
 	///
-	void post_transform_update() override;
+	void ui_render() override;
+
+	///
+	void ui_reload_swap_chain() override;
+
+	///
+	void ui_update_buffers() override;
+
+	///
+	void ui_frame_update(f64 delta_time) override;
 
 	///
 	void post_color_update() override;
-
-	///
-	void post_enable_update(bool enabled) override;
 
 	///
 	void register_field();

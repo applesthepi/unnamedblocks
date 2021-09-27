@@ -1,9 +1,6 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/rendering/interfaces/i_sizeable.hpp"
-#include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_colorable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/object.hpp"
@@ -16,8 +13,6 @@ namespace rhr::render::object
 ///
 class rectangle :
 	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_renderable,
-	public rhr::render::interfaces::i_enableable,
 	public rhr::render::interfaces::i_colorable
 {
 public:
@@ -39,14 +34,19 @@ public:
 	///
 	void enable_border(bool enable_border, rhr::render::cardinal::local_horizontal overhang_horizontal, rhr::render::cardinal::local_vertical overhang_vertical);
 private:
-	void on_render() override;
+	///
+	void ui_transform_update() override;
 
-	void on_update_buffers() override;
+	///
+	void ui_render() override;
 
-	void on_reload_swap_chain() override;
+	///
+	void ui_reload_swap_chain() override;
 
-	void post_transform_update() override;
+	///
+	void ui_update_buffers() override;
 
+	///
 	void post_color_update() override;
 
 	/// Abstracted RenderObject to render the rectangle.

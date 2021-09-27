@@ -53,7 +53,21 @@ bool rhr::stack::argument::real::has_data()
 	return true;
 }
 
-void rhr::stack::argument::real::on_render()
+void rhr::stack::argument::real::ui_transform_update()
+{
+	update_child_transform(m_text);
+	m_text->set_position_local_physical({ ARG_REAL_DECORE_WIDTH, 0 });
+
+	glm::vec<2, f64> pos = get_position_physical_absolute();
+	m_decor_left_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_left_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_right_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+	m_decor_right_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
+
+	mark_dirty();
+}
+
+void rhr::stack::argument::real::ui_render()
 {
 	m_text->render();
 
@@ -63,7 +77,17 @@ void rhr::stack::argument::real::on_render()
 	m_decor_right_bottom->render();
 }
 
-void rhr::stack::argument::real::on_update_buffers()
+void rhr::stack::argument::real::ui_reload_swap_chain()
+{
+	m_text->reload_swap_chain();
+
+	m_decor_left_top->reload_swap_chain();
+	m_decor_left_bottom->reload_swap_chain();
+	m_decor_right_top->reload_swap_chain();
+	m_decor_right_bottom->reload_swap_chain();
+}
+
+void rhr::stack::argument::real::ui_update_buffers()
 {
 	m_text->update_buffers();
 
@@ -98,33 +122,9 @@ void rhr::stack::argument::real::on_update_buffers()
 	m_decor_right_bottom->update_vertices(vertices + 9, 3, true);
 }
 
-void rhr::stack::argument::real::on_reload_swap_chain()
-{
-	m_text->reload_swap_chain();
-
-	m_decor_left_top->reload_swap_chain();
-	m_decor_left_bottom->reload_swap_chain();
-	m_decor_right_top->reload_swap_chain();
-	m_decor_right_bottom->reload_swap_chain();
-}
-
-void rhr::stack::argument::real::on_frame_update(f64 delta_time)
+void rhr::stack::argument::real::ui_frame_update(f64 delta_time)
 {
 
-}
-
-void rhr::stack::argument::real::post_transform_update()
-{
-	update_child_transform(m_text);
-	m_text->set_position_local_physical({ ARG_REAL_DECORE_WIDTH, 0 });
-
-	glm::vec<2, f64> pos = get_position_physical_absolute();
-	m_decor_left_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
-	m_decor_left_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
-	m_decor_right_top->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
-	m_decor_right_bottom->set_super_position({ pos.x, pos.y, rhr::render::renderer::depth_argument });
-
-	mark_dirty();
 }
 
 void rhr::stack::argument::real::on_set_data()
@@ -158,9 +158,4 @@ void rhr::stack::argument::real::on_set_mode(cap::mod::block::block::argument::v
 		m_text->set_color_secondary(m_block_color);
 	else if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
 		m_text->set_color_secondary(cap::color().from_u8({ 100, 0, 40, 255 }));
-}
-
-void rhr::stack::argument::real::post_enable_update(bool enabled)
-{
-	m_text->set_enabled(enabled);
 }

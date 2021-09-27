@@ -16,16 +16,16 @@ public:
 	button_image(const std::string& texture);
 private:
 	///
-	void on_render() override;
+	virtual void ui_transform_update();
 
 	///
-	void on_update_buffers() override;
+	virtual void ui_render();
 
 	///
-	void on_reload_swap_chain() override;
+	virtual void ui_reload_swap_chain();
 
 	///
-	void post_transform_update() override;
+	virtual void ui_update_buffers();
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_rectangle;
