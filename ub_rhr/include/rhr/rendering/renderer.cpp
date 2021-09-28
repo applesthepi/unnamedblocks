@@ -6,6 +6,11 @@
 #include "rhr/rendering/vertex.hpp"
 #include "rhr/stacking/plane.hpp"
 #include "rhr/handlers/category.hpp"
+#include "rhr/rendering/swap_chain.hpp"
+#include "rhr/rendering/render_pass.hpp"
+#include "rhr/rendering/command.hpp"
+#include "rhr/rendering/pipeline.hpp"
+#include "rhr/rendering/device.hpp"
 
 #include <espresso/input_handler.hpp>
 #include <cappuccino/utils.hpp>
@@ -56,7 +61,7 @@ vk::device_memory depthImageMemory;
 
 void rhr::render::renderer::initialize_window()
 {
-	physical_device = VK_NULL_HANDLE;
+	rhr::render::device::physical_device = VK_NULL_HANDLE;
 	surface = VK_NULL_HANDLE;
 	frame_buffer_resized = false;
 	vsync_enabled = false;
@@ -86,9 +91,9 @@ void rhr::render::renderer::initialize_window()
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 
-	init_instance();
+	rhr::render::device::init_instance();
 
-	auto glfw_window_result = glfwCreateWindowSurface(instance, window, nullptr, &surface);
+	auto glfw_window_result = glfwCreateWindowSurface(rhr::render::device::instance, window, nullptr, &surface);
 
 	if (glfw_window_result != VK_SUCCESS)
 		cap::logger::fatal(std::to_string(glfw_window_result));
@@ -105,10 +110,10 @@ void rhr::render::renderer::initialize()
 // 	testObject->SetTexture(RenderObject::TextureType::TEXT_SHEET);
 // 	testObject->SetDepth(0);
 
-	init_debug();
-	init_device();
+	rhr::render::device::init_debug();
+	rhr::render::device::init_device();
 
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
+	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &surface);
 	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
 
 	f32 queue_priority = 1.0f;
@@ -119,27 +124,23 @@ void rhr::render::renderer::initialize()
 		queue_create_info.queueFamilyIndex = queue_family;
 		queue_create_info.queueCount = 1;
 		queue_create_info.pQueuePriorities = &queue_priority;
-		queue_create_infos.push_back(queue_create_info);
+		rhr::render::command::queue_create_infos.push_back(queue_create_info);
 	}
 
-	init_logical_device();
-//	vkGetDeviceQueue(device, indices.present_family.value(), 0, &present_queue);
-	init_swap_chain();
-
-
-
-	init_image_views();
-	init_render_pass();
+	rhr::render::device::init_logical_device();
+	rhr::render::swap_chain::init_swap_chain();
+	rhr::render::swap_chain::init_image_views();
+	rhr::render::render_pass::init_render_pass();
 	init_descriptor_set_layout();
-	init_pipelines();
-	init_command_pool();
+	rhr::render::pipeline::init_pipelines();
+	rhr::render::command::init_command_pool();
 	init_depth_resources();
 
 	// offscreen frame buffer image
 
 	rhr::render::tools::create_image(
-		swap_chain_extent.width,
-		swap_chain_extent.height,
+		rhr::render::swap_chain::swap_chain_extent.width,
+		rhr::render::swap_chain::swap_chain_extent.height,
 		VK_FORMAT_R8G8B8A8_UNORM,
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
@@ -149,8 +150,8 @@ void rhr::render::renderer::initialize()
 		);
 
 	rhr::render::tools::create_image(
-		swap_chain_extent.width,
-		swap_chain_extent.height,
+		rhr::render::swap_chain::swap_chain_extent.width,
+		rhr::render::swap_chain::swap_chain_extent.height,
 		rhr::render::tools::find_depth_format(),
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -173,13 +174,13 @@ void rhr::render::renderer::initialize()
 		VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
 		);
 
-	init_frame_buffers();
+	rhr::render::swap_chain::init_frame_buffers();
 	init_texture_sampler();
-	init_descriptor_pool();
-	init_command_buffers();
-	init_sync_objects();
+	rhr::render::command::init_descriptor_pool();
+	rhr::render::command::init_command_buffers();
+	rhr::render::swap_chain::init_sync_objects();
 
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &surface);
 
 	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
 
@@ -296,46 +297,46 @@ void rhr::render::renderer::initialize()
 
 	for (u32 i = 0; i < imageCount; i++)
 	{
-		imgui_local->frames[i].CommandPool = command_pool;
-		imgui_local->frames[i].CommandBuffer = command_buffers[i];
-		imgui_local->frames[i].Fence = in_flight_fences[i];
-		imgui_local->frames[i].Backbuffer = swap_chain_images[i];
-		imgui_local->frames[i].BackbufferView = swap_chain_image_views[i];
-		imgui_local->frames[i].Framebuffer = swap_chain_frame_buffers[i];
+		imgui_local->frames[i].CommandPool = rhr::render::command::command_pool;
+		imgui_local->frames[i].CommandBuffer = rhr::render::command::command_buffers[i];
+		imgui_local->frames[i].Fence = rhr::render::swap_chain::in_flight_fences[i];
+		imgui_local->frames[i].Backbuffer = rhr::render::swap_chain::swap_chain_images[i];
+		imgui_local->frames[i].BackbufferView = rhr::render::swap_chain::swap_chain_image_views[i];
+		imgui_local->frames[i].Framebuffer = rhr::render::swap_chain::swap_chain_frame_buffers[i];
 	}
 
 	for (u32 i = 0; i < imageCount; i++)
 	{
-		imgui_local->semaphores[i].ImageAcquiredSemaphore = image_available_semaphores[i];
-		imgui_local->semaphores[i].RenderCompleteSemaphore = render_finished_semaphores[i];
+		imgui_local->semaphores[i].ImageAcquiredSemaphore = rhr::render::swap_chain::image_available_semaphores[i];
+		imgui_local->semaphores[i].RenderCompleteSemaphore = rhr::render::swap_chain::render_finished_semaphores[i];
 	}
 
 	imgui_local->data.Width = rhr::render::renderer::window_size.x;
 	imgui_local->data.Height = rhr::render::renderer::window_size.y;
-	imgui_local->data.Swapchain = swap_chain;
+	imgui_local->data.Swapchain = rhr::render::swap_chain::swapchain_khr;
 	imgui_local->data.Surface = surface;
 	imgui_local->data.SurfaceFormat = surface_format;
 	imgui_local->data.PresentMode = present_mode;
-	imgui_local->data.RenderPass = render_pass;
-	imgui_local->data.Pipeline = ui_pipeline;
+	imgui_local->data.RenderPass = rhr::render::render_pass::render_pass_master;
+	imgui_local->data.Pipeline = rhr::render::pipeline::ui_pipeline;
 //	imgui_local->data.ClearEnable = false;
 //	imgui_local->data.ClearValue = VkClearValue(0.0f, 0.0f, 0.0f, 1.0f);
 	imgui_local->data.FrameIndex = 0;
-	imgui_local->data.ImageCount = swap_chain_images.size();
+	imgui_local->data.ImageCount = rhr::render::swap_chain::swap_chain_images.size();
 	imgui_local->data.SemaphoreIndex = 0;
 	imgui_local->data.Frames = imgui_local->frames;
 	imgui_local->data.FrameSemaphores = imgui_local->semaphores;
 
 	ImGui_ImplVulkan_InitInfo imgui_info{
-		.Instance = instance,
-		.PhysicalDevice = physical_device,
-		.Device = device,
+		.Instance = rhr::render::device::instance,
+		.PhysicalDevice = rhr::render::device::physical_device,
+		.Device = rhr::render::device::device_master,
 		.QueueFamily = static_cast<uint32_t>(indices.graphics_family.value()),
 		.Queue = graphics_queue,
 		.PipelineCache = nullptr,
-		.DescriptorPool = descriptor_pool,
+		.DescriptorPool = rhr::render::command::descriptor_pool,
 		.MinImageCount = swap_chain_support.capabilities.minImageCount,
-		.ImageCount = static_cast<uint32_t>(swap_chain_images.size()),
+		.ImageCount = static_cast<uint32_t>(rhr::render::swap_chain::swap_chain_images.size()),
 		.MSAASamples = VK_SAMPLE_COUNT_1_BIT,
 		.Allocator = nullptr,
 		.CheckVkResultFn = [](VkResult result) {
@@ -345,19 +346,19 @@ void rhr::render::renderer::initialize()
 	};
 
 	ImGui_ImplGlfw_InitForVulkan(window, true);
-	ImGui_ImplVulkan_Init(&imgui_info, render_pass);
+	ImGui_ImplVulkan_Init(&imgui_info, rhr::render::render_pass::render_pass_master);
 
 	{
 		VkResult err;
 
-		err = vkResetCommandPool(device, command_pool, 0);
+		err = vkResetCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, 0);
 		check_vk_result(err);
 
 		// Use any command queue
 		VkCommandPool command_pool = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandPool;
 		VkCommandBuffer command_buffer = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandBuffer;
 
-		err = vkResetCommandPool(device, command_pool, 0);
+		err = vkResetCommandPool(rhr::render::device::device_master, command_pool, 0);
 		check_vk_result(err);
 
 		VkCommandBufferBeginInfo begin_info = {};
@@ -380,7 +381,7 @@ void rhr::render::renderer::initialize()
 		err = vkQueueSubmit(graphics_queue, 1, &end_info, VK_NULL_HANDLE);
 		check_vk_result(err);
 
-		err = vkDeviceWaitIdle(device);
+		err = vkDeviceWaitIdle(rhr::render::device::device_master);
 		check_vk_result(err);
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
@@ -390,7 +391,7 @@ void rhr::render::renderer::initialize()
 
 	{
 		VkPhysicalDeviceProperties properties{};
-		vkGetPhysicalDeviceProperties(physical_device, &properties);
+		vkGetPhysicalDeviceProperties(rhr::render::device::physical_device, &properties);
 
 		VkSamplerCreateInfo sampler_info{};
 		sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -412,7 +413,7 @@ void rhr::render::renderer::initialize()
 		sampler_info.minLod = 0.0f;
 		sampler_info.maxLod = 0.0f;
 
-		if (vkCreateSampler(device, &sampler_info, nullptr, &offscreen_pass_local.sampler) != VK_SUCCESS)
+		if (vkCreateSampler(rhr::render::device::device_master, &sampler_info, nullptr, &offscreen_pass_local.sampler) != VK_SUCCESS)
 			cap::logger::fatal("failed to create texture sampler");
 	}
 }
@@ -458,7 +459,7 @@ void rhr::render::renderer::render_pass_plane()
 	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
 	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 
-	err = vkAcquireNextImageKHR(device, imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
+	err = vkAcquireNextImageKHR(rhr::render::device::device_master, imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
@@ -472,10 +473,10 @@ void rhr::render::renderer::render_pass_plane()
 
 	// frame sync
 
-	err = vkWaitForFences(device, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+	err = vkWaitForFences(rhr::render::device::device_master, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
 	check_vk_result(err);
 
-	err = vkResetFences(device, 1, &fd->Fence);
+	err = vkResetFences(rhr::render::device::device_master, 1, &fd->Fence);
 	check_vk_result(err);
 
 	// initialize command buffer for render
@@ -497,7 +498,7 @@ void rhr::render::renderer::render_pass_plane()
 		info.flags = 0;
 
 		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-		active_command_buffer = &(fd->CommandBuffer);
+		rhr::render::command::active_command_buffer = &(fd->CommandBuffer);
 		check_vk_result(err);
 	}
 
@@ -606,7 +607,7 @@ void rhr::render::renderer::frame_present()
 	vkQueueWaitIdle(graphics_queue);
 	check_vk_result(err);
 
-	err = vkResetCommandPool(device, command_pool, 0);
+	err = vkResetCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, 0);
 	check_vk_result(err);
 
 	imgui_local->data.SemaphoreIndex = (imgui_local->data.SemaphoreIndex + 1) % imgui_local->data.ImageCount;
@@ -614,29 +615,29 @@ void rhr::render::renderer::frame_present()
 
 void rhr::render::renderer::clean_up_swap_chain()
 {
-	vkDestroyImageView(device, depth_image_view, nullptr);
-	vkDestroyImage(device, depthImage, nullptr);
-	vkFreeMemory(device, depthImageMemory, nullptr);
+	vkDestroyImageView(rhr::render::device::device_master, depth_image_view, nullptr);
+	vkDestroyImage(rhr::render::device::device_master, depthImage, nullptr);
+	vkFreeMemory(rhr::render::device::device_master, depthImageMemory, nullptr);
 
-	for (usize i = 0; i < swap_chain_frame_buffers.size(); i++)
-		vkDestroyFramebuffer(device, swap_chain_frame_buffers[i], nullptr);
+	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_frame_buffers.size(); i++)
+		vkDestroyFramebuffer(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_frame_buffers[i], nullptr);
 
-	vkFreeCommandBuffers(device, command_pool, static_cast<u32>(command_buffers.size()), command_buffers.data());
+	vkFreeCommandBuffers(rhr::render::device::device_master, rhr::render::command::command_pool, static_cast<u32>(rhr::render::command::command_buffers.size()), rhr::render::command::command_buffers.data());
 
 	//vkDestroyPipeline(Device, BlocksPipeline, nullptr);
-	vkDestroyPipeline(device, ui_pipeline, nullptr);
-	vkDestroyPipeline(device, ui_texture_pipeline, nullptr);
+	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline, nullptr);
+	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline, nullptr);
 
-	vkDestroyPipelineLayout(device, blocks_pipeline_layout, nullptr);
-	vkDestroyPipelineLayout(device, ui_pipeline_layout, nullptr);
-	vkDestroyPipelineLayout(device, ui_texture_pipeline_layout, nullptr);
+//	vkDestroyPipelineLayout(device, rhr::render::pipeline::blocks_pipeline_layout, nullptr);
+	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline_layout, nullptr);
+	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline_layout, nullptr);
 
-	vkDestroyRenderPass(device, render_pass, nullptr);
+	vkDestroyRenderPass(rhr::render::device::device_master, rhr::render::render_pass::render_pass_master, nullptr);
 
-	for (usize i = 0; i < swap_chain_image_views.size(); i++)
-		vkDestroyImageView(device, swap_chain_image_views[i], nullptr);
+	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_image_views.size(); i++)
+		vkDestroyImageView(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_image_views[i], nullptr);
 
-	vkDestroySwapchainKHR(device, swap_chain, nullptr);
+	vkDestroySwapchainKHR(rhr::render::device::device_master, rhr::render::swap_chain::swapchain_khr, nullptr);
 
 	//for (usize i = 0; i < m_SwapChainImages.size(); i++)
 	//{
@@ -644,7 +645,7 @@ void rhr::render::renderer::clean_up_swap_chain()
 	//	vkFreeMemory(m_Device, m_UniformBuffersMemory[i], nullptr);
 	//}
 
-	vkDestroyDescriptorPool(device, descriptor_pool, nullptr);
+	vkDestroyDescriptorPool(rhr::render::device::device_master, rhr::render::command::descriptor_pool, nullptr);
 }
 
 void rhr::render::renderer::clean_up()
@@ -655,13 +656,13 @@ void rhr::render::renderer::clean_up()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 
-	vkDestroySampler(device, texture_sampler, nullptr);
+	vkDestroySampler(rhr::render::device::device_master, texture_sampler, nullptr);
 	//vkDestroyImageView(m_Device, m_TextureImageView, nullptr);
 
 	//vkDestroyImage(m_Device, m_TextureImage, nullptr);
 	//vkFreeMemory(m_Device, m_TextureImageMemory, nullptr);
 
-	vkDestroyDescriptorSetLayout(device, descriptor_set_layout, nullptr);
+	vkDestroyDescriptorSetLayout(rhr::render::device::device_master, rhr::render::command::descriptor_set_layout, nullptr);
 
 	//vkDestroyBuffer(m_Device, m_IndexBuffer, nullptr);
 	//vkFreeMemory(m_Device, m_IndexBufferMemory, nullptr);
@@ -671,20 +672,20 @@ void rhr::render::renderer::clean_up()
 
 	for (usize i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
 	{
-		vkDestroySemaphore(device, render_finished_semaphores[i], nullptr);
-		vkDestroySemaphore(device, image_available_semaphores[i], nullptr);
-		vkDestroyFence(device, in_flight_fences[i], nullptr);
+		vkDestroySemaphore(rhr::render::device::device_master, rhr::render::swap_chain::render_finished_semaphores[i], nullptr);
+		vkDestroySemaphore(rhr::render::device::device_master, rhr::render::swap_chain::image_available_semaphores[i], nullptr);
+		vkDestroyFence(rhr::render::device::device_master, rhr::render::swap_chain::in_flight_fences[i], nullptr);
 	}
 
-	vkDestroyCommandPool(device, command_pool, nullptr);
+	vkDestroyCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, nullptr);
 
-	vkDestroyDevice(device, nullptr);
+	vkDestroyDevice(rhr::render::device::device_master, nullptr);
 
 	if (enable_validation_layers)
-		rhr::render::tools::destroy_debug_utils_message_ext(&instance, &debug_messenger, nullptr);
+		rhr::render::tools::destroy_debug_utils_message_ext(&rhr::render::device::instance, &rhr::render::device::debug_messenger, nullptr);
 
-	vkDestroySurfaceKHR(instance, surface, nullptr);
-	vkDestroyInstance(instance, nullptr);
+	vkDestroySurfaceKHR(rhr::render::device::instance, surface, nullptr);
+	vkDestroyInstance(rhr::render::device::instance, nullptr);
 
 	glfwDestroyWindow(window);
 
@@ -703,22 +704,22 @@ void rhr::render::renderer::recreate_swap_chain()
 		glfwWaitEvents();
 	}
 
-	vkDeviceWaitIdle(device);
+	vkDeviceWaitIdle(rhr::render::device::device_master);
 
 	clean_up_swap_chain();
 
-	init_swap_chain();
-	init_image_views();
-	init_render_pass();
-	init_pipelines();
+	rhr::render::swap_chain::init_swap_chain();
+	rhr::render::swap_chain::init_image_views();
+	rhr::render::render_pass::init_render_pass();
+	rhr::render::pipeline::init_pipelines();
 	init_depth_resources();
-	init_frame_buffers();
-	init_descriptor_pool();
-	init_command_buffers();
-	init_sync_objects();
+	rhr::render::swap_chain::init_frame_buffers();
+	rhr::render::command::init_descriptor_pool();
+	rhr::render::command::init_command_buffers();
+	rhr::render::swap_chain::init_sync_objects();
 
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &surface);
+	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &surface);
 
 	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
 
@@ -727,9 +728,9 @@ void rhr::render::renderer::recreate_swap_chain()
 
 	ImGui_ImplVulkan_SetMinImageCount(swap_chain_support.capabilities.minImageCount);
 	ImGui_ImplVulkanH_CreateOrResizeWindow(
-		instance,
-		physical_device,
-		device,
+		rhr::render::device::instance,
+		rhr::render::device::physical_device,
+		rhr::render::device::device_master,
 		&imgui_local->data,
 		static_cast<u32>(indices.graphics_family.value()),
 		nullptr,
@@ -768,334 +769,6 @@ void rhr::render::renderer::reload_layer_swap_chains()
 //	rhr::handler::category::reload_swap_chain();
 }
 
-void rhr::render::renderer::init_instance()
-{
-	vk::application_info app_info;
-	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-	app_info.pApplicationName = "Unnamed Blocks";
-	app_info.applicationVersion = VK_MAKE_API_VERSION(0, 0, 0, 0);
-	app_info.pEngineName = "No Engine";
-	app_info.engineVersion = VK_MAKE_API_VERSION(0, 0, 0, 0);
-	app_info.apiVersion = VK_API_VERSION_1_0;
-	app_info.pNext = NULL;
-
-	vk::instance_create_info create_info{};
-	create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-	create_info.pApplicationInfo = &app_info;
-
-	u32 glfw_extension_count = 0;
-	const char** glfw_extensions;
-
-	glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
-
-	auto required_extensions = rhr::render::tools::get_required_extensions();
-	create_info.enabledExtensionCount = static_cast<u32>(required_extensions.size());
-	create_info.ppEnabledExtensionNames = required_extensions.data();
-
-	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
-	if (enable_validation_layers)
-	{
-//		rhr::render::tools::validation_layers.push_back("VK_LAYER_LUNARG_standard_validation");
-//		rhr::render::tools::validation_layers.push_back("VK_EXT_debug_report");
-
-		create_info.enabledLayerCount = static_cast<u32>(rhr::render::tools::validation_layers.size());
-		create_info.ppEnabledLayerNames = rhr::render::tools::validation_layers.data();
-
-		rhr::render::tools::populate_debug_messenge_create_info(debug_create_info);
-		create_info.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debug_create_info;
-	}
-	else
-	{
-		create_info.enabledLayerCount = 0;
-		create_info.pNext = nullptr;
-	}
-
-	if (vkCreateInstance(&create_info, nullptr, &instance) != VK_SUCCESS)
-		cap::logger::fatal("vulkan failed to initialize");
-
-	u32 extension_count = 0;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
-
-	std::vector<VkExtensionProperties> extensions(extension_count);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
-
-	if (enable_validation_layers && !rhr::render::tools::check_validation_layer_support())
-		cap::logger::fatal("vulkan validation layers unsupported");
-}
-
-void rhr::render::renderer::init_debug()
-{
-	if (!enable_validation_layers)
-		return;
-
-	VkDebugUtilsMessengerCreateInfoEXT create_info;
-	rhr::render::tools::populate_debug_messenge_create_info(create_info);
-
-	if (rhr::render::tools::create_debug_utils_message_ext(&instance, &create_info, nullptr, &debug_messenger) != VK_SUCCESS)
-		cap::logger::fatal("failed to create debug utils message EXT");
-}
-
-void rhr::render::renderer::init_device()
-{
-	u32 device_count = 0;
-	vkEnumeratePhysicalDevices(instance, &device_count, nullptr);
-
-	if (device_count == 0)
-		cap::logger::fatal("no supported vulkan devices found");
-
-	std::vector<vk::physical_device> devices(device_count);
-	vkEnumeratePhysicalDevices(instance, &device_count, devices.data());
-
-	for (auto& device : devices)
-	{
-		if (rhr::render::tools::is_device_suitable(&device, &surface))
-		{
-			physical_device = device;
-			break;
-		}
-	}
-
-	if (physical_device == VK_NULL_HANDLE)
-		cap::logger::fatal("failed to pick appropriate device");
-}
-
-void rhr::render::renderer::init_logical_device()
-{
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
-
-	vk::device_queue_create_info queue_create_info{};
-	queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-	queue_create_info.queueFamilyIndex = indices.graphics_family.value();
-	queue_create_info.queueCount = 1;
-
-	f32 queue_priority = 1.0f;
-	queue_create_info.pQueuePriorities = &queue_priority;
-
-	vk::physical_device_features device_features{};
-	device_features.samplerAnisotropy = VK_TRUE;
-
-	vk::device_create_info create_info{};
-	create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
-	create_info.queueCreateInfoCount = static_cast<u32>(queue_create_infos.size());
-	create_info.pQueueCreateInfos = queue_create_infos.data();
-	create_info.pEnabledFeatures = &device_features;
-	create_info.enabledExtensionCount = static_cast<u32>(rhr::render::tools::device_extensions.size());
-	create_info.ppEnabledExtensionNames = rhr::render::tools::device_extensions.data();
-
-	if (enable_validation_layers)
-	{
-		create_info.enabledLayerCount = static_cast<u32>(rhr::render::tools::validation_layers.size());
-		create_info.ppEnabledLayerNames = rhr::render::tools::validation_layers.data();
-	}
-	else
-		create_info.enabledLayerCount = 0;
-
-	if (vkCreateDevice(physical_device, &create_info, nullptr, &device) != VK_SUCCESS)
-		cap::logger::fatal("failed to create logical device link to gpu");
-
-	vkGetDeviceQueue(device, indices.graphics_family.value(), 0, &graphics_queue);
-}
-
-void rhr::render::renderer::init_swap_chain()
-{
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&physical_device, &surface);
-
-	surface_format = rhr::render::tools::choose_swap_surface_format(swap_chain_support.formats);
-	present_mode = rhr::render::tools::choose_swap_present_mode(swap_chain_support.present_modes);
-	vk::extent_2d extent = rhr::render::tools::choose_swap_extent(swap_chain_support.capabilities);
-
-	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
-
-	if (swap_chain_support.capabilities.maxImageCount > 0 && imageCount > swap_chain_support.capabilities.maxImageCount)
-		imageCount = swap_chain_support.capabilities.maxImageCount;
-
-	vk::swap_chain_create_info_khr create_info{};
-	create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	create_info.surface = surface;
-
-	create_info.minImageCount = imageCount;
-	create_info.imageFormat = surface_format.format;
-	create_info.imageColorSpace = surface_format.colorSpace;
-	create_info.imageExtent = extent;
-	create_info.imageArrayLayers = 1;
-	create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
-	u32 queue_family_indices[] = { indices.graphics_family.value(), indices.present_family.value() };
-
-	if (indices.graphics_family != indices.present_family)
-	{
-		create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		create_info.queueFamilyIndexCount = 2;
-		create_info.pQueueFamilyIndices = queue_family_indices;
-	}
-	else
-	{
-		create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		create_info.queueFamilyIndexCount = 0; // Optional
-		create_info.pQueueFamilyIndices = nullptr; // Optional
-	}
-
-	create_info.preTransform = swap_chain_support.capabilities.currentTransform;
-	create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	create_info.presentMode = present_mode;
-	create_info.clipped = VK_TRUE;
-	create_info.oldSwapchain = VK_NULL_HANDLE;
-
-	if (vkCreateSwapchainKHR(device, &create_info, nullptr, &swap_chain) != VK_SUCCESS)
-		cap::logger::fatal("failed to create swap chain");
-
-	vkGetSwapchainImagesKHR(device, swap_chain, &imageCount, nullptr);
-	swap_chain_images.resize(imageCount);
-	vkGetSwapchainImagesKHR(device, swap_chain, &imageCount, swap_chain_images.data());
-
-	swap_chain_image_format = surface_format.format;
-	swap_chain_extent = extent;
-}
-
-void rhr::render::renderer::init_image_views()
-{
-	swap_chain_image_views.resize(swap_chain_images.size());
-
-	for (u32 i = 0; i < swap_chain_images.size(); i++)
-		swap_chain_image_views[i] = rhr::render::tools::create_image_view(
-			swap_chain_images[i],
-			swap_chain_image_format,
-			VK_IMAGE_ASPECT_COLOR_BIT
-			);
-}
-
-void rhr::render::renderer::init_render_pass()
-{
-	{
-		std::array<VkSubpassDependency, 2> dependencies{};
-
-		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[0].dstSubpass = 0;
-		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-		dependencies[1].srcSubpass = 0;
-		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
-
-		VkAttachmentDescription color_attachment{};
-		color_attachment.format = swap_chain_image_format;
-		color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-		VkAttachmentDescription depth_attachment{};
-		depth_attachment.format = rhr::render::tools::find_depth_format();
-		depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-		VkAttachmentReference color_attachment_ref{};
-		color_attachment_ref.attachment = 0;
-		color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-		VkAttachmentReference depth_attachment_ref{};
-		depth_attachment_ref.attachment = 1;
-		depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-		VkSubpassDescription subpass{};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &color_attachment_ref;
-		subpass.pDepthStencilAttachment = &depth_attachment_ref;
-
-		std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
-
-		VkRenderPassCreateInfo render_pass_info{};
-		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		render_pass_info.attachmentCount = static_cast<u32>(attachments.size());
-		render_pass_info.pAttachments = attachments.data();
-		render_pass_info.subpassCount = 1;
-		render_pass_info.pSubpasses = &subpass;
-		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
-		render_pass_info.pDependencies = dependencies.data();
-
-		if (vkCreateRenderPass(device, &render_pass_info, nullptr, &offscreen_pass_local.render_pass) != VK_SUCCESS)
-			cap::logger::fatal("failed to create render pass");
-	}
-
-	{
-		std::array<VkSubpassDependency, 1> dependencies{};
-
-		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependencies[0].dstSubpass = 0;
-		dependencies[0].srcAccessMask = 0;
-		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-		VkAttachmentDescription color_attachment{};
-		color_attachment.format = swap_chain_image_format;
-		color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		color_attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-		VkAttachmentDescription depth_attachment{};
-		depth_attachment.format = rhr::render::tools::find_depth_format();
-		depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-		VkAttachmentReference color_attachment_ref{};
-		color_attachment_ref.attachment = 0;
-		color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-		VkAttachmentReference depth_attachment_ref{};
-		depth_attachment_ref.attachment = 1;
-		depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-		VkSubpassDescription subpass{};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &color_attachment_ref;
-		subpass.pDepthStencilAttachment = &depth_attachment_ref;
-
-		std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
-
-		VkRenderPassCreateInfo render_pass_info{};
-		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		render_pass_info.attachmentCount = static_cast<u32>(attachments.size());
-		render_pass_info.pAttachments = attachments.data();
-		render_pass_info.subpassCount = 1;
-		render_pass_info.pSubpasses = &subpass;
-		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
-		render_pass_info.pDependencies = dependencies.data();
-
-		if (vkCreateRenderPass(device, &render_pass_info, nullptr, &render_pass) != VK_SUCCESS)
-			cap::logger::fatal("failed to create render pass");
-	}
-}
-
 void rhr::render::renderer::init_descriptor_set_layout()
 {
 	VkDescriptorSetLayoutBinding ubo_layout_binding{};
@@ -1118,237 +791,14 @@ void rhr::render::renderer::init_descriptor_set_layout()
 	layout_info.bindingCount = static_cast<u32>(bindings.size());
 	layout_info.pBindings = bindings.data();
 
-	if (vkCreateDescriptorSetLayout(device, &layout_info, nullptr, &descriptor_set_layout) != VK_SUCCESS)
+	if (vkCreateDescriptorSetLayout(rhr::render::device::device_master, &layout_info, nullptr, &rhr::render::command::descriptor_set_layout) != VK_SUCCESS)
 		cap::logger::fatal("failed to set descriptor layout");
-}
-
-void rhr::render::renderer::create_pipeline(const std::string& shader, VkPipeline* pipeline, VkPipelineLayout* layout)
-{
-	auto vert_shader_code = rhr::render::tools::read_file_bytes("res/shaders/" + shader + ".vert.spv");
-	auto frag_shader_code = rhr::render::tools::read_file_bytes("res/shaders/" + shader + ".frag.spv");
-
-	VkShaderModule vert_shader_module = rhr::render::tools::create_shader_module(*vert_shader_code, &device);
-	VkShaderModule frag_shader_module = rhr::render::tools::create_shader_module(*frag_shader_code, &device);
-
-	VkPipelineShaderStageCreateInfo vert_shader_stage_info{};
-	vert_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	vert_shader_stage_info.stage = VK_SHADER_STAGE_VERTEX_BIT;
-
-	vert_shader_stage_info.module = vert_shader_module;
-	vert_shader_stage_info.pName = "main";
-
-	VkPipelineShaderStageCreateInfo frag_shader_stage_info{};
-	frag_shader_stage_info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-	frag_shader_stage_info.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-	frag_shader_stage_info.module = frag_shader_module;
-	frag_shader_stage_info.pName = "main";
-
-	VkPipelineShaderStageCreateInfo shader_stages[] = { vert_shader_stage_info, frag_shader_stage_info };
-
-	auto binding_description = rhr::render::vertex::get_binding_description();
-	auto attribute_descriptions = rhr::render::vertex::get_attribute_description();
-
-	VkPipelineVertexInputStateCreateInfo vertex_input_info{};
-	vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	vertex_input_info.vertexBindingDescriptionCount = 1;
-	vertex_input_info.vertexAttributeDescriptionCount = static_cast<u32>(attribute_descriptions.size());
-	vertex_input_info.pVertexBindingDescriptions = &binding_description;
-	vertex_input_info.pVertexAttributeDescriptions = attribute_descriptions.data();
-
-	VkPipelineInputAssemblyStateCreateInfo input_assembly{};
-	input_assembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	input_assembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-	input_assembly.primitiveRestartEnable = VK_FALSE;
-
-	VkViewport viewport{};
-	viewport.x = 0.0f;
-	viewport.y = 0.0f;
-	viewport.width = static_cast<f32>(swap_chain_extent.width);
-	viewport.height = static_cast<f32>(swap_chain_extent.height);
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D scissor{};
-	scissor.offset = { 0, 0 };
-	scissor.extent = swap_chain_extent;
-
-	VkPipelineViewportStateCreateInfo viewport_state{};
-	viewport_state.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-	viewport_state.viewportCount = 1;
-	viewport_state.pViewports = &viewport;
-	viewport_state.scissorCount = 1;
-	viewport_state.pScissors = &scissor;
-
-	VkPipelineRasterizationStateCreateInfo rasterizer{};
-	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-	rasterizer.depthClampEnable = VK_FALSE;
-	rasterizer.rasterizerDiscardEnable = VK_FALSE;
-	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
-	rasterizer.lineWidth = 1.0f;
-
-	rasterizer.cullMode = VK_CULL_MODE_NONE;
-	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-
-	rasterizer.depthBiasEnable = VK_FALSE;
-	rasterizer.depthBiasConstantFactor = 0.0f; // Optional
-	rasterizer.depthBiasClamp = 0.0f; // Optional
-	rasterizer.depthBiasSlopeFactor = 0.0f; // Optional
-
-	VkPipelineMultisampleStateCreateInfo multisampling{};
-	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
-	multisampling.sampleShadingEnable = VK_FALSE;
-	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
-	multisampling.minSampleShading = 1.0f; // Optional
-	multisampling.pSampleMask = nullptr; // Optional
-	multisampling.alphaToCoverageEnable = VK_FALSE; // Optional
-	multisampling.alphaToOneEnable = VK_FALSE; // Optional
-
-	VkPipelineColorBlendAttachmentState color_blend_attachment{};
-	color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	color_blend_attachment.blendEnable = VK_TRUE;
-	color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-	color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-	color_blend_attachment.colorBlendOp = VK_BLEND_OP_ADD;
-	color_blend_attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	color_blend_attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-	color_blend_attachment.alphaBlendOp = VK_BLEND_OP_ADD;
-
-	VkPipelineColorBlendStateCreateInfo color_blending{};
-	color_blending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-	color_blending.logicOpEnable = VK_FALSE;
-	color_blending.logicOp = VK_LOGIC_OP_COPY; // Optional
-	color_blending.attachmentCount = 1;
-	color_blending.pAttachments = &color_blend_attachment;
-	color_blending.blendConstants[0] = 0.0f; // Optional
-	color_blending.blendConstants[1] = 0.0f; // Optional
-	color_blending.blendConstants[2] = 0.0f; // Optional
-	color_blending.blendConstants[3] = 0.0f; // Optional
-
-	VkDynamicState dynamic_states[] = {
-		VK_DYNAMIC_STATE_VIEWPORT,
-		VK_DYNAMIC_STATE_LINE_WIDTH
-	};
-
-	VkPipelineDynamicStateCreateInfo dynamic_state{};
-	dynamic_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-	dynamic_state.dynamicStateCount = 2;
-	dynamic_state.pDynamicStates = dynamic_states;
-
-	VkPipelineLayoutCreateInfo pipeline_layout_info{};
-	pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipeline_layout_info.setLayoutCount = 1;
-	pipeline_layout_info.pSetLayouts = &descriptor_set_layout;
-	pipeline_layout_info.pushConstantRangeCount = 0; // Optional
-	pipeline_layout_info.pPushConstantRanges = nullptr; // Optional
-
-	if (vkCreatePipelineLayout(device, &pipeline_layout_info, nullptr, layout) != VK_SUCCESS)
-		cap::logger::fatal("failed to create pipeline layout");
-
-	VkPipelineDepthStencilStateCreateInfo depth_stencil{};
-	depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depth_stencil.depthTestEnable = VK_TRUE;
-	depth_stencil.depthWriteEnable = VK_TRUE;
-	depth_stencil.depthCompareOp = VK_COMPARE_OP_LESS;
-	depth_stencil.depthBoundsTestEnable = VK_FALSE;
-	depth_stencil.minDepthBounds = 0.0f; // Optional
-	depth_stencil.maxDepthBounds = 1.0f; // Optional
-	depth_stencil.stencilTestEnable = VK_FALSE;
-	depth_stencil.front = {}; // Optional
-	depth_stencil.back = {}; // Optional
-
-	VkGraphicsPipelineCreateInfo pipeline_info{};
-	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipeline_info.stageCount = 2;
-	pipeline_info.pStages = shader_stages;
-	pipeline_info.pVertexInputState = &vertex_input_info;
-	pipeline_info.pInputAssemblyState = &input_assembly;
-	pipeline_info.pViewportState = &viewport_state;
-	pipeline_info.pRasterizationState = &rasterizer;
-	pipeline_info.pMultisampleState = &multisampling;
-	pipeline_info.pDepthStencilState = &depth_stencil;
-	pipeline_info.pColorBlendState = &color_blending;
-	pipeline_info.pDynamicState = nullptr; // Optional
-
-	pipeline_info.layout = *layout;
-	pipeline_info.renderPass = render_pass;
-	pipeline_info.subpass = 0;
-	pipeline_info.basePipelineHandle = VK_NULL_HANDLE; // Optional
-	pipeline_info.basePipelineIndex = -1; // Optional
-
-	if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipeline_info, nullptr, pipeline) != VK_SUCCESS)
-		cap::logger::fatal("failed to create graphics pipeline");
-}
-
-void rhr::render::renderer::init_pipelines()
-{
-	//CreatePipeline("blocks", &BlocksPipeline, &BlocksPipelineLayout);
-	create_pipeline("ui", &ui_pipeline, &ui_pipeline_layout);
-	create_pipeline("ui_texture", &ui_texture_pipeline, &ui_texture_pipeline_layout);
-}
-
-void rhr::render::renderer::init_command_pool()
-{
-	rhr::render::tools::queue_family_indices queue_family_indices = rhr::render::tools::find_queue_families(&physical_device, &surface);
-
-	VkCommandPoolCreateInfo pool_info{};
-	pool_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	pool_info.queueFamilyIndex = queue_family_indices.graphics_family.value();
-	pool_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-	if (vkCreateCommandPool(device, &pool_info, nullptr, &command_pool) != VK_SUCCESS)
-		cap::logger::fatal("failed to create command pool");
-}
-
-void rhr::render::renderer::init_frame_buffers()
-{
-	swap_chain_frame_buffers.resize(swap_chain_image_views.size());
-
-	for (usize i = 0; i < swap_chain_image_views.size(); i++)
-	{
-		std::array<VkImageView, 2> attachments = {
-			swap_chain_image_views[i],
-			depth_image_view
-		};
-
-		VkFramebufferCreateInfo frame_buffer_info{};
-		frame_buffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		frame_buffer_info.renderPass = render_pass;
-		frame_buffer_info.attachmentCount = static_cast<u32>(attachments.size());
-		frame_buffer_info.pAttachments = attachments.data();
-		frame_buffer_info.width = swap_chain_extent.width;
-		frame_buffer_info.height = swap_chain_extent.height;
-		frame_buffer_info.layers = 1;
-
-		if (vkCreateFramebuffer(device, &frame_buffer_info, nullptr, &swap_chain_frame_buffers[i]) != VK_SUCCESS)
-			cap::logger::fatal("failed to create frame buffers");
-	}
-
-	std::array<VkImageView, 2> attachments = {
-		offscreen_pass_local.color.view,
-		offscreen_pass_local.depth.view
-	};
-
-	VkFramebufferCreateInfo frame_buffer_info{};
-	frame_buffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	frame_buffer_info.renderPass = offscreen_pass_local.render_pass;
-	frame_buffer_info.attachmentCount = static_cast<u32>(attachments.size());
-	frame_buffer_info.pAttachments = attachments.data();
-	frame_buffer_info.width = swap_chain_extent.width;
-	frame_buffer_info.height = swap_chain_extent.height;
-	frame_buffer_info.layers = 1;
-
-	if (vkCreateFramebuffer(device, &frame_buffer_info, nullptr, &offscreen_pass_local.frame_buffer) != VK_SUCCESS)
-		cap::logger::fatal("failed to create frame buffers");
-
-	offscreen_pass_local.descriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	offscreen_pass_local.descriptor.imageView = offscreen_pass_local.color.view;
-	offscreen_pass_local.descriptor.sampler = offscreen_pass_local.sampler;
 }
 
 void rhr::render::renderer::init_depth_resources()
 {
 	VkFormat depthFormat = rhr::render::tools::find_depth_format();
-	rhr::render::tools::create_image(swap_chain_extent.width, swap_chain_extent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+	rhr::render::tools::create_image(rhr::render::swap_chain::swap_chain_extent.width, rhr::render::swap_chain::swap_chain_extent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
 	depth_image_view = rhr::render::tools::create_image_view(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 	rhr::render::tools::transition_image_layout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
@@ -1356,7 +806,7 @@ void rhr::render::renderer::init_depth_resources()
 void rhr::render::renderer::init_texture_sampler()
 {
 	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(physical_device, &properties);
+	vkGetPhysicalDeviceProperties(rhr::render::device::physical_device, &properties);
 
 	VkSamplerCreateInfo sampler_info{};
 	sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -1378,152 +828,22 @@ void rhr::render::renderer::init_texture_sampler()
 	sampler_info.minLod = 0.0f;
 	sampler_info.maxLod = 0.0f;
 
-	if (vkCreateSampler(device, &sampler_info, nullptr, &texture_sampler) != VK_SUCCESS)
+	if (vkCreateSampler(rhr::render::device::device_master, &sampler_info, nullptr, &texture_sampler) != VK_SUCCESS)
 		cap::logger::fatal("failed to create texture sampler");
 }
 
-void rhr::render::renderer::init_descriptor_pool()
-{
-	std::array<VkDescriptorPoolSize, 2> pool_sizes{};
-
-	pool_sizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	pool_sizes[0].descriptorCount = static_cast<u32>(10000);
-
-	pool_sizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	pool_sizes[1].descriptorCount = static_cast<u32>(10000);
-
-	VkDescriptorPoolCreateInfo pool_info{};
-	pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-	pool_info.poolSizeCount = static_cast<u32>(pool_sizes.size());
-	pool_info.pPoolSizes = pool_sizes.data();
-	pool_info.maxSets = 10000;
-	pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-
-	if (vkCreateDescriptorPool(device, &pool_info, nullptr, &descriptor_pool) != VK_SUCCESS)
-		cap::logger::fatal("failed to create descriptor pool");
-}
-
-void rhr::render::renderer::init_command_buffers()
-{
-	command_buffers.resize(swap_chain_frame_buffers.size());
-
-	VkCommandBufferAllocateInfo alloc_info{};
-	alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	alloc_info.commandPool = command_pool;
-	alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	alloc_info.commandBufferCount = (u32)command_buffers.size();
-
-	if (vkAllocateCommandBuffers(device, &alloc_info, command_buffers.data()) != VK_SUCCESS)
-		cap::logger::fatal("failed to create command buffers");
-
-	for (usize i = 0; i < command_buffers.size(); i++)
-	{
-		vk::command_buffer_begin_info begin_info{};
-		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		begin_info.flags = 0; // Optional
-		begin_info.pInheritanceInfo = nullptr; // Optional
-
-		if (vkBeginCommandBuffer(command_buffers[i], &begin_info) != VK_SUCCESS)
-			cap::logger::fatal("failed to start the command buffer");
-
-		vk::render_pass_begin_info render_pass_info{};
-		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		render_pass_info.renderPass = render_pass;
-		render_pass_info.framebuffer = swap_chain_frame_buffers[i];
-
-		render_pass_info.renderArea.offset = { 0, 0 };
-		render_pass_info.renderArea.extent = swap_chain_extent;
-
-		std::array<vk::clear_value, 2> clear_values{};
-		clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
-		clear_values[1].depthStencil = { 1.0f, 0 };
-
-		render_pass_info.clearValueCount = static_cast<u32>(clear_values.size());
-		render_pass_info.pClearValues = clear_values.data();
-
-		vkCmdBeginRenderPass(command_buffers[i], &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindPipeline(command_buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, ui_pipeline);
-		vkCmdEndRenderPass(command_buffers[i]);
-
-		if (vkEndCommandBuffer(command_buffers[i]) != VK_SUCCESS)
-			cap::logger::fatal("failed to close the command buffer");
-	}
-}
-
-void rhr::render::renderer::init_sync_objects()
-{
-	for (usize i = 0; i < render_finished_semaphores.size(); i++)
-	{
-		vkDestroySemaphore(device, render_finished_semaphores[i], nullptr);
-		vkDestroySemaphore(device, image_available_semaphores[i], nullptr);
-		vkDestroyFence(device, in_flight_fences[i], nullptr);
-	}
-
-	image_available_semaphores.clear();
-	render_finished_semaphores.clear();
-	in_flight_fences.clear();
-	images_in_flight.clear();
-
-	image_available_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
-	render_finished_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
-	in_flight_fences.resize(MAX_FRAMES_IN_FLIGHT);
-	images_in_flight.resize(swap_chain_images.size(), VK_NULL_HANDLE);
-
-	VkSemaphoreCreateInfo semaphore_info{};
-	semaphore_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-	VkFenceCreateInfo fence_info{};
-	fence_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-	fence_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-	for (usize i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		if (vkCreateSemaphore(device, &semaphore_info, nullptr, &image_available_semaphores[i]) != VK_SUCCESS || vkCreateSemaphore(device, &semaphore_info, nullptr, &render_finished_semaphores[i]) != VK_SUCCESS || vkCreateFence(device, &fence_info, nullptr, &in_flight_fences[i]) != VK_SUCCESS)
-			cap::logger::fatal("failed to create semaphores");
-	}
-}
-
-VkInstance rhr::render::renderer::instance;
-VkDebugUtilsMessengerEXT rhr::render::renderer::debug_messenger;
-VkPhysicalDevice rhr::render::renderer::physical_device;
-VkDevice rhr::render::renderer::device;
 VkQueue rhr::render::renderer::graphics_queue;
 VkQueue rhr::render::renderer::present_queue;
 VkSurfaceKHR rhr::render::renderer::surface;
-VkSwapchainKHR rhr::render::renderer::swap_chain;
 GLFWwindow* rhr::render::renderer::window;
-std::vector<vk::image> rhr::render::renderer::swap_chain_images;
-std::vector<VkImageView> rhr::render::renderer::swap_chain_image_views;
-VkFormat rhr::render::renderer::swap_chain_image_format;
-VkExtent2D rhr::render::renderer::swap_chain_extent;
-std::vector<VkFramebuffer> rhr::render::renderer::swap_chain_frame_buffers;
-std::vector<VkCommandBuffer> rhr::render::renderer::command_buffers;
-VkCommandBuffer* rhr::render::renderer::active_command_buffer = nullptr;
-std::vector<vk::device_queue_create_info> rhr::render::renderer::queue_create_infos;
-VkRenderPass rhr::render::renderer::render_pass;
-VkDescriptorSetLayout rhr::render::renderer::descriptor_set_layout;
-VkCommandPool rhr::render::renderer::command_pool;
-VkDescriptorPool rhr::render::renderer::descriptor_pool;
 VkSampler rhr::render::renderer::texture_sampler;
 VkImageView rhr::render::renderer::depth_image_view;
-std::vector<VkSemaphore> rhr::render::renderer::image_available_semaphores;
-std::vector<VkSemaphore> rhr::render::renderer::render_finished_semaphores;
-std::vector<VkFence> rhr::render::renderer::in_flight_fences;
-std::vector<VkFence> rhr::render::renderer::images_in_flight;
 bool rhr::render::renderer::frame_buffer_resized;
 glm::mat4 rhr::render::renderer::view_matrix;
 glm::mat4 rhr::render::renderer::projection_matrix;
 glm::mat4 rhr::render::renderer::ui_projection_matrix;
 bool rhr::render::renderer::vsync_enabled;
 glm::vec<2, i32> rhr::render::renderer::window_size;
-//std::shared_ptr<rhr::render::frame> rhr::render::renderer::debug_frame;
-
-VkPipelineLayout rhr::render::renderer::blocks_pipeline_layout;
-VkPipelineLayout rhr::render::renderer::ui_pipeline_layout;
-VkPipelineLayout rhr::render::renderer::ui_texture_pipeline_layout;
-
-VkPipeline rhr::render::renderer::ui_pipeline;
-VkPipeline rhr::render::renderer::ui_texture_pipeline;
 
 rhr::render::renderer::imgui_data* rhr::render::renderer::imgui_local;
 vk::present_mode_khr rhr::render::renderer::present_mode;
@@ -1545,5 +865,4 @@ u32 rhr::render::renderer::depth_ui_text = 60;
 
 std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> rhr::render::renderer::m_dirty_renderable;
 std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> rhr::render::renderer::m_dirty_ui;
-//std::vector<std::weak_ptr<rhr::render::layer>> rhr::render::renderer::m_layers;
 std::shared_mutex rhr::render::renderer::m_dirty_mutex;

@@ -2,6 +2,9 @@
 
 #include "rhr/rendering/tools.hpp"
 #include "rhr/rendering/renderer.hpp"
+#include "rhr/rendering/command.hpp"
+#include "rhr/rendering/pipeline.hpp"
+#include "rhr/rendering/device.hpp"
 #include "rhr/registries/char_texture.hpp"
 
 rhr::render::object::object::object(bool ui)
@@ -256,30 +259,31 @@ void rhr::render::object::object::on_render()
 	{
 		if (m_has_texture)
 		{
-			vkCmdBindDescriptorSets(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-			vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
+			vkCmdBindDescriptorSets(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
+			vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
 		}
 		else
 		{
-			vkCmdBindDescriptorSets(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-			vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
+			vkCmdBindDescriptorSets(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
+			vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
 		}
 	}
 	else
 	{
-		vkCmdBindDescriptorSets(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::blocks_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-		vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
+		cap::logger::fatal("not implemented");
+//		vkCmdBindDescriptorSets(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::blocks_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
+//		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
 	}
 
-	vkCmdBindVertexBuffers(*rhr::render::renderer::active_command_buffer, 0, 1, vb, offsets);
+	vkCmdBindVertexBuffers(*rhr::render::command::active_command_buffer, 0, 1, vb, offsets);
 
 	if (m_has_indices)
 	{
-		vkCmdBindIndexBuffer(*rhr::render::renderer::active_command_buffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
-		vkCmdDrawIndexed(*rhr::render::renderer::active_command_buffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
+		vkCmdBindIndexBuffer(*rhr::render::command::active_command_buffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
+		vkCmdDrawIndexed(*rhr::render::command::active_command_buffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
 	}
 	else
-		vkCmdDraw(*rhr::render::renderer::active_command_buffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
+		vkCmdDraw(*rhr::render::command::active_command_buffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
 }
 
 void rhr::render::object::object::on_update_buffers()
@@ -328,9 +332,9 @@ void rhr::render::object::object::on_update_buffers()
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vertex_staging_buffer, m_vertex_staging_buffer_memory);
 
 		void* data;
-		vkMapMemory(rhr::render::renderer::device, m_vertex_staging_buffer_memory, 0, buffer_size, 0, &data);
+		vkMapMemory(rhr::render::device::device_master, m_vertex_staging_buffer_memory, 0, buffer_size, 0, &data);
 		memcpy(data, m_vertices, (usize)buffer_size);
-		vkUnmapMemory(rhr::render::renderer::device, m_vertex_staging_buffer_memory);
+		vkUnmapMemory(rhr::render::device::device_master, m_vertex_staging_buffer_memory);
 
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertex_buffer, m_vertex_buffer_memory);
 		rhr::render::tools::copy_buffer(m_vertex_staging_buffer_memory, m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
@@ -355,9 +359,9 @@ void rhr::render::object::object::on_update_buffers()
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_index_staging_buffer, m_index_staging_buffer_memory);
 
 		void* data;
-		vkMapMemory(rhr::render::renderer::device, m_index_staging_buffer_memory, 0, buffer_size, 0, &data);
+		vkMapMemory(rhr::render::device::device_master, m_index_staging_buffer_memory, 0, buffer_size, 0, &data);
 		memcpy(data, m_indices, (usize)buffer_size);
-		vkUnmapMemory(rhr::render::renderer::device, m_index_staging_buffer_memory);
+		vkUnmapMemory(rhr::render::device::device_master, m_index_staging_buffer_memory);
 
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_index_buffer, m_index_buffer_memory);
 		rhr::render::tools::copy_buffer(m_index_staging_buffer_memory, m_index_staging_buffer, m_index_buffer, buffer_size);
@@ -371,11 +375,11 @@ void rhr::render::object::object::on_reload_swap_chain()
 
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = rhr::render::renderer::descriptor_pool;
+	allocInfo.descriptorPool = rhr::render::command::descriptor_pool;
 	allocInfo.descriptorSetCount = 1;
-	allocInfo.pSetLayouts = &rhr::render::renderer::descriptor_set_layout;
+	allocInfo.pSetLayouts = &rhr::render::command::descriptor_set_layout;
 
-	vkAllocateDescriptorSets(rhr::render::renderer::device, &allocInfo, &m_descriptor_set);
+	vkAllocateDescriptorSets(rhr::render::device::device_master, &allocInfo, &m_descriptor_set);
 
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = m_uniform_buffer;
@@ -407,7 +411,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		descriptorWrites[1].descriptorCount = 1;
 		descriptorWrites[1].pImageInfo = &imageInfo;
 
-		vkUpdateDescriptorSets(rhr::render::renderer::device, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(rhr::render::device::device_master, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 	else
 	{
@@ -421,7 +425,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		descriptorWrites[0].descriptorCount = 1;
 		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-		vkUpdateDescriptorSets(rhr::render::renderer::device, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(rhr::render::device::device_master, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 }
 
@@ -456,9 +460,9 @@ void rhr::render::object::object::update_uniforms(bool ui)
 	ubo.color = { 1.0f, 1.0f, 1.0f };
 
 	void* data;
-	vkMapMemory(rhr::render::renderer::device, m_uniform_buffer_memory, 0, sizeof(ubo), 0, &data);
+	vkMapMemory(rhr::render::device::device_master, m_uniform_buffer_memory, 0, sizeof(ubo), 0, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(rhr::render::renderer::device, m_uniform_buffer_memory);
+	vkUnmapMemory(rhr::render::device::device_master, m_uniform_buffer_memory);
 }
 
 void rhr::render::object::object::set_queue(u8 queue)

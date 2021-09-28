@@ -3,6 +3,7 @@
 #include "mod_loader.hpp"
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/tools.hpp"
+#include "rhr/rendering/device.hpp"
 #include "rhr/handlers/category.hpp"
 #include "rhr/handlers/field.hpp"
 #include "rhr/registries/char_texture.hpp"
@@ -233,14 +234,14 @@ int main()
 			glfwGetFramebufferSize(rhr::render::renderer::window, &width, &height);
 			if (width > 0 && height > 0)
 			{
-				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::renderer::physical_device, &rhr::render::renderer::surface);
-				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::renderer::physical_device, &rhr::render::renderer::surface);
+				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
+				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
 
 				ImGui_ImplVulkan_SetMinImageCount(swap_chain_support.capabilities.minImageCount);
 				ImGui_ImplVulkanH_CreateOrResizeWindow(
-					rhr::render::renderer::instance,
-					rhr::render::renderer::physical_device,
-					rhr::render::renderer::device,
+					rhr::render::device::instance,
+					rhr::render::device::physical_device,
+					rhr::render::device::device_master,
 					&rhr::render::renderer::imgui_local->data,
 					indices.graphics_family.value(),
 					nullptr,
@@ -348,7 +349,6 @@ int main()
 		glm::vec<2, i32> plane_size = { ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
 		glm::vec<2, i32> plane_position = { ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x, ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y };
 
-
 		if (plane_size.x != last_plane_size.x ||
 			plane_size.y != last_plane_size.y)
 		{
@@ -441,7 +441,7 @@ int main()
 		vkResetFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[current_frame]);
 
 		u32 image_index;
-		VkResult result = vkAcquireNextImageKHR(rhr::render::renderer::device, rhr::render::renderer::swap_chain, UINT64_MAX, rhr::render::renderer::image_available_semaphores[current_frame], VK_NULL_HANDLE, &image_index);
+		VkResult result = vkAcquireNextImageKHR(rhr::render::renderer::device, rhr::render::renderer::swapchain_khr, UINT64_MAX, rhr::render::renderer::image_available_semaphores[current_frame], VK_NULL_HANDLE, &image_index);
 		rhr::render::renderer::active_command_buffer = rhr::render::renderer::command_buffers[image_index];
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -545,7 +545,7 @@ int main()
 		presentInfo.waitSemaphoreCount = 1;
 		presentInfo.pWaitSemaphores = signalSemaphores;
 
-		VkSwapchainKHR swapChains[] = { rhr::render::renderer::swap_chain };
+		VkSwapchainKHR swapChains[] = { rhr::render::renderer::swapchain_khr };
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = swapChains;
 		presentInfo.pImageIndices = &image_index;

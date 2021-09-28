@@ -1,6 +1,8 @@
 ﻿#include "text.hpp"
 
 #include "rhr/rendering/renderer.hpp"
+#include "rhr/rendering/command.hpp"
+#include "rhr/rendering/pipeline.hpp"
 #include "rhr/rendering/vertex.hpp"
 #include "rhr/stacking/block.hpp"
 #include "rhr/registries/char_texture.hpp"
@@ -285,11 +287,11 @@ void rhr::render::object::text::ui_render()
 	{
 		if (m_enable_background)
 		{
-			vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_pipeline);
+			vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
 			m_render_object_background->render();
 		}
 
-		vkCmdBindPipeline(*rhr::render::renderer::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::renderer::ui_texture_pipeline);
+		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
 		m_render_object_text->render();
 	}
 }
