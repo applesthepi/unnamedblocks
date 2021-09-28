@@ -5,24 +5,22 @@ Please note that this project isnt setup properly for public use. In the future 
 ### Development Installation
 **master** - active development branch (features not functioning)  
 **stable** - stable releases (1y old demo)  
-**nightly** - bleeding edge releases (1y old demo)  
+**nightly** - bleeding edge releases (1y old demo)
   
 Your expected to have cmake and git installed and in your path. Follow these steps for repo setup:
-#### Windows
-in powershell
+#### Windows / Visual Studio
 1. `git clone https://github.com/applesthepi/unnamedblocks`
 2. `.\initialize.bat`
 3. `.\configure.bat`
 4. open `UB.sln` inside `build/` directory
 
-#### Linux
-using any linux shell
+#### Linux Shell
 1. `git clone https://github.com/applesthepi/unnamedblocks`
 2. `./initialize.sh`
 3. `./configure.sh`
 
 # Code Style
-This describes the code style that should be used throughout Unnamed Blocks. Mods don't have to follow this, but I recommend it.
+This describes the code style that should be used throughout the Unnamed Blocks repository. External additions like mods absolutely do not have to follow this strict standard. I plan to add bindings using different case styles for c++ in the future.
 
 ### Filename
 `snake_case_only_please.hpp`
@@ -96,7 +94,7 @@ private:
 	///
 	f32 m_use_this_convention;
 };
-};
+}
 ```
 cpp
 ```cpp
