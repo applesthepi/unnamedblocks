@@ -26,7 +26,7 @@ public:
 	void text_button(InputHandler::key_state state);
 
 	///
-	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field>&& text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer);
+	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer);
 
 	///
 	void unregister_field(const rhr::handler::field_data::location& location);

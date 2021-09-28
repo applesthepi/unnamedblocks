@@ -1,13 +1,12 @@
 #include "field.hpp"
 
-#include "rhr/stacking/block.hpp"
+#include "rhr/stacking/plane.hpp"
 
 #define DEBUG_FIELDS 0
 
 constexpr usize FIELD_CELL_SIZE = 500;
 
-static void
-mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
+static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
 	rhr::handler::field* field = (rhr::handler::field*) data;
 	field->mouse_button(position, scroll, operation, button);
@@ -243,10 +242,7 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 		{
 		case GLFW_KEY_BACKSPACE:
 			if (m_mouse_drag)
-			{
 				process_highlight(false);
-
-			}
 			else
 			{
 				lock->remove_char(m_cursor_idx - 1);
@@ -257,7 +253,7 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 			if (m_mouse_drag)
 				process_highlight(false);
 			else
-				lock->remove_char(m_cursor_idx + 1);
+				lock->remove_char(m_cursor_idx);
 			return;
 		case GLFW_KEY_ESCAPE:
 			reset_all();
@@ -416,7 +412,7 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 }
 
 rhr::handler::field_data::location
-rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_field>&& text_field,
+rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field,
 									glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer)
 {
 	glm::vec<2, usize> cell_position = calculate_cell_position(position);
@@ -521,12 +517,12 @@ std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_first_d
 		std::optional<rhr::handler::field_data::data*> data = find_data(position, i);
 		if (data.has_value())
 		{
-//			cap::logger::Debug("first find");
+//			cap::logger::debug("first find");
 			return data;
 		}
 	}
 
-//	cap::logger::Debug("nothing first find");
+//	cap::logger::debug("nothing first find");
 	return std::nullopt;
 }
 
@@ -623,12 +619,12 @@ glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2
 
 void rhr::handler::field::update_cursor()
 {
-	m_rectangle_cursor->set_position_local_physical({ m_cursor_position.x - 1, m_cursor_position.y });
+	m_rectangle_cursor->set_position_local_physical(glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
 }
 
 void rhr::handler::field::update_highlight()
 {
-	m_rectangle_highlight->set_position_local_physical({ m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2 });
+	m_rectangle_highlight->set_position_local_physical(glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
 	m_rectangle_highlight->set_size_local(
 	{ m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4 });
 }

@@ -2,6 +2,8 @@
 
 #include "cappuccino/preprocessor_data.hpp"
 
+#include <iostream>
+
 static void thread_util_release()
 {
 	while (!cap::registration::get_util_finished())
@@ -235,7 +237,7 @@ void cap::registration::run_utility_tick()
 		}
 
 		for (u64 a = 0; a < amount; a++)
-			printf("%s\n", (messages[a]).c_str());
+			std::cout << (messages[a]).c_str() << std::endl;
 
 		m_passes[i]->return_messages();
 	}

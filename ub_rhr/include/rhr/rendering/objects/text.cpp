@@ -83,9 +83,11 @@ void rhr::render::object::text::enable_background(bool enable)
 
 std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> position, bool ignore_y)
 {
+//	cap::logger::debug(std::to_string(m_char_contacts.size()));
+
 	if (ignore_y)
 	{
-		i32 field_position = get_position_virtual_offset().x;
+		i32 field_position = get_position_virtual_absolute().x;
 		i32 delta_position = position.x - field_position;
 
 		if (/*m_char_contacts.size() == 0 ||*/
@@ -93,6 +95,9 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 			return std::nullopt;
 
 		//f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
+
+		if (m_text.empty())
+			return 0;
 
 		for (usize i = 0; i < m_char_contacts.size(); i++)
 		{
@@ -110,7 +115,7 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 	}
 	else
 	{
-		glm::vec<2, i32> field_position = get_position_virtual_offset();
+		glm::vec<2, i32> field_position = get_position_virtual_absolute();
 		glm::vec<2, i32> delta_position = position - field_position;
 
 		if (delta_position.x < -EDGE_CLICK_OVERHANG || delta_position.x > get_size_local().x + EDGE_CLICK_OVERHANG ||
@@ -118,6 +123,9 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 			return std::nullopt;
 
 		//f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
+
+		if (m_text.empty())
+			return 0;
 
 		for (usize i = 0; i < m_char_contacts.size(); i++)
 		{
@@ -140,7 +148,7 @@ std::optional<glm::vec<2, i32>> rhr::render::object::text::get_index_position(us
 	if (/*m_char_offsets.size() == 0 ||*/ idx > m_char_offsets.size())
 		return std::nullopt;
 
-	glm::vec<2, i32> field_position = get_position_virtual_offset();
+	glm::vec<2, i32> field_position = get_position_virtual_absolute();
 
 	if (idx > 0)
 		field_position.x += static_cast<i32>(m_char_offsets[idx - 1]);
@@ -202,7 +210,7 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	if (idx >= m_text.size() || idx + size > m_text.size())
 		return false;
 
-	cap::logger::debug("removing at " + std::to_string(idx) + " of size " + std::to_string(size));
+//	cap::logger::debug("removing at " + std::to_string(idx) + " of size " + std::to_string(size));
 	m_text.erase(idx, size);
 	
 	update_size();
@@ -244,7 +252,7 @@ void rhr::render::object::text::update_size()
 		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
 	}
 
-	cap::logger::debug("text width: " + std::to_string(running_char_offsets));
+//	cap::logger::debug("text width: " + std::to_string(running_char_offsets));
 
 	set_size_local({ static_cast<i32>(running_char_offsets) + m_padding, m_font_size });
 }
@@ -400,7 +408,7 @@ void rhr::render::object::text::register_field()
 		if (!m_read_only)
 		{
 			m_location = rhr::stack::plane::primary_plane->get_field().register_field(
-				std::move(m_weak_field), get_position_virtual_absolute(),
+				m_weak_field, get_position_virtual_absolute(),
 				get_size_local(),
 				InputHandler::BullishLayerArguments
 			);

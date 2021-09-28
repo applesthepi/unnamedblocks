@@ -2,6 +2,8 @@
 
 #include "cappuccino/registration.hpp"
 
+#include <iostream>
+
 static f64 gReal = 0.0;
 static bool gBool = false;
 static std::string gString;
@@ -314,6 +316,8 @@ CAP_DLL void cap::mod::block::pass::log_debug(const std::string& message)
 			 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 			 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
 
+	// TODO: overhaul cap logging
+
 	m_messages.emplace_back();
 	usize index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
@@ -338,6 +342,8 @@ void cap::mod::block::pass::log_info(const std::string& message)
 			 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 			 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
 
+	// TODO: overhaul cap logging
+
 	m_messages.emplace_back();
 	usize index = m_messages.size() - 1;
 	m_messages[index].reserve(strlen(prefix) + message.length());
@@ -361,6 +367,8 @@ CAP_DLL void cap::mod::block::pass::log_warning(const std::string& message)
 			 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
 			 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 			 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
+
+	// TODO: overhaul cap logging
 
 	m_messages.emplace_back();
 	usize index = m_messages.size() - 1;
@@ -400,6 +408,8 @@ void cap::mod::block::pass::log_error(const std::string& message, const cap::mod
 				 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
+
+	// TODO: overhaul cap logging
 	
 	// TODO abort
 

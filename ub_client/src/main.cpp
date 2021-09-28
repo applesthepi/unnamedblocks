@@ -312,6 +312,9 @@ int main()
 			ImGui::Begin("###DockSpace", &p_open, window_flags);
 			ImGui::PopStyleVar();
 
+			if (ImGui::Button("run"))
+				rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
+
 			if (opt_fullscreen)
 				ImGui::PopStyleVar(2);
 
@@ -381,25 +384,21 @@ int main()
 			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(last_plane_position - window_position);
 		}
 
-//		static bool descriptor_set_init = false;
-//		static ImTextureID descriptor_set;
+		static bool descriptor_set_init = false;
+		static ImTextureID descriptor_set;
 
-//		if (!descriptor_set_init)
-//		{
-//			descriptor_set_init = true;
-//			descriptor_set = ImGui_ImplVulkan_AddTexture(
-//				rhr::render::renderer::offscreen_pass_local.sampler,
-//				rhr::render::renderer::offscreen_pass_local.color.view,
-//				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-//				);
-//		}
-//
-		ImGui::Image(
-			ImGui_ImplVulkan_AddTexture(
+		if (!descriptor_set_init)
+		{
+			descriptor_set_init = true;
+			descriptor_set = ImGui_ImplVulkan_AddTexture(
 				rhr::render::renderer::offscreen_pass_local.sampler,
 				rhr::render::renderer::offscreen_pass_local.color.view,
 				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-				),
+				);
+		}
+
+		ImGui::Image(
+			descriptor_set,
 			{
 				static_cast<f32>(rhr::render::renderer::window_size.x),
 				static_cast<f32>(rhr::render::renderer::window_size.y)

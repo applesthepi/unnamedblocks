@@ -120,7 +120,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 		}
 	}
 
-	cap::logger::debug("mouse pos", position);
+//	cap::logger::debug("mouse pos", position);
 
 	for (i64 i = /*collectionMax - 1*/0; i < m_collections.size(); i++)
 	{
