@@ -4,6 +4,7 @@
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/tools.hpp"
 #include "rhr/rendering/device.hpp"
+#include "rhr/rendering/panel.hpp"
 #include "rhr/handlers/category.hpp"
 #include "rhr/handlers/field.hpp"
 #include "rhr/registries/char_texture.hpp"
@@ -167,6 +168,7 @@ int main()
 
 	rhr::render::renderer::initialize_window();
     async_setup();
+    rhr::render::panel::initialize_panels();
 	//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
 
 	InputHandler::Initialization();
@@ -219,6 +221,8 @@ int main()
 	static glm::vec<2, i32> last_plane_size = { 0, 0 };
 	static glm::vec<2, i32> last_plane_position = { 0, 0 };
 	static glm::vec<2, i32> window_position = { 0, 0 };
+
+	glfwGetWindowPos(rhr::render::renderer::window, &rhr::render::renderer::window_position.x, &rhr::render::renderer::window_position.y);
 
 	while (!glfwWindowShouldClose(rhr::render::renderer::window))
 	{
@@ -335,79 +339,9 @@ int main()
 			ImGui::End();
 		}
 #endif
-//		static bool show_demo_window = true;
-//		if (show_demo_window)
-//			ImGui::ShowDemoWindow(&show_demo_window);
 
 		rhr::render::renderer::render_pass_plane();
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-//		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.0f, 0.0f));
-//		ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("plane");
-
-		glm::vec<2, i32> plane_size = { ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
-		glm::vec<2, i32> plane_position = { ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x, ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y };
-
-		if (plane_size.x != last_plane_size.x ||
-			plane_size.y != last_plane_size.y)
-		{
-			last_plane_size.x = plane_size.x;
-			last_plane_size.y = plane_size.y;
-
-			rhr::stack::plane::primary_plane->set_size_parent(last_plane_size);
-			rhr::stack::plane::primary_plane->set_size_max();
-
-
-//			frameBase->set_size_local(last_plane_size);
-//			frameBackground->set_size_local(last_plane_size);
-//
-//			rectBackground->set_size_max();
-//
-//			frameOptionsContent->set_size_max();
-//			frameOptions->set_size_max();
-//			frameSidebarPrimary->set_size_max();
-//			frameSidebarCategories->set_size_max();
-//			framePrimary->set_size_max();
-//			frameCategories->set_size_max();
-//			frameToolbar->set_size_max();
-		}
-
-		if (plane_position.x != last_plane_position.x ||
-			plane_position.y != last_plane_position.y)
-		{
-			last_plane_position.x = plane_position.x;
-			last_plane_position.y = plane_position.y;
-
-			cap::logger::debug("imgui window realitive position", last_plane_position - window_position);
-
-			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(last_plane_position - window_position);
-		}
-
-		static bool descriptor_set_init = false;
-		static ImTextureID descriptor_set;
-
-		if (!descriptor_set_init)
-		{
-			descriptor_set_init = true;
-			descriptor_set = ImGui_ImplVulkan_AddTexture(
-				rhr::render::renderer::offscreen_pass_local.sampler,
-				rhr::render::renderer::offscreen_pass_local.color.view,
-				VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-				);
-		}
-
-		ImGui::Image(
-			descriptor_set,
-			{
-				static_cast<f32>(rhr::render::renderer::window_size.x),
-				static_cast<f32>(rhr::render::renderer::window_size.y)
-			}
-		);
-		ImGui::End();
-		ImGui::PopStyleVar();
-//		ImGui::PopStyleVar();
-//		ImGui::PopStyleVar();
+		rhr::render::panel::run_imgui();
 
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();
@@ -434,142 +368,6 @@ int main()
 		// Present Main Platform Window
 		if (!main_is_minimized)
 			rhr::render::renderer::frame_present();
-
-
-#if 0
-		vkWaitForFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[current_frame], VK_TRUE, UINT64_MAX);
-		vkResetFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[current_frame]);
-
-		u32 image_index;
-		VkResult result = vkAcquireNextImageKHR(rhr::render::renderer::device, rhr::render::renderer::swapchain_khr, UINT64_MAX, rhr::render::renderer::image_available_semaphores[current_frame], VK_NULL_HANDLE, &image_index);
-		rhr::render::renderer::active_command_buffer = rhr::render::renderer::command_buffers[image_index];
-
-		if (result == VK_ERROR_OUT_OF_DATE_KHR)
-		{
-			rhr::render::renderer::recreate_swap_chain();
-            current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
-            reload_render_objects = true;
-			continue;
-		}
-		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-			cap::logger::fatal("failed to acquire swap chain image");
-
-		//std::cout << imageIndex << std::endl;
-		// Check if a previous frame is using this image (i.e. there is its fence to wait on)
-		if (rhr::render::renderer::images_in_flight[image_index] != VK_NULL_HANDLE)
-			vkWaitForFences(rhr::render::renderer::device, 1, &rhr::render::renderer::images_in_flight[image_index], VK_TRUE, UINT64_MAX);
-
-		// Mark the image as now being in use by this frame
-		rhr::render::renderer::images_in_flight[image_index] = rhr::render::renderer::in_flight_fences[current_frame];
-
-		rhr::render::renderer::imgui_local->data.FrameIndex = current_frame;
-		rhr::render::renderer::imgui_local->data.SemaphoreIndex = current_frame;
-
-		capture = std::chrono::high_resolution_clock::now();
-        delta_time = static_cast<f64>(std::chrono::duration_cast<std::chrono::microseconds>(capture - last).count()) / 1000000.0;
-		last = capture;
-
-		if (reload_render_objects)
-		{
-			rhr::stack::plane::primary_plane->reload_swap_chain();
-			rhr::stack::plane::toolbar_plane->reload_swap_chain();
-
-			rhr::render::renderer::reload_layer_swap_chains();
-			frameBase->set_size(rhr::render::renderer::window_size);
-			frameBackground->set_size(rhr::render::renderer::window_size);
-
-			rectBackground->set_size_max();
-
-			frameOptionsContent->set_size_max();
-			frameOptions->set_size_max();
-			frameSidebarPrimary->set_size_max();
-			frameSidebarCategories->set_size_max();
-			framePrimary->set_size_max();
-			frameCategories->set_size_max();
-			frameToolbar->set_size_max();
-
-            reload_render_objects = false;
-		}
-
-		rhr::render::renderer::render(image_index, delta_time, false, diagnostics_time);
-
-		if (std::chrono::duration_cast<std::chrono::milliseconds>(capture - begin_fps).count() > 200)
-		{
-            begin_fps = capture;
-
-			if (fps_average.size() == 5)
-			{
-			    f64 average = 0.0;
-
-				for (double i : fps_average)
-                    average += i;
-
-                average /= static_cast<f64>(fps_average.size());
-				fps_average.clear();
-
-				cap::logger::debug("FPS: " + std::to_string(static_cast<u64>(average)));
-			}
-			else
-				fps_average.push_back(1.0 / delta_time);
-		}
-
-		VkSubmitInfo submitInfo{};
-		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-
-
-		VkSemaphore waitSemaphores[] = { rhr::render::renderer::image_available_semaphores[current_frame] };
-		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-		submitInfo.waitSemaphoreCount = 1;
-		submitInfo.pWaitSemaphores = waitSemaphores;
-		submitInfo.pWaitDstStageMask = waitStages;
-
-		submitInfo.commandBufferCount = 1;
-		submitInfo.pCommandBuffers = &rhr::render::renderer::command_buffers[image_index];
-
-		VkSemaphore signalSemaphores[] = { rhr::render::renderer::render_finished_semaphores[current_frame] };
-		submitInfo.signalSemaphoreCount = 1;
-		submitInfo.pSignalSemaphores = signalSemaphores;
-
-		vkResetFences(rhr::render::renderer::device, 1, &rhr::render::renderer::in_flight_fences[current_frame]);
-
-		if (vkQueueSubmit(rhr::render::renderer::graphics_queue, 1, &submitInfo, rhr::render::renderer::in_flight_fences[current_frame]) != VK_SUCCESS)
-		{
-			cap::logger::error("failed to submit draw call to command buffer");
-			return -1;
-		}
-
-		VkPresentInfoKHR presentInfo{};
-		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-		presentInfo.waitSemaphoreCount = 1;
-		presentInfo.pWaitSemaphores = signalSemaphores;
-
-		VkSwapchainKHR swapChains[] = { rhr::render::renderer::swapchain_khr };
-		presentInfo.swapchainCount = 1;
-		presentInfo.pSwapchains = swapChains;
-		presentInfo.pImageIndices = &image_index;
-		presentInfo.pResults = nullptr; // Optional
-
-		result = vkQueuePresentKHR(rhr::render::renderer::present_queue, &presentInfo);
-
-		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || rhr::render::renderer::frame_buffer_resized)
-		{
-			rhr::render::renderer::frame_buffer_resized = false;
-			rhr::render::renderer::recreate_swap_chain();
-            current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
-            reload_render_objects = true;
-			continue;
-		}
-		else if (result != VK_SUCCESS)
-		{
-			cap::logger::error("failed to present swap chain image");
-			return -1;
-		}
-
-		vkQueueWaitIdle(rhr::render::renderer::present_queue);
-        current_frame = (current_frame + 1) % MAX_FRAMES_IN_FLIGHT;
-#endif
 	}
 
 	return 0;

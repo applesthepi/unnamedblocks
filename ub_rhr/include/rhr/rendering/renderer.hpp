@@ -119,6 +119,9 @@ public:
 	static bool vsync_enabled;
 
 	///
+	static glm::vec<2, i32> window_position;
+
+	///
 	static glm::vec<2, i32> window_size;
 
 	///
@@ -147,9 +150,6 @@ public:
 
 	///
 	static ImDrawData* imgui_draw_data;
-
-	///
-	static offscreen_pass offscreen_pass_local;
 
 	///
 #ifdef NDEBUG

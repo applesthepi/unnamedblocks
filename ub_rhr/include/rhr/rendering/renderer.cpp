@@ -11,6 +11,7 @@
 #include "rhr/rendering/command.hpp"
 #include "rhr/rendering/pipeline.hpp"
 #include "rhr/rendering/device.hpp"
+#include "rhr/rendering/panel.hpp"
 
 #include <espresso/input_handler.hpp>
 #include <cappuccino/utils.hpp>
@@ -56,6 +57,11 @@ void cursor_position_callback(GLFWwindow* window, f64 xpos, f64 ypos)
 	InputHandler::FireMouseMove({ xpos, ypos });
 }
 
+void window_position_callback(GLFWwindow* window, i32 x, i32 y)
+{
+	rhr::render::renderer::window_position = { x, y };
+}
+
 vk::image depthImage;
 vk::device_memory depthImageMemory;
 
@@ -90,6 +96,7 @@ void rhr::render::renderer::initialize_window()
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetWindowPosCallback(window, window_position_callback);
 
 	rhr::render::device::init_instance();
 
@@ -135,45 +142,6 @@ void rhr::render::renderer::initialize()
 	rhr::render::pipeline::init_pipelines();
 	rhr::render::command::init_command_pool();
 	init_depth_resources();
-
-	// offscreen frame buffer image
-
-	rhr::render::tools::create_image(
-		rhr::render::swap_chain::swap_chain_extent.width,
-		rhr::render::swap_chain::swap_chain_extent.height,
-		VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		offscreen_pass_local.color.image,
-		offscreen_pass_local.color.mem
-		);
-
-	rhr::render::tools::create_image(
-		rhr::render::swap_chain::swap_chain_extent.width,
-		rhr::render::swap_chain::swap_chain_extent.height,
-		rhr::render::tools::find_depth_format(),
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		offscreen_pass_local.depth.image,
-		offscreen_pass_local.depth.mem
-		);
-
-	// offscreen frame buffer image view
-
-	offscreen_pass_local.color.view = rhr::render::tools::create_image_view(
-		offscreen_pass_local.color.image,
-		VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_ASPECT_COLOR_BIT
-		);
-
-	offscreen_pass_local.depth.view = rhr::render::tools::create_image_view(
-		offscreen_pass_local.depth.image,
-		rhr::render::tools::find_depth_format(),
-		VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
-		);
-
 	rhr::render::swap_chain::init_frame_buffers();
 	init_texture_sampler();
 	rhr::render::command::init_descriptor_pool();
@@ -386,36 +354,6 @@ void rhr::render::renderer::initialize()
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
 	}
-
-	// offscreen frame buffer texture sampler
-
-	{
-		VkPhysicalDeviceProperties properties{};
-		vkGetPhysicalDeviceProperties(rhr::render::device::physical_device, &properties);
-
-		VkSamplerCreateInfo sampler_info{};
-		sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		sampler_info.magFilter = VK_FILTER_NEAREST;
-		sampler_info.minFilter = VK_FILTER_NEAREST;
-		sampler_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		sampler_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-		sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-
-		sampler_info.anisotropyEnable = VK_TRUE;
-		sampler_info.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-		sampler_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-		sampler_info.unnormalizedCoordinates = VK_FALSE;
-		sampler_info.compareEnable = VK_FALSE;
-		sampler_info.compareOp = VK_COMPARE_OP_ALWAYS;
-
-		sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-		sampler_info.mipLodBias = 0.0f;
-		sampler_info.minLod = 0.0f;
-		sampler_info.maxLod = 0.0f;
-
-		if (vkCreateSampler(rhr::render::device::device_master, &sampler_info, nullptr, &offscreen_pass_local.sampler) != VK_SUCCESS)
-			cap::logger::fatal("failed to create texture sampler");
-	}
 }
 
 void rhr::render::renderer::add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable)
@@ -506,25 +444,6 @@ void rhr::render::renderer::render_pass_plane()
 	rhr::stack::plane::toolbar_plane->frame_update(1.0);
 
 	process_dirty();
-
-	// plane render pass
-
-	{
-		VkRenderPassBeginInfo info = {};
-		info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		info.renderPass = offscreen_pass_local.render_pass;
-		info.framebuffer = offscreen_pass_local.frame_buffer;
-		info.renderArea.extent.width = imgui_local->data.Width;
-		info.renderArea.extent.height = imgui_local->data.Height;
-		info.clearValueCount = clear_values.size();
-		info.pClearValues = clear_values.data();
-
-		vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-
-		rhr::stack::plane::primary_plane->render();
-
-		vkCmdEndRenderPass(fd->CommandBuffer);
-	}
 }
 
 void rhr::render::renderer::render_pass_master()
@@ -843,6 +762,7 @@ glm::mat4 rhr::render::renderer::view_matrix;
 glm::mat4 rhr::render::renderer::projection_matrix;
 glm::mat4 rhr::render::renderer::ui_projection_matrix;
 bool rhr::render::renderer::vsync_enabled;
+glm::vec<2, i32> rhr::render::renderer::window_position;
 glm::vec<2, i32> rhr::render::renderer::window_size;
 
 rhr::render::renderer::imgui_data* rhr::render::renderer::imgui_local;
@@ -850,7 +770,6 @@ vk::present_mode_khr rhr::render::renderer::present_mode;
 vk::surface_format_khr rhr::render::renderer::surface_format;
 bool rhr::render::renderer::reload_swap_chain_flag = false;
 ImDrawData* rhr::render::renderer::imgui_draw_data;
-rhr::render::renderer::offscreen_pass rhr::render::renderer::offscreen_pass_local;
 
 u32 rhr::render::renderer::depth_background = 100;
 u32 rhr::render::renderer::depth_plane = 95;

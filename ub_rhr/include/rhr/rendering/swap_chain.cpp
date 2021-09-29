@@ -97,27 +97,6 @@ void rhr::render::swap_chain::init_frame_buffers()
 		if (vkCreateFramebuffer(rhr::render::device::device_master, &frame_buffer_info, nullptr, &swap_chain_frame_buffers[i]) != VK_SUCCESS)
 			cap::logger::fatal("failed to create frame buffers");
 	}
-
-	std::array<VkImageView, 2> attachments = {
-		rhr::render::renderer::offscreen_pass_local.color.view,
-		rhr::render::renderer::offscreen_pass_local.depth.view
-	};
-
-	VkFramebufferCreateInfo frame_buffer_info{};
-	frame_buffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	frame_buffer_info.renderPass = rhr::render::renderer::offscreen_pass_local.render_pass;
-	frame_buffer_info.attachmentCount = static_cast<u32>(attachments.size());
-	frame_buffer_info.pAttachments = attachments.data();
-	frame_buffer_info.width = swap_chain_extent.width;
-	frame_buffer_info.height = swap_chain_extent.height;
-	frame_buffer_info.layers = 1;
-
-	if (vkCreateFramebuffer(rhr::render::device::device_master, &frame_buffer_info, nullptr, &rhr::render::renderer::offscreen_pass_local.frame_buffer) != VK_SUCCESS)
-		cap::logger::fatal("failed to create frame buffers");
-
-	rhr::render::renderer::offscreen_pass_local.descriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	rhr::render::renderer::offscreen_pass_local.descriptor.imageView = rhr::render::renderer::offscreen_pass_local.color.view;
-	rhr::render::renderer::offscreen_pass_local.descriptor.sampler = rhr::render::renderer::offscreen_pass_local.sampler;
 }
 
 void rhr::render::swap_chain::init_sync_objects()
