@@ -506,6 +506,7 @@ void rhr::render::renderer::render_pass_master()
 
 		vkCmdBeginRenderPass(*rhr::render::command::active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, *rhr::render::command::active_command_buffer);
+		rhr::render::panel::run_master_render_pass();
 //		rhr::stack::plane::primary_plane->render();
 		vkCmdEndRenderPass(*rhr::render::command::active_command_buffer);
 	}

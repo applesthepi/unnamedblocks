@@ -8,12 +8,13 @@
 #include "rhr/rendering/render_pass.hpp"
 #include "rhr/stacking/plane.hpp"
 
-void rhr::render::panel::create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size)
+void rhr::render::panel::create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_render_master, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size)
 {
 	data& local_data = panels.emplace_back();
 
 	local_data.id = id;
 	local_data.function_render = function_render;
+	local_data.function_render_master = function_render_master;
 	local_data.function_update_position = function_update_position;
 	local_data.function_update_size = function_update_size;
 
@@ -263,12 +264,22 @@ void rhr::render::panel::run_imgui()
 	}
 }
 
+void rhr::render::panel::run_master_render_pass()
+{
+	for (auto& data : panels)
+		data.function_render_master(data);
+}
+
 void rhr::render::panel::initialize_panels()
 {
 	create_panel("plane_primary",
 		[](panel::data& data)
 		{
 			rhr::stack::plane::primary_plane->render();
+		},
+		[](panel::data& data)
+		{
+			rhr::stack::plane::primary_plane->render_master_pass();
 		},
 		[](panel::data& data)
 		{
@@ -285,6 +296,10 @@ void rhr::render::panel::initialize_panels()
 		[](panel::data& data)
 		{
 			rhr::stack::plane::toolbar_plane->render();
+		},
+		[](panel::data& data)
+		{
+			rhr::stack::plane::toolbar_plane->render_master_pass();
 		},
 		[](panel::data& data)
 		{

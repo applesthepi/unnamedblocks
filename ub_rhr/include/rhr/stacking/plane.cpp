@@ -215,7 +215,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 										stack_position += glm::vec<2, i32>(0, static_cast<i32>(b) * static_cast<i32>(rhr::stack::block::height));
 									}
 
-									active_collection->set_position_parent_physical({ 0, 0 }, false);
+									active_collection->set_position_parent_physical(get_position_virtual_absolute(), false);
 									active_collection->set_position_local_physical(stack_position - active_collection->get_position_virtual_offset(), false);
 									active_collection->set_size_local(stack_size);
 
@@ -271,6 +271,12 @@ rhr::handler::field& rhr::stack::plane::get_field()
 	return m_field;
 }
 
+void rhr::stack::plane::render_master_pass()
+{
+	if (dragging_stack() || dragging_collection())
+		m_dragging_collection->render();
+}
+
 void rhr::stack::plane::ui_transform_update()
 {
 	set_size_max(false);
@@ -284,9 +290,6 @@ void rhr::stack::plane::ui_render()
 {
 	for (auto& collection : m_collections)
 		collection->render();
-
-	if (dragging_stack() || dragging_collection())
-		m_dragging_collection->render();
 
 	m_field.render();
 }
@@ -393,7 +396,7 @@ void rhr::stack::plane::drag_stack(std::shared_ptr<rhr::stack::collection>& coll
 	m_dragging_up = up;
 
 	m_dragging_begin_mouse = InputHandler::GetMousePosition();
-	m_dragging_begin_object = collection->get_position_physical_absolute();
+	m_dragging_begin_object = collection->get_position_local_physical();
 
 	m_dragging_collection = collection;
 	m_dragging_stack = stack;
@@ -403,49 +406,57 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 {
 	if (dragging_stack())
 	{
-		glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_virtual_absolute();
+		glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_physical_absolute();
 
-		if (!(pixel_position.x >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().x && pixel_position.x < rhr::stack::plane::primary_plane->get_size_local().x + rhr::stack::plane::primary_plane->get_position_virtual_absolute().x &&
-			pixel_position.y >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().y && pixel_position.y < rhr::stack::plane::primary_plane->get_size_local().y + rhr::stack::plane::primary_plane->get_position_virtual_absolute().y))
-			return;
+		const glm::vec<2, i32>& plane_primary_position = rhr::stack::plane::primary_plane->get_position_virtual_absolute();
+		const glm::vec<2, i32>& plane_primary_size = rhr::stack::plane::primary_plane->get_size_local();
+
+		const glm::vec<2, i32>& plane_toolbar_position = rhr::stack::plane::toolbar_plane->get_position_virtual_absolute();
+		const glm::vec<2, i32>& plane_toolbar_size = rhr::stack::plane::toolbar_plane->get_size_local();
+
+		bool over_toolbar =
+			pixel_position.x >= plane_toolbar_position.x && pixel_position.x < plane_toolbar_size.x + plane_toolbar_position.x &&
+			pixel_position.y >= plane_toolbar_position.y && pixel_position.y < plane_toolbar_size.y + plane_toolbar_position.y;
+
+		bool over_primary =
+			pixel_position.x >= plane_primary_position.x && pixel_position.x < plane_primary_size.x + plane_primary_position.x &&
+			pixel_position.y >= plane_primary_position.y && pixel_position.y < plane_primary_size.y + plane_primary_position.y;
+
+		if (over_toolbar)
+			cap::logger::debug("over toolbar");
+		else
+			cap::logger::debug("NOT over toolbar");
+
+		if (over_primary)
+			cap::logger::debug("over primary");
+		else
+			cap::logger::debug("NOT over primary");
 
 		if (is_snap())
 		{
-			m_dragging_snap_stack->insert_blocks(m_dragging_stack->get_blocks(), m_dragging_snap_stack_loc);
-			m_dragging_snap_collection->check_bounds();
+			if (!over_toolbar)
+			{
+				m_dragging_snap_stack->insert_blocks(m_dragging_stack->get_blocks(), m_dragging_snap_stack_loc);
+				m_dragging_snap_collection->check_bounds();
+			}
 		}
 		else
 		{
-			glm::vec<2, i32> plane_primary_position = rhr::stack::plane::primary_plane->get_position_virtual_absolute();
-			glm::vec<2, i32> plane_primary_size = rhr::stack::plane::primary_plane->get_size_local();
-
-			glm::vec<2, i32> plane_toolbar_position = rhr::stack::plane::toolbar_plane->get_position_virtual_absolute();
-			glm::vec<2, i32> plane_toolbar_size = rhr::stack::plane::toolbar_plane->get_size_local();
-
-			if (pixel_position.x > plane_toolbar_position.x && pixel_position.x < plane_toolbar_position.x + plane_toolbar_size.x &&
-				pixel_position.y > plane_toolbar_position.y && pixel_position.y < plane_toolbar_position.y + plane_toolbar_size.y)
-			{
-				// TODO: undo support (or recently deleted)
-				cap::logger::warn("letting stack deallocate; undo not supported yet");
-			}
-			else if (pixel_position.x > plane_primary_position.x && pixel_position.x < plane_primary_position.x + plane_primary_size.x &&
-					 pixel_position.y > plane_primary_position.y && pixel_position.y < plane_primary_position.y + plane_primary_size.y)
+			if (over_primary)
 			{
 				cap::logger::debug("dropping over primary plane");
 				bool found = false;
 
-				for (u64 i = 0; i < rhr::stack::plane::primary_plane->get_collections().size(); i++)
+				for (const auto& i : rhr::stack::plane::primary_plane->get_collections())
 				{
-					glm::vec<2, i32> collectionPosition = rhr::stack::plane::primary_plane->get_collections()[i]->get_position_virtual_absolute();
-					glm::vec<2, i32> collectionSize = rhr::stack::plane::primary_plane->get_collections()[i]->get_size_local();
+					glm::vec<2, i32> collectionPosition = i->get_position_virtual_absolute();
+					glm::vec<2, i32> collectionSize = i->get_size_local();
 
-					//colSize = colSize * CalculateZoom();
-
-					if (m_dragging_collection->get_position_virtual_absolute().x > collectionPosition.x && m_dragging_collection->get_position_virtual_absolute().x < collectionPosition.x + collectionSize.x &&
-						m_dragging_collection->get_position_virtual_absolute().y > collectionPosition.y && m_dragging_collection->get_position_virtual_absolute().y < collectionPosition.y + collectionSize.y)
+					if (pixel_position.x > collectionPosition.x && pixel_position.x < collectionPosition.x + collectionSize.x &&
+						pixel_position.y > collectionPosition.y && pixel_position.y < collectionPosition.y + collectionSize.y)
 					{
-						m_dragging_stack->set_position_local_physical((m_dragging_collection->get_position_virtual_absolute()) - collectionPosition);
-						rhr::stack::plane::primary_plane->get_collections()[i]->add_stack(m_dragging_stack);
+						m_dragging_stack->set_position_local_physical(pixel_position - collectionPosition);
+						i->add_stack(m_dragging_stack);
 
 						found = true;
 						break;
@@ -454,12 +465,16 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 
 				if (!found)
 				{
-					glm::vec<2, i32> collection_position = m_dragging_collection->get_position_virtual_absolute();
-
 					rhr::stack::plane::primary_plane->add_collection(m_dragging_collection, true);
-					m_dragging_collection->set_position_local_physical(collection_position - plane_primary_position);
+					m_dragging_collection->set_position_local_physical(pixel_position - plane_primary_position);
+//					m_dragging_collection->set_position_par
 					m_dragging_collection->size_to_stacks(false, true);
 				}
+			}
+			else
+			{
+				// TODO: undo support (or recently deleted)
+				cap::logger::warn("letting stack deallocate; undo not supported yet");
 			}
 		}
 	}
@@ -475,9 +490,9 @@ void rhr::stack::plane::dragging_stack_update()
 {
 	clear_snap();
 
-	glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_virtual_absolute();
+	glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_physical_absolute();
 
-	m_dragging_collection->set_position_parent_physical({ 0, 0 }, false);
+//	m_dragging_collection->set_position_parent_physical({ 0, 0 }, false);
 	m_dragging_collection->set_position_local_physical(InputHandler::GetMousePosition() - m_dragging_begin_mouse + m_dragging_begin_object);
 
 	if (!(pixel_position.x >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().x && pixel_position.x < rhr::stack::plane::primary_plane->get_size_local().x + rhr::stack::plane::primary_plane->get_position_virtual_absolute().x &&
@@ -533,10 +548,8 @@ void rhr::stack::plane::dragging_stack_update()
 						bounding_pos.y += static_cast<i32>(rhr::stack::block::height) * b;
 						bounding_pos.y -= static_cast<f32>(rhr::stack::block::height) / 2.0f;
 
-						glm::vec<2, i32> dragging_collection_position = m_dragging_collection->get_position_virtual_absolute();
-
-						if (dragging_collection_position.x >= bounding_pos.x && dragging_collection_position.x < bounding_pos.x + bounding_size.x &&
-							dragging_collection_position.y >= bounding_pos.y && dragging_collection_position.y < bounding_pos.y + bounding_size.y)
+						if (pixel_position.x >= bounding_pos.x && pixel_position.x < bounding_pos.x + bounding_size.x &&
+							pixel_position.y >= bounding_pos.y && pixel_position.y < bounding_pos.y + bounding_size.y)
 						{
 							//std::cout << "snapping " << b << std::endl;
 							set_snap(use_collections[i], b, use_collections[i]->get_stacks()[a]);

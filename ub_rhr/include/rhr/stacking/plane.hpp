@@ -49,6 +49,9 @@ public:
 
 	///
 	rhr::handler::field& get_field();
+
+	///
+	void render_master_pass();
 private:
 	///
 	void ui_transform_update() override;

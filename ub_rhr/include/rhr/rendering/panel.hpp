@@ -22,6 +22,9 @@ public:
 		std::function<void(panel::data&)> function_render;
 
 		///
+		std::function<void(panel::data&)> function_render_master;
+
+		///
 		std::function<void(panel::data&)> function_update_size;
 
 		///
@@ -68,10 +71,13 @@ public:
 	};
 
 	///
-	static void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size);
+	static void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_render_master, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size);
 
 	///
 	static void run_imgui();
+
+	///
+	static void run_master_render_pass();
 
 	///
 	static void initialize_panels();
