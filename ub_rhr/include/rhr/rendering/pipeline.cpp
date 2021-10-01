@@ -135,17 +135,17 @@ void rhr::render::pipeline::create_pipeline(const std::string& shader, VkPipelin
 	if (vkCreatePipelineLayout(rhr::render::device::device_master, &pipeline_layout_info, nullptr, layout) != VK_SUCCESS)
 		cap::logger::fatal("failed to create pipeline layout");
 
-	VkPipelineDepthStencilStateCreateInfo depth_stencil{};
-	depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depth_stencil.depthTestEnable = VK_TRUE;
-	depth_stencil.depthWriteEnable = VK_TRUE;
-	depth_stencil.depthCompareOp = VK_COMPARE_OP_LESS;
-	depth_stencil.depthBoundsTestEnable = VK_FALSE;
-	depth_stencil.minDepthBounds = 0.0f; // Optional
-	depth_stencil.maxDepthBounds = 1.0f; // Optional
-	depth_stencil.stencilTestEnable = VK_FALSE;
-	depth_stencil.front = {}; // Optional
-	depth_stencil.back = {}; // Optional
+//	VkPipelineDepthStencilStateCreateInfo depth_stencil{};
+//	depth_stencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+//	depth_stencil.depthTestEnable = VK_TRUE;
+//	depth_stencil.depthWriteEnable = VK_TRUE;
+//	depth_stencil.depthCompareOp = VK_COMPARE_OP_LESS;
+//	depth_stencil.depthBoundsTestEnable = VK_FALSE;
+//	depth_stencil.minDepthBounds = 0.0f; // Optional
+//	depth_stencil.maxDepthBounds = 1.0f; // Optional
+//	depth_stencil.stencilTestEnable = VK_FALSE;
+//	depth_stencil.front = {}; // Optional
+//	depth_stencil.back = {}; // Optional
 
 	VkGraphicsPipelineCreateInfo pipeline_info{};
 	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -156,7 +156,8 @@ void rhr::render::pipeline::create_pipeline(const std::string& shader, VkPipelin
 	pipeline_info.pViewportState = &viewport_state;
 	pipeline_info.pRasterizationState = &rasterizer;
 	pipeline_info.pMultisampleState = &multisampling;
-	pipeline_info.pDepthStencilState = &depth_stencil;
+	pipeline_info.pDepthStencilState = nullptr;
+//	pipeline_info.pDepthStencilState = &depth_stencil;
 	pipeline_info.pColorBlendState = &color_blending;
 	pipeline_info.pDynamicState = nullptr; // Optional
 

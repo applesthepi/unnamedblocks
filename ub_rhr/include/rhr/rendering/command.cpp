@@ -43,52 +43,66 @@ void rhr::render::command::init_descriptor_pool()
 
 void rhr::render::command::init_command_buffers()
 {
-	command_buffers.resize(rhr::render::swap_chain::swap_chain_frame_buffers.size());
+	command_buffer_panels.resize(rhr::render::swap_chain::swap_chain_frame_buffers.size());
+	command_buffer_master.resize(rhr::render::swap_chain::swap_chain_frame_buffers.size());
 
+	generate_command_buffer(command_buffer_panels.size(), command_buffer_panels.data());
+	generate_command_buffer(command_buffer_master.size(), command_buffer_master.data());
+
+	for (usize i = 0; i < command_buffer_panels.size(); i++)
+		setup_command_buffer(&command_buffer_panels[i], &rhr::render::render_pass::render_pass_master, &rhr::render::swap_chain::swap_chain_frame_buffers[i]);
+
+	for (usize i = 0; i < command_buffer_master.size(); i++)
+		setup_command_buffer(&command_buffer_master[i], &rhr::render::render_pass::render_pass_master, &rhr::render::swap_chain::swap_chain_frame_buffers[i]);
+}
+
+void rhr::render::command::generate_command_buffer(u32 count, VkCommandBuffer* command_buffer)
+{
 	VkCommandBufferAllocateInfo alloc_info{};
 	alloc_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	alloc_info.commandPool = command_pool;
 	alloc_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	alloc_info.commandBufferCount = (u32)command_buffers.size();
+	alloc_info.commandBufferCount = count;
 
-	if (vkAllocateCommandBuffers(rhr::render::device::device_master, &alloc_info, command_buffers.data()) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(rhr::render::device::device_master, &alloc_info, command_buffer) != VK_SUCCESS)
 		cap::logger::fatal("failed to create command buffers");
-
-	for (usize i = 0; i < command_buffers.size(); i++)
-	{
-		vk::command_buffer_begin_info begin_info{};
-		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		begin_info.flags = 0; // Optional
-		begin_info.pInheritanceInfo = nullptr; // Optional
-
-		if (vkBeginCommandBuffer(command_buffers[i], &begin_info) != VK_SUCCESS)
-			cap::logger::fatal("failed to start the command buffer");
-
-		vk::render_pass_begin_info render_pass_info{};
-		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		render_pass_info.renderPass = rhr::render::render_pass::render_pass_master;
-		render_pass_info.framebuffer = rhr::render::swap_chain::swap_chain_frame_buffers[i];
-
-		render_pass_info.renderArea.offset = { 0, 0 };
-		render_pass_info.renderArea.extent = rhr::render::swap_chain::swap_chain_extent;
-
-		std::array<vk::clear_value, 2> clear_values{};
-		clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
-		clear_values[1].depthStencil = { 1.0f, 0 };
-
-		render_pass_info.clearValueCount = static_cast<u32>(clear_values.size());
-		render_pass_info.pClearValues = clear_values.data();
-
-		vkCmdBeginRenderPass(command_buffers[i], &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-		vkCmdBindPipeline(command_buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
-		vkCmdEndRenderPass(command_buffers[i]);
-
-		if (vkEndCommandBuffer(command_buffers[i]) != VK_SUCCESS)
-			cap::logger::fatal("failed to close the command buffer");
-	}
 }
 
-std::vector<VkCommandBuffer> rhr::render::command::command_buffers;
+void rhr::render::command::setup_command_buffer(VkCommandBuffer* command_buffer, VkRenderPass* render_pass, VkFramebuffer* frame_buffer)
+{
+	vk::command_buffer_begin_info begin_info{};
+	begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	begin_info.flags = 0; // Optional
+	begin_info.pInheritanceInfo = nullptr; // Optional
+
+	if (vkBeginCommandBuffer(*command_buffer, &begin_info) != VK_SUCCESS)
+		cap::logger::fatal("failed to start the command buffer");
+
+	vk::render_pass_begin_info render_pass_info{};
+	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	render_pass_info.renderPass = *render_pass;
+	render_pass_info.framebuffer = *frame_buffer;
+
+	render_pass_info.renderArea.offset = { 0, 0 };
+	render_pass_info.renderArea.extent = rhr::render::swap_chain::swap_chain_extent;
+
+	std::array<vk::clear_value, 1> clear_values{};
+	clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+//	clear_values[1].depthStencil = { 1.0f, 0 };
+
+	render_pass_info.clearValueCount = static_cast<u32>(clear_values.size());
+	render_pass_info.pClearValues = clear_values.data();
+
+	vkCmdBeginRenderPass(*command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+	vkCmdBindPipeline(*command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
+	vkCmdEndRenderPass(*command_buffer);
+
+	if (vkEndCommandBuffer(*command_buffer) != VK_SUCCESS)
+		cap::logger::fatal("failed to close the command buffer");
+}
+
+std::vector<VkCommandBuffer> rhr::render::command::command_buffer_panels;
+std::vector<VkCommandBuffer> rhr::render::command::command_buffer_master;
 VkCommandBuffer* rhr::render::command::active_command_buffer;
 std::vector<VkDeviceQueueCreateInfo> rhr::render::command::queue_create_infos;
 VkDescriptorSetLayout rhr::render::command::descriptor_set_layout;

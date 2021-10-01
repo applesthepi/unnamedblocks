@@ -2,12 +2,12 @@
 
 #include "cappuccino/registration.hpp"
 
-MODBLOCK_EXPORT cap::mod::block::data::data()
+cap::mod::block::data::data()
 {
 
 }
 
-MODBLOCK_EXPORT cap::mod::block::data::data(const std::vector<void*>& data, const std::vector<cap::mod::block::data::type>& types, const std::vector<cap::mod::block::data::interpretation>& interpretations)
+cap::mod::block::data::data(const std::vector<void*>& data, const std::vector<cap::mod::block::data::type>& types, const std::vector<cap::mod::block::data::interpretation>& interpretations)
 	:m_data(data), m_types(types), m_interpretations(interpretations)
 {
 
@@ -23,7 +23,7 @@ const std::vector<u64>& cap::mod::block::data::get_runtime_data()
 	return m_runtime_data;
 }
 
-MODBLOCK_EXPORT std::vector<void*>& cap::mod::block::data::get_pre_data()
+std::vector<void*>& cap::mod::block::data::get_pre_data()
 {
 	return m_pre_data;
 }
@@ -38,17 +38,17 @@ const std::vector<cap::mod::block::data::interpretation>& cap::mod::block::data:
 	return m_interpretations;
 }
 
-MODBLOCK_EXPORT void cap::mod::block::data::clear_data()
+void cap::mod::block::data::clear_data()
 {
 	m_data.clear();
 }
 
-MODBLOCK_EXPORT void cap::mod::block::data::set_runtime_data(const std::vector<u64>& data)
+void cap::mod::block::data::set_runtime_data(const std::vector<u64>& data)
 {
 	m_runtime_data = data;
 }
 
-MODBLOCK_EXPORT void cap::mod::block::data::set_data_templates(u64 stack_idx)
+void cap::mod::block::data::set_data_templates(u64 stack_idx)
 {
 	const std::vector<f64*>& reals = cap::registration::get_real_template();
 	const std::vector<bool*>& bools = cap::registration::get_bool_template();
@@ -75,12 +75,12 @@ void cap::mod::block::data::set_interpretations(const std::vector<cap::mod::bloc
 	m_interpretations = interpretations;
 }
 
-MODBLOCK_EXPORT void cap::mod::block::data::set_interpretation(const cap::mod::block::data::interpretation& interpretation, u64 idx)
+void cap::mod::block::data::set_interpretation(const cap::mod::block::data::interpretation& interpretation, u64 idx)
 {
 	m_interpretations[idx] = interpretation;
 }
 
-MODBLOCK_EXPORT cap::mod::block::data& cap::mod::block::data::operator=(cap::mod::block::data& data)
+cap::mod::block::data& cap::mod::block::data::operator=(cap::mod::block::data& data)
 {
 	m_data = data.m_data;
 	m_runtime_data = data.m_runtime_data;

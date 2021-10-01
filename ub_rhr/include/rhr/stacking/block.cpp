@@ -27,7 +27,7 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 
 	m_mod_category = rhr::registry::block::get_registry().get_categories(m_mod_block->get_category())->category_mod_category;
 	m_background->set_weak(m_background);
-	m_background->set_color(m_mod_category->get_color());
+	m_background->set_color(m_mod_category->get_color() /*cap::color().from_u8({ 200, 200, 200, 0 })*/);
 	m_background->set_depth(rhr::render::renderer::depth_block);
 
 	set_size_local({ 100, rhr::stack::block::height });

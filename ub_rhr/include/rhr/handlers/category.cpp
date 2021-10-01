@@ -5,7 +5,11 @@
 #include "rhr/handlers/message.hpp"
 #include "rhr/handlers/build.hpp"
 #include "rhr/stacking/plane.hpp"
-#if 0
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
+
 static void button_callback_category(void* data)
 {
 	rhr::handler::category::active* active_catagory = (rhr::handler::category::active*)data;
@@ -18,12 +22,12 @@ static void button_callback_mod(void* data)
 	rhr::handler::category::toggle_category(*category_idx);
 }
 
-void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& render_frame)
+void rhr::handler::category::populate()
 {
-	m_render_frame = render_frame;
+//	m_render_frame = render_frame;
 //	m_render_frame->set_padding(0);
-	m_render_frame->enable_background(cap::color::background_color_2);
-	m_render_frame->disable_bar_movement();
+//	m_render_frame->enable_background(cap::color::background_color_2);
+//	m_render_frame->disable_bar_movement();
 
 	const std::vector<rhr::registry::block::category_info>& category_infos = rhr::registry::block::get_registry().get_categories();
 	const std::vector<rhr::registry::block::block_info>& block_infos = rhr::registry::block::get_registry().get_blocks();
@@ -72,24 +76,26 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 		*category_idx = i;
 
  		mod_group group = mod_group(cap::color::text_primary_color, cap::color::background_color_3);
- 		group.mod_category.reserve(binned_catagories[i].size());
 
-		group.mod_button->set_size_local({ 100, 16 });
-		group.mod_button->enable_fill_width(true);
-		group.mod_button->set_callback(button_callback_mod, category_idx);
+ 		group.id_mod = rhr::handler::project::mods[i];
+ 		group.idx_mod = i;
 
-		group.mod_button_render_frame = std::make_shared<rhr::render::frame>();
-		group.mod_button_render_frame->set_weak(group.mod_button_render_frame);
-//		group.mod_button_render_frame->set_padding(0);
+// 		group.mod_category.reserve(binned_catagories[i].size());
 
-		group.categories_render_frame = std::make_shared<rhr::render::frame>();
-		group.categories_render_frame->set_weak(group.categories_render_frame);
-//		group.categories_render_frame->set_padding(0);
+//		group.mod_button->set_size_local({ 100, 16 });
+//		group.mod_button->enable_fill_width(true);
+//		group.mod_button->set_callback(button_callback_mod, category_idx);
+//
+//		group.mod_button_render_frame = std::make_shared<rhr::render::frame>();
+//		group.mod_button_render_frame->set_weak(group.mod_button_render_frame);
+//
+//		group.categories_render_frame = std::make_shared<rhr::render::frame>();
+//		group.categories_render_frame->set_weak(group.categories_render_frame);
 
 //		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
 //		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
 
-		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
+//		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
 
 		offset += rhr::stack::block::padding / 2;
  		
@@ -97,6 +103,8 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 
 		for (usize a = 0; a < binned_catagories[i].size(); a++)
 		{
+			group.mod_category_ids.push_back(binned_catagories[i][a]->get_unlocalized_name());
+
 			active_catagories[a].mod_group = static_cast<u16>(i);
 			active_catagories[a].mod_group_category = static_cast<u16>(a);
 
@@ -109,14 +117,14 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 			button->set_size_local({ 200, 16 }, false);
 			button->set_position_local_physical({ 16, 0 }, false);
 
-			group.categories_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, rhr::render::cardinal::local::DOWN);
+//			group.categories_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button, rhr::render::cardinal::local::DOWN);
 
 			offset += rhr::stack::block::padding / 2 + button->get_size_local().y;
-			group.mod_category.push_back(std::move(button));
+//			group.mod_category.push_back(std::move(button));
 
-			group.mod_category_collections.push_back(std::vector<std::shared_ptr<rhr::stack::collection>>());
-			group.mod_category_stacks.push_back(std::vector<std::shared_ptr<rhr::stack::stack>>());
-			group.mod_category_blocks.push_back(std::vector<std::shared_ptr<rhr::stack::block>>());
+			group.mod_category_collections.emplace_back();
+			group.mod_category_stacks.emplace_back();
+			group.mod_category_blocks.emplace_back();
 
 			for (usize b = 0; b < binned_blocks[i][a].size(); b++)
 			{
@@ -143,9 +151,9 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 			}
 		}
 
-		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
-		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
-		m_render_frame->set_bar(0, 30);
+//		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
+//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
+//		m_render_frame->set_bar(0, 30);
 
 		m_mod_groups.push_back(std::move(group));
 	}
@@ -153,16 +161,34 @@ void rhr::handler::category::populate(std::shared_ptr<rhr::render::frame>& rende
 	select_category(m_active_category);
 }
 
-
 void rhr::handler::category::render()
 {
+	ImGui::Begin("mod_categories");
+
 	for (auto& group : m_mod_groups)
 	{
-		group.mod_button->render();
+		if (ImGui::Button(group.id_mod.c_str()))
+			group.enabled = !group.enabled;
 
-		for (auto& category : group.mod_category)
-			category->render();
+		if (group.enabled)
+		{
+			ImGui::Indent(15.0f);
+
+			for (u16 i = 0; i < static_cast<u16>(group.mod_category_ids.size()); i++)
+			{
+				if (ImGui::Button(group.mod_category_ids[i].c_str()))
+				{
+					select_category({ group.idx_mod, i });
+				}
+			}
+
+			ImGui::Indent(0.0f);
+		}
+
+		ImGui::NewLine();
 	}
+
+	ImGui::End();
 }
 
 void rhr::handler::category::select_category(active active_category)
@@ -179,11 +205,11 @@ void rhr::handler::category::select_category(active active_category)
 		return;
 	}
 
-	if (m_active_category.mod_group_category >= m_mod_groups[m_active_category.mod_group].mod_category.size())
+	if (m_active_category.mod_group_category >= m_mod_groups[m_active_category.mod_group].mod_category_ids.size())
 	{
 		cap::logger::warn(
 		"Failed to load category. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) +
-		" >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category.size()) + ")");
+		" >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category_ids.size()) + ")");
 		return;
 	}
 
@@ -214,8 +240,4 @@ void rhr::handler::category::reload_swap_chain()
 }
 
 std::vector<rhr::handler::category::mod_group> rhr::handler::category::m_mod_groups;
-
-std::shared_ptr<rhr::render::frame> rhr::handler::category::m_render_frame;
-
 rhr::handler::category::active rhr::handler::category::m_active_category = { 0, 0 };
-#endif

@@ -266,7 +266,8 @@ void rhr::render::renderer::initialize()
 	for (u32 i = 0; i < imageCount; i++)
 	{
 		imgui_local->frames[i].CommandPool = rhr::render::command::command_pool;
-		imgui_local->frames[i].CommandBuffer = rhr::render::command::command_buffers[i];
+		imgui_local->frames[i].CommandBuffer = rhr::render::command::command_buffer_master[i];
+		imgui_local->frames[i].CommandBufferPanel = rhr::render::command::command_buffer_panels[i];
 		imgui_local->frames[i].Fence = rhr::render::swap_chain::in_flight_fences[i];
 		imgui_local->frames[i].Backbuffer = rhr::render::swap_chain::swap_chain_images[i];
 		imgui_local->frames[i].BackbufferView = rhr::render::swap_chain::swap_chain_image_views[i];
@@ -388,7 +389,7 @@ void rhr::render::renderer::process_dirty()
 	m_dirty_ui.clear();
 }
 
-void rhr::render::renderer::render_pass_plane()
+void rhr::render::renderer::render_pass_setup()
 {
 	rhr::render::renderer::ui_projection_matrix = glm::ortho(0.0f, static_cast<f32>(window_size.x), 0.0f, static_cast<f32>(window_size.y), -10000.0f, 10000.0f);
 
@@ -421,9 +422,9 @@ void rhr::render::renderer::render_pass_plane()
 
 	//	VkResult err;
 
-	std::array<VkClearValue, 2> clear_values{};
-	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-	clear_values[1].depthStencil = { 1.0f, 0 };
+	std::array<VkClearValue, 1> clear_values{};
+	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+//	clear_values[1].depthStencil = { 1.0f, 0 };
 
 	//	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
 	//	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
@@ -450,14 +451,46 @@ void rhr::render::renderer::render_pass_master()
 {
 	VkResult err;
 
-	std::array<VkClearValue, 2> clear_values{};
-	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-	clear_values[1].depthStencil = { 1.0f, 0 };
+	std::array<VkClearValue, 1> clear_values{};
+	clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+//	clear_values[1].depthStencil = { 1.0f, 0 };
 
 	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
 
 	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
 	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+#if 0
+	{
+		// close out panel frame buffer
+
+		err = vkEndCommandBuffer(fd->CommandBufferPanel);
+		check_vk_result(err);
+
+		// setup master command buffer
+
+		VkCommandBufferBeginInfo info = {};
+		info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		info.flags = 0;
+
+		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
+		rhr::render::command::active_command_buffer = &(fd->CommandBuffer);
+		check_vk_result(err);
+	}
+#endif
+	// seperate panel render passes from final render pass
+
+//	vkCmdPipelineBarrier(
+//		*rhr::render::command::active_command_buffer,
+//		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+//		VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
+//		0,
+//		0,
+//		nullptr,
+//		0,
+//		nullptr,
+//		0,
+//		nullptr
+//	);
 
 	// final render pass
 
@@ -471,24 +504,28 @@ void rhr::render::renderer::render_pass_master()
 		info.clearValueCount = clear_values.size();
 		info.pClearValues = clear_values.data();
 
-		vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-
-		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, fd->CommandBuffer);
-
-		vkCmdEndRenderPass(fd->CommandBuffer);
+		vkCmdBeginRenderPass(*rhr::render::command::active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, *rhr::render::command::active_command_buffer);
+//		rhr::stack::plane::primary_plane->render();
+		vkCmdEndRenderPass(*rhr::render::command::active_command_buffer);
 	}
 
 	// submit command buffer and queue to gpu
 
 	{
+		std::array<VkCommandBuffer, 1> used_command_buffers = {
+//			fd->CommandBufferPanel,
+			fd->CommandBuffer
+		};
+
 		VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkSubmitInfo info = {};
 		info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		info.waitSemaphoreCount = 1;
 		info.pWaitSemaphores = &image_acquired_semaphore;
 		info.pWaitDstStageMask = &wait_stage;
-		info.commandBufferCount = 1;
-		info.pCommandBuffers = &fd->CommandBuffer;
+		info.commandBufferCount = used_command_buffers.size();
+		info.pCommandBuffers = used_command_buffers.data();
 		info.signalSemaphoreCount = 1;
 		info.pSignalSemaphores = &render_complete_semaphore;
 
@@ -534,37 +571,37 @@ void rhr::render::renderer::frame_present()
 
 void rhr::render::renderer::clean_up_swap_chain()
 {
-	vkDestroyImageView(rhr::render::device::device_master, depth_image_view, nullptr);
-	vkDestroyImage(rhr::render::device::device_master, depthImage, nullptr);
-	vkFreeMemory(rhr::render::device::device_master, depthImageMemory, nullptr);
-
-	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_frame_buffers.size(); i++)
-		vkDestroyFramebuffer(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_frame_buffers[i], nullptr);
-
-	vkFreeCommandBuffers(rhr::render::device::device_master, rhr::render::command::command_pool, static_cast<u32>(rhr::render::command::command_buffers.size()), rhr::render::command::command_buffers.data());
-
-	//vkDestroyPipeline(Device, BlocksPipeline, nullptr);
-	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline, nullptr);
-	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline, nullptr);
-
-//	vkDestroyPipelineLayout(device, rhr::render::pipeline::blocks_pipeline_layout, nullptr);
-	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline_layout, nullptr);
-	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline_layout, nullptr);
-
-	vkDestroyRenderPass(rhr::render::device::device_master, rhr::render::render_pass::render_pass_master, nullptr);
-
-	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_image_views.size(); i++)
-		vkDestroyImageView(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_image_views[i], nullptr);
-
-	vkDestroySwapchainKHR(rhr::render::device::device_master, rhr::render::swap_chain::swapchain_khr, nullptr);
-
-	//for (usize i = 0; i < m_SwapChainImages.size(); i++)
-	//{
-	//	vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
-	//	vkFreeMemory(m_Device, m_UniformBuffersMemory[i], nullptr);
-	//}
-
-	vkDestroyDescriptorPool(rhr::render::device::device_master, rhr::render::command::descriptor_pool, nullptr);
+//	vkDestroyImageView(rhr::render::device::device_master, depth_image_view, nullptr);
+//	vkDestroyImage(rhr::render::device::device_master, depthImage, nullptr);
+//	vkFreeMemory(rhr::render::device::device_master, depthImageMemory, nullptr);
+//
+//	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_frame_buffers.size(); i++)
+//		vkDestroyFramebuffer(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_frame_buffers[i], nullptr);
+//
+//	vkFreeCommandBuffers(rhr::render::device::device_master, rhr::render::command::command_pool, static_cast<u32>(rhr::render::command::command_buffers.size()), rhr::render::command::command_buffers.data());
+//
+//	//vkDestroyPipeline(Device, BlocksPipeline, nullptr);
+//	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline, nullptr);
+//	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline, nullptr);
+//
+////	vkDestroyPipelineLayout(device, rhr::render::pipeline::blocks_pipeline_layout, nullptr);
+//	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline_layout, nullptr);
+//	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline_layout, nullptr);
+//
+//	vkDestroyRenderPass(rhr::render::device::device_master, rhr::render::render_pass::render_pass_master, nullptr);
+//
+//	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_image_views.size(); i++)
+//		vkDestroyImageView(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_image_views[i], nullptr);
+//
+//	vkDestroySwapchainKHR(rhr::render::device::device_master, rhr::render::swap_chain::swapchain_khr, nullptr);
+//
+//	//for (usize i = 0; i < m_SwapChainImages.size(); i++)
+//	//{
+//	//	vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
+//	//	vkFreeMemory(m_Device, m_UniformBuffersMemory[i], nullptr);
+//	//}
+//
+//	vkDestroyDescriptorPool(rhr::render::device::device_master, rhr::render::command::descriptor_pool, nullptr);
 }
 
 void rhr::render::renderer::clean_up()
@@ -659,11 +696,6 @@ void rhr::render::renderer::recreate_swap_chain()
 		);
 }
 
-void rhr::render::renderer::add_layer(std::weak_ptr<rhr::render::layer> layer)
-{
-//	m_layers.push_back(layer);
-}
-
 void rhr::render::renderer::reload_layer_swap_chains()
 {
 //	bool erased = false;
@@ -716,10 +748,10 @@ void rhr::render::renderer::init_descriptor_set_layout()
 
 void rhr::render::renderer::init_depth_resources()
 {
-	VkFormat depthFormat = rhr::render::tools::find_depth_format();
-	rhr::render::tools::create_image(rhr::render::swap_chain::swap_chain_extent.width, rhr::render::swap_chain::swap_chain_extent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-	depth_image_view = rhr::render::tools::create_image_view(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
-	rhr::render::tools::transition_image_layout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+//	VkFormat depthFormat = rhr::render::tools::find_depth_format();
+//	rhr::render::tools::create_image(rhr::render::swap_chain::swap_chain_extent.width, rhr::render::swap_chain::swap_chain_extent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+//	depth_image_view = rhr::render::tools::create_image_view(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+//	rhr::render::tools::transition_image_layout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
 }
 
 void rhr::render::renderer::init_texture_sampler()

@@ -28,22 +28,22 @@ void* cap::preprocessor_data::get_structure(const std::string& name)
 	return nullptr;
 }
 /*
-CAP_DLL f64& cap::preprocessor_data::GetReal(u64 idx)
+f64& cap::preprocessor_data::GetReal(u64 idx)
 {
 	return m_vReal[idx];
 }
 
-CAP_DLL bool& cap::preprocessor_data::GetBool(u64 idx)
+bool& cap::preprocessor_data::GetBool(u64 idx)
 {
 	return m_vBool[idx];
 }
 
-CAP_DLL std::string& cap::preprocessor_data::GetString(u64 idx)
+std::string& cap::preprocessor_data::GetString(u64 idx)
 {
 	return m_vString[idx];
 }
 */
-CAP_DLL u64 cap::preprocessor_data::custom_put(void* mem)
+u64 cap::preprocessor_data::custom_put(void* mem)
 {
 	m_v_custom.push_back(mem);
 	return m_v_custom.size() - 1;

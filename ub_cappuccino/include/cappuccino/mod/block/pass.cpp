@@ -112,42 +112,42 @@ cap::mod::block::pass::pass(const initializer& init)
 	}
 }
 
-CAP_DLL void cap::mod::block::pass::set_data(cap::mod::block::data** data)
+void cap::mod::block::pass::set_data(cap::mod::block::data** data)
 {
 	m_data = data;
 }
 
-CAP_DLL void cap::mod::block::pass::set_callstack_stack(std::vector<u64>* callstack)
+void cap::mod::block::pass::set_callstack_stack(std::vector<u64>* callstack)
 {
 	m_callstack_stack_idx = callstack;
 }
 
-CAP_DLL void cap::mod::block::pass::set_callstack_block(std::vector<u64>* callstack)
+void cap::mod::block::pass::set_callstack_block(std::vector<u64>* callstack)
 {
 	m_callstack_block_idx = callstack;
 }
 
-CAP_DLL void cap::mod::block::pass::set_successful(bool* successful)
+void cap::mod::block::pass::set_successful(bool* successful)
 {
 	m_successful = successful;
 }
 
-CAP_DLL void cap::mod::block::pass::set_finished(std::atomic<bool>* finished)
+void cap::mod::block::pass::set_finished(std::atomic<bool>* finished)
 {
 	m_finished = finished;
 }
 
-CAP_DLL void cap::mod::block::pass::set_callstack_local(void(***local_callstack)(pass*))
+void cap::mod::block::pass::set_callstack_local(void(***local_callstack)(pass*))
 {
 	m_local_callstack = local_callstack;
 }
 
-CAP_DLL void cap::mod::block::pass::set_calls(void(***calls)(pass*))
+void cap::mod::block::pass::set_calls(void(***calls)(pass*))
 {
 	m_calls = calls;
 }
 
-CAP_DLL void cap::mod::block::pass::perform_deallocation_callbacks()
+void cap::mod::block::pass::perform_deallocation_callbacks()
 {
 	for (u64 i = 0; i < m_deallocation_calls.size(); i++)
 	{
@@ -158,12 +158,12 @@ CAP_DLL void cap::mod::block::pass::perform_deallocation_callbacks()
 	m_deallocation_calls.clear();
 }
 
-CAP_DLL std::chrono::steady_clock::time_point* cap::mod::block::pass::get_begin_time()
+std::chrono::steady_clock::time_point* cap::mod::block::pass::get_begin_time()
 {
 	return m_begin_time;
 }
 
-CAP_DLL void cap::mod::block::pass::stop()
+void cap::mod::block::pass::stop()
 {
 	m_stop();
 
@@ -171,7 +171,7 @@ CAP_DLL void cap::mod::block::pass::stop()
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
-CAP_DLL void cap::mod::block::pass::add_callstack(u64 stack, u64 block, bool special)
+void cap::mod::block::pass::add_callstack(u64 stack, u64 block, bool special)
 {
 	m_callstack_stack_idx->push_back(stack);
 	m_callstack_block_idx->push_back(block);
@@ -209,7 +209,7 @@ CAP_DLL void cap::mod::block::pass::add_callstack(u64 stack, u64 block, bool spe
 	update_locations();
 }
 
-CAP_DLL void cap::mod::block::pass::pop_callstack()
+void cap::mod::block::pass::pop_callstack()
 {
 	m_callstack_stack_idx->pop_back();
 	m_callstack_block_idx->pop_back();
@@ -234,7 +234,7 @@ CAP_DLL void cap::mod::block::pass::pop_callstack()
 	}
 }
 
-CAP_DLL void cap::mod::block::pass::set_stack_idx(u64 idx)
+void cap::mod::block::pass::set_stack_idx(u64 idx)
 {
 	if (m_callstack_stack_idx->size() > 0)
 		m_callstack_stack_idx->back() = idx;
@@ -242,23 +242,23 @@ CAP_DLL void cap::mod::block::pass::set_stack_idx(u64 idx)
 	update_locations();
 }
 
-CAP_DLL void cap::mod::block::pass::set_block_idx(u64 idx)
+void cap::mod::block::pass::set_block_idx(u64 idx)
 {
 	if (m_callstack_block_idx->size() > 0)
 		m_callstack_block_idx->back() = idx;
 }
 
-CAP_DLL std::mt19937_64& cap::mod::block::pass::get_random_generator()
+std::mt19937_64& cap::mod::block::pass::get_random_generator()
 {
 	return m_random;
 }
 
-CAP_DLL void cap::mod::block::pass::add_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc)
+void cap::mod::block::pass::add_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc)
 {
 	m_deallocation_calls.push_back(dealloc);
 }
 
-CAP_DLL void cap::mod::block::pass::remove_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc)
+void cap::mod::block::pass::remove_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc)
 {
 	for (u64 i = 0; i < m_deallocation_calls.size(); i++)
 	{
@@ -271,7 +271,7 @@ CAP_DLL void cap::mod::block::pass::remove_deallocation(std::function<void(cap::
 	}
 }
 
-CAP_DLL u64 cap::mod::block::pass::custom_put(void* mem)
+u64 cap::mod::block::pass::custom_put(void* mem)
 {
 	// TODO change to shared
 	std::unique_lock<std::mutex> lock(*m_custom_registrer_mutex);
@@ -282,7 +282,7 @@ CAP_DLL u64 cap::mod::block::pass::custom_put(void* mem)
 	return customIdx;
 }
 
-CAP_DLL void* cap::mod::block::pass::custom_get(u64 idx)
+void* cap::mod::block::pass::custom_get(u64 idx)
 {
 	// TODO change to shared
 	std::unique_lock<std::mutex> lock(*m_custom_registrer_mutex);
@@ -290,7 +290,7 @@ CAP_DLL void* cap::mod::block::pass::custom_get(u64 idx)
 	return m_custom_register->at(idx);
 }
 
-CAP_DLL void cap::mod::block::pass::custom_free(u64 idx, bool deallocate)
+void cap::mod::block::pass::custom_free(u64 idx, bool deallocate)
 {
 	std::unique_lock<std::mutex> lock(*m_custom_registrer_mutex);
 
@@ -300,7 +300,7 @@ CAP_DLL void cap::mod::block::pass::custom_free(u64 idx, bool deallocate)
 	m_custom_register->at(idx) = nullptr;
 }
 
-CAP_DLL void cap::mod::block::pass::log_debug(const std::string& message)
+void cap::mod::block::pass::log_debug(const std::string& message)
 {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
@@ -352,7 +352,7 @@ void cap::mod::block::pass::log_info(const std::string& message)
 	m_messages[index] += message;
 }
 
-CAP_DLL void cap::mod::block::pass::log_warning(const std::string& message)
+void cap::mod::block::pass::log_warning(const std::string& message)
 {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 
@@ -421,33 +421,33 @@ void cap::mod::block::pass::log_error(const std::string& message, const cap::mod
 	m_messages[index] += message;
 }
 
-CAP_DLL f64& cap::mod::block::pass::get_real(u64 idx)
+f64& cap::mod::block::pass::get_real(u64 idx)
 {
 	return (this->*(m_get_real))(idx);
 }
 
-CAP_DLL bool& cap::mod::block::pass::get_bool(u64 idx)
+bool& cap::mod::block::pass::get_bool(u64 idx)
 {
 	return (this->*(m_get_bool))(idx);
 }
 
-CAP_DLL std::string& cap::mod::block::pass::get_string(u64&& idx)
+std::string& cap::mod::block::pass::get_string(u64&& idx)
 {
 	return (this->*(m_get_string))(idx);
 }
 
-CAP_DLL void* cap::mod::block::pass::get_pre_data(u64 idx)
+void* cap::mod::block::pass::get_pre_data(u64 idx)
 {
 	return (this->*(m_get_pre_data))(idx);
 }
 
-CAP_DLL const std::vector<std::string>& cap::mod::block::pass::pull_messages()
+const std::vector<std::string>& cap::mod::block::pass::pull_messages()
 {
 	m_messages_mutex.lock();
 	return m_messages;
 }
 
-CAP_DLL void cap::mod::block::pass::return_messages()
+void cap::mod::block::pass::return_messages()
 {
 	m_messages.clear();
 	m_messages_mutex.unlock();

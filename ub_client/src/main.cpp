@@ -10,7 +10,6 @@
 #include "rhr/registries/char_texture.hpp"
 #include "rhr/handlers/build.hpp"
 #include "rhr/rendering/objects/button_image.hpp"
-#include "rhr/rendering/frame.hpp"
 
 #if LINUX
 #include <dlfcn.h>
@@ -70,101 +69,9 @@ int main()
 	rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
 	rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
 
-	// Frames and Layers
-
-//#if 0
-	std::shared_ptr<rhr::render::frame> frameBase = std::make_shared<rhr::render::frame>();
-	frameBase->set_weak(frameBase);
-	frameBase->set_size_local({ 1280, 720 });
-
-	std::shared_ptr<rhr::render::frame> frameBackground = std::make_shared<rhr::render::frame>();
-	frameBackground->set_weak(frameBackground);
-	frameBackground->set_size_local({ 1280, 720 });
-	frameBackground->set_padding(0);
-
-	std::shared_ptr<rhr::render::object::rectangle> rectBackground = std::make_shared<rhr::render::object::rectangle>();
-	rectBackground->set_weak(rectBackground);
-	rectBackground->set_color(cap::color::background_color_1);
-	rectBackground->set_depth(rhr::render::renderer::depth_background);
-
-	frameBackground->add_content(rectBackground, rhr::render::cardinal::local::RIGHT);
-	rectBackground->set_size_max();
-
-	std::shared_ptr<rhr::render::layer> layer = std::make_shared<rhr::render::layer>();
-	layer->add_frame(frameBackground);
-	layer->add_frame(frameBase);
-
-	std::shared_ptr<rhr::render::frame> frameOptionsContent = std::make_shared<rhr::render::frame>();
-	frameOptionsContent->set_weak(frameOptionsContent);
-	std::shared_ptr<rhr::render::frame> frameSidebarPrimary = std::make_shared<rhr::render::frame>();
-	frameSidebarPrimary->set_weak(frameSidebarPrimary);
-	std::shared_ptr<rhr::render::frame> frameSidebarCategories = std::make_shared<rhr::render::frame>();
-	frameSidebarCategories->set_weak(frameSidebarCategories);
-
-	std::shared_ptr<rhr::render::frame> frameOptions = std::make_shared<rhr::render::frame>();
-	frameOptions->set_weak(frameOptions);
-	frameOptions->enable_background(cap::color::background_color_2);
-	std::shared_ptr<rhr::render::frame> frameCategories = std::make_shared<rhr::render::frame>();
-	frameCategories->set_weak(frameCategories);
-	std::shared_ptr<rhr::render::frame> frameToolbar = std::make_shared<rhr::render::frame>();
-	frameToolbar->set_weak(frameToolbar);
-	frameToolbar->enable_background(cap::color::background_color_2);
-	std::shared_ptr<rhr::render::frame> framePrimary = std::make_shared<rhr::render::frame>();
-	framePrimary->set_weak(framePrimary);
-
-	std::shared_ptr<rhr::render::object::rectangle> rectOptions = std::make_shared<rhr::render::object::rectangle>();
-	rectOptions->set_weak(rectOptions);
-	std::shared_ptr<rhr::render::object::rectangle> rectCategories = std::make_shared<rhr::render::object::rectangle>();
-	rectCategories->set_weak(rectCategories);
-
-	//frameBase->add_content(rectOptions, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectOptions, rectOptions, rhr::render::cardinal::local::RIGHT);
-	//rectOptions->set_size_max();
-
-	frameBase->add_frame(frameOptionsContent, rhr::render::cardinal::local::RIGHT);
-	frameOptionsContent->set_size_max();
-
-	frameOptionsContent->add_frame(frameOptions, rhr::render::cardinal::local::DOWN);
-	frameOptionsContent->add_frame(frameSidebarPrimary, rhr::render::cardinal::local::DOWN);
-	frameOptionsContent->set_bar(0, 50);
-
-	frameOptions->set_size_max();
-	frameSidebarPrimary->set_size_max();
-
-	frameSidebarPrimary->add_frame(frameSidebarCategories, rhr::render::cardinal::local::RIGHT);
-	frameSidebarPrimary->add_frame(framePrimary, rhr::render::cardinal::local::RIGHT);
-	frameSidebarPrimary->set_bar(0, 200);
-
-	frameSidebarCategories->set_size_max();
-	framePrimary->set_size_max();
-
-	frameSidebarCategories->add_frame(frameCategories, rhr::render::cardinal::local::DOWN);
-	frameSidebarCategories->add_frame(frameToolbar, rhr::render::cardinal::local::DOWN);
-	frameSidebarCategories->set_bar(0, 200);
-
-	frameCategories->set_size_max();
-	frameToolbar->set_size_max();
-
-//	frameOptions->add_content(rectOptions, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectOptions, rectOptions, rhr::render::cardinal::local::RIGHT);
-//	rectOptions->set_size_max();
-	
-//	frameCategories->add_content(rectCategories, std::weak_ptr<rhr::render::interfaces::i_updateable>(), rectCategories, rectCategories, rhr::render::cardinal::local::RIGHT);
-//	rectCategories->set_size_max();
-
-	std::shared_ptr<rhr::render::object::button_image> button_debug = std::make_shared<rhr::render::object::button_image>("res/deb_run_debug.png");
-    button_debug->set_weak(button_debug);
-    button_debug->set_size_local({16, 16});
-    button_debug->set_callback(button_callback_build_debug, nullptr);
-    frameOptions->add_content(button_debug, rhr::render::cardinal::local::LEFT);
-
-//	framePrimary->add_content(rhr::stack::plane::primary_plane, rhr::render::cardinal::local::RIGHT);
-//	rhr::stack::plane::primary_plane->set_size_max();
-//	frameToolbar->add_content(rhr::stack::plane::toolbar_plane, rhr::render::cardinal::local::RIGHT);
-//	rhr::stack::plane::toolbar_plane->set_size_max();
-
-//	rhr::render::renderer::add_layer(layer);
-//#endif
-
 	// Critical Setup
+
+	// TODO: async setup
 
 	rhr::render::renderer::initialize_window();
     async_setup();
@@ -177,7 +84,7 @@ int main()
 	//rhr::handler::field::initialize();
 
 	run();
-//	rhr::handler::category::populate(frameCategories);
+	rhr::handler::category::populate();
 
 	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::window_size, false);
 	rhr::stack::plane::primary_plane->set_size_max();
@@ -263,18 +170,6 @@ int main()
 				rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
 				rhr::render::renderer::reload_layer_swap_chains();
-				frameBase->set_size_local(last_plane_size);
-				frameBackground->set_size_local(last_plane_size);
-
-				rectBackground->set_size_max();
-
-				frameOptionsContent->set_size_max();
-				frameOptions->set_size_max();
-				frameSidebarPrimary->set_size_max();
-				frameSidebarCategories->set_size_max();
-				framePrimary->set_size_max();
-				frameCategories->set_size_max();
-				frameToolbar->set_size_max();
 			}
 		}
 
@@ -340,8 +235,10 @@ int main()
 		}
 #endif
 
-		rhr::render::renderer::render_pass_plane();
+		rhr::render::renderer::render_pass_setup();
+
 		rhr::render::panel::run_imgui();
+		rhr::handler::category::render();
 
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();

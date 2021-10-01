@@ -3,16 +3,6 @@
 
 #include "cappuccino/utils.hpp"
 
-#if !LINUX
-#ifdef __CAP
-#define CAP_DLL __declspec(dllexport)
-#else
-#define CAP_DLL __declspec(dllimport)
-#endif
-#else
-#define CAP_DLL
-#endif
-
 namespace cap::mod::block
 {
 ///
@@ -32,13 +22,13 @@ public:
 	class iterator
 	{
 	public:
-		CAP_DLL iterator(const u64* flag);
+		iterator(const u64* flag);
 
 		///
-		CAP_DLL type pull_next();
+		type pull_next();
 
 		///
-		CAP_DLL void reset();
+		void reset();
 	private:
 		///
 		u64 m_iterator;
@@ -47,16 +37,16 @@ public:
 		const u64* m_flag;
 	};
 
-	CAP_DLL flags();
+	flags();
 
 	///
-	CAP_DLL cap::mod::block::flags::iterator use_iterator() const;
+	cap::mod::block::flags::iterator use_iterator() const;
 
 	///
-	CAP_DLL flags& check_heap();
+	flags& check_heap();
 
 	///
-	CAP_DLL flags& check_stack();
+	flags& check_stack();
 private:
 	///
 	cap::mod::block::flags::iterator m_iterator;

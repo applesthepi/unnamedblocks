@@ -22,7 +22,16 @@ public:
 	static void init_command_buffers();
 
 	///
-	static std::vector<VkCommandBuffer> command_buffers;
+	static void generate_command_buffer(u32 count, VkCommandBuffer* command_buffer);
+
+	///
+	static void setup_command_buffer(VkCommandBuffer* command_buffer, VkRenderPass* render_pass, VkFramebuffer* frame_buffer);
+
+	///
+	static std::vector<VkCommandBuffer> command_buffer_panels;
+
+	///
+	static std::vector<VkCommandBuffer> command_buffer_master;
 
 	///
 	static VkCommandBuffer* active_command_buffer;

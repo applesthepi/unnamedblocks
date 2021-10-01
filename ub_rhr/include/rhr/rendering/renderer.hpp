@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/layer.hpp"
 #include "rhr/rendering/objects/object.hpp"
 #include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
@@ -62,7 +62,7 @@ public:
 	static void process_dirty();
 
 	///
-	static void render_pass_plane();
+	static void render_pass_setup();
 
 	///
 	static void render_pass_master();
@@ -78,9 +78,6 @@ public:
 
 	///
 	static void recreate_swap_chain();
-
-	///
-	static void add_layer(std::weak_ptr<rhr::render::layer> layer);
 
 	///
 	static void reload_layer_swap_chains();

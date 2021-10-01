@@ -4,6 +4,8 @@
 #include "rhr/stacking/block.hpp"
 
 #include <cappuccino/color.hpp>
+// TODO: remove
+#include <iostream>
 
 void rhr::registry::char_texture::process_fonts()
 {
@@ -156,6 +158,11 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 				memcpy(texture_sheet_char + (cy * image_side_length * highest_width * 4), char_images[char_idx] + (cy * char_sizes[char_idx].x * 4), char_sizes[char_idx].x * 4);
 		}
 	}
+
+//	for (usize i = 0; i < texture_sheet_total_size; i++)
+//		std::cout << (u16)(texture_sheet[i]) << " ";
+//
+//	std::cout << std::flush;
 
 	for (auto char_image : char_images)
 		free(char_image);

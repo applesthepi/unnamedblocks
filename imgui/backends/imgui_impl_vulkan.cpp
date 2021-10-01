@@ -870,32 +870,48 @@ static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationC
 
 	VkPipelineRasterizationStateCreateInfo raster_info = {};
 	raster_info.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
+	raster_info.depthClampEnable = VK_FALSE;
+	raster_info.rasterizerDiscardEnable = VK_FALSE;
 	raster_info.polygonMode = VK_POLYGON_MODE_FILL;
+	raster_info.lineWidth = 1.0f;
+
 	raster_info.cullMode = VK_CULL_MODE_NONE;
 	raster_info.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-	raster_info.lineWidth = 1.0f;
+
+	raster_info.depthBiasEnable = VK_FALSE;
+	raster_info.depthBiasConstantFactor = 0.0f; // Optional
+	raster_info.depthBiasClamp = 0.0f; // Optional
+	raster_info.depthBiasSlopeFactor = 0.0f; // Optional
+
 
 	VkPipelineMultisampleStateCreateInfo ms_info = {};
 	ms_info.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
+	ms_info.sampleShadingEnable = VK_FALSE;
 	ms_info.rasterizationSamples = (MSAASamples != 0) ? MSAASamples : VK_SAMPLE_COUNT_1_BIT;
 
 	VkPipelineColorBlendAttachmentState color_attachment[1] = {};
+	color_attachment[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 	color_attachment[0].blendEnable = VK_TRUE;
 	color_attachment[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 	color_attachment[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 	color_attachment[0].colorBlendOp = VK_BLEND_OP_ADD;
 	color_attachment[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	color_attachment[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	color_attachment[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 	color_attachment[0].alphaBlendOp = VK_BLEND_OP_ADD;
-	color_attachment[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
 	VkPipelineDepthStencilStateCreateInfo depth_info = {};
 	depth_info.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
 
 	VkPipelineColorBlendStateCreateInfo blend_info = {};
 	blend_info.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+	blend_info.logicOpEnable = VK_FALSE;
+	blend_info.logicOp = VK_LOGIC_OP_COPY; // Optional
 	blend_info.attachmentCount = 1;
 	blend_info.pAttachments = color_attachment;
+	blend_info.blendConstants[0] = 0.0f; // Optional
+	blend_info.blendConstants[1] = 0.0f; // Optional
+	blend_info.blendConstants[2] = 0.0f; // Optional
+	blend_info.blendConstants[3] = 0.0f; // Optional
 
 	VkDynamicState dynamic_states[2] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
 	VkPipelineDynamicStateCreateInfo dynamic_state = {};

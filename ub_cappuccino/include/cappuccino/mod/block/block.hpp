@@ -9,16 +9,6 @@
 #include "pass.hpp"
 #include "data.hpp"
 
-#if !LINUX
-#ifdef CAPPUCCINO
-#define CAP_DLL __declspec(dllexport)
-#else
-#define CAP_DLL __declspec(dllimport)
-#endif
-#else
-#define CAP_DLL
-#endif
-
 /*
 Important Modding Information
 
@@ -102,36 +92,36 @@ public:
 	typedef bool(*data_initialization)(cap::preprocessor_data&, cap::mod::block::data&);
 
 	/// How the block will be identified as. Convention example: "mymod_some_block_name".
-	CAP_DLL virtual const char* get_unlocalized_name() const;
+	virtual const char* get_unlocalized_name() const;
 
 	/// Category of the block.
-	CAP_DLL virtual const char* get_category() const;
+	virtual const char* get_category() const;
 
 	/// Does the block start a stack.
-	CAP_DLL virtual bool is_topical() const;
+	virtual bool is_topical() const;
 
 	/// What will be executed in a release build.
-	CAP_DLL virtual execution pull_execute_release() const;
+	virtual execution pull_execute_release() const;
 
 	/// What will be executed in a debug build.
-	CAP_DLL virtual execution pull_execute_debug() const;
+	virtual execution pull_execute_debug() const;
 
 	/// Actions to run once per block type; during runtime before Initialization.
-	CAP_DLL virtual initialization get_runtime_global_pre_init() const;
+	virtual initialization get_runtime_global_pre_init() const;
 
 	/// Actions to run once per block type; during runtime after Initialization.
-	CAP_DLL virtual initialization get_runtime_global_post_init() const;
+	virtual initialization get_runtime_global_post_init() const;
 
 	/// Actions to run once per block type per stack; during runtime before Initialization.
-	CAP_DLL virtual initialization get_runtime_local_pre_init() const;
+	virtual initialization get_runtime_local_pre_init() const;
 
 	/// Actions to run once per block type per stack; during runtime after Initialization.
-	CAP_DLL virtual initialization get_runtime_local_post_init() const;
+	virtual initialization get_runtime_local_post_init() const;
 
 	/// Actions to run on each block preprocessed; during Initialization.
-	CAP_DLL virtual std::vector<std::pair<data_initialization, u16>> get_runtime_stages() const;
+	virtual std::vector<std::pair<data_initialization, u16>> get_runtime_stages() const;
 
 	/// Block arguments, including text.
-	CAP_DLL virtual std::vector<argument::initializer> get_arguments() const;
+	virtual std::vector<argument::initializer> get_arguments() const;
 };
 }

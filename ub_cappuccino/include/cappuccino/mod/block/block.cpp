@@ -65,7 +65,7 @@ cap::mod::block::block::initialization cap::mod::block::block::get_runtime_local
 	return runtime_initialization;
 }
 
-CAP_DLL std::vector<std::pair<cap::mod::block::block::data_initialization, u16>> cap::mod::block::block::get_runtime_stages() const
+std::vector<std::pair<cap::mod::block::block::data_initialization, u16>> cap::mod::block::block::get_runtime_stages() const
 {
 	return {};
 }

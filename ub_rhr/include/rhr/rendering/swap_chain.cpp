@@ -80,10 +80,14 @@ void rhr::render::swap_chain::init_frame_buffers()
 
 	for (usize i = 0; i < swap_chain_image_views.size(); i++)
 	{
-		std::array<VkImageView, 2> attachments = {
-			swap_chain_image_views[i],
-			rhr::render::renderer::depth_image_view
+		std::array<VkImageView, 1> attachments = {
+			swap_chain_image_views[i]
 		};
+
+//		std::array<VkImageView, 2> attachments = {
+//			swap_chain_image_views[i],
+//			rhr::render::renderer::depth_image_view
+//		};
 
 		VkFramebufferCreateInfo frame_buffer_info{};
 		frame_buffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

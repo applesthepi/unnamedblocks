@@ -109,6 +109,7 @@ struct ImGui_ImplVulkanH_Frame
 	{
 	VkCommandPool       CommandPool;
 	VkCommandBuffer     CommandBuffer;
+	VkCommandBuffer     CommandBufferPanel;
 	VkFence             Fence;
 	VkImage             Backbuffer;
 	VkImageView         BackbufferView;

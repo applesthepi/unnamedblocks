@@ -4,16 +4,6 @@
 #include "cappuccino/utils.hpp"
 #include "data.hpp"
 
-#if !LINUX
-	#ifdef CAPPUCCINO
-		#define CAP_DLL __declspec(dllexport)
-	#else
-		#define CAP_DLL __declspec(dllimport)
-	#endif
-#else
-	#define CAP_DLL
-#endif
-
 namespace cap::mod::block
 {
 /// When used as an argument of the execution functions for blocks, the variable must not be moved as it will be tracked
@@ -26,7 +16,7 @@ public:
 	class initializer
 	{
 	public:
-		CAP_DLL initializer();
+		initializer();
 
 		///
 		bool debug_mode;
@@ -80,98 +70,98 @@ public:
 	// ====================================================
 
 	///
-	CAP_DLL pass(const initializer& init);
+	pass(const initializer& init);
 
 	///
-	CAP_DLL const std::vector<std::string>& pull_messages();
+	const std::vector<std::string>& pull_messages();
 
 	///
-	CAP_DLL void return_messages();
+	void return_messages();
 
 	///
-	CAP_DLL void set_data(cap::mod::block::data** data);
+	void set_data(cap::mod::block::data** data);
 
 	///
-	CAP_DLL void set_callstack_stack(std::vector<u64>* callstack);
+	void set_callstack_stack(std::vector<u64>* callstack);
 
 	///
-	CAP_DLL void set_callstack_block(std::vector<u64>* callstack);
+	void set_callstack_block(std::vector<u64>* callstack);
 
 	///
-	CAP_DLL void set_successful(bool* successful);
+	void set_successful(bool* successful);
 
 	///
-	CAP_DLL void set_finished(std::atomic<bool>* finished);
+	void set_finished(std::atomic<bool>* finished);
 
 	///
-	CAP_DLL void set_callstack_local(void(***local_callstack)(pass*));
+	void set_callstack_local(void(***local_callstack)(pass*));
 
 	///
-	CAP_DLL void set_calls(void(***calls)(pass*));
+	void set_calls(void(***calls)(pass*));
 
 	///
-	CAP_DLL void perform_deallocation_callbacks();
+	void perform_deallocation_callbacks();
 
 
-	//CAP_DLL void PerformLocationUpdate();
+	//void PerformLocationUpdate();
 
 	// ====================================================
 	// user calls
 	// ====================================================
 
 	///
-	CAP_DLL void log_debug(const std::string& message);
+	void log_debug(const std::string& message);
 
 	///
-	CAP_DLL void log_info(const std::string& message);
+	void log_info(const std::string& message);
 
 	///
-	CAP_DLL void log_warning(const std::string& message);
+	void log_warning(const std::string& message);
 
 	///
-	CAP_DLL void log_error(const std::string& message, const logger_fatality& fatality);
+	void log_error(const std::string& message, const logger_fatality& fatality);
 
 	///
-	CAP_DLL f64& get_real(u64 idx);
+	f64& get_real(u64 idx);
 
 	///
-	CAP_DLL bool& get_bool(u64 idx);
+	bool& get_bool(u64 idx);
 
 	///
-	CAP_DLL std::string& get_string(u64&& idx);
+	std::string& get_string(u64&& idx);
 
 	///
-	CAP_DLL void* get_pre_data(u64 idx);
+	void* get_pre_data(u64 idx);
 
 	///
-	CAP_DLL std::chrono::steady_clock::time_point* get_begin_time();
+	std::chrono::steady_clock::time_point* get_begin_time();
 
 	///
-	CAP_DLL void stop();
+	void stop();
 
 	///
-	CAP_DLL void add_callstack(u64 stack, u64 block, bool special = true);
+	void add_callstack(u64 stack, u64 block, bool special = true);
 
 	///
-	CAP_DLL void pop_callstack();
+	void pop_callstack();
 
 	///
-	CAP_DLL void set_stack_idx(u64 idx);
+	void set_stack_idx(u64 idx);
 
 	///
-	CAP_DLL void set_block_idx(u64 idx);
+	void set_block_idx(u64 idx);
 
 	///
-	CAP_DLL std::mt19937_64& get_random_generator();
+	std::mt19937_64& get_random_generator();
 
 	// deallocation callbacks MUST be on the heap.
 	// do not deallocate the callback yourself, Cappuccino will do that.
 
 	///
-	CAP_DLL void add_deallocation(std::function<void(pass*)>* dealloc);
+	void add_deallocation(std::function<void(pass*)>* dealloc);
 
 	///
-	CAP_DLL void remove_deallocation(std::function<void(pass*)>* dealloc);
+	void remove_deallocation(std::function<void(pass*)>* dealloc);
 
 	// ====================================================
 	// custom allocations
@@ -188,13 +178,13 @@ public:
 	//		This will ensure it does not get freed at the end.
 
 	///
-	CAP_DLL u64 custom_put(void* mem);
+	u64 custom_put(void* mem);
 
 	///
-	CAP_DLL void* custom_get(u64 idx);
+	void* custom_get(u64 idx);
 
 	///
-	CAP_DLL void custom_free(u64 idx, bool deallocate = true);
+	void custom_free(u64 idx, bool deallocate = true);
 private:
 	///
 	void update_locations();
