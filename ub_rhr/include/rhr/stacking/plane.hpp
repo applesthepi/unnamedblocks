@@ -5,6 +5,7 @@
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 #include "rhr/rendering/objects/text.hpp"
+#include "rhr/rendering/objects/line.hpp"
 #include "rhr/handlers/field.hpp"
 
 #include <cappuccino/utils.hpp>
@@ -169,6 +170,9 @@ private:
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
+
+	///
+	std::shared_ptr<rhr::render::object::line> m_dragging_connecting_line;
 
 	///
 	rhr::handler::field m_field;

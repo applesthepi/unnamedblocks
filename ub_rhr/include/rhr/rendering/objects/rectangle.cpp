@@ -1,8 +1,5 @@
 #include "rectangle.hpp"
 
-#include "rhr/rendering/renderer.hpp"
-#include "rhr/rendering/vertex.hpp"
-
 rhr::render::object::rectangle::rectangle()
 	: i_colorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
 	, m_depth(10)

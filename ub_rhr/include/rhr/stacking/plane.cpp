@@ -23,6 +23,7 @@ rhr::stack::plane::plane(bool toolbar)
 	, m_dragging_snap_collection(0)
 	, m_dragging_snap_stack(0)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
+	, m_dragging_connecting_line(std::make_shared<rhr::render::object::line>())
 {
 	if (toolbar)
 		InputHandler::RegisterMouseCallback(toolbar_plane_mouse_button, nullptr);
@@ -31,9 +32,17 @@ rhr::stack::plane::plane(bool toolbar)
 
 	m_background->set_weak(m_background);
 	update_child_transform(m_background);
+
 	m_background->set_size_local(get_size_local());
 	m_background->set_color(cap::color().from_u8({ 0, 0, 0, 255 }));
 	m_background->set_depth(rhr::render::renderer::depth_plane);
+
+	m_dragging_connecting_line->set_weak(m_dragging_connecting_line);
+	update_child_transform(m_dragging_connecting_line);
+
+	m_dragging_connecting_line->set_color(cap::color().from_u8({ 255, 255, 255, 255 }));
+	m_dragging_connecting_line->set_depth(rhr::render::renderer::depth_argument_text);
+	m_dragging_connecting_line->set_line_half_width(4);
 
 	m_collections.reserve(5);
 	m_collection_vanity.reserve(5);
@@ -219,6 +228,9 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 									active_collection->set_position_local_physical(stack_position - active_collection->get_position_virtual_offset(), false);
 									active_collection->set_size_local(stack_size);
 
+//									m_dragging_connecting_line->set_position_parent_physical(get_position_virtual_absolute(), false);
+//									m_dragging_connecting_line->set_position_local_physical(stack_position - active_collection->get_position_virtual_offset(), false);
+
 									active_stack->set_position_parent_physical({ 0, 0 }, false);
 									active_stack->set_position_local_physical({ 0, 0 });
 
@@ -274,7 +286,12 @@ rhr::handler::field& rhr::stack::plane::get_field()
 void rhr::stack::plane::render_master_pass()
 {
 	if (dragging_stack() || dragging_collection())
+	{
 		m_dragging_collection->render();
+
+		if (m_dragging_snap)
+			m_dragging_connecting_line->render();
+	}
 }
 
 void rhr::stack::plane::ui_transform_update()
@@ -302,7 +319,10 @@ void rhr::stack::plane::ui_reload_swap_chain()
 		collection->reload_swap_chain();
 
 	if (dragging_stack() || dragging_collection())
+	{
 		m_dragging_collection->reload_swap_chain();
+		m_dragging_connecting_line->reload_swap_chain();
+	}
 }
 
 void rhr::stack::plane::ui_update_buffers()
@@ -313,7 +333,10 @@ void rhr::stack::plane::ui_update_buffers()
 		collection->update_buffers();
 
 	if (dragging_stack() || dragging_collection())
+	{
 		m_dragging_collection->update_buffers();
+		m_dragging_connecting_line->update_buffers();
+	}
 }
 
 void rhr::stack::plane::ui_frame_update(f64 delta_time)
@@ -324,7 +347,10 @@ void rhr::stack::plane::ui_frame_update(f64 delta_time)
 		collection->frame_update(delta_time);
 
 	if (dragging_stack() || dragging_collection())
+	{
 		m_dragging_collection->frame_update(delta_time);
+		m_dragging_connecting_line->frame_update(delta_time);
+	}
 
 	// dragging position
 
@@ -494,6 +520,7 @@ void rhr::stack::plane::dragging_stack_update()
 
 //	m_dragging_collection->set_position_parent_physical({ 0, 0 }, false);
 	m_dragging_collection->set_position_local_physical(InputHandler::GetMousePosition() - m_dragging_begin_mouse + m_dragging_begin_object);
+	m_dragging_connecting_line->set_position_local_physical(InputHandler::GetMousePosition() - m_dragging_begin_mouse + m_dragging_begin_object);
 
 	if (!(pixel_position.x >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().x && pixel_position.x < rhr::stack::plane::primary_plane->get_size_local().x + rhr::stack::plane::primary_plane->get_position_virtual_absolute().x &&
 		pixel_position.y >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().y && pixel_position.y < rhr::stack::plane::primary_plane->get_size_local().y + rhr::stack::plane::primary_plane->get_position_virtual_absolute().y))
@@ -590,6 +617,9 @@ void rhr::stack::plane::set_snap(std::shared_ptr<rhr::stack::collection> collect
 	m_dragging_snap_collection = collection;
 	m_dragging_snap_stack_loc = stackLoc;
 	m_dragging_snap_stack = stack;
+
+	m_dragging_connecting_line->set_point_1(m_dragging_collection->get_position_physical_absolute());
+	m_dragging_connecting_line->set_point_2(stack->get_position_virtual_absolute() + glm::vec<2, i32>(0, stackLoc * rhr::stack::block::height));
 }
 
 void rhr::stack::plane::clear_snap()

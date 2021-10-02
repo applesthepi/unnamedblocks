@@ -63,7 +63,7 @@ hpp
 namespace rhr::same::as::path
 {
 ///
-class example_use_snake_case
+class example_use_snake_case : public rhr::some::thing
 {
 public:
 	///
@@ -84,6 +84,9 @@ public:
 		LIGHT_ITALIC,
 		BOLD_ITALIC
 	};
+
+	void overrided_function_init_1() override;
+	void overrided_function_init_2() override;
 	
 	///
 	void also_use_snake_case(u8 use_snake_case = 5);
@@ -91,6 +94,10 @@ public:
 	///
 	void another_one(u8 something_yes);
 private:
+	void overrided_function_1() override;
+	void overrided_function_2() override;
+	void overrided_function_3() override;
+
 	///
 	f32 m_use_this_convention;
 };
@@ -110,7 +117,7 @@ example_class::another_one(u8 something_yes)
 ```
 
 ### Documentation
-Unnamed Blocks currently uses doxygen documentation generation. Heres a big example from the i_positionable class. Also notice how any phrase or sentence begins with a capital letter and ends with a period.
+Unnamed Blocks currently uses doxygen documentation generation. In the example above, notice how overrided functions dont even have a space for documentation, this is because doxygen uses the most super class's documentation. Heres a big example from the i_positionable class. Also notice how any phrase or sentence begins with a capital letter and ends with a period.
 ```cpp
 /// Event called when i_positionable<T>::set_position() or i_positionable<T>::set_super_position() gets run.
 /// \param Position of i_positionable.

@@ -6,10 +6,7 @@
 #include "rhr/rendering/device.hpp"
 #include "rhr/rendering/panel.hpp"
 #include "rhr/handlers/category.hpp"
-#include "rhr/handlers/field.hpp"
-#include "rhr/registries/char_texture.hpp"
 #include "rhr/handlers/build.hpp"
-#include "rhr/rendering/objects/button_image.hpp"
 
 #if LINUX
 #include <dlfcn.h>
@@ -17,12 +14,7 @@
 #include <windows.h>
 #endif
 
-#include <espresso/input_handler.hpp>
-#include <cappuccino/logger.hpp>
-#include <cappuccino/utils.hpp>
-#include <iostream>
-
-// Include last, has defines that conflict with enums
+// include last, has defines that conflict with enums
 #if LINUX
 #include <X11/Xlib.h>
 #endif
@@ -41,12 +33,12 @@ static void button_callback_build_debug(void* data)
 
 int main()
 {
-	//cap::color testColor = cap::color().FromU8({ 10, 10, 10, 255 });
-	//auto testColorN = testColor.GetNormalized();
-	//std::cout << testColorN.r << ", " << testColorN.g << ", " << testColorN.b << ", " << testColorN.a << std::endl;
-
-	// cap::logger::Info("CLIENT  - " std::string(VER_CLIENT));
-	// cap::logger::Info("SERVER  - " std::string(VER_SERVER));
+//	cap::color testColor = cap::color().FromU8({ 10, 10, 10, 255 });
+//	auto testColorN = testColor.GetNormalized();
+//	std::cout << testColorN.r << ", " << testColorN.g << ", " << testColorN.b << ", " << testColorN.a << std::endl;
+//
+//	 cap::logger::Info("CLIENT  - " std::string(VER_CLIENT));
+//	 cap::logger::Info("SERVER  - " std::string(VER_SERVER));
 
 // #if MODS
 // 	cap::logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
@@ -69,7 +61,7 @@ int main()
 	rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
 	rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
 
-	// Critical Setup
+	// critical setup
 
 	// TODO: async setup
 
@@ -92,7 +84,7 @@ int main()
 	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::window_size, false);
 	rhr::stack::plane::toolbar_plane->set_size_max();
 
-	// Debug
+	// default blocks
 
 	std::shared_ptr<rhr::stack::collection> testCollection = std::make_shared<rhr::stack::collection>();
 	testCollection->set_weak(testCollection);
@@ -134,7 +126,7 @@ int main()
 	while (!glfwWindowShouldClose(rhr::render::renderer::window))
 	{
 		// TODO: config
-		std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
+//		std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
 
 		glfwPollEvents();
 		glfwGetWindowPos(rhr::render::renderer::window, &window_position.x, &window_position.y);
@@ -164,8 +156,6 @@ int main()
 				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
 				rhr::render::renderer::reload_swap_chain_flag = false;
 
-				// reload swap chain
-
 				rhr::stack::plane::primary_plane->reload_swap_chain();
 				rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
@@ -185,14 +175,17 @@ int main()
 			// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
 			// because it would be confusing to have two docking targets within each others.
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
 			if (opt_fullscreen)
 			{
 				ImGuiViewport* viewport = ImGui::GetMainViewport();
+
 				ImGui::SetNextWindowPos(viewport->Pos);
 				ImGui::SetNextWindowSize(viewport->Size);
 				ImGui::SetNextWindowViewport(viewport->ID);
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
 				window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 				window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 			}
@@ -225,11 +218,6 @@ int main()
 				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 			}
-			else
-			{
-				//ShowDockingDisabledMessage();
-			}
-
 
 			ImGui::End();
 		}
@@ -255,15 +243,15 @@ int main()
 			rhr::render::renderer::render_pass_master();
 		}
 
-		// Update and Render additional Platform Windows
 		if (rhr::render::renderer::imgui_local->io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 		}
 
-		// Present Main Platform Window
-		if (!main_is_minimized)
+		if (main_is_minimized)
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		else
 			rhr::render::renderer::frame_present();
 	}
 
