@@ -258,22 +258,12 @@ void rhr::render::object::object::on_render()
 	if (m_ui)
 	{
 		if (m_has_texture)
-		{
-			vkCmdBindDescriptorSets(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-			vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
-		}
+			rhr::render::pipeline::bind_texture(&m_descriptor_set);
 		else
-		{
-			vkCmdBindDescriptorSets(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-			vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
-		}
+			rhr::render::pipeline::bind_color(&m_descriptor_set);
 	}
 	else
-	{
 		cap::logger::fatal("not implemented");
-//		vkCmdBindDescriptorSets(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::blocks_pipeline_layout, 0, 1, &m_descriptor_set, 0, nullptr);
-//		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
-	}
 
 	vkCmdBindVertexBuffers(*rhr::render::command::active_command_buffer, 0, 1, vb, offsets);
 

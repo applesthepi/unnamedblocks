@@ -22,7 +22,7 @@ rhr::stack::argument::string::string(const cap::color& color, std::function<void
 	m_text->set_weak(m_text);
 	m_text->set_weak_field(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
-	m_text->set_color_primary(cap::color::text_primary_color);
+	m_text->set_color_primary(cap::color::white);
 	m_text->set_color_secondary(color);
 	m_text->set_padding(rhr::stack::argument::argument::padding);
 	m_text->set_mouse_button(m_mouse_button);

@@ -139,7 +139,7 @@ void rhr::render::renderer::initialize()
 	rhr::render::swap_chain::init_image_views();
 	rhr::render::render_pass::init_render_pass();
 	init_descriptor_set_layout();
-	rhr::render::pipeline::init_pipelines();
+	rhr::render::pipeline::initialize();
 	rhr::render::command::init_command_pool();
 	init_depth_resources();
 	rhr::render::swap_chain::init_frame_buffers();
@@ -186,18 +186,49 @@ void rhr::render::renderer::initialize()
 	{
 		ImGuiStyle &style = ImGui::GetStyle();
 
-		const ImVec4 dockBgColor = ImVec4(0.098f, 0.098f, 0.1019f, 1.0f);
-		const ImVec4 bgColor = ImVec4(0.145f, 0.145f, 0.149f, 1.0f);
-		const ImVec4 lightBgColor = ImVec4(0.321f, 0.321f, 0.333f, 1.0f);
-		const ImVec4 lighterBgColor = ImVec4(0.353f, 0.353f, 0.372f, 1.0f);
+		static const float color_scalar_low = 0.75f;
+		static const float color_scalar_high = 0.8f;
 
-		const ImVec4 panelColor = ImVec4(0.2f, 0.2f, 0.21f, 1.0f);
-		const ImVec4 panelHoverColor = ImVec4(0.114f, 0.592f, 0.925f, 1.0f);
-		const ImVec4 panelActiveColor = ImVec4(0.0f, 0.466f, 0.784f, 1.0f);
+		ImVec4 dockBgColor = ImVec4(0.098f, 0.098f, 0.1019f, 1.0f);
+		ImVec4 bgColor = ImVec4(0.145f, 0.145f, 0.149f, 1.0f);
+		ImVec4 lightBgColor = ImVec4(0.321f, 0.321f, 0.333f, 1.0f);
+		ImVec4 lighterBgColor = ImVec4(0.353f, 0.353f, 0.372f, 1.0f);
 
-		const ImVec4 textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-		const ImVec4 textDisabledColor = ImVec4(0.592f, 0.592f, 0.592f, 1.0f);
-		const ImVec4 borderColor = ImVec4(0.305f, 0.305f, 0.305f, 1.0f);
+		ImVec4 panelColor = ImVec4(0.2f, 0.2f, 0.21f, 1.0f);
+		ImVec4 panelHoverColor = ImVec4(0.114f, 0.592f, 0.925f, 1.0f);
+		ImVec4 panelActiveColor = ImVec4(0.0f, 0.466f, 0.784f, 1.0f);
+
+		ImVec4 textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+		ImVec4 textDisabledColor = ImVec4(0.592f, 0.592f, 0.592f, 1.0f);
+		ImVec4 borderColor = ImVec4(0.305f, 0.305f, 0.305f, 1.0f);
+
+		dockBgColor.x *= color_scalar_high;
+		dockBgColor.y *= color_scalar_high;
+		dockBgColor.z *= color_scalar_high;
+
+		bgColor.x *= color_scalar_high;
+		bgColor.y *= color_scalar_high;
+		bgColor.z *= color_scalar_high;
+
+		lightBgColor.x *= color_scalar_high;
+		lightBgColor.y *= color_scalar_high;
+		lightBgColor.z *= color_scalar_high;
+
+		lighterBgColor.x *= color_scalar_high;
+		lighterBgColor.y *= color_scalar_high;
+		lighterBgColor.z *= color_scalar_high;
+
+		panelColor.x *= color_scalar_low;
+		panelColor.y *= color_scalar_low;
+		panelColor.z *= color_scalar_low;
+
+		panelHoverColor.x *= color_scalar_low;
+		panelHoverColor.y *= color_scalar_low;
+		panelHoverColor.z *= color_scalar_low;
+
+		panelActiveColor.x *= color_scalar_low;
+		panelActiveColor.y *= color_scalar_low;
+		panelActiveColor.z *= color_scalar_low;
 
 		style.Colors[ImGuiCol_Text] = textColor;
 		style.Colors[ImGuiCol_TextDisabled] = textDisabledColor;
@@ -287,7 +318,7 @@ void rhr::render::renderer::initialize()
 	imgui_local->data.SurfaceFormat = surface_format;
 	imgui_local->data.PresentMode = present_mode;
 	imgui_local->data.RenderPass = rhr::render::render_pass::render_pass_master;
-	imgui_local->data.Pipeline = rhr::render::pipeline::ui_pipeline;
+	imgui_local->data.Pipeline = rhr::render::pipeline::get_color("master");
 //	imgui_local->data.ClearEnable = false;
 //	imgui_local->data.ClearValue = VkClearValue(0.0f, 0.0f, 0.0f, 1.0f);
 	imgui_local->data.FrameIndex = 0;
@@ -492,6 +523,8 @@ void rhr::render::renderer::render_pass_master()
 //		nullptr
 //	);
 
+	rhr::render::pipeline::apply_active("master");
+
 	// final render pass
 
 	{
@@ -504,8 +537,13 @@ void rhr::render::renderer::render_pass_master()
 		info.clearValueCount = clear_values.size();
 		info.pClearValues = clear_values.data();
 
+//		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
+
 		vkCmdBeginRenderPass(*rhr::render::command::active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, *rhr::render::command::active_command_buffer);
+
+//		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
+
 		rhr::render::panel::run_master_render_pass();
 //		rhr::stack::plane::primary_plane->render();
 		vkCmdEndRenderPass(*rhr::render::command::active_command_buffer);
@@ -668,7 +706,7 @@ void rhr::render::renderer::recreate_swap_chain()
 	rhr::render::swap_chain::init_swap_chain();
 	rhr::render::swap_chain::init_image_views();
 	rhr::render::render_pass::init_render_pass();
-	rhr::render::pipeline::init_pipelines();
+	rhr::render::pipeline::initialize();
 	init_depth_resources();
 	rhr::render::swap_chain::init_frame_buffers();
 	rhr::render::command::init_descriptor_pool();
@@ -804,16 +842,16 @@ vk::surface_format_khr rhr::render::renderer::surface_format;
 bool rhr::render::renderer::reload_swap_chain_flag = false;
 ImDrawData* rhr::render::renderer::imgui_draw_data;
 
-u32 rhr::render::renderer::depth_background = 100;
-u32 rhr::render::renderer::depth_plane = 95;
-u32 rhr::render::renderer::depth_frame_background = 93;
-u32 rhr::render::renderer::depth_collection = 90;
-u32 rhr::render::renderer::depth_stack = 85;
-u32 rhr::render::renderer::depth_block = 80;
-u32 rhr::render::renderer::depth_argument = 75;
-u32 rhr::render::renderer::depth_argument_text = 70;
-u32 rhr::render::renderer::depth_ui_background = 65;
-u32 rhr::render::renderer::depth_ui_text = 60;
+u32 rhr::render::renderer::depth_background = 10;
+u32 rhr::render::renderer::depth_plane = 15;
+u32 rhr::render::renderer::depth_frame_background = 20;
+u32 rhr::render::renderer::depth_collection = 25;
+u32 rhr::render::renderer::depth_stack = 30;
+u32 rhr::render::renderer::depth_block = 35;
+u32 rhr::render::renderer::depth_argument = 40;
+u32 rhr::render::renderer::depth_argument_text = 45;
+u32 rhr::render::renderer::depth_ui_background = 50;
+u32 rhr::render::renderer::depth_ui_text = 55;
 
 std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> rhr::render::renderer::m_dirty_renderable;
 std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> rhr::render::renderer::m_dirty_ui;

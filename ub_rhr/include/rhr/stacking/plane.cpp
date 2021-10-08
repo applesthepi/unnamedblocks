@@ -42,7 +42,7 @@ rhr::stack::plane::plane(bool toolbar)
 
 	m_dragging_connecting_line->set_color(cap::color().from_u8({ 255, 255, 255, 255 }));
 	m_dragging_connecting_line->set_depth(rhr::render::renderer::depth_argument_text);
-	m_dragging_connecting_line->set_line_half_width(4);
+	m_dragging_connecting_line->set_line_half_width(3);
 
 	m_collections.reserve(5);
 	m_collection_vanity.reserve(5);
@@ -228,8 +228,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 									active_collection->set_position_local_physical(stack_position - active_collection->get_position_virtual_offset(), false);
 									active_collection->set_size_local(stack_size);
 
-//									m_dragging_connecting_line->set_position_parent_physical(get_position_virtual_absolute(), false);
-//									m_dragging_connecting_line->set_position_local_physical(stack_position - active_collection->get_position_virtual_offset(), false);
+									m_dragging_connecting_line->set_color(active_stack->get_blocks().front()->get_mod_category()->get_color());
 
 									active_stack->set_position_parent_physical({ 0, 0 }, false);
 									active_stack->set_position_local_physical({ 0, 0 });
@@ -618,8 +617,11 @@ void rhr::stack::plane::set_snap(std::shared_ptr<rhr::stack::collection> collect
 	m_dragging_snap_stack_loc = stackLoc;
 	m_dragging_snap_stack = stack;
 
-	m_dragging_connecting_line->set_point_1(m_dragging_collection->get_position_physical_absolute());
-	m_dragging_connecting_line->set_point_2(stack->get_position_virtual_absolute() + glm::vec<2, i32>(0, stackLoc * rhr::stack::block::height));
+	if (dragging_stack())
+	{
+		m_dragging_connecting_line->set_point_1(m_dragging_collection->get_position_physical_absolute());
+		m_dragging_connecting_line->set_point_2(stack->get_position_virtual_absolute() + glm::vec<2, i32>(0, stackLoc * rhr::stack::block::height));
+	}
 }
 
 void rhr::stack::plane::clear_snap()

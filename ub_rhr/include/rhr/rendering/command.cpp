@@ -94,7 +94,7 @@ void rhr::render::command::setup_command_buffer(VkCommandBuffer* command_buffer,
 	render_pass_info.pClearValues = clear_values.data();
 
 	vkCmdBeginRenderPass(*command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-	vkCmdBindPipeline(*command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
+	vkCmdBindPipeline(*command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::get_color("master"));
 	vkCmdEndRenderPass(*command_buffer);
 
 	if (vkEndCommandBuffer(*command_buffer) != VK_SUCCESS)

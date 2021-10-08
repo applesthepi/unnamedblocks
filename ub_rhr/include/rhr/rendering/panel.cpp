@@ -6,6 +6,7 @@
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/command.hpp"
 #include "rhr/rendering/render_pass.hpp"
+#include "rhr/rendering/pipeline.hpp"
 #include "rhr/stacking/plane.hpp"
 
 void rhr::render::panel::create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_render_master, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size)
@@ -21,25 +22,135 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 	// create render pass
 
 	{
-//		std::array<VkSubpassDependency, 2> dependencies{};
+		// Color attachment
+		VkImageCreateInfo image = {};
+		image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+		image.imageType = VK_IMAGE_TYPE_2D;
+		image.format = VK_FORMAT_R8G8B8A8_UNORM;
+		image.extent.width = rhr::render::swap_chain::swap_chain_extent.width;
+		image.extent.height = rhr::render::swap_chain::swap_chain_extent.height;
+		image.extent.depth = 1;
+		image.mipLevels = 1;
+		image.arrayLayers = 1;
+		image.samples = VK_SAMPLE_COUNT_1_BIT;
+		image.tiling = VK_IMAGE_TILING_OPTIMAL;
+		// We will sample directly from the color attachment
+		image.usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+		VkMemoryAllocateInfo memAlloc = {};
+		memAlloc.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+
+		VkMemoryRequirements memReqs;
+
+		vkCreateImage(rhr::render::device::device_master, &image, nullptr, &local_data.color_image);
+		vkGetImageMemoryRequirements(rhr::render::device::device_master, local_data.color_image, &memReqs);
+		memAlloc.allocationSize = memReqs.size;
+		memAlloc.memoryTypeIndex = rhr::render::tools::find_memory_type(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		vkAllocateMemory(rhr::render::device::device_master, &memAlloc, nullptr, &local_data.color_device_memory);
+		vkBindImageMemory(rhr::render::device::device_master, local_data.color_image, local_data.color_device_memory, 0);
+
+		VkImageViewCreateInfo colorImageView = {};
+		colorImageView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		colorImageView.format = VK_FORMAT_R8G8B8A8_UNORM;
+		colorImageView.subresourceRange = {};
+		colorImageView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		colorImageView.subresourceRange.baseMipLevel = 0;
+		colorImageView.subresourceRange.levelCount = 1;
+		colorImageView.subresourceRange.baseArrayLayer = 0;
+		colorImageView.subresourceRange.layerCount = 1;
+		colorImageView.image = local_data.color_image;
+		vkCreateImageView(rhr::render::device::device_master, &colorImageView, nullptr, &local_data.color_image_view);
+
+		// Create sampler to sample from the attachment in the fragment shader
+		VkSamplerCreateInfo samplerInfo = {};
+		samplerInfo.magFilter = VK_FILTER_LINEAR;
+		samplerInfo.minFilter = VK_FILTER_LINEAR;
+		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+		samplerInfo.addressModeV = samplerInfo.addressModeU;
+		samplerInfo.addressModeW = samplerInfo.addressModeU;
+		samplerInfo.mipLodBias = 0.0f;
+		samplerInfo.maxAnisotropy = 1.0f;
+		samplerInfo.minLod = 0.0f;
+		samplerInfo.maxLod = 1.0f;
+		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+		vkCreateSampler(rhr::render::device::device_master, &samplerInfo, nullptr, &local_data.sampler);
+
+		// Depth stencil attachment
+//		image.format = fbDepthFormat;
+//		image.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
+//		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.depth.image));
+//		vkGetImageMemoryRequirements(device, offscreenPass.depth.image, &memReqs);
+//		memAlloc.allocationSize = memReqs.size;
+//		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+//		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.depth.mem));
+//		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.depth.image, offscreenPass.depth.mem, 0));
+
+//		VkImageViewCreateInfo depthStencilView = vks::initializers::imageViewCreateInfo();
+//		depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
+//		depthStencilView.format = fbDepthFormat;
+//		depthStencilView.flags = 0;
+//		depthStencilView.subresourceRange = {};
+//		depthStencilView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT;
+//		depthStencilView.subresourceRange.baseMipLevel = 0;
+//		depthStencilView.subresourceRange.levelCount = 1;
+//		depthStencilView.subresourceRange.baseArrayLayer = 0;
+//		depthStencilView.subresourceRange.layerCount = 1;
+//		depthStencilView.image = offscreenPass.depth.image;
+//		VK_CHECK_RESULT(vkCreateImageView(device, &depthStencilView, nullptr, &offscreenPass.depth.view));
+
+		// Create a separate render pass for the offscreen rendering as it may differ from the one used for scene rendering
+
+		std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
+		// Color attachment
+		attchmentDescriptions[0].format = VK_FORMAT_R8G8B8A8_UNORM;
+		attchmentDescriptions[0].samples = VK_SAMPLE_COUNT_1_BIT;
+		attchmentDescriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		attchmentDescriptions[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+		attchmentDescriptions[0].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		attchmentDescriptions[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		attchmentDescriptions[0].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		attchmentDescriptions[0].finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		// Depth attachment
+//		attchmentDescriptions[1].format = fbDepthFormat;
+//		attchmentDescriptions[1].samples = VK_SAMPLE_COUNT_1_BIT;
+//		attchmentDescriptions[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+//		attchmentDescriptions[1].storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+//		attchmentDescriptions[1].stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+//		attchmentDescriptions[1].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+//		attchmentDescriptions[1].initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+//		attchmentDescriptions[1].finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		VkAttachmentReference colorReference = { 0, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL };
+//		VkAttachmentReference depthReference = { 1, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL };
+
+		VkSubpassDescription subpassDescription = {};
+		subpassDescription.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpassDescription.colorAttachmentCount = 1;
+		subpassDescription.pColorAttachments = &colorReference;
+//		subpassDescription.pDepthStencilAttachment = &depthReference;
+
+		// Use subpass dependencies for layout transitions
+//		std::array<VkSubpassDependency, 2> dependencies;
 //
-//		dependencies[0].srcSubpass = 0;
-//		dependencies[0].dstSubpass = VK_SUBPASS_EXTERNAL;
-//		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-//		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-//		dependencies[0].srcAccessMask = 0 /*VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT*/;
-//		dependencies[0].dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-//
+//		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+//		dependencies[0].dstSubpass = 0;
+//		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+//		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+//		dependencies[0].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+//		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 //		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 //
-//		dependencies[1].srcSubpass = VK_SUBPASS_EXTERNAL;
-//		dependencies[1].dstSubpass = 0;
-//		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-//		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-//		dependencies[1].srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-//		dependencies[1].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-//
+//		dependencies[1].srcSubpass = 0;
+//		dependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+//		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+//		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+//		dependencies[1].srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+//		dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 //		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
 
 		std::array<VkSubpassDependency, 1> dependencies{};
 
@@ -49,52 +160,13 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		dependencies[0].srcAccessMask = 0;
 		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-//		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-		VkAttachmentDescription color_attachment{};
-		color_attachment.format = rhr::render::swap_chain::swap_chain_image_format;
-		color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		color_attachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-//		VkAttachmentDescription depth_attachment{};
-//		depth_attachment.format = rhr::render::tools::find_depth_format();
-//		depth_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-//		depth_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-//		depth_attachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-//		depth_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-//		depth_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-//		depth_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-//		depth_attachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-		VkAttachmentReference color_attachment_ref{};
-		color_attachment_ref.attachment = 0;
-		color_attachment_ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-//		VkAttachmentReference depth_attachment_ref{};
-//		depth_attachment_ref.attachment = 1;
-//		depth_attachment_ref.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-		VkSubpassDescription subpass{};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &color_attachment_ref;
-		subpass.pDepthStencilAttachment = nullptr;
-//		subpass.pDepthStencilAttachment = &depth_attachment_ref;
-
-		std::array<VkAttachmentDescription, 1> attachments = { color_attachment };
-//		std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
 
 		VkRenderPassCreateInfo render_pass_info{};
 		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		render_pass_info.attachmentCount = static_cast<u32>(attachments.size());
-		render_pass_info.pAttachments = attachments.data();
+		render_pass_info.attachmentCount = static_cast<u32>(attchmentDescriptions.size());
+		render_pass_info.pAttachments = attchmentDescriptions.data();
 		render_pass_info.subpassCount = 1;
-		render_pass_info.pSubpasses = &subpass;
+		render_pass_info.pSubpasses = &subpassDescription;
 		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
 		render_pass_info.pDependencies = dependencies.data();
 
@@ -104,41 +176,41 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 
 	// create panel image
 
-	rhr::render::tools::create_image(
-		rhr::render::swap_chain::swap_chain_extent.width,
-		rhr::render::swap_chain::swap_chain_extent.height,
-		VK_FORMAT_R8G8B8A8_UNORM,
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		local_data.color_image,
-		local_data.color_device_memory
-		);
-
-	rhr::render::tools::create_image(
-		rhr::render::swap_chain::swap_chain_extent.width,
-		rhr::render::swap_chain::swap_chain_extent.height,
-		rhr::render::tools::find_depth_format(),
-		VK_IMAGE_TILING_OPTIMAL,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-		local_data.depth_image,
-		local_data.depth_device_memory
-		);
+//	rhr::render::tools::create_image(
+//		rhr::render::swap_chain::swap_chain_extent.width,
+//		rhr::render::swap_chain::swap_chain_extent.height,
+//		rhr::render::swap_chain::swap_chain_image_format,
+//		VK_IMAGE_TILING_OPTIMAL,
+//		VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT,
+//		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+//		local_data.color_image,
+//		local_data.color_device_memory
+//		);
+//
+//	rhr::render::tools::create_image(
+//		rhr::render::swap_chain::swap_chain_extent.width,
+//		rhr::render::swap_chain::swap_chain_extent.height,
+//		rhr::render::tools::find_depth_format(),
+//		VK_IMAGE_TILING_OPTIMAL,
+//		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+//		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+//		local_data.depth_image,
+//		local_data.depth_device_memory
+//		);
 
 	// create panel image views
 
-	local_data.color_image_view = rhr::render::tools::create_image_view(
-		local_data.color_image,
-		rhr::render::swap_chain::swap_chain_image_format,
-		VK_IMAGE_ASPECT_COLOR_BIT
-		);
-
-	local_data.depth_image_view = rhr::render::tools::create_image_view(
-		local_data.depth_image,
-		rhr::render::tools::find_depth_format(),
-		VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
-		);
+//	local_data.color_image_view = rhr::render::tools::create_image_view(
+//		local_data.color_image,
+//		rhr::render::swap_chain::swap_chain_image_format,
+//		VK_IMAGE_ASPECT_COLOR_BIT
+//		);
+//
+//	local_data.depth_image_view = rhr::render::tools::create_image_view(
+//		local_data.depth_image,
+//		rhr::render::tools::find_depth_format(),
+//		VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT
+//		);
 
 	// create panel frame buffer
 
@@ -204,6 +276,8 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		local_data.descriptor.imageView,
 		local_data.descriptor.imageLayout
 	);
+
+	rhr::render::pipeline::register_("panel_" + id, "ui", "ui_texture", &local_data.render_pass);
 }
 
 void rhr::render::panel::run_imgui()
@@ -233,8 +307,10 @@ void rhr::render::panel::run_imgui()
 		// render pass
 
 		std::array<VkClearValue, 1> clear_values{};
-		clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+		clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
 //		clear_values[1].depthStencil = { 1.0f, 0 };
+
+		rhr::render::pipeline::apply_active("panel_" + data.id);
 
 		{
 			VkRenderPassBeginInfo info = {};

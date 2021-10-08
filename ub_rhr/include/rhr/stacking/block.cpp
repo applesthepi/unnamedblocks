@@ -31,7 +31,6 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 	m_background->set_depth(rhr::render::renderer::depth_block);
 
 	set_size_local({ 100, rhr::stack::block::height });
-
 	update_arguments();
 }
 

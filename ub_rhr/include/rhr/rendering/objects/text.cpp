@@ -85,8 +85,6 @@ void rhr::render::object::text::enable_background(bool enable)
 
 std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> position, bool ignore_y)
 {
-//	cap::logger::debug(std::to_string(m_char_contacts.size()));
-
 	if (ignore_y)
 	{
 		i32 field_position = get_position_virtual_absolute().x;
@@ -212,7 +210,6 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	if (idx >= m_text.size() || idx + size > m_text.size())
 		return false;
 
-//	cap::logger::debug("removing at " + std::to_string(idx) + " of size " + std::to_string(size));
 	m_text.erase(idx, size);
 	
 	update_size();
@@ -254,9 +251,7 @@ void rhr::render::object::text::update_size()
 		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
 	}
 
-//	cap::logger::debug("text width: " + std::to_string(running_char_offsets));
-
-	set_size_local({ static_cast<i32>(running_char_offsets) + m_padding, m_font_size });
+	set_size_local({ static_cast<i32>(running_char_offsets) + m_padding, m_font_size }, false);
 }
 
 void rhr::render::object::text::ui_transform_update()
@@ -286,12 +281,8 @@ void rhr::render::object::text::ui_render()
 	if (get_enabled())
 	{
 		if (m_enable_background)
-		{
-			vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_pipeline);
 			m_render_object_background->render();
-		}
 
-		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
 		m_render_object_text->render();
 	}
 }

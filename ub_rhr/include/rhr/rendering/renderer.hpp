@@ -154,7 +154,6 @@ public:
 #else
 	static const bool enable_validation_layers = true;
 #endif
-
 private:
 	///
 	static void init_descriptor_set_layout();

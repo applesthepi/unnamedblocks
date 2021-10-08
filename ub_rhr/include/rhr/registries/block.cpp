@@ -12,10 +12,17 @@ void rhr::registry::block::register_category(esp::mod::category* category, const
 
 const rhr::registry::block::block_info* rhr::registry::block::get_block(const std::string& unlocalized_name)
 {
+//	cap::logger::debug("block registry get block: " + unlocalized_name);
+
 	for (auto& info : m_blocks)
 	{
+//		cap::logger::debug("block registry get block --- testing block: " + info.block_mod_unlocalized_name);
+
 		if (info.block_mod_block->get_unlocalized_name() == unlocalized_name)
+		{
+//			cap::logger::debug("block registry get block --- FOUND block: " + info.block_mod_unlocalized_name);
 			return &info;
+		}
 	}
 
 	for (auto& info : m_blocks)

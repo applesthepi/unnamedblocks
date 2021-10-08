@@ -98,7 +98,7 @@ void rhr::handler::category::populate()
 //		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button, rhr::render::cardinal::local::DOWN);
 
 		offset += rhr::stack::block::padding / 2;
- 		
+
 		active* active_catagories = new active[binned_catagories[i].size()];
 
 		for (usize a = 0; a < binned_catagories[i].size(); a++)
@@ -193,8 +193,6 @@ void rhr::handler::category::render()
 
 void rhr::handler::category::select_category(active active_category)
 {
-	cap::logger::debug("void rhr::handler::category::select_category(active active_category) " + std::to_string(active_category.mod_group_category));
-
 	m_active_category = active_category;
 
 	if (m_active_category.mod_group >= m_mod_groups.size())
