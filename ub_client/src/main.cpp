@@ -7,6 +7,7 @@
 #include "rhr/rendering/panel.hpp"
 #include "rhr/handlers/category.hpp"
 #include "rhr/handlers/build.hpp"
+#include "rhr/handlers/context.hpp"
 
 #if LINUX
 #include <dlfcn.h>
@@ -72,6 +73,7 @@ int main()
 
 	InputHandler::Initialization();
 	rhr::handler::build::initialize();
+	rhr::handler::context::initialize();
 	rhr::registry::block::create_block_registry();
 	//rhr::handler::field::initialize();
 
@@ -151,7 +153,7 @@ int main()
 					width,
 					height,
 					swap_chain_support.capabilities.minImageCount
-					);
+				);
 
 				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
 				rhr::render::renderer::reload_swap_chain_flag = false;
@@ -227,6 +229,7 @@ int main()
 
 		rhr::render::panel::run_imgui();
 		rhr::handler::category::render();
+		rhr::handler::context::run_imgui();
 
 		ImGui::Render();
 		ImDrawData* main_draw_data = ImGui::GetDrawData();

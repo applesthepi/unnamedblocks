@@ -27,16 +27,23 @@
 #include <future>
 #include <thread>
 
+#include <stb_image.h>
+#include <zstd.h>
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <stb_image.h>
+
 #include <rapidjson/rapidjson.h>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
-#include <zstd.h>
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_vulkan.h>
 
 //#include "cappuccino/imgui/imgui.h"
 //#include "cappuccino/imgui/imgui_impl_glfw.h"

@@ -1,4 +1,7 @@
-#include "input_handler.hpp"
+#include "input.hpp"
+
+#include "rhr/handlers/context.hpp"
+#include "rhr/rendering/renderer.hpp"
 
 void InputHandler::Initialization()
 {
@@ -186,6 +189,21 @@ void InputHandler::FireMouseButton(u8 button, u8 operation)
 		break;
 	}
 	};
+
+	if (rhr::handler::context::is_open())
+	{
+		glm::vec<2, i32> context_position = rhr::handler::context::get_position() - rhr::render::renderer::window_position;
+		const glm::vec<2, i32>& context_bounds = rhr::handler::context::get_bounds();
+
+		cap::logger::debug("context_bounds", context_bounds);
+
+		if (m_MousePosition.x > context_position.x && m_MousePosition.x < context_position.x + context_bounds.x &&
+			m_MousePosition.y > context_position.y && m_MousePosition.y < context_position.y + context_bounds.y)
+		{
+			cap::logger::debug("in bounds");
+			return;
+		}
+	}
 
 	std::unique_lock lock(m_MouseMutex);
 

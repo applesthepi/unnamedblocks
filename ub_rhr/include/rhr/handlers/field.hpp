@@ -5,7 +5,7 @@
 #include "rhr/rendering/objects/rectangle.hpp"
 
 #include <cappuccino/utils.hpp>
-#include <espresso/input_handler.hpp>
+#include "rhr/handlers/input.hpp"
 
 namespace rhr::handler
 {

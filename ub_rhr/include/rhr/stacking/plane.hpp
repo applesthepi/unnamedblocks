@@ -7,10 +7,10 @@
 #include "rhr/rendering/objects/text.hpp"
 #include "rhr/rendering/objects/line.hpp"
 #include "rhr/handlers/field.hpp"
+#include "rhr/handlers/input.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <cappuccino/intrinsics.hpp>
-#include <espresso/input_handler.hpp>
 
 #define SNAP_DISTANCE 30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
@@ -40,7 +40,7 @@ public:
 	void delete_contents(bool disable_collections = false);
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
+	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
 
 	///
 	static std::shared_ptr<rhr::stack::plane> primary_plane;

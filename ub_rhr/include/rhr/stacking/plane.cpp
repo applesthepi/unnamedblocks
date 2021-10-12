@@ -1,15 +1,16 @@
 #include "plane.hpp"
 
 #include "rhr/rendering/renderer.hpp"
+#include "rhr/handlers/context.hpp"
 
 static void primary_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
-	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation);
+	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation, button);
 }
 
 static void toolbar_plane_mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
-	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation);
+	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation, button);
 }
 
 rhr::stack::plane::plane(bool toolbar)
@@ -106,7 +107,7 @@ void rhr::stack::plane::delete_contents(bool disable_collections)
 	m_collections.clear();
 }
 
-void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation)
+void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 {
 	if (operation != MouseOperation::Press && operation != MouseOperation::Release)
 		return;
@@ -164,11 +165,8 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 							{
 								// not dragging and mouse down
 
-								if (true/* left or right click */)
+								if (button == MouseButton::LEFT)
 								{
-									// remove context menu
-
-									//ContextHandler::Disable();
 									unselect();
 
 									if (m_collections[i]->get_stacks()[a]->get_blocks()[b]->drag_bounds(position))
@@ -246,15 +244,14 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 
 									return;
 								}
-								else if (false/* left or right click */)
+								else if (button == MouseButton::RIGHT)
 								{
-									//cap::logger::Debug("opening context menu");
+									unselect();
 
-									// startup context menu on block
+									if (m_collections[i]->get_stacks()[a]->get_blocks()[b]->drag_bounds(position))
+										return;
 
-									//ContextHandler::Disable();
-									//ContextHandler::Enable(mmpos + glm::vec<2, i32>(5, 5), &m_contextCallback);
-									//SelectContext(i, a, b);
+									rhr::handler::context::open(rhr::handler::context::flag::OBJECT_SHARED);
 								}
 							}
 

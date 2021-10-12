@@ -13,7 +13,7 @@
 #include "rhr/rendering/device.hpp"
 #include "rhr/rendering/panel.hpp"
 
-#include <espresso/input_handler.hpp>
+#include "rhr/handlers/input.hpp"
 #include <cappuccino/utils.hpp>
 #include <iostream>
 

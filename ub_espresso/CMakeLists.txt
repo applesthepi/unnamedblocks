@@ -6,9 +6,6 @@ set(UB_ESPRESSO_SRC
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/category.cpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/data.hpp"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/mod/data.cpp"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/input_handler.hpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include/espresso/input_handler.cpp"
 )
 
 add_library(UB_ESPRESSO STATIC

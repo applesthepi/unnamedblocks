@@ -1,6 +1,7 @@
 #include "field.hpp"
 
 #include "rhr/stacking/plane.hpp"
+#include "rhr/handlers/context.hpp"
 
 #define DEBUG_FIELDS 0
 
@@ -79,8 +80,7 @@ void rhr::handler::field::render()
 		m_rectangle_highlight->render();
 }
 
-void
-rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 {
 	std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
 
@@ -149,8 +149,11 @@ rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOp
 
 		if (auto lock = data.value()->get_text_field().lock())
 		{
-			if (button != MouseButton::LEFT)
+			if (button == MouseButton::RIGHT && m_mouse_drag)
+			{
+				rhr::handler::context::open(rhr::handler::context::flag::TEXT_SELECTION_ONLY);
 				return;
+			}
 
 			std::optional<usize> idx = lock->pick_index(position, false);
 			if (!idx.has_value())
@@ -174,6 +177,12 @@ rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOp
 			m_cursor_weak = data.value()->get_text_field();
 
 			update_cursor();
+
+			if (button == MouseButton::RIGHT)
+			{
+				rhr::handler::context::open(rhr::handler::context::flag::TEXT_STANDING_ONLY);
+				return;
+			}
 		}
 		else
 		{

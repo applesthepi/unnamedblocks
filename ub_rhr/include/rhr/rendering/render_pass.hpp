@@ -2,9 +2,6 @@
 #include "config.h"
 
 #include <cappuccino/utils.hpp>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_vulkan.h>
 
 namespace rhr::render
 {
