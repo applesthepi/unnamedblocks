@@ -128,7 +128,6 @@ virtual bool preposition_update(const glm::vec<S, T>& position, const glm::vec<S
 # Version Standard
 This is the version standard Unnamed Blocks will be following.  
 
-**Pre-Alpha** - 0.0.1.X  
-**Post-Alpha** - Major . Minor . Beta
+**Post-Alpha** - Major . Minor . Beta  
 
-All Major and Minor updates should be user tested extensivly while beta updates will have tests ran on it and briefly user tested with some projects.
+All Major and Minor updates should be user tested extensivly while beta updates will have tests ran on it and briefly user tested with some projects. Major and Minor updates will both use the stable branch while beta releases will be merged to nightly. Master will just be the development branch that isnt ready for public use and may have issues.
