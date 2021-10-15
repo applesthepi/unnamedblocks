@@ -151,7 +151,7 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 		{
 			if (button == MouseButton::RIGHT && m_mouse_drag)
 			{
-				rhr::handler::context::open(rhr::handler::context::flag::TEXT_SELECTION_ONLY);
+				rhr::handler::context::open(rhr::handler::context::flag::TEXT_SELECTION_ONLY, std::nullopt);
 				return;
 			}
 
@@ -180,7 +180,7 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 
 			if (button == MouseButton::RIGHT)
 			{
-				rhr::handler::context::open(rhr::handler::context::flag::TEXT_STANDING_ONLY);
+				rhr::handler::context::open(rhr::handler::context::flag::TEXT_STANDING_ONLY, std::nullopt);
 				return;
 			}
 		}

@@ -13,7 +13,7 @@ public:
 	i_ui();
 
 	///
-	void set_weak(std::weak_ptr<i_ui>&& weak);
+	void set_weak(std::weak_ptr<i_ui> weak);
 
 	///
 	void set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child = true);

@@ -105,4 +105,5 @@ private:
 	static std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>> m_BullishMouseCallbacks;
 	static std::vector<std::vector<void*>> m_BullishMouseDatas;
 	static std::vector<TIME_POINT> m_PressLog;
+	static MouseButton m_LastMouseButton;
 };

@@ -31,6 +31,9 @@ public:
 	void remove_block(u64 idx);
 
 	///
+	void remove_blocks_end(u64 offset);
+
+	///
 	void update_size();
 
 	///

@@ -44,7 +44,7 @@ public:
 	void check_bounds();
 
 	///
-	void remove_stack(u64 idx);
+	void remove_stack(u64 idx, u64 block_offset = 0);
 
 	///
 	void remove_all();

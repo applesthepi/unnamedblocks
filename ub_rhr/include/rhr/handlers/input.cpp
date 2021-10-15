@@ -170,22 +170,23 @@ void InputHandler::FireKey(i16 key, u8 operation)
 
 void InputHandler::FireMouseButton(u8 button, u8 operation)
 {
-	MouseButton mouseButton = MouseButton::LEFT;
+	m_LastMouseButton = MouseButton::LEFT;
+
 	switch (button)
 	{
 	case GLFW_MOUSE_BUTTON_LEFT:
 	{
-		mouseButton = MouseButton::LEFT;
+		m_LastMouseButton = MouseButton::LEFT;
 		break;
 	}
 	case GLFW_MOUSE_BUTTON_RIGHT:
 	{
-		mouseButton = MouseButton::RIGHT;
+		m_LastMouseButton = MouseButton::RIGHT;
 		break;
 	}
 	case GLFW_MOUSE_BUTTON_MIDDLE:
 	{
-		mouseButton = MouseButton::MIDDLE;
+		m_LastMouseButton = MouseButton::MIDDLE;
 		break;
 	}
 	};
@@ -195,12 +196,9 @@ void InputHandler::FireMouseButton(u8 button, u8 operation)
 		glm::vec<2, i32> context_position = rhr::handler::context::get_position() - rhr::render::renderer::window_position;
 		const glm::vec<2, i32>& context_bounds = rhr::handler::context::get_bounds();
 
-		cap::logger::debug("context_bounds", context_bounds);
-
 		if (m_MousePosition.x > context_position.x && m_MousePosition.x < context_position.x + context_bounds.x &&
 			m_MousePosition.y > context_position.y && m_MousePosition.y < context_position.y + context_bounds.y)
 		{
-			cap::logger::debug("in bounds");
 			return;
 		}
 	}
@@ -219,26 +217,26 @@ void InputHandler::FireMouseButton(u8 button, u8 operation)
 		if (m_PressLog.size() == 1)
 		{
 			for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Press, mouseButton, m_MouseDatas[i]);
+				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Press, m_LastMouseButton, m_MouseDatas[i]);
 		}
 		else if (m_PressLog.size() == 2)
 		{
 			for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::DoublePress, mouseButton, m_MouseDatas[i]);
+				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::DoublePress, m_LastMouseButton, m_MouseDatas[i]);
 		}
 		else if (m_PressLog.size() == 3)
 		{
 			for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::TripplePress, mouseButton, m_MouseDatas[i]);
+				m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::TripplePress, m_LastMouseButton, m_MouseDatas[i]);
 		}
 	}
 	else if (operation == GLFW_RELEASE)
 	{
 		for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Release, mouseButton, m_MouseDatas[i]);
+			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Release, m_LastMouseButton, m_MouseDatas[i]);
 
 		for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Click, mouseButton, m_MouseDatas[i]);
+			m_MouseCallbacks[i](m_MousePosition, 0.0f, MouseOperation::Click, m_LastMouseButton, m_MouseDatas[i]);
 	}
 }
 
@@ -248,13 +246,13 @@ void InputHandler::FireMouseMove(glm::vec<2, i32> position)
 	m_MousePosition = position;
 
 	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-		m_MouseCallbacks[i](position, 0.0f, MouseOperation::Move, MouseButton::LEFT, m_MouseDatas[i]);
+		m_MouseCallbacks[i](position, 0.0f, MouseOperation::Move, m_LastMouseButton, m_MouseDatas[i]);
 
 	for (u8 i = 0; i < m_BullishMouseCallbacks.size(); i++)
 	{
 		for (usize a = 0; a < m_BullishMouseCallbacks[static_cast<usize>(i)].size(); a++)
 		{
-			if (m_BullishMouseCallbacks[i][a](position, 0.0f, MouseOperation::Move, MouseButton::LEFT, m_BullishMouseDatas[i][a]))
+			if (m_BullishMouseCallbacks[i][a](position, 0.0f, MouseOperation::Move, m_LastMouseButton, m_BullishMouseDatas[i][a]))
 				return;
 		}
 	}
@@ -265,7 +263,7 @@ void InputHandler::FireMouseScroll(f32 scroll)
 	std::unique_lock lock(m_MouseMutex);
 
 	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-		m_MouseCallbacks[i](m_MousePosition, scroll, MouseOperation::Scroll, MouseButton::LEFT, m_MouseDatas[i]);
+		m_MouseCallbacks[i](m_MousePosition, scroll, MouseOperation::Scroll, m_LastMouseButton, m_MouseDatas[i]);
 }
 
 glm::vec<2, i32> InputHandler::GetMousePosition()
@@ -296,3 +294,4 @@ std::vector<void*> InputHandler::m_MouseDatas;
 std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>> InputHandler::m_BullishMouseCallbacks;
 std::vector<std::vector<void*>> InputHandler::m_BullishMouseDatas;
 std::vector<TIME_POINT> InputHandler::m_PressLog;
+MouseButton InputHandler::m_LastMouseButton = MouseButton::LEFT;

@@ -213,9 +213,12 @@ void rhr::stack::collection::check_bounds()
 	}
 }
 
-void rhr::stack::collection::remove_stack(u64 idx)
+void rhr::stack::collection::remove_stack(u64 idx, u64 block_offset)
 {
-	m_stacks.erase(m_stacks.begin() + static_cast<usize>(idx));
+	if (block_offset == 0)
+		m_stacks.erase(m_stacks.begin() + static_cast<i64>(idx));
+	else
+		m_stacks[static_cast<usize>(idx)]->remove_blocks_end(block_offset);
 }
 
 void rhr::stack::collection::remove_all()

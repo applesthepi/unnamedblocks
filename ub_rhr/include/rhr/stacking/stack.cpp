@@ -61,10 +61,10 @@ u64 rhr::stack::stack::get_widest_block()
 {
 	u64 widest = 0;
 
-	for (u64 i = 0; i < m_blocks.size(); i++)
+	for (auto& m_block : m_blocks)
 	{
-		if (m_blocks[i]->get_width() > widest)
-			widest = m_blocks[i]->get_width();
+		if (m_block->get_width() > widest)
+			widest = m_block->get_width();
 	}
 
 	return widest;
@@ -72,7 +72,20 @@ u64 rhr::stack::stack::get_widest_block()
 
 void rhr::stack::stack::remove_block(u64 idx)
 {
-	m_blocks.erase(m_blocks.begin() + idx);
+	m_blocks.erase(m_blocks.begin() + static_cast<i64>(idx));
+
+	for (usize i = 0; i < m_blocks.size(); i++)
+	{
+		update_child_transform(m_blocks[i]);
+		m_blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * i });
+	}
+
+	update_size();
+}
+
+void rhr::stack::stack::remove_blocks_end(u64 offset)
+{
+	m_blocks.erase(m_blocks.begin() + static_cast<i64>(offset), m_blocks.end());
 
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{

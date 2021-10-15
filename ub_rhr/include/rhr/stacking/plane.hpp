@@ -85,25 +85,25 @@ private:
 	bool m_selected_context;
 	
 	///
-	std::shared_ptr<rhr::stack::collection> m_selected_collection;
+	std::weak_ptr<rhr::stack::collection> m_selected_collection;
 
 	///
-	std::shared_ptr<rhr::stack::stack> m_selected_stack;
+	std::weak_ptr<rhr::stack::stack> m_selected_stack;
 
 	///
-	std::shared_ptr<rhr::stack::block> m_selected_block;
+	std::weak_ptr<rhr::stack::block> m_selected_block;
 	
 	///
-	std::shared_ptr<rhr::stack::argument::argument> m_selected_argument;
+	std::weak_ptr<rhr::stack::argument::argument> m_selected_argument;
 
 	///
 	std::function<void(u8)> m_context_callback;
 
 	///
-	void drag_collection(std::shared_ptr<rhr::stack::collection>& collection, bool up);
+	void drag_collection(std::shared_ptr<rhr::stack::collection> collection, bool up);
 
 	///
-	void drag_stack(std::shared_ptr<rhr::stack::collection>& collection, std::shared_ptr<rhr::stack::stack>& stack, bool up);
+	void drag_stack(std::shared_ptr<rhr::stack::collection> collection, std::shared_ptr<rhr::stack::stack> stack, bool up);
 
 	///
 	void undrag(const glm::vec<2, i32>& position);
@@ -133,7 +133,7 @@ private:
 	bool m_dragging_up;
 
 	///
-	void set_snap(std::shared_ptr<rhr::stack::collection> collection, u64 stackLoc, std::shared_ptr<rhr::stack::stack> stack);
+	void set_snap(std::weak_ptr<rhr::stack::collection> collection, u64 stackLoc, std::weak_ptr<rhr::stack::stack> stack);
 
 	///
 	void clear_snap();
@@ -145,13 +145,13 @@ private:
 	rhr::render::object::rectangle m_dragging_shape;
 
 	///
-	std::shared_ptr<rhr::stack::collection> m_dragging_snap_collection;
+	std::weak_ptr<rhr::stack::collection> m_dragging_snap_collection;
 
 	///
 	u64 m_dragging_snap_stack_loc;
 
 	///
-	std::shared_ptr<rhr::stack::stack> m_dragging_snap_stack;
+	std::weak_ptr<rhr::stack::stack> m_dragging_snap_stack;
 
 	///
 	bool m_dragging_snap;

@@ -18,7 +18,7 @@ rhr::render::interfaces::i_ui::i_ui()
 
 }
 
-void rhr::render::interfaces::i_ui::set_weak(std::weak_ptr<i_ui>&& weak)
+void rhr::render::interfaces::i_ui::set_weak(std::weak_ptr<i_ui> weak)
 {
 	m_weak = std::move(weak);
 	m_weak_set = true;
