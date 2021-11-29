@@ -136,6 +136,7 @@ typedef VkShaderModule shader_module;
 typedef VkRenderPassBeginInfo render_pass_begin_info;
 }
 
+#undef VK_MAKE_API_VERSION
 #define VK_MAKE_API_VERSION(variant, major, minor, patch) \
     ((((u32)(variant)) << 29) | (((u32)(major)) << 22) | (((u32)(minor)) << 12) | ((u32)(patch)))
 

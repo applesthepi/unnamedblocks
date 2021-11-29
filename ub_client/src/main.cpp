@@ -9,6 +9,8 @@
 #include "rhr/handlers/build.hpp"
 #include "rhr/handlers/context.hpp"
 
+//#include "clip/clip.h"
+
 #if LINUX
 #include <dlfcn.h>
 #else
@@ -34,6 +36,8 @@ static void button_callback_build_debug(void* data)
 
 int main()
 {
+	//clip::set_text("Hello World");
+
 //	cap::color testColor = cap::color().FromU8({ 10, 10, 10, 255 });
 //	auto testColorN = testColor.GetNormalized();
 //	std::cout << testColorN.r << ", " << testColorN.g << ", " << testColorN.b << ", " << testColorN.a << std::endl;

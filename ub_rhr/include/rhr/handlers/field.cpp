@@ -3,6 +3,11 @@
 #include "rhr/stacking/plane.hpp"
 #include "rhr/handlers/context.hpp"
 
+//#include "clip/clip.h"
+
+// TODO: remove
+#include <iostream>
+
 #define DEBUG_FIELDS 0
 
 constexpr usize FIELD_CELL_SIZE = 500;
@@ -147,14 +152,10 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 		if (m_mouse_down)
 			return;
 
-		if (auto lock = data.value()->get_text_field().lock())
-		{
-			if (button == MouseButton::RIGHT && m_mouse_drag)
-			{
-				rhr::handler::context::open(rhr::handler::context::flag::TEXT_SELECTION_ONLY, std::nullopt);
-				return;
-			}
+		std::weak_ptr<rhr::render::interfaces::i_field> text_field_weak = data.value()->get_text_field();
 
+		if (auto lock = text_field_weak.lock())
+		{
 			std::optional<usize> idx = lock->pick_index(position, false);
 			if (!idx.has_value())
 				return;
@@ -162,6 +163,43 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 			std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(*idx);
 			if (!cursor_position.has_value())
 				return;
+
+			usize field_idx = idx.value();
+
+			if (button == MouseButton::RIGHT && m_mouse_drag)
+			{
+				rhr::handler::context::open(rhr::handler::context::flag::TEXT_SELECTION_ONLY, [text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+				{
+					//if (flag == rhr::handler::context::flag::TEXT_SELECTION_ONLY)
+					//{
+					//	bool flag_delete_collection = false;
+					//
+					//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
+					//	{
+					//	case rhr::handler::context::flag::menu_text::PASTE:
+					//
+					//		if (clip::has(clip::text_format()))
+					//		{
+					//			std::string value;
+					//			clip::get_text(value);
+					//
+					//			if (auto data = text_field_weak.lock())
+					//				data->insert_string(value, field_idx);
+					//		}
+					//
+					//		break;
+					//	case rhr::handler::context::flag::menu_text::COPY:
+					//
+					//		if (auto data = text_field_weak.lock())
+					//			data->
+					//
+					//		break;
+					//	}
+					//}
+				});
+
+				return;
+			}
 
 			m_mouse_down = true;
 			m_mouse_down_data = data.value();
@@ -180,7 +218,30 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 
 			if (button == MouseButton::RIGHT)
 			{
-				rhr::handler::context::open(rhr::handler::context::flag::TEXT_STANDING_ONLY, std::nullopt);
+				rhr::handler::context::open(rhr::handler::context::flag::TEXT_STANDING_ONLY, [text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+				{
+					//if (flag == rhr::handler::context::flag::TEXT_STANDING_ONLY)
+					//{
+					//	bool flag_delete_collection = false;
+					//
+					//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
+					//	{
+					//	case rhr::handler::context::flag::menu_text::PASTE:
+					//
+					//		if (clip::has(clip::text_format()))
+					//		{
+					//			std::string value;
+					//			clip::get_text(value);
+					//
+					//			if (auto data = text_field_weak.lock())
+					//				data->insert_string(value, field_idx);
+					//		}
+					//
+					//		break;
+					//	}
+					//}
+				});
+
 				return;
 			}
 		}

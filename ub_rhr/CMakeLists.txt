@@ -24,21 +24,24 @@ target_link_libraries(UB_RHR PUBLIC
 	glad::glad
 	glfw
 	imgui
+#	clip
 	Vulkan::Vulkan
 	freetype
 
 	imm32.lib
 )
 
-target_include_directories(UB_RHR PUBLIC
+target_include_directories(UB_RHR PUBLIC SYSTEM
 	"${PROJECT_BINARY_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
     "${CMAKE_SOURCE_DIR}/ub_espresso/include"
-	"${CMAKE_SOURCE_DIR}/imgui"
+	"${CMAKE_SOURCE_DIR}/vendor"
 
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
 	${Vulkan_INCLUDE_DIR}
 	${CMAKE_INCLUDES}
+
+#	"${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/include/qt5"
 )

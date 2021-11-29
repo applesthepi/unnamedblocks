@@ -214,6 +214,7 @@ rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_textu
 	}
 
 	cap::logger::error("failed to generate char texture");
+	return nullptr;
 }
 
 //ft::library rhr::registry::char_texture::m_library;

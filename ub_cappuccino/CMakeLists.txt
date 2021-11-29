@@ -65,7 +65,7 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 	imm32.lib
 )
 
-target_include_directories(UB_CAPPUCCINO PUBLIC
+target_include_directories(UB_CAPPUCCINO PUBLIC SYSTEM
 	${PROJECT_BINARY_DIR}
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
 	"${CMAKE_SOURCE_DIR}/imgui"

@@ -7,6 +7,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(USE_FOLDERS ON)
 set(CMAKE_BUILD_PARALLEL_LEVEL 12)
 
+#set(CMAKE_AUTOMOC ON)
+#set(CMAKE_AUTORCC ON)
+#set(CMAKE_AUTOUIC ON)
+
 project(UB)
 
 # Add X11 if using linux
@@ -75,23 +79,40 @@ endif()
 ########################################################################################
 ########################################################################################
 
+# IMGUI
+
 add_library(imgui STATIC)
 target_sources(imgui PRIVATE
-		"imgui/imgui_demo.cpp"
-		"imgui/imgui_draw.cpp"
-		"imgui/imgui_tables.cpp"
-		"imgui/imgui_widgets.cpp"
-		"imgui/imgui.cpp"
+		"vendor/imgui/imgui_demo.cpp"
+		"vendor/imgui/imgui_draw.cpp"
+		"vendor/imgui/imgui_tables.cpp"
+		"vendor/imgui/imgui_widgets.cpp"
+		"vendor/imgui/imgui.cpp"
 
-		"imgui/backends/imgui_impl_vulkan.cpp"
-		"imgui/backends/imgui_impl_glfw.cpp"
+		"vendor/imgui/backends/imgui_impl_vulkan.cpp"
+		"vendor/imgui/backends/imgui_impl_glfw.cpp"
 )
 
-target_include_directories(imgui PUBLIC
-		imgui
-		imgui/backends
+target_include_directories(imgui PUBLIC SYSTEM
+		vendor/imgui
+		vendor/imgui/backends
 #		${GLFW_SOURCE_DIR}/include
 		${Vulkan_INCLUDE_DIR}
 		${CMAKE_INCLUDES}
 		"vcpkg/installed/x64-windows/include"
 )
+
+# CLIP
+
+#add_library(clip STATIC)
+#target_sources(clip PRIVATE
+#		"vendor/clip/clip.cpp"
+#		"vendor/clip/clip_none.cpp"
+#		"vendor/clip/clip_win.cpp"
+##		"vendor/clip/clip_x11.cpp"
+#		"vendor/clip/image.cpp"
+#)
+#
+#target_include_directories(clip PUBLIC
+#		"vendor/clip"
+#)

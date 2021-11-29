@@ -96,29 +96,30 @@ void rhr::handler::context::generate_functions(rhr::handler::context::flag::info
 
 void rhr::handler::context::open(RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags, std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>> callback_context)
 {
+	std::function<bool(RHR_HANDLER_CONTEXT_FLAG_PREFIX)> test_bit_mask = [context_flags](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag)
+	{
+		if ((context_flags & flag) == flag)
+		{
+			m_flags.push_back(flag);
+			return true;
+		}
+		else
+			return false;
+	};
+
 	m_callback_context = std::move(callback_context);
 	m_flags.clear();
 
-	if (context_flags & flag::TEXT)
-		m_flags.push_back(flag::TEXT);
-	else
+	if (!test_bit_mask(flag::TEXT))
 	{
-		if (context_flags & flag::TEXT_STANDING_ONLY)
-			m_flags.push_back(flag::TEXT_STANDING_ONLY);
-
-		if (context_flags & flag::TEXT_SELECTION_ONLY)
-			m_flags.push_back(flag::TEXT_SELECTION_ONLY);
+		test_bit_mask(flag::TEXT_STANDING_ONLY);
+		test_bit_mask(flag::TEXT_SELECTION_ONLY);
 	}
 
-	if (context_flags & flag::OBJECT_STACKING)
-		m_flags.push_back(flag::OBJECT_STACKING);
-	else
+	if (!test_bit_mask(flag::OBJECT_STACKING))
 	{
-		if (context_flags & flag::OBJECT_STACKING_STACK)
-			m_flags.push_back(flag::OBJECT_STACKING_STACK);
-
-		if (context_flags & flag::OBJECT_STACKING_BLOCK)
-			m_flags.push_back(flag::OBJECT_STACKING_BLOCK);
+		test_bit_mask(flag::OBJECT_STACKING_STACK);
+		test_bit_mask(flag::OBJECT_STACKING_BLOCK);
 	}
 
 	m_flag_open = true;

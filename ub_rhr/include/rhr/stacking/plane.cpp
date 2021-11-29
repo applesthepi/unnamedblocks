@@ -256,15 +256,18 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 									std::weak_ptr<rhr::stack::stack> local_stack = m_collections[i]->get_stacks()[a];
 									std::weak_ptr<rhr::stack::block> local_block = m_collections[i]->get_stacks()[a]->get_blocks()[b];
 
+									u64 local_collection_idx = i;
 									u64 local_stack_idx = a;
 									u64 local_block_idx = b;
 
 									rhr::handler::context::open(
 										rhr::handler::context::flag::OBJECT_STACKING,
-										[local_collection, local_stack, local_block, local_stack_idx, local_block_idx, stack_position, stack_size, this](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+										[local_collection, local_stack, local_block, local_collection_idx, local_stack_idx, local_block_idx, stack_position, stack_size, this](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
 										{
 											if (flag == rhr::handler::context::flag::OBJECT_STACKING)
 											{
+												bool flag_delete_collection = false;
+
 												switch (rhr::handler::context::flag::hashed_menu_object[flag_menu_item])
 												{
 												case rhr::handler::context::flag::menu_object::DUPLICATE_STACK:
@@ -305,6 +308,8 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 														);
 														new_collection->set_size_local(stack_size);
 
+														m_dragging_connecting_line->set_color(new_stack->get_blocks().front()->get_mod_category()->get_color());
+
 														new_stack->set_position_parent_physical({ 0, 0 }, false);
 														new_stack->set_position_local_physical({ 0, 0 });
 
@@ -321,18 +326,78 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 													///////////////////////////////////////////////////
 
 													if (auto collection = local_collection.lock())
+													{
 														collection->remove_stack(local_stack_idx, local_block_idx);
+
+														if (collection->get_stacks().empty())
+															flag_delete_collection = true;
+													}
 
 													break;
 												case handler::context::flag::menu_object::DUPLICATE_BLOCK:
 													//////////////////////////////////////////////////////
 
+													if (auto stack = local_stack.lock())
+													{
+														std::shared_ptr<rhr::stack::collection> new_collection = std::make_shared<rhr::stack::collection>();
+														new_collection->set_weak(new_collection);
+														update_child_transform(new_collection);
+
+														std::shared_ptr<rhr::stack::stack> new_stack = std::make_shared<rhr::stack::stack>();
+														new_stack->set_weak(new_stack);
+
+														// clone block
+
+														const std::vector<std::shared_ptr<rhr::stack::block>>& blocks = stack->get_blocks();
+														std::shared_ptr<rhr::stack::block> cloned_block = std::make_shared<rhr::stack::block>(blocks[local_block_idx]->get_mod_block()->get_unlocalized_name());
+														cloned_block->set_weak(cloned_block);
+
+														new_stack->add_block(cloned_block);
+
+														// transform
+
+														new_collection->set_position_parent_physical(get_position_virtual_absolute(), false);
+														new_collection->set_position_local_physical(
+															stack_position -
+																new_collection->get_position_virtual_offset() +
+																glm::vec<2, i32>(0, static_cast<i32>(local_block_idx) * static_cast<i32>(rhr::stack::block::height)),
+															false
+														);
+														new_collection->set_size_local(stack_size);
+
+														m_dragging_connecting_line->set_color(new_stack->get_blocks().front()->get_mod_category()->get_color());
+
+														new_stack->set_position_parent_physical({ 0, 0 }, false);
+														new_stack->set_position_local_physical({ 0, 0 });
+
+														// submit
+
+														new_collection->add_stack(new_stack, false);
+														new_collection->size_to_stacks(true, false);
+
+														drag_stack(new_collection, new_stack, true);
+													}
+
 													break;
 												case handler::context::flag::menu_object::DELETE_BLOCK:
 													///////////////////////////////////////////////////
 
+													if (auto collection = local_collection.lock())
+													{
+														collection->get_stacks()[local_stack_idx]->remove_block(local_block_idx);
+
+														if (collection->get_stacks()[local_stack_idx]->get_blocks().empty())
+															collection->remove_stack(local_stack_idx);
+
+														if (collection->get_stacks().empty())
+															flag_delete_collection = true;
+													}
+
 													break;
 												}
+
+												if (flag_delete_collection)
+													delete_collection(local_collection_idx);
 											}
 										}
 									);
