@@ -7,59 +7,7 @@
 
 void rhr::render::swap_chain::init_swap_chain()
 {
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
 
-	rhr::render::renderer::surface_format = rhr::render::tools::choose_swap_surface_format(swap_chain_support.formats);
-	rhr::render::renderer::present_mode = rhr::render::tools::choose_swap_present_mode(swap_chain_support.present_modes);
-	vk::extent_2d extent = rhr::render::tools::choose_swap_extent(swap_chain_support.capabilities);
-
-	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
-
-	if (swap_chain_support.capabilities.maxImageCount > 0 && imageCount > swap_chain_support.capabilities.maxImageCount)
-		imageCount = swap_chain_support.capabilities.maxImageCount;
-
-	vk::swap_chain_create_info_khr create_info{};
-	create_info.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-	create_info.surface = rhr::render::renderer::surface;
-
-	create_info.minImageCount = imageCount;
-	create_info.imageFormat = rhr::render::renderer::surface_format.format;
-	create_info.imageColorSpace = rhr::render::renderer::surface_format.colorSpace;
-	create_info.imageExtent = extent;
-	create_info.imageArrayLayers = 1;
-	create_info.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
-	u32 queue_family_indices[] = { indices.graphics_family.value(), indices.present_family.value() };
-
-	if (indices.graphics_family != indices.present_family)
-	{
-		create_info.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-		create_info.queueFamilyIndexCount = 2;
-		create_info.pQueueFamilyIndices = queue_family_indices;
-	}
-	else
-	{
-		create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-		create_info.queueFamilyIndexCount = 0; // Optional
-		create_info.pQueueFamilyIndices = nullptr; // Optional
-	}
-
-	create_info.preTransform = swap_chain_support.capabilities.currentTransform;
-	create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-	create_info.presentMode = rhr::render::renderer::present_mode;
-	create_info.clipped = VK_TRUE;
-	create_info.oldSwapchain = VK_NULL_HANDLE;
-
-	if (vkCreateSwapchainKHR(rhr::render::device::device_master, &create_info, nullptr, &swapchain_khr) != VK_SUCCESS)
-		cap::logger::fatal("failed to create swap chain");
-
-	vkGetSwapchainImagesKHR(rhr::render::device::device_master, swapchain_khr, &imageCount, nullptr);
-	swap_chain_images.resize(imageCount);
-	vkGetSwapchainImagesKHR(rhr::render::device::device_master, swapchain_khr, &imageCount, swap_chain_images.data());
-
-	swap_chain_image_format = rhr::render::renderer::surface_format.format;
-	swap_chain_extent = extent;
 }
 
 void rhr::render::swap_chain::init_image_views()

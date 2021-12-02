@@ -233,7 +233,7 @@ i32 main()
 			ImGui::End();
 		}
 #endif
-
+        cap::logger::debug("rhr::render::renderer::render_pass_setup();");
 		rhr::render::renderer::render_pass_setup();
 
 		rhr::render::panel::run_imgui();

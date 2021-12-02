@@ -99,7 +99,10 @@ target_include_directories(imgui PUBLIC SYSTEM
 #		${GLFW_SOURCE_DIR}/include
 		${Vulkan_INCLUDE_DIR}
 		${CMAKE_INCLUDES}
+
+		# TODO: fix this
 		"vcpkg/installed/x64-windows/include"
+		"vcpkg/installed/x64-linux/include"
 )
 
 # CLIP

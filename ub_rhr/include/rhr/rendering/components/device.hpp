@@ -53,5 +53,8 @@ private:
 
 	///
 	bool m_valid;
+
+    ///
+    std::unique_ptr<rhr::render::components::swapchain> m_swapchain;
 };
 }

@@ -35,87 +35,21 @@ vk::device_memory depthImageMemory;
 
 void rhr::render::renderer::initialize_window()
 {
-	rhr::render::device::physical_device = VK_NULL_HANDLE;
-	surface = VK_NULL_HANDLE;
-	vsync_enabled = false;
-	reload_swap_chain_flag = false;
+    glfwInit();
+
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+
+    m_window_primary = std::make_unique<rhr::render::components::window>(std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720));
 
 	view_matrix = glm::mat4(1.0);
 	projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
-
-	window_size = { 1280, 720 };
-
-	glfwInit();
-
-	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-	char window_title[100];
-	memset(window_title, 0, 100);
-	sprintf(window_title, "Unnamed Blocks %s", VER_CLIENT);
-
-	window = glfwCreateWindow(window_size.x, window_size.y, window_title, NULL, NULL);
-
-	if (window == NULL)
-		cap::logger::fatal("Failed to create GLFW window");
-
-	glfwSetFramebufferSizeCallback(window, frame_buffer_resize_callback);
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	glfwSetCursorPosCallback(window, cursor_position_callback);
-	glfwSetWindowPosCallback(window, window_position_callback);
-
-	rhr::render::device::init_instance();
-
-	auto glfw_window_result = glfwCreateWindowSurface(rhr::render::device::instance, window, nullptr, &surface);
-
-	if (glfw_window_result != VK_SUCCESS)
-		cap::logger::fatal(std::to_string(glfw_window_result));
 }
 
 //static std::shared_ptr<vui::RenderRectangle> testObject = std::make_shared<vui::RenderRectangle>();
 
 void rhr::render::renderer::initialize()
 {
-// 	testObject->SetWeak(testObject);
-// 	testObject->SetPosition({ 100, 100 });
-// 	testObject->SetSize({ 256, 256 });
-// 	testObject->SetColor(Color::White);
-// 	testObject->SetTexture(RenderObject::TextureType::TEXT_SHEET);
-// 	testObject->SetDepth(0);
-
-	rhr::render::device::init_debug();
-	rhr::render::device::init_device();
-
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &surface);
-	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
-
-	f32 queue_priority = 1.0f;
-	for (u32 queue_family : unique_queue_families)
-	{
-		vk::device_queue_create_info queue_create_info{};
-		queue_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-		queue_create_info.queueFamilyIndex = queue_family;
-		queue_create_info.queueCount = 1;
-		queue_create_info.pQueuePriorities = &queue_priority;
-		rhr::render::command::queue_create_infos.push_back(queue_create_info);
-	}
-
-	rhr::render::device::init_logical_device();
-	rhr::render::swap_chain::init_swap_chain();
-	rhr::render::swap_chain::init_image_views();
-	rhr::render::render_pass::init_render_pass();
-	init_descriptor_set_layout();
-	rhr::render::pipeline::initialize();
-	rhr::render::command::init_command_pool();
-	init_depth_resources();
-	rhr::render::swap_chain::init_frame_buffers();
-	init_texture_sampler();
-	rhr::render::command::init_descriptor_pool();
-	rhr::render::command::init_command_buffers();
-	rhr::render::swap_chain::init_sync_objects();
-
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
@@ -184,6 +118,11 @@ void rhr::render::renderer::initialize()
 	}
 
 	initialize_imgui(true);
+}
+
+std::unique_ptr<rhr::render::components::window>& rhr::render::renderer::get_window_primary()
+{
+	return m_window_primary;
 }
 
 void rhr::render::renderer::reload_swap_chain()
@@ -355,12 +294,10 @@ void rhr::render::renderer::render_pass_setup()
 {
 	rhr::render::renderer::ui_projection_matrix = glm::ortho(0.0f, static_cast<f32>(window_size.x), 0.0f, static_cast<f32>(window_size.y), -10000.0f, 10000.0f);
 
-	VkResult err;
-
 	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
 	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
-
-	err = vkAcquireNextImageKHR(rhr::render::device::device_master, imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
+    cap::logger::debug("vkAcquireNextImageKHR");
+    VkResult err = vkAcquireNextImageKHR(rhr::render::device::device_master, imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{

@@ -72,7 +72,7 @@ ModLoaderStatus run()
 #if LINUX
 		if (!(*mods)[i].Supported_LINUX)
 		{
-			cap::logger::Warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
+			cap::logger::warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
 			continue;
 		}
 
@@ -80,14 +80,14 @@ ModLoaderStatus run()
 
 		if (!so)
 		{
-			cap::logger::Error("failed to load mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error("failed to load mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
 		f_initialize initialize = (f_initialize)dlsym(so, "Initialization");
 		if (initialize == nullptr)
 		{
-			cap::logger::Error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 

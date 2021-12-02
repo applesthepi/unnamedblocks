@@ -14,14 +14,32 @@ namespace rhr::render::components
 class window
 {
 public:
-	window(const std::string& title = "", const glm::vec<2, i32>& window_size = { 1280, 720 });
+	window(std::string title, glm::vec<2, i32> window_size);
 
 	///
-	void flag_swapchain_recreation(const glm::vec<2, i32>& window_size);
+	void create_systems();
 
 	///
-	void update_window_position(const glm::vec<2, i32>& window_position);
+	void delete_systems();
+
+	///
+	vk::surface_khr* get_surface();
+
+	///
+	vk::physical_device* get_physical_device();
+
+	///
+	vk::device* get_device();
+
+	///
+	void flag_swapchain_recreation(glm::vec<2, i32> window_size);
+
+	///
+	void update_window_position(glm::vec<2, i32> window_position);
 private:
+    ///
+    void setup();
+
 	///
 	glfw::window* m_window;
 
@@ -36,6 +54,9 @@ private:
 
 	///
 	glm::vec<2, i32> m_window_position;
+
+    ///
+    std::string m_window_title;
 
 	///
 	std::unique_ptr<rhr::render::components::device> m_device;

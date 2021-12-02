@@ -84,10 +84,20 @@ FF_TMP auto create_instance(FF_ARG) -> decltype(vkCreateInstance(FF_FARG))
 { return vkCreateInstance(FF_FARG); }
 FF_TMP auto create_device(FF_ARG) -> decltype(vkCreateDevice(FF_FARG))
 { return vkCreateDevice(FF_FARG); }
+FF_TMP auto create_swapchain_khr(FF_ARG) -> decltype(vkCreateSwapchainKHR(FF_FARG))
+{ return vkCreateSwapchainKHR(FF_FARG); }
+FF_TMP auto create_framebuffer(FF_ARG) -> decltype(vkCreateFramebuffer(FF_FARG))
+{ return vkCreateFramebuffer(FF_FARG); }
+FF_TMP auto create_semaphore(FF_ARG) -> decltype(vkCreateSemaphore(FF_FARG))
+{ return vkCreateSemaphore(FF_FARG); }
+FF_TMP auto create_fence(FF_ARG) -> decltype(vkCreateFence(FF_FARG))
+{ return vkCreateFence(FF_FARG); }
 
 // API Getters.
 FF_TMP auto get_device_queue(FF_ARG) -> decltype(vkGetDeviceQueue(FF_FARG))
 { return vkGetDeviceQueue(FF_FARG); }
+FF_TMP auto get_swapchain_images_khr(FF_ARG) -> decltype(vkGetSwapchainImagesKHR(FF_FARG))
+{ return vkGetSwapchainImagesKHR(FF_FARG); }
 
 // API Enumeration.
 FF_TMP auto enumerate_instance_extension_properties(FF_ARG) -> decltype(vkEnumerateInstanceExtensionProperties(FF_FARG))
@@ -144,7 +154,17 @@ typedef VkSurfaceFormatKHR surface_format_khr;
 typedef VkSurfaceKHR surface_khr;
 typedef VkPresentModeKHR present_mode_khr;
 
-typedef VkSwapchainCreateInfoKHR swap_chain_create_info_khr;
+typedef VkSwapchainCreateInfoKHR swapchain_create_info_khr;
+typedef VkSwapchainKHR swapchain_khr;
+
+typedef VkSemaphoreCreateInfo semaphore_create_info;
+typedef VkSemaphore semaphore;
+
+typedef VkFenceCreateInfo fence_create_info;
+typedef VkFence fence;
+
+typedef VkRenderPassBeginInfo render_pass_begin_info;
+typedef VkRenderPass render_pass;
 
 typedef VkLayerProperties layer_properties;
 typedef VkSubmitInfo submit_info;
@@ -153,9 +173,10 @@ typedef VkExtensionProperties extension_properties;
 typedef VkQueueFamilyProperties queue_family_properties;
 typedef VkExtent2D extent_2d;
 typedef VkShaderModule shader_module;
-typedef VkRenderPassBeginInfo render_pass_begin_info;
 typedef VkQueue queue;
 typedef VkResult result;
+typedef VkFramebufferCreateInfo framebuffer_create_info;
+typedef VkFramebuffer frame_buffer;
 
 typedef VkDebugUtilsMessengerCreateInfoEXT debug_utils_messenger_create_info;
 typedef VkDebugUtilsMessengerEXT debug_utils_messenger_ext;

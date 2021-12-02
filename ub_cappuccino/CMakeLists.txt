@@ -62,7 +62,7 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 	Vulkan::Vulkan
 	freetype
 
-	imm32.lib
+	#imm32.lib
 )
 
 target_include_directories(UB_CAPPUCCINO PUBLIC SYSTEM

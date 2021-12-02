@@ -54,6 +54,9 @@ public:
 	static void initialize();
 
 	///
+	static std::unique_ptr<rhr::render::components::window>& get_window_primary();
+
+	///
 	static void reload_swap_chain();
 
 	///

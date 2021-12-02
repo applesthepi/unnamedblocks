@@ -39,7 +39,7 @@ target_link_libraries(UB_CLIENT PUBLIC
 	Vulkan::Vulkan
 	freetype
 
-	imm32.lib
+	#imm32.lib
 )
 
 target_include_directories(UB_CLIENT PUBLIC SYSTEM
