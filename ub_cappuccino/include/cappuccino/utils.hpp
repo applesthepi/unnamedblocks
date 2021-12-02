@@ -72,11 +72,31 @@
 
 #include "cutils.h"
 
-// TODO: add vulkan functions
-// TODO: add rest of typdefs used in rhr::render::renderer
-// Maintain code style standards.
+// https://stackoverflow.com/a/9864472
+#define FF_TMP  template <typename... Args>
+#define FF_FARG std::forward<Args>(args)...
+#define FF_ARG  Args&&... args
+
 namespace vk
 {
+// API Creation.
+FF_TMP auto create_instance(FF_ARG) -> decltype(vkCreateInstance(FF_FARG))
+{ return vkCreateInstance(FF_FARG); }
+FF_TMP auto create_device(FF_ARG) -> decltype(vkCreateDevice(FF_FARG))
+{ return vkCreateDevice(FF_FARG); }
+
+// API Getters.
+FF_TMP auto get_device_queue(FF_ARG) -> decltype(vkGetDeviceQueue(FF_FARG))
+{ return vkGetDeviceQueue(FF_FARG); }
+
+// API Enumeration.
+FF_TMP auto enumerate_instance_extension_properties(FF_ARG) -> decltype(vkEnumerateInstanceExtensionProperties(FF_FARG))
+{ return vkEnumerateInstanceExtensionProperties(FF_FARG); }
+FF_TMP auto enumerate_physical_device(FF_ARG) -> decltype(vkEnumeratePhysicalDevices(FF_FARG))
+{ return vkEnumeratePhysicalDevices(FF_FARG); }
+
+typedef VkInstance instance;
+
 typedef VkBool32 bool32;
 typedef VkClearValue clear_value;
 typedef VkApplicationInfo application_info;
@@ -134,41 +154,44 @@ typedef VkQueueFamilyProperties queue_family_properties;
 typedef VkExtent2D extent_2d;
 typedef VkShaderModule shader_module;
 typedef VkRenderPassBeginInfo render_pass_begin_info;
+typedef VkQueue queue;
+typedef VkResult result;
+
+typedef VkDebugUtilsMessengerCreateInfoEXT debug_utils_messenger_create_info;
+typedef VkDebugUtilsMessengerEXT debug_utils_messenger_ext;
 }
-
-// https://stackoverflow.com/a/9864472
-
-#define GLFW_TMP template <typename... Args>
-#define GLFW_FARG std::forward<Args>(args)...
-#define GLFW_ARG  Args&&... args
 
 namespace glfw
 {
 // API Creation.
-GLFW_TMP auto create_window(GLFW_ARG) -> decltype(glfwCreateWindow(GLFW_FARG))
-{ return glfwCreateWindow(GLFW_FARG); }
+FF_TMP auto create_window(FF_ARG) -> decltype(glfwCreateWindow(FF_FARG))
+{ return glfwCreateWindow(FF_FARG); }
+FF_TMP auto create_window_surface(FF_ARG) -> decltype(glfwCreateWindowSurface(FF_FARG))
+{ return glfwCreateWindowSurface(FF_FARG); }
 
 // API Getters.
-GLFW_TMP auto set_framebuffer_size_callback(GLFW_ARG) -> decltype(glfwSetFramebufferSizeCallback(GLFW_FARG))
-{ return glfwSetFramebufferSizeCallback(GLFW_FARG); }
-GLFW_TMP auto set_key_callback(GLFW_ARG) -> decltype(glfwSetKeyCallback(GLFW_FARG))
-{ return glfwSetKeyCallback(GLFW_FARG); }
-GLFW_TMP auto set_mouse_button_callback(GLFW_ARG) -> decltype(glfwSetMouseButtonCallback(GLFW_FARG))
-{ return glfwSetMouseButtonCallback(GLFW_FARG); }
-GLFW_TMP auto set_scroll_callback(GLFW_ARG) -> decltype(glfwSetScrollCallback(GLFW_FARG))
-{ return glfwSetScrollCallback(GLFW_FARG); }
-GLFW_TMP auto set_cursor_position_callback(GLFW_ARG) -> decltype(glfwSetCursorPosCallback(GLFW_FARG))
-{ return glfwSetCursorPosCallback(GLFW_FARG); }
-GLFW_TMP auto set_window_position_callback(GLFW_ARG) -> decltype(glfwSetWindowPosCallback(GLFW_FARG))
-{ return glfwSetWindowPosCallback(GLFW_FARG); }
-GLFW_TMP auto set_window_user_pointer(GLFW_ARG) -> decltype(glfwSetWindowUserPointer(GLFW_FARG))
-{ return glfwSetWindowUserPointer(GLFW_FARG); }
+FF_TMP auto set_framebuffer_size_callback(FF_ARG) -> decltype(glfwSetFramebufferSizeCallback(FF_FARG))
+{ return glfwSetFramebufferSizeCallback(FF_FARG); }
+FF_TMP auto set_key_callback(FF_ARG) -> decltype(glfwSetKeyCallback(FF_FARG))
+{ return glfwSetKeyCallback(FF_FARG); }
+FF_TMP auto set_mouse_button_callback(FF_ARG) -> decltype(glfwSetMouseButtonCallback(FF_FARG))
+{ return glfwSetMouseButtonCallback(FF_FARG); }
+FF_TMP auto set_scroll_callback(FF_ARG) -> decltype(glfwSetScrollCallback(FF_FARG))
+{ return glfwSetScrollCallback(FF_FARG); }
+FF_TMP auto set_cursor_position_callback(FF_ARG) -> decltype(glfwSetCursorPosCallback(FF_FARG))
+{ return glfwSetCursorPosCallback(FF_FARG); }
+FF_TMP auto set_window_position_callback(FF_ARG) -> decltype(glfwSetWindowPosCallback(FF_FARG))
+{ return glfwSetWindowPosCallback(FF_FARG); }
+FF_TMP auto set_window_user_pointer(FF_ARG) -> decltype(glfwSetWindowUserPointer(FF_FARG))
+{ return glfwSetWindowUserPointer(FF_FARG); }
 
 // API Setters.
-GLFW_TMP auto get_window_user_pointer(GLFW_ARG) -> decltype(glfwGetWindowUserPointer(GLFW_FARG))
-{ return glfwGetWindowUserPointer(GLFW_FARG); }
-GLFW_TMP auto get_window_position(GLFW_ARG) -> decltype(glfwGetWindowPos(GLFW_FARG))
-{ return glfwGetWindowPos(GLFW_FARG); }
+FF_TMP auto get_window_user_pointer(FF_ARG) -> decltype(glfwGetWindowUserPointer(FF_FARG))
+{ return glfwGetWindowUserPointer(FF_FARG); }
+FF_TMP auto get_window_position(FF_ARG) -> decltype(glfwGetWindowPos(FF_FARG))
+{ return glfwGetWindowPos(FF_FARG); }
+FF_TMP auto get_required_instance_extensions(FF_ARG) -> decltype(glfwGetRequiredInstanceExtensions(FF_FARG))
+{ return glfwGetRequiredInstanceExtensions(FF_FARG); }
 
 // API Types.
 using window = GLFWwindow;

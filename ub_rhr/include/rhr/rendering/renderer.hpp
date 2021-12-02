@@ -4,6 +4,7 @@
 #include "rhr/rendering/objects/object.hpp"
 #include "rhr/rendering/interfaces/i_renderable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
+#include "rhr/rendering/components/window.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
@@ -166,6 +167,12 @@ private:
 
 	///
 	static void init_texture_sampler();
+
+	////////////////////////////////////////////////////////////////////////////
+
+	static std::unique_ptr<rhr::render::components::window> m_window_primary;
+
+	////////////////////////////////////////////////////////////////////////////
 
 	///
 	static std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> m_dirty_renderable;

@@ -41,8 +41,10 @@ void window_position(glfw::window* glfw_window, i32 x, i32 y)
 rhr::render::components::window::window(const std::string& title, const glm::vec<2, i32>& window_size)
 	: m_window(nullptr)
 	, m_recreate_swapchain(false)
+	, m_valid(false)
 	, m_window_size(window_size)
 	, m_window_position({ 0, 0 })
+	, m_surface(nullptr)
 {
 	m_window = glfw::create_window(window_size.x, window_size.y, title.c_str(), nullptr, nullptr);
 
@@ -51,6 +53,16 @@ rhr::render::components::window::window(const std::string& title, const glm::vec
 		cap::logger::error("failed to create window");
 		return;
 	}
+
+	m_device = std::make_unique<rhr::render::components::device>();
+
+	if (glfw::create_window_surface(m_device->get_instance(), m_window, nullptr, &m_surface) != VK_SUCCESS)
+	{
+		cap::logger::error("failed to create window surface");
+		return;
+	}
+
+	m_device->initialize(&m_surface);
 
 	glfw::set_framebuffer_size_callback(m_window, rhr::render::components::window_callback::framebuffer_resize);
 	glfw::set_key_callback(m_window, rhr::render::components::window_callback::key);
@@ -61,6 +73,8 @@ rhr::render::components::window::window(const std::string& title, const glm::vec
 
 	glfw::set_window_user_pointer(m_window, reinterpret_cast<void*>(this));
 	glfw::get_window_position(m_window, &m_window_position.x, &m_window_position.y);
+
+	m_valid = true;
 }
 
 void rhr::render::components::window::flag_swapchain_recreation(const glm::vec<2, i32>& window_size)

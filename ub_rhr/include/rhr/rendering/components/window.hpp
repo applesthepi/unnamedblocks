@@ -1,6 +1,8 @@
 #pragma once
 #include "config.h"
 
+#include "device.hpp"
+
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -27,9 +29,18 @@ private:
 	bool m_recreate_swapchain;
 
 	///
+	bool m_valid;
+
+	///
 	glm::vec<2, i32> m_window_size;
 
 	///
 	glm::vec<2, i32> m_window_position;
+
+	///
+	std::unique_ptr<rhr::render::components::device> m_device;
+
+	///
+	vk::surface_khr m_surface;
 };
 }

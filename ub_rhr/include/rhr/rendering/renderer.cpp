@@ -793,6 +793,12 @@ u32 rhr::render::renderer::depth_argument_text = 45;
 u32 rhr::render::renderer::depth_ui_background = 50;
 u32 rhr::render::renderer::depth_ui_text = 55;
 
+////////////////////////////////////////////////////////////////////////////
+
+std::unique_ptr<rhr::render::components::window> rhr::render::renderer::m_window_primary;
+
+////////////////////////////////////////////////////////////////////////////
+
 std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> rhr::render::renderer::m_dirty_renderable;
 std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> rhr::render::renderer::m_dirty_ui;
 std::shared_mutex rhr::render::renderer::m_dirty_mutex;

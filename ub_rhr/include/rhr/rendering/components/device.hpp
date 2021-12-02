@@ -12,28 +12,46 @@ namespace rhr::render::components
 class device
 {
 public:
-	///
-	void init_instance();
+	explicit device();
+
+	/// Needed for most operations. The window can exist before calling this, but every other vulkan operation requires
+	/// this to be called beforehand.
+	void initialize(vk::surface_khr* surface);
 
 	///
-	static void init_debug();
+	vk::instance& get_instance();
 
 	///
-	static void init_device();
+	vk::physical_device& get_physical_device();
 
 	///
-	static void init_logical_device();
+	vk::device& get_device();
 
 	///
-	static VkInstance instance;
+	static bool validation_layers_enabled;
+private:
+	///
+	vk::surface_khr* m_surface;
 
 	///
-	static VkDebugUtilsMessengerEXT debug_messenger;
+	vk::instance m_instance;
 
 	///
-	static VkPhysicalDevice physical_device;
+	vk::physical_device m_physical_device;
 
 	///
-	static VkDevice device_master;
+	vk::device m_device;
+
+	///
+	vk::debug_utils_messenger_ext m_debug_messenger;
+
+	///
+	std::vector<vk::device_queue_create_info> m_queue_create_infos;
+
+	///
+	vk::queue m_graphics_queue;
+
+	///
+	bool m_valid;
 };
 }
