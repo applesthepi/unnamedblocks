@@ -53,6 +53,12 @@ public:
 	static void initialize();
 
 	///
+	static void reload_swap_chain();
+
+	///
+	static void initialize_imgui(bool first_time);
+
+	///
 	static void add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable);
 
 	///
@@ -99,9 +105,6 @@ public:
 
 	///
 	static VkImageView depth_image_view;
-
-	///
-	static bool frame_buffer_resized;
 
 	///
 	static glm::mat4 view_matrix;

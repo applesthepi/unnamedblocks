@@ -105,12 +105,14 @@ void rhr::render::swap_chain::init_frame_buffers()
 
 void rhr::render::swap_chain::init_sync_objects()
 {
-	for (usize i = 0; i < rhr::render::swap_chain::render_finished_semaphores.size(); i++)
+	rhr::render::swap_chain::render_finished_semaphores.clear();
+
+	/*for (usize i = 0; i < rhr::render::swap_chain::render_finished_semaphores.size(); i++)
 	{
 		vkDestroySemaphore(rhr::render::device::device_master, render_finished_semaphores[i], nullptr);
 		vkDestroySemaphore(rhr::render::device::device_master, image_available_semaphores[i], nullptr);
 		vkDestroyFence(rhr::render::device::device_master, in_flight_fences[i], nullptr);
-	}
+	}*/
 
 	image_available_semaphores.clear();
 	render_finished_semaphores.clear();

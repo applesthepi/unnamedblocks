@@ -12,8 +12,8 @@
 #include "rhr/rendering/pipeline.hpp"
 #include "rhr/rendering/device.hpp"
 #include "rhr/rendering/panel.hpp"
-
 #include "rhr/handlers/input.hpp"
+
 #include <cappuccino/utils.hpp>
 #include <iostream>
 
@@ -28,39 +28,7 @@ static void check_vk_result(VkResult err)
 		cap::logger::error("vulkan error code \"" + std::to_string(err) + "\"");
 }
 
-void frame_buffer_resize_callback(GLFWwindow* window, i32 width, i32 height)
-{
-	rhr::render::renderer::frame_buffer_resized = true;
-	rhr::render::renderer::window_size = { width, height };
-}
 
-void key_callback(GLFWwindow* window, i32 key, i32 scancode, i32 action, i32 mode)
-{
-	if (action == GLFW_PRESS && key == GLFW_KEY_Q)
-		run_first_render_pass = !run_first_render_pass;
-
-	InputHandler::FireKey(key, action);
-}
-
-void mouse_button_callback(GLFWwindow* window, i32 button, i32 action, i32 mods)
-{
-	InputHandler::FireMouseButton(button, action);
-}
-
-void scroll_callback(GLFWwindow* window, f64 xoffset, f64 yoffset)
-{
-	InputHandler::FireMouseScroll(yoffset);
-}
-
-void cursor_position_callback(GLFWwindow* window, f64 xpos, f64 ypos)
-{
-	InputHandler::FireMouseMove({ xpos, ypos });
-}
-
-void window_position_callback(GLFWwindow* window, i32 x, i32 y)
-{
-	rhr::render::renderer::window_position = { x, y };
-}
 
 vk::image depthImage;
 vk::device_memory depthImageMemory;
@@ -69,8 +37,8 @@ void rhr::render::renderer::initialize_window()
 {
 	rhr::render::device::physical_device = VK_NULL_HANDLE;
 	surface = VK_NULL_HANDLE;
-	frame_buffer_resized = false;
 	vsync_enabled = false;
+	reload_swap_chain_flag = false;
 
 	view_matrix = glm::mat4(1.0);
 	projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
@@ -148,10 +116,6 @@ void rhr::render::renderer::initialize()
 	rhr::render::command::init_command_buffers();
 	rhr::render::swap_chain::init_sync_objects();
 
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &surface);
-
-	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
-
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
@@ -165,12 +129,48 @@ void rhr::render::renderer::initialize()
 //	ImGui::StyleColorsDark();
 	//ImGui::StyleColorsClassic();
 
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	//ImGui::StyleColorsClassic();
+
 	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
 		style.WindowRounding = 0.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	{
+		auto& colors = style.Colors;
+		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+
+		// Headers
+		colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Buttons
+		colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Frame BG
+		colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Tabs
+		colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
+		colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
+		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+
+		// Title
+		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
 	}
 
 	{
@@ -183,116 +183,45 @@ void rhr::render::renderer::initialize()
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/Roboto-Regular.ttf", 16, &fontConfig);
 	}
 
+	initialize_imgui(true);
+}
+
+void rhr::render::renderer::reload_swap_chain()
+{
+	rhr::render::swap_chain::init_swap_chain();
+	rhr::render::swap_chain::init_image_views();
+	rhr::render::render_pass::init_render_pass();
+	init_descriptor_set_layout();
+	rhr::render::pipeline::initialize();
+	rhr::render::command::init_command_pool();
+	init_depth_resources();
+	rhr::render::swap_chain::init_frame_buffers();
+	init_texture_sampler();
+	rhr::render::command::init_descriptor_pool();
+	rhr::render::command::init_command_buffers();
+	rhr::render::swap_chain::init_sync_objects();
+
+	initialize_imgui(false);
+}
+
+void rhr::render::renderer::initialize_imgui(bool first_time)
+{
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGuiStyle& style = ImGui::GetStyle();
+
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &surface);
+	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
+
+	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &surface);
+	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
+
+	if (first_time)
 	{
-		ImGuiStyle &style = ImGui::GetStyle();
+		imgui_local = new imgui_data(io, style);
 
-		static const float color_scalar_low = 0.75f;
-		static const float color_scalar_high = 0.8f;
-
-		ImVec4 dockBgColor = ImVec4(0.098f, 0.098f, 0.1019f, 1.0f);
-		ImVec4 bgColor = ImVec4(0.145f, 0.145f, 0.149f, 1.0f);
-		ImVec4 lightBgColor = ImVec4(0.321f, 0.321f, 0.333f, 1.0f);
-		ImVec4 lighterBgColor = ImVec4(0.353f, 0.353f, 0.372f, 1.0f);
-
-		ImVec4 panelColor = ImVec4(0.2f, 0.2f, 0.21f, 1.0f);
-		ImVec4 panelHoverColor = ImVec4(0.114f, 0.592f, 0.925f, 1.0f);
-		ImVec4 panelActiveColor = ImVec4(0.0f, 0.466f, 0.784f, 1.0f);
-
-		ImVec4 textColor = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-		ImVec4 textDisabledColor = ImVec4(0.592f, 0.592f, 0.592f, 1.0f);
-		ImVec4 borderColor = ImVec4(0.305f, 0.305f, 0.305f, 1.0f);
-
-		dockBgColor.x *= color_scalar_high;
-		dockBgColor.y *= color_scalar_high;
-		dockBgColor.z *= color_scalar_high;
-
-		bgColor.x *= color_scalar_high;
-		bgColor.y *= color_scalar_high;
-		bgColor.z *= color_scalar_high;
-
-		lightBgColor.x *= color_scalar_high;
-		lightBgColor.y *= color_scalar_high;
-		lightBgColor.z *= color_scalar_high;
-
-		lighterBgColor.x *= color_scalar_high;
-		lighterBgColor.y *= color_scalar_high;
-		lighterBgColor.z *= color_scalar_high;
-
-		panelColor.x *= color_scalar_low;
-		panelColor.y *= color_scalar_low;
-		panelColor.z *= color_scalar_low;
-
-		panelHoverColor.x *= color_scalar_low;
-		panelHoverColor.y *= color_scalar_low;
-		panelHoverColor.z *= color_scalar_low;
-
-		panelActiveColor.x *= color_scalar_low;
-		panelActiveColor.y *= color_scalar_low;
-		panelActiveColor.z *= color_scalar_low;
-
-		style.Colors[ImGuiCol_Text] = textColor;
-		style.Colors[ImGuiCol_TextDisabled] = textDisabledColor;
-		style.Colors[ImGuiCol_TextSelectedBg] = panelActiveColor;
-		style.Colors[ImGuiCol_WindowBg] = bgColor;
-		style.Colors[ImGuiCol_ChildBg] = bgColor;
-		style.Colors[ImGuiCol_PopupBg] = bgColor;
-		style.Colors[ImGuiCol_Border] = borderColor;
-		style.Colors[ImGuiCol_BorderShadow] = borderColor;
-		style.Colors[ImGuiCol_FrameBg] = panelColor;
-		style.Colors[ImGuiCol_FrameBgHovered] = panelHoverColor;
-		style.Colors[ImGuiCol_FrameBgActive] = panelActiveColor;
-		style.Colors[ImGuiCol_TitleBg] = bgColor;
-		style.Colors[ImGuiCol_TitleBgActive] = bgColor;
-		style.Colors[ImGuiCol_TitleBgCollapsed] = bgColor;
-		style.Colors[ImGuiCol_MenuBarBg] = panelColor;
-		style.Colors[ImGuiCol_ScrollbarBg] = panelColor;
-		style.Colors[ImGuiCol_ScrollbarGrab] = lightBgColor;
-		style.Colors[ImGuiCol_ScrollbarGrabHovered] = lighterBgColor;
-		style.Colors[ImGuiCol_ScrollbarGrabActive] = lighterBgColor;
-		style.Colors[ImGuiCol_CheckMark] = panelActiveColor;
-		style.Colors[ImGuiCol_SliderGrab] = panelHoverColor;
-		style.Colors[ImGuiCol_SliderGrabActive] = panelActiveColor;
-		style.Colors[ImGuiCol_Button] = panelColor;
-		style.Colors[ImGuiCol_ButtonHovered] = panelHoverColor;
-		style.Colors[ImGuiCol_ButtonActive] = panelHoverColor;
-		style.Colors[ImGuiCol_Header] = panelColor;
-		style.Colors[ImGuiCol_HeaderHovered] = panelHoverColor;
-		style.Colors[ImGuiCol_HeaderActive] = panelActiveColor;
-		style.Colors[ImGuiCol_Separator] = borderColor;
-		style.Colors[ImGuiCol_SeparatorHovered] = borderColor;
-		style.Colors[ImGuiCol_SeparatorActive] = borderColor;
-		style.Colors[ImGuiCol_ResizeGrip] = bgColor;
-		style.Colors[ImGuiCol_ResizeGripHovered] = panelColor;
-		style.Colors[ImGuiCol_ResizeGripActive] = lightBgColor;
-		style.Colors[ImGuiCol_PlotLines] = panelActiveColor;
-		style.Colors[ImGuiCol_PlotLinesHovered] = panelHoverColor;
-		style.Colors[ImGuiCol_PlotHistogram] = panelActiveColor;
-		style.Colors[ImGuiCol_PlotHistogramHovered] = panelHoverColor;
-		style.Colors[ImGuiCol_DragDropTarget] = bgColor;
-		style.Colors[ImGuiCol_NavHighlight] = bgColor;
-		style.Colors[ImGuiCol_Tab] = bgColor;
-		style.Colors[ImGuiCol_TabActive] = panelActiveColor;
-		style.Colors[ImGuiCol_TabUnfocused] = bgColor;
-		style.Colors[ImGuiCol_TabUnfocusedActive] = panelActiveColor;
-		style.Colors[ImGuiCol_TabHovered] = panelHoverColor;
-
-		style.Colors[ImGuiCol_DockingEmptyBg] = dockBgColor;
-
-		style.ScrollbarSize = 10.0f;
-		style.WindowRounding = 1.0f;
-		style.ChildRounding = 1.0f;
-		style.FrameRounding = 1.0f;
-		style.GrabRounding = 1.0f;
-		style.PopupRounding = 1.0f;
-		style.ScrollbarRounding = 1.0f;
-		style.TabRounding = 1.0f;
-		style.WindowMenuButtonPosition = ImGuiDir_Right;
+		imgui_local->frames = new ImGui_ImplVulkanH_Frame[imageCount];
+		imgui_local->semaphores = new ImGui_ImplVulkanH_FrameSemaphores[imageCount];
 	}
-
-	imgui_local = new imgui_data(io, style);
-
-	imgui_local->frames = new ImGui_ImplVulkanH_Frame[imageCount];
-	imgui_local->semaphores = new ImGui_ImplVulkanH_FrameSemaphores[imageCount];
 
 	for (u32 i = 0; i < imageCount; i++)
 	{
@@ -345,7 +274,9 @@ void rhr::render::renderer::initialize()
 		}
 	};
 
-	ImGui_ImplGlfw_InitForVulkan(window, true);
+	if (first_time)
+		ImGui_ImplGlfw_InitForVulkan(window, true);
+
 	ImGui_ImplVulkan_Init(&imgui_info, rhr::render::render_pass::render_pass_master);
 
 	{
@@ -433,6 +364,16 @@ void rhr::render::renderer::render_pass_setup()
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
+		//ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
+		//
+		//// frame sync
+		//
+		//err = vkWaitForFences(rhr::render::device::device_master, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+		//check_vk_result(err);
+		//
+		//err = vkResetFences(rhr::render::device::device_master, 1, &fd->Fence);
+		//check_vk_result(err);
+
 		reload_swap_chain_flag = true;
 		return;
 	}
@@ -599,7 +540,7 @@ void rhr::render::renderer::frame_present()
 		return;
 	}
 
-	vkQueueWaitIdle(graphics_queue);
+	err = vkQueueWaitIdle(graphics_queue);
 	check_vk_result(err);
 
 	err = vkResetCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, 0);
@@ -828,7 +769,6 @@ VkSurfaceKHR rhr::render::renderer::surface;
 GLFWwindow* rhr::render::renderer::window;
 VkSampler rhr::render::renderer::texture_sampler;
 VkImageView rhr::render::renderer::depth_image_view;
-bool rhr::render::renderer::frame_buffer_resized;
 glm::mat4 rhr::render::renderer::view_matrix;
 glm::mat4 rhr::render::renderer::projection_matrix;
 glm::mat4 rhr::render::renderer::ui_projection_matrix;

@@ -163,6 +163,9 @@ public:
 	static std::vector<const char*> validation_layers;
 
 	///
+	static std::vector<vk::layer_properties> available_validation_layers;
+
+	///
 	static std::vector<const char*> device_extensions;
 
 	///

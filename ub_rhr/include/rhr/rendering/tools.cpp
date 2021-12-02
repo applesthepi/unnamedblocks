@@ -3,23 +3,28 @@
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/command.hpp"
 #include "rhr/rendering/device.hpp"
+#include "rhr/rendering/swap_chain.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
 void rhr::render::tools::initialize()
 {
-//	validation_layers.push_back("VK_LAYER_KHRONOS_validation");
-
 	validation_layers = {
-		"VK_LAYER_GOOGLE_threading",
-		"VK_LAYER_LUNARG_parameter_validation",
-		"VK_LAYER_LUNARG_device_limits",
-		"VK_LAYER_LUNARG_object_tracker",
-		"VK_LAYER_LUNARG_image",
-		"VK_LAYER_LUNARG_core_validation",
-		"VK_LAYER_LUNARG_swapchain",
-		"VK_LAYER_GOOGLE_unique_objects"
+		"VK_LAYER_NV_optimus",
+		//"VK_LAYER_RENDERDOC_Capture",
+		//"VK_LAYER_OW_OVERLAY",
+		//"VK_LAYER_OW_OBS_HOOK",
+		//"VK_LAYER_VALVE_steam_overlay",
+		//"VK_LAYER_VALVE_steam_fossilize",
+		//"VK_LAYER_OBS_HOOK",
+		//"VK_LAYER_LUNARG_api_dump",
+		//"VK_LAYER_LUNARG_device_simulation",
+		//"VK_LAYER_LUNARG_gfxreconstruct",
+		"VK_LAYER_KHRONOS_synchronization2",
+		"VK_LAYER_KHRONOS_validation",
+		"VK_LAYER_LUNARG_monitor",
+		"VK_LAYER_LUNARG_screenshot"
 	};
 
 	device_extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
@@ -47,14 +52,16 @@ bool rhr::render::tools::check_validation_layer_support()
 	u32 layer_count;
 	vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
 
-	std::vector<vk::layer_properties> available_layers(layer_count);
-	vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
+	available_validation_layers.clear();
+	available_validation_layers.resize(layer_count);
+	vkEnumerateInstanceLayerProperties(&layer_count, available_validation_layers.data());
 
+#if 1
 	for (const char* layer_name : validation_layers)
 	{
 		bool layer_found = false;
 
-		for (const auto& layer_properties : available_layers)
+		for (const auto& layer_properties : available_validation_layers)
 		{
 			if (strcmp(layer_name, layer_properties.layerName) == 0)
 			{
@@ -64,10 +71,14 @@ bool rhr::render::tools::check_validation_layer_support()
 		}
 
 		if (!layer_found)
-		{
 			return false;
-		}
 	}
+#else
+	validation_layers.clear();
+
+	for (const auto& layer_properties : available_validation_layers)
+		validation_layers.push_back(layer_properties.layerName);
+#endif
 
 	return true;
 }
@@ -377,19 +388,20 @@ void rhr::render::tools::delete_buffer(vk::buffer& buffer, vk::device_memory& bu
 
 void rhr::render::tools::copy_buffer(vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size)
 {
-	vk::buffer_copy copy_region {};
+	vk::command_buffer command_buffer = begin_single_time_command();
+
+	vk::buffer_copy copy_region = {};
 	copy_region.size = size;
-	vkCmdCopyBuffer(*rhr::render::command::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+	vkCmdCopyBuffer(command_buffer, src_buffer, dst_buffer, 1, &copy_region);
+
+	end_single_time_command(command_buffer);
 }
 
 void rhr::render::tools::copy_buffer(vk::device_memory src_memory, vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size)
 {
-	vk::buffer_copy copy_region {};
-	copy_region.size = size;
-	vkCmdCopyBuffer(*rhr::render::command::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
-
-	//rhr::render::renderer::AuxBufferMemory.push_back(srcBuffer);
-	//rhr::render::renderer::AuxDeviceMemory.push_back(srcMemory);
+	//vk::buffer_copy copy_region = {};
+	//copy_region.size = size;
+	//vkCmdCopyBuffer(*rhr::render::command::active_command_buffer, src_buffer, dst_buffer, 1, &copy_region);
 }
 
 bool rhr::render::tools::check_device_extension_support(vk::physical_device* device)
@@ -472,11 +484,11 @@ vk::image rhr::render::tools::create_texture_image(const std::string& texture_pa
 	vkUnmapMemory(rhr::render::device::device_master, staging_buffer_memory);
 
 	vk::image image;
-	create_image(texture_width, texture_height, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *texture_image_memory);
+	create_image(texture_width, texture_height, rhr::render::swap_chain::swap_chain_image_format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *texture_image_memory);
 
-	transition_image_layout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	transition_image_layout(image, rhr::render::swap_chain::swap_chain_image_format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copy_buffer_to_image(staging_buffer, image, static_cast<u32>(texture_width), static_cast<u32>(texture_height));
-	transition_image_layout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	transition_image_layout(image, rhr::render::swap_chain::swap_chain_image_format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	vkDestroyBuffer(rhr::render::device::device_master, staging_buffer, nullptr);
 	vkFreeMemory(rhr::render::device::device_master, staging_buffer_memory, nullptr);
@@ -511,11 +523,11 @@ vk::image rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pi
 	vkUnmapMemory(rhr::render::device::device_master, staging_buffer_memory);
 
 	vk::image image;
-	create_image(size.x, size.y, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *texture_image_memory);
+	create_image(size.x, size.y, rhr::render::swap_chain::swap_chain_image_format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, *texture_image_memory);
 
-	transition_image_layout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	transition_image_layout(image, rhr::render::swap_chain::swap_chain_image_format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copy_buffer_to_image(staging_buffer, image, size.x, size.y);
-	transition_image_layout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+	transition_image_layout(image, rhr::render::swap_chain::swap_chain_image_format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 	vkDestroyBuffer(rhr::render::device::device_master, staging_buffer, nullptr);
 	vkFreeMemory(rhr::render::device::device_master, staging_buffer_memory, nullptr);
@@ -650,7 +662,7 @@ vk::surface_format_khr rhr::render::tools::choose_swap_surface_format(const std:
 {
 	for (const auto& available_format : available_formats)
 	{
-		if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM && available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		if (available_format.format == rhr::render::swap_chain::swap_chain_image_format && available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 		{
 			return available_format;
 		}
@@ -737,4 +749,5 @@ VKAPI_ATTR vk::bool32 VKAPI_CALL rhr::render::tools::debug_callback(VkDebugUtils
 }
 
 std::vector<const char*> rhr::render::tools::validation_layers;
+std::vector<vk::layer_properties> rhr::render::tools::available_validation_layers;
 std::vector<const char*> rhr::render::tools::device_extensions;

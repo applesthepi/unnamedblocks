@@ -136,6 +136,44 @@ typedef VkShaderModule shader_module;
 typedef VkRenderPassBeginInfo render_pass_begin_info;
 }
 
+// https://stackoverflow.com/a/9864472
+
+#define GLFW_TMP template <typename... Args>
+#define GLFW_FARG std::forward<Args>(args)...
+#define GLFW_ARG  Args&&... args
+
+namespace glfw
+{
+// API Creation.
+GLFW_TMP auto create_window(GLFW_ARG) -> decltype(glfwCreateWindow(GLFW_FARG))
+{ return glfwCreateWindow(GLFW_FARG); }
+
+// API Getters.
+GLFW_TMP auto set_framebuffer_size_callback(GLFW_ARG) -> decltype(glfwSetFramebufferSizeCallback(GLFW_FARG))
+{ return glfwSetFramebufferSizeCallback(GLFW_FARG); }
+GLFW_TMP auto set_key_callback(GLFW_ARG) -> decltype(glfwSetKeyCallback(GLFW_FARG))
+{ return glfwSetKeyCallback(GLFW_FARG); }
+GLFW_TMP auto set_mouse_button_callback(GLFW_ARG) -> decltype(glfwSetMouseButtonCallback(GLFW_FARG))
+{ return glfwSetMouseButtonCallback(GLFW_FARG); }
+GLFW_TMP auto set_scroll_callback(GLFW_ARG) -> decltype(glfwSetScrollCallback(GLFW_FARG))
+{ return glfwSetScrollCallback(GLFW_FARG); }
+GLFW_TMP auto set_cursor_position_callback(GLFW_ARG) -> decltype(glfwSetCursorPosCallback(GLFW_FARG))
+{ return glfwSetCursorPosCallback(GLFW_FARG); }
+GLFW_TMP auto set_window_position_callback(GLFW_ARG) -> decltype(glfwSetWindowPosCallback(GLFW_FARG))
+{ return glfwSetWindowPosCallback(GLFW_FARG); }
+GLFW_TMP auto set_window_user_pointer(GLFW_ARG) -> decltype(glfwSetWindowUserPointer(GLFW_FARG))
+{ return glfwSetWindowUserPointer(GLFW_FARG); }
+
+// API Setters.
+GLFW_TMP auto get_window_user_pointer(GLFW_ARG) -> decltype(glfwGetWindowUserPointer(GLFW_FARG))
+{ return glfwGetWindowUserPointer(GLFW_FARG); }
+GLFW_TMP auto get_window_position(GLFW_ARG) -> decltype(glfwGetWindowPos(GLFW_FARG))
+{ return glfwGetWindowPos(GLFW_FARG); }
+
+// API Types.
+using window = GLFWwindow;
+}
+
 #undef VK_MAKE_API_VERSION
 #define VK_MAKE_API_VERSION(variant, major, minor, patch) \
     ((((u32)(variant)) << 29) | (((u32)(major)) << 22) | (((u32)(minor)) << 12) | ((u32)(patch)))

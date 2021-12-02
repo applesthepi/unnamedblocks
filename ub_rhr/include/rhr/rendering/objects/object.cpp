@@ -295,7 +295,7 @@ void rhr::render::object::object::on_update_buffers()
 			else if (m_texture_type == texture_type::TEXT_SHEET)
 			{
 				m_image = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_char_texture_type].image;
-				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_B8G8R8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 		}
 
@@ -327,7 +327,8 @@ void rhr::render::object::object::on_update_buffers()
 		vkUnmapMemory(rhr::render::device::device_master, m_vertex_staging_buffer_memory);
 
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertex_buffer, m_vertex_buffer_memory);
-		rhr::render::tools::copy_buffer(m_vertex_staging_buffer_memory, m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
+		rhr::render::tools::copy_buffer(m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
+
 	}
 
 	if (m_has_indices)
@@ -354,7 +355,8 @@ void rhr::render::object::object::on_update_buffers()
 		vkUnmapMemory(rhr::render::device::device_master, m_index_staging_buffer_memory);
 
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_index_buffer, m_index_buffer_memory);
-		rhr::render::tools::copy_buffer(m_index_staging_buffer_memory, m_index_staging_buffer, m_index_buffer, buffer_size);
+		rhr::render::tools::copy_buffer(m_index_staging_buffer, m_index_buffer, buffer_size);
+
 	}
 }
 

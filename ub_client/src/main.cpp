@@ -24,7 +24,6 @@
 
 static void async_setup()
 {
-	rhr::render::tools::initialize();
 	rhr::render::renderer::initialize();
 	rhr::registry::char_texture::process_fonts();
 }
@@ -34,7 +33,7 @@ static void button_callback_build_debug(void* data)
     rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
 }
 
-int main()
+i32 main()
 {
 	//clip::set_text("Hello World");
 
@@ -70,6 +69,7 @@ int main()
 
 	// TODO: async setup
 
+	rhr::render::tools::initialize();
 	rhr::render::renderer::initialize_window();
     async_setup();
     rhr::render::panel::initialize_panels();
@@ -141,26 +141,31 @@ int main()
 		{
 			int width, height;
 			glfwGetFramebufferSize(rhr::render::renderer::window, &width, &height);
+
 			if (width > 0 && height > 0)
 			{
+				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
+				rhr::render::renderer::reload_swap_chain_flag = false;
+
+				VkResult err = vkDeviceWaitIdle(rhr::render::device::device_master);
+
+				if (err != VK_SUCCESS)
+				{
+					cap::logger::error("failed to idle device during swapchain reload; vulkan error code: " + std::to_string(static_cast<i32>(err)));
+					return -1;
+				}
+
 				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
 				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
 
-				ImGui_ImplVulkan_SetMinImageCount(swap_chain_support.capabilities.minImageCount);
-				ImGui_ImplVulkanH_CreateOrResizeWindow(
+				ImGui_ImplVulkanH_DestroySystems(
 					rhr::render::device::instance,
-					rhr::render::device::physical_device,
 					rhr::render::device::device_master,
 					&rhr::render::renderer::imgui_local->data,
-					indices.graphics_family.value(),
-					nullptr,
-					width,
-					height,
-					swap_chain_support.capabilities.minImageCount
+					nullptr
 				);
 
-				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
-				rhr::render::renderer::reload_swap_chain_flag = false;
+				rhr::render::renderer::reload_swap_chain();
 
 				rhr::stack::plane::primary_plane->reload_swap_chain();
 				rhr::stack::plane::toolbar_plane->reload_swap_chain();

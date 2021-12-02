@@ -1475,6 +1475,22 @@ void ImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevic
 	ImGui_ImplVulkanH_CreateWindowCommandBuffers(physical_device, device, wd, queue_family, allocator);
 }
 
+void ImGui_ImplVulkanH_DestroySystems(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator)
+{
+	for (uint32_t i = 0; i < wd->ImageCount; i++)
+	{
+		ImGui_ImplVulkanH_DestroyFrame(device, &wd->Frames[i], allocator);
+		ImGui_ImplVulkanH_DestroyFrameSemaphores(device, &wd->FrameSemaphores[i], allocator);
+	}
+
+	vkDestroyCommandPool(device, wd->Frames[0].CommandPool, allocator);
+
+	vkDestroyPipeline(device, wd->Pipeline, allocator);
+	vkDestroyRenderPass(device, wd->RenderPass, allocator);
+	vkDestroySwapchainKHR(device, wd->Swapchain, allocator);
+	//vkDestroySurfaceKHR(instance, wd->Surface, allocator);
+}
+
 void ImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator)
 {
 	vkDeviceWaitIdle(device); // FIXME: We could wait on the Queue if we had the queue in wd-> (otherwise VulkanH functions can't use globals)
@@ -1485,6 +1501,9 @@ void ImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, ImGui
 		ImGui_ImplVulkanH_DestroyFrame(device, &wd->Frames[i], allocator);
 		ImGui_ImplVulkanH_DestroyFrameSemaphores(device, &wd->FrameSemaphores[i], allocator);
 	}
+
+	vkDestroyCommandPool(device, wd->Frames[0].CommandPool, allocator);
+
 	IM_FREE(wd->Frames);
 	IM_FREE(wd->FrameSemaphores);
 	wd->Frames = NULL;
@@ -1501,13 +1520,14 @@ void ImGui_ImplVulkanH_DestroyFrame(VkDevice device, ImGui_ImplVulkanH_Frame* fd
 {
 	vkDestroyFence(device, fd->Fence, allocator);
 	vkFreeCommandBuffers(device, fd->CommandPool, 1, &fd->CommandBuffer);
-	vkDestroyCommandPool(device, fd->CommandPool, allocator);
-	fd->Fence = VK_NULL_HANDLE;
-	fd->CommandBuffer = VK_NULL_HANDLE;
-	fd->CommandPool = VK_NULL_HANDLE;
 
 	vkDestroyImageView(device, fd->BackbufferView, allocator);
 	vkDestroyFramebuffer(device, fd->Framebuffer, allocator);
+
+	fd->Fence = VK_NULL_HANDLE;
+	fd->CommandBuffer = VK_NULL_HANDLE;
+	fd->BackbufferView = VK_NULL_HANDLE;
+	fd->Framebuffer = VK_NULL_HANDLE;
 }
 
 void ImGui_ImplVulkanH_DestroyFrameSemaphores(VkDevice device, ImGui_ImplVulkanH_FrameSemaphores* fsd, const VkAllocationCallbacks* allocator)
@@ -1574,7 +1594,7 @@ static void ImGui_ImplVulkan_CreateWindow(ImGuiViewport* viewport)
 	}
 
 	// Select Surface Format
-	const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
+	const VkFormat requestSurfaceImageFormat[] = { /*VK_FORMAT_B8G8R8A8_UNORM, */VK_FORMAT_R8G8B8A8_UNORM/*, VK_FORMAT_B8G8R8_UNORM*/, VK_FORMAT_R8G8B8_UNORM };
 	const VkColorSpaceKHR requestSurfaceColorSpace = VK_COLORSPACE_SRGB_NONLINEAR_KHR;
 	wd->SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(v->PhysicalDevice, wd->Surface, requestSurfaceImageFormat, (size_t)IM_ARRAYSIZE(requestSurfaceImageFormat), requestSurfaceColorSpace);
 

@@ -32,6 +32,9 @@ void rhr::render::device::init_instance()
 	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
 	if (rhr::render::renderer::enable_validation_layers)
 	{
+		if (!rhr::render::tools::check_validation_layer_support())
+			cap::logger::fatal("vulkan validation layers unsupported");
+
 		//		rhr::render::tools::validation_layers.push_back("VK_LAYER_LUNARG_standard_validation");
 		//		rhr::render::tools::validation_layers.push_back("VK_EXT_debug_report");
 
@@ -56,8 +59,8 @@ void rhr::render::device::init_instance()
 	std::vector<VkExtensionProperties> extensions(extension_count);
 	vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, extensions.data());
 
-	if (rhr::render::renderer::enable_validation_layers && !rhr::render::tools::check_validation_layer_support())
-		cap::logger::fatal("vulkan validation layers unsupported");
+	//if (rhr::render::renderer::enable_validation_layers && !rhr::render::tools::check_validation_layer_support())
+	//	cap::logger::fatal("vulkan validation layers unsupported");
 }
 
 void rhr::render::device::init_debug()
