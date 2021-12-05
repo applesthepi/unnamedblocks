@@ -193,7 +193,7 @@ void InputHandler::FireMouseButton(u8 button, u8 operation)
 
 	if (rhr::handler::context::is_open())
 	{
-		glm::vec<2, i32> context_position = rhr::handler::context::get_position() - rhr::render::renderer::window_position;
+		glm::vec<2, i32> context_position = rhr::handler::context::get_position() - rhr::render::renderer::get_window_primary()->get_window_position();
 		const glm::vec<2, i32>& context_bounds = rhr::handler::context::get_bounds();
 
 		if (m_MousePosition.x > context_position.x && m_MousePosition.x < context_position.x + context_bounds.x &&

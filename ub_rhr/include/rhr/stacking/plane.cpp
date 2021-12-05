@@ -583,14 +583,14 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 			pixel_position.y >= plane_primary_position.y && pixel_position.y < plane_primary_size.y + plane_primary_position.y;
 
 //		if (over_toolbar)
-//			cap::logger::debug("over toolbar");
+//			cap::logger::info("over toolbar");
 //		else
-//			cap::logger::debug("NOT over toolbar");
+//			cap::logger::info("NOT over toolbar");
 //
 //		if (over_primary)
-//			cap::logger::debug("over primary");
+//			cap::logger::info("over primary");
 //		else
-//			cap::logger::debug("NOT over primary");
+//			cap::logger::info("NOT over primary");
 
 		if (is_snap())
 		{

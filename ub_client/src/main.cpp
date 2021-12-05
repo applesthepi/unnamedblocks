@@ -3,13 +3,10 @@
 #include "mod_loader.hpp"
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/tools.hpp"
-#include "rhr/rendering/device.hpp"
 #include "rhr/rendering/panel.hpp"
 #include "rhr/handlers/category.hpp"
 #include "rhr/handlers/build.hpp"
 #include "rhr/handlers/context.hpp"
-
-//#include "clip/clip.h"
 
 #if LINUX
 #include <dlfcn.h>
@@ -84,10 +81,10 @@ i32 main()
 	run();
 	rhr::handler::category::populate();
 
-	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::window_size, false);
+	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
 	rhr::stack::plane::primary_plane->set_size_max();
 
-	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::window_size, false);
+	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
 	rhr::stack::plane::toolbar_plane->set_size_max();
 
 	// default blocks
@@ -127,27 +124,28 @@ i32 main()
 	static glm::vec<2, i32> last_plane_position = { 0, 0 };
 	static glm::vec<2, i32> window_position = { 0, 0 };
 
-	glfwGetWindowPos(rhr::render::renderer::window, &rhr::render::renderer::window_position.x, &rhr::render::renderer::window_position.y);
+	glfwGetWindowPos(rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
+	rhr::render::renderer::get_window_primary()->set_window_position(window_position);
 
-	while (!glfwWindowShouldClose(rhr::render::renderer::window))
+	while (!glfwWindowShouldClose(rhr::render::renderer::get_window_primary()->get_window()))
 	{
 		// TODO: config
 //		std::this_thread::sleep_for(std::chrono::milliseconds(6 /* 144fps */));
 
 		glfwPollEvents();
-		glfwGetWindowPos(rhr::render::renderer::window, &window_position.x, &window_position.y);
+		glfwGetWindowPos(rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
 
-		if (rhr::render::renderer::reload_swap_chain_flag)
+		if (rhr::render::renderer::get_window_primary()->get_swapchain_recreation_flag())
 		{
 			int width, height;
-			glfwGetFramebufferSize(rhr::render::renderer::window, &width, &height);
+			glfwGetFramebufferSize(rhr::render::renderer::get_window_primary()->get_window(), &width, &height);
 
 			if (width > 0 && height > 0)
 			{
 				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
-				rhr::render::renderer::reload_swap_chain_flag = false;
+				rhr::render::renderer::get_window_primary()->flag_clear_swapchain_recreation();
 
-				VkResult err = vkDeviceWaitIdle(rhr::render::device::device_master);
+				VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
 
 				if (err != VK_SUCCESS)
 				{
@@ -155,12 +153,12 @@ i32 main()
 					return -1;
 				}
 
-				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
-				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &rhr::render::renderer::surface);
+				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(rhr::render::renderer::get_window_primary()->get_physical_device(), rhr::render::renderer::get_window_primary()->get_surface());
+				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(rhr::render::renderer::get_window_primary()->get_physical_device(), rhr::render::renderer::get_window_primary()->get_surface());
 
 				ImGui_ImplVulkanH_DestroySystems(
-					rhr::render::device::instance,
-					rhr::render::device::device_master,
+					*rhr::render::renderer::get_window_primary()->get_instance(),
+					*rhr::render::renderer::get_window_primary()->get_device(),
 					&rhr::render::renderer::imgui_local->data,
 					nullptr
 				);
@@ -170,7 +168,7 @@ i32 main()
 				rhr::stack::plane::primary_plane->reload_swap_chain();
 				rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
-				rhr::render::renderer::reload_layer_swap_chains();
+				//rhr::render::renderer::reload_layer_swap_chains();
 			}
 		}
 
@@ -233,7 +231,7 @@ i32 main()
 			ImGui::End();
 		}
 #endif
-        cap::logger::debug("rhr::render::renderer::render_pass_setup();");
+        //cap::logger::info("rhr::render::renderer::render_pass_setup();");
 		rhr::render::renderer::render_pass_setup();
 
 		rhr::render::panel::run_imgui();

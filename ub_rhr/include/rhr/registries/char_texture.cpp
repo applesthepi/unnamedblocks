@@ -101,7 +101,7 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 #endif
 
 		if (i == 'A')
-			cap::logger::debug(std::to_string(map.width) + ", " + std::to_string(map.rows));
+			cap::logger::info(std::to_string(map.width) + ", " + std::to_string(map.rows));
 
 		u8* char_image = (u8*)malloc(map.width * map.rows * 4);
 		glm::vec<4, u8> fill_color_bytes;
@@ -191,7 +191,7 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 
 rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_texture_map(u16 size)
 {
-//	cap::logger::debug("size: " + std::to_string(size));
+//	cap::logger::info("size: " + std::to_string(size));
 
 	for (auto font : m_texture_maps)
 	{
@@ -208,7 +208,7 @@ rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_textu
 	{
 		if (font->texture_size == size)
 		{
-			cap::logger::debug("successfuly generated char texture of size: " + std::to_string(size));
+			cap::logger::info("successfuly generated char texture of size: " + std::to_string(size));
 			return font;
 		}
 	}

@@ -54,7 +54,7 @@ public:
 	static void initialize();
 
 	///
-	static std::unique_ptr<rhr::render::components::window>& get_window_primary();
+	static std::unique_ptr<rhr::render::component::window>& get_window_primary();
 
 	///
 	static void reload_swap_chain();
@@ -81,36 +81,6 @@ public:
 	static void frame_present();
 
 	///
-	static void clean_up_swap_chain();
-
-	///
-	static void clean_up();
-
-	///
-	static void recreate_swap_chain();
-
-	///
-	static void reload_layer_swap_chains();
-
-	///
-	static VkQueue graphics_queue;
-
-	///
-	static VkQueue present_queue;
-	
-	///
-	static VkSurfaceKHR surface;
-
-	///
-	static GLFWwindow* window;
-
-	///
-	static VkSampler texture_sampler;
-
-	///
-	static VkImageView depth_image_view;
-
-	///
 	static glm::mat4 view_matrix;
 
 	///
@@ -118,15 +88,6 @@ public:
 
 	///
 	static glm::mat4 ui_projection_matrix;
-
-	///
-	static bool vsync_enabled;
-
-	///
-	static glm::vec<2, i32> window_position;
-
-	///
-	static glm::vec<2, i32> window_size;
 
 	///
 	static u32 depth_background;
@@ -144,15 +105,6 @@ public:
 	static imgui_data* imgui_local;
 
 	///
-	static vk::present_mode_khr present_mode;
-
-	///
-	static vk::surface_format_khr surface_format;
-
-	///
-	static bool reload_swap_chain_flag;
-
-	///
 	static ImDrawData* imgui_draw_data;
 
 	///
@@ -163,28 +115,13 @@ public:
 #endif
 private:
 	///
-	static void init_descriptor_set_layout();
-
-	///
-	static void init_depth_resources();
-
-	///
-	static void init_texture_sampler();
-
-	////////////////////////////////////////////////////////////////////////////
-
-	static std::unique_ptr<rhr::render::components::window> m_window_primary;
-
-	////////////////////////////////////////////////////////////////////////////
+	static std::unique_ptr<rhr::render::component::window> m_window_primary;
 
 	///
 	static std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> m_dirty_renderable;
 
 	///
 	static std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> m_dirty_ui;
-
-	///
-//	static std::vector<std::weak_ptr<rhr::render::layer>> m_layers;
 
 	///
 	static std::shared_mutex m_dirty_mutex;

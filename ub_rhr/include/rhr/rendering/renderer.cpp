@@ -6,11 +6,6 @@
 #include "rhr/rendering/vertex.hpp"
 #include "rhr/stacking/plane.hpp"
 #include "rhr/handlers/category.hpp"
-#include "rhr/rendering/swap_chain.hpp"
-#include "rhr/rendering/render_pass.hpp"
-#include "rhr/rendering/command.hpp"
-#include "rhr/rendering/pipeline.hpp"
-#include "rhr/rendering/device.hpp"
 #include "rhr/rendering/panel.hpp"
 #include "rhr/handlers/input.hpp"
 
@@ -28,28 +23,22 @@ static void check_vk_result(VkResult err)
 		cap::logger::error("vulkan error code \"" + std::to_string(err) + "\"");
 }
 
-
-
 vk::image depthImage;
 vk::device_memory depthImageMemory;
 
 void rhr::render::renderer::initialize_window()
 {
     glfwInit();
-
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-
-    m_window_primary = std::make_unique<rhr::render::components::window>(std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720));
-
-	view_matrix = glm::mat4(1.0);
-	projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
+    m_window_primary = std::make_unique<rhr::render::component::window>(std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720));
 }
-
-//static std::shared_ptr<vui::RenderRectangle> testObject = std::make_shared<vui::RenderRectangle>();
 
 void rhr::render::renderer::initialize()
 {
+	view_matrix = glm::mat4(1.0);
+	projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
+
+	m_window_primary->initialize_components();
+
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
@@ -120,27 +109,14 @@ void rhr::render::renderer::initialize()
 	initialize_imgui(true);
 }
 
-std::unique_ptr<rhr::render::components::window>& rhr::render::renderer::get_window_primary()
+std::unique_ptr<rhr::render::component::window>& rhr::render::renderer::get_window_primary()
 {
 	return m_window_primary;
 }
 
 void rhr::render::renderer::reload_swap_chain()
 {
-	rhr::render::swap_chain::init_swap_chain();
-	rhr::render::swap_chain::init_image_views();
-	rhr::render::render_pass::init_render_pass();
-	init_descriptor_set_layout();
-	rhr::render::pipeline::initialize();
-	rhr::render::command::init_command_pool();
-	init_depth_resources();
-	rhr::render::swap_chain::init_frame_buffers();
-	init_texture_sampler();
-	rhr::render::command::init_descriptor_pool();
-	rhr::render::command::init_command_buffers();
-	rhr::render::swap_chain::init_sync_objects();
 
-	initialize_imgui(false);
 }
 
 void rhr::render::renderer::initialize_imgui(bool first_time)
@@ -148,63 +124,63 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGuiStyle& style = ImGui::GetStyle();
 
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &surface);
-	u32 imageCount = swap_chain_support.capabilities.minImageCount + 1;
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(m_window_primary->get_physical_device(), m_window_primary->get_surface());
+	u8 image_count = static_cast<u8>(swap_chain_support.capabilities.minImageCount + 1);
 
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &surface);
+	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(m_window_primary->get_physical_device(), m_window_primary->get_surface());
 	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
 
 	if (first_time)
 	{
 		imgui_local = new imgui_data(io, style);
 
-		imgui_local->frames = new ImGui_ImplVulkanH_Frame[imageCount];
-		imgui_local->semaphores = new ImGui_ImplVulkanH_FrameSemaphores[imageCount];
+		imgui_local->frames = new ImGui_ImplVulkanH_Frame[static_cast<usize>(image_count)];
+		imgui_local->semaphores = new ImGui_ImplVulkanH_FrameSemaphores[static_cast<usize>(image_count)];
 	}
 
-	for (u32 i = 0; i < imageCount; i++)
+	for (u8 i = 0; i < image_count; i++)
 	{
-		imgui_local->frames[i].CommandPool = rhr::render::command::command_pool;
-		imgui_local->frames[i].CommandBuffer = rhr::render::command::command_buffer_master[i];
-		imgui_local->frames[i].CommandBufferPanel = rhr::render::command::command_buffer_panels[i];
-		imgui_local->frames[i].Fence = rhr::render::swap_chain::in_flight_fences[i];
-		imgui_local->frames[i].Backbuffer = rhr::render::swap_chain::swap_chain_images[i];
-		imgui_local->frames[i].BackbufferView = rhr::render::swap_chain::swap_chain_image_views[i];
-		imgui_local->frames[i].Framebuffer = rhr::render::swap_chain::swap_chain_frame_buffers[i];
+		imgui_local->frames[i].CommandPool = *m_window_primary->get_command_pool();
+		imgui_local->frames[i].CommandBuffer = *m_window_primary->get_master_command_buffer(i);
+		imgui_local->frames[i].CommandBufferPanel = *m_window_primary->get_panel_command_buffer(i);
+		imgui_local->frames[i].Fence = m_window_primary->get_frame(i)->fence_in_flight;
+		imgui_local->frames[i].Backbuffer = m_window_primary->get_frame(i)->frame_image;
+		imgui_local->frames[i].BackbufferView = m_window_primary->get_frame(i)->frame_view;
+		imgui_local->frames[i].Framebuffer = m_window_primary->get_frame(i)->frame_buffer;
 	}
 
-	for (u32 i = 0; i < imageCount; i++)
+	for (u32 i = 0; i < image_count; i++)
 	{
-		imgui_local->semaphores[i].ImageAcquiredSemaphore = rhr::render::swap_chain::image_available_semaphores[i];
-		imgui_local->semaphores[i].RenderCompleteSemaphore = rhr::render::swap_chain::render_finished_semaphores[i];
+		imgui_local->semaphores[i].ImageAcquiredSemaphore = m_window_primary->get_frame(i)->semaphore_image;
+		imgui_local->semaphores[i].RenderCompleteSemaphore = m_window_primary->get_frame(i)->semaphore_finished;
 	}
 
-	imgui_local->data.Width = rhr::render::renderer::window_size.x;
-	imgui_local->data.Height = rhr::render::renderer::window_size.y;
-	imgui_local->data.Swapchain = rhr::render::swap_chain::swapchain_khr;
-	imgui_local->data.Surface = surface;
-	imgui_local->data.SurfaceFormat = surface_format;
-	imgui_local->data.PresentMode = present_mode;
-	imgui_local->data.RenderPass = rhr::render::render_pass::render_pass_master;
-	imgui_local->data.Pipeline = rhr::render::pipeline::get_color("master");
+	imgui_local->data.Width = m_window_primary->get_window_size().x;
+	imgui_local->data.Height = m_window_primary->get_window_size().y;
+	imgui_local->data.Swapchain = *m_window_primary->get_swapchain();
+	imgui_local->data.Surface = *m_window_primary->get_surface();
+	imgui_local->data.SurfaceFormat = *m_window_primary->get_surface_format();
+	imgui_local->data.PresentMode = *m_window_primary->get_present_mode();
+	imgui_local->data.RenderPass = *m_window_primary->get_render_pass(0);
+	imgui_local->data.Pipeline = *m_window_primary->get_color_pipeline("master");
 //	imgui_local->data.ClearEnable = false;
 //	imgui_local->data.ClearValue = VkClearValue(0.0f, 0.0f, 0.0f, 1.0f);
 	imgui_local->data.FrameIndex = 0;
-	imgui_local->data.ImageCount = rhr::render::swap_chain::swap_chain_images.size();
+	imgui_local->data.ImageCount = m_window_primary->get_framebuffer_count();
 	imgui_local->data.SemaphoreIndex = 0;
 	imgui_local->data.Frames = imgui_local->frames;
 	imgui_local->data.FrameSemaphores = imgui_local->semaphores;
 
 	ImGui_ImplVulkan_InitInfo imgui_info{
-		.Instance = rhr::render::device::instance,
-		.PhysicalDevice = rhr::render::device::physical_device,
-		.Device = rhr::render::device::device_master,
+		.Instance = *m_window_primary->get_instance(),
+		.PhysicalDevice = *m_window_primary->get_physical_device(),
+		.Device = *m_window_primary->get_device(),
 		.QueueFamily = static_cast<uint32_t>(indices.graphics_family.value()),
-		.Queue = graphics_queue,
+		.Queue = *m_window_primary->get_graphics_queue(),
 		.PipelineCache = nullptr,
-		.DescriptorPool = rhr::render::command::descriptor_pool,
+		.DescriptorPool = *m_window_primary->get_descriptor_pool(),
 		.MinImageCount = swap_chain_support.capabilities.minImageCount,
-		.ImageCount = static_cast<uint32_t>(rhr::render::swap_chain::swap_chain_images.size()),
+		.ImageCount = static_cast<uint32_t>(m_window_primary->get_framebuffer_count()),
 		.MSAASamples = VK_SAMPLE_COUNT_1_BIT,
 		.Allocator = nullptr,
 		.CheckVkResultFn = [](VkResult result) {
@@ -214,21 +190,21 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 	};
 
 	if (first_time)
-		ImGui_ImplGlfw_InitForVulkan(window, true);
+		ImGui_ImplGlfw_InitForVulkan(m_window_primary->get_window(), true);
 
-	ImGui_ImplVulkan_Init(&imgui_info, rhr::render::render_pass::render_pass_master);
+	ImGui_ImplVulkan_Init(&imgui_info, *m_window_primary->get_render_pass(0));
 
 	{
 		VkResult err;
 
-		err = vkResetCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, 0);
+		err = vkResetCommandPool(*m_window_primary->get_device(), *m_window_primary->get_command_pool(), 0);
 		check_vk_result(err);
 
 		// Use any command queue
 		VkCommandPool command_pool = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandPool;
 		VkCommandBuffer command_buffer = imgui_local->data.Frames[imgui_local->data.FrameIndex].CommandBuffer;
 
-		err = vkResetCommandPool(rhr::render::device::device_master, command_pool, 0);
+		err = vkResetCommandPool(*m_window_primary->get_device(), command_pool, 0);
 		check_vk_result(err);
 
 		VkCommandBufferBeginInfo begin_info = {};
@@ -248,10 +224,10 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 		err = vkEndCommandBuffer(command_buffer);
 		check_vk_result(err);
 
-		err = vkQueueSubmit(graphics_queue, 1, &end_info, VK_NULL_HANDLE);
+		err = vkQueueSubmit(*m_window_primary->get_graphics_queue(), 1, &end_info, VK_NULL_HANDLE);
 		check_vk_result(err);
 
-		err = vkDeviceWaitIdle(rhr::render::device::device_master);
+		err = vkDeviceWaitIdle(*m_window_primary->get_device());
 		check_vk_result(err);
 
 		ImGui_ImplVulkan_DestroyFontUploadObjects();
@@ -292,26 +268,16 @@ void rhr::render::renderer::process_dirty()
 
 void rhr::render::renderer::render_pass_setup()
 {
-	rhr::render::renderer::ui_projection_matrix = glm::ortho(0.0f, static_cast<f32>(window_size.x), 0.0f, static_cast<f32>(window_size.y), -10000.0f, 10000.0f);
+	rhr::render::renderer::ui_projection_matrix = glm::ortho(0.0f, static_cast<f32>(m_window_primary->get_window_size().x), 0.0f, static_cast<f32>(m_window_primary->get_window_size().y), -10000.0f, 10000.0f);
 
 	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
 	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
-    cap::logger::debug("vkAcquireNextImageKHR");
-    VkResult err = vkAcquireNextImageKHR(rhr::render::device::device_master, imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
+    //cap::logger::info("vkAcquireNextImageKHR");
+    VkResult err = vkAcquireNextImageKHR(*m_window_primary->get_device(), imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
-		//ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
-		//
-		//// frame sync
-		//
-		//err = vkWaitForFences(rhr::render::device::device_master, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
-		//check_vk_result(err);
-		//
-		//err = vkResetFences(rhr::render::device::device_master, 1, &fd->Fence);
-		//check_vk_result(err);
-
-		reload_swap_chain_flag = true;
+		m_window_primary->flag_swapchain_recreation();
 		return;
 	}
 
@@ -321,10 +287,10 @@ void rhr::render::renderer::render_pass_setup()
 
 	// frame sync
 
-	err = vkWaitForFences(rhr::render::device::device_master, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
+	err = vkWaitForFences(*m_window_primary->get_device(), 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
 	check_vk_result(err);
 
-	err = vkResetFences(rhr::render::device::device_master, 1, &fd->Fence);
+	err = vkResetFences(*m_window_primary->get_device(), 1, &fd->Fence);
 	check_vk_result(err);
 
 	// initialize command buffer for render
@@ -346,7 +312,7 @@ void rhr::render::renderer::render_pass_setup()
 		info.flags = 0;
 
 		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-		rhr::render::command::active_command_buffer = &(fd->CommandBuffer);
+		m_window_primary->set_active_command_buffer(imgui_local->data.FrameIndex);
 		check_vk_result(err);
 	}
 
@@ -382,14 +348,14 @@ void rhr::render::renderer::render_pass_master()
 		info.flags = 0;
 
 		err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-		rhr::render::command::active_command_buffer = &(fd->CommandBuffer);
+		m_window_primary->get_active_command_buffer() = &(fd->CommandBuffer);
 		check_vk_result(err);
 	}
 #endif
 	// seperate panel render passes from final render pass
 
 //	vkCmdPipelineBarrier(
-//		*rhr::render::command::active_command_buffer,
+//		*m_window_primary->get_active_command_buffer(),
 //		VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
 //		VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT,
 //		0,
@@ -401,7 +367,7 @@ void rhr::render::renderer::render_pass_master()
 //		nullptr
 //	);
 
-	rhr::render::pipeline::apply_active("master");
+	m_window_primary->apply_active_pipeline("master");
 
 	// final render pass
 
@@ -415,16 +381,16 @@ void rhr::render::renderer::render_pass_master()
 		info.clearValueCount = clear_values.size();
 		info.pClearValues = clear_values.data();
 
-//		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
+//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
 
-		vkCmdBeginRenderPass(*rhr::render::command::active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, *rhr::render::command::active_command_buffer);
+		vkCmdBeginRenderPass(*m_window_primary->get_active_command_buffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
+		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, *m_window_primary->get_active_command_buffer());
 
-//		vkCmdBindPipeline(*rhr::render::command::active_command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
+//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
 
 		rhr::render::panel::run_master_render_pass();
 //		rhr::stack::plane::primary_plane->render();
-		vkCmdEndRenderPass(*rhr::render::command::active_command_buffer);
+		vkCmdEndRenderPass(*m_window_primary->get_active_command_buffer());
 	}
 
 	// submit command buffer and queue to gpu
@@ -449,16 +415,13 @@ void rhr::render::renderer::render_pass_master()
 		err = vkEndCommandBuffer(fd->CommandBuffer);
 		check_vk_result(err);
 
-		err = vkQueueSubmit(graphics_queue, 1, &info, fd->Fence);
+		err = vkQueueSubmit(*m_window_primary->get_graphics_queue(), 1, &info, fd->Fence);
 		check_vk_result(err);
 	}
 }
 
 void rhr::render::renderer::frame_present()
 {
-	if (reload_swap_chain_flag)
-		return;
-	
 	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 
 	VkPresentInfoKHR info = {};
@@ -469,254 +432,28 @@ void rhr::render::renderer::frame_present()
 	info.pSwapchains = &imgui_local->data.Swapchain;
 	info.pImageIndices = &imgui_local->data.FrameIndex;
 
-	VkResult err = vkQueuePresentKHR(graphics_queue, &info);
+	VkResult err = vkQueuePresentKHR(*m_window_primary->get_graphics_queue(), &info);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
-		reload_swap_chain_flag = true;
+		m_window_primary->flag_swapchain_recreation();
 		return;
 	}
 
-	err = vkQueueWaitIdle(graphics_queue);
+	err = vkQueueWaitIdle(*m_window_primary->get_graphics_queue());
 	check_vk_result(err);
 
-	err = vkResetCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, 0);
+	err = vkResetCommandPool(*m_window_primary->get_device(), *m_window_primary->get_command_pool(), 0);
 	check_vk_result(err);
 
 	imgui_local->data.SemaphoreIndex = (imgui_local->data.SemaphoreIndex + 1) % imgui_local->data.ImageCount;
 }
 
-void rhr::render::renderer::clean_up_swap_chain()
-{
-//	vkDestroyImageView(rhr::render::device::device_master, depth_image_view, nullptr);
-//	vkDestroyImage(rhr::render::device::device_master, depthImage, nullptr);
-//	vkFreeMemory(rhr::render::device::device_master, depthImageMemory, nullptr);
-//
-//	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_frame_buffers.size(); i++)
-//		vkDestroyFramebuffer(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_frame_buffers[i], nullptr);
-//
-//	vkFreeCommandBuffers(rhr::render::device::device_master, rhr::render::command::command_pool, static_cast<u32>(rhr::render::command::command_buffers.size()), rhr::render::command::command_buffers.data());
-//
-//	//vkDestroyPipeline(Device, BlocksPipeline, nullptr);
-//	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline, nullptr);
-//	vkDestroyPipeline(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline, nullptr);
-//
-////	vkDestroyPipelineLayout(device, rhr::render::pipeline::blocks_pipeline_layout, nullptr);
-//	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_pipeline_layout, nullptr);
-//	vkDestroyPipelineLayout(rhr::render::device::device_master, rhr::render::pipeline::ui_texture_pipeline_layout, nullptr);
-//
-//	vkDestroyRenderPass(rhr::render::device::device_master, rhr::render::render_pass::render_pass_master, nullptr);
-//
-//	for (usize i = 0; i < rhr::render::swap_chain::swap_chain_image_views.size(); i++)
-//		vkDestroyImageView(rhr::render::device::device_master, rhr::render::swap_chain::swap_chain_image_views[i], nullptr);
-//
-//	vkDestroySwapchainKHR(rhr::render::device::device_master, rhr::render::swap_chain::swapchain_khr, nullptr);
-//
-//	//for (usize i = 0; i < m_SwapChainImages.size(); i++)
-//	//{
-//	//	vkDestroyBuffer(m_Device, m_UniformBuffers[i], nullptr);
-//	//	vkFreeMemory(m_Device, m_UniformBuffersMemory[i], nullptr);
-//	//}
-//
-//	vkDestroyDescriptorPool(rhr::render::device::device_master, rhr::render::command::descriptor_pool, nullptr);
-}
-
-void rhr::render::renderer::clean_up()
-{
-	clean_up_swap_chain();
-
-	ImGui_ImplVulkan_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-	vkDestroySampler(rhr::render::device::device_master, texture_sampler, nullptr);
-	//vkDestroyImageView(m_Device, m_TextureImageView, nullptr);
-
-	//vkDestroyImage(m_Device, m_TextureImage, nullptr);
-	//vkFreeMemory(m_Device, m_TextureImageMemory, nullptr);
-
-	vkDestroyDescriptorSetLayout(rhr::render::device::device_master, rhr::render::command::descriptor_set_layout, nullptr);
-
-	//vkDestroyBuffer(m_Device, m_IndexBuffer, nullptr);
-	//vkFreeMemory(m_Device, m_IndexBufferMemory, nullptr);
-
-	//vkDestroyBuffer(m_Device, m_VertexBuffer, nullptr);
-	//vkFreeMemory(m_Device, vertexBufferMemory, nullptr);
-
-	for (usize i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-	{
-		vkDestroySemaphore(rhr::render::device::device_master, rhr::render::swap_chain::render_finished_semaphores[i], nullptr);
-		vkDestroySemaphore(rhr::render::device::device_master, rhr::render::swap_chain::image_available_semaphores[i], nullptr);
-		vkDestroyFence(rhr::render::device::device_master, rhr::render::swap_chain::in_flight_fences[i], nullptr);
-	}
-
-	vkDestroyCommandPool(rhr::render::device::device_master, rhr::render::command::command_pool, nullptr);
-
-	vkDestroyDevice(rhr::render::device::device_master, nullptr);
-
-	if (enable_validation_layers)
-		rhr::render::tools::destroy_debug_utils_message_ext(&rhr::render::device::instance, &rhr::render::device::debug_messenger, nullptr);
-
-	vkDestroySurfaceKHR(rhr::render::device::instance, surface, nullptr);
-	vkDestroyInstance(rhr::render::device::instance, nullptr);
-
-	glfwDestroyWindow(window);
-
-	glfwTerminate();
-}
-
-void rhr::render::renderer::recreate_swap_chain()
-{
-	i32 width = 0;
-	i32 height = 0;
-	glfwGetFramebufferSize(window, &width, &height);
-
-	while (width == 0 || height == 0)
-	{
-		glfwGetFramebufferSize(window, &width, &height);
-		glfwWaitEvents();
-	}
-
-	vkDeviceWaitIdle(rhr::render::device::device_master);
-
-	clean_up_swap_chain();
-
-	rhr::render::swap_chain::init_swap_chain();
-	rhr::render::swap_chain::init_image_views();
-	rhr::render::render_pass::init_render_pass();
-	rhr::render::pipeline::initialize();
-	init_depth_resources();
-	rhr::render::swap_chain::init_frame_buffers();
-	rhr::render::command::init_descriptor_pool();
-	rhr::render::command::init_command_buffers();
-	rhr::render::swap_chain::init_sync_objects();
-
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(&rhr::render::device::physical_device, &surface);
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&rhr::render::device::physical_device, &surface);
-
-	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };
-
-	imgui_local->data.Width = width;
-	imgui_local->data.Height = height;
-
-	ImGui_ImplVulkan_SetMinImageCount(swap_chain_support.capabilities.minImageCount);
-	ImGui_ImplVulkanH_CreateOrResizeWindow(
-		rhr::render::device::instance,
-		rhr::render::device::physical_device,
-		rhr::render::device::device_master,
-		&imgui_local->data,
-		static_cast<u32>(indices.graphics_family.value()),
-		nullptr,
-		width,
-		height,
-		swap_chain_support.capabilities.minImageCount
-		);
-}
-
-void rhr::render::renderer::reload_layer_swap_chains()
-{
-//	bool erased = false;
-//
-//	for (usize i = 0; i < m_layers.size(); i++)
-//	{
-//		if (erased)
-//		{
-//			erased = false;
-//			i--;
-//		}
-//
-//		if (auto layer = m_layers[i].lock())
-//			layer->reload_swap_chain();
-//		else
-//		{
-//			m_layers.erase(m_layers.begin() + i);
-//			erased = true;
-//		}
-//	}
-//
-//	rhr::handler::category::reload_swap_chain();
-}
-
-void rhr::render::renderer::init_descriptor_set_layout()
-{
-	VkDescriptorSetLayoutBinding ubo_layout_binding{};
-	ubo_layout_binding.binding = 0;
-	ubo_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	ubo_layout_binding.descriptorCount = 1;
-	ubo_layout_binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	ubo_layout_binding.pImmutableSamplers = nullptr; // Optional
-
-	VkDescriptorSetLayoutBinding sampler_layout_binding{};
-	sampler_layout_binding.binding = 1;
-	sampler_layout_binding.descriptorCount = 1;
-	sampler_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	sampler_layout_binding.pImmutableSamplers = nullptr;
-	sampler_layout_binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-	std::array<VkDescriptorSetLayoutBinding, 2> bindings = { ubo_layout_binding, sampler_layout_binding };
-	VkDescriptorSetLayoutCreateInfo layout_info{};
-	layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layout_info.bindingCount = static_cast<u32>(bindings.size());
-	layout_info.pBindings = bindings.data();
-
-	if (vkCreateDescriptorSetLayout(rhr::render::device::device_master, &layout_info, nullptr, &rhr::render::command::descriptor_set_layout) != VK_SUCCESS)
-		cap::logger::fatal("failed to set descriptor layout");
-}
-
-void rhr::render::renderer::init_depth_resources()
-{
-//	VkFormat depthFormat = rhr::render::tools::find_depth_format();
-//	rhr::render::tools::create_image(rhr::render::swap_chain::swap_chain_extent.width, rhr::render::swap_chain::swap_chain_extent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
-//	depth_image_view = rhr::render::tools::create_image_view(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
-//	rhr::render::tools::transition_image_layout(depthImage, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-}
-
-void rhr::render::renderer::init_texture_sampler()
-{
-	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(rhr::render::device::physical_device, &properties);
-
-	VkSamplerCreateInfo sampler_info{};
-	sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	sampler_info.magFilter = VK_FILTER_NEAREST;
-	sampler_info.minFilter = VK_FILTER_NEAREST;
-	sampler_info.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	sampler_info.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	sampler_info.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-
-	sampler_info.anisotropyEnable = VK_TRUE;
-	sampler_info.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-	sampler_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-	sampler_info.unnormalizedCoordinates = VK_FALSE;
-	sampler_info.compareEnable = VK_FALSE;
-	sampler_info.compareOp = VK_COMPARE_OP_ALWAYS;
-
-	sampler_info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-	sampler_info.mipLodBias = 0.0f;
-	sampler_info.minLod = 0.0f;
-	sampler_info.maxLod = 0.0f;
-
-	if (vkCreateSampler(rhr::render::device::device_master, &sampler_info, nullptr, &texture_sampler) != VK_SUCCESS)
-		cap::logger::fatal("failed to create texture sampler");
-}
-
-VkQueue rhr::render::renderer::graphics_queue;
-VkQueue rhr::render::renderer::present_queue;
-VkSurfaceKHR rhr::render::renderer::surface;
-GLFWwindow* rhr::render::renderer::window;
-VkSampler rhr::render::renderer::texture_sampler;
-VkImageView rhr::render::renderer::depth_image_view;
 glm::mat4 rhr::render::renderer::view_matrix;
 glm::mat4 rhr::render::renderer::projection_matrix;
 glm::mat4 rhr::render::renderer::ui_projection_matrix;
-bool rhr::render::renderer::vsync_enabled;
-glm::vec<2, i32> rhr::render::renderer::window_position;
-glm::vec<2, i32> rhr::render::renderer::window_size;
 
 rhr::render::renderer::imgui_data* rhr::render::renderer::imgui_local;
-vk::present_mode_khr rhr::render::renderer::present_mode;
-vk::surface_format_khr rhr::render::renderer::surface_format;
-bool rhr::render::renderer::reload_swap_chain_flag = false;
 ImDrawData* rhr::render::renderer::imgui_draw_data;
 
 u32 rhr::render::renderer::depth_background = 10;
@@ -732,7 +469,7 @@ u32 rhr::render::renderer::depth_ui_text = 55;
 
 ////////////////////////////////////////////////////////////////////////////
 
-std::unique_ptr<rhr::render::components::window> rhr::render::renderer::m_window_primary;
+std::unique_ptr<rhr::render::component::window> rhr::render::renderer::m_window_primary;
 
 ////////////////////////////////////////////////////////////////////////////
 

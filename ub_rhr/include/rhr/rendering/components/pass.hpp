@@ -11,6 +11,9 @@ class pass
 public:
 	pass();
 	~pass();
+
+	///
+	vk::render_pass& get_render_pass();
 private:
 	///
 	vk::render_pass m_render_pass;

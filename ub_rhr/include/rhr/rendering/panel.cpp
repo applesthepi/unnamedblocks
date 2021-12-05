@@ -1,12 +1,7 @@
 #include "panel.hpp"
 
-#include "rhr/rendering/swap_chain.hpp"
-#include "rhr/rendering/device.hpp"
 #include "rhr/rendering/tools.hpp"
 #include "rhr/rendering/renderer.hpp"
-#include "rhr/rendering/command.hpp"
-#include "rhr/rendering/render_pass.hpp"
-#include "rhr/rendering/pipeline.hpp"
 #include "rhr/stacking/plane.hpp"
 
 void rhr::render::panel::create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_render_master, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size)
@@ -26,9 +21,9 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		VkImageCreateInfo image = {};
 		image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		image.imageType = VK_IMAGE_TYPE_2D;
-		image.format = VK_FORMAT_R8G8B8A8_UNORM;
-		image.extent.width = rhr::render::swap_chain::swap_chain_extent.width;
-		image.extent.height = rhr::render::swap_chain::swap_chain_extent.height;
+		image.format = VK_FORMAT_B8G8R8A8_UNORM;
+		image.extent.width = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->width;
+		image.extent.height = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->height;
 		image.extent.depth = 1;
 		image.mipLevels = 1;
 		image.arrayLayers = 1;
@@ -42,17 +37,17 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 
 		VkMemoryRequirements memReqs;
 
-		vkCreateImage(rhr::render::device::device_master, &image, nullptr, &local_data.color_image);
-		vkGetImageMemoryRequirements(rhr::render::device::device_master, local_data.color_image, &memReqs);
+		vkCreateImage(*rhr::render::renderer::get_window_primary()->get_device(), &image, nullptr, &local_data.color_image);
+		vkGetImageMemoryRequirements(*rhr::render::renderer::get_window_primary()->get_device(), local_data.color_image, &memReqs);
 		memAlloc.allocationSize = memReqs.size;
 		memAlloc.memoryTypeIndex = rhr::render::tools::find_memory_type(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		vkAllocateMemory(rhr::render::device::device_master, &memAlloc, nullptr, &local_data.color_device_memory);
-		vkBindImageMemory(rhr::render::device::device_master, local_data.color_image, local_data.color_device_memory, 0);
+		vkAllocateMemory(*rhr::render::renderer::get_window_primary()->get_device(), &memAlloc, nullptr, &local_data.color_device_memory);
+		vkBindImageMemory(*rhr::render::renderer::get_window_primary()->get_device(), local_data.color_image, local_data.color_device_memory, 0);
 
 		VkImageViewCreateInfo colorImageView = {};
 		colorImageView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		colorImageView.format = VK_FORMAT_R8G8B8A8_UNORM;
+		colorImageView.format = VK_FORMAT_B8G8R8A8_UNORM;
 		colorImageView.subresourceRange = {};
 		colorImageView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		colorImageView.subresourceRange.baseMipLevel = 0;
@@ -60,10 +55,11 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		colorImageView.subresourceRange.baseArrayLayer = 0;
 		colorImageView.subresourceRange.layerCount = 1;
 		colorImageView.image = local_data.color_image;
-		vkCreateImageView(rhr::render::device::device_master, &colorImageView, nullptr, &local_data.color_image_view);
+		vkCreateImageView(*rhr::render::renderer::get_window_primary()->get_device(), &colorImageView, nullptr, &local_data.color_image_view);
 
 		// Create sampler to sample from the attachment in the fragment shader
 		VkSamplerCreateInfo samplerInfo = {};
+		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
 		samplerInfo.magFilter = VK_FILTER_LINEAR;
 		samplerInfo.minFilter = VK_FILTER_LINEAR;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
@@ -75,7 +71,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		samplerInfo.minLod = 0.0f;
 		samplerInfo.maxLod = 1.0f;
 		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		vkCreateSampler(rhr::render::device::device_master, &samplerInfo, nullptr, &local_data.sampler);
+		vkCreateSampler(*rhr::render::renderer::get_window_primary()->get_device(), &samplerInfo, nullptr, &local_data.sampler);
 
 		// Depth stencil attachment
 //		image.format = fbDepthFormat;
@@ -105,7 +101,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 
 		std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
 		// Color attachment
-		attchmentDescriptions[0].format = VK_FORMAT_R8G8B8A8_UNORM;
+		attchmentDescriptions[0].format = VK_FORMAT_B8G8R8A8_UNORM;
 		attchmentDescriptions[0].samples = VK_SAMPLE_COUNT_1_BIT;
 		attchmentDescriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attchmentDescriptions[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -170,7 +166,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
 		render_pass_info.pDependencies = dependencies.data();
 
-		if (vkCreateRenderPass(rhr::render::device::device_master, &render_pass_info, nullptr, &local_data.render_pass) != VK_SUCCESS)
+		if (vkCreateRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), &render_pass_info, nullptr, &local_data.render_pass) != VK_SUCCESS)
 			cap::logger::fatal("failed to create render pass");
 	}
 
@@ -228,18 +224,18 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 	frame_buffer_info.renderPass = local_data.render_pass;
 	frame_buffer_info.attachmentCount = static_cast<u32>(attachments.size());
 	frame_buffer_info.pAttachments = attachments.data();
-	frame_buffer_info.width = rhr::render::swap_chain::swap_chain_extent.width;
-	frame_buffer_info.height = rhr::render::swap_chain::swap_chain_extent.height;
+	frame_buffer_info.width = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->width;
+	frame_buffer_info.height = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->height;
 	frame_buffer_info.layers = 1;
 
-	if (vkCreateFramebuffer(rhr::render::device::device_master, &frame_buffer_info, nullptr, &local_data.frame_buffer) != VK_SUCCESS)
+	if (vkCreateFramebuffer(*rhr::render::renderer::get_window_primary()->get_device(), &frame_buffer_info, nullptr, &local_data.frame_buffer) != VK_SUCCESS)
 		cap::logger::fatal("failed to create frame buffers");
 
 	// create panel texture sampler
 
 	{
 		VkPhysicalDeviceProperties properties{};
-		vkGetPhysicalDeviceProperties(rhr::render::device::physical_device, &properties);
+		vkGetPhysicalDeviceProperties(*rhr::render::renderer::get_window_primary()->get_physical_device(), &properties);
 
 		VkSamplerCreateInfo sampler_info{};
 		sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -261,7 +257,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		sampler_info.minLod = 0.0f;
 		sampler_info.maxLod = 0.0f;
 
-		if (vkCreateSampler(rhr::render::device::device_master, &sampler_info, nullptr, &local_data.sampler) != VK_SUCCESS)
+		if (vkCreateSampler(*rhr::render::renderer::get_window_primary()->get_device(), &sampler_info, nullptr, &local_data.sampler) != VK_SUCCESS)
 			cap::logger::fatal("failed to create texture sampler");
 	}
 
@@ -277,7 +273,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		local_data.descriptor.imageLayout
 	);
 
-	rhr::render::pipeline::register_("panel_" + id, "ui", "ui_texture", &local_data.render_pass);
+	rhr::render::renderer::get_window_primary()->register_paired_pipeline("panel_" + id, "ui", "ui_texture");
 }
 
 void rhr::render::panel::run_imgui()
@@ -310,28 +306,28 @@ void rhr::render::panel::run_imgui()
 		clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
 //		clear_values[1].depthStencil = { 1.0f, 0 };
 
-		rhr::render::pipeline::apply_active("panel_" + data.id);
+		rhr::render::renderer::get_window_primary()->apply_active_pipeline("panel_" + data.id);
 
 		{
 			VkRenderPassBeginInfo info = {};
 			info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 			info.renderPass = data.render_pass;
 			info.framebuffer = data.frame_buffer;
-			info.renderArea.extent.width = rhr::render::renderer::window_size.x;
-			info.renderArea.extent.height = rhr::render::renderer::window_size.y;
+			info.renderArea.extent.width = rhr::render::renderer::get_window_primary()->get_window_size().x;
+			info.renderArea.extent.height = rhr::render::renderer::get_window_primary()->get_window_size().y;
 			info.clearValueCount = clear_values.size();
 			info.pClearValues = clear_values.data();
 
-			vkCmdBeginRenderPass(*rhr::render::command::active_command_buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
+			vkCmdBeginRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
 			data.function_render(data);
-			vkCmdEndRenderPass(*rhr::render::command::active_command_buffer);
+			vkCmdEndRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer());
 		}
 
 		ImGui::Image(
 			data.descriptor_set,
 			{
-				static_cast<f32>(rhr::render::renderer::window_size.x),
-				static_cast<f32>(rhr::render::renderer::window_size.y)
+				static_cast<f32>(rhr::render::renderer::get_window_primary()->get_window_size().x),
+				static_cast<f32>(rhr::render::renderer::get_window_primary()->get_window_size().y)
 			}
 		);
 
@@ -359,7 +355,7 @@ void rhr::render::panel::initialize_panels()
 		},
 		[](panel::data& data)
 		{
-			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::window_position);
+			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position());
 		},
 		[](panel::data& data)
 		{
@@ -379,7 +375,7 @@ void rhr::render::panel::initialize_panels()
 		},
 		[](panel::data& data)
 		{
-			rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::window_position);
+			rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position());
 		},
 		[](panel::data& data)
 		{

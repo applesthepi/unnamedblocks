@@ -107,7 +107,7 @@ void rhr::render::object::line::ui_update_buffers()
 		static_cast<i32>(glm::sin(point_2_angle_2) * half_width)
 	};
 
-//	cap::logger::debug("point_2_top: ", point_2_left);
+//	cap::logger::info("point_2_top: ", point_2_left);
 
 	std::vector<rhr::render::vertex> vertices;
 	std::vector<u32> indices;
@@ -324,14 +324,14 @@ void rhr::render::object::line::post_color_update()
 
 void rhr::render::object::line::set_point_1(const glm::vec<2, i32>& point)
 {
-//	cap::logger::debug("set_point_1", point);
+//	cap::logger::info("set_point_1", point);
 	m_point_1 = point;
 	mark_dirty();
 }
 
 void rhr::render::object::line::set_point_2(const glm::vec<2, i32>& point)
 {
-//	cap::logger::debug("set_point_2", point);
+//	cap::logger::info("set_point_2", point);
 	m_point_2 = point;
 	mark_dirty();
 }

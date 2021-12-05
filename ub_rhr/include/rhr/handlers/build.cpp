@@ -123,7 +123,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 					try
 					{
 						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data() == "1";
-						cap::logger::debug("======================= BOOL: " + std::to_string(*dt));
+						cap::logger::info("======================= BOOL: " + std::to_string(*dt));
 					}
 					catch (const std::invalid_argument&)
 					{

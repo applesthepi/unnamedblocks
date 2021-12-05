@@ -119,7 +119,7 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 			update_cursor();
 			update_highlight();
 
-//			cap::logger::Debug("move from " + std::to_string(m_mouse_drag_start) + " to " + std::to_string(m_mouse_drag_end));
+//			cap::logger::info("move from " + std::to_string(m_mouse_drag_start) + " to " + std::to_string(m_mouse_drag_end));
 		}
 		else
 		{
@@ -273,7 +273,7 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 			if (!cursor_position_start.has_value() || !cursor_position_end.has_value())
 				return;
 #if DEBUG_FIELDS
-			cap::logger::Debug("double press");
+			cap::logger::info("double press");
 #endif
 			m_mouse_down = true;
 			m_mouse_down_data = data.value();
@@ -524,7 +524,7 @@ rhr::handler::field::update_field_position(const rhr::handler::field_data::locat
 	cell_position.y *= FIELD_CELL_SIZE;
 
 #if DEBUG_FIELDS
-	cap::logger::Debug(std::to_string(cell_position.x) + ", " + std::to_string(cell_position.y));
+	cap::logger::info(std::to_string(cell_position.x) + ", " + std::to_string(cell_position.y));
 #endif
 	if (static_cast<usize>(position.x) > cell_position.x && static_cast<usize>(position.x) < cell_position.x + FIELD_CELL_SIZE &&
 		static_cast<usize>(position.y) > cell_position.y && static_cast<usize>(position.y) < cell_position.y + FIELD_CELL_SIZE)
@@ -587,12 +587,12 @@ std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_first_d
 		std::optional<rhr::handler::field_data::data*> data = find_data(position, i);
 		if (data.has_value())
 		{
-//			cap::logger::debug("first find");
+//			cap::logger::info("first find");
 			return data;
 		}
 	}
 
-//	cap::logger::debug("nothing first find");
+//	cap::logger::info("nothing first find");
 	return std::nullopt;
 }
 
@@ -723,7 +723,7 @@ void rhr::handler::field::process_highlight(bool copy)
 	if (auto lock = m_mouse_down_data->get_text_field().lock())
 	{
 		if (copy)
-			cap::logger::debug("copy not implemented");
+			cap::logger::warn("copy not implemented");
 		else
 		{
 			if (m_mouse_drag_end > m_mouse_drag_start)
@@ -853,7 +853,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			local_guest.get_cell().x > cell_last.x || local_guest.get_cell().y > cell_last.y)
 		{
 #if DEBUG_FIELDS
-			cap::logger::Debug("popping " + std::to_string(local_guest.get_cell().x) + ", " + std::to_string(local_guest.get_cell().y));
+			cap::logger::info("popping " + std::to_string(local_guest.get_cell().x) + ", " + std::to_string(local_guest.get_cell().y));
 #endif
 			pop_data(local_guest);
 			guests.value()->erase(guests.value()->begin() + i);
@@ -875,7 +875,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 				if (guest.get_cell().x == location.get_cell().x + x && guest.get_cell().y == location.get_cell().y + y)
 				{
 #if DEBUG_FIELDS
-					cap::logger::Debug("keeping " + std::to_string(guest.get_cell().x) + ", " + std::to_string(guest.get_cell().y));
+					cap::logger::info("keeping " + std::to_string(guest.get_cell().x) + ", " + std::to_string(guest.get_cell().y));
 #endif
 					found_location = guest;
 					found = true;
@@ -944,7 +944,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			if (found)
 			{
 #if DEBUG_FIELDS
-				cap::logger::Debug("updating guest cell " + std::to_string(found_location.get_cell().x) + ", " + std::to_string(found_location.get_cell().y));
+				cap::logger::info("updating guest cell " + std::to_string(found_location.get_cell().x) + ", " + std::to_string(found_location.get_cell().y));
 #endif
 				std::optional<rhr::handler::field_data::data*> guest_data = find_data(found_location);
 				if (!guest_data.has_value())
@@ -956,7 +956,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			else if (x == 0 && y == 0)
 			{
 #if DEBUG_FIELDS
-				cap::logger::Debug("size is now " + std::to_string(data.value()->get_size().x) + ", " + std::to_string(data.value()->get_size().y));
+				cap::logger::info("size is now " + std::to_string(data.value()->get_size().x) + ", " + std::to_string(data.value()->get_size().y));
 #endif
 				data.value()->set_size(local_high - local_low);
 				data.value()->set_position(local_low);
@@ -969,7 +969,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 														  std::move(data.value()->get_text_field()), guest_location, false);
 
 #if DEBUG_FIELDS
-				cap::logger::Debug("adding cell " + std::to_string(guest_location.get_cell().x) + ", " + std::to_string(guest_location.get_cell().y));
+				cap::logger::info("adding cell " + std::to_string(guest_location.get_cell().x) + ", " + std::to_string(guest_location.get_cell().y));
 #endif
 				guests.value()->push_back(guest_location);
 				push_data(guest_location, guest_data);
@@ -1003,7 +1003,7 @@ void rhr::handler::field::remove_guests(const rhr::handler::field_data::location
 	{
 		rhr::handler::field_data::location& local_guest = guests.value()->at(i);
 #if DEBUG_FIELDS
-		cap::logger::Debug("poping " + std::to_string(local_guest.get_cell().x) + ", " + std::to_string(local_guest.get_cell().y));
+		cap::logger::info("poping " + std::to_string(local_guest.get_cell().x) + ", " + std::to_string(local_guest.get_cell().y));
 #endif
 		pop_data(local_guest);
 		guests.value()->erase(guests.value()->begin() + i);

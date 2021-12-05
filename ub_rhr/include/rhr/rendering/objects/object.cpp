@@ -2,9 +2,6 @@
 
 #include "rhr/rendering/tools.hpp"
 #include "rhr/rendering/renderer.hpp"
-#include "rhr/rendering/command.hpp"
-#include "rhr/rendering/pipeline.hpp"
-#include "rhr/rendering/device.hpp"
 #include "rhr/registries/char_texture.hpp"
 
 rhr::render::object::object::object(bool ui)
@@ -40,17 +37,6 @@ rhr::render::object::object::object(bool ui, const std::string& texture_path)
 {
 	m_texture_path = texture_path;
 }
-
-//void object::SetWeak(std::weak_ptr<IRenderable>&& weak)
-//{
-//	m_Weak = std::move(weak);
-//	m_HasWeak = true;
-//}
-
-//void object::SetPosition(const glm::vec<3, f64>& position)
-//{
-//	m_Position = position;
-//}
 
 void rhr::render::object::object::set_texture(const std::string& texture)
 {
@@ -258,22 +244,23 @@ void rhr::render::object::object::on_render()
 	if (m_ui)
 	{
 		if (m_has_texture)
-			rhr::render::pipeline::bind_texture(&m_descriptor_set);
+			rhr::render::renderer::get_window_primary()->bind_texture_pipeline(&m_descriptor_set);
 		else
-			rhr::render::pipeline::bind_color(&m_descriptor_set);
+			rhr::render::renderer::get_window_primary()->bind_color_pipeline(&m_descriptor_set);
 	}
 	else
 		cap::logger::fatal("not implemented");
 
-	vkCmdBindVertexBuffers(*rhr::render::command::active_command_buffer, 0, 1, vb, offsets);
+	vk::command_buffer* active_command_buffer = rhr::render::renderer::get_window_primary()->get_active_command_buffer();
+	vk::cmd::bind_vertex_buffers(*active_command_buffer, 0, 1, vb, offsets);
 
 	if (m_has_indices)
 	{
-		vkCmdBindIndexBuffer(*rhr::render::command::active_command_buffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
-		vkCmdDrawIndexed(*rhr::render::command::active_command_buffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
+		vk::cmd::bind_index_buffer(*active_command_buffer, m_index_buffer, 0, VK_INDEX_TYPE_UINT32);
+		vk::cmd::draw_indexed(*active_command_buffer, static_cast<u32>(m_index_count), 1, 0, 0, 0);
 	}
 	else
-		vkCmdDraw(*rhr::render::command::active_command_buffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
+		vk::cmd::draw(*active_command_buffer, static_cast<u32>(m_vertex_count), 1, 0, 0);
 }
 
 void rhr::render::object::object::on_update_buffers()
@@ -290,7 +277,7 @@ void rhr::render::object::object::on_update_buffers()
 			if (m_texture_type == texture_type::CUSTOM)
 			{
 				m_image = rhr::render::tools::create_texture_image(m_texture_path, &m_image_memory);
-				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
+				m_image_view = rhr::render::tools::create_image_view(m_image, VK_FORMAT_B8G8R8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 			else if (m_texture_type == texture_type::TEXT_SHEET)
 			{
@@ -322,9 +309,9 @@ void rhr::render::object::object::on_update_buffers()
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_vertex_staging_buffer, m_vertex_staging_buffer_memory);
 
 		void* data;
-		vkMapMemory(rhr::render::device::device_master, m_vertex_staging_buffer_memory, 0, buffer_size, 0, &data);
-		memcpy(data, m_vertices, (usize)buffer_size);
-		vkUnmapMemory(rhr::render::device::device_master, m_vertex_staging_buffer_memory);
+		vk::map_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_vertex_staging_buffer_memory, 0, buffer_size, 0, &data);
+		memcpy(data, m_vertices, static_cast<usize>(buffer_size));
+		vk::unmap_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_vertex_staging_buffer_memory);
 
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertex_buffer, m_vertex_buffer_memory);
 		rhr::render::tools::copy_buffer(m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
@@ -350,9 +337,9 @@ void rhr::render::object::object::on_update_buffers()
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, m_index_staging_buffer, m_index_staging_buffer_memory);
 
 		void* data;
-		vkMapMemory(rhr::render::device::device_master, m_index_staging_buffer_memory, 0, buffer_size, 0, &data);
-		memcpy(data, m_indices, (usize)buffer_size);
-		vkUnmapMemory(rhr::render::device::device_master, m_index_staging_buffer_memory);
+		vk::map_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_index_staging_buffer_memory, 0, buffer_size, 0, &data);
+		memcpy(data, m_indices, static_cast<usize>(buffer_size));
+		vk::unmap_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_index_staging_buffer_memory);
 
 		rhr::render::tools::create_buffer(buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_index_buffer, m_index_buffer_memory);
 		rhr::render::tools::copy_buffer(m_index_staging_buffer, m_index_buffer, buffer_size);
@@ -367,11 +354,11 @@ void rhr::render::object::object::on_reload_swap_chain()
 
 	VkDescriptorSetAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool = rhr::render::command::descriptor_pool;
+	allocInfo.descriptorPool = *rhr::render::renderer::get_window_primary()->get_descriptor_pool();
 	allocInfo.descriptorSetCount = 1;
-	allocInfo.pSetLayouts = &rhr::render::command::descriptor_set_layout;
+	allocInfo.pSetLayouts = rhr::render::renderer::get_window_primary()->get_descriptor_set_layout();
 
-	vkAllocateDescriptorSets(rhr::render::device::device_master, &allocInfo, &m_descriptor_set);
+	vkAllocateDescriptorSets(*rhr::render::renderer::get_window_primary()->get_device(), &allocInfo, &m_descriptor_set);
 
 	VkDescriptorBufferInfo bufferInfo{};
 	bufferInfo.buffer = m_uniform_buffer;
@@ -383,7 +370,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		VkDescriptorImageInfo imageInfo{};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView = m_image_view;
-		imageInfo.sampler = rhr::render::renderer::texture_sampler;
+		imageInfo.sampler = *rhr::render::renderer::get_window_primary()->get_texture_sampler();
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
 
@@ -403,7 +390,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		descriptorWrites[1].descriptorCount = 1;
 		descriptorWrites[1].pImageInfo = &imageInfo;
 
-		vkUpdateDescriptorSets(rhr::render::device::device_master, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(*rhr::render::renderer::get_window_primary()->get_device(), static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 	else
 	{
@@ -417,7 +404,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		descriptorWrites[0].descriptorCount = 1;
 		descriptorWrites[0].pBufferInfo = &bufferInfo;
 
-		vkUpdateDescriptorSets(rhr::render::device::device_master, static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(*rhr::render::renderer::get_window_primary()->get_device(), static_cast<u32>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 	}
 }
 
@@ -452,9 +439,9 @@ void rhr::render::object::object::update_uniforms(bool ui)
 	ubo.color = { 1.0f, 1.0f, 1.0f };
 
 	void* data;
-	vkMapMemory(rhr::render::device::device_master, m_uniform_buffer_memory, 0, sizeof(ubo), 0, &data);
+	vk::map_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_uniform_buffer_memory, 0, sizeof(ubo), 0, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vkUnmapMemory(rhr::render::device::device_master, m_uniform_buffer_memory);
+	vk::unmap_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_uniform_buffer_memory);
 }
 
 void rhr::render::object::object::set_queue(u8 queue)

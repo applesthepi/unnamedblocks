@@ -1,18 +1,22 @@
 #pragma once
 #include "config.h"
 
+#include "rhr/rendering/components/swapchain.hpp"
+#include "rhr/rendering/components/pipeline.hpp"
+#include "rhr/rendering/components/command_pool.hpp"
+
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 
-namespace rhr::render::components
+namespace rhr::render::component
 {
 ///
 class device
 {
 public:
-	explicit device();
+	device();
 
 	/// Needed for most operations. The window can exist before calling this, but every other vulkan operation requires
 	/// this to be called beforehand.
@@ -28,13 +32,37 @@ public:
 	vk::device& get_device();
 
 	///
+	vk::descriptor_set_layout& get_descriptor_set_layout();
+
+	///
+	vk::queue& get_graphics_queue();
+
+	///
+	vk::sampler& get_texture_sampler();
+
+	///
+	std::unique_ptr<rhr::render::component::swapchain>& get_swapchain();
+
+	///
+	std::unique_ptr<rhr::render::component::pipeline>& get_pipeline();
+
+	///
+	std::unique_ptr<rhr::render::component::command_pool>& get_command_pool();
+
+	///
 	static bool validation_layers_enabled;
 private:
 	///
-	vk::surface_khr* m_surface;
+	void initialize_descriptor_set();
+
+	///
+	void initialize_texture_sampler();
 
 	///
 	vk::instance m_instance;
+
+	///
+	vk::surface_khr* m_surface;
 
 	///
 	vk::physical_device m_physical_device;
@@ -54,7 +82,19 @@ private:
 	///
 	bool m_valid;
 
+	/// Descriptor sets are like uniforms. This is the layout for it, defining its structure.
+	vk::descriptor_set_layout m_descriptor_set_layout;
+
+	///
+	vk::sampler m_texture_sampler;
+
     ///
-    std::unique_ptr<rhr::render::components::swapchain> m_swapchain;
+	std::unique_ptr<rhr::render::component::swapchain> m_swapchain;
+
+	///
+	std::unique_ptr<rhr::render::component::pipeline> m_pipeline;
+
+	///
+	std::unique_ptr<rhr::render::component::command_pool> m_command_pool;
 };
 }

@@ -2,6 +2,7 @@
 #include "config.h"
 
 #include "rhr/rendering/components/frame.hpp"
+#include "rhr/rendering/components/pass.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
@@ -18,16 +19,40 @@ public:
 	~swapchain();
 
 	///
-	void create_swapchain();
-
-	///
-	void create_image_views();
+	void create_render_passes();
 
 	///
 	void create_framebuffers();
 
 	///
 	void create_synchronization();
+
+	///
+	vk::format& get_format();
+
+	///
+	vk::surface_format_khr& get_surface_format();
+
+	///
+	vk::present_mode_khr& get_present_mode();
+
+	///
+	vk::extent_2d& get_extent();
+
+	///
+	vk::render_pass& get_render_pass(u8 idx);
+
+	///
+	u8 get_framebuffer_count();
+
+	///
+	vk::frame_buffer& get_framebuffer(u8 idx);
+
+	///
+	vk::swapchain_khr& get_swapchain();
+
+	///
+	rhr::render::component::frame& get_frame(u8 idx);
 private:
 	///
 	std::vector<rhr::render::component::frame> m_frames;
@@ -46,5 +71,8 @@ private:
 
 	///
 	vk::present_mode_khr m_present_mode;
+
+	///
+	std::vector<rhr::render::component::pass> m_render_passes;
 };
 }

@@ -1,8 +1,6 @@
 ﻿#include "text.hpp"
 
 #include "rhr/rendering/renderer.hpp"
-#include "rhr/rendering/command.hpp"
-#include "rhr/rendering/pipeline.hpp"
 #include "rhr/rendering/vertex.hpp"
 #include "rhr/stacking/block.hpp"
 #include "rhr/registries/char_texture.hpp"
