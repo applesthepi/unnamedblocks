@@ -23,6 +23,9 @@ public:
 	void initialize(vk::surface_khr* surface);
 
 	///
+	void recreate_swapchain();
+
+	///
 	vk::instance& get_instance();
 
 	///

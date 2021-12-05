@@ -17,6 +17,9 @@ public:
 	void initialize_components();
 
 	///
+	void recreate_swapchain();
+
+	///
 	void register_paired_pipeline(
 		const std::string& name, const std::string& shader_color, const std::string& shader_texture,
 		vk::cull_mode_flags cull_mode_flags = VK_CULL_MODE_NONE

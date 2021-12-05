@@ -5,7 +5,6 @@
 
 rhr::render::component::command_pool::command_pool()
 	: m_active_command_buffer{}
-	, m_descriptor_set_layout{}
 	, m_command_pool{}
 	, m_descriptor_pool{}
 {
@@ -53,6 +52,29 @@ void rhr::render::component::command_pool::initialize_descriptor_pool()
 void rhr::render::component::command_pool::initialize_command_buffers()
 {
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+
+	if (!m_command_buffer_panels.empty())
+	{
+		vkFreeCommandBuffers(
+			*window->get_device(),
+			m_command_pool,
+			static_cast<u32>(m_command_buffer_panels.size()),
+			m_command_buffer_panels.data()
+		);
+	}
+
+	if (!m_command_buffer_master.empty())
+	{
+		vkFreeCommandBuffers(
+			*window->get_device(),
+			m_command_pool,
+			static_cast<u32>(m_command_buffer_master.size()),
+			m_command_buffer_master.data()
+		);
+	}
+
+	m_command_buffer_panels.clear();
+	m_command_buffer_master.clear();
 
 	m_command_buffer_panels.resize(static_cast<usize>(window->get_framebuffer_count()));
 	m_command_buffer_master.resize(static_cast<usize>(window->get_framebuffer_count()));
@@ -133,20 +155,20 @@ void rhr::render::component::command_pool::setup_command_buffer(vk::command_buff
 		cap::logger::fatal("failed to begin recording the command buffer during setup");
 	}
 
-	render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	render_pass_info.renderPass = *window->get_render_pass(0);
-	render_pass_info.framebuffer = *frame_buffer;
-	render_pass_info.renderArea.offset = { 0, 0 };
-	render_pass_info.renderArea.extent = *window->get_swapchain_extent();
-
-	clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
-
-	render_pass_info.clearValueCount = static_cast<u32>(clear_values.size());
-	render_pass_info.pClearValues = clear_values.data();
-
-	vk::cmd::begin_render_pass(*command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
-	vk::cmd::bind_pipeline(*command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *window->get_color_pipeline("master"));
-	vk::cmd::end_render_pass(*command_buffer);
+	//render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+	//render_pass_info.renderPass = *window->get_render_pass(0);
+	//render_pass_info.framebuffer = *frame_buffer;
+	//render_pass_info.renderArea.offset = { 0, 0 };
+	//render_pass_info.renderArea.extent = *window->get_swapchain_extent();
+	//
+	//clear_values[0].color = { 0.0f, 0.0f, 0.0f, 1.0f };
+	//
+	//render_pass_info.clearValueCount = static_cast<u32>(clear_values.size());
+	//render_pass_info.pClearValues = clear_values.data();
+	//
+	//vk::cmd::begin_render_pass(*command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
+	//vk::cmd::bind_pipeline(*command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, *window->get_color_pipeline("master"));
+	//vk::cmd::end_render_pass(*command_buffer);
 
 	if (vk::end_command_buffer(*command_buffer) != VK_SUCCESS)
 		cap::logger::fatal("failed to stop recording the command buffer during setup");

@@ -13,6 +13,7 @@ class pipeline
 {
 public:
 	pipeline();
+	~pipeline();
 
 	///
 	void apply_active_pipeline(const std::string& name);

@@ -191,6 +191,22 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 	m_command_pool->initialize_descriptor_pool();
 	m_command_pool->initialize_command_buffers();
 	m_swapchain->create_synchronization();
+
+	m_pipeline->apply_active_pipeline("master");
+}
+
+void rhr::render::component::device::recreate_swapchain()
+{
+	m_swapchain.reset(nullptr);
+	m_swapchain = std::make_unique<rhr::render::component::swapchain>();
+	m_swapchain->create_render_passes();
+
+	m_pipeline = std::make_unique<rhr::render::component::pipeline>();
+	m_swapchain->create_framebuffers();
+	m_command_pool->initialize_command_buffers();
+	m_swapchain->create_synchronization();
+
+	m_pipeline->apply_active_pipeline("master");
 }
 
 vk::instance& rhr::render::component::device::get_instance()

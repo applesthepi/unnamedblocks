@@ -66,12 +66,12 @@ private:
 		///
 		void reload_swap_chain()
 		{
-//			mod_button->reload_swap_chain();
-//			categories_render_frame->reload_swap_chain();
-//			mod_button_render_frame->reload_swap_chain();
+//			mod_button->reload_swapchain();
+//			categories_render_frame->reload_swapchain();
+//			mod_button_render_frame->reload_swapchain();
 //
 //			for (auto& button : mod_category)
-//				button->reload_swap_chain();
+//				button->reload_swapchain();
 
 			for (auto& category : mod_category_collections)
 			{

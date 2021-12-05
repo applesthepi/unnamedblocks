@@ -114,9 +114,41 @@ std::unique_ptr<rhr::render::component::window>& rhr::render::renderer::get_wind
 	return m_window_primary;
 }
 
-void rhr::render::renderer::reload_swap_chain()
+void rhr::render::renderer::reload_swapchain()
 {
+	int width = 0, height = 0;
+	glfwGetFramebufferSize(m_window_primary->get_window(), &width, &height);
 
+	while (width == 0 || height == 0)
+	{
+		glfwGetFramebufferSize(m_window_primary->get_window(), &width, &height);
+		glfwWaitEvents();
+	}
+
+	vkDeviceWaitIdle(*m_window_primary->get_device());
+
+	cap::logger::info("recreating swapchain...");
+	cap::logger::info("framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
+
+	m_window_primary->recreate_swapchain();
+	initialize_imgui(false);
+	rhr::render::panel::initialize_panels();
+
+	cap::logger::info("...recreated swapchain");
+	cap::logger::info("reloading swapchain dependent objects...");
+
+	rhr::render::renderer::imgui_local->data.FrameIndex = 0;
+	rhr::render::renderer::get_window_primary()->flag_clear_swapchain_recreation();
+
+	VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
+
+	if (err != VK_SUCCESS)
+		cap::logger::fatal("failed to idle device during swapchain reload; vulkan error code: " + std::to_string(static_cast<i32>(err)));
+
+	rhr::stack::plane::primary_plane->reload_swap_chain();
+	rhr::stack::plane::toolbar_plane->reload_swap_chain();
+
+	cap::logger::info("...reloaded swapchain dependent objects");
 }
 
 void rhr::render::renderer::initialize_imgui(bool first_time)
@@ -277,7 +309,7 @@ void rhr::render::renderer::render_pass_setup()
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
-		m_window_primary->flag_swapchain_recreation();
+		reload_swapchain();
 		return;
 	}
 
@@ -435,10 +467,7 @@ void rhr::render::renderer::frame_present()
 	VkResult err = vkQueuePresentKHR(*m_window_primary->get_graphics_queue(), &info);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-	{
-		m_window_primary->flag_swapchain_recreation();
-		return;
-	}
+		reload_swapchain();
 
 	err = vkQueueWaitIdle(*m_window_primary->get_graphics_queue());
 	check_vk_result(err);

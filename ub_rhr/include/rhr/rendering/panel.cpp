@@ -344,6 +344,8 @@ void rhr::render::panel::run_master_render_pass()
 
 void rhr::render::panel::initialize_panels()
 {
+	panels.clear();
+
 	create_panel("plane_primary",
 		[](panel::data& data)
 		{

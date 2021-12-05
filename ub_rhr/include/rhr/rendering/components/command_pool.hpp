@@ -58,9 +58,6 @@ private:
 	std::vector<vk::device_queue_create_info> m_queue_create_infos;
 
 	///
-	vk::descriptor_set_layout m_descriptor_set_layout;
-
-	///
 	vk::command_pool m_command_pool;
 
 	///

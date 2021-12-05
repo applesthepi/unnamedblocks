@@ -57,7 +57,7 @@ public:
 	static std::unique_ptr<rhr::render::component::window>& get_window_primary();
 
 	///
-	static void reload_swap_chain();
+	static void reload_swapchain();
 
 	///
 	static void initialize_imgui(bool first_time);

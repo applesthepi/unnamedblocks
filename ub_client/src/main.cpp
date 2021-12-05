@@ -136,41 +136,7 @@ i32 main()
 		glfwGetWindowPos(rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
 
 		if (rhr::render::renderer::get_window_primary()->get_swapchain_recreation_flag())
-		{
-			int width, height;
-			glfwGetFramebufferSize(rhr::render::renderer::get_window_primary()->get_window(), &width, &height);
-
-			if (width > 0 && height > 0)
-			{
-				rhr::render::renderer::imgui_local->data.FrameIndex = 0;
-				rhr::render::renderer::get_window_primary()->flag_clear_swapchain_recreation();
-
-				VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
-
-				if (err != VK_SUCCESS)
-				{
-					cap::logger::error("failed to idle device during swapchain reload; vulkan error code: " + std::to_string(static_cast<i32>(err)));
-					return -1;
-				}
-
-				rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(rhr::render::renderer::get_window_primary()->get_physical_device(), rhr::render::renderer::get_window_primary()->get_surface());
-				rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(rhr::render::renderer::get_window_primary()->get_physical_device(), rhr::render::renderer::get_window_primary()->get_surface());
-
-				ImGui_ImplVulkanH_DestroySystems(
-					*rhr::render::renderer::get_window_primary()->get_instance(),
-					*rhr::render::renderer::get_window_primary()->get_device(),
-					&rhr::render::renderer::imgui_local->data,
-					nullptr
-				);
-
-				rhr::render::renderer::reload_swap_chain();
-
-				rhr::stack::plane::primary_plane->reload_swap_chain();
-				rhr::stack::plane::toolbar_plane->reload_swap_chain();
-
-				//rhr::render::renderer::reload_layer_swap_chains();
-			}
-		}
+			rhr::render::renderer::reload_swapchain();
 
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
@@ -233,6 +199,9 @@ i32 main()
 #endif
         //cap::logger::info("rhr::render::renderer::render_pass_setup();");
 		rhr::render::renderer::render_pass_setup();
+
+		//if (rhr::render::renderer::get_window_primary()->get_swapchain_recreation_flag())
+		//	continue;
 
 		rhr::render::panel::run_imgui();
 		rhr::handler::category::render();

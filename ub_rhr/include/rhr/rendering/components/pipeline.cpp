@@ -12,6 +12,15 @@ rhr::render::component::pipeline::pipeline()
 	register_paired_pipeline("master", "ui", "ui_texture");
 }
 
+rhr::render::component::pipeline::~pipeline()
+{
+	for (auto& registered_pipeline : m_registered_pipelines)
+		vkDestroyPipeline(*rhr::render::renderer::get_window_primary()->get_device(), registered_pipeline.second, nullptr);
+
+	for (auto& registered_layout : m_registered_layouts)
+		vkDestroyPipelineLayout(*rhr::render::renderer::get_window_primary()->get_device(), registered_layout.second, nullptr);
+}
+
 void rhr::render::component::pipeline::apply_active_pipeline(const std::string& name)
 {
 	m_active_pipeline_color = m_registered_pipelines["c_" + name];

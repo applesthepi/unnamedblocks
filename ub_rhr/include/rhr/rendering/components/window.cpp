@@ -82,6 +82,11 @@ void rhr::render::component::window::initialize_components()
 	m_valid = true;
 }
 
+void rhr::render::component::window::recreate_swapchain()
+{
+	m_device->recreate_swapchain();
+}
+
 void rhr::render::component::window::bind_color_pipeline(vk::descriptor_set* descriptor_set)
 {
 	m_device->get_pipeline()->bind_color_pipeline(descriptor_set);

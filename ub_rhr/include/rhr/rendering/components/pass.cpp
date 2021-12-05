@@ -52,7 +52,7 @@ rhr::render::component::pass::pass()
 
 rhr::render::component::pass::~pass()
 {
-
+	vkDestroyRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), m_render_pass, nullptr);
 }
 
 vk::render_pass& rhr::render::component::pass::get_render_pass()

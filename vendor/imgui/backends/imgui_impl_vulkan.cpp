@@ -1074,7 +1074,7 @@ bool    ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info, VkRenderPass rend
 	IM_ASSERT(g_FunctionsLoaded && "Need to call ImGui_ImplVulkan_LoadFunctions() if IMGUI_IMPL_VULKAN_NO_PROTOTYPES or VK_NO_PROTOTYPES are set!");
 
 	ImGuiIO& io = ImGui::GetIO();
-	IM_ASSERT(io.BackendRendererUserData == NULL && "Already initialized a renderer backend!");
+	//IM_ASSERT(io.BackendRendererUserData == NULL && "Already initialized a renderer backend!");
 
 	// Setup backend capabilities flags
 	ImGui_ImplVulkan_Data* bd = IM_NEW(ImGui_ImplVulkan_Data)();

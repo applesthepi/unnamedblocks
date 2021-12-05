@@ -93,11 +93,18 @@ rhr::render::component::swapchain::swapchain()
 
 rhr::render::component::swapchain::~swapchain()
 {
+	for (auto& frame : m_frames)
+	{
+		vkDestroyFramebuffer(*rhr::render::renderer::get_window_primary()->get_device(), frame.frame_buffer, nullptr);
+		vkDestroyImageView(*rhr::render::renderer::get_window_primary()->get_device(), frame.frame_view, nullptr);
+	}
 
+	vkDestroySwapchainKHR(*rhr::render::renderer::get_window_primary()->get_device(), m_swapchain, nullptr);
 }
 
 void rhr::render::component::swapchain::create_render_passes()
 {
+	m_render_passes.clear();
 	m_render_passes.reserve(1);
 	rhr::render::component::pass& render_pass_master = m_render_passes.emplace_back();
 }
