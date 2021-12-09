@@ -53,7 +53,7 @@ bool rhr::render::tools::check_validation_layer_support()
 	available_validation_layers.resize(layer_count);
 	vkEnumerateInstanceLayerProperties(&layer_count, available_validation_layers.data());
 
-#if 1
+#if 0
 	for (const char* layer_name : validation_layers)
 	{
 		bool layer_found = false;
@@ -76,6 +76,9 @@ bool rhr::render::tools::check_validation_layer_support()
 	for (const auto& layer_properties : available_validation_layers)
 		validation_layers.push_back(layer_properties.layerName);
 #endif
+
+	for (const auto& validation_layer : validation_layers)
+		cap::logger::info("loading validation layer " + std::string(validation_layer));
 
 	return true;
 }
@@ -659,7 +662,7 @@ vk::surface_format_khr rhr::render::tools::choose_swap_surface_format(const std:
 {
 	for (const auto& available_format : available_formats)
 	{
-		if (/*available_format.format == VK_FORMAT_R8G8B8A8_UNORM && */available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+		if (available_format.format == VK_FORMAT_B8G8R8A8_UNORM)// && */available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 			return available_format;
 	}
 

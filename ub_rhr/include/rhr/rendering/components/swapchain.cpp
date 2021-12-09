@@ -64,14 +64,9 @@ rhr::render::component::swapchain::swapchain()
 	if (vk::create_swapchain_khr(*window->get_device(), &swapchain_create_info_khr, nullptr, &m_swapchain) != VK_SUCCESS)
 		cap::logger::fatal("failed to create swap chain");
 
-	vk::get_swapchain_images_khr(*window->get_device(), m_swapchain, &image_count, nullptr);
-
-	if (image_count != MAX_FRAMES_IN_FLIGHT)
-		cap::logger::fatal("swapchain must have the same image count as expected");
-
 	m_frames.resize(image_count);
 
-	std::vector<vk::image> swapchain_images(m_frames.size());
+	std::vector<vk::image> swapchain_images(image_count);
 	vk::get_swapchain_images_khr(*window->get_device(), m_swapchain, &image_count, swapchain_images.data());
 
 	m_image_format = m_surface_format.format;

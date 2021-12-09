@@ -157,7 +157,7 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 	ImGuiStyle& style = ImGui::GetStyle();
 
 	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(m_window_primary->get_physical_device(), m_window_primary->get_surface());
-	u8 image_count = static_cast<u8>(swap_chain_support.capabilities.minImageCount + 1);
+	u8 image_count = m_window_primary->get_framebuffer_count();
 
 	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(m_window_primary->get_physical_device(), m_window_primary->get_surface());
 	std::set<u32> unique_queue_families = { indices.graphics_family.value(), indices.present_family.value() };

@@ -21,7 +21,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		VkImageCreateInfo image = {};
 		image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 		image.imageType = VK_IMAGE_TYPE_2D;
-		image.format = VK_FORMAT_B8G8R8A8_UNORM;
+		image.format = rhr::render::renderer::get_window_primary()->get_surface_format()->format;
 		image.extent.width = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->width;
 		image.extent.height = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->height;
 		image.extent.depth = 1;
@@ -47,7 +47,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		VkImageViewCreateInfo colorImageView = {};
 		colorImageView.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 		colorImageView.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		colorImageView.format = VK_FORMAT_B8G8R8A8_UNORM;
+		colorImageView.format = rhr::render::renderer::get_window_primary()->get_surface_format()->format;
 		colorImageView.subresourceRange = {};
 		colorImageView.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 		colorImageView.subresourceRange.baseMipLevel = 0;
@@ -101,7 +101,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 
 		std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
 		// Color attachment
-		attchmentDescriptions[0].format = VK_FORMAT_B8G8R8A8_UNORM;
+		attchmentDescriptions[0].format = rhr::render::renderer::get_window_primary()->get_surface_format()->format;
 		attchmentDescriptions[0].samples = VK_SAMPLE_COUNT_1_BIT;
 		attchmentDescriptions[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 		attchmentDescriptions[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;

@@ -257,10 +257,16 @@ void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) }
 #define LOG_LCR error_raw
 #define LOG_UCS "ERROR"
 
-void cap::logger::LOG_LC(LOG_A1) { LOG_BEGIN LOG_EXE1(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A2) { LOG_BEGIN LOG_EXE2(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A3) { LOG_BEGIN LOG_EXE3(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A4) { LOG_BEGIN LOG_EXE4(LOG_UCS) LOG_END }
+#ifdef NDEBUG
+#define ASSERT_ABORT
+#else
+#define ASSERT_ABORT abort();
+#endif
+
+void cap::logger::LOG_LC(LOG_A1) { LOG_BEGIN LOG_EXE1(LOG_UCS) ASSERT_ABORT LOG_END }
+void cap::logger::LOG_LC(LOG_A2) { LOG_BEGIN LOG_EXE2(LOG_UCS) ASSERT_ABORT LOG_END }
+void cap::logger::LOG_LC(LOG_A3) { LOG_BEGIN LOG_EXE3(LOG_UCS) ASSERT_ABORT LOG_END }
+void cap::logger::LOG_LC(LOG_A4) { LOG_BEGIN LOG_EXE4(LOG_UCS) ASSERT_ABORT LOG_END }
 
 void cap::logger::LOG_LCR(LOG_A1) { LOG_EXE1(LOG_UCS) }
 void cap::logger::LOG_LCR(LOG_A2) { LOG_EXE2(LOG_UCS) }
