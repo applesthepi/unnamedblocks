@@ -78,17 +78,17 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	// Initialize debug operations.
 
-	if (!validation_layers_enabled)
-		return;
-
-	vk::debug_utils_messenger_create_info debug_utils_messenger_create_info;
-	rhr::render::tools::populate_debug_messenge_create_info(debug_utils_messenger_create_info);
-
-	if (rhr::render::tools::create_debug_utils_message_ext(&m_instance, &debug_utils_messenger_create_info, nullptr, &m_debug_messenger) != VK_SUCCESS)
+	if (validation_layers_enabled)
 	{
-		cap::logger::error("failed to create debug utils message EXT");
-		m_valid = false;
-		return;
+		vk::debug_utils_messenger_create_info debug_utils_messenger_create_info;
+		rhr::render::tools::populate_debug_messenge_create_info(debug_utils_messenger_create_info);
+
+		if (rhr::render::tools::create_debug_utils_message_ext(&m_instance, &debug_utils_messenger_create_info, nullptr, &m_debug_messenger) != VK_SUCCESS)
+		{
+			cap::logger::error("failed to create debug utils message EXT");
+			m_valid = false;
+			return;
+		}
 	}
 
 	// Initialize vulkan instance.
@@ -318,4 +318,8 @@ void rhr::render::component::device::initialize_texture_sampler()
 		cap::logger::fatal("failed to create texture sampler");
 }
 
+#ifdef NDEBUG
+bool rhr::render::component::device::validation_layers_enabled = false;
+#else
 bool rhr::render::component::device::validation_layers_enabled = true;
+#endif
