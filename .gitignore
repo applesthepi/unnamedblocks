@@ -1,8 +1,5 @@
-Espresso/INT
-RHR/INT
-VanillaMods/*
-!/VanillaMods/ub-ModVin
-!/VanillaMods/CMakeLists.txt
+mods/*
+!mods/CMakeLists.txt
 **.o
 **.dll
 **.lib

@@ -20,8 +20,6 @@ if (m_stream_editor == nullptr)  \
 if (m_stream_runtime == nullptr)  \
 	internal_fatal(ERROR_DATA_NULL);
 
-#define CHECK_ALL CHECK_SYSTEM CHECK_EDITOR CHECK_RUNTIME
-
 #define CHECK_OWNER_SYSTEM   \
 if (!m_stream_system_owner)  \
 	internal_fatal(ERROR_OWNER_REQUIRED);
@@ -45,6 +43,8 @@ if (!m_stream_runtime_owner) \
 #define CHECK_OWNER_RUNTIME
 
 #endif
+
+#define CHECK_ALL CHECK_SYSTEM CHECK_EDITOR CHECK_RUNTIME
 
 #define MUTEX_LOCK_SYSTEM m_stream_system->mutex.lock();
 #define MUTEX_LOCK_EDITOR m_stream_editor->mutex.lock();

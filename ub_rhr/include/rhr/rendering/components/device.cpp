@@ -13,13 +13,17 @@ rhr::render::component::device::device()
 	, m_descriptor_set_layout{}
 	, m_texture_sampler{}
 {
+
+
+
+
 	vk::application_info app_info = {};
 	app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	app_info.pApplicationName = "Unnamed Blocks";
 	app_info.applicationVersion = VK_MAKE_API_VERSION(0, 0, 0, 0);
 	app_info.pEngineName = "No Engine";
 	app_info.engineVersion = VK_MAKE_API_VERSION(0, 0, 0, 0);
-	app_info.apiVersion = VK_API_VERSION_1_0;
+	app_info.apiVersion = VK_API_VERSION_1_1;
 	app_info.pNext = nullptr;
 
 	vk::instance_create_info create_info = {};
@@ -45,7 +49,7 @@ rhr::render::component::device::device()
 		create_info.ppEnabledLayerNames = rhr::render::tools::validation_layers.data();
 
 		rhr::render::tools::populate_debug_messenge_create_info(debug_create_info);
-		create_info.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debug_create_info;
+		create_info.pNext = &debug_create_info;
 	}
 	else
 	{
