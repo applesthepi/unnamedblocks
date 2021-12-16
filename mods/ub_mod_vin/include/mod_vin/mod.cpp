@@ -8,6 +8,8 @@
 
 // graphics
 
+#include "blocks/graphics/console_push.hpp"
+
 // booleans
 
 #include "blocks/booleans/and.hpp"
@@ -62,6 +64,11 @@
 
 UB_EXPORT void Initialization(esp::mod::data* data)
 {
+	cap::logger::initialize();
+	cap::logger::set_stream_system(data->get_stream_system());
+	cap::logger::set_stream_editor(data->get_stream_editor());
+	cap::logger::set_stream_runtime(data->get_stream_runtime());
+
 	/////////////////////////////////////////////////////////////////
 	// mod information
 	/////////////////////////////////////////////////////////////////
@@ -92,6 +99,8 @@ UB_EXPORT void Initialization(esp::mod::data* data)
 	// utility
 
 	// graphics
+
+	data->register_block(new mod_vin::block::graphics::console_push());
 
 	// booleans
 

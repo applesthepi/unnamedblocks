@@ -30,12 +30,13 @@ rhr::render::component::device::device()
 	create_info.enabledExtensionCount = static_cast<u32>(required_extensions.size());
 	create_info.ppEnabledExtensionNames = required_extensions.data();
 
-	VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
 	if (validation_layers_enabled)
 	{
+		VkDebugUtilsMessengerCreateInfoEXT debug_create_info = {};
+
 		if (!rhr::render::tools::check_validation_layer_support())
 		{
-			cap::logger::error("vulkan validation layers unsupported");
+			cap::logger::error(cap::logger::level::SYSTEM, "vulkan validation layers unsupported");
 			m_valid = false;
 			return;
 		}
@@ -54,7 +55,7 @@ rhr::render::component::device::device()
 
 	if (vk::create_instance(&create_info, nullptr, &m_instance) != VK_SUCCESS)
 	{
-		cap::logger::error("failed to create vulkan instance");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to create vulkan instance");
 		m_valid = false;
 		return;
 	}
@@ -72,7 +73,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (!m_valid)
 	{
-		cap::logger::error("cannot initialize invalid device");
+		cap::logger::error(cap::logger::level::SYSTEM, "cannot initialize invalid device");
 		return;
 	}
 
@@ -85,7 +86,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 		if (rhr::render::tools::create_debug_utils_message_ext(&m_instance, &debug_utils_messenger_create_info, nullptr, &m_debug_messenger) != VK_SUCCESS)
 		{
-			cap::logger::error("failed to create debug utils message EXT");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to create debug utils message EXT");
 			m_valid = false;
 			return;
 		}
@@ -98,7 +99,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (device_count == 0)
 	{
-		cap::logger::error("no supported vulkan devices found");
+		cap::logger::error(cap::logger::level::SYSTEM, "no supported vulkan devices found");
 		m_valid = false;
 		return;
 	}
@@ -117,7 +118,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (m_physical_device == nullptr)
 	{
-		cap::logger::error("failed to pick appropriate device");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to pick appropriate device");
 		m_valid = false;
 		return;
 	}
@@ -168,7 +169,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (vk::create_device(m_physical_device, &device_create_info, nullptr, &m_device) != VK_SUCCESS)
 	{
-		cap::logger::error("failed to create logical device link to gpu");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to create logical device link to gpu");
 		m_valid = false;
 		return;
 	}
@@ -212,7 +213,7 @@ void rhr::render::component::device::recreate_swapchain()
 vk::instance& rhr::render::component::device::get_instance()
 {
 	if (!m_valid)
-		cap::logger::warn("get_instance - device marked as invalid");
+		cap::logger::warn(cap::logger::level::SYSTEM, "get_instance - device marked as invalid");
 
 	return m_instance;
 }
@@ -285,7 +286,7 @@ void rhr::render::component::device::initialize_descriptor_set()
 	descriptor_set_layout_create_info.pBindings = descriptor_set_layout_bindings.data();
 
 	if (vk::create_descriptor_set_layout(m_device, &descriptor_set_layout_create_info, nullptr, &m_descriptor_set_layout) != VK_SUCCESS)
-		cap::logger::fatal("failed to create descriptor set layout");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create descriptor set layout");
 }
 
 void rhr::render::component::device::initialize_texture_sampler()
@@ -315,7 +316,7 @@ void rhr::render::component::device::initialize_texture_sampler()
 	sampler_create_info.maxLod = 0.0f;
 
 	if (vk::create_sampler(m_device, &sampler_create_info, nullptr, &m_texture_sampler) != VK_SUCCESS)
-		cap::logger::fatal("failed to create texture sampler");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create texture sampler");
 }
 
 #ifdef NDEBUG

@@ -43,6 +43,7 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 	else if (fileType == ".so")
 		mod.SupportLINUX();
 
+	mod.Data->set_logger_linkage(cap::logger::get_stream_system(), cap::logger::get_stream_editor(), cap::logger::get_stream_runtime());
 	mods->push_back(mod);
 }
 
@@ -64,7 +65,7 @@ ModLoaderStatus run()
 	}
 	catch (std::exception* e)
 	{
-		cap::logger::warn("no mods folder present; starting base editor");
+		cap::logger::warn(cap::logger::level::SYSTEM, "no mods folder present; starting base editor");
 	}
 
 	for (u16 i = 0; i < mods->size(); i++)
@@ -72,7 +73,7 @@ ModLoaderStatus run()
 #if LINUX
 		if (!(*mods)[i].Supported_LINUX)
 		{
-			cap::logger::warn("mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
+			cap::logger::warn(cap::logger::level::SYSTEM, "mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
 			continue;
 		}
 
@@ -80,14 +81,14 @@ ModLoaderStatus run()
 
 		if (!so)
 		{
-			cap::logger::error("failed to load mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to load mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
 		f_initialize initialize = (f_initialize)dlsym(so, "Initialization");
 		if (initialize == nullptr)
 		{
-			cap::logger::error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
@@ -95,7 +96,7 @@ ModLoaderStatus run()
 #else
 		if (!(*mods)[i].Supported_WIN)
 		{
-			cap::logger::warn("mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
+			cap::logger::warn(cap::logger::level::SYSTEM, "mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
 			continue;
 		}
 
@@ -103,14 +104,14 @@ ModLoaderStatus run()
 
 		if (!hGetProcIDDLL)
 		{
-			cap::logger::error("failed to load mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to load mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
 		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "Initialization");
 		if (initialize == nullptr)
 		{
-			cap::logger::error("failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif

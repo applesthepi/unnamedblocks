@@ -2,40 +2,168 @@
 
 #include <iostream>
 
-#define LOG_BEGIN m_mutex.lock();
-#define LOG_END   m_mutex.unlock();
+#define ERROR_DATA_NULL "logger not initialized; a stream is nullptr"
+#define ERROR_OWNER_REQUIRED "this logger must be the owner of its stream in order to perform this operation"
+#define ERROR_BUFFER_IDX_FAILURE "invalid buffer log _type idx"
 
-#define LOG_BUFFER_IDX_FAILURE "invalid buffer log _type idx"
+#ifndef NDEBUG
 
-#define LOG_EXE1(__UCS) \
-std::cout << " [" << (__UCS) << "] " << message << "\n" << std::flush;
+#define CHECK_SYSTEM             \
+if (m_stream_system == nullptr)  \
+	internal_fatal(ERROR_DATA_NULL);
 
-#define LOG_EXE2(__UCS)                                      \
-for (auto& message : messages)                               \
-	std::cout << " [" << (__UCS) << "] " << message << "\n"; \
-std::cout << std::flush;
+#define CHECK_EDITOR             \
+if (m_stream_editor == nullptr)  \
+	internal_fatal(ERROR_DATA_NULL);
 
-#define LOG_EXE3(__UCS) \
-std::cout << "\n [" << (__UCS) << "] [" << file << "] [" << line << "]\n [" << (__UCS) << "] " << message << "\n\n" << std::flush;
+#define CHECK_RUNTIME             \
+if (m_stream_runtime == nullptr)  \
+	internal_fatal(ERROR_DATA_NULL);
 
-#define LOG_EXE4(__UCS)                                                    \
-std::cout << "\n [" << (__UCS) << "] [" << file << "] [" << line << "]\n"; \
-for (auto& message : messages)                                             \
-	std::cout << " [" << (__UCS) << "] " << message << "\n";               \
-std::cout << std::flush;
+#define CHECK_ALL CHECK_SYSTEM CHECK_EDITOR CHECK_RUNTIME
 
-cap::logger::buffer::buffer(bool destruction_flush, bool heap_buffer)
+#define CHECK_OWNER_SYSTEM   \
+if (!m_stream_system_owner)  \
+	internal_fatal(ERROR_OWNER_REQUIRED);
+
+#define CHECK_OWNER_EDITOR  \
+if (!m_stream_editor_owner) \
+	internal_fatal(ERROR_OWNER_REQUIRED);
+
+#define CHECK_OWNER_RUNTIME  \
+if (!m_stream_runtime_owner) \
+	internal_fatal(ERROR_OWNER_REQUIRED);
+
+#else
+
+#define CHECK_SYSTEM
+#define CHECK_EDITOR
+#define CHECK_RUNTIME
+
+#define CHECK_OWNER_SYSTEM
+#define CHECK_OWNER_EDITOR
+#define CHECK_OWNER_RUNTIME
+
+#endif
+
+#define MUTEX_LOCK_SYSTEM m_stream_system->mutex.lock();
+#define MUTEX_LOCK_EDITOR m_stream_editor->mutex.lock();
+#define MUTEX_LOCK_RUNTIME m_stream_runtime->mutex.lock();
+
+#define MUTEX_UNLOCK_SYSTEM m_stream_system->mutex.unlock();
+#define MUTEX_UNLOCK_EDITOR m_stream_editor->mutex.unlock();
+#define MUTEX_UNLOCK_RUNTIME m_stream_runtime->mutex.unlock();
+
+#define MUTEX_LOCK_ALL MUTEX_LOCK_SYSTEM MUTEX_LOCK_EDITOR MUTEX_LOCK_RUNTIME
+#define MUTEX_UNLOCK_ALL MUTEX_UNLOCK_SYSTEM MUTEX_UNLOCK_EDITOR MUTEX_UNLOCK_RUNTIME
+
+#define PREP_LOG_RAW              \
+switch (level)                    \
+{                                 \
+case cap::logger::level::SYSTEM:  \
+	CHECK_SYSTEM                  \
+	break;                        \
+case cap::logger::level::EDITOR:  \
+	CHECK_EDITOR                  \
+	break;                        \
+case cap::logger::level::RUNTIME: \
+	CHECK_RUNTIME                 \
+	break;                        \
+}
+
+#define PREP_LOG_MUT              \
+switch (level)                    \
+{                                 \
+case cap::logger::level::SYSTEM:  \
+	CHECK_SYSTEM                  \
+    MUTEX_LOCK_SYSTEM             \
+	break;                        \
+case cap::logger::level::EDITOR:  \
+	CHECK_EDITOR                  \
+    MUTEX_LOCK_EDITOR             \
+	break;                        \
+case cap::logger::level::RUNTIME: \
+	CHECK_RUNTIME                 \
+    MUTEX_LOCK_RUNTIME            \
+	break;                        \
+}
+
+#define FINISH_LOG_MUT            \
+switch (level)                    \
+{                                 \
+case cap::logger::level::SYSTEM:  \
+    MUTEX_UNLOCK_SYSTEM           \
+	break;                        \
+case cap::logger::level::EDITOR:  \
+    MUTEX_UNLOCK_EDITOR           \
+	break;                        \
+case cap::logger::level::RUNTIME: \
+    MUTEX_UNLOCK_RUNTIME          \
+	break;                        \
+}
+
+#define LOG_SWITCH_STREAM                  \
+cap::logger::stream* use_stream = nullptr; \
+switch (level)                             \
+{                                          \
+case cap::logger::level::SYSTEM:           \
+	use_stream = m_stream_system;          \
+	break;                                 \
+case cap::logger::level::EDITOR:           \
+	use_stream = m_stream_editor;          \
+	break;                                 \
+case cap::logger::level::RUNTIME:          \
+	use_stream = m_stream_runtime;         \
+	break;                                 \
+}
+
+#define LOG_EXE1(__UCS)                                    \
+LOG_SWITCH_STREAM                                          \
+std::string& out = use_stream->cached_logs.emplace_back(); \
+out = " [" + std::string(__UCS) + "] " + message;          \
+std::cout << out << "\n" << std::flush;                    \
+use_stream->log_update = true;
+
+#define LOG_EXE2(__UCS)                                         \
+LOG_SWITCH_STREAM                                               \
+for (auto& message : messages)                                  \
+{                                                               \
+	std::string& out = use_stream->cached_logs.emplace_back();  \
+	out = " [" + std::string(__UCS) + "] " + message;           \
+	std::cout << out << "\n";                                   \
+}                                                               \
+std::cout << std::flush;                                        \
+use_stream->log_update = true;
+
+#define LOG_EXE3(__UCS)                                                                                                                 \
+LOG_SWITCH_STREAM                                                                                                                       \
+std::string& out = use_stream->cached_logs.emplace_back();                                                                              \
+out = "\n [" + std::string(__UCS) + "] [" + file + "] [" + std::to_string(line) + "]\n [" + std::string(__UCS) + "] " + message + "\n"; \
+std::cout << out << "\n" << std::flush;                                                                                                 \
+use_stream->log_update = true;
+
+#define LOG_EXE4(__UCS)                                                                 \
+LOG_SWITCH_STREAM                                                                       \
+std::string& out1 = use_stream->cached_logs.emplace_back();                             \
+out1 = "\n [" + std::string(__UCS) + "] [" + file + "] [" + std::to_string(line) + "]"; \
+std::cout << out1 << "\n";                                                              \
+for (auto& message : messages)                                                          \
+{                                                                                       \
+	std::string& out2 = use_stream->cached_logs.emplace_back();                         \
+	out2 = " [" + std::string(__UCS) + "] " + message;                                  \
+	std::cout << out2 << "\n";                                                          \
+}                                                                                       \
+std::cout << std::flush;                                                                \
+use_stream->log_update = true;
+
+#ifdef NDEBUG
+#define ASSERT_ABORT
+#else
+#define ASSERT_ABORT abort();
+#endif
+
+cap::logger::buffer::buffer(bool destruction_flush)
 	: m_destruction_flush(destruction_flush)
-	, m_heap_buffer(heap_buffer)
-	, m_recorded_max(0)
-	, m_recorded_1_count(0)
-	, m_recorded_2_count(0)
-	, m_recorded_3_count(0)
-	, m_recorded_4_count(0)
-	, m_recorded_1(nullptr)
-	, m_recorded_2(nullptr)
-	, m_recorded_3(nullptr)
-	, m_recorded_4(nullptr)
 {
 	reserve(10);
 }
@@ -51,90 +179,98 @@ void cap::logger::buffer::flush()
 	if (has_recorded_information())
 		cap::logger::flush_buffer(this);
 
-	m_recorded_1_count = 0;
-	m_recorded_2_count = 0;
-	m_recorded_3_count = 0;
-	m_recorded_4_count = 0;
+	m_recorded_1.clear();
+	m_recorded_2.clear();
+	m_recorded_3.clear();
+	m_recorded_4.clear();
 }
 
 void cap::logger::buffer::reserve(size_t size)
 {
-	if (m_recorded_max > 0)
-	{
-		free(m_recorded_1);
-		free(m_recorded_2);
-		free(m_recorded_3);
-		free(m_recorded_4);
-	}
+	m_recorded_1.clear();
+	m_recorded_2.clear();
+	m_recorded_3.clear();
+	m_recorded_4.clear();
 
-	m_recorded_max = static_cast<uint16_t>(size);
-
-	if (m_heap_buffer)
-	{
-		if (size == 0)
-		{
-			cap::logger::warn("attempted to reserve heap buffer to 0; reserving to 1 instead");
-			size = 1;
-		}
-		else if (size > 1000000)
-		{
-			cap::logger::warn("attempted to reserve heap buffer with more then 1 million groups; reserving to 1 million instead");
-			size = 1000000;
-		}
-
-		m_recorded_1 = reinterpret_cast<group_1*>(malloc(size * sizeof(group_1)));
-		m_recorded_2 = reinterpret_cast<group_2*>(malloc(size * sizeof(group_2)));
-		m_recorded_3 = reinterpret_cast<group_3*>(malloc(size * sizeof(group_3)));
-		m_recorded_4 = reinterpret_cast<group_4*>(malloc(size * sizeof(group_4)));
-	}
-	else
-	{
-		if (size == 0)
-		{
-			cap::logger::warn("attempted to reserve stack buffer to 0; reserving to 1 instead");
-			size = 1;
-		}
-		else if (size > 100)
-		{
-			cap::logger::warn("attempted to reserve stack buffer with more then 100 groups; reserving to 100 instead");
-			size = 100;
-		}
-
-		m_recorded_1 = reinterpret_cast<group_1*>(alloca(size * sizeof(group_1)));
-		m_recorded_2 = reinterpret_cast<group_2*>(alloca(size * sizeof(group_2)));
-		m_recorded_3 = reinterpret_cast<group_3*>(alloca(size * sizeof(group_3)));
-		m_recorded_4 = reinterpret_cast<group_4*>(alloca(size * sizeof(group_4)));
-	}
-
-	m_recorded_1_count = 0;
-	m_recorded_2_count = 0;
-	m_recorded_3_count = 0;
-	m_recorded_4_count = 0;
+	m_recorded_1.reserve(size);
+	m_recorded_2.reserve(size);
+	m_recorded_3.reserve(size);
+	m_recorded_4.reserve(size);
 }
 
 bool cap::logger::buffer::has_recorded_information() const
 {
 	return
-		m_recorded_1_count > 0 ||
-		m_recorded_2_count > 0 ||
-		m_recorded_3_count > 0 ||
-		m_recorded_4_count > 0;
+		!m_recorded_1.empty() ||
+		!m_recorded_2.empty() ||
+		!m_recorded_3.empty() ||
+		!m_recorded_4.empty();
 }
 
 void cap::logger::buffer::setup_push()
 {
-	if (m_recorded_1_count >= m_recorded_max ||
-		m_recorded_2_count >= m_recorded_max ||
-		m_recorded_3_count >= m_recorded_max ||
-		m_recorded_4_count >= m_recorded_max)
+	if (m_recorded_1.size() == m_recorded_1.capacity() ||
+		m_recorded_2.size() == m_recorded_2.capacity() ||
+		m_recorded_3.size() == m_recorded_3.capacity() ||
+		m_recorded_4.size() == m_recorded_4.capacity())
 		flush();
+}
+
+void cap::logger::initialize()
+{
+	m_stream_system = new cap::logger::stream();
+	m_stream_editor = new cap::logger::stream();
+	m_stream_runtime = new cap::logger::stream();
+}
+
+cap::logger::stream* cap::logger::get_stream_system()
+{
+	CHECK_SYSTEM
+	CHECK_OWNER_SYSTEM
+
+	return m_stream_system;
+}
+
+cap::logger::stream* cap::logger::get_stream_editor()
+{
+	CHECK_EDITOR
+	CHECK_OWNER_EDITOR
+
+	return m_stream_editor;
+}
+
+cap::logger::stream* cap::logger::get_stream_runtime()
+{
+	CHECK_RUNTIME
+	CHECK_OWNER_RUNTIME
+
+	return m_stream_runtime;
+}
+
+void cap::logger::set_stream_system(cap::logger::stream* stream_system)
+{
+	m_stream_system_owner = false;
+	m_stream_system = stream_system;
+}
+
+void cap::logger::set_stream_editor(cap::logger::stream* stream_editor)
+{
+	m_stream_editor_owner = false;
+	m_stream_editor = stream_editor;
+}
+
+void cap::logger::set_stream_runtime(cap::logger::stream* stream_runtime)
+{
+	m_stream_runtime_owner = false;
+	m_stream_runtime = stream_runtime;
 }
 
 void cap::logger::flush_buffer(cap::logger::buffer* b)
 {
-	LOG_BEGIN
+	CHECK_ALL
+	MUTEX_LOCK_ALL
 
-	for (uint16_t i = 0; i < b->m_recorded_1_count; i++)
+	for (uint16_t i = 0; i < b->m_recorded_1.size(); i++)
 	{
 		buffer::group_1& g = b->m_recorded_1[static_cast<size_t>(i)];
 		switch (g._type)
@@ -149,12 +285,12 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 			cap::logger::error_raw(LOG_A1P);
 			break;
 		default:
-			cap::logger::fatal_raw(LOG_BUFFER_IDX_FAILURE);
+			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
 			break;
 		}
 	}
 
-	for (uint16_t i = 0; i < b->m_recorded_2_count; i++)
+	for (uint16_t i = 0; i < b->m_recorded_2.size(); i++)
 	{
 		buffer::group_2& g = b->m_recorded_2[static_cast<size_t>(i)];
 		switch (g._type)
@@ -169,12 +305,12 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 			cap::logger::error_raw(LOG_A2P);
 			break;
 		default:
-			cap::logger::fatal_raw(LOG_BUFFER_IDX_FAILURE);
+			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
 			break;
 		}
 	}
 
-	for (uint16_t i = 0; i < b->m_recorded_1_count; i++)
+	for (uint16_t i = 0; i < b->m_recorded_3.size(); i++)
 	{
 		buffer::group_3& g = b->m_recorded_3[static_cast<size_t>(i)];
 		switch (g._type)
@@ -189,12 +325,12 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 			cap::logger::error_raw(LOG_A3P);
 			break;
 		default:
-			cap::logger::fatal_raw(LOG_BUFFER_IDX_FAILURE);
+			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
 			break;
 		}
 	}
 
-	for (uint16_t i = 0; i < b->m_recorded_1_count; i++)
+	for (uint16_t i = 0; i < b->m_recorded_4.size(); i++)
 	{
 		buffer::group_4& g = b->m_recorded_4[static_cast<size_t>(i)];
 		switch (g._type)
@@ -209,27 +345,27 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 			cap::logger::error_raw(LOG_A4P);
 			break;
 		default:
-			cap::logger::fatal_raw(LOG_BUFFER_IDX_FAILURE);
+			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
 			break;
 		}
 	}
 
-	LOG_END
+	MUTEX_UNLOCK_ALL
 }
 
 #define LOG_LC  info
 #define LOG_LCR info_raw
 #define LOG_UCS "INFO"
 
-void cap::logger::LOG_LC(LOG_A1) { LOG_BEGIN LOG_EXE1(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A2) { LOG_BEGIN LOG_EXE2(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A3) { LOG_BEGIN LOG_EXE3(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A4) { LOG_BEGIN LOG_EXE4(LOG_UCS) LOG_END }
+void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT }
 
-void cap::logger::LOG_LCR(LOG_A1) { LOG_EXE1(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A2) { LOG_EXE2(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A3) { LOG_EXE3(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
 
 #undef LOG_LC
 #undef LOG_LCR
@@ -237,17 +373,17 @@ void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) }
 
 #define LOG_LC  warn
 #define LOG_LCR warn_raw
+
 #define LOG_UCS "WARN"
+void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT }
 
-void cap::logger::LOG_LC(LOG_A1) { LOG_BEGIN LOG_EXE1(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A2) { LOG_BEGIN LOG_EXE2(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A3) { LOG_BEGIN LOG_EXE3(LOG_UCS) LOG_END }
-void cap::logger::LOG_LC(LOG_A4) { LOG_BEGIN LOG_EXE4(LOG_UCS) LOG_END }
-
-void cap::logger::LOG_LCR(LOG_A1) { LOG_EXE1(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A2) { LOG_EXE2(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A3) { LOG_EXE3(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
 
 #undef LOG_LC
 #undef LOG_LCR
@@ -255,44 +391,49 @@ void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) }
 
 #define LOG_LC  error
 #define LOG_LCR error_raw
+
 #define LOG_UCS "ERROR"
+void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) ASSERT_ABORT FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) ASSERT_ABORT FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) ASSERT_ABORT FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) ASSERT_ABORT FINISH_LOG_MUT }
 
-#ifdef NDEBUG
-#define ASSERT_ABORT
-#else
-#define ASSERT_ABORT abort();
-#endif
-
-void cap::logger::LOG_LC(LOG_A1) { LOG_BEGIN LOG_EXE1(LOG_UCS) ASSERT_ABORT LOG_END }
-void cap::logger::LOG_LC(LOG_A2) { LOG_BEGIN LOG_EXE2(LOG_UCS) ASSERT_ABORT LOG_END }
-void cap::logger::LOG_LC(LOG_A3) { LOG_BEGIN LOG_EXE3(LOG_UCS) ASSERT_ABORT LOG_END }
-void cap::logger::LOG_LC(LOG_A4) { LOG_BEGIN LOG_EXE4(LOG_UCS) ASSERT_ABORT LOG_END }
-
-void cap::logger::LOG_LCR(LOG_A1) { LOG_EXE1(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A2) { LOG_EXE2(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A3) { LOG_EXE3(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
 
 #undef LOG_LC
 #undef LOG_LCR
 #undef LOG_UCS
-
 #define LOG_LC  fatal
 #define LOG_LCR fatal_raw
+
 #define LOG_UCS "FATAL"
+void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) abort(); }
+void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) abort(); }
+void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) abort(); }
+void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) abort(); }
 
-void cap::logger::LOG_LC(LOG_A1) { LOG_BEGIN LOG_EXE1(LOG_UCS) abort(); }
-void cap::logger::LOG_LC(LOG_A2) { LOG_BEGIN LOG_EXE2(LOG_UCS) abort(); }
-void cap::logger::LOG_LC(LOG_A3) { LOG_BEGIN LOG_EXE3(LOG_UCS) abort(); }
-void cap::logger::LOG_LC(LOG_A4) { LOG_BEGIN LOG_EXE4(LOG_UCS) abort(); }
-
-void cap::logger::LOG_LCR(LOG_A1) { LOG_EXE1(LOG_UCS) abort(); }
-void cap::logger::LOG_LCR(LOG_A2) { LOG_EXE2(LOG_UCS) abort(); }
-void cap::logger::LOG_LCR(LOG_A3) { LOG_EXE3(LOG_UCS) abort(); }
-void cap::logger::LOG_LCR(LOG_A4) { LOG_EXE4(LOG_UCS) abort(); }
+void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) abort(); }
+void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) abort(); }
+void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) abort(); }
+void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) abort(); }
 
 #undef LOG_LC
 #undef LOG_LCR
 #undef LOG_UCS
 
-std::mutex cap::logger::m_mutex;
+void cap::logger::internal_fatal(const std::string& error)
+{
+	std::cout << " [FATAL] " + error << std::endl;
+	abort();
+}
+
+cap::logger::stream* cap::logger::m_stream_system;
+cap::logger::stream* cap::logger::m_stream_editor;
+cap::logger::stream* cap::logger::m_stream_runtime;
+
+bool cap::logger::m_stream_system_owner = true;
+bool cap::logger::m_stream_editor_owner = true;
+bool cap::logger::m_stream_runtime_owner = true;

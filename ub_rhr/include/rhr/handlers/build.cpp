@@ -36,8 +36,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		{
 			if (function_main_found)
 			{
-				cap::logger::error(
-				"program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
+				cap::logger::error(cap::logger::level::EDITOR, "program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
 				rhr::handler::build::confirm_terminated();
 				return;
 			}
@@ -80,7 +79,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 					}
 					catch (const std::invalid_argument&)
 					{
-						cap::logger::error("invalid argument exception in preprocessor");
+						cap::logger::error(cap::logger::level::EDITOR, "invalid argument exception in preprocessor");
 						return;
 					}
 					
@@ -108,7 +107,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 					}
 					catch (const std::invalid_argument&)
 					{
-						cap::logger::error("invalid argument exception in preprocessor");
+						cap::logger::error(cap::logger::level::EDITOR, "invalid argument exception in preprocessor");
 						return;
 					}
 
@@ -123,11 +122,10 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 					try
 					{
 						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data() == "1";
-						cap::logger::info("======================= BOOL: " + std::to_string(*dt));
 					}
 					catch (const std::invalid_argument&)
 					{
-						cap::logger::error("invalid argument exception in preprocessor");
+						cap::logger::error(cap::logger::level::EDITOR, "invalid argument exception in preprocessor");
 						return;
 					}
 
@@ -145,7 +143,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 					}
 					catch (const std::invalid_argument&)
 					{
-						cap::logger::error("invalid argument exception in preprocessor");
+						cap::logger::error(cap::logger::level::EDITOR, "invalid argument exception in preprocessor");
 						return;
 					}
 
@@ -164,7 +162,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 	if (!function_main_found)
 	{
-		cap::logger::error("program has no entry points; can not run program without exactly 1 entry point (vin_main)");
+		cap::logger::error(cap::logger::level::EDITOR, "program has no entry points; can not run program without exactly 1 entry point (vin_main)");
 		rhr::handler::build::confirm_terminated();
 		return;
 	}
@@ -226,7 +224,7 @@ void rhr::handler::build::execute(cap::build_system::method build_method, cap::b
 {
 	if (m_status == cap::build_system::status::RUNNING)
 	{
-		cap::logger::error("can not execute a build while already running");
+		cap::logger::error(cap::logger::level::EDITOR, "can not execute a build while already running");
 		return;
 	}
 

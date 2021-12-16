@@ -219,7 +219,7 @@ bool rhr::render::interfaces::i_ui::is_weak()
 {
 	if (!m_weak_set)
 	{
-		cap::logger::warn("rhr::render::interfaces::i_ui::is_weak() returning false");
+		cap::logger::warn(cap::logger::level::SYSTEM, "rhr::render::interfaces::i_ui::is_weak() returning false");
 		return false;
 	}
 

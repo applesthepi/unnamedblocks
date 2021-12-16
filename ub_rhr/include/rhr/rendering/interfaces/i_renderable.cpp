@@ -89,7 +89,7 @@ bool rhr::render::interfaces::i_renderable::is_weak()
 {
 	if (!m_weak_set)
 	{
-		cap::logger::warn("check for i_renderable::is_weak() failed");
+		cap::logger::warn(cap::logger::level::SYSTEM, "check for i_renderable::is_weak() failed");
 		return false;
 	}
 

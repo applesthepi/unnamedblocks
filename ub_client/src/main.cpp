@@ -54,29 +54,34 @@ i32 main()
 	XInitThreads();
 #endif
 
-	cap::logger::info("all unsaved progress will be lost if this window is closed");
+	// Application setup.
 
-	rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
-	rhr::stack::plane::primary_plane->set_weak(rhr::stack::plane::primary_plane);
+	{
+		cap::logger::initialize();
+		rhr::render::tools::initialize();
+		rhr::render::renderer::initialize_window();
+		async_setup();
+		rhr::render::panel::initialize_panels();
+		//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
 
-	rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
-	rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
+		InputHandler::Initialization();
+		rhr::handler::build::initialize();
+		rhr::handler::context::initialize();
+		rhr::registry::block::create_block_registry();
+		//rhr::handler::field::initialize();
+	}
 
-	// critical setup
+	// Plane setup.
 
-	// TODO: async setup
+	{
+		cap::logger::info(cap::logger::level::EDITOR, "all unsaved progress will be lost if this window is closed");
 
-	rhr::render::tools::initialize();
-	rhr::render::renderer::initialize_window();
-    async_setup();
-    rhr::render::panel::initialize_panels();
-	//std::future<void> asyncSetup = std::async(std::launch::async, AsyncSetup);
+		rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
+		rhr::stack::plane::primary_plane->set_weak(rhr::stack::plane::primary_plane);
 
-	InputHandler::Initialization();
-	rhr::handler::build::initialize();
-	rhr::handler::context::initialize();
-	rhr::registry::block::create_block_registry();
-	//rhr::handler::field::initialize();
+		rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
+		rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
+	}
 
 	run();
 	rhr::handler::category::populate();

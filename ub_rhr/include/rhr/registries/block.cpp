@@ -31,7 +31,7 @@ const rhr::registry::block::block_info* rhr::registry::block::get_block(const st
 			return &info;
 	}
 
-	cap::logger::error("Unexpected failure to receive vin_null block. Mod loading error?");
+	cap::logger::error(cap::logger::level::SYSTEM, "Unexpected failure to receive vin_null block. Mod loading error?");
 	return nullptr;
 }
 
@@ -43,7 +43,7 @@ const rhr::registry::block::category_info* rhr::registry::block::get_categories(
 			return &info;
 	}
 
-	cap::logger::error("Unexpected failure to get a catagory. Mod loading error?");
+	cap::logger::error(cap::logger::level::SYSTEM, "Unexpected failure to get a catagory. Mod loading error?");
 	return nullptr;
 }
 

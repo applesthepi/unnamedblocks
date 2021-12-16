@@ -62,7 +62,7 @@ public:
 			ft::error error = FT_Init_FreeType(&library);
 			if (error)
 			{
-				cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
+				cap::logger::error(cap::logger::level::SYSTEM, "failed to init freetype \"" + std::to_string(error) + "\"");
 				return;
 			}
 		}

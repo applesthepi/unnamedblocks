@@ -9,15 +9,6 @@ void rhr::render::tools::initialize()
 {
 	validation_layers = {
 		"VK_LAYER_NV_optimus",
-		//"VK_LAYER_RENDERDOC_Capture",
-		//"VK_LAYER_OW_OVERLAY",
-		//"VK_LAYER_OW_OBS_HOOK",
-		//"VK_LAYER_VALVE_steam_overlay",
-		//"VK_LAYER_VALVE_steam_fossilize",
-		//"VK_LAYER_OBS_HOOK",
-		//"VK_LAYER_LUNARG_api_dump",
-		//"VK_LAYER_LUNARG_device_simulation",
-		//"VK_LAYER_LUNARG_gfxreconstruct",
 		"VK_LAYER_KHRONOS_synchronization2",
 		"VK_LAYER_KHRONOS_validation",
 		"VK_LAYER_LUNARG_monitor",
@@ -32,7 +23,7 @@ std::vector<char>* rhr::render::tools::read_file_bytes(const std::string& file_n
 	std::ifstream file(file_name, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
-		cap::logger::fatal("failed to open file \"" + file_name + "\"");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to open file \"" + file_name + "\"");
 
 	usize file_size = (usize)file.tellg();
 	std::vector<char>* buffer = new std::vector<char>(file_size);
@@ -53,7 +44,7 @@ bool rhr::render::tools::check_validation_layer_support()
 	available_validation_layers.resize(layer_count);
 	vkEnumerateInstanceLayerProperties(&layer_count, available_validation_layers.data());
 
-#if 0
+#if 1
 	for (const char* layer_name : validation_layers)
 	{
 		bool layer_found = false;
@@ -68,7 +59,10 @@ bool rhr::render::tools::check_validation_layer_support()
 		}
 
 		if (!layer_found)
+		{
+			cap::logger::warn(cap::logger::level::SYSTEM, "layer \"" + std::string(layer_name) + "\" not supported");
 			return false;
+		}
 	}
 #else
 	validation_layers.clear();
@@ -78,7 +72,7 @@ bool rhr::render::tools::check_validation_layer_support()
 #endif
 
 	for (const auto& validation_layer : validation_layers)
-		cap::logger::info("loading validation layer " + std::string(validation_layer));
+		cap::logger::info(cap::logger::level::SYSTEM, "loading validation layer " + std::string(validation_layer));
 
 	return true;
 }
@@ -99,7 +93,7 @@ vk::image_view rhr::render::tools::create_image_view(vk::image image, vk::format
 	vk::image_view image_view;
 
 	if (vkCreateImageView(*rhr::render::renderer::get_window_primary()->get_device(), &view_info, nullptr, &image_view) != VK_SUCCESS)
-		cap::logger::fatal("failed to create image view");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create image view");
 
 	return image_view;
 }
@@ -211,7 +205,7 @@ vk::format rhr::render::tools::find_supported_format(const std::vector<vk::forma
 		}
 	}
 
-	cap::logger::fatal("failed to find supported format");
+	cap::logger::fatal(cap::logger::level::SYSTEM, "failed to find supported format");
 	return candidates.front();
 }
 
@@ -289,7 +283,7 @@ void rhr::render::tools::transition_image_layout(vk::image image, vk::format for
 		destination_stage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
 	else
-		cap::logger::fatal("unsupported layout transition");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "unsupported layout transition");
 
 	vkCmdPipelineBarrier(
 	    command_buffer,
@@ -313,7 +307,7 @@ u32 rhr::render::tools::find_memory_type(u32 type_filter, vk::memory_property_fl
 			return i;
 	}
 
-	cap::logger::fatal("failed to find suitable memory type");
+	cap::logger::fatal(cap::logger::level::SYSTEM, "failed to find suitable memory type");
 	return 0;
 }
 
@@ -359,7 +353,7 @@ void rhr::render::tools::create_buffer(vk::device_size size, VkBufferUsageFlags 
 
 	if (vkCreateBuffer(*rhr::render::renderer::get_window_primary()->get_device(), &buffer_info, nullptr, &buffer) != VK_SUCCESS)
 	{
-		cap::logger::error("failed to create buffer");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to create buffer");
 		return;
 	}
 
@@ -373,7 +367,7 @@ void rhr::render::tools::create_buffer(vk::device_size size, VkBufferUsageFlags 
 
 	if (vkAllocateMemory(*rhr::render::renderer::get_window_primary()->get_device(), &allocate_info, nullptr, &buffer_memory) != VK_SUCCESS)
 	{
-		cap::logger::error("failed to allocate buffer memory");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to allocate buffer memory");
 		return;
 	}
 
@@ -439,7 +433,7 @@ void rhr::render::tools::create_image(u32 width, u32 height, vk::format format, 
 
 	if (vkCreateImage(*rhr::render::renderer::get_window_primary()->get_device(), &image_info, nullptr, &image) != VK_SUCCESS)
 	{
-		cap::logger::error("failed to create image");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to create image");
 		return;
 	}
 
@@ -453,7 +447,7 @@ void rhr::render::tools::create_image(u32 width, u32 height, vk::format format, 
 
 	if (vkAllocateMemory(*rhr::render::renderer::get_window_primary()->get_device(), &allocation_info, nullptr, &image_memory) != VK_SUCCESS)
 	{
-		cap::logger::error("failed to allocate image memory");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to allocate image memory");
 		return;
 	}
 
@@ -472,7 +466,7 @@ vk::image rhr::render::tools::create_texture_image(const std::string& texture_pa
 	vk::device_size image_size = texture_width * texture_height * 4;
 
 	if (!pixels)
-		cap::logger::fatal("failed to load texture \"" + texture_path + "\"");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to load texture \"" + texture_path + "\"");
 
 	vk::buffer staging_buffer;
 	vk::device_memory staging_buffer_memory;
@@ -703,7 +697,7 @@ vk::shader_module rhr::render::tools::create_shader_module(const std::vector<cha
 	vk::shader_module shader_module;
 
 	if (vkCreateShaderModule(*device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
-		cap::logger::error("failed to create shader modules");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to create shader modules");
 
 	return shader_module;
 }
@@ -739,9 +733,9 @@ bool rhr::render::tools::is_device_suitable(vk::physical_device* physical_device
 VKAPI_ATTR vk::bool32 VKAPI_CALL rhr::render::tools::debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity, VkDebugUtilsMessageTypeFlagsEXT message_type, const VkDebugUtilsMessengerCallbackDataEXT* callback_data, void* user_data)
 {
 	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-		cap::logger::warn("vulkan error: " + std::string(callback_data->pMessage));
+		cap::logger::warn(cap::logger::level::SYSTEM, std::string(callback_data->pMessage));
 	else if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-		cap::logger::error("vulkan error: " + std::string(callback_data->pMessage));
+		cap::logger::error(cap::logger::level::SYSTEM, std::string(callback_data->pMessage));
 
 	return VK_FALSE;
 }

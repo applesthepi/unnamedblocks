@@ -62,7 +62,7 @@ rhr::render::component::swapchain::swapchain()
 	swapchain_create_info_khr.oldSwapchain = VK_NULL_HANDLE;
 
 	if (vk::create_swapchain_khr(*window->get_device(), &swapchain_create_info_khr, nullptr, &m_swapchain) != VK_SUCCESS)
-		cap::logger::fatal("failed to create swap chain");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create swap chain");
 
 	m_frames.resize(image_count);
 
@@ -124,7 +124,7 @@ void rhr::render::component::swapchain::create_framebuffers()
 		framebuffer_create_info.layers = 1;
 
 		if (vk::create_framebuffer(*window->get_device(), &framebuffer_create_info, nullptr, &frame.frame_buffer) != VK_SUCCESS)
-			cap::logger::fatal("failed to create frame buffers");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create frame buffers");
 	}
 }
 
@@ -144,7 +144,7 @@ void rhr::render::component::swapchain::create_synchronization()
 		if (vk::create_semaphore(*window->get_device(), &semaphore_create_info, nullptr, &frame.semaphore_image) != VK_SUCCESS ||
 			vk::create_semaphore(*window->get_device(), &semaphore_create_info, nullptr, &frame.semaphore_finished) != VK_SUCCESS ||
 			vk::create_fence(*window->get_device(), &fence_create_info, nullptr, &frame.fence_in_flight) != VK_SUCCESS)
-			cap::logger::fatal("failed to create semaphores");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create semaphores");
 	}
 }
 
@@ -174,11 +174,11 @@ vk::render_pass& rhr::render::component::swapchain::get_render_pass(u8 idx)
 	{
 		if (!m_render_passes.empty())
 		{
-			cap::logger::error("failed to fetch render pass using idx, using first one instead");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch render pass using idx, using first one instead");
 			return m_render_passes.front().get_render_pass();
 		}
 		else
-			cap::logger::fatal("failed to fetch render pass, none registered");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch render pass, none registered");
 	}
 
 	return m_render_passes[static_cast<usize>(idx)].get_render_pass();
@@ -195,11 +195,11 @@ vk::frame_buffer& rhr::render::component::swapchain::get_framebuffer(u8 idx)
 	{
 		if (!m_frames.empty())
 		{
-			cap::logger::error("failed to fetch framebuffer using idx, using first one instead");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch framebuffer using idx, using first one instead");
 			return m_frames.front().frame_buffer;
 		}
 		else
-			cap::logger::fatal("failed to fetch framebuffer, none registered");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch framebuffer, none registered");
 	}
 
 	return m_frames[static_cast<usize>(idx)].frame_buffer;
@@ -216,11 +216,11 @@ rhr::render::component::frame& rhr::render::component::swapchain::get_frame(u8 i
 	{
 		if (!m_frames.empty())
 		{
-			cap::logger::error("failed to fetch frame using idx, using first one instead");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch frame using idx, using first one instead");
 			return m_frames.front();
 		}
 		else
-			cap::logger::fatal("failed to fetch frame, none registered");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch frame, none registered");
 	}
 
 	return m_frames[static_cast<usize>(idx)];

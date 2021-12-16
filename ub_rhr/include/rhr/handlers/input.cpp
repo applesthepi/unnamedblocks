@@ -33,7 +33,7 @@ void InputHandler::UnregisterKeyCallback(void(*callback)(key_state state, void* 
 		}
 	}
 
-	cap::logger::error("failed to unregister key callback");
+	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister key callback");
 }
 
 void InputHandler::RegisterTextCallback(void(*callback)(key_state state, void* data), void* data)
@@ -58,7 +58,7 @@ void InputHandler::UnregisterTextCallback(void(*callback)(key_state state, void*
 		}
 	}
 
-	cap::logger::error("failed to unregister text callback");
+	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister text callback");
 }
 
 void InputHandler::RegisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), void* data)
@@ -83,7 +83,7 @@ void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> posi
 		}
 	}
 
-	cap::logger::error("failed to unregister mouse callback");
+	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister mouse callback");
 }
 
 void InputHandler::RegisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer, void* data)
@@ -117,7 +117,7 @@ void InputHandler::UnregisterBullishMouseCallback(bool(*callback)(glm::vec<2, i3
 		}
 	}
 
-	cap::logger::error("failed to unregister bullish mouse callback");
+	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister bullish mouse callback");
 }
 
 void InputHandler::FireKey(i16 key, u8 operation)

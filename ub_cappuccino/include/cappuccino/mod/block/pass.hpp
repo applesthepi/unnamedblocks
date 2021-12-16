@@ -53,7 +53,7 @@ public:
 	};
 
 	///
-	enum logger_fatality
+	enum class logger_fatality
 	{
 		/// Proceeds as normal.
 		OK,
@@ -73,10 +73,19 @@ public:
 	pass(const initializer& init);
 
 	///
-	const std::vector<std::string>& pull_messages();
+	const std::vector<std::string>& pull_messages_info();
 
 	///
-	void return_messages();
+	const std::vector<std::string>& pull_messages_warn();
+
+	///
+	const std::vector<std::string>& pull_messages_error();
+
+	///
+	void lock_messages();
+
+	///
+	void unlock_messages();
 
 	///
 	void set_data(cap::mod::block::data** data);
@@ -110,16 +119,13 @@ public:
 	// ====================================================
 
 	///
-	void log_debug(const std::string& message);
-
-	///
 	void log_info(const std::string& message);
 
 	///
 	void log_warning(const std::string& message);
 
 	///
-	void log_error(const std::string& message, const logger_fatality& fatality);
+	void log_error(const std::string& message, logger_fatality fatality);
 
 	///
 	f64& get_real(u64 idx);
@@ -229,7 +235,13 @@ private:
 	std::mutex m_messages_mutex;
 
 	///
-	std::vector<std::string> m_messages;
+	std::vector<std::string> m_messages_info;
+
+	///
+	std::vector<std::string> m_messages_warn;
+
+	///
+	std::vector<std::string> m_messages_error;
 
 	///
 	void(*m_stop)();

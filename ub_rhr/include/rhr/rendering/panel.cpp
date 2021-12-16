@@ -8,6 +8,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 {
 	data& local_data = panels.emplace_back();
 
+	local_data.basic_imgui = false;
 	local_data.id = id;
 	local_data.function_render = function_render;
 	local_data.function_render_master = function_render_master;
@@ -167,7 +168,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		render_pass_info.pDependencies = dependencies.data();
 
 		if (vkCreateRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), &render_pass_info, nullptr, &local_data.render_pass) != VK_SUCCESS)
-			cap::logger::fatal("failed to create render pass");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create render pass");
 	}
 
 	// create panel image
@@ -214,11 +215,6 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		local_data.color_image_view
 	};
 
-//	std::array<VkImageView, 2> attachments = {
-//		local_data.color_image_view,
-//		local_data.depth_image_view
-//	};
-
 	VkFramebufferCreateInfo frame_buffer_info{};
 	frame_buffer_info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	frame_buffer_info.renderPass = local_data.render_pass;
@@ -229,7 +225,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 	frame_buffer_info.layers = 1;
 
 	if (vkCreateFramebuffer(*rhr::render::renderer::get_window_primary()->get_device(), &frame_buffer_info, nullptr, &local_data.frame_buffer) != VK_SUCCESS)
-		cap::logger::fatal("failed to create frame buffers");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create frame buffers");
 
 	// create panel texture sampler
 
@@ -258,7 +254,7 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 		sampler_info.maxLod = 0.0f;
 
 		if (vkCreateSampler(*rhr::render::renderer::get_window_primary()->get_device(), &sampler_info, nullptr, &local_data.sampler) != VK_SUCCESS)
-			cap::logger::fatal("failed to create texture sampler");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create texture sampler");
 	}
 
 	// create panel descriptor set
@@ -276,60 +272,76 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 	rhr::render::renderer::get_window_primary()->register_paired_pipeline("panel_" + id, "ui", "ui_texture");
 }
 
+void rhr::render::panel::create_panel(const std::string& id, const std::function<void(panel::data&)>& function_imgui)
+{
+	data& local_data = panels.emplace_back();
+
+	local_data.basic_imgui = true;
+	local_data.id = id;
+	local_data.function_imgui = function_imgui;
+}
+
 void rhr::render::panel::run_imgui()
 {
 	ImGui_ImplVulkanH_Frame* fd = &rhr::render::renderer::imgui_local->data.Frames[rhr::render::renderer::imgui_local->data.FrameIndex];
+
+	ImGui::ShowDemoWindow();
 
 	for (auto& data : panels)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin(data.id.c_str());
 
-		glm::vec<2, i32> panel_size = { ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
-		glm::vec<2, i32> panel_position = { ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x, ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y };
-
-		if (panel_size != data.panel_last_size)
+		if (!data.basic_imgui)
 		{
-			data.panel_last_size = panel_size;
-			data.function_update_size(data);
-		}
+			glm::vec<2, i32> panel_size = { ImGui::GetWindowSize().x, ImGui::GetWindowSize().y };
+			glm::vec<2, i32> panel_position = { ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x, ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y };
 
-		if (panel_position != data.panel_last_position)
-		{
-			data.panel_last_position = panel_position;
-			data.function_update_position(data);
-		}
+			if (panel_size != data.panel_last_size)
+			{
+				data.panel_last_size = panel_size;
+				data.function_update_size(data);
+			}
 
-		// render pass
+			if (panel_position != data.panel_last_position)
+			{
+				data.panel_last_position = panel_position;
+				data.function_update_position(data);
+			}
 
-		std::array<VkClearValue, 1> clear_values{};
-		clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
+			// render pass
+
+			std::array<VkClearValue, 1> clear_values{};
+			clear_values[0].color = { { 0.0f, 0.0f, 0.0f, 0.0f } };
 //		clear_values[1].depthStencil = { 1.0f, 0 };
 
-		rhr::render::renderer::get_window_primary()->apply_active_pipeline("panel_" + data.id);
+			rhr::render::renderer::get_window_primary()->apply_active_pipeline("panel_" + data.id);
 
-		{
-			VkRenderPassBeginInfo info = {};
-			info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			info.renderPass = data.render_pass;
-			info.framebuffer = data.frame_buffer;
-			info.renderArea.extent.width = rhr::render::renderer::get_window_primary()->get_window_size().x;
-			info.renderArea.extent.height = rhr::render::renderer::get_window_primary()->get_window_size().y;
-			info.clearValueCount = clear_values.size();
-			info.pClearValues = clear_values.data();
-
-			vkCmdBeginRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
-			data.function_render(data);
-			vkCmdEndRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer());
-		}
-
-		ImGui::Image(
-			data.descriptor_set,
 			{
-				static_cast<f32>(rhr::render::renderer::get_window_primary()->get_window_size().x),
-				static_cast<f32>(rhr::render::renderer::get_window_primary()->get_window_size().y)
+				VkRenderPassBeginInfo info = {};
+				info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+				info.renderPass = data.render_pass;
+				info.framebuffer = data.frame_buffer;
+				info.renderArea.extent.width = rhr::render::renderer::get_window_primary()->get_window_size().x;
+				info.renderArea.extent.height = rhr::render::renderer::get_window_primary()->get_window_size().y;
+				info.clearValueCount = clear_values.size();
+				info.pClearValues = clear_values.data();
+
+				vkCmdBeginRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
+				data.function_render(data);
+				vkCmdEndRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer());
 			}
-		);
+
+			ImGui::Image(
+				data.descriptor_set,
+				{
+					static_cast<f32>(rhr::render::renderer::get_window_primary()->get_window_size().x),
+					static_cast<f32>(rhr::render::renderer::get_window_primary()->get_window_size().y)
+				}
+			);
+		}
+		else
+			data.function_imgui(data);
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -339,7 +351,10 @@ void rhr::render::panel::run_imgui()
 void rhr::render::panel::run_master_render_pass()
 {
 	for (auto& data : panels)
-		data.function_render_master(data);
+	{
+		if (!data.basic_imgui)
+			data.function_render_master(data);
+	}
 }
 
 void rhr::render::panel::initialize_panels()
@@ -383,6 +398,135 @@ void rhr::render::panel::initialize_panels()
 		{
 			rhr::stack::plane::toolbar_plane->set_size_parent(data.panel_last_size);
 			rhr::stack::plane::toolbar_plane->set_size_max();
+		}
+	);
+
+	create_panel("console",
+		[](panel::data& data)
+		{
+			// List of logs that gets appended to when new messages are present in the logger.
+			static std::vector<std::string> logs_system;
+			static std::vector<std::string> logs_editor;
+			static std::vector<std::string> logs_runtime;
+
+			// Whether to auto scroll when at the bottom of the logs.
+			static bool auto_scroll = true;
+
+			// Flag to jump to the end of logs.
+			static bool scroll_to_bottom = false;
+
+			// Footer button index.
+			static u8 button_idx = 0;
+			static u8 n_button_idx = 0;
+
+			n_button_idx = button_idx;
+
+			cap::logger::stream* system_stream = cap::logger::get_stream_system();
+			cap::logger::stream* editor_stream = cap::logger::get_stream_editor();
+			cap::logger::stream* runtime_stream = cap::logger::get_stream_runtime();
+
+			if (system_stream->log_update)
+			{
+				system_stream->mutex.lock();
+				std::vector<std::string>& cached_logs = system_stream->cached_logs;
+
+				for (auto& cached_log : cached_logs)
+					logs_system.push_back(cached_log);
+
+				cached_logs.clear();
+				system_stream->log_update = false;
+				system_stream->mutex.unlock();
+			}
+
+			if (editor_stream->log_update)
+			{
+				editor_stream->mutex.lock();
+				std::vector<std::string>& cached_logs = editor_stream->cached_logs;
+
+				for (auto& cached_log : cached_logs)
+					logs_editor.push_back(cached_log);
+
+				cached_logs.clear();
+				editor_stream->log_update = false;
+				editor_stream->mutex.unlock();
+			}
+
+			if (runtime_stream->log_update)
+			{
+				runtime_stream->mutex.lock();
+				std::vector<std::string>& cached_logs = runtime_stream->cached_logs;
+
+				for (auto& cached_log : cached_logs)
+					logs_runtime.push_back(cached_log);
+
+				cached_logs.clear();
+				runtime_stream->log_update = false;
+				runtime_stream->mutex.unlock();
+			}
+
+			ImGui::Checkbox("AS", &auto_scroll);
+			ImGui::Separator();
+
+			const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+			switch (button_idx)
+			{
+			case 0:
+				for (auto& log : logs_system)
+					ImGui::TextUnformatted(log.c_str());
+				break;
+			case 1:
+				for (auto& log : logs_editor)
+					ImGui::TextUnformatted(log.c_str());
+				break;
+			case 2:
+				for (auto& log : logs_runtime)
+					ImGui::TextUnformatted(log.c_str());
+				break;
+			}
+
+			ImGui::EndChild();
+			ImGui::Separator();
+
+			constexpr glm::vec4 button_active_color = { 0.15f, 0.15f, 0.15f, 1.0f };
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2, 2 });
+
+			if (button_idx == 0)
+				ImGui::PushStyleColor(ImGuiCol_Button, { button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w });
+			if (ImGui::Button("system"))
+				n_button_idx = 0;
+			if (button_idx == 0)
+				ImGui::PopStyleColor();
+
+			ImGui::SameLine();
+
+			if (button_idx == 1)
+				ImGui::PushStyleColor(ImGuiCol_Button, { button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w });
+			if (ImGui::Button("editor"))
+				n_button_idx = 1;
+			if (button_idx == 1)
+				ImGui::PopStyleColor();
+
+			ImGui::SameLine();
+
+			if (button_idx == 2)
+				ImGui::PushStyleColor(ImGuiCol_Button, { button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w });
+			if (ImGui::Button("runtime"))
+				n_button_idx = 2;
+			if (button_idx == 2)
+				ImGui::PopStyleColor();
+
+			ImGui::PopStyleVar();
+
+			if (scroll_to_bottom || (auto_scroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
+			{
+				ImGui::SetScrollHereY(1.0f);
+			}
+
+			button_idx = n_button_idx;
+			scroll_to_bottom = false;
 		}
 	);
 }

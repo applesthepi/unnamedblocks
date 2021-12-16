@@ -53,7 +53,7 @@ void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 sc
 			position.y >= button_position.y && position.y < button_position.y + get_size_local().y)
 		{
 			if (m_callback == nullptr)
-				cap::logger::warn("button callback is nullptr");
+				cap::logger::warn(cap::logger::level::SYSTEM, "button callback is nullptr");
 			else
 				m_callback(m_callback_data);
 		}

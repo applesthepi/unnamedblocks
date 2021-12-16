@@ -225,22 +225,65 @@ void cap::registration::run_utility_tick()
 	std::unique_lock<std::mutex> lock1(m_passes_mutex);
 	std::unique_lock<std::mutex> lock2(m_execution_mutex);
 
+	static cap::logger::buffer* logging_buffer = new cap::logger::buffer(false);
+	logging_buffer->reserve(256 * 3 + 10);
+
 	for (u64 i = 0; i < m_passes.size(); i++)
 	{
-		const std::vector<std::string>& messages = m_passes[i]->pull_messages();
+		m_passes[i]->lock_messages();
 
-		u64 amount = messages.size();
-		if (amount > 256)
+		// Info.
+
 		{
-			amount = 256;
-			printf("restricting to 256 messages per tick...\n");
+			const std::vector<std::string>& messages = m_passes[i]->pull_messages_info();
+
+			u64 amount = messages.size();
+			if (amount > 256)
+			{
+				amount = 256;
+				logging_buffer->warn(cap::logger::level::RUNTIME, "restricting to 256 messages per tick...");
+			}
+
+			for (u64 a = 0; a < amount; a++)
+				logging_buffer->info(cap::logger::level::RUNTIME, messages[a]);
 		}
 
-		for (u64 a = 0; a < amount; a++)
-			std::cout << (messages[a]).c_str() << std::endl;
+		// Warn.
 
-		m_passes[i]->return_messages();
+		{
+			const std::vector<std::string>& messages = m_passes[i]->pull_messages_warn();
+
+			u64 amount = messages.size();
+			if (amount > 256)
+			{
+				amount = 256;
+				logging_buffer->warn(cap::logger::level::RUNTIME, "restricting to 256 messages per tick...");
+			}
+
+			for (u64 a = 0; a < amount; a++)
+				logging_buffer->warn(cap::logger::level::RUNTIME, messages[a]);
+		}
+
+		// Error.
+
+		{
+			const std::vector<std::string>& messages = m_passes[i]->pull_messages_error();
+
+			u64 amount = messages.size();
+			if (amount > 256)
+			{
+				amount = 256;
+				logging_buffer->warn(cap::logger::level::RUNTIME, "restricting to 256 messages per tick...");
+			}
+
+			for (u64 a = 0; a < amount; a++)
+				logging_buffer->error(cap::logger::level::RUNTIME, messages[a]);
+		}
+
+		m_passes[i]->unlock_messages();
 	}
+
+	logging_buffer->flush();
 
 	// cleanup passes
 
@@ -383,6 +426,8 @@ void cap::registration::run()
 	m_variable_string_count.clear();
 
 	printf("#########[ Stopped Cappuccino\n");
+
+	std::cout << std::flush;
 }
 
 bool cap::registration::is_all_done()
@@ -473,7 +518,7 @@ bool cap::registration::global_pre(cap::preprocessor_data& data)
 	{
 		if (!single_blocks[i]->get_runtime_global_pre_init()(data))
 		{
-			cap::logger::error("failed on globalPreInit");
+			cap::logger::error(cap::logger::level::EDITOR, "failed on globalPreInit");
 			return false;
 		}
 	}
@@ -509,7 +554,7 @@ bool cap::registration::global_post(cap::preprocessor_data& data)
 	{
 		if (!single_blocks[i]->get_runtime_global_post_init()(data))
 		{
-			cap::logger::error("failed on globalPostInit");
+			cap::logger::error(cap::logger::level::EDITOR, "failed on globalPostInit");
 			return false;
 		}
 	}
@@ -546,7 +591,7 @@ bool cap::registration::local_pre(cap::preprocessor_data& data)
 		{
 			if (!single_blocks[a]->get_runtime_local_pre_init()(data))
 			{
-				cap::logger::error("failed on localPreInit");
+				cap::logger::error(cap::logger::level::EDITOR, "failed on localPreInit");
 				return false;
 			}
 		}
@@ -584,7 +629,7 @@ bool cap::registration::local_post(cap::preprocessor_data& data)
 		{
 			if (!single_blocks[a]->get_runtime_local_post_init()(data))
 			{
-				cap::logger::error("failed on localPostInit");
+				cap::logger::error(cap::logger::level::EDITOR, "failed on localPostInit");
 				return false;
 			}
 		}
@@ -635,7 +680,7 @@ bool cap::registration::init(cap::preprocessor_data& pre_data, cap::mod::block::
 
 			if (!stages[i][a](pre_data, block_data[stage_stack_idx[i][a]][stage_block_idx[i][a]]))
 			{
-				cap::logger::error("failed on initialization of stage \"" + std::to_string(i) + "\"");
+				cap::logger::error(cap::logger::level::EDITOR, "failed on initialization of stage \"" + std::to_string(i) + "\"");
 				return false;
 			}
 		}
@@ -833,7 +878,7 @@ void cap::registration::compile_data_debug()
 						}
 
 						if (!found)
-							cap::logger::warn("*any* variable \"" + *(std::string*) data[b] + "\" was not found");
+							cap::logger::warn(cap::logger::level::EDITOR, "*any* variable \"" + *(std::string*) data[b] + "\" was not found");
 					}
 					else
 					{
@@ -1077,7 +1122,7 @@ void cap::registration::compile_data_release()
 						}
 
 						if (!found)
-							cap::logger::warn("*any* variable \"" + *(std::string*) data[b] + "\" was not found");
+							cap::logger::warn(cap::logger::level::EDITOR, "*any* variable \"" + *(std::string*) data[b] + "\" was not found");
 					}
 					else
 					{

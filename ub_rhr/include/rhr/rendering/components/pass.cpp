@@ -47,7 +47,7 @@ rhr::render::component::pass::pass()
 	render_pass_create_info.pDependencies = subpass_dependencies.data();
 
 	if (vk::create_render_pass(*window->get_device(), &render_pass_create_info, nullptr, &m_render_pass) != VK_SUCCESS)
-		cap::logger::fatal("failed to create render pass");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create render pass");
 }
 
 rhr::render::component::pass::~pass()

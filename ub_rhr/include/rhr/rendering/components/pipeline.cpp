@@ -212,7 +212,7 @@ void rhr::render::component::pipeline::create_pipeline(
 	pipeline_layout_info.pSetLayouts = window->get_descriptor_set_layout();
 
 	if (vkCreatePipelineLayout(*window->get_device(), &pipeline_layout_info, nullptr, &pipeline_layout) != VK_SUCCESS)
-		cap::logger::fatal("failed to create pipeline layout");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create pipeline layout");
 
 	pipeline_info.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipeline_info.stageCount = 2;
@@ -232,7 +232,7 @@ void rhr::render::component::pipeline::create_pipeline(
 	vk::pipeline pipeline;
 
 	if (vkCreateGraphicsPipelines(*window->get_device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS)
-		cap::logger::fatal("failed to create graphics pipeline");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create graphics pipeline");
 
 	m_registered_pipelines[name] = pipeline;
 	m_registered_layouts[name] = pipeline_layout;

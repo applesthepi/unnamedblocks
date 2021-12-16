@@ -203,7 +203,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 									{
 										if (m_toolbar)
 										{
-											cap::logger::error("splitting stacks inside toolbar is not supported");
+											cap::logger::error(cap::logger::level::EDITOR, "splitting stacks inside toolbar is not supported");
 											return;
 										}
 
@@ -653,7 +653,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 			else
 			{
 				// TODO: undo support (or recently deleted)
-				cap::logger::warn("letting stack deallocate; undo not supported yet");
+				cap::logger::warn(cap::logger::level::EDITOR, "letting stack deallocate; undo not supported yet");
 			}
 		}
 	}

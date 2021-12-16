@@ -16,6 +16,9 @@ public:
 	struct data
 	{
 		///
+		bool basic_imgui;
+
+		///
 		std::string id;
 
 		///
@@ -29,6 +32,9 @@ public:
 
 		///
 		std::function<void(panel::data&)> function_update_position;
+
+		///
+		std::function<void(panel::data&)> function_imgui;
 
 		///
 		VkFramebuffer frame_buffer;
@@ -71,7 +77,14 @@ public:
 	};
 
 	///
-	static void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_render, const std::function<void(panel::data&)>& function_render_master, const std::function<void(panel::data&)>& function_update_position, const std::function<void(panel::data&)>& function_update_size);
+	static void create_panel(const std::string& id,
+		const std::function<void(panel::data&)>& function_render,
+		const std::function<void(panel::data&)>& function_render_master,
+		const std::function<void(panel::data&)>& function_update_position,
+		const std::function<void(panel::data&)>& function_update_size);
+
+	///
+	static void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_imgui);
 
 	///
 	static void run_imgui();

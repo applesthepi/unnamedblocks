@@ -20,7 +20,7 @@ static bool run_first_render_pass = false;
 static void check_vk_result(VkResult err)
 {
 	if (err != VK_SUCCESS)
-		cap::logger::error("vulkan error code \"" + std::to_string(err) + "\"");
+		cap::logger::error(cap::logger::level::SYSTEM, "vulkan error code \"" + std::to_string(err) + "\"");
 }
 
 vk::image depthImage;
@@ -127,15 +127,15 @@ void rhr::render::renderer::reload_swapchain()
 
 	vkDeviceWaitIdle(*m_window_primary->get_device());
 
-	cap::logger::info("recreating swapchain...");
-	cap::logger::info("framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
+	cap::logger::info(cap::logger::level::SYSTEM, "recreating swapchain...");
+	cap::logger::info(cap::logger::level::SYSTEM, "framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
 
 	m_window_primary->recreate_swapchain();
 	initialize_imgui(false);
 	rhr::render::panel::initialize_panels();
 
-	cap::logger::info("...recreated swapchain");
-	cap::logger::info("reloading swapchain dependent objects...");
+	cap::logger::info(cap::logger::level::SYSTEM, "...recreated swapchain");
+	cap::logger::info(cap::logger::level::SYSTEM, "reloading swapchain dependent objects...");
 
 	rhr::render::renderer::imgui_local->data.FrameIndex = 0;
 	rhr::render::renderer::get_window_primary()->flag_clear_swapchain_recreation();
@@ -143,12 +143,12 @@ void rhr::render::renderer::reload_swapchain()
 	VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
 
 	if (err != VK_SUCCESS)
-		cap::logger::fatal("failed to idle device during swapchain reload; vulkan error code: " + std::to_string(static_cast<i32>(err)));
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to idle device during swapchain reload; vulkan error code: " + std::to_string(static_cast<i32>(err)));
 
 	rhr::stack::plane::primary_plane->reload_swap_chain();
 	rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
-	cap::logger::info("...reloaded swapchain dependent objects");
+	cap::logger::info(cap::logger::level::SYSTEM, "...reloaded swapchain dependent objects");
 }
 
 void rhr::render::renderer::initialize_imgui(bool first_time)
@@ -217,7 +217,7 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 		.Allocator = nullptr,
 		.CheckVkResultFn = [](VkResult result) {
 			if (result != VK_SUCCESS)
-				cap::logger::fatal("imgui fatal error: " + std::to_string(static_cast<i32>(result)));
+				cap::logger::fatal(cap::logger::level::SYSTEM, "imgui fatal error: " + std::to_string(static_cast<i32>(result)));
 		}
 	};
 

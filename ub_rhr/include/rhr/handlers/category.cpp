@@ -197,16 +197,16 @@ void rhr::handler::category::select_category(active active_category)
 
 	if (m_active_category.mod_group >= m_mod_groups.size())
 	{
-		cap::logger::warn(
-		"Failed to load category. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " +
+		cap::logger::warn(cap::logger::level::EDITOR,
+			"Failed to load category. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " +
 		std::to_string(m_mod_groups.size()) + ")");
 		return;
 	}
 
 	if (m_active_category.mod_group_category >= m_mod_groups[m_active_category.mod_group].mod_category_ids.size())
 	{
-		cap::logger::warn(
-		"Failed to load category. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) +
+		cap::logger::warn(cap::logger::level::EDITOR,
+			"Failed to load category. Category idx out of range (" + std::to_string(m_active_category.mod_group_category) +
 		" >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category_ids.size()) + ")");
 		return;
 	}
@@ -224,7 +224,7 @@ void rhr::handler::category::toggle_category(usize category_idx)
 {
 	if (category_idx >= m_mod_groups.size())
 	{
-		cap::logger::warn("failed to toggle category out of bounds");
+		cap::logger::warn(cap::logger::level::EDITOR, "failed to toggle category out of bounds");
 		return;
 	}
 

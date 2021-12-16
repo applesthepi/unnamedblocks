@@ -18,7 +18,7 @@ rhr::render::component::command_pool::command_pool()
 	command_pool_create_info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
 	if (vk::create_command_pool(*window->get_device(), &command_pool_create_info, nullptr, &m_command_pool) != VK_SUCCESS)
-		cap::logger::fatal("failed to create command pool");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create command pool");
 }
 
 rhr::render::component::command_pool::~command_pool()
@@ -46,7 +46,7 @@ void rhr::render::component::command_pool::initialize_descriptor_pool()
 	descriptor_pool_create_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
 	if (vk::create_descriptor_pool(*window->get_device(), &descriptor_pool_create_info, nullptr, &m_descriptor_pool) != VK_SUCCESS)
-		cap::logger::fatal("failed to create descriptor pool");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create descriptor pool");
 }
 
 void rhr::render::component::command_pool::initialize_command_buffers()
@@ -100,11 +100,11 @@ vk::command_buffer* rhr::render::component::command_pool::get_master_command_buf
 	{
 		if (!m_command_buffer_master.empty())
 		{
-			cap::logger::error("failed to fetch master command buffer using idx, using first one instead");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch master command buffer using idx, using first one instead");
 			return &m_command_buffer_master.front();
 		}
 		else
-			cap::logger::fatal("failed to fetch master command buffer, none registered");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch master command buffer, none registered");
 	}
 
 	return &m_command_buffer_master[static_cast<usize>(idx)];
@@ -116,11 +116,11 @@ vk::command_buffer* rhr::render::component::command_pool::get_panel_command_buff
 	{
 		if (!m_command_buffer_panels.empty())
 		{
-			cap::logger::error("failed to fetch panel command buffer using idx, using first one instead");
+			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch panel command buffer using idx, using first one instead");
 			return &m_command_buffer_panels.front();
 		}
 		else
-			cap::logger::fatal("failed to fetch panel command buffer, none registered");
+			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch panel command buffer, none registered");
 	}
 
 	return &m_command_buffer_panels[static_cast<usize>(idx)];
@@ -137,7 +137,7 @@ void rhr::render::component::command_pool::generate_command_buffer(u32 count, vk
 	command_buffer_allocate_info.commandBufferCount = count;
 
 	if (vk::allocate_command_buffers(*window->get_device(), &command_buffer_allocate_info, command_buffer) != VK_SUCCESS)
-		cap::logger::fatal("failed to create command buffers");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create command buffers");
 }
 
 void rhr::render::component::command_pool::setup_command_buffer(vk::command_buffer* command_buffer, vk::frame_buffer* frame_buffer)
@@ -152,7 +152,7 @@ void rhr::render::component::command_pool::setup_command_buffer(vk::command_buff
 
 	if (vk::begin_command_buffer(*command_buffer, &begin_info) != VK_SUCCESS)
 	{
-		cap::logger::fatal("failed to begin recording the command buffer during setup");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to begin recording the command buffer during setup");
 	}
 
 	//render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -171,7 +171,7 @@ void rhr::render::component::command_pool::setup_command_buffer(vk::command_buff
 	//vk::cmd::end_render_pass(*command_buffer);
 
 	if (vk::end_command_buffer(*command_buffer) != VK_SUCCESS)
-		cap::logger::fatal("failed to stop recording the command buffer during setup");
+		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to stop recording the command buffer during setup");
 }
 
 vk::command_pool& rhr::render::component::command_pool::get_command_pool()

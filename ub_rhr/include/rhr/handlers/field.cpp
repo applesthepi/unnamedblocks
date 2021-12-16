@@ -10,7 +10,7 @@
 
 #define DEBUG_FIELDS 0
 
-constexpr usize FIELD_CELL_SIZE = 500;
+constexpr usize FIELD_CELL_SIZE = 5000;
 
 static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
@@ -490,7 +490,7 @@ rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_fie
 
 	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> cell = get_cell(cell_position);
 	if (!cell.has_value())
-		cap::logger::error("rhr::handler::field::register_field failed");
+		cap::logger::error(cap::logger::level::SYSTEM, "rhr::handler::field::register_field failed");
 
 	rhr::handler::field_data::location local_location = rhr::handler::field_data::location(cell_position, m_idx, layer);
 	rhr::handler::field_data::data local_data(m_idx, position, size, std::move(text_field), local_location, true);
@@ -515,7 +515,7 @@ rhr::handler::field::update_field_position(const rhr::handler::field_data::locat
 {
 	if (position.x < 0 || position.y < 0)
 	{
-		cap::logger::error("failed to update field position");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to update field position");
 		return location;
 	}
 
@@ -677,7 +677,7 @@ void rhr::handler::field::pop_data(const rhr::handler::field_data::location& loc
 		}
 	}
 
-	cap::logger::warn("rhr::handler::field::pop_data failed to remove data from cell");
+	cap::logger::warn(cap::logger::level::SYSTEM, "rhr::handler::field::pop_data failed to remove data from cell");
 }
 
 glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2, usize>& position)
@@ -723,7 +723,7 @@ void rhr::handler::field::process_highlight(bool copy)
 	if (auto lock = m_mouse_down_data->get_text_field().lock())
 	{
 		if (copy)
-			cap::logger::warn("copy not implemented");
+			cap::logger::warn(cap::logger::level::SYSTEM, "copy not implemented");
 		else
 		{
 			if (m_mouse_drag_end > m_mouse_drag_start)
@@ -836,7 +836,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{
-		cap::logger::warn("failed to update guests of field data location. host cell is after the guests cells.");
+		cap::logger::warn(cap::logger::level::SYSTEM, "failed to update guests of field data location. host cell is after the guests cells.");
 		return;
 	}
 
@@ -989,7 +989,7 @@ void rhr::handler::field::remove_guests(const rhr::handler::field_data::location
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{
-		cap::logger::error("failed to remove guests of field data location. host cell is after the guests cells.");
+		cap::logger::error(cap::logger::level::SYSTEM, "failed to remove guests of field data location. host cell is after the guests cells.");
 		return;
 	}
 

@@ -31,6 +31,14 @@ target_link_libraries(UB_RHR PUBLIC
 #	imm32.lib
 )
 
+# TODO: ???
+if(LINUX)
+else()
+	target_link_libraries(UB_RHR PUBLIC
+		imm32.lib
+	)
+endif()
+
 target_include_directories(UB_RHR PUBLIC SYSTEM
 	"${PROJECT_BINARY_DIR}"
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"

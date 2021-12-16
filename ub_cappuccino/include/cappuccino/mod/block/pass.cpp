@@ -36,7 +36,9 @@ cap::mod::block::pass::pass(const initializer& init)
 	m_variable_registry = init.variable_registry;
 	m_begin_time = init.begin_time;
 	m_random.seed(std::time(0));
-	m_messages.reserve(1024);
+	m_messages_info.reserve(1024);
+	m_messages_warn.reserve(1024);
+	m_messages_error.reserve(1024);
 	m_active_idx = nullptr;
 
 	m_data = cap::registration::get_data();
@@ -300,32 +302,6 @@ void cap::mod::block::pass::custom_free(u64 idx, bool deallocate)
 	m_custom_register->at(idx) = nullptr;
 }
 
-void cap::mod::block::pass::log_debug(const std::string& message)
-{
-	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
-
-	// Should be enough
-	char prefix[100];
-
-	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messages_mutex);
-
-	snprintf(prefix, 100, "[%02lu%02luu] %03luu:%03lu%03luu] [DEBUG] ",
-		((u64)std::chrono::duration_cast<std::chrono::minutes>(now - *m_begin_time).count()),
-		((u64)std::chrono::duration_cast<std::chrono::seconds>(now - *m_begin_time).count()),
-			 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
-			 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
-			 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
-
-	// TODO: overhaul cap logging
-
-	m_messages.emplace_back();
-	usize index = m_messages.size() - 1;
-	m_messages[index].reserve(strlen(prefix) + message.length());
-
-	m_messages[index] += prefix;
-	m_messages[index] += message;
-}
-
 void cap::mod::block::pass::log_info(const std::string& message)
 {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -335,21 +311,17 @@ void cap::mod::block::pass::log_info(const std::string& message)
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messages_mutex);
 
-	snprintf(prefix, 100, "[%02lu:%02lu] [%03lu%03luu%03luu] [INFO] ",
+	snprintf(prefix, 100, "[%02lu:%02lu] [%03lu%03luu%03luu] ",
 		((u64)std::chrono::duration_cast<std::chrono::minutes>(now - *m_begin_time).count()),
 		((u64)std::chrono::duration_cast<std::chrono::seconds>(now - *m_begin_time).count()),
 			 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
 			 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 			 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
 
-	// TODO: overhaul cap logging
-
-	m_messages.emplace_back();
-	usize index = m_messages.size() - 1;
-	m_messages[index].reserve(strlen(prefix) + message.length());
-
-	m_messages[index] += prefix;
-	m_messages[index] += message;
+	std::string& str = m_messages_info.emplace_back();
+	str.reserve(strlen(prefix) + message.length());
+	str += prefix;
+	str += message;
 }
 
 void cap::mod::block::pass::log_warning(const std::string& message)
@@ -361,7 +333,7 @@ void cap::mod::block::pass::log_warning(const std::string& message)
 
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messages_mutex);
 
-	snprintf(prefix, 100, "[%02lu:%02lu] [%03lu%03luu%03luu] [WARN] ",
+	snprintf(prefix, 100, "[%02lu:%02lu] [%03lu%03luu%03luu] ",
 		((u64)std::chrono::duration_cast<std::chrono::minutes>(now - *m_begin_time).count()),
 		((u64)std::chrono::duration_cast<std::chrono::seconds>(now - *m_begin_time).count()),
 			 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
@@ -370,15 +342,13 @@ void cap::mod::block::pass::log_warning(const std::string& message)
 
 	// TODO: overhaul cap logging
 
-	m_messages.emplace_back();
-	usize index = m_messages.size() - 1;
-	m_messages[index].reserve(strlen(prefix) + message.length());
-
-	m_messages[index] += prefix;
-	m_messages[index] += message;
+	std::string& str = m_messages_warn.emplace_back();
+	str.reserve(strlen(prefix) + message.length());
+	str += prefix;
+	str += message;
 }
 
-void cap::mod::block::pass::log_error(const std::string& message, const cap::mod::block::pass::logger_fatality& fatality)
+void cap::mod::block::pass::log_error(const std::string& message, cap::mod::block::pass::logger_fatality fatality)
 {
 	std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
 	
@@ -388,37 +358,33 @@ void cap::mod::block::pass::log_error(const std::string& message, const cap::mod
 	std::unique_lock<std::mutex> lock = std::unique_lock<std::mutex>(m_messages_mutex);
 
 	if (fatality == logger_fatality::OK)
-		snprintf(prefix, 100, "[%02lu:%02lu] [%03lu:%03lu:%03lu] [ERROR-OK] ",
+		snprintf(prefix, 100, "[E-OK] [%02lu:%02lu] [%03lu:%03lu:%03lu] ",
 			((u64)std::chrono::duration_cast<std::chrono::minutes>(now - *m_begin_time).count()),
 			((u64)std::chrono::duration_cast<std::chrono::seconds>(now - *m_begin_time).count()),
 				 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
 	else if (fatality == logger_fatality::BREAK)
-		snprintf(prefix, 100, "[%02lu:%02lu] [%03lu:%03lu:%03lu] [ERROR-BREAK] ",
+		snprintf(prefix, 100, "[E-BREAK] [%02lu:%02lu] [%03lu:%03lu:%03lu] ",
 			((u64)std::chrono::duration_cast<std::chrono::minutes>(now - *m_begin_time).count()),
 			((u64)std::chrono::duration_cast<std::chrono::seconds>(now - *m_begin_time).count()),
 				 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
 	else if (fatality == logger_fatality::ABORT)
-		snprintf(prefix, 100, "[%02lu:%02lu] [%03lu:%03lu:%03lu] [ERROR-ABORT] ",
+		snprintf(prefix, 100, "[E-ABORT] [%02lu:%02lu] [%03lu:%03lu:%03lu] ",
 			((u64)std::chrono::duration_cast<std::chrono::minutes>(now - *m_begin_time).count()),
 			((u64)std::chrono::duration_cast<std::chrono::seconds>(now - *m_begin_time).count()),
 				 ((u64)std::chrono::duration_cast<std::chrono::milliseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::microseconds>(now - *m_begin_time).count()) % 1000,
 				 ((u64)std::chrono::duration_cast<std::chrono::nanoseconds>(now - *m_begin_time).count()) % 1000);
 
-	// TODO: overhaul cap logging
-	
-	// TODO abort
+	// TODO break or abort
 
-	m_messages.emplace_back();
-	usize index = m_messages.size() - 1;
-	m_messages[index].reserve(strlen(prefix) + message.length());
-
-	m_messages[index] += prefix;
-	m_messages[index] += message;
+	std::string& str = m_messages_error.emplace_back();
+	str.reserve(strlen(prefix) + message.length());
+	str += prefix;
+	str += message;
 }
 
 f64& cap::mod::block::pass::get_real(u64 idx)
@@ -441,15 +407,28 @@ void* cap::mod::block::pass::get_pre_data(u64 idx)
 	return (this->*(m_get_pre_data))(idx);
 }
 
-const std::vector<std::string>& cap::mod::block::pass::pull_messages()
+const std::vector<std::string>& cap::mod::block::pass::pull_messages_info()
 {
-	m_messages_mutex.lock();
-	return m_messages;
+	return m_messages_info;
 }
 
-void cap::mod::block::pass::return_messages()
+const std::vector<std::string>& cap::mod::block::pass::pull_messages_warn()
 {
-	m_messages.clear();
+	return m_messages_warn;
+}
+
+const std::vector<std::string>& cap::mod::block::pass::pull_messages_error()
+{
+	return m_messages_error;
+}
+
+void cap::mod::block::pass::lock_messages()
+{
+	m_messages_mutex.lock();
+}
+
+void cap::mod::block::pass::unlock_messages()
+{
 	m_messages_mutex.unlock();
 }
 
