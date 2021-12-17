@@ -32,11 +32,11 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		function_data[i] = new cap::mod::block::data[stacks[i]->get_blocks().size()];
 		mod_blocks[i] = new cap::mod::block::block*[stacks[i]->get_blocks().size()];
 
-		if (stacks[i]->get_blocks().size() >= 1 && std::string(stacks[i]->get_blocks()[0]->get_mod_block()->get_unlocalized_name()) == "vin_main")
+		if (stacks[i]->get_blocks().size() >= 1 && std::string(stacks[i]->get_blocks()[0]->get_mod_block()->get_unlocalized_name()) == "essentials_main")
 		{
 			if (function_main_found)
 			{
-				cap::logger::error(cap::logger::level::EDITOR, "program has more than 1 entry points; can not run program without exactly 1 entry point (vin_main)");
+				cap::logger::error(cap::logger::level::EDITOR, "program has more than 1 entry points; can not run program without exactly 1 entry point (essentials_main)");
 				rhr::handler::build::confirm_terminated();
 				return;
 			}
@@ -162,7 +162,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 	if (!function_main_found)
 	{
-		cap::logger::error(cap::logger::level::EDITOR, "program has no entry points; can not run program without exactly 1 entry point (vin_main)");
+		cap::logger::error(cap::logger::level::EDITOR, "program has no entry points; can not run program without exactly 1 entry point (essentials_main)");
 		rhr::handler::build::confirm_terminated();
 		return;
 	}

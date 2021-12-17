@@ -72,7 +72,7 @@ add_subdirectory("ub_espresso")
 add_subdirectory("ub_rhr")
 
 if (MODS)
-	add_subdirectory("mods/ub_mod_vin")
+	add_subdirectory("mods")
 endif()
 
 ########################################################################################

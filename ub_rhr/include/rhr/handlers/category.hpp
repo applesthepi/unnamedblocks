@@ -105,6 +105,9 @@ private:
 		std::vector<std::string> mod_category_ids;
 
 		///
+		std::vector<cap::color> mod_category_colors;
+
+		///
 		bool enabled;
 
 		///

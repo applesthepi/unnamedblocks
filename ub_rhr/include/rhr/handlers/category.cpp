@@ -42,13 +42,22 @@ void rhr::handler::category::populate()
 
 	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
 	{
-		binned_catagories.push_back(std::vector<esp::mod::category*>());
-		binned_blocks.push_back(std::vector<std::vector<cap::mod::block::block*>>());
+		binned_catagories.emplace_back();
+		binned_blocks.emplace_back();
 
-		for (usize a = 0; a < category_infos.size(); a++)
+		usize ac = 0;
+		bool first_mod_category = false;
+
+		for (usize a = 0; a < category_infos.size(); a++, ac++)
 		{
 			if (category_infos[a].category_mod_unlocalized_name == rhr::handler::project::mods[i])
 			{
+				if (!first_mod_category)
+				{
+					first_mod_category = true;
+					ac = 0;
+				}
+
 				binned_catagories[i].push_back(category_infos[a].category_mod_category);
 				binned_blocks[i].push_back(std::vector<cap::mod::block::block*>());
 
@@ -58,7 +67,7 @@ void rhr::handler::category::populate()
 						block_infos[b].block_mod_block->get_category() ==
 						category_infos[a].category_mod_category->get_unlocalized_name())
 					{
-						binned_blocks[i][a].push_back(block_infos[b].block_mod_block);
+						binned_blocks[i][ac].push_back(block_infos[b].block_mod_block);
 					}
 				}
 			}
@@ -103,7 +112,8 @@ void rhr::handler::category::populate()
 
 		for (usize a = 0; a < binned_catagories[i].size(); a++)
 		{
-			group.mod_category_ids.push_back(binned_catagories[i][a]->get_unlocalized_name());
+			group.mod_category_ids.push_back(binned_catagories[i][a]->get_display_name());
+			group.mod_category_colors.push_back(binned_catagories[i][a]->get_color());
 
 			active_catagories[a].mod_group = static_cast<u16>(i);
 			active_catagories[a].mod_group_category = static_cast<u16>(a);
@@ -176,16 +186,18 @@ void rhr::handler::category::render()
 
 			for (u16 i = 0; i < static_cast<u16>(group.mod_category_ids.size()); i++)
 			{
+				auto button_color = group.mod_category_colors[i].get_normalized_scaled(0.5f, false);
+				ImGui::PushStyleColor(ImGuiCol_Button, { button_color.x, button_color.y, button_color.z, button_color.w });
+
 				if (ImGui::Button(group.mod_category_ids[i].c_str()))
-				{
 					select_category({ group.idx_mod, i });
-				}
+
+				ImGui::PopStyleColor();
 			}
 
-			ImGui::Indent(0.0f);
+			ImGui::Unindent(15.0f);
+			ImGui::NewLine();
 		}
-
-		ImGui::NewLine();
 	}
 
 	ImGui::End();

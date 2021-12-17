@@ -103,11 +103,11 @@ i32 main()
 	testStack1->set_weak(testStack1);
 	testStack1->set_position_local_physical({ 0, 0 });
 
-	std::shared_ptr<rhr::stack::block> testBlock1 = std::make_shared<rhr::stack::block>("vin_main");
+	std::shared_ptr<rhr::stack::block> testBlock1 = std::make_shared<rhr::stack::block>("essentials_main");
 	testBlock1->set_weak(testBlock1);
 	testStack1->add_block(testBlock1);
 
-	std::shared_ptr<rhr::stack::block> testBlock2 = std::make_shared<rhr::stack::block>("vin_string_log");
+	std::shared_ptr<rhr::stack::block> testBlock2 = std::make_shared<rhr::stack::block>("essentials_string_log");
 	testBlock2->set_weak(testBlock2);
 	testStack1->add_block(testBlock2);
 
