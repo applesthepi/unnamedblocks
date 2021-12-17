@@ -7,3 +7,6 @@
 [submodule "mods/ub_vanilla"]
 	path = mods/ub_vanilla
 	url = https://github.com/applesthepi/ub-vanilla
+[submodule "ub_imgui"]
+	path = ub_imgui
+	url = https://github.com/applesthepi/ub-imgui
