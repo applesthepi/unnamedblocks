@@ -25,16 +25,17 @@ add_dependencies(UB_CLIENT
     UB_CAPPUCCINO
     UB_ESPRESSO
     UB_RHR
+	UB_IMGUI
 )
 
 target_link_libraries(UB_CLIENT PUBLIC
 	UB_CAPPUCCINO
     UB_ESPRESSO
     UB_RHR
+	UB_IMGUI
 	
 	glad::glad
 	glfw
-	imgui
 #	clip
 	Vulkan::Vulkan
 	freetype
@@ -48,7 +49,8 @@ target_include_directories(UB_CLIENT PUBLIC SYSTEM
     "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
     "${CMAKE_SOURCE_DIR}/ub_espresso/include"
     "${CMAKE_SOURCE_DIR}/ub_rhr/include"
-	"${CMAKE_SOURCE_DIR}/vendor"
+	"${CMAKE_SOURCE_DIR}/ub_imgui"
+	"${CMAKE_SOURCE_DIR}/ub_imgui/backend"
 
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}

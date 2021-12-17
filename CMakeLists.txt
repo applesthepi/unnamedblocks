@@ -70,6 +70,7 @@ add_subdirectory("ub_client")
 add_subdirectory("ub_cappuccino")
 add_subdirectory("ub_espresso")
 add_subdirectory("ub_rhr")
+add_subdirectory("ub_imgui")
 
 if (MODS)
 	add_subdirectory("mods")
@@ -81,29 +82,29 @@ endif()
 
 # IMGUI
 
-add_library(imgui STATIC)
-target_sources(imgui PRIVATE
-		"vendor/imgui/imgui_demo.cpp"
-		"vendor/imgui/imgui_draw.cpp"
-		"vendor/imgui/imgui_tables.cpp"
-		"vendor/imgui/imgui_widgets.cpp"
-		"vendor/imgui/imgui.cpp"
-
-		"vendor/imgui/backends/imgui_impl_vulkan.cpp"
-		"vendor/imgui/backends/imgui_impl_glfw.cpp"
-)
-
-target_include_directories(imgui PUBLIC SYSTEM
-		vendor/imgui
-		vendor/imgui/backends
-#		${GLFW_SOURCE_DIR}/include
-		${Vulkan_INCLUDE_DIR}
-		${CMAKE_INCLUDES}
-
-		# TODO: fix this
-		"vcpkg/installed/x64-windows/include"
-		"vcpkg/installed/x64-linux/include"
-)
+#add_library(imgui STATIC)
+#target_sources(imgui PRIVATE
+#		"vendor/imgui/imgui_demo.cpp"
+#		"vendor/imgui/imgui_draw.cpp"
+#		"vendor/imgui/imgui_tables.cpp"
+#		"vendor/imgui/imgui_widgets.cpp"
+#		"vendor/imgui/imgui.cpp"
+#
+#		"vendor/imgui/backends/imgui_impl_vulkan.cpp"
+#		"vendor/imgui/backends/imgui_impl_glfw.cpp"
+#)
+#
+#target_include_directories(imgui PUBLIC SYSTEM
+#		vendor/imgui
+#		vendor/imgui/backends
+##		${GLFW_SOURCE_DIR}/include
+#		${Vulkan_INCLUDE_DIR}
+#		${CMAKE_INCLUDES}
+#
+#		# TODO: fix this
+#		"vcpkg/installed/x64-windows/include"
+#		"vcpkg/installed/x64-linux/include"
+#)
 
 # CLIP
 

@@ -55,10 +55,15 @@ if(MSVC)
 	target_compile_options(UB_CAPPUCCINO PRIVATE "/MP")
 endif()
 
+add_dependencies(UB_CLIENT
+	UB_IMGUI
+	)
+
 target_link_libraries(UB_CAPPUCCINO PUBLIC
+	UB_IMGUI
+
 	glad::glad
 	glfw
-	imgui
 	Vulkan::Vulkan
 	freetype
 
@@ -68,7 +73,8 @@ target_link_libraries(UB_CAPPUCCINO PUBLIC
 target_include_directories(UB_CAPPUCCINO PUBLIC SYSTEM
 	${PROJECT_BINARY_DIR}
 	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-	"${CMAKE_SOURCE_DIR}/imgui"
+	"${CMAKE_SOURCE_DIR}/ub_imgui"
+	"${CMAKE_SOURCE_DIR}/ub_imgui/backend"
 
     ${STB_INCLUDE_DIRS}
 	${RAPIDJSON_INCLUDE_DIRS}
