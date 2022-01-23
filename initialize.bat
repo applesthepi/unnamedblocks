@@ -13,7 +13,6 @@ vcpkg.exe install freetype:x64-windows
 vcpkg.exe install glad:x64-windows
 vcpkg.exe install glfw3:x64-windows
 vcpkg.exe install glm:x64-windows
-vcpkg.exe install imgui:x64-windows
 vcpkg.exe install rapidjson:x64-windows
 vcpkg.exe install stb:x64-windows
 vcpkg.exe install vulkan:x64-windows

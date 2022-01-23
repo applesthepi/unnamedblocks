@@ -22,42 +22,31 @@ if(MSVC)
 endif()
 
 add_dependencies(UB_CLIENT
+	${UB_DEPENDENCIES}
     UB_CAPPUCCINO
     UB_ESPRESSO
     UB_RHR
-	UB_IMGUI
 )
 
 target_link_libraries(UB_CLIENT PUBLIC
+	${UB_DEPENDENCIES_LINK}
+	#imm32.lib
 	UB_CAPPUCCINO
     UB_ESPRESSO
     UB_RHR
-	UB_IMGUI
-	
-	glad::glad
-	glfw
-#	clip
-	Vulkan::Vulkan
-	freetype
-
-	#imm32.lib
 )
 
 target_include_directories(UB_CLIENT PUBLIC SYSTEM
-	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
-    "${CMAKE_SOURCE_DIR}/ub_espresso/include"
-    "${CMAKE_SOURCE_DIR}/ub_rhr/include"
-	"${CMAKE_SOURCE_DIR}/ub_imgui"
-	"${CMAKE_SOURCE_DIR}/ub_imgui/backend"
+	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+	"${CMAKE_SOURCE_DIR}/ub_espresso/include"
+	"${CMAKE_SOURCE_DIR}/ub_rhr/include"
+	)
 
-    ${STB_INCLUDE_DIRS}
-	${RAPIDJSON_INCLUDE_DIRS}
-	${Vulkan_INCLUDE_DIR}
+target_include_directories(UB_CLIENT PUBLIC SYSTEM
+	${PROJECT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${UB_DEPENDENCIES_INCLUDE}
 	${CMAKE_INCLUDES}
-
-#	"${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/include/qt5"
 )
 
 # Copy Resources

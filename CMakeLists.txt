@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(USE_FOLDERS ON)
 set(CMAKE_BUILD_PARALLEL_LEVEL 12)
+enable_language( C CXX ASM )
+#SET(ASM_OPTIONS "-x assembler-with-cpp")
 
 #set(CMAKE_AUTOMOC ON)
 #set(CMAKE_AUTORCC ON)
@@ -30,29 +32,29 @@ endif()
 
 # set(CMAKE_BUILD_TYPE Debug)
 
-find_package(glm CONFIG REQUIRED)
-find_package(glfw3 CONFIG REQUIRED)
-find_package(RapidJSON CONFIG REQUIRED)
-find_package(Vulkan REQUIRED)
-find_package(zstd CONFIG REQUIRED)
-find_package(freetype CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED)
+#find_package(glm CONFIG REQUIRED)
+#find_package(glfw3 CONFIG REQUIRED)
+#find_package(RapidJSON CONFIG REQUIRED)
+#find_package(Vulkan REQUIRED)
+#find_package(zstd CONFIG REQUIRED)
+#find_package(freetype CONFIG REQUIRED)
+#find_package(glad CONFIG REQUIRED)
 
 #find_library(TCC_LIBRARY NAMES libtcc1-64 PATHS "${CMAKE_SOURCE_DIR}/tcc")
 #find_path(TCC_INCLUDE NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}/tcc")
 #set(TCC_LIBRARY "${CMAKE_SOURCE_DIR}/tcc/lib/libtcc")
 #set(TCC_INCLUDE "${CMAKE_SOURCE_DIR}/tcc/libtcc")
 
-find_library(TCC_LIBRARY NAMES tcc libtcc PATHS "${CMAKE_SOURCE_DIR}/cmake/lib")
+#find_library(TCC_LIBRARY NAMES tcc libtcc PATHS "${CMAKE_SOURCE_DIR}/cmake/lib")
 
-set(CMAKE_INCLUDES "${CMAKE_SOURCE_DIR}/cmake/include")
-set(VULKAN_LIB_LIST, "vulkan-1")
+#set(CMAKE_INCLUDES "${CMAKE_SOURCE_DIR}/cmake/include")
+#set(VULKAN_LIB_LIST, "vulkan-1")
 
 #message("${TCC_LIBRARY}")
 #message("${CMAKE_INCLUDES}")
 
-find_path(STB_INCLUDE_DIRS "stb.h")
-find_path(CPPTOML_INCLUDE_DIRS "cpptoml.h")
+#find_path(STB_INCLUDE_DIRS "stb.h")
+#find_path(CPPTOML_INCLUDE_DIRS "cpptoml.h")
 
 # Visual Studio
 # set_property(TARGET UB PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/Debug")
@@ -66,11 +68,41 @@ option(BETA "Enable beta features" OFF)
 option(AVX "Enable AVX2 support. This is supported on Intel Haswell processors or newer and AMD Excavator processors and all Zen processors or newer" OFF)
 option(MODS "Build mods" ON)
 
+add_subdirectory("dependencies")
+
+set(UB_DEPENDENCIES
+	zstd
+	imgui
+	glfw
+	glm
+	freetype
+	Vulkan-Headers
+	)
+
+set(UB_DEPENDENCIES_LINK
+	libzstd
+	imgui
+	glfw
+	glm
+	freetype
+	vulkan
+	)
+
+set(UB_DEPENDENCIES_INCLUDE
+	${CMAKE_SOURCE_DIR}/dependencies/zstd/lib
+	${CMAKE_SOURCE_DIR}/dependencies/stb/include
+	${CMAKE_SOURCE_DIR}/dependencies/rapidjson/include
+	${CMAKE_SOURCE_DIR}/dependencies/imgui/include
+	${CMAKE_SOURCE_DIR}/dependencies/vulkan/Vulkan-Headers/include
+	${CMAKE_SOURCE_DIR}/dependencies/vulkan/glfw/include
+	${CMAKE_SOURCE_DIR}/dependencies/vulkan/glm
+	${CMAKE_SOURCE_DIR}/dependencies/freetype/include
+	)
+
 add_subdirectory("ub_client")
 add_subdirectory("ub_cappuccino")
 add_subdirectory("ub_espresso")
 add_subdirectory("ub_rhr")
-add_subdirectory("ub_imgui")
 
 if (MODS)
 	add_subdirectory("mods")

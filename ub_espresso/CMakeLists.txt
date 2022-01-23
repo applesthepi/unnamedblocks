@@ -19,30 +19,24 @@ endif()
 
 add_dependencies(UB_ESPRESSO
 	UB_CAPPUCCINO
-	UB_IMGUI
-)
+	)
 
 target_link_libraries(UB_ESPRESSO PUBLIC
 	UB_CAPPUCCINO
-	UB_IMGUI
-	
-	glad::glad
-	glfw
-	Vulkan::Vulkan
-	freetype
-
-	#imm32.lib
-)
+	)
 
 target_include_directories(UB_ESPRESSO PUBLIC SYSTEM
-	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
-	"${CMAKE_SOURCE_DIR}/ub_imgui"
-	"${CMAKE_SOURCE_DIR}/ub_imgui/backend"
+	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+	)
 
-    ${STB_INCLUDE_DIRS}
-	${RAPIDJSON_INCLUDE_DIRS}
-	${Vulkan_INCLUDE_DIR}
+target_link_libraries(UB_ESPRESSO PUBLIC
+	${UB_DEPENDENCIES_LINK}
+	#imm32.lib
+	)
+
+target_include_directories(UB_ESPRESSO PUBLIC SYSTEM
+	${PROJECT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${UB_DEPENDENCIES_INCLUDE}
 	${CMAKE_INCLUDES}
-)
+	)

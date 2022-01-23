@@ -3,7 +3,7 @@
 #include "rhr/rendering/renderer.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 void rhr::render::tools::initialize()
 {

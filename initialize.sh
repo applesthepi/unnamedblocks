@@ -12,7 +12,6 @@ git submodule update --init;
 ./vcpkg/vcpkg install glad:x64-linux;
 ./vcpkg/vcpkg install glfw3:x64-linux;
 ./vcpkg/vcpkg install glm:x64-linux;
-./vcpkg/vcpkg install imgui:x64-linux;
 ./vcpkg/vcpkg install rapidjson:x64-linux;
 ./vcpkg/vcpkg install stb:x64-linux;
 ./vcpkg/vcpkg install vulkan:x64-linux;

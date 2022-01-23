@@ -7,6 +7,30 @@
 [submodule "mods/ub_vanilla"]
 	path = mods/ub_vanilla
 	url = https://github.com/applesthepi/ub-vanilla
-[submodule "ub_imgui"]
-	path = ub_imgui
-	url = https://github.com/applesthepi/ub-imgui
+[submodule "dependencies/cpptoml"]
+	path = dependencies/cpptoml
+	url = https://github.com/skystrife/cpptoml
+[submodule "dependencies/freetype"]
+	path = dependencies/freetype
+	url = https://gitlab.freedesktop.org/freetype/freetype.git
+[submodule "dependencies/rapidjson"]
+	path = dependencies/rapidjson
+	url = https://github.com/Tencent/rapidjson
+[submodule "dependencies/vulkan"]
+	path = dependencies/vulkan
+	url = https://github.com/KhronosGroup/Vulkan-Hpp
+[submodule "dependencies/zstd"]
+	path = dependencies/zstd
+	url = https://github.com/facebook/zstd
+[submodule "dependencies/stb"]
+	path = dependencies/stb
+	url = https://github.com/applesthepi/stb
+[submodule "dependencies/imgui"]
+	path = dependencies/imgui
+	url = https://github.com/applesthepi/imgui
+[submodule "dependencies/vulkan_loader"]
+	path = dependencies/vulkan_loader
+	url = https://github.com/KhronosGroup/Vulkan-Loader
+[submodule "dependencies/vulkan_headers"]
+	path = dependencies/vulkan_headers
+	url = https://github.com/KhronosGroup/Vulkan-Headers

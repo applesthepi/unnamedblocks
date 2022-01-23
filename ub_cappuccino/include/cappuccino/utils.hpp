@@ -27,7 +27,7 @@
 #include <future>
 #include <thread>
 
-#include <stb_image.h>
+#include <stb/stb_image.h>
 #include <zstd.h>
 
 #define GLM_FORCE_RADIANS
@@ -41,7 +41,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 
-#include <imgui.h>
+//#include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
 
@@ -61,7 +61,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #if LINUX_TOOLCHAIN

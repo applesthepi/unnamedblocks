@@ -47,7 +47,7 @@ rhr::render::component::window::window(std::string title, glm::vec<2, i32> windo
 	, m_surface{}
 {
 	glfw::set_window_hint(GLFW_CLIENT_API, GLFW_NO_API);
-	glfw::set_window_hint(GLFW_RESIZABLE, GL_TRUE);
+	glfw::set_window_hint(GLFW_RESIZABLE, GLFW_TRUE);
 
 	m_window = glfw::create_window(m_window_size.x, m_window_size.y, m_window_title.c_str(), nullptr, nullptr);
 

@@ -12,26 +12,38 @@ if(MSVC)
 	target_compile_options(UB_RHR PRIVATE "/MP")
 endif()
 
-add_dependencies(UB_CLIENT
-    UB_CAPPUCCINO
-    UB_ESPRESSO
-	UB_IMGUI
-)
+add_dependencies(UB_RHR
+	${UB_DEPENDENCIES}
+	UB_CAPPUCCINO
+	UB_ESPRESSO
+	)
 
 target_link_libraries(UB_RHR PUBLIC
 	UB_CAPPUCCINO
 	UB_ESPRESSO
-	UB_IMGUI
-	
-	glad::glad
-	glfw
-#	clip
-	Vulkan::Vulkan
-	freetype
+	)
 
-#	imm32.lib
-)
+target_include_directories(UB_RHR PUBLIC SYSTEM
+	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+	"${CMAKE_SOURCE_DIR}/ub_espresso/include"
+	)
 
+target_link_libraries(UB_RHR PUBLIC
+	${UB_DEPENDENCIES_LINK}
+	#imm32.lib
+	)
+
+target_include_directories(UB_RHR PUBLIC SYSTEM
+	${PROJECT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+	${UB_DEPENDENCIES_INCLUDE}
+	${CMAKE_INCLUDES}
+	)
+############################################################################################################################################
+############################################################################################################################################
+############################################################################################################################################
+############################################################################################################################################
+# TODO: ADDDDDDDDDDD EEEEEEVVVVVVEEEERRRRRYYYYY WHERE
 # TODO: ???
 if(LINUX)
 else()
@@ -39,19 +51,3 @@ else()
 		imm32.lib
 	)
 endif()
-
-target_include_directories(UB_RHR PUBLIC SYSTEM
-	"${PROJECT_BINARY_DIR}"
-	"${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
-    "${CMAKE_SOURCE_DIR}/ub_espresso/include"
-	"${CMAKE_SOURCE_DIR}/ub_imgui"
-	"${CMAKE_SOURCE_DIR}/ub_imgui/backend"
-
-    ${STB_INCLUDE_DIRS}
-	${RAPIDJSON_INCLUDE_DIRS}
-	${Vulkan_INCLUDE_DIR}
-	${CMAKE_INCLUDES}
-
-#	"${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-windows/include/qt5"
-)
