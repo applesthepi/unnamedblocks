@@ -35,10 +35,13 @@ endif()
 #find_package(glm CONFIG REQUIRED)
 #find_package(glfw3 CONFIG REQUIRED)
 #find_package(RapidJSON CONFIG REQUIRED)
-#find_package(Vulkan REQUIRED)
-#find_package(zstd CONFIG REQUIRED)
+find_package(Vulkan REQUIRED FATAL_ERROR)
+#find_package(ZSTD REQUIRED FATAL_ERROR)
 #find_package(freetype CONFIG REQUIRED)
 #find_package(glad CONFIG REQUIRED)
+
+find_package(PkgConfig)
+pkg_check_modules(ZSTD zstd IMPORTED_TARGET GLOBAL)
 
 #find_library(TCC_LIBRARY NAMES libtcc1-64 PATHS "${CMAKE_SOURCE_DIR}/tcc")
 #find_path(TCC_INCLUDE NAMES libtcc.h PATHS "${CMAKE_SOURCE_DIR}/tcc")
@@ -68,36 +71,40 @@ option(BETA "Enable beta features" OFF)
 option(AVX "Enable AVX2 support. This is supported on Intel Haswell processors or newer and AMD Excavator processors and all Zen processors or newer" OFF)
 option(MODS "Build mods" ON)
 
-add_subdirectory("dependencies")
-
-set(UB_DEPENDENCIES
-	zstd
-	imgui
-	glfw
-	glm
-	freetype
-	Vulkan-Headers
-	)
-
-set(UB_DEPENDENCIES_LINK
-	libzstd
-	imgui
-	glfw
-	glm
-	freetype
-	vulkan
-	)
-
 set(UB_DEPENDENCIES_INCLUDE
 	${CMAKE_SOURCE_DIR}/dependencies/zstd/lib
 	${CMAKE_SOURCE_DIR}/dependencies/stb/include
 	${CMAKE_SOURCE_DIR}/dependencies/rapidjson/include
 	${CMAKE_SOURCE_DIR}/dependencies/imgui/include
-	${CMAKE_SOURCE_DIR}/dependencies/vulkan/Vulkan-Headers/include
-	${CMAKE_SOURCE_DIR}/dependencies/vulkan/glfw/include
-	${CMAKE_SOURCE_DIR}/dependencies/vulkan/glm
+	${CMAKE_SOURCE_DIR}/dependencies/glfw/include
+	${CMAKE_SOURCE_DIR}/dependencies/glm
 	${CMAKE_SOURCE_DIR}/dependencies/freetype/include
+)
+
+add_subdirectory("dependencies")
+
+set(UB_DEPENDENCIES
+	#zstd
+
+	imgui
+	glfw
+	glm
+	freetype
+	#Vulkan-Headers
 	)
+
+set(UB_DEPENDENCIES_LINK
+#	libzstd
+#PkgConfig::ZSTD
+zstd
+X11
+	imgui
+	glfw
+	glm
+	freetype
+	Vulkan::Vulkan
+	)
+
 
 add_subdirectory("ub_client")
 add_subdirectory("ub_cappuccino")
