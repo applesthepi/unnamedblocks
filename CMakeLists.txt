@@ -106,7 +106,6 @@ if (LINUX)
 		glm
 		freetype
 		Vulkan::Vulkan
-		imm32
 		X11 # Link X11 for linux
 	)
 else()

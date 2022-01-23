@@ -1,6 +1,3 @@
-[submodule "vcpkg"]
-	path = vcpkg
-	url = https://github.com/Microsoft/vcpkg
 [submodule "mods/ub_essentials"]
 	path = mods/ub_essentials
 	url = https://github.com/applesthepi/ub-essentials
