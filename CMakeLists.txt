@@ -9,9 +9,15 @@ set(CMAKE_BUILD_PARALLEL_LEVEL 12)
 enable_language( C CXX ASM )
 #SET(ASM_OPTIONS "-x assembler-with-cpp")
 
-#set(CMAKE_AUTOMOC ON)
-#set(CMAKE_AUTORCC ON)
-#set(CMAKE_AUTOUIC ON)
+macro(print_all_variables)
+	message(STATUS "print_all_variables------------------------------------------{")
+	get_cmake_property(_variableNames VARIABLES)
+	foreach (_variableName ${_variableNames})
+		message(STATUS "${_variableName}=${${_variableName}}")
+	endforeach()
+	message(STATUS "print_all_variables------------------------------------------}")
+endmacro()
+
 
 project(UB)
 
@@ -79,31 +85,40 @@ set(UB_DEPENDENCIES_INCLUDE
 	${CMAKE_SOURCE_DIR}/dependencies/glfw/include
 	${CMAKE_SOURCE_DIR}/dependencies/glm
 	${CMAKE_SOURCE_DIR}/dependencies/freetype/include
+	${Vulkan_INCLUDE_DIRS}
 )
+
+message(STATUS "VULKAN ------------- ${VULKAN_PATH}")
 
 add_subdirectory("dependencies")
 
 set(UB_DEPENDENCIES
-	#zstd
-
 	imgui
 	glfw
 	glm
 	freetype
-	#Vulkan-Headers
 	)
 
-set(UB_DEPENDENCIES_LINK
-#	libzstd
-#PkgConfig::ZSTD
-zstd
-X11
-	imgui
-	glfw
-	glm
-	freetype
-	Vulkan::Vulkan
+if (LINUX)
+	set(UB_DEPENDENCIES_LINK
+		imgui
+		glfw
+		glm
+		freetype
+		Vulkan::Vulkan
+		imm32
+		X11 # Link X11 for linux
 	)
+else()
+	set(UB_DEPENDENCIES_LINK
+		imgui
+		glfw
+		glm
+		freetype
+		Vulkan::Vulkan
+		imm32
+		)
+endif()
 
 
 add_subdirectory("ub_client")
@@ -115,47 +130,4 @@ if (MODS)
 	add_subdirectory("mods")
 endif()
 
-########################################################################################
-########################################################################################
-########################################################################################
-
-# IMGUI
-
-#add_library(imgui STATIC)
-#target_sources(imgui PRIVATE
-#		"vendor/imgui/imgui_demo.cpp"
-#		"vendor/imgui/imgui_draw.cpp"
-#		"vendor/imgui/imgui_tables.cpp"
-#		"vendor/imgui/imgui_widgets.cpp"
-#		"vendor/imgui/imgui.cpp"
-#
-#		"vendor/imgui/backends/imgui_impl_vulkan.cpp"
-#		"vendor/imgui/backends/imgui_impl_glfw.cpp"
-#)
-#
-#target_include_directories(imgui PUBLIC SYSTEM
-#		vendor/imgui
-#		vendor/imgui/backends
-##		${GLFW_SOURCE_DIR}/include
-#		${Vulkan_INCLUDE_DIR}
-#		${CMAKE_INCLUDES}
-#
-#		# TODO: fix this
-#		"vcpkg/installed/x64-windows/include"
-#		"vcpkg/installed/x64-linux/include"
-#)
-
-# CLIP
-
-#add_library(clip STATIC)
-#target_sources(clip PRIVATE
-#		"vendor/clip/clip.cpp"
-#		"vendor/clip/clip_none.cpp"
-#		"vendor/clip/clip_win.cpp"
-##		"vendor/clip/clip_x11.cpp"
-#		"vendor/clip/image.cpp"
-#)
-#
-#target_include_directories(clip PUBLIC
-#		"vendor/clip"
-#)
+#print_all_variables()
