@@ -9,7 +9,11 @@ class TextSystem
 {
 public:
 	TextSystem(std::string* text, u64* locHigh, u64* loc, bool* isDown)
-		:Text(text), LocHigh(locHigh), Loc(loc), IsDown(isDown) {}
+		: Text(text)
+		, LocHigh(locHigh)
+		, Loc(loc)
+		, IsDown(isDown)
+	{}
 
 	std::string* Text;
 	u64* LocHigh;
@@ -52,17 +56,18 @@ public:
 
 	static void Initialization();
 
-	static void RegisterKeyCallback(void(*callback)(key_state state, void* data), void* data);
-	static void UnregisterKeyCallback(void(*callback)(key_state state, void* data));
+	static void RegisterKeyCallback(void (*callback)(key_state state, void* data), void* data);
+	static void UnregisterKeyCallback(void (*callback)(key_state state, void* data));
 
-	static void RegisterTextCallback(void(*callback)(key_state state, void* data), void* data);
-	static void UnregisterTextCallback(void(*callback)(key_state state, void* data));
+	static void RegisterTextCallback(void (*callback)(key_state state, void* data), void* data);
+	static void UnregisterTextCallback(void (*callback)(key_state state, void* data));
 
-	static void RegisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), void* data);
-	static void UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data));
+	static void RegisterMouseCallback(void (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), void* data);
+	static void UnregisterMouseCallback(void (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data));
 
-	static void RegisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer, void* data);
-	static void UnregisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer);
+	static void
+	RegisterBullishMouseCallback(bool (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer, void* data);
+	static void UnregisterBullishMouseCallback(bool (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer);
 
 	// run events though window
 	static void FireKey(i16 key, u8 operation);
@@ -81,12 +86,14 @@ public:
 
 	// run every frame
 	// static void RunMouseProccessFrame(sf::Text* text, u64* loc, bool* isDown, const sf::Vector2i& pos, u64 yOverride = 0);
-	// static void RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, u64* loc, bool* isDown, const sf::Vector2i& pos, u16 fontSize, i16 vanityOffset);
+	// static void RunMouseProccessFrame(std::string* text, const sf::Vector2i& tPos, const sf::Vector2u& tSize, u64* loc, bool* isDown, const sf::Vector2i& pos, u16 fontSize, i16
+	// vanityOffset);
 
 	static u8 BullishLayerPopups;
 	static u8 BullishLayerUI;
 	static u8 BullishLayerArguments;
 	static u8 BullishLayerBackground;
+
 private:
 	static bool m_MouseWasDown;
 	static bool m_ShiftDown;
@@ -96,13 +103,13 @@ private:
 	static std::shared_mutex m_KeyTextMutex;
 	static std::shared_mutex m_MouseMutex;
 
-	static std::vector<void(*)(key_state state, void* data)> m_KeyCallbacks;
+	static std::vector<void (*)(key_state state, void* data)> m_KeyCallbacks;
 	static std::vector<void*> m_KeyDatas;
-	static std::vector<void(*)(key_state state, void* data)> m_TextCallbacks;
+	static std::vector<void (*)(key_state state, void* data)> m_TextCallbacks;
 	static std::vector<void*> m_TextDatas;
-	static std::vector<void(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)> m_MouseCallbacks;
+	static std::vector<void (*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)> m_MouseCallbacks;
 	static std::vector<void*> m_MouseDatas;
-	static std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>> m_BullishMouseCallbacks;
+	static std::vector<std::vector<bool (*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>> m_BullishMouseCallbacks;
 	static std::vector<std::vector<void*>> m_BullishMouseDatas;
 	static std::vector<TIME_POINT> m_PressLog;
 	static MouseButton m_LastMouseButton;

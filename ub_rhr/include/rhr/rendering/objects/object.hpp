@@ -1,11 +1,11 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/vertex.hpp"
-#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/registries/char_texture.hpp"
 #include "rhr/rendering/interfaces/i_enableable.hpp"
 #include "rhr/rendering/interfaces/i_positionable.hpp"
-#include "rhr/registries/char_texture.hpp"
+#include "rhr/rendering/interfaces/i_renderable.hpp"
+#include "rhr/rendering/vertex.hpp"
 
 #include <cappuccino/utils.hpp>
 
@@ -14,7 +14,10 @@
 namespace rhr::render::object
 {
 /// Basic object class for rendering custom geometry.
-class object : public rhr::render::interfaces::i_renderable, public rhr::render::interfaces::i_enableable, public rhr::render::interfaces::i_positionable<3, f64>
+class object
+	: public rhr::render::interfaces::i_renderable
+	, public rhr::render::interfaces::i_enableable
+	, public rhr::render::interfaces::i_positionable<3, f64>
 {
 public:
 	///
@@ -62,13 +65,14 @@ public:
 
 	///
 	void post_position_update() override;
+
 private:
 	///
 	void update_uniforms(bool ui);
-	
+
 	///
 	bool m_has_vertices;
-	
+
 	///
 	bool m_has_indices;
 
@@ -107,7 +111,7 @@ private:
 
 	///
 	vk::descriptor_set m_descriptor_set;
-	
+
 	///
 	u8 m_queue;
 
@@ -135,4 +139,4 @@ private:
 	///
 	rhr::registry::char_texture::texture_type m_char_texture_type;
 };
-}
+} // namespace rhr::render::object

@@ -20,10 +20,8 @@ public:
 	void recreate_swapchain();
 
 	///
-	void register_paired_pipeline(
-		const std::string& name, const std::string& shader_color, const std::string& shader_texture,
-		vk::cull_mode_flags cull_mode_flags = VK_CULL_MODE_NONE
-	);
+	void
+	register_paired_pipeline(const std::string& name, const std::string& shader_color, const std::string& shader_texture, vk::cull_mode_flags cull_mode_flags = VK_CULL_MODE_NONE);
 
 	///
 	void bind_color_pipeline(vk::descriptor_set* descriptor_set);
@@ -132,6 +130,7 @@ public:
 
 	///
 	void update_window_position(glm::vec<2, i32> window_position);
+
 private:
 	///
 	glfw::window* m_window;
@@ -148,8 +147,8 @@ private:
 	///
 	glm::vec<2, i32> m_window_position;
 
-    ///
-    std::string m_window_title;
+	///
+	std::string m_window_title;
 
 	///
 	std::unique_ptr<rhr::render::component::device> m_device;
@@ -157,4 +156,4 @@ private:
 	///
 	vk::surface_khr m_surface;
 };
-}
+} // namespace rhr::render::component

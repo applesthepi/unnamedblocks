@@ -7,26 +7,35 @@ namespace rhr::render::cardinal
 {
 enum class local
 {
-	UP, DOWN, LEFT, RIGHT
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
 };
 
 enum class local_horizontal
 {
-	LEFT, RIGHT
+	LEFT,
+	RIGHT
 };
 
 enum class local_vertical
 {
-	UP, DOWN
+	UP,
+	DOWN
 };
 
 enum class global
 {
-	NORTH, SOUTH, WEST, EAST
+	NORTH,
+	SOUTH,
+	WEST,
+	EAST
 };
 
 enum class plane
 {
-	HORIZONTAL, VERTICAL
+	HORIZONTAL,
+	VERTICAL
 };
-}
+} // namespace rhr::render::cardinal

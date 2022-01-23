@@ -49,7 +49,4 @@ void rhr::render::object::button_text::ui_update_buffers()
 	m_text->update_buffers();
 }
 
-void rhr::render::object::button_text::ui_frame_update(f64 delta_time)
-{
-	rhr::render::object::button::ui_frame_update(delta_time);
-}
+void rhr::render::object::button_text::ui_frame_update(f64 delta_time) { rhr::render::object::button::ui_frame_update(delta_time); }

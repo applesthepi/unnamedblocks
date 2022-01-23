@@ -17,6 +17,7 @@ public:
 
 	///
 	bool get_enabled();
+
 protected:
 	///
 	virtual void post_enable_update(bool enabled);
@@ -24,4 +25,4 @@ protected:
 	///
 	bool m_enabled;
 };
-}
+} // namespace rhr::render::interfaces

@@ -2,22 +2,32 @@
 
 void rhr::handler::context::initialize()
 {
-	m_open = false;
-	m_flag_open = false;
-	m_bounds = {};
-	m_position = {};
+	m_open			   = false;
+	m_flag_open		   = false;
+	m_bounds		   = {};
+	m_position		   = {};
 	m_callback_context = std::nullopt;
 
 	// setup info
 
-	flag::INFO_TEXT_SELECTION_ONLY = { &flag::INFO_TEXT, rhr::handler::context::flag::TEXT_SELECTION_ONLY,  { "cut", "copy", "paste", "delete" } };
-	flag::INFO_TEXT_STANDING_ONLY = { &flag::INFO_TEXT, rhr::handler::context::flag::TEXT_STANDING_ONLY, { "paste" } };
+	flag::INFO_TEXT_SELECTION_ONLY = {
+		&flag::INFO_TEXT, rhr::handler::context::flag::TEXT_SELECTION_ONLY, {"cut", "copy", "paste", "delete"}
+	  };
+	flag::INFO_TEXT_STANDING_ONLY = {&flag::INFO_TEXT, rhr::handler::context::flag::TEXT_STANDING_ONLY, {"paste"}};
 
-	flag::INFO_OBJECT_STACKING_STACK = { &flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING_STACK, { "duplicate stack", "delete stack" } };
-	flag::INFO_OBJECT_STACKING_BLOCK = { &flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING_BLOCK, { "duplicate block", "delete block" } };
+	flag::INFO_OBJECT_STACKING_STACK = {
+		&flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING_STACK, {"duplicate stack", "delete stack"}
+	};
+	flag::INFO_OBJECT_STACKING_BLOCK = {
+		&flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING_BLOCK, {"duplicate block", "delete block"}
+	};
 
-	flag::INFO_TEXT = { &flag::INFO_TEXT, rhr::handler::context::flag::TEXT, { "cut", "copy", "paste", "delete" } };
-	flag::INFO_OBJECT_STACKING = { &flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING, { "duplicate stack", "delete stack", "duplicate block", "delete block" } };
+	flag::INFO_TEXT = {
+		&flag::INFO_TEXT, rhr::handler::context::flag::TEXT, {"cut", "copy", "paste", "delete"}
+	   };
+	flag::INFO_OBJECT_STACKING = {
+		&flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING, {"duplicate stack", "delete stack", "duplicate block", "delete block"}
+	 };
 
 	// create imgui functions
 
@@ -125,10 +135,7 @@ void rhr::handler::context::open(RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags, 
 	m_flag_open = true;
 }
 
-void rhr::handler::context::close()
-{
-
-}
+void rhr::handler::context::close() {}
 
 void rhr::handler::context::run_imgui()
 {
@@ -146,10 +153,10 @@ void rhr::handler::context::run_imgui()
 			flag::hashed_imgui[context_flag](m_callback_context);
 
 		ImVec2 bounds = ImGui::GetWindowSize();
-		m_bounds = { bounds.x, bounds.y };
+		m_bounds	  = {bounds.x, bounds.y};
 
 		ImVec2 position = ImGui::GetWindowPos();
-		m_position = { position.x, position.y };
+		m_position		= {position.x, position.y};
 
 		ImGui::EndPopup();
 	}
@@ -157,20 +164,11 @@ void rhr::handler::context::run_imgui()
 		m_open = false;
 }
 
-bool rhr::handler::context::is_open()
-{
-	return m_open;
-}
+bool rhr::handler::context::is_open() { return m_open; }
 
-const glm::vec<2, i32>& rhr::handler::context::get_position()
-{
-	return m_position;
-}
+const glm::vec<2, i32>& rhr::handler::context::get_position() { return m_position; }
 
-const glm::vec<2, i32>& rhr::handler::context::get_bounds()
-{
-	return m_bounds;
-}
+const glm::vec<2, i32>& rhr::handler::context::get_bounds() { return m_bounds; }
 
 RHR_HANDLER_CONTEXT_FLAG_PREFIX rhr::handler::context::flag::TEXT_SELECTION_ONLY = 0x1;
 rhr::handler::context::flag::info rhr::handler::context::flag::INFO_TEXT_SELECTION_ONLY;
@@ -193,7 +191,8 @@ rhr::handler::context::flag::info rhr::handler::context::flag::INFO_OBJECT_STACK
 std::unordered_map<u8, rhr::handler::context::flag::menu_text> rhr::handler::context::flag::hashed_menu_text;
 std::unordered_map<u8, rhr::handler::context::flag::menu_object> rhr::handler::context::flag::hashed_menu_object;
 
-std::unordered_map<RHR_HANDLER_CONTEXT_FLAG_PREFIX, std::function<void(std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>&)>> rhr::handler::context::flag::hashed_imgui;
+std::unordered_map<RHR_HANDLER_CONTEXT_FLAG_PREFIX, std::function<void(std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>&)>>
+	rhr::handler::context::flag::hashed_imgui;
 
 std::vector<RHR_HANDLER_CONTEXT_FLAG_PREFIX> rhr::handler::context::m_flags;
 bool rhr::handler::context::m_open;

@@ -1,11 +1,11 @@
 #pragma once
 #include "config.h"
 
-#include "cappuccino/utils.hpp"
-#include "cappuccino/mod/block/block.hpp"
-#include "cappuccino/mod/block/pass.hpp"
 #include "cappuccino/execution_thread.hpp"
+#include "cappuccino/mod/block/block.hpp"
 #include "cappuccino/mod/block/data.hpp"
+#include "cappuccino/mod/block/pass.hpp"
+#include "cappuccino/utils.hpp"
 
 namespace cap
 {
@@ -111,6 +111,7 @@ public:
 
 	///
 	static cap::mod::block::data** get_data();
+
 private:
 	///
 	static bool global_pre(cap::preprocessor_data& data);
@@ -267,4 +268,4 @@ private:
 	///
 	static std::vector<u64> m_variable_registry_offsets;
 };
-}
+} // namespace cap

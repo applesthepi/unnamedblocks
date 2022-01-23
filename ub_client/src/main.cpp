@@ -25,10 +25,7 @@ static void async_setup()
 	rhr::registry::char_texture::process_fonts();
 }
 
-static void button_callback_build_debug(void *data)
-{
-	rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
-}
+static void button_callback_build_debug(void* data) { rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG); }
 
 i32 main()
 {
@@ -78,7 +75,7 @@ i32 main()
 
 	{
 		cap::logger::info(cap::logger::level::EDITOR, "all unsaved progress will be lost if this window is closed");
-        
+
 		rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
 		rhr::stack::plane::primary_plane->set_weak(rhr::stack::plane::primary_plane);
 
@@ -89,12 +86,10 @@ i32 main()
 	run();
 	rhr::handler::category::populate();
 
-	rhr::stack::plane::primary_plane->set_size_parent(
-		rhr::render::renderer::get_window_primary()->get_window_size(), false);
+	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
 	rhr::stack::plane::primary_plane->set_size_max();
 
-	rhr::stack::plane::toolbar_plane->set_size_parent(
-		rhr::render::renderer::get_window_primary()->get_window_size(), false);
+	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
 	rhr::stack::plane::toolbar_plane->set_size_max();
 
 	// default blocks
@@ -145,8 +140,7 @@ i32 main()
 		//*/));
 
 		glfwPollEvents();
-		glfwGetWindowPos(
-			rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
+		glfwGetWindowPos(rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
 
 		if (rhr::render::renderer::get_window_primary()->get_swapchain_recreation_flag())
 			rhr::render::renderer::reload_swapchain();
@@ -167,7 +161,7 @@ i32 main()
 
 			if (opt_fullscreen)
 			{
-				ImGuiViewport *viewport = ImGui::GetMainViewport();
+				ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 				ImGui::SetNextWindowPos(viewport->Pos);
 				ImGui::SetNextWindowSize(viewport->Size);
@@ -205,7 +199,7 @@ i32 main()
 				ImGui::PopStyleVar(2);
 
 			// DockSpace
-			ImGuiIO &io = ImGui::GetIO();
+			ImGuiIO& io = ImGui::GetIO();
 			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 			{
 				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
@@ -227,7 +221,7 @@ i32 main()
 		rhr::handler::context::run_imgui();
 
 		ImGui::Render();
-		ImDrawData *main_draw_data = ImGui::GetDrawData();
+		ImDrawData* main_draw_data = ImGui::GetDrawData();
 		bool main_is_minimized	   = (main_draw_data->DisplaySize.x <= 0.0f || main_draw_data->DisplaySize.y <= 0.0f);
 
 		rhr::render::renderer::imgui_local->data.ClearValue.color.float32[0] = clear_color.x * clear_color.w;

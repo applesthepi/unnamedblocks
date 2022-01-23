@@ -7,24 +7,23 @@
 
 enum class ModLoaderStatus
 {
-	ModLoaderStatus_OK, ModLoaderStatus_ERROR
+	ModLoaderStatus_OK,
+	ModLoaderStatus_ERROR
 };
 
 class RegMod
 {
 public:
 	RegMod(const std::string fileName)
-	: FileName(fileName), Data(new esp::mod::data()), Supported_WIN(false), Supported_LINUX(false) {}
+		: FileName(fileName)
+		, Data(new esp::mod::data())
+		, Supported_WIN(false)
+		, Supported_LINUX(false)
+	{}
 
-	void SupportWIN()
-	{
-		Supported_WIN = true;
-	}
+	void SupportWIN() { Supported_WIN = true; }
 
-	void SupportLINUX()
-	{
-		Supported_LINUX = true;
-	}
+	void SupportLINUX() { Supported_LINUX = true; }
 
 	std::string FileName;
 	esp::mod::data* Data;

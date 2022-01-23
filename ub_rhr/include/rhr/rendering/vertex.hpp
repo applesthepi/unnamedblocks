@@ -36,4 +36,4 @@ public:
 	///
 	static std::array<VkVertexInputAttributeDescription, 3> get_attribute_description();
 };
-}
+} // namespace rhr::render

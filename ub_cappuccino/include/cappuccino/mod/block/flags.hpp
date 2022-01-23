@@ -29,6 +29,7 @@ public:
 
 		///
 		void reset();
+
 	private:
 		///
 		u64 m_iterator;
@@ -47,6 +48,7 @@ public:
 
 	///
 	flags& check_stack();
+
 private:
 	///
 	cap::mod::block::flags::iterator m_iterator;
@@ -54,4 +56,4 @@ private:
 	///
 	u64 m_flag;
 };
-}
+} // namespace cap::mod::block

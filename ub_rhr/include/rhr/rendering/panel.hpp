@@ -77,7 +77,8 @@ public:
 	};
 
 	///
-	static void create_panel(const std::string& id,
+	static void create_panel(
+		const std::string& id,
 		const std::function<void(panel::data&)>& function_render,
 		const std::function<void(panel::data&)>& function_render_master,
 		const std::function<void(panel::data&)>& function_update_position,
@@ -98,4 +99,4 @@ public:
 	///
 	static std::vector<data> panels;
 };
-}
+} // namespace rhr::render

@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/components/swapchain.hpp"
-#include "rhr/rendering/components/pipeline.hpp"
 #include "rhr/rendering/components/command_pool.hpp"
+#include "rhr/rendering/components/pipeline.hpp"
+#include "rhr/rendering/components/swapchain.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
@@ -54,6 +54,7 @@ public:
 
 	///
 	static bool validation_layers_enabled;
+
 private:
 	///
 	void initialize_descriptor_set();
@@ -91,7 +92,7 @@ private:
 	///
 	vk::sampler m_texture_sampler;
 
-    ///
+	///
 	std::unique_ptr<rhr::render::component::swapchain> m_swapchain;
 
 	///
@@ -100,4 +101,4 @@ private:
 	///
 	std::unique_ptr<rhr::render::component::command_pool> m_command_pool;
 };
-}
+} // namespace rhr::render::component

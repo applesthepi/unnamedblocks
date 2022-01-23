@@ -18,17 +18,8 @@ void rhr::render::object::button_image::ui_transform_update()
 	m_rectangle->set_size_max();
 }
 
-void rhr::render::object::button_image::ui_render()
-{
-	m_rectangle->render();
-}
+void rhr::render::object::button_image::ui_render() { m_rectangle->render(); }
 
-void rhr::render::object::button_image::ui_reload_swap_chain()
-{
-	m_rectangle->reload_swap_chain();
-}
+void rhr::render::object::button_image::ui_reload_swap_chain() { m_rectangle->reload_swap_chain(); }
 
-void rhr::render::object::button_image::ui_update_buffers()
-{
-	m_rectangle->update_buffers();
-}
+void rhr::render::object::button_image::ui_update_buffers() { m_rectangle->update_buffers(); }

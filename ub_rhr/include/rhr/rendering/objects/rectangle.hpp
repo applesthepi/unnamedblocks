@@ -1,19 +1,19 @@
 #pragma once
 #include "config.h"
 
+#include "rhr/rendering/cardinal.hpp"
 #include "rhr/rendering/interfaces/i_colorable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/object.hpp"
-#include "rhr/rendering/cardinal.hpp"
 
 #include <cappuccino/utils.hpp>
 
 namespace rhr::render::object
 {
 ///
-class rectangle :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_colorable
+class rectangle
+	: public rhr::render::interfaces::i_ui
+	, public rhr::render::interfaces::i_colorable
 {
 public:
 	///
@@ -33,6 +33,7 @@ public:
 
 	///
 	void enable_border(bool enable_border, rhr::render::cardinal::local_horizontal overhang_horizontal, rhr::render::cardinal::local_vertical overhang_vertical);
+
 private:
 	///
 	void ui_transform_update() override;
@@ -66,4 +67,4 @@ private:
 	rhr::render::cardinal::local_horizontal m_overhang_horizontal;
 	rhr::render::cardinal::local_vertical m_overhang_vertical;
 };
-}
+} // namespace rhr::render::object

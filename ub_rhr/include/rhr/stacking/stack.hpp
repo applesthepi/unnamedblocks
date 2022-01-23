@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/stacking/block.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
+#include "rhr/stacking/block.hpp"
 
 #include <cappuccino/utils.hpp>
 
@@ -41,6 +41,7 @@ public:
 
 	///
 	void set_collection_update_function(std::function<void()>* function_collection_update);
+
 private:
 	///
 	void ui_transform_update() override;
@@ -66,4 +67,4 @@ private:
 	///
 	std::function<void()> m_function_stack_update;
 };
-}
+} // namespace rhr::stack

@@ -40,7 +40,7 @@ public:
 		std::vector<void*>* custom_register;
 
 		///
-		void(*stop)();
+		void (*stop)();
 
 		///
 		std::chrono::steady_clock::time_point* begin_time;
@@ -103,16 +103,15 @@ public:
 	void set_finished(std::atomic<bool>* finished);
 
 	///
-	void set_callstack_local(void(***local_callstack)(pass*));
+	void set_callstack_local(void (***local_callstack)(pass*));
 
 	///
-	void set_calls(void(***calls)(pass*));
+	void set_calls(void (***calls)(pass*));
 
 	///
 	void perform_deallocation_callbacks();
 
-
-	//void PerformLocationUpdate();
+	// void PerformLocationUpdate();
 
 	// ====================================================
 	// user calls
@@ -191,12 +190,13 @@ public:
 
 	///
 	void custom_free(u64 idx, bool deallocate = true);
+
 private:
 	///
 	void update_locations();
 	// user data interactions
 	///
-	f64& (pass::* m_get_real)(u64 idx);
+	f64& (pass::*m_get_real)(u64 idx);
 
 	///
 	f64& get_real_debug(u64 idx);
@@ -205,7 +205,7 @@ private:
 	f64& get_real_release(u64 idx);
 
 	///
-	bool& (pass::* m_get_bool)(u64 idx);
+	bool& (pass::*m_get_bool)(u64 idx);
 
 	///
 	bool& get_bool_debug(u64 idx);
@@ -214,7 +214,7 @@ private:
 	bool& get_bool_release(u64 idx);
 
 	///
-	std::string& (pass::* m_get_string)(u64 idx);
+	std::string& (pass::*m_get_string)(u64 idx);
 
 	///
 	std::string& get_string_debug(u64 idx);
@@ -223,7 +223,7 @@ private:
 	std::string& get_string_release(u64 idx);
 
 	///
-	void* (pass::* m_get_pre_data)(u64 idx);
+	void* (pass::*m_get_pre_data)(u64 idx);
 
 	///
 	void* get_pre_data_debug(u64 idx);
@@ -244,7 +244,7 @@ private:
 	std::vector<std::string> m_messages_error;
 
 	///
-	void(*m_stop)();
+	void (*m_stop)();
 
 	///
 	std::chrono::steady_clock::time_point* m_begin_time;
@@ -325,10 +325,10 @@ private:
 	std::vector<u64>* m_callstack_block_idx;
 
 	///
-	void(***m_local_callstack)(pass*);
+	void (***m_local_callstack)(pass*);
 
 	///
-	void(***m_calls)(pass*);
+	void (***m_calls)(pass*);
 
 	///
 	std::vector<std::function<void(pass*)>*> m_deallocation_calls;
@@ -339,4 +339,4 @@ private:
 	///
 	std::atomic<bool>* m_finished;
 };
-}
+} // namespace cap::mod::block

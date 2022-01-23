@@ -3,11 +3,11 @@
 
 #include "config.h"
 
-#include "cappuccino/utils.hpp"
 #include "cappuccino/preprocessor_data.hpp"
+#include "cappuccino/utils.hpp"
+#include "data.hpp"
 #include "flags.hpp"
 #include "pass.hpp"
-#include "data.hpp"
 
 /*
 Important Modding Information
@@ -29,7 +29,11 @@ public:
 		/// "ANY" is indicated for any *variable* input. The type will unspecified in cappuccino and will be presented as a "void*".
 		enum class type
 		{
-			TEXT, REAL, BOOL, STRING, ANY
+			TEXT,
+			REAL,
+			BOOL,
+			STRING,
+			ANY
 		};
 
 		///
@@ -46,7 +50,8 @@ public:
 		/// If you want to restrict how data is inputted see the "cap::mod::block::argument::variable_mode_restriction" class.
 		enum class variable_mode
 		{
-			VAR, RAW
+			VAR,
+			RAW
 		};
 
 		///
@@ -54,7 +59,11 @@ public:
 		{
 		public:
 			initializer(const type type, const variable_mode_restriction restriction, const variable_mode mode, std::string default_value)
-			: m_type(type), m_restriction(restriction), m_mode(mode), m_default_value(std::move(default_value)) {}
+				: m_type(type)
+				, m_restriction(restriction)
+				, m_mode(mode)
+				, m_default_value(std::move(default_value))
+			{}
 
 			///
 			type& get_type() { return m_type; }
@@ -67,6 +76,7 @@ public:
 
 			///
 			std::string& get_default_value() { return m_default_value; }
+
 		private:
 			///
 			type m_type;
@@ -83,13 +93,13 @@ public:
 	};
 
 	///
-	typedef void(*execution)(pass*);
+	typedef void (*execution)(pass*);
 
 	///
-	typedef bool(*initialization)(cap::preprocessor_data&);
+	typedef bool (*initialization)(cap::preprocessor_data&);
 
 	///
-	typedef bool(*data_initialization)(cap::preprocessor_data&, cap::mod::block::data&);
+	typedef bool (*data_initialization)(cap::preprocessor_data&, cap::mod::block::data&);
 
 	/// How the block will be identified as. Convention example: "mymod_some_block_name".
 	virtual const char* get_unlocalized_name() const;
@@ -124,4 +134,4 @@ public:
 	/// Block arguments, including text.
 	virtual std::vector<argument::initializer> get_arguments() const;
 };
-}
+} // namespace cap::mod::block

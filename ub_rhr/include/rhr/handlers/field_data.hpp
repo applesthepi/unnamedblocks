@@ -3,8 +3,8 @@
 
 #include "rhr/rendering/interfaces/i_field.hpp"
 
-#include <cappuccino/utils.hpp>
 #include "rhr/handlers/input.hpp"
+#include <cappuccino/utils.hpp>
 
 namespace rhr::handler::field_data
 {
@@ -29,6 +29,7 @@ public:
 
 	///
 	static location none;
+
 private:
 	///
 	glm::vec<2, usize> m_cell;
@@ -85,6 +86,7 @@ public:
 
 	///
 	void host_add_location(const rhr::handler::field_data::location& location);
+
 private:
 	///
 	usize m_idx;
@@ -107,4 +109,4 @@ private:
 	///
 	std::vector<rhr::handler::field_data::location>* m_other_locations;
 };
-}
+} // namespace rhr::handler::field_data

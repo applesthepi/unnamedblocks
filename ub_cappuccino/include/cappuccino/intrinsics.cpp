@@ -2,11 +2,11 @@
 #include "Intrinsics.h"
 
 #ifdef WIN32
-#include <iostream>
-#include <vector>
-#include <bitset>
 #include <array>
+#include <bitset>
+#include <iostream>
 #include <string>
+#include <vector>
 
 class InstructionSet
 {

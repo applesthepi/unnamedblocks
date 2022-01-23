@@ -3,8 +3,10 @@
 #include "cappuccino/registration.hpp"
 
 cap::preprocessor_data::preprocessor_data(std::vector<void*>& v_custom)
-	: m_v_real(cap::registration::get_real_template()), m_v_bool(cap::registration::get_bool_template()), m_v_string(
-cap::registration::get_string_template()), m_v_custom(v_custom)
+	: m_v_real(cap::registration::get_real_template())
+	, m_v_bool(cap::registration::get_bool_template())
+	, m_v_string(cap::registration::get_string_template())
+	, m_v_custom(v_custom)
 {
 	block_idx = 0;
 	stack_idx = 0;

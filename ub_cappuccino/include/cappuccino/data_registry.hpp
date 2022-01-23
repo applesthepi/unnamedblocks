@@ -3,14 +3,14 @@
 //
 //#include "cappuccino/utils.hpp"
 //
-//class DataRegistry
+// class DataRegistry
 //{
-//public:
+// public:
 //	DataRegistry(u64 keyCount);
 //	~DataRegistry();
 //
 //	void CreateKey(void* value, u64 idx);
 //	void* GetKey(u64 idx);
-//private:
+// private:
 //	void** m_keys;
 //};

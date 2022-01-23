@@ -6,14 +6,11 @@ rhr::stack::collection::collection()
 	: m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_display_vanity(true)
 {
-	m_function_collection_update = [&]()
-	{
-		check_bounds();
-	};
+	m_function_collection_update = [&]() { check_bounds(); };
 
 	m_background->set_weak(m_background);
 	m_background->set_depth(rhr::render::renderer::depth_collection);
-	m_background->set_color(cap::color().from_u8({ 25, 25, 30, 255 }));
+	m_background->set_color(cap::color().from_u8({25, 25, 30, 255}));
 	m_stacks.reserve(5);
 }
 
@@ -30,7 +27,7 @@ void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack,
 		if (!m_display_vanity)
 			empty_space = 0;
 
-		glm::vec<2, i32> size = get_size_local();
+		glm::vec<2, i32> size	  = get_size_local();
 		glm::vec<2, i32> position = get_position_local_physical();
 
 		if (size.x < empty_space)
@@ -83,7 +80,7 @@ void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::s
 
 		if (auto_size)
 		{
-			glm::vec<2, i32> size = get_size_local();
+			glm::vec<2, i32> size	  = get_size_local();
 			glm::vec<2, i32> position = get_position_local_physical();
 
 			if (stacks[i]->get_position_local_physical().x + stacks[i]->get_widest_block() > size.x - empty_space)
@@ -97,7 +94,8 @@ void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::s
 			}
 
 			if (stacks[i]->get_position_local_physical().y + (stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
-				size.y = stacks[i]->get_position_local_physical().y + (static_cast<i32>(stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
+				size.y =
+					stacks[i]->get_position_local_physical().y + (static_cast<i32>(stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
 
 			if (stacks[i]->get_position_local_physical().y < empty_space)
 			{
@@ -185,7 +183,7 @@ void rhr::stack::collection::check_bounds()
 
 	for (usize i = 0; i < m_stacks.size(); i++)
 	{
-		glm::vec<2, i32> size = get_size_local();
+		glm::vec<2, i32> size	  = get_size_local();
 		glm::vec<2, i32> position = get_position_local_physical();
 
 		if (m_stacks[i]->get_position_local_physical().x + m_stacks[i]->get_widest_block() > size.x - empty_space)
@@ -199,7 +197,8 @@ void rhr::stack::collection::check_bounds()
 		}
 
 		if (m_stacks[i]->get_position_local_physical().y + (m_stacks[i]->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
-			size.y = m_stacks[i]->get_position_local_physical().y + (static_cast<i32>(m_stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
+			size.y =
+				m_stacks[i]->get_position_local_physical().y + (static_cast<i32>(m_stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height)) + empty_space;
 
 		if (m_stacks[i]->get_position_local_physical().y < empty_space)
 		{
@@ -221,20 +220,11 @@ void rhr::stack::collection::remove_stack(u64 idx, u64 block_offset)
 		m_stacks[static_cast<usize>(idx)]->remove_blocks_end(block_offset);
 }
 
-void rhr::stack::collection::remove_all()
-{
-	m_stacks.clear();
-}
+void rhr::stack::collection::remove_all() { m_stacks.clear(); }
 
-void rhr::stack::collection::display_vanity(bool enabled)
-{
-	m_display_vanity = enabled;
-}
+void rhr::stack::collection::display_vanity(bool enabled) { m_display_vanity = enabled; }
 
-const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::get_stacks()
-{
-	return m_stacks;
-}
+const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::get_stacks() { return m_stacks; }
 
 void rhr::stack::collection::ui_transform_update()
 {

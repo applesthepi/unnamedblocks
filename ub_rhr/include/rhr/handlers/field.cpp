@@ -1,7 +1,7 @@
 #include "field.hpp"
 
-#include "rhr/stacking/plane.hpp"
 #include "rhr/handlers/context.hpp"
+#include "rhr/stacking/plane.hpp"
 
 //#include "clip/clip.h"
 
@@ -14,34 +14,44 @@ constexpr usize FIELD_CELL_SIZE = 5000;
 
 static void mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
 {
-	rhr::handler::field* field = (rhr::handler::field*) data;
+	rhr::handler::field* field = (rhr::handler::field*)data;
 	field->mouse_button(position, scroll, operation, button);
 }
 
 static void text_button_caller(InputHandler::key_state state, void* data)
 {
-	rhr::handler::field* field = (rhr::handler::field*) data;
+	rhr::handler::field* field = (rhr::handler::field*)data;
 	field->text_button(state);
 }
 
 rhr::handler::field::field()
-: m_cell_table_size({ 0, 0 }), m_mouse_down(false), m_mouse_down_data(nullptr), m_mouse_drag(false)
-  , m_mouse_click_highlight(false), m_mouse_drag_start(0), m_mouse_drag_end(0), m_mouse_drag_start_position({ 0, 0 })
-  , m_mouse_drag_end_position({ 0, 0 }), m_cursor(false), m_cursor_position({ 0, 0 }), m_cursor_idx(0), m_idx(0)
-  , m_rectangle_cursor(std::make_shared<rhr::render::object::rectangle>()), m_rectangle_highlight(
-std::make_shared<rhr::render::object::rectangle>())
+	: m_cell_table_size({0, 0})
+	, m_mouse_down(false)
+	, m_mouse_down_data(nullptr)
+	, m_mouse_drag(false)
+	, m_mouse_click_highlight(false)
+	, m_mouse_drag_start(0)
+	, m_mouse_drag_end(0)
+	, m_mouse_drag_start_position({0, 0})
+	, m_mouse_drag_end_position({0, 0})
+	, m_cursor(false)
+	, m_cursor_position({0, 0})
+	, m_cursor_idx(0)
+	, m_idx(0)
+	, m_rectangle_cursor(std::make_shared<rhr::render::object::rectangle>())
+	, m_rectangle_highlight(std::make_shared<rhr::render::object::rectangle>())
 {
-	resize({ 5, 5 });
+	resize({5, 5});
 
 	m_rectangle_cursor->set_weak(m_rectangle_cursor);
 	m_rectangle_highlight->set_weak(m_rectangle_highlight);
 	m_rectangle_highlight->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_cursor->set_color(cap::color::text_primary_color);
-	m_rectangle_cursor->set_size_local({ 1, rhr::stack::block::height_content });
+	m_rectangle_cursor->set_size_local({1, rhr::stack::block::height_content});
 	m_rectangle_cursor->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
-	m_rectangle_highlight->set_color(cap::color().from_u8({ 30, 70, 210, 80 }));
+	m_rectangle_highlight->set_color(cap::color().from_u8({30, 70, 210, 80}));
 
 	InputHandler::RegisterMouseCallback(mouse_button_caller, this);
 	InputHandler::RegisterTextCallback(text_button_caller, this);
@@ -110,16 +120,16 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 			if (m_mouse_drag_start != *idx)
 				m_mouse_drag = true;
 
-			m_mouse_drag_end = *idx;
+			m_mouse_drag_end		  = *idx;
 			m_mouse_drag_end_position = *cursor_position;
 
 			m_cursor_position = *cursor_position;
-			m_cursor_idx = *idx;
+			m_cursor_idx	  = *idx;
 
 			update_cursor();
 			update_highlight();
 
-//			cap::logger::info("move from " + std::to_string(m_mouse_drag_start) + " to " + std::to_string(m_mouse_drag_end));
+			//			cap::logger::info("move from " + std::to_string(m_mouse_drag_start) + " to " + std::to_string(m_mouse_drag_end));
 		}
 		else
 		{
@@ -168,79 +178,83 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 
 			if (button == MouseButton::RIGHT && m_mouse_drag)
 			{
-				rhr::handler::context::open(rhr::handler::context::flag::TEXT_SELECTION_ONLY, [text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
-				{
-					//if (flag == rhr::handler::context::flag::TEXT_SELECTION_ONLY)
-					//{
-					//	bool flag_delete_collection = false;
-					//
-					//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
-					//	{
-					//	case rhr::handler::context::flag::menu_text::PASTE:
-					//
-					//		if (clip::has(clip::text_format()))
-					//		{
-					//			std::string value;
-					//			clip::get_text(value);
-					//
-					//			if (auto data = text_field_weak.lock())
-					//				data->insert_string(value, field_idx);
-					//		}
-					//
-					//		break;
-					//	case rhr::handler::context::flag::menu_text::COPY:
-					//
-					//		if (auto data = text_field_weak.lock())
-					//			data->
-					//
-					//		break;
-					//	}
-					//}
-				});
+				rhr::handler::context::open(
+					rhr::handler::context::flag::TEXT_SELECTION_ONLY,
+					[text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+					{
+						// if (flag == rhr::handler::context::flag::TEXT_SELECTION_ONLY)
+						//{
+						//	bool flag_delete_collection = false;
+						//
+						//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
+						//	{
+						//	case rhr::handler::context::flag::menu_text::PASTE:
+						//
+						//		if (clip::has(clip::text_format()))
+						//		{
+						//			std::string value;
+						//			clip::get_text(value);
+						//
+						//			if (auto data = text_field_weak.lock())
+						//				data->insert_string(value, field_idx);
+						//		}
+						//
+						//		break;
+						//	case rhr::handler::context::flag::menu_text::COPY:
+						//
+						//		if (auto data = text_field_weak.lock())
+						//			data->
+						//
+						//		break;
+						//	}
+						// }
+					});
 
 				return;
 			}
 
-			m_mouse_down = true;
-			m_mouse_down_data = data.value();
-			m_mouse_drag = false;
-			m_mouse_drag_start = *idx;
-			m_mouse_drag_end = *idx;
+			m_mouse_down				= true;
+			m_mouse_down_data			= data.value();
+			m_mouse_drag				= false;
+			m_mouse_drag_start			= *idx;
+			m_mouse_drag_end			= *idx;
 			m_mouse_drag_start_position = *cursor_position;
-			m_mouse_drag_end_position = *cursor_position;
+			m_mouse_drag_end_position	= *cursor_position;
 
-			m_cursor = true;
+			m_cursor		  = true;
 			m_cursor_position = *cursor_position;
-			m_cursor_idx = *idx;
-			m_cursor_weak = data.value()->get_text_field();
+			m_cursor_idx	  = *idx;
+			m_cursor_weak	  = data.value()->get_text_field();
 
 			update_cursor();
 
 			if (button == MouseButton::RIGHT)
 			{
-				rhr::handler::context::open(rhr::handler::context::flag::TEXT_STANDING_ONLY, [text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
-				{
-					//if (flag == rhr::handler::context::flag::TEXT_STANDING_ONLY)
-					//{
-					//	bool flag_delete_collection = false;
-					//
-					//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
-					//	{
-					//	case rhr::handler::context::flag::menu_text::PASTE:
-					//
-					//		if (clip::has(clip::text_format()))
-					//		{
-					//			std::string value;
-					//			clip::get_text(value);
-					//
-					//			if (auto data = text_field_weak.lock())
-					//				data->insert_string(value, field_idx);
-					//		}
-					//
-					//		break;
-					//	}
-					//}
-				});
+				rhr::handler::context::open(
+					rhr::handler::context::flag::TEXT_STANDING_ONLY,
+					[text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+					{
+						// if (flag == rhr::handler::context::flag::TEXT_STANDING_ONLY)
+						//{
+						//	bool flag_delete_collection = false;
+						//
+						//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
+						//	{
+						//	case rhr::handler::context::flag::menu_text::PASTE:
+						//
+						//		if (clip::has(clip::text_format()))
+						//		{
+						//			std::string value;
+						//			clip::get_text(value);
+						//
+						//			if (auto data = text_field_weak.lock())
+						//				data->insert_string(value, field_idx);
+						//		}
+						//
+						//		break;
+						//	}
+						// }
+					});
 
 				return;
 			}
@@ -268,25 +282,25 @@ void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, Mo
 				return;
 
 			std::optional<glm::vec<2, i32>> cursor_position_start = lock->get_index_position(0);
-			std::optional<glm::vec<2, i32>> cursor_position_end = lock->get_index_position(lock->get_index_count());
+			std::optional<glm::vec<2, i32>> cursor_position_end	  = lock->get_index_position(lock->get_index_count());
 
 			if (!cursor_position_start.has_value() || !cursor_position_end.has_value())
 				return;
 #if DEBUG_FIELDS
 			cap::logger::info("double press");
 #endif
-			m_mouse_down = true;
-			m_mouse_down_data = data.value();
-			m_mouse_drag = true;
-			m_mouse_drag_start = 0;
-			m_mouse_drag_end = lock->get_index_count();
+			m_mouse_down				= true;
+			m_mouse_down_data			= data.value();
+			m_mouse_drag				= true;
+			m_mouse_drag_start			= 0;
+			m_mouse_drag_end			= lock->get_index_count();
 			m_mouse_drag_start_position = *cursor_position_start;
-			m_mouse_drag_end_position = *cursor_position_end;
+			m_mouse_drag_end_position	= *cursor_position_end;
 
-			m_cursor = true;
+			m_cursor		  = true;
 			m_cursor_position = *cursor_position_end;
-			m_cursor_idx = lock->get_index_count();
-			m_cursor_weak = data.value()->get_text_field();
+			m_cursor_idx	  = lock->get_index_count();
+			m_cursor_weak	  = data.value()->get_text_field();
 
 			update_cursor();
 			update_highlight();
@@ -370,8 +384,8 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 			{
 				set_cursor(0, true);
 				m_mouse_drag_start = 0;
-				m_mouse_drag_end = 0;
-				m_mouse_drag = true;
+				m_mouse_drag_end   = 0;
+				m_mouse_drag	   = true;
 				set_cursor(lock->get_index_count(), false);
 				return;
 			}
@@ -460,7 +474,7 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 
 			if (state.key >= 'A' && state.key <= 'Z')
 			{
-				insert_key = state.key;
+				insert_key		 = state.key;
 				insert_key_valid = true;
 			}
 
@@ -482,8 +496,7 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 }
 
 rhr::handler::field_data::location
-rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field,
-									glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer)
+rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer)
 {
 	glm::vec<2, usize> cell_position = calculate_cell_position(position);
 	resize(cell_position + glm::vec<2, usize>(1, 1));
@@ -509,9 +522,7 @@ void rhr::handler::field::unregister_field(const rhr::handler::field_data::locat
 	remove_guests(location);
 }
 
-rhr::handler::field_data::location
-rhr::handler::field::update_field_position(const rhr::handler::field_data::location& location,
-										   glm::vec<2, i32> position)
+rhr::handler::field_data::location rhr::handler::field::update_field_position(const rhr::handler::field_data::location& location, glm::vec<2, i32> position)
 {
 	if (position.x < 0 || position.y < 0)
 	{
@@ -526,8 +537,8 @@ rhr::handler::field::update_field_position(const rhr::handler::field_data::locat
 #if DEBUG_FIELDS
 	cap::logger::info(std::to_string(cell_position.x) + ", " + std::to_string(cell_position.y));
 #endif
-	if (static_cast<usize>(position.x) > cell_position.x && static_cast<usize>(position.x) < cell_position.x + FIELD_CELL_SIZE &&
-		static_cast<usize>(position.y) > cell_position.y && static_cast<usize>(position.y) < cell_position.y + FIELD_CELL_SIZE)
+	if (static_cast<usize>(position.x) > cell_position.x && static_cast<usize>(position.x) < cell_position.x + FIELD_CELL_SIZE && static_cast<usize>(position.y) > cell_position.y
+		&& static_cast<usize>(position.y) < cell_position.y + FIELD_CELL_SIZE)
 	{
 		std::optional<rhr::handler::field_data::data*> data = find_data(location);
 		if (!data.has_value())
@@ -547,9 +558,7 @@ rhr::handler::field::update_field_position(const rhr::handler::field_data::locat
 		glm::vec<2, usize> cell_position = calculate_cell_position(position);
 		resize(cell_position + glm::vec<2, usize>(1, 1));
 
-		rhr::handler::field_data::location moved_cell_location = rhr::handler::field_data::location(cell_position,
-																									location.get_idx(),
-																									location.get_layer());
+		rhr::handler::field_data::location moved_cell_location = rhr::handler::field_data::location(cell_position, location.get_idx(), location.get_layer());
 
 		rhr::handler::field_data::data local_data = *data.value();
 		local_data.set_position(position);
@@ -587,12 +596,12 @@ std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_first_d
 		std::optional<rhr::handler::field_data::data*> data = find_data(position, i);
 		if (data.has_value())
 		{
-//			cap::logger::info("first find");
+			//			cap::logger::info("first find");
 			return data;
 		}
 	}
 
-//	cap::logger::info("nothing first find");
+	//	cap::logger::info("nothing first find");
 	return std::nullopt;
 }
 
@@ -608,18 +617,17 @@ std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_data(gl
 	for (usize i = 0; i < cell.value()->at(layer).size(); i++)
 	{
 		glm::vec<2, i32> cell_pixel_position = cell.value()->at(layer)[i].get_position();
-		glm::vec<2, i32> cell_pixel_size = cell.value()->at(layer)[i].get_size();
+		glm::vec<2, i32> cell_pixel_size	 = cell.value()->at(layer)[i].get_size();
 
-		if (position.x >= cell_pixel_position.x && position.x < cell_pixel_position.x + cell_pixel_size.x &&
-			position.y >= cell_pixel_position.y && position.y < cell_pixel_position.y + cell_pixel_size.y)
+		if (position.x >= cell_pixel_position.x && position.x < cell_pixel_position.x + cell_pixel_size.x && position.y >= cell_pixel_position.y
+			&& position.y < cell_pixel_position.y + cell_pixel_size.y)
 			return &(cell.value()->at(layer)[i]);
 	}
 
 	return std::nullopt;
 }
 
-std::optional<rhr::handler::field_data::data*>
-rhr::handler::field::find_data(const rhr::handler::field_data::location& location)
+std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_data(const rhr::handler::field_data::location& location)
 {
 	resize(location.get_cell() + glm::vec<2, usize>(1, 1));
 
@@ -636,8 +644,7 @@ rhr::handler::field::find_data(const rhr::handler::field_data::location& locatio
 	return std::nullopt;
 }
 
-std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*>
-rhr::handler::field::get_cell(const glm::vec<2, usize>& cell_location)
+std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> rhr::handler::field::get_cell(const glm::vec<2, usize>& cell_location)
 {
 	if (cell_location.x >= m_cell_table_size.x || cell_location.y >= m_cell_table_size.y)
 		return std::nullopt;
@@ -645,8 +652,7 @@ rhr::handler::field::get_cell(const glm::vec<2, usize>& cell_location)
 	return &(m_cell_table[cell_location.x][cell_location.y]);
 }
 
-void rhr::handler::field::push_data(const rhr::handler::field_data::location& location,
-									const rhr::handler::field_data::data& data)
+void rhr::handler::field::push_data(const rhr::handler::field_data::location& location, const rhr::handler::field_data::data& data)
 {
 	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> cell = get_cell(location.get_cell());
 	if (!cell.has_value())
@@ -682,36 +688,37 @@ void rhr::handler::field::pop_data(const rhr::handler::field_data::location& loc
 
 glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2, usize>& position)
 {
-	return { static_cast<usize>(glm::floor(static_cast<f32>(position.x) / static_cast<f32>(FIELD_CELL_SIZE)))
-			 , static_cast<usize>(glm::floor(static_cast<f32>(position.y) / static_cast<f32>(FIELD_CELL_SIZE)))
-	};
+	return {
+		static_cast<usize>(glm::floor(static_cast<f32>(position.x) / static_cast<f32>(FIELD_CELL_SIZE))),
+		static_cast<usize>(glm::floor(static_cast<f32>(position.y) / static_cast<f32>(FIELD_CELL_SIZE)))};
 }
 
 void rhr::handler::field::update_cursor()
 {
-	m_rectangle_cursor->set_position_local_physical(glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
+	m_rectangle_cursor->set_position_local_physical(
+		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
 }
 
 void rhr::handler::field::update_highlight()
 {
-	m_rectangle_highlight->set_position_local_physical(glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
-	m_rectangle_highlight->set_size_local(
-	{ m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4 });
+	m_rectangle_highlight->set_position_local_physical(
+		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
+	m_rectangle_highlight->set_size_local({m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4});
 }
 
 void rhr::handler::field::reset_all()
 {
-	m_mouse_down = false;
-	m_mouse_down_data = nullptr;
-	m_mouse_drag = false;
-	m_mouse_drag_start = 0;
-	m_mouse_drag_end = 0;
-	m_mouse_drag_start_position = { 0, 0 };
-	m_mouse_drag_end_position = { 0, 0 };
+	m_mouse_down				= false;
+	m_mouse_down_data			= nullptr;
+	m_mouse_drag				= false;
+	m_mouse_drag_start			= 0;
+	m_mouse_drag_end			= 0;
+	m_mouse_drag_start_position = {0, 0};
+	m_mouse_drag_end_position	= {0, 0};
 
-	m_cursor = false;
-	m_cursor_position = { 0, 0 };
-	m_cursor_idx = 0;
+	m_cursor		  = false;
+	m_cursor_position = {0, 0};
+	m_cursor_idx	  = 0;
 }
 
 void rhr::handler::field::process_highlight(bool copy)
@@ -734,17 +741,17 @@ void rhr::handler::field::process_highlight(bool copy)
 
 		m_cursor_idx = glm::min(m_mouse_drag_start, m_mouse_drag_end);
 
-		m_mouse_drag = false;
+		m_mouse_drag	   = false;
 		m_mouse_drag_start = m_cursor_idx;
-		m_mouse_drag_end = m_cursor_idx;
+		m_mouse_drag_end   = m_cursor_idx;
 
 		std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(m_cursor_idx);
 		if (!cursor_position.has_value())
 			return;
 
-		m_cursor_position = cursor_position.value();
+		m_cursor_position			= cursor_position.value();
 		m_mouse_drag_start_position = cursor_position.value();
-		m_mouse_drag_end_position = cursor_position.value();
+		m_mouse_drag_end_position	= cursor_position.value();
 
 		update_cursor();
 		update_highlight();
@@ -771,15 +778,15 @@ void rhr::handler::field::advance_cursor(i64 idx, bool break_highlight)
 
 		if (m_mouse_drag && !break_highlight)
 		{
-			m_mouse_drag_end = static_cast<i64>(m_mouse_drag_end) + idx;
+			m_mouse_drag_end		  = static_cast<i64>(m_mouse_drag_end) + idx;
 			m_mouse_drag_end_position = cursor_position.value();
 		}
 		else
 		{
-			m_mouse_drag_start = static_cast<i64>(m_mouse_drag_start) + idx;
+			m_mouse_drag_start			= static_cast<i64>(m_mouse_drag_start) + idx;
 			m_mouse_drag_start_position = cursor_position.value();
 
-			m_mouse_drag_end = static_cast<i64>(m_mouse_drag_end) + idx;
+			m_mouse_drag_end		  = static_cast<i64>(m_mouse_drag_end) + idx;
 			m_mouse_drag_end_position = cursor_position.value();
 		}
 
@@ -808,15 +815,15 @@ void rhr::handler::field::set_cursor(usize idx, bool break_highlight)
 
 		if (m_mouse_drag && !break_highlight)
 		{
-			m_mouse_drag_end = idx;
+			m_mouse_drag_end		  = idx;
 			m_mouse_drag_end_position = cursor_position.value();
 		}
 		else
 		{
-			m_mouse_drag_start = idx;
+			m_mouse_drag_start			= idx;
 			m_mouse_drag_start_position = cursor_position.value();
 
-			m_mouse_drag_end = idx;
+			m_mouse_drag_end		  = idx;
 			m_mouse_drag_end_position = cursor_position.value();
 		}
 
@@ -832,7 +839,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 		return;
 
 	glm::vec<2, usize> cell_first = calculate_cell_position(data.value()->get_position());
-	glm::vec<2, usize> cell_last = calculate_cell_position(data.value()->get_position() + data.value()->get_host_size());
+	glm::vec<2, usize> cell_last  = calculate_cell_position(data.value()->get_position() + data.value()->get_host_size());
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{
@@ -849,8 +856,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 	for (usize i = 0; i < guests.value()->size(); i++)
 	{
 		rhr::handler::field_data::location& local_guest = guests.value()->at(i);
-		if (local_guest.get_cell().x < cell_first.x || local_guest.get_cell().y < cell_first.y ||
-			local_guest.get_cell().x > cell_last.x || local_guest.get_cell().y > cell_last.y)
+		if (local_guest.get_cell().x < cell_first.x || local_guest.get_cell().y < cell_first.y || local_guest.get_cell().x > cell_last.x || local_guest.get_cell().y > cell_last.y)
 		{
 #if DEBUG_FIELDS
 			cap::logger::info("popping " + std::to_string(local_guest.get_cell().x) + ", " + std::to_string(local_guest.get_cell().y));
@@ -868,7 +874,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			bool found = false;
 
 			// copy so the vector can be changed without breaking pointers.
-			rhr::handler::field_data::location found_location({ 0, 0 }, 0, 0);
+			rhr::handler::field_data::location found_location({0, 0}, 0, 0);
 
 			for (auto& guest : *guests.value())
 			{
@@ -878,7 +884,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 					cap::logger::info("keeping " + std::to_string(guest.get_cell().x) + ", " + std::to_string(guest.get_cell().y));
 #endif
 					found_location = guest;
-					found = true;
+					found		   = true;
 					break;
 				}
 			}
@@ -893,24 +899,24 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 
 			if (cell_last.x - cell_first.x == 0)
 			{
-				local_low.x = data.value()->get_position().x;
+				local_low.x	 = data.value()->get_position().x;
 				local_high.x = data.value()->get_position().x + data.value()->get_host_size().x;
 			}
 			else
 			{
 				if (x == cell_last.x - cell_first.x)
 				{
-					local_low.x = ((location.get_cell().x + x) * FIELD_CELL_SIZE);
+					local_low.x	 = ((location.get_cell().x + x) * FIELD_CELL_SIZE);
 					local_high.x = data.value()->get_position().x + data.value()->get_host_size().x;
 				}
 				else if (x == 0)
 				{
-					local_low.x = data.value()->get_position().x;
+					local_low.x	 = data.value()->get_position().x;
 					local_high.x = ((location.get_cell().x + 1) * FIELD_CELL_SIZE);
 				}
 				else
 				{
-					local_low.x = (location.get_cell().x + x) * FIELD_CELL_SIZE;
+					local_low.x	 = (location.get_cell().x + x) * FIELD_CELL_SIZE;
 					local_high.x = (location.get_cell().x + x + 1) * FIELD_CELL_SIZE;
 				}
 			}
@@ -919,24 +925,24 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 
 			if (cell_last.y - cell_first.y == 0)
 			{
-				local_low.y = data.value()->get_position().y;
+				local_low.y	 = data.value()->get_position().y;
 				local_high.y = data.value()->get_position().y + data.value()->get_host_size().y;
 			}
 			else
 			{
 				if (y == cell_last.y - cell_first.y)
 				{
-					local_low.y = ((location.get_cell().y + y) * FIELD_CELL_SIZE);
+					local_low.y	 = ((location.get_cell().y + y) * FIELD_CELL_SIZE);
 					local_high.y = data.value()->get_position().y + data.value()->get_host_size().y;
 				}
 				else if (y == 0)
 				{
-					local_low.y = data.value()->get_position().y;
+					local_low.y	 = data.value()->get_position().y;
 					local_high.y = ((location.get_cell().y + 1) * FIELD_CELL_SIZE);
 				}
 				else
 				{
-					local_low.y = (location.get_cell().y + y) * FIELD_CELL_SIZE;
+					local_low.y	 = (location.get_cell().y + y) * FIELD_CELL_SIZE;
 					local_high.y = (location.get_cell().y + y + 1) * FIELD_CELL_SIZE;
 				}
 			}
@@ -965,8 +971,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			{
 				usize guest_idx = m_idx++;
 				rhr::handler::field_data::location guest_location({location.get_cell().x + x, location.get_cell().y + y}, guest_idx, location.get_layer());
-				rhr::handler::field_data::data guest_data(guest_idx, local_low, local_high - local_low,
-														  std::move(data.value()->get_text_field()), guest_location, false);
+				rhr::handler::field_data::data guest_data(guest_idx, local_low, local_high - local_low, std::move(data.value()->get_text_field()), guest_location, false);
 
 #if DEBUG_FIELDS
 				cap::logger::info("adding cell " + std::to_string(guest_location.get_cell().x) + ", " + std::to_string(guest_location.get_cell().y));
@@ -985,7 +990,7 @@ void rhr::handler::field::remove_guests(const rhr::handler::field_data::location
 		return;
 
 	glm::vec<2, usize> cell_first = calculate_cell_position(data.value()->get_position());
-	glm::vec<2, usize> cell_last = calculate_cell_position(data.value()->get_position() + data.value()->get_size());
+	glm::vec<2, usize> cell_last  = calculate_cell_position(data.value()->get_position() + data.value()->get_size());
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{

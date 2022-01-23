@@ -12,10 +12,10 @@ class project
 {
 public:
 	///
-	//static void LoadProject(const std::string& path);
+	// static void LoadProject(const std::string& path);
 
 	///
-	//static void SaveProject(const std::string& path);
+	// static void SaveProject(const std::string& path);
 
 	///
 	static std::string current_path;
@@ -23,4 +23,4 @@ public:
 	///
 	static std::vector<std::string> mods;
 };
-}
+} // namespace rhr::handler

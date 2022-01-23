@@ -137,7 +137,8 @@ void vui::ProgressBar::OnUpdateBuffers()
 	m_Size = { m_SuperBounds.x * horizontalSize, PROGRESS_BAR_HEIGHT };
 	m_Position = { m_SuperOffset.x + (m_SuperBounds.x - m_Size.x) / 2, ypos };
 
-	if (m_Position.y + m_Size.y > parentHigh.y || m_Position.y < m_SuperOffset.y || m_Position.x < m_SuperOffset.x || m_Position.x + m_Size.x > parentHigh.x || m_Progress < 0.0f || m_Progress > 1.0f)
+	if (m_Position.y + m_Size.y > parentHigh.y || m_Position.y < m_SuperOffset.y || m_Position.x < m_SuperOffset.x || m_Position.x + m_Size.x > parentHigh.x || m_Progress < 0.0f ||
+m_Progress > 1.0f)
 	{
 		cap::logger::Error("ProgressBar's dimensions are out of range");
 		m_BoundsAccepted = false;

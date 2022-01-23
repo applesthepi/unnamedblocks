@@ -1,18 +1,18 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/stacking/collection.hpp"
-#include "rhr/rendering/interfaces/i_ui.hpp"
-#include "rhr/rendering/objects/rectangle.hpp"
-#include "rhr/rendering/objects/text.hpp"
-#include "rhr/rendering/objects/line.hpp"
 #include "rhr/handlers/field.hpp"
 #include "rhr/handlers/input.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
+#include "rhr/rendering/objects/line.hpp"
+#include "rhr/rendering/objects/rectangle.hpp"
+#include "rhr/rendering/objects/text.hpp"
+#include "rhr/stacking/collection.hpp"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/intrinsics.hpp>
+#include <cappuccino/utils.hpp>
 
-#define SNAP_DISTANCE 30.0f
+#define SNAP_DISTANCE		30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
 
 namespace rhr::stack
@@ -53,6 +53,7 @@ public:
 
 	///
 	void render_master_pass();
+
 private:
 	///
 	void ui_transform_update() override;
@@ -83,7 +84,7 @@ private:
 
 	///
 	bool m_selected_context;
-	
+
 	///
 	std::weak_ptr<rhr::stack::collection> m_selected_collection;
 
@@ -92,7 +93,7 @@ private:
 
 	///
 	std::weak_ptr<rhr::stack::block> m_selected_block;
-	
+
 	///
 	std::weak_ptr<rhr::stack::argument::argument> m_selected_argument;
 
@@ -140,7 +141,7 @@ private:
 
 	///
 	bool is_snap();
-	
+
 	///
 	rhr::render::object::rectangle m_dragging_shape;
 
@@ -166,7 +167,7 @@ private:
 	bool m_toolbar;
 
 	///
-	//rhr::render::object::text m_inner_text;
+	// rhr::render::object::text m_inner_text;
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
@@ -177,4 +178,4 @@ private:
 	///
 	rhr::handler::field m_field;
 };
-}
+} // namespace rhr::stack

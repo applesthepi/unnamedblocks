@@ -86,6 +86,7 @@ public:
 
 	///
 	void frame_update(f64 delta_time);
+
 protected:
 	///
 	void mark_dirty();
@@ -104,6 +105,7 @@ protected:
 
 	///
 	virtual void ui_frame_update(f64 delta_time);
+
 private:
 	///
 	bool is_weak();
@@ -147,4 +149,4 @@ private:
 	///
 	std::weak_ptr<i_ui> m_weak;
 };
-}
+} // namespace rhr::render::interfaces

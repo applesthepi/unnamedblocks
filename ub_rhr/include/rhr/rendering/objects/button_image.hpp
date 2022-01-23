@@ -14,6 +14,7 @@ class button_image : public rhr::render::object::button
 public:
 	///
 	button_image(const std::string& texture);
+
 private:
 	///
 	virtual void ui_transform_update();
@@ -30,4 +31,4 @@ private:
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_rectangle;
 };
-}
+} // namespace rhr::render::object

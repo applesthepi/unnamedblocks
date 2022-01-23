@@ -12,13 +12,13 @@ class execution_thread
 {
 public:
 	///
-	typedef void(***function_stack_list)(cap::mod::block::pass*);
+	typedef void (***function_stack_list)(cap::mod::block::pass*);
 
 	///
-	typedef void(*function)(cap::mod::block::pass*);
+	typedef void (*function)(cap::mod::block::pass*);
 
 	///
-	typedef void(**function_stack)(cap::mod::block::pass*);
+	typedef void (**function_stack)(cap::mod::block::pass*);
 
 	///
 	execution_thread(u64 function_start, u64* function_call_count, function_stack_list calls, cap::mod::block::pass* pass);
@@ -67,6 +67,7 @@ public:
 
 	///
 	void step();
+
 private:
 	///
 	std::atomic<bool> m_finished;
@@ -101,4 +102,4 @@ private:
 	///
 	cap::mod::block::pass* m_pass;
 };
-}
+} // namespace cap

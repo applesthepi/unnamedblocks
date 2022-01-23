@@ -14,6 +14,7 @@ class button_text : public rhr::render::object::button
 public:
 	///
 	button_text(const cap::color& primary_color, const cap::color& secondary_color, const std::string& text);
+
 private:
 	///
 	virtual void ui_transform_update();
@@ -33,4 +34,4 @@ private:
 	///
 	std::shared_ptr<rhr::render::object::text> m_text;
 };
-}
+} // namespace rhr::render::object

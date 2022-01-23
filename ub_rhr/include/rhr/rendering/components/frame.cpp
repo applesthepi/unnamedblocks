@@ -8,11 +8,6 @@ rhr::render::component::frame::frame()
 	, fence_image_in_flight(nullptr)
 	, semaphore_image(nullptr)
 	, semaphore_finished(nullptr)
-{
+{}
 
-}
-
-rhr::render::component::frame::~frame()
-{
-
-}
+rhr::render::component::frame::~frame() {}

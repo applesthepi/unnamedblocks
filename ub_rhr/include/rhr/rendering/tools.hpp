@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/color.hpp>
+#include <cappuccino/utils.hpp>
 
 //#define MAX_FRAMES_IN_FLIGHT 5
 
@@ -22,10 +22,7 @@ public:
 		std::optional<u32> present_family;
 
 		///
-		bool complete()
-		{
-			return graphics_family.has_value() && present_family.has_value();
-		}
+		bool complete() { return graphics_family.has_value() && present_family.has_value(); }
 	};
 
 	///
@@ -118,7 +115,15 @@ public:
 	static bool check_device_extension_support(vk::physical_device* device);
 
 	///
-	static void create_image(u32 width, u32 height, vk::format format, vk::image_tiling tiling, vk::image_usage_flags usage, vk::memory_property_flags properties, vk::image& image, vk::device_memory& image_memory);
+	static void create_image(
+		u32 width,
+		u32 height,
+		vk::format format,
+		vk::image_tiling tiling,
+		vk::image_usage_flags usage,
+		vk::memory_property_flags properties,
+		vk::image& image,
+		vk::device_memory& image_memory);
 
 	///
 	static vk::image create_texture_image(const std::string& texturePath, vk::device_memory* textureImageMemory);
@@ -130,7 +135,8 @@ public:
 	static std::vector<const char*> get_required_extensions();
 
 	///
-	static VkResult create_debug_utils_message_ext(VkInstance* instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+	static VkResult create_debug_utils_message_ext(
+		VkInstance* instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 
 	///
 	static void destroy_debug_utils_message_ext(VkInstance* instance, VkDebugUtilsMessengerEXT* debugMessenger, const VkAllocationCallbacks* pAllocator);
@@ -175,4 +181,4 @@ public:
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData);
 };
-}
+} // namespace rhr::render

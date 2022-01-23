@@ -22,15 +22,16 @@ public:
 	/// if your trying to use the  blocks' arguments during the initializations, then use the cap::mod::block::data, not this.
 	u64 custom_put(void* mem);
 
-	//f64& GetReal(u64 idx);
-	//bool& GetBool(u64 idx);
-	//std::string& GetString(u64 idx);
+	// f64& GetReal(u64 idx);
+	// bool& GetBool(u64 idx);
+	// std::string& GetString(u64 idx);
 
 	///
 	u64 block_idx;
 
 	///
 	u64 stack_idx;
+
 private:
 	///
 	std::vector<std::string> m_names;
@@ -50,4 +51,4 @@ private:
 	///
 	std::vector<void*>& m_v_custom;
 };
-}
+} // namespace cap

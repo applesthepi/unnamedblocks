@@ -1,14 +1,14 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/stacking/arguments/argument.hpp"
-#include "rhr/registries/char_texture.hpp"
-#include "rhr/rendering/objects/text.hpp"
-#include "rhr/rendering/objects/object.hpp"
 #include "rhr/handlers/field.hpp"
+#include "rhr/registries/char_texture.hpp"
+#include "rhr/rendering/objects/object.hpp"
+#include "rhr/rendering/objects/text.hpp"
+#include "rhr/stacking/arguments/argument.hpp"
 
-#include <cappuccino/utils.hpp>
 #include "rhr/handlers/input.hpp"
+#include <cappuccino/utils.hpp>
 
 namespace rhr::stack::argument
 {
@@ -38,6 +38,7 @@ public:
 
 	///
 	rhr::stack::argument::argument::padding_style get_padding_style() override;
+
 private:
 	///
 	void ui_transform_update() override;
@@ -66,4 +67,4 @@ private:
 	///
 	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
 };
-}
+} // namespace rhr::stack::argument

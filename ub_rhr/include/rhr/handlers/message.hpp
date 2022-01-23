@@ -86,7 +86,7 @@
 // private:
 // 	std::function<void(const std::string&)>* m_callback;
 // 	std::function<void(const sf::Event::KeyEvent&)> m_textCallback;
-	
+
 // 	std::function<void()> m_escape;
 // 	std::function<void()> m_enter;
 
@@ -99,17 +99,17 @@
 
 class MessageHandler
 {
-// public:
-// 	static void Initialize();
-// 	static void Finish();
-// 	static void RegisterMessage(Message* message, bool sync = false);
+	// public:
+	// 	static void Initialize();
+	// 	static void Finish();
+	// 	static void RegisterMessage(Message* message, bool sync = false);
 
-// 	static std::mutex& GetMessageMutex();
-// 	// static std::vector<Message*>& GetMessages();
-// 	static std::atomic<bool>& GetFinished();
-// private:
-// 	static std::atomic<bool> m_finish;
-// 	static std::mutex m_messageMutex;
-// 	// static std::vector<Message*> m_messages;
-// 	static std::thread m_messageThread;
+	// 	static std::mutex& GetMessageMutex();
+	// 	// static std::vector<Message*>& GetMessages();
+	// 	static std::atomic<bool>& GetFinished();
+	// private:
+	// 	static std::atomic<bool> m_finish;
+	// 	static std::mutex m_messageMutex;
+	// 	// static std::vector<Message*> m_messages;
+	// 	static std::thread m_messageThread;
 };

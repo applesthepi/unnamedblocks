@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include <cappuccino/utils.hpp>
-#include <cappuccino/mod/block/block.hpp>
 #include <cappuccino/execution_thread.hpp>
+#include <cappuccino/mod/block/block.hpp>
+#include <cappuccino/utils.hpp>
 #include <espresso/mod/category.hpp>
 
 namespace rhr::registry
@@ -19,13 +19,16 @@ public:
 	{
 	public:
 		block_argument_caller(const cap::mod::block::block::argument::variable_mode mode, const std::string& value)
-		: m_mode(mode), m_value(value) {}
+			: m_mode(mode)
+			, m_value(value)
+		{}
 
 		///
 		cap::mod::block::block::argument::variable_mode get_mode() { return m_mode; };
 
 		///
 		const std::string& get_value() { return m_value; };
+
 	private:
 		///
 		cap::mod::block::block::argument::variable_mode m_mode;
@@ -73,6 +76,7 @@ public:
 
 	///
 	static block& get_registry();
+
 private:
 	///
 	static block* m_registry;
@@ -83,4 +87,4 @@ private:
 	///
 	std::vector<category_info> m_categories;
 };
-}
+} // namespace rhr::registry

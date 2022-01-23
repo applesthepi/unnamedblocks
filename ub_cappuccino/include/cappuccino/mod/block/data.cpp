@@ -2,56 +2,33 @@
 
 #include "cappuccino/registration.hpp"
 
-cap::mod::block::data::data()
-{
+cap::mod::block::data::data() {}
 
-}
+cap::mod::block::data::data(
+	const std::vector<void*>& data, const std::vector<cap::mod::block::data::type>& types, const std::vector<cap::mod::block::data::interpretation>& interpretations)
+	: m_data(data)
+	, m_types(types)
+	, m_interpretations(interpretations)
+{}
 
-cap::mod::block::data::data(const std::vector<void*>& data, const std::vector<cap::mod::block::data::type>& types, const std::vector<cap::mod::block::data::interpretation>& interpretations)
-	:m_data(data), m_types(types), m_interpretations(interpretations)
-{
+const std::vector<void*>& cap::mod::block::data::get_data() { return m_data; }
 
-}
+const std::vector<u64>& cap::mod::block::data::get_runtime_data() { return m_runtime_data; }
 
-const std::vector<void*>& cap::mod::block::data::get_data()
-{
-	return m_data;
-}
+std::vector<void*>& cap::mod::block::data::get_pre_data() { return m_pre_data; }
 
-const std::vector<u64>& cap::mod::block::data::get_runtime_data()
-{
-	return m_runtime_data;
-}
+const std::vector<cap::mod::block::data::type>& cap::mod::block::data::get_types() { return m_types; }
 
-std::vector<void*>& cap::mod::block::data::get_pre_data()
-{
-	return m_pre_data;
-}
+const std::vector<cap::mod::block::data::interpretation>& cap::mod::block::data::get_interpretations() { return m_interpretations; }
 
-const std::vector<cap::mod::block::data::type>& cap::mod::block::data::get_types()
-{
-	return m_types;
-}
+void cap::mod::block::data::clear_data() { m_data.clear(); }
 
-const std::vector<cap::mod::block::data::interpretation>& cap::mod::block::data::get_interpretations()
-{
-	return m_interpretations;
-}
-
-void cap::mod::block::data::clear_data()
-{
-	m_data.clear();
-}
-
-void cap::mod::block::data::set_runtime_data(const std::vector<u64>& data)
-{
-	m_runtime_data = data;
-}
+void cap::mod::block::data::set_runtime_data(const std::vector<u64>& data) { m_runtime_data = data; }
 
 void cap::mod::block::data::set_data_templates(u64 stack_idx)
 {
-	const std::vector<f64*>& reals = cap::registration::get_real_template();
-	const std::vector<bool*>& bools = cap::registration::get_bool_template();
+	const std::vector<f64*>& reals			 = cap::registration::get_real_template();
+	const std::vector<bool*>& bools			 = cap::registration::get_bool_template();
 	const std::vector<std::string*>& strings = cap::registration::get_string_template();
 	std::string* str;
 	for (u64 i = 0; i < m_runtime_data.size(); i++)
@@ -65,26 +42,17 @@ void cap::mod::block::data::set_data_templates(u64 stack_idx)
 	}
 }
 
-void cap::mod::block::data::set_types(const std::vector<cap::mod::block::data::type>& types)
-{
-	m_types = types;
-}
+void cap::mod::block::data::set_types(const std::vector<cap::mod::block::data::type>& types) { m_types = types; }
 
-void cap::mod::block::data::set_interpretations(const std::vector<cap::mod::block::data::interpretation>& interpretations)
-{
-	m_interpretations = interpretations;
-}
+void cap::mod::block::data::set_interpretations(const std::vector<cap::mod::block::data::interpretation>& interpretations) { m_interpretations = interpretations; }
 
-void cap::mod::block::data::set_interpretation(const cap::mod::block::data::interpretation& interpretation, u64 idx)
-{
-	m_interpretations[idx] = interpretation;
-}
+void cap::mod::block::data::set_interpretation(const cap::mod::block::data::interpretation& interpretation, u64 idx) { m_interpretations[idx] = interpretation; }
 
 cap::mod::block::data& cap::mod::block::data::operator=(cap::mod::block::data& data)
 {
-	m_data = data.m_data;
-	m_runtime_data = data.m_runtime_data;
-	m_types = data.m_types;
+	m_data			  = data.m_data;
+	m_runtime_data	  = data.m_runtime_data;
+	m_types			  = data.m_types;
 	m_interpretations = data.m_interpretations;
 
 	return *this;

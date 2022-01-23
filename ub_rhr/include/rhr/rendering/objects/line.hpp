@@ -1,18 +1,18 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/objects/object.hpp"
-#include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/interfaces/i_colorable.hpp"
+#include "rhr/rendering/interfaces/i_ui.hpp"
+#include "rhr/rendering/objects/object.hpp"
 
 #include <cappuccino/utils.hpp>
 
 namespace rhr::render::object
 {
 ///
-class line :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_colorable
+class line
+	: public rhr::render::interfaces::i_ui
+	, public rhr::render::interfaces::i_colorable
 {
 public:
 	line();
@@ -32,6 +32,7 @@ public:
 
 	///
 	void set_line_half_width(u8 line_half_width);
+
 private:
 	///
 	void ui_transform_update() override;
@@ -69,4 +70,4 @@ private:
 	///
 	u8 m_line_half_width;
 };
-}
+} // namespace rhr::render::object

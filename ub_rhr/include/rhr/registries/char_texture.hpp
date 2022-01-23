@@ -57,7 +57,7 @@ public:
 	struct texture_map
 	{
 		texture_map(u16 size)
-		: texture_size(size)
+			: texture_size(size)
 		{
 			ft::error error = FT_Init_FreeType(&library);
 			if (error)
@@ -82,14 +82,15 @@ public:
 
 	///
 	static texture_map* get_texture_map(u16 size);
+
 private:
 	///
 	static void process_font(const std::string& font_path, texture_type type, u16 size);
 
 	/// Used to load ttf fonts.
-//	static ft::library m_library;
+	//	static ft::library m_library;
 
 	///
 	static std::vector<texture_map*> m_texture_maps;
 };
-}
+} // namespace rhr::registry

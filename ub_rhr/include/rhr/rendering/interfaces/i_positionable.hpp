@@ -6,7 +6,7 @@
 namespace rhr::render::interfaces
 {
 /// Template interface used for elements that have a position offset from a parent.
-template <usize S, typename T>
+template<usize S, typename T>
 class i_positionable
 {
 public:
@@ -24,6 +24,7 @@ public:
 
 	///
 	glm::vec<S, T> get_super_position();
+
 protected:
 	/// Event called when i_positionable<T>::set_position() or i_positionable<T>::set_super_position() gets involked.
 	/// \param Position of i_positionable.
@@ -40,4 +41,4 @@ protected:
 	///
 	glm::vec<S, T> m_super_position;
 };
-}
+} // namespace rhr::render::interfaces

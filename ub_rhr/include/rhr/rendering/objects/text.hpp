@@ -1,21 +1,21 @@
 #pragma once
 #include "config.h"
 
+#include "rhr/handlers/field.hpp"
 #include "rhr/rendering/interfaces/i_dicolorable.hpp"
 #include "rhr/rendering/interfaces/i_field.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/object.hpp"
-#include "rhr/handlers/field.hpp"
 
 #include <cappuccino/utils.hpp>
 
 namespace rhr::render::object
 {
 ///
-class text :
-	public rhr::render::interfaces::i_ui,
-	public rhr::render::interfaces::i_dicolorable,
-	public rhr::render::interfaces::i_field
+class text
+	: public rhr::render::interfaces::i_ui
+	, public rhr::render::interfaces::i_dicolorable
+	, public rhr::render::interfaces::i_field
 {
 public:
 	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register);
@@ -70,6 +70,7 @@ public:
 
 	///
 	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button) override;
+
 private:
 	///
 	void update_size();
@@ -149,4 +150,4 @@ private:
 	///
 	rhr::registry::char_texture::texture_type m_texture_type;
 };
-}
+} // namespace rhr::render::object

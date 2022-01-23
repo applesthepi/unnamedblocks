@@ -6,12 +6,12 @@
 void InputHandler::Initialization()
 {
 	m_MouseWasDown = false;
-	m_ShiftDown = false;
+	m_ShiftDown	   = false;
 
-	m_MousePosition = { 0, 0 };
+	m_MousePosition = {0, 0};
 }
 
-void InputHandler::RegisterKeyCallback(void(*callback)(key_state state, void* data), void* data)
+void InputHandler::RegisterKeyCallback(void (*callback)(key_state state, void* data), void* data)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -19,7 +19,7 @@ void InputHandler::RegisterKeyCallback(void(*callback)(key_state state, void* da
 	m_KeyDatas.push_back(data);
 }
 
-void InputHandler::UnregisterKeyCallback(void(*callback)(key_state state, void* data))
+void InputHandler::UnregisterKeyCallback(void (*callback)(key_state state, void* data))
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -36,7 +36,7 @@ void InputHandler::UnregisterKeyCallback(void(*callback)(key_state state, void* 
 	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister key callback");
 }
 
-void InputHandler::RegisterTextCallback(void(*callback)(key_state state, void* data), void* data)
+void InputHandler::RegisterTextCallback(void (*callback)(key_state state, void* data), void* data)
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -44,7 +44,7 @@ void InputHandler::RegisterTextCallback(void(*callback)(key_state state, void* d
 	m_TextDatas.push_back(data);
 }
 
-void InputHandler::UnregisterTextCallback(void(*callback)(key_state state, void* data))
+void InputHandler::UnregisterTextCallback(void (*callback)(key_state state, void* data))
 {
 	std::unique_lock lock(m_KeyTextMutex);
 
@@ -61,7 +61,7 @@ void InputHandler::UnregisterTextCallback(void(*callback)(key_state state, void*
 	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister text callback");
 }
 
-void InputHandler::RegisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), void* data)
+void InputHandler::RegisterMouseCallback(void (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), void* data)
 {
 	std::unique_lock lock(m_MouseMutex);
 
@@ -69,7 +69,7 @@ void InputHandler::RegisterMouseCallback(void(*callback)(glm::vec<2, i32> positi
 	m_MouseDatas.push_back(data);
 }
 
-void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data))
+void InputHandler::UnregisterMouseCallback(void (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data))
 {
 	std::unique_lock lock(m_MouseMutex);
 
@@ -86,7 +86,8 @@ void InputHandler::UnregisterMouseCallback(void(*callback)(glm::vec<2, i32> posi
 	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister mouse callback");
 }
 
-void InputHandler::RegisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer, void* data)
+void InputHandler::RegisterBullishMouseCallback(
+	bool (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer, void* data)
 {
 	std::unique_lock lock(m_MouseMutex);
 
@@ -94,7 +95,7 @@ void InputHandler::RegisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32>
 	{
 		for (u8 i = 0; i < layer - m_BullishMouseCallbacks.size() + 1; i++)
 		{
-			m_BullishMouseCallbacks.push_back(std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>());
+			m_BullishMouseCallbacks.push_back(std::vector<bool (*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>());
 			m_BullishMouseDatas.push_back(std::vector<void*>());
 		}
 	}
@@ -103,7 +104,7 @@ void InputHandler::RegisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32>
 	m_BullishMouseDatas[layer].push_back(data);
 }
 
-void InputHandler::UnregisterBullishMouseCallback(bool(*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer)
+void InputHandler::UnregisterBullishMouseCallback(bool (*callback)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data), u8 layer)
 {
 	std::unique_lock lock(m_MouseMutex);
 
@@ -151,20 +152,20 @@ void InputHandler::FireKey(i16 key, u8 operation)
 	if (operation == GLFW_PRESS)
 	{
 		for (usize i = 0; i < m_KeyCallbacks.size(); i++)
-			m_KeyCallbacks[i]({ key, true, m_ShiftDown, m_ControlDown, m_AltDown }, m_KeyDatas[i]);
+			m_KeyCallbacks[i]({key, true, m_ShiftDown, m_ControlDown, m_AltDown}, m_KeyDatas[i]);
 
 		for (usize i = 0; i < m_TextCallbacks.size(); i++)
-			m_TextCallbacks[i]({ key, true, m_ShiftDown, m_ControlDown, m_AltDown }, m_TextDatas[i]);
+			m_TextCallbacks[i]({key, true, m_ShiftDown, m_ControlDown, m_AltDown}, m_TextDatas[i]);
 	}
 	else if (operation == GLFW_RELEASE)
 	{
 		for (usize i = 0; i < m_KeyCallbacks.size(); i++)
-			m_KeyCallbacks[i]({ key, false, m_ShiftDown, m_ControlDown, m_AltDown }, m_KeyDatas[i]);
+			m_KeyCallbacks[i]({key, false, m_ShiftDown, m_ControlDown, m_AltDown}, m_KeyDatas[i]);
 	}
 	else if (operation == GLFW_REPEAT)
 	{
 		for (usize i = 0; i < m_TextCallbacks.size(); i++)
-			m_TextCallbacks[i]({ key, true, m_ShiftDown, m_ControlDown, m_AltDown }, m_TextDatas[i]);
+			m_TextCallbacks[i]({key, true, m_ShiftDown, m_ControlDown, m_AltDown}, m_TextDatas[i]);
 	}
 }
 
@@ -193,11 +194,11 @@ void InputHandler::FireMouseButton(u8 button, u8 operation)
 
 	if (rhr::handler::context::is_open())
 	{
-		glm::vec<2, i32> context_position = rhr::handler::context::get_position() - rhr::render::renderer::get_window_primary()->get_window_position();
+		glm::vec<2, i32> context_position	   = rhr::handler::context::get_position() - rhr::render::renderer::get_window_primary()->get_window_position();
 		const glm::vec<2, i32>& context_bounds = rhr::handler::context::get_bounds();
 
-		if (m_MousePosition.x > context_position.x && m_MousePosition.x < context_position.x + context_bounds.x &&
-			m_MousePosition.y > context_position.y && m_MousePosition.y < context_position.y + context_bounds.y)
+		if (m_MousePosition.x > context_position.x && m_MousePosition.x < context_position.x + context_bounds.x && m_MousePosition.y > context_position.y
+			&& m_MousePosition.y < context_position.y + context_bounds.y)
 		{
 			return;
 		}
@@ -266,14 +267,11 @@ void InputHandler::FireMouseScroll(f32 scroll)
 		m_MouseCallbacks[i](m_MousePosition, scroll, MouseOperation::Scroll, m_LastMouseButton, m_MouseDatas[i]);
 }
 
-glm::vec<2, i32> InputHandler::GetMousePosition()
-{
-	return m_MousePosition;
-}
+glm::vec<2, i32> InputHandler::GetMousePosition() { return m_MousePosition; }
 
-u8 InputHandler::BullishLayerPopups = 10;
-u8 InputHandler::BullishLayerUI = 15;
-u8 InputHandler::BullishLayerArguments = 20;
+u8 InputHandler::BullishLayerPopups		= 10;
+u8 InputHandler::BullishLayerUI			= 15;
+u8 InputHandler::BullishLayerArguments	= 20;
 u8 InputHandler::BullishLayerBackground = 25;
 
 bool InputHandler::m_MouseWasDown;
@@ -285,13 +283,13 @@ glm::vec<2, i32> InputHandler::m_MousePosition;
 std::shared_mutex InputHandler::m_KeyTextMutex;
 std::shared_mutex InputHandler::m_MouseMutex;
 
-std::vector<void(*)(InputHandler::key_state state, void* data)> InputHandler::m_KeyCallbacks;
+std::vector<void (*)(InputHandler::key_state state, void* data)> InputHandler::m_KeyCallbacks;
 std::vector<void*> InputHandler::m_KeyDatas;
-std::vector<void(*)(InputHandler::key_state state, void* data)> InputHandler::m_TextCallbacks;
+std::vector<void (*)(InputHandler::key_state state, void* data)> InputHandler::m_TextCallbacks;
 std::vector<void*> InputHandler::m_TextDatas;
-std::vector<void(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)> InputHandler::m_MouseCallbacks;
+std::vector<void (*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)> InputHandler::m_MouseCallbacks;
 std::vector<void*> InputHandler::m_MouseDatas;
-std::vector<std::vector<bool(*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>> InputHandler::m_BullishMouseCallbacks;
+std::vector<std::vector<bool (*)(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)>> InputHandler::m_BullishMouseCallbacks;
 std::vector<std::vector<void*>> InputHandler::m_BullishMouseDatas;
 std::vector<TIME_POINT> InputHandler::m_PressLog;
 MouseButton InputHandler::m_LastMouseButton = MouseButton::LEFT;

@@ -1,10 +1,10 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/objects/object.hpp"
+#include "rhr/rendering/components/window.hpp"
 #include "rhr/rendering/interfaces/i_renderable.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
-#include "rhr/rendering/components/window.hpp"
+#include "rhr/rendering/objects/object.hpp"
 
 #include <cappuccino/utils.hpp>
 #include <imgui.h>
@@ -18,14 +18,16 @@ class renderer
 {
 public:
 	///
-	struct frame_buffer_attachment {
+	struct frame_buffer_attachment
+	{
 		VkImage image;
 		VkDeviceMemory mem;
 		VkImageView view;
 	};
 
 	///
-	struct offscreen_pass {
+	struct offscreen_pass
+	{
 		VkFramebuffer frame_buffer;
 		frame_buffer_attachment color, depth;
 		VkRenderPass render_pass;
@@ -37,8 +39,9 @@ public:
 	struct imgui_data
 	{
 		imgui_data(ImGuiIO& a_io, ImGuiStyle& a_style)
-		: io(a_io)
-		, style(a_style) {}
+			: io(a_io)
+			, style(a_style)
+		{}
 
 		ImGuiIO& io;
 		ImGuiStyle& style;
@@ -126,4 +129,4 @@ private:
 	///
 	static std::shared_mutex m_dirty_mutex;
 };
-}
+} // namespace rhr::render

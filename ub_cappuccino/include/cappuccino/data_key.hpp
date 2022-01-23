@@ -3,13 +3,13 @@
 //
 //#include "cappuccino/utils.hpp"
 //
-//class DataKey
+// class DataKey
 //{
-//public:
+// public:
 //	DataKey();
 //	~DataKey();
 //
 //	void* GetData();
-//private:
+// private:
 //	void* m_data;
 //};

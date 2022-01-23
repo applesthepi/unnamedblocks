@@ -38,6 +38,7 @@ public:
 
 	///
 	vk::descriptor_pool& get_descriptor_pool();
+
 private:
 	///
 	void generate_command_buffer(u32 count, vk::command_buffer* command_buffer);
@@ -63,4 +64,4 @@ private:
 	///
 	vk::descriptor_pool m_descriptor_pool;
 };
-}
+} // namespace rhr::render::component

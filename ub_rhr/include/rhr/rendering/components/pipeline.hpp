@@ -31,15 +31,12 @@ public:
 	vk::pipeline& get_texture_pipeline(const std::string& name);
 
 	///
-	void register_paired_pipeline(
-		const std::string& name, const std::string& shader_color, const std::string& shader_texture,
-		vk::cull_mode_flags cull_mode_flags = VK_CULL_MODE_NONE
-	);
+	void
+	register_paired_pipeline(const std::string& name, const std::string& shader_color, const std::string& shader_texture, vk::cull_mode_flags cull_mode_flags = VK_CULL_MODE_NONE);
+
 private:
-		///
-	void create_pipeline(
-		const std::string& name, const std::string& shader, vk::cull_mode_flags cull_mode_flags
-	);
+	///
+	void create_pipeline(const std::string& name, const std::string& shader, vk::cull_mode_flags cull_mode_flags);
 
 	///
 	vk::pipeline m_active_pipeline_color;
@@ -59,4 +56,4 @@ private:
 	///
 	std::unordered_map<std::string, vk::pipeline_layout> m_registered_layouts;
 };
-}
+} // namespace rhr::render::component

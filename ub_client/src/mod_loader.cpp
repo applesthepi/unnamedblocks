@@ -1,13 +1,13 @@
 #include "mod_loader.hpp"
 
+#include <espresso/mod/data.hpp>
 #include <rhr/handlers/project.hpp>
 #include <rhr/registries/block.hpp>
-#include <espresso/mod/data.hpp>
 
-//TODO temp
+// TODO temp
 //#include <RHR/config.h>
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 #if LINUX
 #include <dlfcn.h>
 #else
@@ -32,7 +32,7 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 			return;
 		}
 	}
-	
+
 	if (fileType != ".dll" && fileType != ".so")
 		return;
 
@@ -50,7 +50,7 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 ModLoaderStatus run()
 {
 	rhr::handler::project::mods.clear();
-	typedef void(*f_initialize)(esp::mod::data*);
+	typedef void (*f_initialize)(esp::mod::data*);
 
 	mods = new std::vector<RegMod>();
 
@@ -92,7 +92,7 @@ ModLoaderStatus run()
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
-		//dlclose(so);
+		// dlclose(so);
 #else
 		if (!(*mods)[i].Supported_WIN)
 		{
@@ -116,7 +116,7 @@ ModLoaderStatus run()
 		}
 #endif
 		initialize((*mods)[i].Data);
-		
+
 		rhr::handler::project::mods.push_back((*mods)[i].Data->get_mod_unlocalized_name());
 
 		esp::mod::data* mod_data = (*mods)[i].Data;

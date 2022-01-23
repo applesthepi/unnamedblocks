@@ -3,8 +3,8 @@
 
 #include "espresso/mod/category.hpp"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/mod/block/block.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace esp::mod
 {
@@ -53,6 +53,7 @@ public:
 
 	///
 	void set_logger_linkage(cap::logger::stream* stream_system, cap::logger::stream* stream_editor, cap::logger::stream* stream_runtime);
+
 private:
 	///
 	std::vector<cap::mod::block::block*> m_blocks;
@@ -78,4 +79,4 @@ private:
 	///
 	cap::logger::stream* m_stream_runtime;
 };
-}
+} // namespace esp::mod

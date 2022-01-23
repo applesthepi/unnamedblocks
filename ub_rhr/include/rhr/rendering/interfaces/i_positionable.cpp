@@ -1,14 +1,12 @@
 #include "i_positionable.hpp"
 
-template <usize S, typename T>
+template<usize S, typename T>
 rhr::render::interfaces::i_positionable<S, T>::i_positionable()
 	: m_position(glm::vec<S, T>())
 	, m_super_position(glm::vec<S, T>())
-{
+{}
 
-}
-
-template <usize S, typename T>
+template<usize S, typename T>
 void rhr::render::interfaces::i_positionable<S, T>::set_position(const glm::vec<S, T>& position)
 {
 	if (pre_position_update(position, m_super_position))
@@ -18,7 +16,7 @@ void rhr::render::interfaces::i_positionable<S, T>::set_position(const glm::vec<
 	}
 }
 
-template <usize S, typename T>
+template<usize S, typename T>
 void rhr::render::interfaces::i_positionable<S, T>::set_super_position(const glm::vec<S, T>& super_position)
 {
 	if (pre_position_update(m_position, super_position))
@@ -28,29 +26,27 @@ void rhr::render::interfaces::i_positionable<S, T>::set_super_position(const glm
 	}
 }
 
-template <usize S, typename T>
+template<usize S, typename T>
 glm::vec<S, T> rhr::render::interfaces::i_positionable<S, T>::get_position()
 {
 	return m_position;
 }
 
-template <usize S, typename T>
+template<usize S, typename T>
 glm::vec<S, T> rhr::render::interfaces::i_positionable<S, T>::get_super_position()
 {
 	return m_super_position;
 }
 
-template <usize S, typename T>
+template<usize S, typename T>
 bool rhr::render::interfaces::i_positionable<S, T>::pre_position_update(const glm::vec<S, T>& position, const glm::vec<S, T>& super_position)
 {
 	return true;
 }
 
-template <usize S, typename T>
+template<usize S, typename T>
 void rhr::render::interfaces::i_positionable<S, T>::post_position_update()
-{
-	
-}
+{}
 
 template class rhr::render::interfaces::i_positionable<2, i64>;
 template class rhr::render::interfaces::i_positionable<2, i32>;

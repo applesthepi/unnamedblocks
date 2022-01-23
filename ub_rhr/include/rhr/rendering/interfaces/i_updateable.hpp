@@ -13,4 +13,4 @@ public:
 	/// \param Seconds since last frame.
 	virtual void frame_update(f64 delta_time);
 };
-}
+} // namespace rhr::render::interfaces

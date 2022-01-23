@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/stacking/stack.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
+#include "rhr/stacking/stack.hpp"
 
 #include <cappuccino/utils.hpp>
 
@@ -54,6 +54,7 @@ public:
 
 	///
 	const std::vector<std::shared_ptr<rhr::stack::stack>>& get_stacks();
+
 private:
 	///
 	void ui_transform_update() override;
@@ -82,4 +83,4 @@ private:
 	///
 	std::function<void()> m_function_collection_update;
 };
-}
+} // namespace rhr::stack

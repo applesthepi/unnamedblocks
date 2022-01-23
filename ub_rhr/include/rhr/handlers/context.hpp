@@ -5,7 +5,6 @@
 
 #define RHR_HANDLER_CONTEXT_FLAG_PREFIX u32
 
-
 namespace rhr::handler
 {
 ///
@@ -53,8 +52,20 @@ public:
 		static info INFO_OBJECT_STACKING;
 
 		///
-		enum class menu_text { CUT, COPY, PASTE, DELETE_ };
-		enum class menu_object { DUPLICATE_STACK, DELETE_STACK, DUPLICATE_BLOCK, DELETE_BLOCK };
+		enum class menu_text
+		{
+			CUT,
+			COPY,
+			PASTE,
+			DELETE_
+		};
+		enum class menu_object
+		{
+			DUPLICATE_STACK,
+			DELETE_STACK,
+			DUPLICATE_BLOCK,
+			DELETE_BLOCK
+		};
 
 		///
 		static std::unordered_map<u8, menu_text> hashed_menu_text;
@@ -87,6 +98,7 @@ public:
 
 	///
 	static const glm::vec<2, i32>& get_bounds();
+
 private:
 	///
 	static std::vector<RHR_HANDLER_CONTEXT_FLAG_PREFIX> m_flags;
@@ -106,4 +118,4 @@ private:
 	///
 	static std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>> m_callback_context;
 };
-}
+} // namespace rhr::handler

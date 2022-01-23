@@ -6,38 +6,46 @@
 
 using namespace cap::endianness;
 
-inline void push(std::vector<char> &vec, u32 value) {
+inline void push(std::vector<char>& vec, u32 value)
+{
 	auto bytes = to_le_bytes(value);
-	for(char i : bytes) {
+	for (char i : bytes)
+	{
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, f32 value) {
+inline void push(std::vector<char>& vec, f32 value)
+{
 	auto bytes = to_le_bytes(value);
-	for(char i : bytes) {
+	for (char i : bytes)
+	{
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, i32 value) {
+inline void push(std::vector<char>& vec, i32 value)
+{
 	auto bytes = to_le_bytes(value);
-	for(char i : bytes) {
+	for (char i : bytes)
+	{
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, u16 value) {
+inline void push(std::vector<char>& vec, u16 value)
+{
 	auto bytes = to_le_bytes(value);
-	for(char i : bytes) {
+	for (char i : bytes)
+	{
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, std::string_view value) {
-	for(char i : value) {
+inline void push(std::vector<char>& vec, std::string_view value)
+{
+	for (char i : value)
+	{
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char> &vec, char value) {
-	vec.push_back(value);
-}
+inline void push(std::vector<char>& vec, char value) { vec.push_back(value); }
 /*
 // Reads count elements and converts them to the native endian. Stores the result in buffer
 // Ensure buffer is atleast size * count bytes

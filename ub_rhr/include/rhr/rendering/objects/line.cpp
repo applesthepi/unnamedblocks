@@ -1,13 +1,13 @@
 #include "line.hpp"
 
 rhr::render::object::line::line()
-	: i_colorable(cap::color().from_normalized({ 0.0f, 0.0f, 0.0f, 1.0f }))
+	: i_colorable(cap::color().from_normalized({0.0f, 0.0f, 0.0f, 1.0f}))
 	, m_depth(10)
 	, m_in_bounds(false)
 	, m_border_enabled(true)
 	, m_render_object(std::make_shared<rhr::render::object::object>(true))
-	, m_point_1({ 0, 0 })
-	, m_point_2({ 100, 100 })
+	, m_point_1({0, 0})
+	, m_point_2({100, 100})
 	, m_line_half_width(5)
 {
 	m_render_object->set_weak(m_render_object);
@@ -29,8 +29,8 @@ void rhr::render::object::line::ui_transform_update()
 {
 	mark_dirty();
 
-	const glm::vec<2, i32>& size_local = get_size_local();
-	const glm::vec<2, i32>& size_parent = get_size_parent();
+	const glm::vec<2, i32>& size_local	   = get_size_local();
+	const glm::vec<2, i32>& size_parent	   = get_size_parent();
 	const glm::vec<2, i32>& position_local = get_position_local_physical();
 
 	if (size_parent == glm::vec<2, i32>(0, 0))
@@ -39,8 +39,7 @@ void rhr::render::object::line::ui_transform_update()
 	}
 	else
 	{
-		if (position_local.x > size_parent.x ||
-			position_local.y > size_parent.y)
+		if (position_local.x > size_parent.x || position_local.y > size_parent.y)
 		{
 			m_in_bounds = false;
 		}
@@ -48,11 +47,11 @@ void rhr::render::object::line::ui_transform_update()
 		{
 			m_in_bounds = true;
 
-//			if (position_local.x + size_local.x > size_parent.x)
-//				m_use_size.x = size_parent.x - position_local.x;
-//
-//			if (position_local.y + size_local.y > size_parent.y)
-//				m_use_size.y = size_parent.y - position_local.y;
+			//			if (position_local.x + size_local.x > size_parent.x)
+			//				m_use_size.x = size_parent.x - position_local.x;
+			//
+			//			if (position_local.y + size_local.y > size_parent.y)
+			//				m_use_size.y = size_parent.y - position_local.y;
 		}
 	}
 }
@@ -63,51 +62,30 @@ void rhr::render::object::line::ui_render()
 		m_render_object->render();
 }
 
-void rhr::render::object::line::ui_reload_swap_chain()
-{
-	m_render_object->reload_swap_chain();
-}
+void rhr::render::object::line::ui_reload_swap_chain() { m_render_object->reload_swap_chain(); }
 
 void rhr::render::object::line::ui_update_buffers()
 {
 	double point_1_angle_1 = atan2(static_cast<double>(m_point_2.y - m_point_1.y), static_cast<double>(m_point_2.x - m_point_1.x));
 	double point_1_angle_2 = glm::radians(90.0) - point_1_angle_1;
-	double half_width = static_cast<double>(m_line_half_width);
+	double half_width	   = static_cast<double>(m_line_half_width);
 
-	glm::vec<2, i32> point_1_top = {
-		static_cast<i32>(glm::cos(point_1_angle_1) * half_width),
-		static_cast<i32>(glm::sin(point_1_angle_1) * half_width * -1.0)
-	};
+	glm::vec<2, i32> point_1_top = {static_cast<i32>(glm::cos(point_1_angle_1) * half_width), static_cast<i32>(glm::sin(point_1_angle_1) * half_width * -1.0)};
 
-	glm::vec<2, i32> point_1_right = {
-		static_cast<i32>(glm::cos(point_1_angle_2) * half_width * -1.0),
-		static_cast<i32>(glm::sin(point_1_angle_2) * half_width * -1.0)
-	};
+	glm::vec<2, i32> point_1_right = {static_cast<i32>(glm::cos(point_1_angle_2) * half_width * -1.0), static_cast<i32>(glm::sin(point_1_angle_2) * half_width * -1.0)};
 
-	glm::vec<2, i32> point_1_left = {
-		static_cast<i32>(glm::cos(point_1_angle_2) * half_width),
-		static_cast<i32>(glm::sin(point_1_angle_2) * half_width)
-	};
+	glm::vec<2, i32> point_1_left = {static_cast<i32>(glm::cos(point_1_angle_2) * half_width), static_cast<i32>(glm::sin(point_1_angle_2) * half_width)};
 
 	double point_2_angle_1 = atan2(static_cast<double>(m_point_2.y - m_point_1.y), static_cast<double>(m_point_2.x - m_point_1.x));
 	double point_2_angle_2 = glm::radians(90.0) - point_2_angle_1;
 
-	glm::vec<2, i32> point_2_top = {
-		static_cast<i32>(glm::cos(point_2_angle_1) * half_width),
-		static_cast<i32>(glm::sin(point_2_angle_1) * half_width * -1.0)
-	};
+	glm::vec<2, i32> point_2_top = {static_cast<i32>(glm::cos(point_2_angle_1) * half_width), static_cast<i32>(glm::sin(point_2_angle_1) * half_width * -1.0)};
 
-	glm::vec<2, i32> point_2_right = {
-		static_cast<i32>(glm::cos(point_2_angle_2) * half_width * -1.0),
-		static_cast<i32>(glm::sin(point_2_angle_2) * half_width * -1.0)
-	};
+	glm::vec<2, i32> point_2_right = {static_cast<i32>(glm::cos(point_2_angle_2) * half_width * -1.0), static_cast<i32>(glm::sin(point_2_angle_2) * half_width * -1.0)};
 
-	glm::vec<2, i32> point_2_left = {
-		static_cast<i32>(glm::cos(point_2_angle_2) * half_width),
-		static_cast<i32>(glm::sin(point_2_angle_2) * half_width)
-	};
+	glm::vec<2, i32> point_2_left = {static_cast<i32>(glm::cos(point_2_angle_2) * half_width), static_cast<i32>(glm::sin(point_2_angle_2) * half_width)};
 
-//	cap::logger::info("point_2_top: ", point_2_left);
+	//	cap::logger::info("point_2_top: ", point_2_left);
 
 	std::vector<rhr::render::vertex> vertices;
 	std::vector<u32> indices;
@@ -118,29 +96,16 @@ void rhr::render::object::line::ui_update_buffers()
 	// point 1 termination
 
 	{
-		rhr::render::vertex pt = rhr::render::vertex(
-			{ m_point_1.x, m_point_1.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt = rhr::render::vertex({m_point_1.x, m_point_1.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_left = rhr::render::vertex(
-			{ m_point_1.x - point_1_left.x, m_point_1.y + point_1_left.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_left =
+			rhr::render::vertex({m_point_1.x - point_1_left.x, m_point_1.y + point_1_left.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_top = rhr::render::vertex(
-			{ m_point_1.x - point_1_top.x, m_point_1.y + point_1_top.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_top =
+			rhr::render::vertex({m_point_1.x - point_1_top.x, m_point_1.y + point_1_top.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_right = rhr::render::vertex(
-			{ m_point_1.x - point_1_right.x, m_point_1.y + point_1_right.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_right =
+			rhr::render::vertex({m_point_1.x - point_1_right.x, m_point_1.y + point_1_right.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
 		vertices.push_back(pt);
 		vertices.push_back(pt_left);
@@ -159,29 +124,16 @@ void rhr::render::object::line::ui_update_buffers()
 	// point 2 termination
 
 	{
-		rhr::render::vertex pt = rhr::render::vertex(
-			{ m_point_2.x, m_point_2.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt = rhr::render::vertex({m_point_2.x, m_point_2.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_left = rhr::render::vertex(
-			{ m_point_2.x + point_2_left.x, m_point_2.y - point_2_left.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_left =
+			rhr::render::vertex({m_point_2.x + point_2_left.x, m_point_2.y - point_2_left.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_top = rhr::render::vertex(
-			{ m_point_2.x + point_2_top.x, m_point_2.y - point_2_top.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_top =
+			rhr::render::vertex({m_point_2.x + point_2_top.x, m_point_2.y - point_2_top.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_right = rhr::render::vertex(
-			{ m_point_2.x + point_2_right.x, m_point_2.y - point_2_right.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_right =
+			rhr::render::vertex({m_point_2.x + point_2_right.x, m_point_2.y - point_2_right.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
 		vertices.push_back(pt);
 		vertices.push_back(pt_left);
@@ -200,29 +152,17 @@ void rhr::render::object::line::ui_update_buffers()
 	// fill
 
 	{
-		rhr::render::vertex pt_1_left = rhr::render::vertex(
-			{ m_point_1.x - point_1_left.x, m_point_1.y + point_1_left.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_1_left =
+			rhr::render::vertex({m_point_1.x - point_1_left.x, m_point_1.y + point_1_left.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_1_right = rhr::render::vertex(
-			{ m_point_1.x - point_1_right.x, m_point_1.y + point_1_right.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_1_right =
+			rhr::render::vertex({m_point_1.x - point_1_right.x, m_point_1.y + point_1_right.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_2_left = rhr::render::vertex(
-			{ m_point_2.x + point_2_left.x, m_point_2.y - point_2_left.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_2_left =
+			rhr::render::vertex({m_point_2.x + point_2_left.x, m_point_2.y - point_2_left.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
-		rhr::render::vertex pt_2_right = rhr::render::vertex(
-			{ m_point_2.x + point_2_right.x, m_point_2.y - point_2_right.y, static_cast<i32>(m_depth) * -1 },
-			m_color.get_normalized(),
-			{ 0.0f, 0.0f }
-		);
+		rhr::render::vertex pt_2_right =
+			rhr::render::vertex({m_point_2.x + point_2_right.x, m_point_2.y - point_2_right.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
 
 		vertices.push_back(pt_1_left);
 		vertices.push_back(pt_1_right);
@@ -317,26 +257,20 @@ void rhr::render::object::line::ui_update_buffers()
 	m_render_object->update_vertices(&vertices, &indices, true);
 }
 
-void rhr::render::object::line::post_color_update()
-{
-	mark_dirty();
-}
+void rhr::render::object::line::post_color_update() { mark_dirty(); }
 
 void rhr::render::object::line::set_point_1(const glm::vec<2, i32>& point)
 {
-//	cap::logger::info("set_point_1", point);
+	//	cap::logger::info("set_point_1", point);
 	m_point_1 = point;
 	mark_dirty();
 }
 
 void rhr::render::object::line::set_point_2(const glm::vec<2, i32>& point)
 {
-//	cap::logger::info("set_point_2", point);
+	//	cap::logger::info("set_point_2", point);
 	m_point_2 = point;
 	mark_dirty();
 }
 
-void rhr::render::object::line::set_line_half_width(u8 line_half_width)
-{
-	m_line_half_width = line_half_width;
-}
+void rhr::render::object::line::set_line_half_width(u8 line_half_width) { m_line_half_width = line_half_width; }

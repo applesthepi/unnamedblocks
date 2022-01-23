@@ -4,8 +4,8 @@
 #include "rhr/handlers/field_data.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
 
-#include <cappuccino/utils.hpp>
 #include "rhr/handlers/input.hpp"
+#include <cappuccino/utils.hpp>
 
 namespace rhr::handler
 {
@@ -36,6 +36,7 @@ public:
 
 	///
 	void update_field_size(const rhr::handler::field_data::location& location, glm::vec<2, i32> size);
+
 private:
 	///
 	void resize(const glm::vec<2, usize>& size);
@@ -136,4 +137,4 @@ private:
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_rectangle_highlight;
 };
-}
+} // namespace rhr::handler

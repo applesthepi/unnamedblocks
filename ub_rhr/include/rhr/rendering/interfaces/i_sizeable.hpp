@@ -6,7 +6,7 @@
 namespace rhr::render::interfaces
 {
 /// Template interface used for elements that have a size and bounded size from a parent.
-template <usize S, typename T>
+template<usize S, typename T>
 class i_sizeable
 {
 public:
@@ -27,6 +27,7 @@ public:
 
 	///
 	void set_size_max();
+
 protected:
 	/// Event called when i_sizeable<T>::set_size() or i_sizeable<T>::set_super_bounds() gets involked.
 	/// \param Size of i_sizeable.
@@ -43,4 +44,4 @@ protected:
 	///
 	glm::vec<S, T> m_super_bounds;
 };
-}
+} // namespace rhr::render::interfaces

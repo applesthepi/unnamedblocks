@@ -1,12 +1,12 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/rendering/vertex.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
+#include "rhr/rendering/vertex.hpp"
 
-#include <cappuccino/utils.hpp>
-#include <cappuccino/mod/block/block.hpp>
 #include <cappuccino/color.hpp>
+#include <cappuccino/mod/block/block.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace rhr::stack::argument
 {
@@ -18,7 +18,9 @@ public:
 	enum class padding_style
 	{
 		///
-		NONE, SOFT, HARD
+		NONE,
+		SOFT,
+		HARD
 	};
 
 	///
@@ -63,6 +65,7 @@ public:
 
 	///
 	static i32 padding;
+
 protected:
 	/// Sets data. Data of the argument is stored as a string.
 	virtual void on_set_data();
@@ -85,4 +88,4 @@ protected:
 	///
 	std::function<void()>* m_function_collection_update;
 };
-}
+} // namespace rhr::stack::argument

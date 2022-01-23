@@ -3,20 +3,36 @@
 
 // utils.hpp requires logger.hpp
 
+#include <glm/glm.hpp>
+#include <mutex>
 #include <string>
 #include <vector>
-#include <mutex>
-#include <glm/glm.hpp>
 
-#define LOG_A1 cap::logger::level level, const std::string& message
-#define LOG_A2 cap::logger::level level, const std::vector<std::string>& messages
-#define LOG_A3 cap::logger::level level, const std::string& file, int line, const std::string& message
-#define LOG_A4 cap::logger::level level, const std::string& file, int line, const std::vector<std::string>& messages
+#define LOG_A1 cap::logger::level level, const std::string &message
+#define LOG_A2 cap::logger::level level, const std::vector<std::string>&messages
+#define LOG_A3 cap::logger::level level, const std::string &file, int line, const std::string &message
+#define LOG_A4 cap::logger::level level, const std::string &file, int line, const std::vector<std::string>&messages
 
-#define LOG_A1G uint8_t _type; cap::logger::level _level; std::string _message;
-#define LOG_A2G uint8_t _type; cap::logger::level _level; std::vector<std::string> _messages;
-#define LOG_A3G uint8_t _type; cap::logger::level _level; std::string _file; int _line; std::string _message;
-#define LOG_A4G uint8_t _type; cap::logger::level _level; std::string _file; int _line; std::vector<std::string> _messages;
+#define LOG_A1G                \
+	uint8_t _type;             \
+	cap::logger::level _level; \
+	std::string _message;
+#define LOG_A2G                \
+	uint8_t _type;             \
+	cap::logger::level _level; \
+	std::vector<std::string> _messages;
+#define LOG_A3G                \
+	uint8_t _type;             \
+	cap::logger::level _level; \
+	std::string _file;         \
+	int _line;                 \
+	std::string _message;
+#define LOG_A4G                \
+	uint8_t _type;             \
+	cap::logger::level _level; \
+	std::string _file;         \
+	int _line;                 \
+	std::vector<std::string> _messages;
 
 #define LOG_A1N ._level = level, ._message = std::string(message)
 #define LOG_A2N ._level = level, ._messages = std::vector<std::string>(messages)
@@ -37,13 +53,17 @@ public:
 	///
 	enum class level
 	{
-		SYSTEM, EDITOR, RUNTIME
+		SYSTEM,
+		EDITOR,
+		RUNTIME
 	};
 
 	/// Internal data structure used to override one static logger and feed another instead.
 	struct stream
 	{
-		stream() : log_update(false) {}
+		stream()
+			: log_update(false)
+		{}
 
 		///
 		bool log_update;
@@ -61,11 +81,24 @@ public:
 	private:
 		///
 		bool m_destruction_flush;
+
 	public:
-		struct group_1 { LOG_A1G };
-		struct group_2 { LOG_A2G };
-		struct group_3 { LOG_A3G };
-		struct group_4 { LOG_A4G };
+		struct group_1
+		{
+			LOG_A1G
+		};
+		struct group_2
+		{
+			LOG_A2G
+		};
+		struct group_3
+		{
+			LOG_A3G
+		};
+		struct group_4
+		{
+			LOG_A4G
+		};
 
 		std::vector<group_1> m_recorded_1;
 		std::vector<group_2> m_recorded_2;
@@ -87,54 +120,90 @@ public:
 		///
 		void setup_push();
 
-#define LOG_LC  info
+#define LOG_LC	info
 #define LOG_LCI static_cast<uint8_t>(1)
 
 		void LOG_LC(LOG_A1)
-		{ setup_push(); m_recorded_1.push_back({ ._type = LOG_LCI, LOG_A1N }); }
+		{
+			setup_push();
+			m_recorded_1.push_back({._type = LOG_LCI, LOG_A1N});
+		}
 
 		void LOG_LC(LOG_A2)
-		{ setup_push(); m_recorded_2.push_back({ ._type = LOG_LCI, LOG_A2N }); }
+		{
+			setup_push();
+			m_recorded_2.push_back({._type = LOG_LCI, LOG_A2N});
+		}
 
 		void LOG_LC(LOG_A3)
-		{ setup_push(); m_recorded_3.push_back({ ._type = LOG_LCI, LOG_A3N }); }
+		{
+			setup_push();
+			m_recorded_3.push_back({._type = LOG_LCI, LOG_A3N});
+		}
 
 		void LOG_LC(LOG_A4)
-		{ setup_push(); m_recorded_4.push_back({ ._type = LOG_LCI, LOG_A4N }); }
+		{
+			setup_push();
+			m_recorded_4.push_back({._type = LOG_LCI, LOG_A4N});
+		}
 
 #undef LOG_LC
 #undef LOG_LCI
-#define LOG_LC  warn
+#define LOG_LC	warn
 #define LOG_LCI static_cast<uint8_t>(2)
 
 		void LOG_LC(LOG_A1)
-		{ setup_push(); m_recorded_1.push_back({ ._type = LOG_LCI, LOG_A1N }); }
+		{
+			setup_push();
+			m_recorded_1.push_back({._type = LOG_LCI, LOG_A1N});
+		}
 
 		void LOG_LC(LOG_A2)
-		{ setup_push(); m_recorded_2.push_back({ ._type = LOG_LCI, LOG_A2N }); }
+		{
+			setup_push();
+			m_recorded_2.push_back({._type = LOG_LCI, LOG_A2N});
+		}
 
 		void LOG_LC(LOG_A3)
-		{ setup_push(); m_recorded_3.push_back({ ._type = LOG_LCI, LOG_A3N }); }
+		{
+			setup_push();
+			m_recorded_3.push_back({._type = LOG_LCI, LOG_A3N});
+		}
 
 		void LOG_LC(LOG_A4)
-		{ setup_push(); m_recorded_4.push_back({ ._type = LOG_LCI, LOG_A4N }); }
+		{
+			setup_push();
+			m_recorded_4.push_back({._type = LOG_LCI, LOG_A4N});
+		}
 
 #undef LOG_LC
 #undef LOG_LCI
-#define LOG_LC  error
+#define LOG_LC	error
 #define LOG_LCI static_cast<uint8_t>(3)
 
 		void LOG_LC(LOG_A1)
-		{ setup_push(); m_recorded_1.push_back({ ._type = LOG_LCI, LOG_A1N }); }
+		{
+			setup_push();
+			m_recorded_1.push_back({._type = LOG_LCI, LOG_A1N});
+		}
 
 		void LOG_LC(LOG_A2)
-		{ setup_push(); m_recorded_2.push_back({ ._type = LOG_LCI, LOG_A2N }); }
+		{
+			setup_push();
+			m_recorded_2.push_back({._type = LOG_LCI, LOG_A2N});
+		}
 
 		void LOG_LC(LOG_A3)
-		{ setup_push(); m_recorded_3.push_back({ ._type = LOG_LCI, LOG_A3N }); }
+		{
+			setup_push();
+			m_recorded_3.push_back({._type = LOG_LCI, LOG_A3N});
+		}
 
 		void LOG_LC(LOG_A4)
-		{ setup_push(); m_recorded_4.push_back({ ._type = LOG_LCI, LOG_A4N }); }
+		{
+			setup_push();
+			m_recorded_4.push_back({._type = LOG_LCI, LOG_A4N});
+		}
 
 #undef LOG_LC
 #undef LOG_LCI
@@ -164,7 +233,7 @@ public:
 	///
 	static void flush_buffer(buffer* b);
 
-#define LOG_LC  info
+#define LOG_LC	info
 #define LOG_LCR info_raw
 
 	static void LOG_LC(LOG_A1);
@@ -179,7 +248,7 @@ public:
 
 #undef LOG_LC
 #undef LOG_LCR
-#define LOG_LC  warn
+#define LOG_LC	warn
 #define LOG_LCR warn_raw
 
 	static void LOG_LC(LOG_A1);
@@ -194,7 +263,7 @@ public:
 
 #undef LOG_LC
 #undef LOG_LCR
-#define LOG_LC  error
+#define LOG_LC	error
 #define LOG_LCR error_raw
 
 	static void LOG_LC(LOG_A1);
@@ -209,7 +278,7 @@ public:
 
 #undef LOG_LC
 #undef LOG_LCR
-#define LOG_LC  fatal
+#define LOG_LC	fatal
 #define LOG_LCR fatal_raw
 
 	static void LOG_LC(LOG_A1);
@@ -246,4 +315,4 @@ private:
 	///
 	static bool m_stream_runtime_owner;
 };
-}
+} // namespace cap

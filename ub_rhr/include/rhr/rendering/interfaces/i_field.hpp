@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include <cappuccino/utils.hpp>
 #include "rhr/handlers/input.hpp"
+#include <cappuccino/utils.hpp>
 
 namespace rhr::render::interfaces
 {
@@ -34,4 +34,4 @@ public:
 	///
 	virtual void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
 };
-}
+} // namespace rhr::render::interfaces

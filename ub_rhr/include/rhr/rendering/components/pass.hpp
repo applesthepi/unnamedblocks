@@ -14,8 +14,9 @@ public:
 
 	///
 	vk::render_pass& get_render_pass();
+
 private:
 	///
 	vk::render_pass m_render_pass;
 };
-}
+} // namespace rhr::render::component

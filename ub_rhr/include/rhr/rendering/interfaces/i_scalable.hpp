@@ -6,7 +6,7 @@
 namespace rhr::render::interfaces
 {
 /// Template interface used for elements that have a size and bounded size from a parent.
-template <usize S, typename T>
+template<usize S, typename T>
 class i_scaleable
 {
 public:
@@ -24,6 +24,7 @@ public:
 
 	///
 	glm::vec<S, T> get_super_scale();
+
 protected:
 	/// Event called when i_scaleable<T>::set_scale() or i_scaleable<T>::set_super_scale() gets involked.
 	/// \param Size of i_scaleable.
@@ -40,4 +41,4 @@ protected:
 	///
 	glm::vec<S, T> m_super_scale;
 };
-}
+} // namespace rhr::render::interfaces

@@ -5,12 +5,11 @@
 rhr::render::interfaces::i_renderable::i_renderable()
 	: m_dirty(false)
 	, m_weak_set(false)
-{
-}
+{}
 
 void rhr::render::interfaces::i_renderable::set_weak(std::weak_ptr<i_renderable>&& weak)
 {
-	m_weak = std::move(weak);
+	m_weak	   = std::move(weak);
 	m_weak_set = true;
 
 	on_set_weak();
@@ -41,25 +40,13 @@ void rhr::render::interfaces::i_renderable::reload_swap_chain()
 	on_reload_swap_chain();
 }
 
-void rhr::render::interfaces::i_renderable::on_render()
-{
+void rhr::render::interfaces::i_renderable::on_render() {}
 
-}
+void rhr::render::interfaces::i_renderable::on_update_buffers() {}
 
-void rhr::render::interfaces::i_renderable::on_update_buffers()
-{
+void rhr::render::interfaces::i_renderable::on_reload_swap_chain() {}
 
-}
-
-void rhr::render::interfaces::i_renderable::on_reload_swap_chain()
-{
-
-}
-
-void rhr::render::interfaces::i_renderable::on_set_weak()
-{
-
-}
+void rhr::render::interfaces::i_renderable::on_set_weak() {}
 
 void rhr::render::interfaces::i_renderable::mark_dirty()
 {
@@ -80,10 +67,7 @@ void rhr::render::interfaces::i_renderable::clear_dirty()
 	m_dirty = false;
 }
 
-std::weak_ptr<rhr::render::interfaces::i_renderable>& rhr::render::interfaces::i_renderable::get_weak()
-{
-	return m_weak;
-}
+std::weak_ptr<rhr::render::interfaces::i_renderable>& rhr::render::interfaces::i_renderable::get_weak() { return m_weak; }
 
 bool rhr::render::interfaces::i_renderable::is_weak()
 {
@@ -96,7 +80,4 @@ bool rhr::render::interfaces::i_renderable::is_weak()
 	return true;
 }
 
-void rhr::render::interfaces::i_renderable::on_mark_dirty()
-{
-
-}
+void rhr::render::interfaces::i_renderable::on_mark_dirty() {}

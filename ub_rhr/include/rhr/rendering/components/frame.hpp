@@ -36,4 +36,4 @@ public:
 	///
 	vk::semaphore semaphore_finished;
 };
-}
+} // namespace rhr::render::component

@@ -41,8 +41,9 @@ public:
 	static color white;
 	static color black;
 	static color alpha;
+
 private:
 	/// Color stored as a 4 component normalized (0.0 - 1.0) vector.
 	glm::vec<4, f32> m_color;
 };
-}
+} // namespace cap

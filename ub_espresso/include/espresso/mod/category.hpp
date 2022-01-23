@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/color.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace esp::mod
 {
@@ -26,6 +26,7 @@ public:
 
 	/// What will be displayed on the category button as text. Convention example: "Some Category".
 	virtual std::string get_display_name() const;
+
 private:
 	///
 	const std::string m_mod_unlocalized_name;
@@ -33,4 +34,4 @@ private:
 	///
 	const std::string m_mod_display_name;
 };
-}
+} // namespace esp::mod

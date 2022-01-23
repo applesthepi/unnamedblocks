@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "cappuccino/utils.hpp"
 #include "cappuccino/data_registry.hpp"
+#include "cappuccino/utils.hpp"
 
 namespace cap::mod::block
 {
@@ -13,13 +13,18 @@ public:
 	///
 	enum class type
 	{
-		VAR, RAW
+		VAR,
+		RAW
 	};
 
 	///
 	enum class interpretation
 	{
-		TEXT, STRING, REAL, BOOL, ANY
+		TEXT,
+		STRING,
+		REAL,
+		BOOL,
+		ANY
 	};
 
 	data();
@@ -60,6 +65,7 @@ public:
 
 	///
 	data& operator=(data& data);
+
 private:
 	///
 	std::vector<void*> m_data;
@@ -76,4 +82,4 @@ private:
 	///
 	std::vector<interpretation> m_interpretations;
 };
-}
+} // namespace cap::mod::block

@@ -1,12 +1,12 @@
 #pragma once
 #include "config.h"
 /*
-#include "ui/RenderObject.hpp"
+#include "ui/interfaces/IBoundedParent.hpp"
 #include "ui/interfaces/IDiColorable.hpp"
+#include "ui/interfaces/IEnableable.hpp"
 #include "ui/interfaces/IPositionable.hpp"
 #include "ui/interfaces/ISizeable.hpp"
-#include "ui/interfaces/IEnableable.hpp"
-#include "ui/interfaces/IBoundedParent.hpp"
+#include "ui/RenderObject.hpp"
 #include "ui/RenderRectangle.hpp"
 
 #include <Cappuccino/Utils.hpp>
@@ -31,7 +31,8 @@ enum class VerticalAlignment
 class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<2, i32>, public ISizeable<i32>
 {
 public:
-	ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal = HorizontalAlignment::CENTER, f32 horizontalSizeOverride = 0.0f);
+	ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal =
+HorizontalAlignment::CENTER, f32 horizontalSizeOverride = 0.0f);
 
 	void SetWeak(std::weak_ptr<ProgressBar>&& weak);
 	void SetDepth(u32 depth);

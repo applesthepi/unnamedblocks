@@ -53,6 +53,7 @@ public:
 
 	///
 	rhr::render::component::frame& get_frame(u8 idx);
+
 private:
 	///
 	std::vector<rhr::render::component::frame> m_frames;
@@ -75,4 +76,4 @@ private:
 	///
 	std::vector<rhr::render::component::pass> m_render_passes;
 };
-}
+} // namespace rhr::render::component

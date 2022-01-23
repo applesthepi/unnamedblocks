@@ -15,7 +15,7 @@ rhr::stack::stack::stack()
 void rhr::stack::stack::add_block(std::shared_ptr<rhr::stack::block> block)
 {
 	update_child_transform(block);
-	block->set_position_local_physical({ 0, rhr::stack::block::height * m_blocks.size() });
+	block->set_position_local_physical({0, rhr::stack::block::height * m_blocks.size()});
 	block->set_stack_update_function(&m_function_stack_update);
 	m_blocks.push_back(block);
 
@@ -30,7 +30,7 @@ void rhr::stack::stack::add_blocks(const std::vector<std::shared_ptr<rhr::stack:
 	for (u64 i = 0; i < blocks.size(); i++)
 	{
 		update_child_transform(blocks[i]);
-		blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * (m_blocks.size() + i) });
+		blocks[i]->set_position_local_physical({0, rhr::stack::block::height * (m_blocks.size() + i)});
 		blocks[i]->set_stack_update_function(&m_function_stack_update);
 		m_blocks.push_back(blocks[i]);
 	}
@@ -43,7 +43,7 @@ void rhr::stack::stack::insert_blocks(const std::vector<std::shared_ptr<rhr::sta
 	for (usize i = 0; i < blocks.size(); i++)
 	{
 		update_child_transform(blocks[i]);
-		blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * (idx + i) });
+		blocks[i]->set_position_local_physical({0, rhr::stack::block::height * (idx + i)});
 		blocks[i]->set_stack_update_function(&m_function_stack_update);
 		m_blocks.insert(m_blocks.begin() + idx + i, blocks[i]);
 	}
@@ -51,7 +51,7 @@ void rhr::stack::stack::insert_blocks(const std::vector<std::shared_ptr<rhr::sta
 	for (usize i = idx + blocks.size(); i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i]);
-		m_blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i});
 	}
 
 	update_size();
@@ -77,7 +77,7 @@ void rhr::stack::stack::remove_block(u64 idx)
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i]);
-		m_blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i});
 	}
 
 	update_size();
@@ -90,28 +90,22 @@ void rhr::stack::stack::remove_blocks_end(u64 offset)
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i]);
-		m_blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i});
 	}
 
 	update_size();
 }
 
-void rhr::stack::stack::update_size()
-{
-	set_size_local({ get_widest_block(), m_blocks.size() * rhr::stack::block::height });
-}
+void rhr::stack::stack::update_size() { set_size_local({get_widest_block(), m_blocks.size() * rhr::stack::block::height}); }
 
-const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks()
-{
-	return m_blocks;
-}
+const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks() { return m_blocks; }
 
 void rhr::stack::stack::ui_transform_update()
 {
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i], false);
-		m_blocks[i]->set_position_local_physical({ 0, rhr::stack::block::height * i });
+		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i});
 	}
 }
 
@@ -139,7 +133,4 @@ void rhr::stack::stack::ui_frame_update(f64 delta_time)
 		block->frame_update(delta_time);
 }
 
-void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
-{
-	m_function_collection_update = function_collection_update;
-}
+void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update) { m_function_collection_update = function_collection_update; }

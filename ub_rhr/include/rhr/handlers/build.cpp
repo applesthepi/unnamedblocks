@@ -9,9 +9,9 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 	std::vector<std::string> function_references;
 	std::vector<u32> function_ids;
 	std::vector<u64> function_call_count;
-	std::vector<std::vector<void(*)(cap::mod::block::pass* pass)>> function_calls;
+	std::vector<std::vector<void (*)(cap::mod::block::pass * pass)>> function_calls;
 
-	u64 function_main = 0;
+	u64 function_main		 = 0;
 	bool function_main_found = false;
 
 	std::vector<std::shared_ptr<rhr::stack::stack>> stacks;
@@ -25,12 +25,12 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 	}
 
 	cap::mod::block::data** function_data = new cap::mod::block::data*[stacks.size()];
-	cap::mod::block::block*** mod_blocks = new cap::mod::block::block**[stacks.size()];
-	
+	cap::mod::block::block*** mod_blocks  = new cap::mod::block::block**[stacks.size()];
+
 	for (u64 i = 0; i < stacks.size(); i++)
 	{
 		function_data[i] = new cap::mod::block::data[stacks[i]->get_blocks().size()];
-		mod_blocks[i] = new cap::mod::block::block*[stacks[i]->get_blocks().size()];
+		mod_blocks[i]	 = new cap::mod::block::block*[stacks[i]->get_blocks().size()];
 
 		if (stacks[i]->get_blocks().size() >= 1 && std::string(stacks[i]->get_blocks()[0]->get_mod_block()->get_unlocalized_name()) == "essentials_main")
 		{
@@ -41,16 +41,16 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 				return;
 			}
 
-			function_main = i;
+			function_main		= i;
 			function_main_found = true;
 		}
-		
+
 		// TODO: function references to indices (use lambda code in Cappuccino/cap::registration.cpp)
 
-		//functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
-		//functionIds.push_back(functionReferences.size());
+		// functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
+		// functionIds.push_back(functionReferences.size());
 
-		std::vector<void(*)(cap::mod::block::pass* pass)> trans_calls;
+		std::vector<void (*)(cap::mod::block::pass * pass)> trans_calls;
 
 		for (u64 a = 0; a < stacks[i]->get_blocks().size(); a++)
 		{
@@ -82,10 +82,10 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 						cap::logger::error(cap::logger::level::EDITOR, "invalid argument exception in preprocessor");
 						return;
 					}
-					
+
 					arg_data.push_back((void*)dt);
 					arg_types.push_back(cap::mod::block::data::type::VAR);
-					
+
 					if (type == cap::mod::block::block::argument::type::TEXT)
 						arg_interpretations.push_back(cap::mod::block::data::interpretation::TEXT);
 					else if (type == cap::mod::block::block::argument::type::BOOL)
@@ -100,7 +100,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 				else if (type == cap::mod::block::block::argument::type::STRING)
 				{
 					std::string* dt = new std::string();
-					
+
 					try
 					{
 						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data();
@@ -136,7 +136,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 				else if (type == cap::mod::block::block::argument::type::REAL)
 				{
 					f64* dt = new f64;
-					
+
 					try
 					{
 						*dt = std::stod(stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data());
@@ -153,7 +153,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 				}
 			}
 			cap::mod::block::data blockdata = cap::mod::block::data(arg_data, arg_types, arg_interpretations);
-			function_data[i][a] = blockdata;
+			function_data[i][a]				= blockdata;
 		}
 
 		function_calls.push_back(trans_calls);
@@ -168,12 +168,12 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 	}
 
 	void (***calls)(cap::mod::block::pass*);
-	calls = (void(***)(cap::mod::block::pass*))malloc(sizeof(void(**)(cap::mod::block::pass*)) * function_calls.size());
+	calls = (void (***)(cap::mod::block::pass*))malloc(sizeof(void (**)(cap::mod::block::pass*)) * function_calls.size());
 
 	for (u64 i = 0; i < function_calls.size(); i++)
 	{
 		void (**callsInside)(cap::mod::block::pass*);
-		callsInside = (void(**)(cap::mod::block::pass*))malloc(sizeof(void(*)(cap::mod::block::pass*)) * function_calls[i].size());
+		callsInside = (void (**)(cap::mod::block::pass*))malloc(sizeof(void (*)(cap::mod::block::pass*)) * function_calls[i].size());
 
 		for (u64 a = 0; a < function_calls[i].size(); a++)
 			callsInside[a] = function_calls[i][a];
@@ -217,7 +217,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 void rhr::handler::build::initialize()
 {
 	m_terminate = false;
-	m_status = cap::build_system::status::READY;
+	m_status	= cap::build_system::status::READY;
 }
 
 void rhr::handler::build::execute(cap::build_system::method build_method, cap::build_system::type build_type)
@@ -236,10 +236,7 @@ void rhr::handler::build::execute(cap::build_system::method build_method, cap::b
 	m_thread = std::thread(thread_build, build_method, build_type);
 }
 
-cap::build_system::status rhr::handler::build::get_status()
-{
-	return m_status;
-}
+cap::build_system::status rhr::handler::build::get_status() { return m_status; }
 
 void rhr::handler::build::terminate()
 {
@@ -250,7 +247,7 @@ void rhr::handler::build::terminate()
 void rhr::handler::build::confirm_terminated()
 {
 	m_terminate = false;
-	m_status = cap::build_system::status::READY;
+	m_status	= cap::build_system::status::READY;
 }
 
 std::thread rhr::handler::build::m_thread;

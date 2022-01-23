@@ -1,16 +1,11 @@
 #include "flags.hpp"
 
 cap::mod::block::flags::iterator::iterator(const u64* flag)
-	: m_iterator(0),
-	m_flag(flag)
-{
+	: m_iterator(0)
+	, m_flag(flag)
+{}
 
-}
-
-void cap::mod::block::flags::iterator::reset()
-{
-	m_iterator = 0;
-}
+void cap::mod::block::flags::iterator::reset() { m_iterator = 0; }
 
 cap::mod::block::flags::type cap::mod::block::flags::iterator::pull_next()
 {
@@ -24,15 +19,12 @@ cap::mod::block::flags::type cap::mod::block::flags::iterator::pull_next()
 }
 
 cap::mod::block::flags::flags()
-	:m_iterator(cap::mod::block::flags::iterator(&m_flag))
+	: m_iterator(cap::mod::block::flags::iterator(&m_flag))
 {
 	m_flag = 0;
 }
 
-cap::mod::block::flags::iterator cap::mod::block::flags::use_iterator() const
-{
-	return m_iterator;
-}
+cap::mod::block::flags::iterator cap::mod::block::flags::use_iterator() const { return m_iterator; }
 
 cap::mod::block::flags& cap::mod::block::flags::check_heap()
 {
@@ -45,4 +37,3 @@ cap::mod::block::flags& cap::mod::block::flags::check_stack()
 	m_flag |= (u64)cap::mod::block::flags::type::FLAG_CHECK_STACK;
 	return *this;
 }
-

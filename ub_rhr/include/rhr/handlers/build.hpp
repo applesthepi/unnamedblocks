@@ -3,8 +3,8 @@
 
 #include "rhr/stacking/plane.hpp"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/build_system.hpp>
+#include <cappuccino/utils.hpp>
 
 #if LINUX
 #include <dlfcn.h>
@@ -32,6 +32,7 @@ public:
 
 	///
 	static void confirm_terminated();
+
 private:
 	///
 	static std::thread m_thread;
@@ -42,4 +43,4 @@ private:
 	///
 	static cap::build_system::status m_status;
 };
-}
+} // namespace rhr::handler

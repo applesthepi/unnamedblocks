@@ -1,12 +1,12 @@
 #pragma once
 #include "config.h"
 
-#include "rhr/stacking/arguments/argument.hpp"
 #include "rhr/rendering/interfaces/i_ui.hpp"
 #include "rhr/rendering/objects/rectangle.hpp"
+#include "rhr/stacking/arguments/argument.hpp"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/mod/block/block.hpp>
+#include <cappuccino/utils.hpp>
 #include <espresso/mod/category.hpp>
 
 namespace rhr::stack
@@ -47,6 +47,7 @@ public:
 
 	///
 	static i16 height_content;
+
 private:
 	///
 	void ui_transform_update() override;
@@ -67,7 +68,8 @@ private:
 	void update_arguments();
 
 	///
-	static void pad_arguments(u32& width, usize i, const std::shared_ptr<rhr::stack::argument::argument>& last_arg, const std::shared_ptr<rhr::stack::argument::argument>& arg, bool last = false);
+	static void pad_arguments(
+		u32& width, usize i, const std::shared_ptr<rhr::stack::argument::argument>& last_arg, const std::shared_ptr<rhr::stack::argument::argument>& arg, bool last = false);
 
 	///
 	u32 m_width;
@@ -90,4 +92,4 @@ private:
 	///
 	std::function<void()> m_function_block_update;
 };
-}
+} // namespace rhr::stack

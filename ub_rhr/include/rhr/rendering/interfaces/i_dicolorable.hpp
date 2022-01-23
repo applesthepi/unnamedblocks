@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include <cappuccino/utils.hpp>
 #include <cappuccino/color.hpp>
+#include <cappuccino/utils.hpp>
 
 namespace rhr::render::interfaces
 {
@@ -24,6 +24,7 @@ public:
 
 	///
 	const cap::color& get_color_secondary();
+
 protected:
 	/// Gets called after the color is changed.
 	virtual void post_color_update();
@@ -34,4 +35,4 @@ protected:
 	///
 	cap::color m_color_secondary;
 };
-}
+} // namespace rhr::render::interfaces

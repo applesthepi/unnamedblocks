@@ -16,7 +16,7 @@ std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)
 
 			continue;
 		}
-		
+
 		if (currentIfs.size() > 0)
 		{
 			if (stack->GetBlock(a)->GetUnlocalizedName() == "vin_execution_if_end")

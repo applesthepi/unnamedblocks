@@ -27,7 +27,7 @@ public:
 	/// Gets the weak reference.
 	/// \return Weak reference to itself.
 	std::weak_ptr<i_renderable>& get_weak();
-	
+
 	/// If i_renderable::set_weak() was run then this returns true.
 	bool is_weak();
 
@@ -62,4 +62,4 @@ protected:
 	/// Weak reference to itself.
 	std::weak_ptr<i_renderable> m_weak;
 };
-}
+} // namespace rhr::render::interfaces
