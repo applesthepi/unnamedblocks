@@ -7,9 +7,6 @@
 [submodule "dependencies/cpptoml"]
 	path = dependencies/cpptoml
 	url = https://github.com/skystrife/cpptoml
-[submodule "dependencies/freetype"]
-	path = dependencies/freetype
-	url = https://gitlab.freedesktop.org/freetype/freetype.git
 [submodule "dependencies/rapidjson"]
 	path = dependencies/rapidjson
 	url = https://github.com/Tencent/rapidjson
