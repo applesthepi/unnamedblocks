@@ -1,13 +1,13 @@
 # Installation
 ### General User
-Please note that this project isnt setup properly for public use. In the future there will be more downloads. For now, the only demo availible is from 1 year ago is for windows only here https://applesthepi.com/unnamedblocks/downloads
+Please note that this project isnt setup properly for public use. In the future there will be more downloads. For now, the only demo availible is from 2 years ago is for windows only here https://applesthepi.com/unnamedblocks/downloads
 
 ### Development Installation
 **master** - active development branch (features not functioning)  
-**stable** - stable releases (1y old demo)  
-**nightly** - bleeding edge releases (1y old demo)
+**stable** - stable releases (2yo demo)  
+**nightly** - bleeding edge releases (2yo demo)
   
-Your expected to have cmake and git installed and in your path. Follow these steps for repo setup:
+  Your expected to have cmake and git installed and in your path. Follow these steps for repo setup:
 #### Windows / Visual Studio
 1. `git clone https://github.com/applesthepi/unnamedblocks`
 2. `.\initialize.bat`
@@ -116,6 +116,9 @@ example_class::another_one(u8 something_yes)
 }
 ```
 
+### Formating
+There is a formating script that will format the repo files based on the clang format provided in the repo root.
+
 ### Documentation
 Unnamed Blocks currently uses doxygen documentation generation. In the example above, notice how overrided functions dont even have a space for documentation, this is because doxygen uses the most super class's documentation. Heres a big example from the i_positionable class. Also notice how any phrase or sentence begins with a capital letter and ends with a period.
 ```cpp
@@ -128,6 +131,6 @@ virtual bool preposition_update(const glm::vec<S, T>& position, const glm::vec<S
 # Version Standard
 This is the version standard Unnamed Blocks will be following.  
 
-**Post-Alpha** - Major . Minor . Beta  
+Major . Minor . Beta  
 
 All Major and Minor updates should be user tested extensivly while beta updates will have tests ran on it and briefly user tested with some projects. Major and Minor updates will both use the stable branch while beta releases will be merged to nightly. Master will just be the development branch that isnt ready for public use and may have issues.
