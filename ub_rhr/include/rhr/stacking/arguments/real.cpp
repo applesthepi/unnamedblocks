@@ -45,7 +45,7 @@ u32 rhr::stack::argument::real::get_width() { return m_text->get_size_local().x 
 
 bool rhr::stack::argument::real::has_data() { return true; }
 
-void rhr::stack::argument::real::ui_transform_update()
+void rhr::stack::argument::real::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	update_child_transform(m_text);
 	m_text->set_position_local_physical({ARG_REAL_DECORE_WIDTH, 0});
@@ -115,6 +115,11 @@ void rhr::stack::argument::real::ui_update_buffers()
 	m_decor_left_bottom->update_vertices(vertices + 3, 3, true);
 	m_decor_right_top->update_vertices(vertices + 6, 3, true);
 	m_decor_right_bottom->update_vertices(vertices + 9, 3, true);
+}
+
+void rhr::stack::argument::real::ui_chain_update_buffers()
+{
+
 }
 
 void rhr::stack::argument::real::ui_frame_update(f64 delta_time) {}

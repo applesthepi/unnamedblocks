@@ -25,7 +25,7 @@ void rhr::render::object::line::enable_border(bool enable_border)
 	mark_dirty();
 }
 
-void rhr::render::object::line::ui_transform_update()
+void rhr::render::object::line::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	mark_dirty();
 
@@ -255,6 +255,11 @@ void rhr::render::object::line::ui_update_buffers()
 	}
 #endif
 	m_render_object->update_vertices(&vertices, &indices, true);
+}
+
+void rhr::render::object::line::ui_chain_update_buffers()
+{
+
 }
 
 void rhr::render::object::line::post_color_update() { mark_dirty(); }

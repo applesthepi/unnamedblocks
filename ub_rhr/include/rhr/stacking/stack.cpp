@@ -100,7 +100,7 @@ void rhr::stack::stack::update_size() { set_size_local({get_widest_block(), m_bl
 
 const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks() { return m_blocks; }
 
-void rhr::stack::stack::ui_transform_update()
+void rhr::stack::stack::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
@@ -121,7 +121,9 @@ void rhr::stack::stack::ui_reload_swap_chain()
 		block->reload_swap_chain();
 }
 
-void rhr::stack::stack::ui_update_buffers()
+void rhr::stack::stack::ui_update_buffers() {}
+
+void rhr::stack::stack::ui_chain_update_buffers()
 {
 	for (auto& block : m_blocks)
 		block->update_buffers();

@@ -57,7 +57,7 @@ public:
 
 private:
 	///
-	void ui_transform_update() override;
+	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 
 	///
 	void ui_render() override;
@@ -67,6 +67,9 @@ private:
 
 	///
 	void ui_update_buffers() override;
+
+	///
+	void ui_chain_update_buffers() override;
 
 	///
 	void ui_frame_update(f64 delta_time) override;

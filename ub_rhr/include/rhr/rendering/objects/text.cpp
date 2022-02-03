@@ -242,7 +242,7 @@ void rhr::render::object::text::update_size()
 	set_size_local({static_cast<i32>(running_char_offsets) + m_padding, m_font_size}, false);
 }
 
-void rhr::render::object::text::ui_transform_update()
+void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	const glm::vec<2, i32>& position_physical = get_position_physical_absolute();
 	const glm::vec<2, i32>& position_virtual  = get_position_virtual_absolute();
@@ -350,6 +350,11 @@ void rhr::render::object::text::ui_update_buffers()
 
 	if (!m_read_only && m_registered)
 		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), size_local);
+}
+
+void rhr::render::object::text::ui_chain_update_buffers()
+{
+
 }
 
 void rhr::render::object::text::ui_frame_update(f64 delta_time) {}

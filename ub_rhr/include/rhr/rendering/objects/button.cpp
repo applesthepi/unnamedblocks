@@ -59,7 +59,7 @@ void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 sc
 
 void rhr::render::object::button::enable_fill_width(bool enable) { m_enable_fill_width = enable; }
 
-void rhr::render::object::button::ui_transform_update()
+void rhr::render::object::button::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	if (m_enable_fill_width)
 		set_size_local(get_size_local() + glm::vec<2, i32>(get_size_parent().x - get_position_local_physical().x, 0), false);
@@ -72,7 +72,9 @@ void rhr::render::object::button::ui_render() { m_background->render(); }
 
 void rhr::render::object::button::ui_reload_swap_chain() { m_background->reload_swap_chain(); }
 
-void rhr::render::object::button::ui_update_buffers() { m_background->update_buffers(); }
+void rhr::render::object::button::ui_update_buffers() {}
+
+void rhr::render::object::button::ui_chain_update_buffers() { m_background->update_buffers(); }
 
 void rhr::render::object::button::ui_frame_update(f64 delta_time) {}
 

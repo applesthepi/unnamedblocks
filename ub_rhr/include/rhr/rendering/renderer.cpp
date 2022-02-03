@@ -282,17 +282,17 @@ void rhr::render::renderer::process_dirty()
 {
 	std::unique_lock lock(m_dirty_mutex);
 
-	for (const auto& renderable : m_dirty_renderable)
-	{
-		if (auto object = renderable.lock())
-			object->update_buffers();
-	}
+	//for (const auto& renderable : m_dirty_renderable)
+	//{
+	//	if (auto object = renderable.lock())
+	//		object->update_buffers();
+	//}
 
-	for (const auto& ui : m_dirty_ui)
-	{
-		if (auto object = ui.lock())
-			object->update_buffers();
-	}
+	//for (const auto& ui : m_dirty_ui)
+	//{
+	//	if (auto object = ui.lock())
+	//		object->update_buffers();
+	//}
 
 	m_dirty_renderable.clear();
 	m_dirty_ui.clear();
@@ -355,7 +355,10 @@ void rhr::render::renderer::render_pass_setup()
 	rhr::stack::plane::primary_plane->frame_update(1.0);
 	rhr::stack::plane::toolbar_plane->frame_update(1.0);
 
-	process_dirty();
+	rhr::stack::plane::primary_plane->update_buffers();
+	rhr::stack::plane::toolbar_plane->update_buffers();
+
+	//process_dirty();
 }
 
 void rhr::render::renderer::render_pass_master()

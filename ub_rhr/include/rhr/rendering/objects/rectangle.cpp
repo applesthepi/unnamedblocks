@@ -43,7 +43,7 @@ void rhr::render::object::rectangle::set_depth(i32 depth)
 	mark_dirty();
 }
 
-void rhr::render::object::rectangle::ui_transform_update()
+void rhr::render::object::rectangle::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	mark_dirty();
 
@@ -250,6 +250,11 @@ void rhr::render::object::rectangle::ui_update_buffers()
 	}
 
 	m_render_object->update_vertices(&vertices, &indices, true);
+}
+
+void rhr::render::object::rectangle::ui_chain_update_buffers()
+{
+
 }
 
 void rhr::render::object::rectangle::post_color_update() { mark_dirty(); }

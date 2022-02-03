@@ -16,10 +16,8 @@ rhr::render::object::button_text::button_text(const cap::color& primary_color, c
 	m_text->set_text(text);
 }
 
-void rhr::render::object::button_text::ui_transform_update()
+void rhr::render::object::button_text::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	rhr::render::object::button::ui_transform_update();
-
 	update_child_transform(m_text, false);
 	m_text->set_position_parent_physical(m_text->get_position_parent_physical() + glm::vec<2, i32>(0, 2), false);
 
@@ -43,7 +41,9 @@ void rhr::render::object::button_text::ui_reload_swap_chain()
 	m_text->reload_swap_chain();
 }
 
-void rhr::render::object::button_text::ui_update_buffers()
+void rhr::render::object::button_text::ui_update_buffers() {}
+
+void rhr::render::object::button_text::ui_chain_update_buffers()
 {
 	rhr::render::object::button::ui_update_buffers();
 	m_text->update_buffers();

@@ -10,6 +10,9 @@ class i_ui
 {
 public:
 	///
+	typedef u8 transform_update_spec;
+
+	///
 	i_ui();
 
 	///
@@ -64,7 +67,7 @@ public:
 	const glm::vec<2, i32>& get_size_parent();
 
 	///
-	void update_transform();
+	void update_transform(i_ui::transform_update_spec transform_update_spec);
 
 	///
 	void update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, bool update_child = true);
@@ -92,7 +95,7 @@ protected:
 	void mark_dirty();
 
 	/// Event called after any position or size update functions get run.
-	virtual void ui_transform_update();
+	virtual void ui_transform_update(i_ui::transform_update_spec transform_update_spec);
 
 	///
 	virtual void ui_render();
@@ -104,7 +107,16 @@ protected:
 	virtual void ui_update_buffers();
 
 	///
+	virtual void ui_chain_update_buffers();
+
+	///
 	virtual void ui_frame_update(f64 delta_time);
+
+	///
+	static transform_update_spec transform_update_spec_position;
+
+	///
+	static transform_update_spec transform_update_spec_size;
 
 private:
 	///

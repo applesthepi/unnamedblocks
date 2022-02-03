@@ -29,7 +29,7 @@ void rhr::render::interfaces::i_ui::set_position_local_physical(const glm::vec<2
 	m_position_virtual_absolute	 = m_position_virtual_offset + m_position_physical_absolute;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_position);
 }
 
 void rhr::render::interfaces::i_ui::set_position_local_virtual_offset(const glm::vec<2, i32>& offset, bool update_child)
@@ -39,7 +39,7 @@ void rhr::render::interfaces::i_ui::set_position_local_virtual_offset(const glm:
 	m_position_virtual_absolute		= m_position_virtual_offset + m_position_physical_absolute;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_position);
 }
 
 void rhr::render::interfaces::i_ui::set_position_parent_physical(const glm::vec<2, i32>& offset, bool update_child)
@@ -49,7 +49,7 @@ void rhr::render::interfaces::i_ui::set_position_parent_physical(const glm::vec<
 	m_position_virtual_absolute	 = m_position_virtual_offset + m_position_physical_absolute;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_position);
 }
 
 void rhr::render::interfaces::i_ui::set_position_parent_virtual_offset(const glm::vec<2, i32>& offset, bool update_child)
@@ -59,7 +59,7 @@ void rhr::render::interfaces::i_ui::set_position_parent_virtual_offset(const glm
 	m_position_virtual_absolute		 = m_position_virtual_offset + m_position_physical_absolute;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_position);
 }
 
 void rhr::render::interfaces::i_ui::set_size_local(const glm::vec<2, i32>& size, bool update_child)
@@ -67,7 +67,7 @@ void rhr::render::interfaces::i_ui::set_size_local(const glm::vec<2, i32>& size,
 	m_size_local = size;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_size);
 }
 
 void rhr::render::interfaces::i_ui::set_size_parent(const glm::vec<2, i32>& size, bool update_child)
@@ -75,7 +75,7 @@ void rhr::render::interfaces::i_ui::set_size_parent(const glm::vec<2, i32>& size
 	m_size_parent = size;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_size);
 }
 
 void rhr::render::interfaces::i_ui::set_size_max(bool update_child)
@@ -83,7 +83,7 @@ void rhr::render::interfaces::i_ui::set_size_max(bool update_child)
 	m_size_local = m_size_parent;
 
 	if (update_child)
-		update_transform();
+		update_transform(i_ui::transform_update_spec_size);
 }
 
 const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_local_physical() { return m_position_local_physical; }
@@ -104,7 +104,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_local() { return
 
 const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_parent() { return m_size_parent; }
 
-void rhr::render::interfaces::i_ui::update_transform() { ui_transform_update(); }
+void rhr::render::interfaces::i_ui::update_transform(rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec) { ui_transform_update(transform_update_spec); }
 
 void rhr::render::interfaces::i_ui::update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, bool update_child)
 {
@@ -113,7 +113,7 @@ void rhr::render::interfaces::i_ui::update_child_transform(const std::shared_ptr
 	ui->set_size_parent(get_size_local(), false);
 
 	if (update_child)
-		ui->update_transform();
+		ui->update_transform(i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 }
 
 void rhr::render::interfaces::i_ui::set_enabled(bool enabled) { m_enabled = enabled; }
@@ -130,8 +130,13 @@ void rhr::render::interfaces::i_ui::reload_swap_chain() { ui_reload_swap_chain()
 
 void rhr::render::interfaces::i_ui::update_buffers()
 {
-	m_dirty = false;
-	ui_update_buffers();
+	if (m_dirty)
+	{
+		m_dirty = false;
+		ui_update_buffers();
+	}
+
+	ui_chain_update_buffers();
 }
 
 void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
@@ -142,14 +147,15 @@ void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
 
 void rhr::render::interfaces::i_ui::mark_dirty()
 {
-	if (!is_weak() || m_dirty)
-		return;
-
 	m_dirty = true;
-	rhr::render::renderer::add_dirty(m_weak);
+	//if (!is_weak() || m_dirty)
+	//	return;
+	//
+	//m_dirty = true;
+	//rhr::render::renderer::add_dirty(m_weak);
 }
 
-void rhr::render::interfaces::i_ui::ui_transform_update() {}
+void rhr::render::interfaces::i_ui::ui_transform_update(i_ui::transform_update_spec transform_update_spec) {}
 
 void rhr::render::interfaces::i_ui::ui_render() {}
 
@@ -157,7 +163,13 @@ void rhr::render::interfaces::i_ui::ui_reload_swap_chain() {}
 
 void rhr::render::interfaces::i_ui::ui_update_buffers() {}
 
+void rhr::render::interfaces::i_ui::ui_chain_update_buffers() {}
+
 void rhr::render::interfaces::i_ui::ui_frame_update(f64 delta_time) {}
+
+rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_position = 0x1;
+
+rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_size = 0x2;
 
 bool rhr::render::interfaces::i_ui::is_weak()
 {

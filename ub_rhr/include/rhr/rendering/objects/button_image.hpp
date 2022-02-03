@@ -17,16 +17,19 @@ public:
 
 private:
 	///
-	virtual void ui_transform_update();
+	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 
 	///
-	virtual void ui_render();
+	void ui_render() override;
 
 	///
-	virtual void ui_reload_swap_chain();
+	void ui_reload_swap_chain() override;
 
 	///
-	virtual void ui_update_buffers();
+	void ui_update_buffers() override;
+
+	///
+	void ui_chain_update_buffers() override;
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_rectangle;

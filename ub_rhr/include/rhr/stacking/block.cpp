@@ -46,7 +46,7 @@ i16 rhr::stack::block::padding		  = 2;
 i16 rhr::stack::block::height		  = 20;
 i16 rhr::stack::block::height_content = height - (padding * 2);
 
-void rhr::stack::block::ui_transform_update()
+void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	update_child_transform(m_background);
 
@@ -70,7 +70,9 @@ void rhr::stack::block::ui_reload_swap_chain()
 		arg->reload_swap_chain();
 }
 
-void rhr::stack::block::ui_update_buffers()
+void rhr::stack::block::ui_update_buffers() {}
+
+void rhr::stack::block::ui_chain_update_buffers()
 {
 	m_background->update_buffers();
 

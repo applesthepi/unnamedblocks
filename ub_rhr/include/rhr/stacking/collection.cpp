@@ -226,7 +226,7 @@ void rhr::stack::collection::display_vanity(bool enabled) { m_display_vanity = e
 
 const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::get_stacks() { return m_stacks; }
 
-void rhr::stack::collection::ui_transform_update()
+void rhr::stack::collection::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	update_child_transform(m_background, false);
 	m_background->set_size_max();
@@ -252,7 +252,9 @@ void rhr::stack::collection::ui_reload_swap_chain()
 		stack->reload_swap_chain();
 }
 
-void rhr::stack::collection::ui_update_buffers()
+void rhr::stack::collection::ui_update_buffers() {}
+
+void rhr::stack::collection::ui_chain_update_buffers()
 {
 	m_background->update_buffers();
 

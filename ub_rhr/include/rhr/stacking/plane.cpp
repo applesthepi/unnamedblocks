@@ -428,7 +428,7 @@ void rhr::stack::plane::render_master_pass()
 	}
 }
 
-void rhr::stack::plane::ui_transform_update()
+void rhr::stack::plane::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	set_size_max(false);
 	update_child_transform(m_background);
@@ -460,6 +460,11 @@ void rhr::stack::plane::ui_reload_swap_chain()
 }
 
 void rhr::stack::plane::ui_update_buffers()
+{
+
+}
+
+void rhr::stack::plane::ui_chain_update_buffers()
 {
 	m_background->update_buffers();
 

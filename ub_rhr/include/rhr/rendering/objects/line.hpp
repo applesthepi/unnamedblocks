@@ -35,7 +35,7 @@ public:
 
 private:
 	///
-	void ui_transform_update() override;
+	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 
 	///
 	void ui_render() override;
@@ -47,8 +47,11 @@ private:
 	void ui_update_buffers() override;
 
 	///
-	void post_color_update() override;
+	void ui_chain_update_buffers() override;
 
+	///
+	void post_color_update() override;
+private:
 	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object;
 

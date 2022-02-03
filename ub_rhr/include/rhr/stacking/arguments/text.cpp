@@ -29,13 +29,18 @@ bool rhr::stack::argument::text::has_data() { return true; }
 
 rhr::stack::argument::argument::padding_style rhr::stack::argument::text::get_padding_style() { return rhr::stack::argument::argument::padding_style::SOFT; }
 
-void rhr::stack::argument::text::ui_transform_update() { update_child_transform(m_text); }
+void rhr::stack::argument::text::ui_transform_update(i_ui::transform_update_spec transform_update_spec) { update_child_transform(m_text); }
 
 void rhr::stack::argument::text::ui_render() { m_text->render(); }
 
 void rhr::stack::argument::text::ui_reload_swap_chain() { m_text->reload_swap_chain(); }
 
-void rhr::stack::argument::text::ui_update_buffers() { m_text->update_buffers(); }
+void rhr::stack::argument::text::ui_update_buffers() {}
+
+void rhr::stack::argument::text::ui_chain_update_buffers()
+{
+	m_text->update_buffers();
+}
 
 void rhr::stack::argument::text::ui_frame_update(f64 delta_time) {}
 
