@@ -142,7 +142,7 @@ void rhr::handler::category::populate()
 				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>();
 				collection->set_weak(collection);
 				collection->display_vanity(false);
-				collection->set_position_local_physical({0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b});
+				collection->set_position_local_physical({0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b}, true);
 
 				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>();
 				stack->set_weak(stack);

@@ -363,11 +363,11 @@ void rhr::render::panel::initialize_panels()
 		[](panel::data& data) { rhr::stack::plane::primary_plane->render(); },
 		[](panel::data& data) { rhr::stack::plane::primary_plane->render_master_pass(); },
 		[](panel::data& data)
-		{ rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position()); },
+		{ rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position(), true); },
 		[](panel::data& data)
 		{
-			rhr::stack::plane::primary_plane->set_size_parent(data.panel_last_size);
-			rhr::stack::plane::primary_plane->set_size_max();
+			rhr::stack::plane::primary_plane->set_size_parent(data.panel_last_size, false);
+			rhr::stack::plane::primary_plane->set_size_max(true);
 		});
 
 	create_panel(
@@ -375,11 +375,11 @@ void rhr::render::panel::initialize_panels()
 		[](panel::data& data) { rhr::stack::plane::toolbar_plane->render(); },
 		[](panel::data& data) { rhr::stack::plane::toolbar_plane->render_master_pass(); },
 		[](panel::data& data)
-		{ rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position()); },
+		{ rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position(), true); },
 		[](panel::data& data)
 		{
-			rhr::stack::plane::toolbar_plane->set_size_parent(data.panel_last_size);
-			rhr::stack::plane::toolbar_plane->set_size_max();
+			rhr::stack::plane::toolbar_plane->set_size_parent(data.panel_last_size, false);
+			rhr::stack::plane::toolbar_plane->set_size_max(true);
 		});
 
 	create_panel(

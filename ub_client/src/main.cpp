@@ -87,21 +87,21 @@ i32 main()
 	rhr::handler::category::populate();
 
 	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
-	rhr::stack::plane::primary_plane->set_size_max();
+	rhr::stack::plane::primary_plane->set_size_max(true);
 
 	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
-	rhr::stack::plane::toolbar_plane->set_size_max();
+	rhr::stack::plane::toolbar_plane->set_size_max(true);
 
 	// default blocks
 
 	std::shared_ptr<rhr::stack::collection> testCollection = std::make_shared<rhr::stack::collection>();
 	testCollection->set_weak(testCollection);
-	testCollection->set_position_local_physical({200, 200});
-	testCollection->set_size_local({500, 300});
+	testCollection->set_position_local_physical({200, 200}, true);
+	testCollection->set_size_local({500, 300}, true);
 
 	std::shared_ptr<rhr::stack::stack> testStack1 = std::make_shared<rhr::stack::stack>();
 	testStack1->set_weak(testStack1);
-	testStack1->set_position_local_physical({0, 0});
+	testStack1->set_position_local_physical({0, 0}, true);
 
 	std::shared_ptr<rhr::stack::block> testBlock1 = std::make_shared<rhr::stack::block>("essentials_main");
 	testBlock1->set_weak(testBlock1);

@@ -18,15 +18,41 @@ rhr::render::object::button_text::button_text(const cap::color& primary_color, c
 
 void rhr::render::object::button_text::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_text, false);
-	m_text->set_position_parent_physical(m_text->get_position_parent_physical() + glm::vec<2, i32>(0, 2), false);
+	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
+	bool size_update     = transform_update_spec & i_ui::transform_update_spec_size;
 
-	i32 font_size = get_size_local().y - 4;
+	if (size_update && !position_update)
+	{
+		// Update only size.
 
-	if (font_size <= 4)
-		m_text->set_font_size(static_cast<u16>(get_size_local().y));
-	else
-		m_text->set_font_size(get_size_local().y - 4);
+		update_child_transform(m_text, 0x0);
+
+		i32 font_size = get_size_local().y - 4;
+		if (font_size <= 4)
+			m_text->set_font_size(static_cast<u16>(get_size_local().y));
+		else
+			m_text->set_font_size(get_size_local().y - 4);
+	}
+	else if (size_update)
+	{
+		// Update size and position.
+
+		update_child_transform(m_text, 0x0);
+		m_text->set_position_parent_physical(m_text->get_position_parent_physical() + glm::vec<2, i32>(0, 2), true);
+
+		i32 font_size = get_size_local().y - 4;
+		if (font_size <= 4)
+			m_text->set_font_size(static_cast<u16>(get_size_local().y));
+		else
+			m_text->set_font_size(get_size_local().y - 4);
+	}
+	else if (position_update)
+	{
+		// Update only position.
+
+		update_child_transform(m_text, 0x0);
+		m_text->set_position_parent_physical(m_text->get_position_parent_physical() + glm::vec<2, i32>(0, 2), true);
+	}
 }
 
 void rhr::render::object::button_text::ui_render()
@@ -45,7 +71,6 @@ void rhr::render::object::button_text::ui_update_buffers() {}
 
 void rhr::render::object::button_text::ui_chain_update_buffers()
 {
-	rhr::render::object::button::ui_update_buffers();
 	m_text->update_buffers();
 }
 

@@ -19,7 +19,7 @@ rhr::render::object::button::button(const cap::color& primary_color, const cap::
 	m_background->set_color(m_color_secondary);
 	m_background->set_depth(rhr::render::renderer::depth_ui_background);
 
-	set_size_local({100, 20});
+	set_size_local({100, 20}, true);
 
 	InputHandler::RegisterMouseCallback(mouse_update_caller, this);
 }
@@ -61,11 +61,36 @@ void rhr::render::object::button::enable_fill_width(bool enable) { m_enable_fill
 
 void rhr::render::object::button::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	if (m_enable_fill_width)
-		set_size_local(get_size_local() + glm::vec<2, i32>(get_size_parent().x - get_position_local_physical().x, 0), false);
+	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
+	bool size_update     = transform_update_spec & i_ui::transform_update_spec_size;
 
-	update_child_transform(m_background, false);
-	m_background->set_size_max();
+	if (size_update && !position_update)
+	{
+		// Update only size.
+
+		update_child_transform(m_background, 0x0);
+
+		if (m_enable_fill_width)
+			set_size_local(get_size_local() + glm::vec<2, i32>(get_size_parent().x - get_position_local_physical().x, 0), false);
+
+		update_child_transform(m_background, 0x0);
+		m_background->set_size_max(true);
+	}
+	else if (size_update)
+	{
+		// Update size and position.
+
+		if (m_enable_fill_width)
+			set_size_local(get_size_local() + glm::vec<2, i32>(get_size_parent().x - get_position_local_physical().x, 0), false);
+
+		update_child_transform(m_background, i_ui::transform_update_spec_position);
+		m_background->set_size_max(true);
+	}
+	else if (position_update)
+	{
+		// Update only position.
+		update_child_transform(m_background, i_ui::transform_update_spec_position);
+	}
 }
 
 void rhr::render::object::button::ui_render() { m_background->render(); }

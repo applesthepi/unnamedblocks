@@ -30,7 +30,7 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 	m_background->set_color(m_mod_category->get_color() /*cap::color().from_u8({ 200, 200, 200, 0 })*/);
 	m_background->set_depth(rhr::render::renderer::depth_block);
 
-	set_size_local({100, rhr::stack::block::height});
+	set_size_local({100, rhr::stack::block::height}, true);
 	update_arguments();
 }
 
@@ -48,10 +48,10 @@ i16 rhr::stack::block::height_content = height - (padding * 2);
 
 void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_background);
+	update_child_transform(m_background, true);
 
 	for (auto& arg : m_arguments)
-		update_child_transform(arg);
+		update_child_transform(arg, true);
 }
 
 void rhr::stack::block::ui_render()
@@ -110,8 +110,8 @@ void rhr::stack::block::update_arguments()
 
 			pad_arguments(width, i, last_arg, arg);
 
-			update_child_transform(arg);
-			arg->set_position_local_physical({width, rhr::stack::block::padding});
+			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+			arg->set_position_local_physical({ width, rhr::stack::block::padding }, true);
 			arg->set_data(argument_init[i].get_default_value());
 			arg->set_mode(argument_init[i].get_mode());
 			arg->set_mode_restriction(argument_init[i].get_restriction());
@@ -126,8 +126,8 @@ void rhr::stack::block::update_arguments()
 
 			pad_arguments(width, i, last_arg, arg);
 
-			update_child_transform(arg);
-			arg->set_position_local_physical({width, rhr::stack::block::padding});
+			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
 			arg->set_data(argument_init[i].get_default_value());
 			arg->set_mode(argument_init[i].get_mode());
 			arg->set_mode_restriction(argument_init[i].get_restriction());
@@ -142,8 +142,8 @@ void rhr::stack::block::update_arguments()
 
 			pad_arguments(width, i, last_arg, arg);
 
-			update_child_transform(arg);
-			arg->set_position_local_physical({width, rhr::stack::block::padding});
+			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
 			arg->set_data(argument_init[i].get_default_value());
 			arg->set_mode(argument_init[i].get_mode());
 			arg->set_mode_restriction(argument_init[i].get_restriction());
@@ -158,8 +158,8 @@ void rhr::stack::block::update_arguments()
 			pad_arguments(width, i, last_arg, arg);
 			last_arg = arg;
 
-			update_child_transform(arg);
-			arg->set_position_local_physical({width, rhr::stack::block::padding});
+			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
 			arg->set_data(argument_init[i].get_default_value());
 			arg->set_mode(argument_init[i].get_mode());
 			arg->set_mode_restriction(argument_init[i].get_restriction());
@@ -181,14 +181,14 @@ void rhr::stack::block::update_width()
 		pad_arguments(m_width, i, last_arg, arg);
 		last_arg = arg;
 
-		arg->set_position_local_physical({m_width, rhr::stack::block::padding});
+		arg->set_position_local_physical({m_width, rhr::stack::block::padding}, true);
 		m_width += m_arguments[i]->get_width();
 	}
 
 	pad_arguments(m_width, 0, last_arg, last_arg, true);
 
-	set_size_local(glm::vec<2, i32>(m_width, get_size_local().y));
-	m_background->set_size_local(get_size_local());
+	set_size_local(glm::vec<2, i32>(m_width, get_size_local().y), true);
+	m_background->set_size_local(get_size_local(), true);
 }
 
 bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)

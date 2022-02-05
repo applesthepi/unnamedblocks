@@ -35,7 +35,7 @@ u32 rhr::stack::argument::string::get_width() { return m_text->get_size_local().
 
 bool rhr::stack::argument::string::has_data() { return true; }
 
-void rhr::stack::argument::string::ui_transform_update(i_ui::transform_update_spec transform_update_spec) { update_child_transform(m_text); }
+void rhr::stack::argument::string::ui_transform_update(i_ui::transform_update_spec transform_update_spec) { update_child_transform(m_text, true); }
 
 void rhr::stack::argument::string::ui_render() { m_text->render(); }
 

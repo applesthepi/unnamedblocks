@@ -29,7 +29,7 @@ bool rhr::stack::argument::text::has_data() { return true; }
 
 rhr::stack::argument::argument::padding_style rhr::stack::argument::text::get_padding_style() { return rhr::stack::argument::argument::padding_style::SOFT; }
 
-void rhr::stack::argument::text::ui_transform_update(i_ui::transform_update_spec transform_update_spec) { update_child_transform(m_text); }
+void rhr::stack::argument::text::ui_transform_update(i_ui::transform_update_spec transform_update_spec) { update_child_transform(m_text, true); }
 
 void rhr::stack::argument::text::ui_render() { m_text->render(); }
 

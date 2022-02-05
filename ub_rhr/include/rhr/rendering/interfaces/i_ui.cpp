@@ -106,14 +106,14 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_parent() { retur
 
 void rhr::render::interfaces::i_ui::update_transform(rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec) { ui_transform_update(transform_update_spec); }
 
-void rhr::render::interfaces::i_ui::update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, bool update_child)
+void rhr::render::interfaces::i_ui::update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, i_ui::transform_update_spec transform_update_spec)
 {
 	ui->set_position_parent_physical(get_position_physical_absolute(), false);
 	ui->set_position_parent_virtual_offset(get_position_virtual_offset(), false);
 	ui->set_size_parent(get_size_local(), false);
 
-	if (update_child)
-		ui->update_transform(i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+	if (transform_update_spec)
+		ui->update_transform(transform_update_spec);
 }
 
 void rhr::render::interfaces::i_ui::set_enabled(bool enabled) { m_enabled = enabled; }

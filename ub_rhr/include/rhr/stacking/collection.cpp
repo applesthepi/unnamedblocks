@@ -16,7 +16,7 @@ rhr::stack::collection::collection()
 
 void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size)
 {
-	update_child_transform(stack);
+	update_child_transform(stack, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 	stack->set_collection_update_function(&m_function_collection_update);
 	m_stacks.push_back(stack);
 
@@ -44,7 +44,7 @@ void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack,
 			i32 diff = empty_space - stack->get_position_local_physical().x;
 			position.x -= diff;
 			size.x += diff;
-			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(diff, 0));
+			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(diff, 0), true);
 		}
 
 		if (stack->get_position_local_physical().y + (stack->get_blocks().size() * rhr::stack::block::height) > size.y - empty_space)
@@ -55,11 +55,11 @@ void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack,
 			i32 diff = empty_space - stack->get_position_local_physical().y;
 			position.y -= diff;
 			size.y += diff;
-			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(0, diff));
+			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(0, diff), true);
 		}
 
-		set_size_local(size);
-		set_position_local_physical(position);
+		set_size_local(size, true);
+		set_position_local_physical(position, true);
 	}
 }
 
@@ -75,7 +75,7 @@ void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::s
 
 	for (u64 i = 0; i < stacks.size(); i++)
 	{
-		update_child_transform(stacks[i]);
+		update_child_transform(stacks[i], true);
 		m_stacks.push_back(stacks[i]);
 
 		if (auto_size)
@@ -104,8 +104,8 @@ void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::s
 				size.y += diff;
 			}
 
-			set_size_local(size);
-			set_position_local_physical(position);
+			set_size_local(size, true);
+			set_position_local_physical(position, true);
 		}
 	}
 }
@@ -141,17 +141,17 @@ void rhr::stack::collection::size_to_stacks(bool offset_stacks, bool use_padding
 
 		for (auto& stack : m_stacks)
 		{
-			stack->set_position_local_physical(stack->get_position_local_physical() + shift);
+			stack->set_position_local_physical(stack->get_position_local_physical() + shift, true);
 		}
 	}
 	else
 	{
 		glm::vec<2, i32> shift = earliest_position - glm::vec<2, i32>(padding, padding);
-		set_position_local_physical(get_position_local_physical() + shift);
+		set_position_local_physical(get_position_local_physical() + shift, true);
 
 		for (auto& stack : m_stacks)
 		{
-			stack->set_position_local_physical(stack->get_position_local_physical() - shift);
+			stack->set_position_local_physical(stack->get_position_local_physical() - shift, true);
 		}
 	}
 
@@ -171,7 +171,7 @@ void rhr::stack::collection::size_to_stacks(bool offset_stacks, bool use_padding
 	// Size
 
 	glm::vec<2, i32> size = latest_position + glm::vec<2, i32>(padding, padding);
-	set_size_local(size);
+	set_size_local(size, true);
 }
 
 void rhr::stack::collection::check_bounds()
@@ -207,8 +207,8 @@ void rhr::stack::collection::check_bounds()
 			size.y += diff;
 		}
 
-		set_size_local(size);
-		set_position_local_physical(position);
+		set_size_local(size, true);
+		set_position_local_physical(position, true);
 	}
 }
 
@@ -228,11 +228,11 @@ const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::g
 
 void rhr::stack::collection::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_background, false);
-	m_background->set_size_max();
+	update_child_transform(m_background, i_ui::transform_update_spec_position);
+	m_background->set_size_max(true);
 
 	for (auto& stack : m_stacks)
-		update_child_transform(stack);
+		update_child_transform(stack, true);
 }
 
 void rhr::stack::collection::ui_render()
@@ -252,12 +252,13 @@ void rhr::stack::collection::ui_reload_swap_chain()
 		stack->reload_swap_chain();
 }
 
-void rhr::stack::collection::ui_update_buffers() {}
+void rhr::stack::collection::ui_update_buffers()
+{
+	m_background->update_buffers();
+}
 
 void rhr::stack::collection::ui_chain_update_buffers()
 {
-	m_background->update_buffers();
-
 	for (auto& stack : m_stacks)
 		stack->update_buffers();
 }

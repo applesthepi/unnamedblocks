@@ -14,8 +14,28 @@ rhr::render::object::button_image::button_image(const std::string& texture)
 
 void rhr::render::object::button_image::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_rectangle, false);
-	m_rectangle->set_size_max();
+	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
+	bool size_update     = transform_update_spec & i_ui::transform_update_spec_size;
+
+	if (size_update && !position_update)
+	{
+		// Update only size.
+
+		update_child_transform(m_rectangle, 0x0);
+		m_rectangle->set_size_max(true);
+	}
+	else if (size_update)
+	{
+		// Update size and position.
+
+		update_child_transform(m_rectangle, i_ui::transform_update_spec_position);
+		m_rectangle->set_size_max(true);
+	}
+	else if (position_update)
+	{
+		// Update only position.
+		update_child_transform(m_rectangle, i_ui::transform_update_spec_position);
+	}
 }
 
 void rhr::render::object::button_image::ui_render() { m_rectangle->render(); }

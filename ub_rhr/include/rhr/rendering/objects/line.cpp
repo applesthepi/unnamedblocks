@@ -27,33 +27,16 @@ void rhr::render::object::line::enable_border(bool enable_border)
 
 void rhr::render::object::line::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	mark_dirty();
-
 	const glm::vec<2, i32>& size_local	   = get_size_local();
 	const glm::vec<2, i32>& size_parent	   = get_size_parent();
 	const glm::vec<2, i32>& position_local = get_position_local_physical();
 
-	if (size_parent == glm::vec<2, i32>(0, 0))
-	{
+	if (size_parent == glm::vec<2, i32>())
 		m_in_bounds = true;
-	}
 	else
-	{
-		if (position_local.x > size_parent.x || position_local.y > size_parent.y)
-		{
-			m_in_bounds = false;
-		}
-		else
-		{
-			m_in_bounds = true;
+		m_in_bounds = (position_local.x + size_local.x < size_parent.x) && (position_local.y + size_local.y < size_parent.y);
 
-			//			if (position_local.x + size_local.x > size_parent.x)
-			//				m_use_size.x = size_parent.x - position_local.x;
-			//
-			//			if (position_local.y + size_local.y > size_parent.y)
-			//				m_use_size.y = size_parent.y - position_local.y;
-		}
-	}
+	mark_dirty();
 }
 
 void rhr::render::object::line::ui_render()

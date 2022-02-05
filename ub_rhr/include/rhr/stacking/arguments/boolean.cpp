@@ -43,8 +43,8 @@ bool rhr::stack::argument::boolean::has_data() { return true; }
 
 void rhr::stack::argument::boolean::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_text);
-	m_text->set_position_local_physical({ARG_BOOL_DECORE_WIDTH, 0});
+	update_child_transform(m_text, false);
+	m_text->set_position_local_physical({ARG_BOOL_DECORE_WIDTH, 0}, true);
 
 	glm::vec<2, f64> pos = get_position_physical_absolute();
 	m_decor_left->set_super_position({pos.x, pos.y, rhr::render::renderer::depth_argument});

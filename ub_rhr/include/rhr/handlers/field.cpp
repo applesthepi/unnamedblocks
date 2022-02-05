@@ -48,7 +48,7 @@ rhr::handler::field::field()
 	m_rectangle_highlight->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_cursor->set_color(cap::color::text_primary_color);
-	m_rectangle_cursor->set_size_local({1, rhr::stack::block::height_content});
+	m_rectangle_cursor->set_size_local({1, rhr::stack::block::height_content}, true);
 	m_rectangle_cursor->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_highlight->set_color(cap::color().from_u8({30, 70, 210, 80}));
@@ -696,14 +696,14 @@ glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2
 void rhr::handler::field::update_cursor()
 {
 	m_rectangle_cursor->set_position_local_physical(
-		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
+		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset(), true);
 }
 
 void rhr::handler::field::update_highlight()
 {
 	m_rectangle_highlight->set_position_local_physical(
-		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset());
-	m_rectangle_highlight->set_size_local({m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4});
+		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset(), true);
+	m_rectangle_highlight->set_size_local({m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4}, true);
 }
 
 void rhr::handler::field::reset_all()

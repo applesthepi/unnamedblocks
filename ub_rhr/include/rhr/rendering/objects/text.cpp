@@ -247,8 +247,14 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 	const glm::vec<2, i32>& position_physical = get_position_physical_absolute();
 	const glm::vec<2, i32>& position_virtual  = get_position_virtual_absolute();
 
-	m_render_object_background->set_super_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth)});
-	m_render_object_text->set_super_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1});
+	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
+	bool size_update     = transform_update_spec & i_ui::transform_update_spec_size;
+
+	if (position_update)
+	{
+		m_render_object_background->set_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth)});
+		m_render_object_text->set_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1});
+	}
 
 	if (!m_read_only && !m_registered && position_virtual.x >= 0 && position_virtual.y >= 0)
 		register_field();
@@ -260,8 +266,6 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 		else
 			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
 	}
-
-	mark_dirty();
 }
 
 void rhr::render::object::text::ui_render()
@@ -283,8 +287,6 @@ void rhr::render::object::text::ui_reload_swap_chain()
 
 void rhr::render::object::text::ui_update_buffers()
 {
-	//	update_size();
-
 	const glm::vec<2, i32>& size_local = get_size_local();
 
 	{
