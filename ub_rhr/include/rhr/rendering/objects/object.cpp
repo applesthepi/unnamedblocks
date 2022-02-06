@@ -20,13 +20,9 @@ rhr::render::object::object::object(bool ui)
 	, m_ui(ui)
 	, m_has_texture(false)
 	, m_vertex_buffer(nullptr)
-	, m_vertex_buffer_memory(nullptr)
 	, m_vertex_staging_buffer(nullptr)
-	, m_vertex_staging_buffer_memory(nullptr)
 	, m_index_buffer(nullptr)
-	, m_index_buffer_memory(nullptr)
 	, m_index_staging_buffer(nullptr)
-	, m_index_staging_buffer_memory(nullptr)
 	, m_texture_type(texture_type::CUSTOM)
 	, m_font_size(4)
 {}
@@ -285,12 +281,21 @@ void rhr::render::object::object::on_update_buffers()
 			}
 		}
 
-		rhr::render::tools::create_buffer(
-			sizeof(rhr::render::tools::uniform_buffer_object),
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			m_uniform_buffer,
-			m_uniform_buffer_memory);
+		vk::buffer_create_info buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+		buffer_info.size = sizeof(rhr::render::tools::uniform_buffer_object);
+		buffer_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+
+		VmaAllocationCreateInfo alloc_info = {};
+		alloc_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+
+		vmaCreateBuffer(rhr::render::renderer::vma_allocator, &buffer_info, &alloc_info, &m_uniform_buffer, &m_uniform_allocation, nullptr);
+
+		//rhr::render::tools::create_buffer(
+		//	sizeof(rhr::render::tools::uniform_buffer_object),
+		//	VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+		//	VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+		//	m_uniform_buffer,
+		//	m_uniform_buffer_memory);
 		on_reload_swap_chain();
 	}
 
@@ -298,32 +303,47 @@ void rhr::render::object::object::on_update_buffers()
 	{
 		if (m_vertex_buffer)
 		{
-			rhr::render::tools::delete_buffer(m_vertex_buffer, m_vertex_buffer_memory);
-			rhr::render::tools::delete_buffer(m_vertex_staging_buffer, m_vertex_staging_buffer_memory);
+			vmaDestroyBuffer(rhr::render::renderer::vma_allocator, m_vertex_staging_buffer, m_vertex_staging_buffer_allocation);
+			vmaDestroyBuffer(rhr::render::renderer::vma_allocator, m_vertex_buffer, m_vertex_buffer_allocation);
 
-			m_vertex_buffer		   = nullptr;
-			m_vertex_buffer_memory = nullptr;
-
-			m_vertex_staging_buffer		   = nullptr;
-			m_vertex_staging_buffer_memory = nullptr;
+			m_vertex_buffer		    = nullptr;
+			m_vertex_staging_buffer = nullptr;
 		}
 
-		VkDeviceSize buffer_size = sizeof(rhr::render::vertex) * m_vertex_count;
+		vk::buffer_create_info buffer_info;
+		VmaAllocationCreateInfo alloc_info;
 
-		rhr::render::tools::create_buffer(
-			buffer_size,
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			m_vertex_staging_buffer,
-			m_vertex_staging_buffer_memory);
+		usize buffer_size = sizeof(rhr::render::vertex) * m_vertex_count;
+
+		// Create vertex cpu buffer.
+
+		buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+		buffer_info.size = buffer_size;
+		buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+		alloc_info = {};
+		alloc_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+
+		vmaCreateBuffer(rhr::render::renderer::vma_allocator, &buffer_info, &alloc_info, &m_vertex_staging_buffer, &m_vertex_staging_buffer_allocation, nullptr);
+
+		// Create vertex gpu buffer.
+
+		buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+		buffer_info.size = buffer_size;
+		buffer_info.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+		alloc_info = {};
+		alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+		vmaCreateBuffer(rhr::render::renderer::vma_allocator, &buffer_info, &alloc_info, &m_vertex_buffer, &m_vertex_buffer_allocation, nullptr);
+
+		// Move memory.
 
 		void* data;
-		vk::map_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_vertex_staging_buffer_memory, 0, buffer_size, 0, &data);
-		memcpy(data, m_vertices, static_cast<usize>(buffer_size));
-		vk::unmap_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_vertex_staging_buffer_memory);
+		vmaMapMemory(rhr::render::renderer::vma_allocator, m_vertex_staging_buffer_allocation, &data);
+		memcpy(data, m_vertices, buffer_size);
+		vmaUnmapMemory(rhr::render::renderer::vma_allocator, m_vertex_staging_buffer_allocation);
 
-		rhr::render::tools::create_buffer(
-			buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_vertex_buffer, m_vertex_buffer_memory);
 		rhr::render::tools::copy_buffer(m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
 	}
 
@@ -331,32 +351,47 @@ void rhr::render::object::object::on_update_buffers()
 	{
 		if (m_index_buffer)
 		{
-			rhr::render::tools::delete_buffer(m_index_buffer, m_index_buffer_memory);
-			rhr::render::tools::delete_buffer(m_index_staging_buffer, m_index_staging_buffer_memory);
+			vmaDestroyBuffer(rhr::render::renderer::vma_allocator, m_index_staging_buffer, m_index_staging_buffer_allocation);
+			vmaDestroyBuffer(rhr::render::renderer::vma_allocator, m_index_buffer, m_index_buffer_allocation);
 
-			m_index_buffer		  = nullptr;
-			m_index_buffer_memory = nullptr;
-
-			m_index_staging_buffer		  = nullptr;
-			m_index_staging_buffer_memory = nullptr;
+			m_index_buffer		   = nullptr;
+			m_index_staging_buffer = nullptr;
 		}
 
-		VkDeviceSize buffer_size = sizeof(u32) * m_index_count;
+		vk::buffer_create_info buffer_info;
+		VmaAllocationCreateInfo alloc_info;
 
-		rhr::render::tools::create_buffer(
-			buffer_size,
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			m_index_staging_buffer,
-			m_index_staging_buffer_memory);
+		usize buffer_size = sizeof(u32) * m_index_count;
+
+		// Create index cpu buffer.
+
+		buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+		buffer_info.size = buffer_size;
+		buffer_info.usage = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
+
+		alloc_info = {};
+		alloc_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
+
+		vmaCreateBuffer(rhr::render::renderer::vma_allocator, &buffer_info, &alloc_info, &m_index_staging_buffer, &m_index_staging_buffer_allocation, nullptr);
+
+		// Create index gpu buffer.
+
+		buffer_info = { VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO };
+		buffer_info.size = buffer_size;
+		buffer_info.usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+
+		alloc_info = {};
+		alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
+
+		vmaCreateBuffer(rhr::render::renderer::vma_allocator, &buffer_info, &alloc_info, &m_index_buffer, &m_index_buffer_allocation, nullptr);
+
+		// Move memory.
 
 		void* data;
-		vk::map_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_index_staging_buffer_memory, 0, buffer_size, 0, &data);
-		memcpy(data, m_indices, static_cast<usize>(buffer_size));
-		vk::unmap_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_index_staging_buffer_memory);
+		vmaMapMemory(rhr::render::renderer::vma_allocator, m_index_staging_buffer_allocation, &data);
+		memcpy(data, m_indices, buffer_size);
+		vmaUnmapMemory(rhr::render::renderer::vma_allocator, m_index_staging_buffer_allocation);
 
-		rhr::render::tools::create_buffer(
-			buffer_size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_index_buffer, m_index_buffer_memory);
 		rhr::render::tools::copy_buffer(m_index_staging_buffer, m_index_buffer, buffer_size);
 	}
 }
@@ -451,13 +486,14 @@ void rhr::render::object::object::update_uniforms(bool ui)
 		ubo.projection[1][1] *= -1;
 	}
 
-	// ubo.Color = { 1.0f, 0.0f, static_cast<f32>(m_Index) };
 	ubo.color = {1.0f, 1.0f, 1.0f};
 
+	// Move memory.
+
 	void* data;
-	vk::map_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_uniform_buffer_memory, 0, sizeof(ubo), 0, &data);
+	vmaMapMemory(rhr::render::renderer::vma_allocator, m_uniform_allocation, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vk::unmap_memory(*rhr::render::renderer::get_window_primary()->get_device(), m_uniform_buffer_memory);
+	vmaUnmapMemory(rhr::render::renderer::vma_allocator, m_uniform_allocation);
 }
 
 void rhr::render::object::object::set_queue(u8 queue) { m_queue = queue; }

@@ -39,6 +39,14 @@ void rhr::render::renderer::initialize()
 
 	m_window_primary->initialize_components();
 
+	VmaAllocatorCreateInfo allocator_info = {};
+	allocator_info.vulkanApiVersion = VK_API_VERSION_1_0;
+	allocator_info.physicalDevice = *m_window_primary->get_physical_device();
+	allocator_info.device = *m_window_primary->get_device();
+	allocator_info.instance = *m_window_primary->get_instance();
+
+	vmaCreateAllocator(&allocator_info, &vma_allocator);
+
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	(void)io;
@@ -491,6 +499,7 @@ glm::mat4 rhr::render::renderer::ui_projection_matrix;
 
 rhr::render::renderer::imgui_data* rhr::render::renderer::imgui_local;
 ImDrawData* rhr::render::renderer::imgui_draw_data;
+VmaAllocator rhr::render::renderer::vma_allocator;
 
 u32 rhr::render::renderer::depth_background		  = 10;
 u32 rhr::render::renderer::depth_plane			  = 15;
@@ -500,6 +509,7 @@ u32 rhr::render::renderer::depth_stack			  = 30;
 u32 rhr::render::renderer::depth_block			  = 35;
 u32 rhr::render::renderer::depth_argument		  = 40;
 u32 rhr::render::renderer::depth_argument_text	  = 45;
+u32 rhr::render::renderer::depth_cursor			  = 46;
 u32 rhr::render::renderer::depth_ui_background	  = 50;
 u32 rhr::render::renderer::depth_ui_text		  = 55;
 

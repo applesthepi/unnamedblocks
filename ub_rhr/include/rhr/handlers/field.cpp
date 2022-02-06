@@ -2,11 +2,7 @@
 
 #include "rhr/handlers/context.hpp"
 #include "rhr/stacking/plane.hpp"
-
-//#include "clip/clip.h"
-
-// TODO: remove
-#include <iostream>
+#include "rhr/rendering/renderer.hpp"
 
 #define DEBUG_FIELDS 0
 
@@ -50,6 +46,7 @@ rhr::handler::field::field()
 	m_rectangle_cursor->set_color(cap::color::text_primary_color);
 	m_rectangle_cursor->set_size_local({1, rhr::stack::block::height_content}, true);
 	m_rectangle_cursor->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
+	m_rectangle_cursor->set_depth(rhr::render::renderer::depth_cursor);
 
 	m_rectangle_highlight->set_color(cap::color().from_u8({30, 70, 210, 80}));
 

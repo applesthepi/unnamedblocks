@@ -10,6 +10,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_vulkan.h>
+#include <vk_mem_alloc.h>
 
 namespace rhr::render
 {
@@ -101,6 +102,7 @@ public:
 	static u32 depth_block;
 	static u32 depth_argument;
 	static u32 depth_argument_text;
+	static u32 depth_cursor;
 	static u32 depth_ui_background;
 	static u32 depth_ui_text;
 
@@ -109,6 +111,9 @@ public:
 
 	///
 	static ImDrawData* imgui_draw_data;
+
+	///
+	static VmaAllocator vma_allocator;
 
 	///
 #ifdef NDEBUG

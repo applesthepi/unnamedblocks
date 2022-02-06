@@ -25,3 +25,6 @@
 [submodule "dependencies/freetype"]
 	path = dependencies/freetype
 	url = https://gitlab.freedesktop.org/freetype/freetype.git
+[submodule "dependencies/vma"]
+	path = dependencies/vma
+	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator

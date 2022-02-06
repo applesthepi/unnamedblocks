@@ -86,19 +86,20 @@ set(UB_DEPENDENCIES_INCLUDE
 	${CMAKE_SOURCE_DIR}/dependencies/glfw/include
 	${CMAKE_SOURCE_DIR}/dependencies/glm
 	${CMAKE_SOURCE_DIR}/dependencies/freetype/include
+	${CMAKE_SOURCE_DIR}/dependencies/vma/include
 	${Vulkan_INCLUDE_DIRS})
 
 message(STATUS "VULKAN ------------- ${VULKAN_PATH}")
 
 add_subdirectory("dependencies")
 
-set(UB_DEPENDENCIES imgui glfw glm freetype)
+set(UB_DEPENDENCIES imgui glfw glm freetype VulkanMemoryAllocator)
 
 if(LINUX)
-	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan X11 # Link X11 for linux
+	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan VulkanMemoryAllocator X11 # Link X11 for linux
 	)
 else()
-	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan imm32)
+	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan VulkanMemoryAllocator imm32)
 endif()
 
 add_subdirectory("ub_client")

@@ -20,7 +20,7 @@ rhr::render::component::device::device()
 	app_info.applicationVersion	  = VK_MAKE_API_VERSION(0, 0, 0, 0);
 	app_info.pEngineName		  = "No Engine";
 	app_info.engineVersion		  = VK_MAKE_API_VERSION(0, 0, 0, 0);
-	app_info.apiVersion			  = VK_API_VERSION_1_1;
+	app_info.apiVersion			  = VK_API_VERSION_1_0;
 	app_info.pNext				  = nullptr;
 
 	vk::instance_create_info create_info = {};

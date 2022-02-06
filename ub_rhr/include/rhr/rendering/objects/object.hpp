@@ -8,6 +8,7 @@
 #include "rhr/rendering/vertex.hpp"
 
 #include <cappuccino/utils.hpp>
+#include <vk_mem_alloc.h>
 
 #define RENDER_OBJECT_ALLOC_FACTOR 2
 
@@ -90,19 +91,19 @@ private:
 
 	/// rhr::render::vertex buffer data.
 	vk::buffer m_vertex_buffer;
-	vk::device_memory m_vertex_buffer_memory;
+	VmaAllocation m_vertex_buffer_allocation;
 	vk::buffer m_vertex_staging_buffer;
-	vk::device_memory m_vertex_staging_buffer_memory;
+	VmaAllocation m_vertex_staging_buffer_allocation;
 
 	/// Index buffer data.
 	vk::buffer m_index_buffer;
-	vk::device_memory m_index_buffer_memory;
+	VmaAllocation m_index_buffer_allocation;
 	vk::buffer m_index_staging_buffer;
-	vk::device_memory m_index_staging_buffer_memory;
+	VmaAllocation m_index_staging_buffer_allocation;
 
 	/// Uniform buffer data.
 	vk::buffer m_uniform_buffer;
-	vk::device_memory m_uniform_buffer_memory;
+	VmaAllocation m_uniform_allocation;
 
 	/// Image buffer data.
 	vk::image m_image;
