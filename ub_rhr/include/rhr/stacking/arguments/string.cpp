@@ -7,7 +7,7 @@
 rhr::stack::argument::string::string(const cap::color& color, std::function<void()>* function_collection_update)
 	: rhr::stack::argument::argument(color, function_collection_update)
 	, m_text(std::make_shared<rhr::render::object::text>(
-		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, function_collection_update, false, true))
+		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true))
 {
 	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 	{
@@ -20,7 +20,14 @@ rhr::stack::argument::string::string(const cap::color& color, std::function<void
 		}
 	};
 
+	m_function_text_update = [&]()
+	{
+		set_data(m_text->get_text());
+		(*m_function_collection_update)();
+	};
+
 	m_text->set_weak(m_text);
+	m_text->set_update_function(&m_function_text_update);
 	m_text->set_weak_field(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
 	m_text->set_color_primary(cap::color::text_primary_color);
@@ -61,8 +68,6 @@ bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
 }
 
 rhr::stack::argument::argument::padding_style rhr::stack::argument::string::get_padding_style() { return rhr::stack::argument::argument::padding_style::HARD; }
-
-const std::string& rhr::stack::argument::string::get_data() { return m_text->get_text(); }
 
 void rhr::stack::argument::string::on_set_mode(cap::mod::block::block::argument::variable_mode mode)
 {

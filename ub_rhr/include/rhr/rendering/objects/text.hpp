@@ -18,8 +18,11 @@ class text
 	, public rhr::render::interfaces::i_field
 {
 public:
-	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register);
+	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register);
 	~text();
+
+	///
+	void set_update_function(std::function<void()>* function_update);
 
 	///
 	void set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field);

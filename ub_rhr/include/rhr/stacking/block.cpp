@@ -8,6 +8,9 @@
 #include "rhr/stacking/arguments/string.hpp"
 #include "rhr/stacking/arguments/text.hpp"
 
+#define BLOCK_SET_DATA_ERROR_MISSING(field) ("failed to set data for block. " + std::string(field) + " does not exist in the data provided to the block. The information is unchanged for this block.")
+#define BLOCK_SET_DATA_ERROR_TYPE(field)    ("failed to set data for block. " + std::string(field) + " is not the expected type. The information is unchanged for this block.")
+
 static void block_update(void* data)
 {
 	rhr::stack::block* block = (rhr::stack::block*)data;
@@ -34,6 +37,89 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 	update_arguments();
 }
 
+const std::string& rhr::stack::block::get_data()
+{
+	rapidjson::Document document;
+	document.SetObject();
+
+	rapidjson::Value v_args;
+	v_args.SetArray();
+
+	for (auto& arg : m_arguments)
+	{
+		const std::string& data_compact = arg->get_data_compact();
+
+		rapidjson::Value v_arg;
+		v_arg.SetString(data_compact.c_str(), data_compact.size());
+
+		v_args.PushBack(v_arg, document.GetAllocator());
+	}
+
+	document.AddMember("args", v_args, document.GetAllocator());
+
+	rapidjson::StringBuffer string_buffer;
+	rapidjson::Writer<rapidjson::StringBuffer> writer(string_buffer);
+	document.Accept(writer);
+
+	m_data_compact_cache = std::move(std::string(string_buffer.GetString()));
+	return m_data_compact_cache;
+}
+
+void rhr::stack::block::set_data(const std::string& data)
+{
+	rapidjson::Document document;
+	document.Parse(data.c_str(), data.size());
+
+	if (document.HasParseError())
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the block.");
+		return;
+	}
+
+	if (!document.IsObject())
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "data provided to the block is not an object that can be parsed.");
+		return;
+	}
+
+	if (!document.HasMember("args"))
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_MISSING("args"));
+		return;
+	}
+
+	rapidjson::Value& v_args = document["args"];
+
+	if (!v_args.IsArray())
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_TYPE("args"));
+		return;
+	}
+
+	if (v_args.Size() != m_arguments.size())
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "data provided to the block has a different argument count.");
+		return;
+	}
+
+	for (u16 i = 0; i < v_args.Size(); i++)
+	{
+		rapidjson::Value& v_arg = v_args[static_cast<usize>(i)];
+
+		if (!v_arg.IsString())
+		{
+			cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_TYPE("args"));
+			return;
+		}
+
+		const char* local_arg = v_arg.GetString();
+		std::string string_local_arg = std::move(std::string(local_arg));
+		m_arguments[static_cast<usize>(i)]->set_data_compact(string_local_arg);
+	}
+
+	update_width();
+}
+
 const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::get_arguments() { return m_arguments; }
 
 u32 rhr::stack::block::get_width() { return m_width; }
@@ -41,9 +127,9 @@ u32 rhr::stack::block::get_width() { return m_width; }
 const cap::mod::block::block* rhr::stack::block::get_mod_block() { return m_mod_block; }
 
 const esp::mod::category* rhr::stack::block::get_mod_category() { return m_mod_category; }
-
 i16 rhr::stack::block::padding		  = 2;
 i16 rhr::stack::block::height		  = 20;
+
 i16 rhr::stack::block::height_content = height - (padding * 2);
 
 void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)

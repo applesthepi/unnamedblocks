@@ -5,7 +5,7 @@
 
 rhr::render::object::button_text::button_text(const cap::color& primary_color, const cap::color& secondary_color, const std::string& text)
 	: rhr::render::object::button(primary_color, secondary_color)
-	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::BOLD_NORMAL, 4, nullptr, true, false))
+	, m_text(std::make_shared<rhr::render::object::text>(rhr::registry::char_texture::texture_type::BOLD_NORMAL, 4, true, false))
 {
 	m_text->set_weak(m_text);
 	m_text->set_weak_field(m_text);

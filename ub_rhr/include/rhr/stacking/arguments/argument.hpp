@@ -30,6 +30,10 @@ public:
 	/// \param Data to set the argument to.
 	void set_data(const std::string& data);
 
+	/// Sets all local information. Gets parsed as json and sets the fields.
+	/// \param Data to set the argument to.
+	void set_data_compact(const std::string& data);
+
 	/// Sets mode. Mode can either be raw (rvalue) or var (lvalue).
 	/// \param Argument variable mode.
 	bool set_mode(cap::mod::block::block::argument::variable_mode mode);
@@ -44,6 +48,10 @@ public:
 	/// Gets data. Data of the argument is stored as a string.
 	/// \return Data from the argument.
 	virtual const std::string& get_data();
+
+	/// Gets data. Data of the argument is stored as a string.
+	/// \return Data from the argument.
+	virtual const std::string& get_data_compact();
 
 	/// How to interpret the data.
 	/// \return Type of argument.
@@ -67,6 +75,9 @@ public:
 	static i32 padding;
 
 protected:
+	///
+	void build_data_distribute();
+
 	/// Sets data. Data of the argument is stored as a string.
 	virtual void on_set_data();
 
@@ -87,5 +98,11 @@ protected:
 
 	///
 	std::function<void()>* m_function_collection_update;
+
+	///
+	bool m_dirty;
+
+	///
+	std::string m_data_distribute;
 };
 } // namespace rhr::stack::argument

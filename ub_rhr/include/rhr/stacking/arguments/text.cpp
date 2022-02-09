@@ -6,7 +6,7 @@
 rhr::stack::argument::text::text(const cap::color& color, std::function<void()>* function_collection_update)
 	: rhr::stack::argument::argument(color, function_collection_update)
 	, m_text(std::make_shared<rhr::render::object::text>(
-		  rhr::registry::char_texture::texture_type::BOLD_NORMAL, rhr::stack::block::height_content, function_collection_update, true, false))
+		  rhr::registry::char_texture::texture_type::BOLD_NORMAL, rhr::stack::block::height_content, true, false))
 {
 	m_text->set_weak(m_text);
 	m_text->set_weak_field(m_text);

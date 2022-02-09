@@ -285,6 +285,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 															std::shared_ptr<rhr::stack::block> cloned_block =
 																std::make_shared<rhr::stack::block>(blocks[i]->get_mod_block()->get_unlocalized_name());
 															cloned_block->set_weak(cloned_block);
+															cloned_block->set_data(blocks[i]->get_data());
 
 															cloned_blocks.push_back(std::move(cloned_block));
 														}
@@ -344,6 +345,7 @@ void rhr::stack::plane::mouse_button(glm::vec<2, i32> position, f32 scroll, Mous
 														std::shared_ptr<rhr::stack::block> cloned_block =
 															std::make_shared<rhr::stack::block>(blocks[local_block_idx]->get_mod_block()->get_unlocalized_name());
 														cloned_block->set_weak(cloned_block);
+														cloned_block->set_data(blocks[local_block_idx]->get_data());
 
 														new_stack->add_block(cloned_block);
 

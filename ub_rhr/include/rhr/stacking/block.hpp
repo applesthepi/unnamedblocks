@@ -18,6 +18,12 @@ public:
 	///
 	block(const std::string& unlocalized_name);
 
+	/// Builds data everytime so be careful when you call it.
+	const std::string& get_data();
+
+	///
+	void set_data(const std::string& data);
+
 	///
 	const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& get_arguments();
 
@@ -94,5 +100,8 @@ private:
 
 	///
 	std::function<void()> m_function_block_update;
+
+	///
+	std::string m_data_compact_cache;
 };
 } // namespace rhr::stack

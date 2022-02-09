@@ -10,13 +10,13 @@
 
 static i64 DEBUG_COUNT = 0;
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, std::function<void()>* function_update, bool read_only, bool force_register)
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register)
 	: i_dicolorable(cap::color().from_normalized({0.0f, 0.0f, 0.0f, 1.0f}), cap::color().from_u8({25, 25, 25, 255}))
 	, m_depth(10)
 	, m_render_object_background(std::make_shared<rhr::render::object::object>(true))
 	, m_render_object_text(std::make_shared<rhr::render::object::object>(true))
 	, m_enable_background(true)
-	, m_function_update(function_update)
+	, m_function_update(nullptr)
 	, m_read_only(read_only)
 	, m_mouse_button(nullptr)
 	, m_font_size(font_size)
@@ -31,6 +31,11 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 }
 
 rhr::render::object::text::~text() { unregister_field(); }
+
+void rhr::render::object::text::set_update_function(std::function<void()>* function_update)
+{
+	m_function_update = function_update;
+}
 
 void rhr::render::object::text::set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field)
 {
