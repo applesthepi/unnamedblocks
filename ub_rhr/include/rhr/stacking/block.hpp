@@ -16,7 +16,13 @@ class block : public rhr::render::interfaces::i_ui
 {
 public:
 	///
-	block(const std::string& unlocalized_name);
+	block(const std::string& unlocalized_name, glm::vec<2, i32>* plane_offset);
+
+	///
+	void set_plane_offset(glm::vec<2, i32>* plane_offset);
+
+	///
+	glm::vec<2, i32>* get_plane_offset();
 
 	/// Builds data everytime so be careful when you call it.
 	const std::string& get_data();
@@ -103,5 +109,8 @@ private:
 
 	///
 	std::string m_data_compact_cache;
+
+	///
+	glm::vec<2, i32>* m_plane_offset;
 };
 } // namespace rhr::stack

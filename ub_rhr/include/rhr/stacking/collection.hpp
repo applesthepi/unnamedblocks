@@ -29,7 +29,13 @@ class collection : public rhr::render::interfaces::i_ui
 {
 public:
 	///
-	collection();
+	collection(glm::vec<2, i32>* plane_offset);
+
+	///
+	void set_plane_offset(glm::vec<2, i32>* plane_offset);
+
+	///
+	glm::vec<2, i32>* get_plane_offset();
 
 	///
 	void add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size = true);
@@ -85,5 +91,8 @@ private:
 
 	///
 	std::function<void()> m_function_collection_update;
+
+	///
+	glm::vec<2, i32>* m_plane_offset;
 };
 } // namespace rhr::stack

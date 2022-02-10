@@ -24,7 +24,7 @@ public:
 	};
 
 	///
-	argument(const cap::color& block_color, std::function<void()>* function_collection_update);
+	argument(const cap::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset);
 
 	/// Sets data. Data of the argument is stored as a string.
 	/// \param Data to set the argument to.
@@ -72,6 +72,9 @@ public:
 	virtual padding_style get_padding_style();
 
 	///
+	virtual void set_plane_offset(glm::vec<2, i32>* plane_offset);
+
+	///
 	static i32 padding;
 
 protected:
@@ -104,5 +107,8 @@ protected:
 
 	///
 	std::string m_data_distribute;
+
+	///
+	glm::vec<2, i32>* m_plane_offset;
 };
 } // namespace rhr::stack::argument

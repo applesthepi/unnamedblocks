@@ -4,8 +4,8 @@
 #include "rhr/stacking/block.hpp"
 #include "rhr/stacking/plane.hpp"
 
-rhr::stack::argument::string::string(const cap::color& color, std::function<void()>* function_collection_update)
-	: rhr::stack::argument::argument(color, function_collection_update)
+rhr::stack::argument::string::string(const cap::color& color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
+	: rhr::stack::argument::argument(color, function_collection_update, plane_offset)
 	, m_text(std::make_shared<rhr::render::object::text>(
 		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true))
 {
@@ -27,6 +27,7 @@ rhr::stack::argument::string::string(const cap::color& color, std::function<void
 	};
 
 	m_text->set_weak(m_text);
+	m_text->set_offset(plane_offset);
 	m_text->set_update_function(&m_function_text_update);
 	m_text->set_weak_field(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
@@ -68,6 +69,12 @@ bool rhr::stack::argument::string::drag_bounds(glm::vec<2, i32> position)
 }
 
 rhr::stack::argument::argument::padding_style rhr::stack::argument::string::get_padding_style() { return rhr::stack::argument::argument::padding_style::HARD; }
+
+void rhr::stack::argument::string::set_plane_offset(glm::vec<2, i32>* plane_offset)
+{
+	argument::set_plane_offset(plane_offset);
+	m_text->set_offset(plane_offset);
+}
 
 void rhr::stack::argument::string::on_set_mode(cap::mod::block::block::argument::variable_mode mode)
 {

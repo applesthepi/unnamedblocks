@@ -13,7 +13,13 @@ class stack : public rhr::render::interfaces::i_ui
 {
 public:
 	///
-	stack();
+	stack(glm::vec<2, i32>* plane_offset);
+
+	///
+	void set_plane_offset(glm::vec<2, i32>* plane_offset);
+
+	///
+	glm::vec<2, i32>* get_plane_offset();
 
 	///
 	void add_block(std::shared_ptr<rhr::stack::block> block);
@@ -69,5 +75,8 @@ private:
 
 	///
 	std::function<void()> m_function_stack_update;
+
+	///
+	glm::vec<2, i32>* m_plane_offset;
 };
 } // namespace rhr::stack

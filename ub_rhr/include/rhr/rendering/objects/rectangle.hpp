@@ -19,6 +19,9 @@ public:
 	///
 	rectangle();
 
+	///
+	void set_offset(glm::vec<2, i32>* offset);
+
 	/// Sets texture of rectangle.
 	/// \param Texture path.
 	void set_texture(const std::string& texture);

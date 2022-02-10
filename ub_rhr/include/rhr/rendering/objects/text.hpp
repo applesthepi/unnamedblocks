@@ -22,6 +22,9 @@ public:
 	~text();
 
 	///
+	void set_offset(glm::vec<2, i32>* offset);
+
+	///
 	void set_update_function(std::function<void()>* function_update);
 
 	///

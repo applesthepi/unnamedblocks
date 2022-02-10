@@ -139,15 +139,15 @@ void rhr::handler::category::populate()
 
 			for (usize b = 0; b < binned_blocks[i][a].size(); b++)
 			{
-				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>();
+				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_offset());
 				collection->set_weak(collection);
 				collection->display_vanity(false);
 				collection->set_position_local_physical({0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b}, true);
 
-				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>();
+				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_offset());
 				stack->set_weak(stack);
 
-				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(binned_blocks[i][a][b]->get_unlocalized_name());
+				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(binned_blocks[i][a][b]->get_unlocalized_name(), rhr::stack::plane::toolbar_plane->get_offset());
 				block->set_weak(block);
 
 				stack->add_block(block);

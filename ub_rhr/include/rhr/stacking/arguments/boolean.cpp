@@ -5,8 +5,8 @@
 
 #define ARG_BOOL_DECORE_WIDTH 10
 
-rhr::stack::argument::boolean::boolean(const cap::color& color, std::function<void()>* function_collection_update)
-	: argument(color, function_collection_update)
+rhr::stack::argument::boolean::boolean(const cap::color& color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
+	: argument(color, function_collection_update, plane_offset)
 	, m_text(std::make_shared<rhr::render::object::text>(
 		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true))
 	, m_decor_left(std::make_shared<rhr::render::object::object>(true))
@@ -30,9 +30,12 @@ rhr::stack::argument::boolean::boolean(const cap::color& color, std::function<vo
 	};
 
 	m_decor_left->set_weak(m_decor_left);
+	m_decor_left->set_offset(plane_offset);
 	m_decor_right->set_weak(m_decor_right);
+	m_decor_right->set_offset(plane_offset);
 
 	m_text->set_weak(m_text);
+	m_text->set_offset(plane_offset);
 	m_text->set_update_function(&m_function_text_update);
 	m_text->set_weak_field(m_text);
 	m_text->set_depth(rhr::render::renderer::depth_argument_text);
@@ -119,6 +122,15 @@ bool rhr::stack::argument::boolean::drag_bounds(glm::vec<2, i32> position)
 }
 
 rhr::stack::argument::argument::padding_style rhr::stack::argument::boolean::get_padding_style() { return rhr::stack::argument::argument::padding_style::NONE; }
+
+void rhr::stack::argument::boolean::set_plane_offset(glm::vec<2, i32>* plane_offset)
+{
+	argument::set_plane_offset(plane_offset);
+
+	m_text->set_offset(plane_offset);
+	m_decor_left->set_offset(plane_offset);
+	m_decor_right->set_offset(plane_offset);
+}
 
 void rhr::stack::argument::boolean::on_set_mode(cap::mod::block::block::argument::variable_mode mode)
 {

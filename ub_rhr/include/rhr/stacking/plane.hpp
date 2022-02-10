@@ -24,6 +24,9 @@ public:
 	///
 	plane(bool toolbar);
 
+	///
+	glm::vec<2, i32>* get_offset();
+
 	/// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
 	void add_collection(std::shared_ptr<rhr::stack::collection>& collection, bool displayCollectionVanity);
 
@@ -180,5 +183,8 @@ private:
 
 	///
 	rhr::handler::field m_field;
+
+	///
+	glm::vec<2, i32> m_offset;
 };
 } // namespace rhr::stack

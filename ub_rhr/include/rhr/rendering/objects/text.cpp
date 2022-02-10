@@ -32,6 +32,12 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 
 rhr::render::object::text::~text() { unregister_field(); }
 
+void rhr::render::object::text::set_offset(glm::vec<2, i32>* offset)
+{
+	m_render_object_background->set_offset(offset);
+	m_render_object_text->set_offset(offset);
+}
+
 void rhr::render::object::text::set_update_function(std::function<void()>* function_update)
 {
 	m_function_update = function_update;

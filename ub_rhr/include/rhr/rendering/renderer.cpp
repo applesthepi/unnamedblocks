@@ -17,6 +17,8 @@
 
 static bool run_first_render_pass = false;
 
+static std::vector<std::shared_ptr<rhr::render::object::rectangle>> grid_objects;
+
 static void check_vk_result(VkResult err)
 {
 	if (err != VK_SUCCESS)
@@ -116,6 +118,38 @@ void rhr::render::renderer::initialize()
 	}
 
 	initialize_imgui(true);
+
+#if 0
+	i32 x = 0;
+	i32 y = 0;
+
+	i32 width  = m_window_primary->get_window_size().x;
+	i32 height = m_window_primary->get_window_size().y;
+
+	while (x < width)
+	{
+		auto& rect = grid_objects.emplace_back(std::make_shared<rhr::render::object::rectangle>());
+		rect->set_weak(rect);
+		rect->set_depth(depth_ui_background);
+
+		rect->set_size_local({ 1, height }, true);
+		rect->set_position_local_physical({ x, 0 }, true);
+
+		x += 100;
+	}
+
+	while (y < height)
+	{
+		auto& rect = grid_objects.emplace_back(std::make_shared<rhr::render::object::rectangle>());
+		rect->set_weak(rect);
+		rect->set_depth(depth_ui_background);
+
+		rect->set_size_local({ width, 1 }, true);
+		rect->set_position_local_physical({ 0, y }, true);
+
+		y += 100;
+	}
+#endif
 }
 
 std::unique_ptr<rhr::render::component::window>& rhr::render::renderer::get_window_primary() { return m_window_primary; }
@@ -153,6 +187,9 @@ void rhr::render::renderer::reload_swapchain()
 
 	rhr::stack::plane::primary_plane->reload_swap_chain();
 	rhr::stack::plane::toolbar_plane->reload_swap_chain();
+
+	for (auto& grid_object : grid_objects)
+		grid_object->reload_swap_chain();
 
 	cap::logger::info(cap::logger::level::SYSTEM, "...reloaded swapchain dependent objects");
 }
@@ -363,8 +400,14 @@ void rhr::render::renderer::render_pass_setup()
 	rhr::stack::plane::primary_plane->frame_update(1.0);
 	rhr::stack::plane::toolbar_plane->frame_update(1.0);
 
+	for (auto& grid_object : grid_objects)
+		grid_object->frame_update(1.0);
+
 	rhr::stack::plane::primary_plane->update_buffers();
 	rhr::stack::plane::toolbar_plane->update_buffers();
+
+	for (auto& grid_object : grid_objects)
+		grid_object->update_buffers();
 
 	//process_dirty();
 }
@@ -438,6 +481,10 @@ void rhr::render::renderer::render_pass_master()
 		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
 
 		rhr::render::panel::run_master_render_pass();
+
+		for (auto& grid_object : grid_objects)
+			grid_object->render();
+
 		//		rhr::stack::plane::primary_plane->render();
 		vkCmdEndRenderPass(*m_window_primary->get_active_command_buffer());
 	}

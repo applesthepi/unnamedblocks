@@ -25,12 +25,18 @@ rhr::render::object::object::object(bool ui)
 	, m_index_staging_buffer(nullptr)
 	, m_texture_type(texture_type::CUSTOM)
 	, m_font_size(4)
+	, m_offset(nullptr)
 {}
 
 rhr::render::object::object::object(bool ui, const std::string& texture_path)
 	: object(ui)
 {
 	m_texture_path = texture_path;
+}
+
+void rhr::render::object::object::set_offset(glm::vec<2, i32>* offset)
+{
+	m_offset = offset;
 }
 
 void rhr::render::object::object::set_texture(const std::string& texture)
@@ -469,10 +475,23 @@ void rhr::render::object::object::update_uniforms(bool ui)
 	// auto currentTime = std::chrono::high_resolution_clock::now();
 	// f32 time = std::chrono::duration<f32, std::chrono::seconds::period>(currentTime - startTime).count();
 
+	glm::vec<3, f32> position = {
+		static_cast<f32>(m_position.x + m_super_position.x),
+		static_cast<f32>(m_position.y + m_super_position.y),
+		static_cast<f32>(m_position.z + m_super_position.z)
+	};
+
+	if (m_offset != nullptr)
+	{
+		position.x += static_cast<f32>(m_offset->x);
+		position.y += static_cast<f32>(m_offset->y);
+	}
+
 	rhr::render::tools::uniform_buffer_object ubo {};
 	ubo.model = glm::translate(
 		glm::mat4(1.0f),
-		{static_cast<f32>(m_position.x + m_super_position.x), static_cast<f32>(m_position.y + m_super_position.y), -1.0f * static_cast<f32>(m_position.z + m_super_position.z)});
+		{ position.x, position.y, -1.0f * position.z }
+	);
 	// ubo.Model = glm::rotate(ubo.Model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	// ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	// ubo.projection = glm::perspective(glm::radians(45.0f), rhr::render::renderer::SwapChainExtent.width / (f32)rhr::render::renderer::SwapChainExtent.height, 0.1f, 10.0f);

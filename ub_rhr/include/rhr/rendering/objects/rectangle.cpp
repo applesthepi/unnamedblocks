@@ -16,6 +16,11 @@ rhr::render::object::rectangle::rectangle()
 	m_render_object->set_weak(m_render_object);
 }
 
+void rhr::render::object::rectangle::set_offset(glm::vec<2, i32>* offset)
+{
+	m_render_object->set_offset(offset);
+}
+
 void rhr::render::object::rectangle::set_texture(const std::string& texture)
 {
 	m_has_texture  = true;
@@ -266,7 +271,11 @@ void rhr::render::object::rectangle::ui_chain_update_buffers()
 
 }
 
-void rhr::render::object::rectangle::post_color_update() { mark_dirty(); }
+void rhr::render::object::rectangle::post_color_update()
+{
+	m_has_color = true;
+	mark_dirty();
+}
 
 void rhr::render::object::rectangle::enable_border(
 	bool enable_border, rhr::render::cardinal::local_horizontal overhang_horizontal, rhr::render::cardinal::local_vertical overhang_vertical)

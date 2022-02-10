@@ -35,6 +35,9 @@ public:
 	object(bool ui, const std::string& texture_path);
 
 	///
+	void set_offset(glm::vec<2, i32>* offset);
+
+	///
 	void set_texture(const std::string& texture);
 
 	///
@@ -139,5 +142,8 @@ private:
 
 	///
 	rhr::registry::char_texture::texture_type m_char_texture_type;
+
+	///
+	glm::vec<2, i32>* m_offset;
 };
 } // namespace rhr::render::object

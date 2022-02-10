@@ -8,6 +8,10 @@
 #include <string>
 #include <vector>
 
+#define LOG_DEBUG(message) cap::logger::info(cap::logger::level::SYSTEM, __FILE__, __LINE__, message)
+#define LOG_DEBUG_VEC2(vec) cap::logger::info(cap::logger::level::SYSTEM, __FILE__, __LINE__, std::to_string(vec.x) + ", " + std::to_string(vec.y))
+#define LOG_DEBUG_VEC3(vec) cap::logger::info(cap::logger::level::SYSTEM, __FILE__, __LINE__, std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z))
+
 #define LOG_A1 cap::logger::level level, const std::string &message
 #define LOG_A2 cap::logger::level level, const std::vector<std::string>&messages
 #define LOG_A3 cap::logger::level level, const std::string &file, int line, const std::string &message

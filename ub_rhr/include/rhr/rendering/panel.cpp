@@ -283,12 +283,12 @@ void rhr::render::panel::run_imgui()
 {
 	ImGui_ImplVulkanH_Frame* fd = &rhr::render::renderer::imgui_local->data.Frames[rhr::render::renderer::imgui_local->data.FrameIndex];
 
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 
 	for (auto& data : panels)
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin(data.id.c_str());
+		ImGui::Begin(data.id.c_str(), nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
 
 		if (!data.basic_imgui)
 		{

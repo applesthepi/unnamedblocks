@@ -5,12 +5,13 @@
 #define ARG_SET_DATA_ERROR_MISSING(field) ("failed to set data for argument. " + std::string(field) + " does not exist in the data provided to the argument. The information is unchanged for this argument.")
 #define ARG_SET_DATA_ERROR_TYPE(field)    ("failed to set data for argument. " + std::string(field) + " is not the expected type. The information is unchanged for this argument.")
 
-rhr::stack::argument::argument::argument(const cap::color& block_color, std::function<void()>* function_collection_update)
+rhr::stack::argument::argument::argument(const cap::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
 	: m_mode(cap::mod::block::block::argument::variable_mode::RAW)
 	, m_block_color(block_color)
 	, m_function_collection_update(function_collection_update)
 	, m_mode_restriction(cap::mod::block::block::argument::variable_mode_restriction::NONE)
 	, m_dirty(true)
+	, m_plane_offset(plane_offset)
 {}
 
 void rhr::stack::argument::argument::set_data(const std::string& data)
@@ -123,6 +124,11 @@ bool rhr::stack::argument::argument::has_data() { return false; }
 bool rhr::stack::argument::argument::drag_bounds(glm::vec<2, i32> position) { return false; }
 
 rhr::stack::argument::argument::padding_style rhr::stack::argument::argument::get_padding_style() { return rhr::stack::argument::argument::padding_style::HARD; }
+
+void rhr::stack::argument::argument::set_plane_offset(glm::vec<2, i32>* plane_offset)
+{
+	m_plane_offset = plane_offset;
+}
 
 i32 rhr::stack::argument::argument::padding = rhr::stack::block::padding * 4;
 
