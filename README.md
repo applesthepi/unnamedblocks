@@ -1,3 +1,4 @@
+[![CMake](https://github.com/applesthepi/unnamedblocks/actions/workflows/cmake.yml/badge.svg?branch=master)](https://github.com/applesthepi/unnamedblocks/actions/workflows/cmake.yml)
 [![CodeQL](https://github.com/applesthepi/unnamedblocks/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/applesthepi/unnamedblocks/actions/workflows/codeql-analysis.yml)
 
 # Installation
