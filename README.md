@@ -1,3 +1,5 @@
+[![CodeQL](https://github.com/applesthepi/unnamedblocks/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/applesthepi/unnamedblocks/actions/workflows/codeql-analysis.yml)
+
 # Installation
 ### General User
 Please note that this project isnt setup properly for public use. In the future there will be more downloads. For now, the only demo availible is from 2 years ago is for windows only here https://applesthepi.com/unnamedblocks/downloads
