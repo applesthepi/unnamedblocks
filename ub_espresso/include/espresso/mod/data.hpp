@@ -52,7 +52,8 @@ public:
 	void set_version(const std::string& version);
 
 	///
-	void set_logger_linkage(cap::logger::stream* stream_system, cap::logger::stream* stream_editor, cap::logger::stream* stream_runtime);
+	void set_logger_linkage(
+		cap::logger::stream* stream_system, cap::logger::stream* stream_editor, cap::logger::stream* stream_runtime);
 
 private:
 	///

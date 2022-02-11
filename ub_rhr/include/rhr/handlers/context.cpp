@@ -16,18 +16,24 @@ void rhr::handler::context::initialize()
 	flag::INFO_TEXT_STANDING_ONLY = {&flag::INFO_TEXT, rhr::handler::context::flag::TEXT_STANDING_ONLY, {"paste"}};
 
 	flag::INFO_OBJECT_STACKING_STACK = {
-		&flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING_STACK, {"duplicate stack", "delete stack"}
-	};
+		&flag::INFO_OBJECT_STACKING,
+		rhr::handler::context::flag::OBJECT_STACKING_STACK,
+		{"duplicate stack", "delete stack"}
+	   };
 	flag::INFO_OBJECT_STACKING_BLOCK = {
-		&flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING_BLOCK, {"duplicate block", "delete block"}
-	};
+		&flag::INFO_OBJECT_STACKING,
+		rhr::handler::context::flag::OBJECT_STACKING_BLOCK,
+		{"duplicate block", "delete block"}
+	   };
 
 	flag::INFO_TEXT = {
 		&flag::INFO_TEXT, rhr::handler::context::flag::TEXT, {"cut", "copy", "paste", "delete"}
 	   };
 	flag::INFO_OBJECT_STACKING = {
-		&flag::INFO_OBJECT_STACKING, rhr::handler::context::flag::OBJECT_STACKING, {"duplicate stack", "delete stack", "duplicate block", "delete block"}
-	 };
+		&flag::INFO_OBJECT_STACKING,
+		rhr::handler::context::flag::OBJECT_STACKING,
+		{"duplicate stack", "delete stack", "duplicate block", "delete block"}
+	  };
 
 	// create imgui functions
 
@@ -81,7 +87,8 @@ void rhr::handler::context::generate_functions(rhr::handler::context::flag::info
 
 	// make imgui function for flag
 
-	auto hash_imgui = [menu_items, menu_items_enabled, menu_flag](std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>& context_callback)
+	auto hash_imgui = [menu_items, menu_items_enabled, menu_flag](
+						  std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>& context_callback)
 	{
 		for (u8 i = 0; i < static_cast<u8>(menu_items.size()); i++)
 		{
@@ -93,7 +100,8 @@ void rhr::handler::context::generate_functions(rhr::handler::context::flag::info
 				if (context_callback.has_value())
 					context_callback.value()(menu_flag, i);
 				else
-					cap::logger::warn(cap::logger::level::SYSTEM, "context menu has no callback \"" + menu_items[i] + "\"");
+					cap::logger::warn(
+						cap::logger::level::SYSTEM, "context menu has no callback \"" + menu_items[i] + "\"");
 			}
 
 			if (!menu_items_enabled[i])
@@ -104,9 +112,12 @@ void rhr::handler::context::generate_functions(rhr::handler::context::flag::info
 	flag::hashed_imgui[flag_info.flag] = hash_imgui;
 }
 
-void rhr::handler::context::open(RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags, std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>> callback_context)
+void rhr::handler::context::open(
+	RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags,
+	std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>> callback_context)
 {
-	std::function<bool(RHR_HANDLER_CONTEXT_FLAG_PREFIX)> test_bit_mask = [context_flags](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag)
+	std::function<bool(RHR_HANDLER_CONTEXT_FLAG_PREFIX)> test_bit_mask =
+		[context_flags](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag)
 	{
 		if ((context_flags & flag) == flag)
 		{
@@ -135,7 +146,8 @@ void rhr::handler::context::open(RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags, 
 	m_flag_open = true;
 }
 
-void rhr::handler::context::close() {}
+void rhr::handler::context::close()
+{}
 
 void rhr::handler::context::run_imgui()
 {
@@ -164,11 +176,20 @@ void rhr::handler::context::run_imgui()
 		m_open = false;
 }
 
-bool rhr::handler::context::is_open() { return m_open; }
+bool rhr::handler::context::is_open()
+{
+	return m_open;
+}
 
-const glm::vec<2, i32>& rhr::handler::context::get_position() { return m_position; }
+const glm::vec<2, i32>& rhr::handler::context::get_position()
+{
+	return m_position;
+}
 
-const glm::vec<2, i32>& rhr::handler::context::get_bounds() { return m_bounds; }
+const glm::vec<2, i32>& rhr::handler::context::get_bounds()
+{
+	return m_bounds;
+}
 
 RHR_HANDLER_CONTEXT_FLAG_PREFIX rhr::handler::context::flag::TEXT_SELECTION_ONLY = 0x1;
 rhr::handler::context::flag::info rhr::handler::context::flag::INFO_TEXT_SELECTION_ONLY;
@@ -185,13 +206,16 @@ rhr::handler::context::flag::info rhr::handler::context::flag::INFO_OBJECT_STACK
 RHR_HANDLER_CONTEXT_FLAG_PREFIX rhr::handler::context::flag::TEXT = TEXT_SELECTION_ONLY | TEXT_STANDING_ONLY;
 rhr::handler::context::flag::info rhr::handler::context::flag::INFO_TEXT;
 
-RHR_HANDLER_CONTEXT_FLAG_PREFIX rhr::handler::context::flag::OBJECT_STACKING = OBJECT_STACKING_STACK | OBJECT_STACKING_BLOCK;
+RHR_HANDLER_CONTEXT_FLAG_PREFIX rhr::handler::context::flag::OBJECT_STACKING =
+	OBJECT_STACKING_STACK | OBJECT_STACKING_BLOCK;
 rhr::handler::context::flag::info rhr::handler::context::flag::INFO_OBJECT_STACKING;
 
 std::unordered_map<u8, rhr::handler::context::flag::menu_text> rhr::handler::context::flag::hashed_menu_text;
 std::unordered_map<u8, rhr::handler::context::flag::menu_object> rhr::handler::context::flag::hashed_menu_object;
 
-std::unordered_map<RHR_HANDLER_CONTEXT_FLAG_PREFIX, std::function<void(std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>&)>>
+std::unordered_map<
+	RHR_HANDLER_CONTEXT_FLAG_PREFIX,
+	std::function<void(std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>&)>>
 	rhr::handler::context::flag::hashed_imgui;
 
 std::vector<RHR_HANDLER_CONTEXT_FLAG_PREFIX> rhr::handler::context::m_flags;

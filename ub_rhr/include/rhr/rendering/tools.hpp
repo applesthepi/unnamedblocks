@@ -22,7 +22,10 @@ public:
 		std::optional<u32> present_family;
 
 		///
-		bool complete() { return graphics_family.has_value() && present_family.has_value(); }
+		bool complete()
+		{
+			return graphics_family.has_value() && present_family.has_value();
+		}
 	};
 
 	///
@@ -82,7 +85,8 @@ public:
 	static void end_single_time_command(vk::command_buffer command_buffer);
 
 	///
-	static vk::format find_supported_format(const std::vector<vk::format>& candidates, vk::image_tiling tiling, vk::format_feature_flags features);
+	static vk::format find_supported_format(
+		const std::vector<vk::format>& candidates, vk::image_tiling tiling, vk::format_feature_flags features);
 
 	///
 	static vk::format find_depth_format();
@@ -91,7 +95,8 @@ public:
 	static bool has_stencil_component(vk::format format);
 
 	///
-	static void transition_image_layout(vk::image image, vk::format format, vk::image_layout old_layout, vk::image_layout new_layout);
+	static void transition_image_layout(
+		vk::image image, vk::format format, vk::image_layout old_layout, vk::image_layout new_layout);
 
 	///
 	static u32 find_memory_type(u32 type_filter, vk::memory_property_flags properties);
@@ -100,7 +105,12 @@ public:
 	static void copy_buffer_to_image(vk::buffer buffer, vk::image image, u32 width, u32 height);
 
 	///
-	static void create_buffer(vk::device_size size, VkBufferUsageFlags usage, vk::memory_property_flags properties, vk::buffer& buffer, vk::device_memory& buffer_memory);
+	static void create_buffer(
+		vk::device_size size,
+		VkBufferUsageFlags usage,
+		vk::memory_property_flags properties,
+		vk::buffer& buffer,
+		vk::device_memory& buffer_memory);
 
 	///
 	static void delete_buffer(vk::buffer& buffer, vk::device_memory& buffer_memory);
@@ -109,7 +119,8 @@ public:
 	static void copy_buffer(vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size);
 
 	///
-	static void copy_buffer(vk::device_memory src_memory, vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size);
+	static void
+	copy_buffer(vk::device_memory src_memory, vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size);
 
 	///
 	static bool check_device_extension_support(vk::physical_device* device);
@@ -136,10 +147,14 @@ public:
 
 	///
 	static VkResult create_debug_utils_message_ext(
-		VkInstance* instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
+		VkInstance* instance,
+		const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+		const VkAllocationCallbacks* pAllocator,
+		VkDebugUtilsMessengerEXT* pDebugMessenger);
 
 	///
-	static void destroy_debug_utils_message_ext(VkInstance* instance, VkDebugUtilsMessengerEXT* debugMessenger, const VkAllocationCallbacks* pAllocator);
+	static void destroy_debug_utils_message_ext(
+		VkInstance* instance, VkDebugUtilsMessengerEXT* debugMessenger, const VkAllocationCallbacks* pAllocator);
 
 	///
 	static void populate_debug_messenge_create_info(VkDebugUtilsMessengerCreateInfoEXT& createInfo);

@@ -14,7 +14,7 @@ rhr::render::object::button_image::button_image(const std::string& texture)
 void rhr::render::object::button_image::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
-	bool size_update     = transform_update_spec & i_ui::transform_update_spec_size;
+	bool size_update	 = transform_update_spec & i_ui::transform_update_spec_size;
 
 	if (size_update && !position_update)
 	{
@@ -37,10 +37,20 @@ void rhr::render::object::button_image::ui_transform_update(i_ui::transform_upda
 	}
 }
 
-void rhr::render::object::button_image::ui_render() { m_rectangle->render(); }
+void rhr::render::object::button_image::ui_render()
+{
+	m_rectangle->render();
+}
 
-void rhr::render::object::button_image::ui_reload_swap_chain() { m_rectangle->reload_swap_chain(); }
+void rhr::render::object::button_image::ui_reload_swap_chain()
+{
+	m_rectangle->reload_swap_chain();
+}
 
-void rhr::render::object::button_image::ui_update_buffers() {}
+void rhr::render::object::button_image::ui_update_buffers()
+{}
 
-void rhr::render::object::button_image::ui_chain_update_buffers() { m_rectangle->update_buffers(); }
+void rhr::render::object::button_image::ui_chain_update_buffers()
+{
+	m_rectangle->update_buffers();
+}

@@ -47,10 +47,18 @@ public:
 	void set_texture_char_size(u16 font_size);
 
 	///
-	void update_vertices(const std::vector<rhr::render::vertex>* vertices, const std::vector<u32>* indices, bool update_buffers_now = false);
+	void update_vertices(
+		const std::vector<rhr::render::vertex>* vertices,
+		const std::vector<u32>* indices,
+		bool update_buffers_now = false);
 
 	///
-	void update_vertices(const rhr::render::vertex* vertices, u32 vertex_count, const u32* indices, u32 index_count, bool update_buffers_now = false);
+	void update_vertices(
+		const rhr::render::vertex* vertices,
+		u32 vertex_count,
+		const u32* indices,
+		u32 index_count,
+		bool update_buffers_now = false);
 
 	///
 	void update_vertices(const rhr::render::vertex* vertices, u32 vertex_count, bool update_buffers_now = false);

@@ -72,7 +72,10 @@ public:
 		static std::unordered_map<u8, menu_object> hashed_menu_object;
 
 		///
-		static std::unordered_map<RHR_HANDLER_CONTEXT_FLAG_PREFIX, std::function<void(std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>&)>> hashed_imgui;
+		static std::unordered_map<
+			RHR_HANDLER_CONTEXT_FLAG_PREFIX,
+			std::function<void(std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>>&)>>
+			hashed_imgui;
 	};
 
 	///
@@ -82,7 +85,9 @@ public:
 	static void generate_functions(flag::info& flag_info);
 
 	///
-	static void open(RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags, std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>> callback_context);
+	static void open(
+		RHR_HANDLER_CONTEXT_FLAG_PREFIX context_flags,
+		std::optional<std::function<void(RHR_HANDLER_CONTEXT_FLAG_PREFIX, u8)>> callback_context);
 
 	///
 	static void close();

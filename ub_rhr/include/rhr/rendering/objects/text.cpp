@@ -10,7 +10,12 @@
 
 static i64 DEBUG_COUNT = 0;
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register, glm::vec<2, i32>* plane_offset)
+rhr::render::object::text::text(
+	rhr::registry::char_texture::texture_type texture_type,
+	u16 font_size,
+	bool read_only,
+	bool force_register,
+	glm::vec<2, i32>* plane_offset)
 	: i_dicolorable(cap::color().from_normalized({0.0f, 0.0f, 0.0f, 1.0f}), cap::color().from_u8({25, 25, 25, 255}))
 	, m_depth(10)
 	, m_render_object_background(std::make_shared<rhr::render::object::object>(true))
@@ -29,7 +34,10 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	m_render_object_text->set_enabled(false);
 }
 
-rhr::render::object::text::~text() { unregister_field(); }
+rhr::render::object::text::~text()
+{
+	unregister_field();
+}
 
 void rhr::render::object::text::set_offset(glm::vec<2, i32>* offset)
 {
@@ -83,7 +91,10 @@ void rhr::render::object::text::set_padding(i32 padding)
 	mark_dirty();
 }
 
-void rhr::render::object::text::enable_background(bool enable) { m_enable_background = enable; }
+void rhr::render::object::text::enable_background(bool enable)
+{
+	m_enable_background = enable;
+}
 
 std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> position, bool ignore_y)
 {
@@ -120,7 +131,8 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 		glm::vec<2, i32> field_position = get_position_virtual_absolute();
 		glm::vec<2, i32> delta_position = position - field_position;
 
-		if (delta_position.x < -EDGE_CLICK_OVERHANG || delta_position.x > get_size_local().x + EDGE_CLICK_OVERHANG || delta_position.y < 0 || delta_position.y > get_size_local().y)
+		if (delta_position.x < -EDGE_CLICK_OVERHANG || delta_position.x > get_size_local().x + EDGE_CLICK_OVERHANG
+			|| delta_position.y < 0 || delta_position.y > get_size_local().y)
 			return std::nullopt;
 
 		// f32 running_x = static_cast<f32>(m_char_widths.front()) / 2.0f;
@@ -159,7 +171,10 @@ std::optional<glm::vec<2, i32>> rhr::render::object::text::get_index_position(us
 	return field_position;
 }
 
-usize rhr::render::object::text::get_index_count() { return m_text.size(); }
+usize rhr::render::object::text::get_index_count()
+{
+	return m_text.size();
+}
 
 void rhr::render::object::text::insert_char(char charactor, usize idx)
 {
@@ -228,14 +243,20 @@ void rhr::render::object::text::update_size()
 
 	for (usize i = 0; i < m_text.size(); i++)
 	{
-		i16 char_width = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]].advance.x >> 6;
+		i16 char_width =
+			rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]].advance.x
+			>> 6;
 
 		running_char_offsets += static_cast<f32>(char_width);
 		running_char_contacts += static_cast<f32>(char_width) / 2.0f;
 
 		if (i > 0)
 		{
-			i16 last_char_width = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i - 1]].advance.x >> 6;
+			i16 last_char_width = rhr::registry::char_texture::get_texture_map(m_font_size)
+									  ->map[m_texture_type]
+									  .char_map[m_text[i - 1]]
+									  .advance.x
+				>> 6;
 			running_char_contacts += static_cast<f32>(last_char_width) / 2.0f;
 		}
 
@@ -258,12 +279,16 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 	const glm::vec<2, i32>& position_virtual  = get_position_virtual_absolute();
 
 	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
-	bool size_update     = transform_update_spec & i_ui::transform_update_spec_size;
+	bool size_update	 = transform_update_spec & i_ui::transform_update_spec_size;
 
 	if (position_update)
 	{
-		m_render_object_background->set_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth)});
-		m_render_object_text->set_position({static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth) - 0.1});
+		m_render_object_background->set_position(
+			{static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth)});
+		m_render_object_text->set_position(
+			{static_cast<f64>(position_physical.x),
+			 static_cast<f64>(position_physical.y),
+			 static_cast<f64>(m_depth) - 0.1});
 	}
 
 	if (!m_read_only && !m_registered && position_virtual.x >= 0 && position_virtual.y >= 0)
@@ -274,7 +299,8 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 		if (position_virtual.x < 0 || position_virtual.y < 0)
 			unregister_field();
 		else
-			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual/*, m_plane_offset*/);
+			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(
+				m_location.value(), position_virtual /*, m_plane_offset*/);
 	}
 }
 
@@ -304,9 +330,14 @@ void rhr::render::object::text::ui_update_buffers()
 		u32 indices[6];
 
 		vertices[0] = rhr::render::vertex({0.0f, 0.0f, 0.0f}, m_color_secondary.get_normalized(), {0.0f, 0.0f});
-		vertices[1] = rhr::render::vertex({static_cast<f32>(size_local.x), 0.0f, 0.0f}, m_color_secondary.get_normalized(), {1.0f, 0.0f});
-		vertices[2] = rhr::render::vertex({static_cast<f32>(size_local.x), static_cast<f32>(size_local.y), 0.0f}, m_color_secondary.get_normalized(), {1.0f, 1.0f});
-		vertices[3] = rhr::render::vertex({0.0f, static_cast<f32>(size_local.y), 0.0f}, m_color_secondary.get_normalized(), {0.0f, 1.0f});
+		vertices[1] = rhr::render::vertex(
+			{static_cast<f32>(size_local.x), 0.0f, 0.0f}, m_color_secondary.get_normalized(), {1.0f, 0.0f});
+		vertices[2] = rhr::render::vertex(
+			{static_cast<f32>(size_local.x), static_cast<f32>(size_local.y), 0.0f},
+			m_color_secondary.get_normalized(),
+			{1.0f, 1.0f});
+		vertices[3] = rhr::render::vertex(
+			{0.0f, static_cast<f32>(size_local.y), 0.0f}, m_color_secondary.get_normalized(), {0.0f, 1.0f});
 
 		indices[0] = 1;
 		indices[1] = 0;
@@ -328,15 +359,23 @@ void rhr::render::object::text::ui_update_buffers()
 
 		for (usize i = 0; i < m_text.size(); i++)
 		{
-			rhr::registry::char_texture::char_data char_data = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]];
-			f32 y_offset									 = static_cast<f32>(m_font_size) - static_cast<f32>(char_data.offset.y) - static_cast<f32>(rhr::stack::block::padding);
+			rhr::registry::char_texture::char_data char_data =
+				rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]];
+			f32 y_offset = static_cast<f32>(m_font_size) - static_cast<f32>(char_data.offset.y)
+				- static_cast<f32>(rhr::stack::block::padding);
 
-			vertices[i * 4 + 0] =
-				rhr::render::vertex({static_cast<f32>(running_x + char_data.offset.x), y_offset, 0.0f}, m_color_primary.get_normalized(), {char_data.first.x, char_data.first.y});
+			vertices[i * 4 + 0] = rhr::render::vertex(
+				{static_cast<f32>(running_x + char_data.offset.x), y_offset, 0.0f},
+				m_color_primary.get_normalized(),
+				{char_data.first.x, char_data.first.y});
 			vertices[i * 4 + 1] = rhr::render::vertex(
-				{static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), y_offset, 0.0f}, m_color_primary.get_normalized(), {char_data.second.x, char_data.first.y});
+				{static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), y_offset, 0.0f},
+				m_color_primary.get_normalized(),
+				{char_data.second.x, char_data.first.y});
 			vertices[i * 4 + 2] = rhr::render::vertex(
-				{static_cast<f32>(running_x + char_data.offset.x + char_data.size.x), static_cast<f32>(char_data.size.y) + y_offset, 0.0f},
+				{static_cast<f32>(running_x + char_data.offset.x + char_data.size.x),
+				 static_cast<f32>(char_data.size.y) + y_offset,
+				 0.0f},
 				m_color_primary.get_normalized(),
 				{char_data.second.x, char_data.second.y});
 			vertices[i * 4 + 3] = rhr::render::vertex(
@@ -365,26 +404,34 @@ void rhr::render::object::text::ui_update_buffers()
 }
 
 void rhr::render::object::text::ui_chain_update_buffers()
-{
+{}
 
+void rhr::render::object::text::ui_frame_update(f64 delta_time)
+{}
+
+const std::string& rhr::render::object::text::get_text()
+{
+	return m_text;
 }
 
-void rhr::render::object::text::ui_frame_update(f64 delta_time) {}
-
-const std::string& rhr::render::object::text::get_text() { return m_text; }
-
-void rhr::render::object::text::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+void rhr::render::object::text::mouse_button(
+	glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 {
 	if (m_mouse_button != nullptr)
 		m_mouse_button(position, scroll, operation, button);
 }
 
-void rhr::render::object::text::set_mouse_button(std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>& mouse_button)
+void rhr::render::object::text::set_mouse_button(
+	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>&
+		mouse_button)
 {
 	m_mouse_button = mouse_button;
 }
 
-void rhr::render::object::text::post_color_update() { mark_dirty(); }
+void rhr::render::object::text::post_color_update()
+{
+	mark_dirty();
+}
 
 void rhr::render::object::text::set_font_size(u16 font_size)
 {
@@ -403,8 +450,11 @@ void rhr::render::object::text::register_field()
 
 		if (!m_read_only)
 		{
-			m_location =
-				rhr::stack::plane::primary_plane->get_field().register_field(m_weak_field, get_position_virtual_absolute(), get_size_local(), InputHandler::BullishLayerArguments/*, m_plane_offset*/);
+			m_location = rhr::stack::plane::primary_plane->get_field().register_field(
+				m_weak_field,
+				get_position_virtual_absolute(),
+				get_size_local(),
+				InputHandler::BullishLayerArguments /*, m_plane_offset*/);
 		}
 	}
 }

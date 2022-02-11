@@ -49,7 +49,13 @@ class data
 {
 public:
 	///
-	data(usize idx, glm::vec<2, i32> position, glm::vec<2, i32> size, std::weak_ptr<rhr::render::interfaces::i_field>&& text_field, location location, bool is_host);
+	data(
+		usize idx,
+		glm::vec<2, i32> position,
+		glm::vec<2, i32> size,
+		std::weak_ptr<rhr::render::interfaces::i_field>&& text_field,
+		location location,
+		bool is_host);
 
 	///
 	glm::vec<2, i32> get_position();

@@ -1,14 +1,10 @@
 #include "project.hpp"
 
 void rhr::handler::project::load_project(const std::string& path)
-{
-
-}
+{}
 
 void rhr::handler::project::save_project(const std::string& path)
-{
-
-}
+{}
 
 /*using namespace cap::endianness;
 
@@ -294,8 +290,8 @@ void ProjectHandler::LoadProject(const std::string& path)
 
 					// Update arg data
 
-					block->GetArguments()[arg_index]->SetMode(hbuffer[0] == '0' ? BlockArgumentVariableMode::RAW : BlockArgumentVariableMode::VAR);
-					block->GetArguments()[arg_index]->SetData(hbuffer + 1);
+					block->GetArguments()[arg_index]->SetMode(hbuffer[0] == '0' ? BlockArgumentVariableMode::RAW :
+BlockArgumentVariableMode::VAR); block->GetArguments()[arg_index]->SetData(hbuffer + 1);
 					block->GetArguments()[arg_index]->UpdateData();
 
 					free(hbuffer);

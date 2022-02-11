@@ -22,6 +22,7 @@ public:
 	bool drag_bounds(glm::vec<2, i32> position) override;
 	rhr::stack::argument::argument::padding_style get_padding_style() override;
 	void set_plane_offset(glm::vec<2, i32>* plane_offset) override;
+
 private:
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 	void ui_render() override;
@@ -42,7 +43,8 @@ private:
 	std::shared_ptr<rhr::render::object::text> m_text;
 
 	///
-	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
+	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>
+		m_mouse_button;
 
 	///
 	std::function<void()> m_function_text_update;

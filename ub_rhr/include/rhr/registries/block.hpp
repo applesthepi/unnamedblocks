@@ -24,10 +24,16 @@ public:
 		{}
 
 		///
-		cap::mod::block::block::argument::variable_mode get_mode() { return m_mode; };
+		cap::mod::block::block::argument::variable_mode get_mode()
+		{
+			return m_mode;
+		};
 
 		///
-		const std::string& get_value() { return m_value; };
+		const std::string& get_value()
+		{
+			return m_value;
+		};
 
 	private:
 		///

@@ -84,7 +84,11 @@ private:
 
 	///
 	static void pad_arguments(
-		u32& width, usize i, const std::shared_ptr<rhr::stack::argument::argument>& last_arg, const std::shared_ptr<rhr::stack::argument::argument>& arg, bool last = false);
+		u32& width,
+		usize i,
+		const std::shared_ptr<rhr::stack::argument::argument>& last_arg,
+		const std::shared_ptr<rhr::stack::argument::argument>& arg,
+		bool last = false);
 
 	///
 	u32 m_width;

@@ -46,7 +46,8 @@ void rhr::render::interfaces::i_sizeable<S, T>::set_size_max()
 }
 
 template<usize S, typename T>
-bool rhr::render::interfaces::i_sizeable<S, T>::pre_size_update(const glm::vec<S, T>& size, const glm::vec<S, T>& super_bounds)
+bool rhr::render::interfaces::i_sizeable<S, T>::pre_size_update(
+	const glm::vec<S, T>& size, const glm::vec<S, T>& super_bounds)
 {
 	return true;
 }

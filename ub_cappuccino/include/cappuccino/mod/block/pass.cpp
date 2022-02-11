@@ -114,19 +114,40 @@ cap::mod::block::pass::pass(const initializer& init)
 	}
 }
 
-void cap::mod::block::pass::set_data(cap::mod::block::data** data) { m_data = data; }
+void cap::mod::block::pass::set_data(cap::mod::block::data** data)
+{
+	m_data = data;
+}
 
-void cap::mod::block::pass::set_callstack_stack(std::vector<u64>* callstack) { m_callstack_stack_idx = callstack; }
+void cap::mod::block::pass::set_callstack_stack(std::vector<u64>* callstack)
+{
+	m_callstack_stack_idx = callstack;
+}
 
-void cap::mod::block::pass::set_callstack_block(std::vector<u64>* callstack) { m_callstack_block_idx = callstack; }
+void cap::mod::block::pass::set_callstack_block(std::vector<u64>* callstack)
+{
+	m_callstack_block_idx = callstack;
+}
 
-void cap::mod::block::pass::set_successful(bool* successful) { m_successful = successful; }
+void cap::mod::block::pass::set_successful(bool* successful)
+{
+	m_successful = successful;
+}
 
-void cap::mod::block::pass::set_finished(std::atomic<bool>* finished) { m_finished = finished; }
+void cap::mod::block::pass::set_finished(std::atomic<bool>* finished)
+{
+	m_finished = finished;
+}
 
-void cap::mod::block::pass::set_callstack_local(void (***local_callstack)(pass*)) { m_local_callstack = local_callstack; }
+void cap::mod::block::pass::set_callstack_local(void (***local_callstack)(pass*))
+{
+	m_local_callstack = local_callstack;
+}
 
-void cap::mod::block::pass::set_calls(void (***calls)(pass*)) { m_calls = calls; }
+void cap::mod::block::pass::set_calls(void (***calls)(pass*))
+{
+	m_calls = calls;
+}
 
 void cap::mod::block::pass::perform_deallocation_callbacks()
 {
@@ -139,7 +160,10 @@ void cap::mod::block::pass::perform_deallocation_callbacks()
 	m_deallocation_calls.clear();
 }
 
-std::chrono::steady_clock::time_point* cap::mod::block::pass::get_begin_time() { return m_begin_time; }
+std::chrono::steady_clock::time_point* cap::mod::block::pass::get_begin_time()
+{
+	return m_begin_time;
+}
 
 void cap::mod::block::pass::stop()
 {
@@ -226,9 +250,15 @@ void cap::mod::block::pass::set_block_idx(u64 idx)
 		m_callstack_block_idx->back() = idx;
 }
 
-std::mt19937_64& cap::mod::block::pass::get_random_generator() { return m_random; }
+std::mt19937_64& cap::mod::block::pass::get_random_generator()
+{
+	return m_random;
+}
 
-void cap::mod::block::pass::add_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc) { m_deallocation_calls.push_back(dealloc); }
+void cap::mod::block::pass::add_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc)
+{
+	m_deallocation_calls.push_back(dealloc);
+}
 
 void cap::mod::block::pass::remove_deallocation(std::function<void(cap::mod::block::pass*)>* dealloc)
 {
@@ -372,23 +402,50 @@ void cap::mod::block::pass::log_error(const std::string& message, cap::mod::bloc
 	str += message;
 }
 
-f64& cap::mod::block::pass::get_real(u64 idx) { return (this->*(m_get_real))(idx); }
+f64& cap::mod::block::pass::get_real(u64 idx)
+{
+	return (this->*(m_get_real))(idx);
+}
 
-bool& cap::mod::block::pass::get_bool(u64 idx) { return (this->*(m_get_bool))(idx); }
+bool& cap::mod::block::pass::get_bool(u64 idx)
+{
+	return (this->*(m_get_bool))(idx);
+}
 
-std::string& cap::mod::block::pass::get_string(u64&& idx) { return (this->*(m_get_string))(idx); }
+std::string& cap::mod::block::pass::get_string(u64&& idx)
+{
+	return (this->*(m_get_string))(idx);
+}
 
-void* cap::mod::block::pass::get_pre_data(u64 idx) { return (this->*(m_get_pre_data))(idx); }
+void* cap::mod::block::pass::get_pre_data(u64 idx)
+{
+	return (this->*(m_get_pre_data))(idx);
+}
 
-const std::vector<std::string>& cap::mod::block::pass::pull_messages_info() { return m_messages_info; }
+const std::vector<std::string>& cap::mod::block::pass::pull_messages_info()
+{
+	return m_messages_info;
+}
 
-const std::vector<std::string>& cap::mod::block::pass::pull_messages_warn() { return m_messages_warn; }
+const std::vector<std::string>& cap::mod::block::pass::pull_messages_warn()
+{
+	return m_messages_warn;
+}
 
-const std::vector<std::string>& cap::mod::block::pass::pull_messages_error() { return m_messages_error; }
+const std::vector<std::string>& cap::mod::block::pass::pull_messages_error()
+{
+	return m_messages_error;
+}
 
-void cap::mod::block::pass::lock_messages() { m_messages_mutex.lock(); }
+void cap::mod::block::pass::lock_messages()
+{
+	m_messages_mutex.lock();
+}
 
-void cap::mod::block::pass::unlock_messages() { m_messages_mutex.unlock(); }
+void cap::mod::block::pass::unlock_messages()
+{
+	m_messages_mutex.unlock();
+}
 
 void cap::mod::block::pass::update_locations()
 {
@@ -406,8 +463,8 @@ f64& cap::mod::block::pass::get_real_debug(u64 idx)
 	if (idx >= m_variables_real_count->at(m_callstack_stack_idx->back()))
 	{
 		log_error(
-			"attempted to get real out of range \"" + std::to_string(idx) + "\". registry size is \"" + std::to_string(m_variables_real_count->at(m_callstack_stack_idx->back()))
-				+ "\"",
+			"attempted to get real out of range \"" + std::to_string(idx) + "\". registry size is \""
+				+ std::to_string(m_variables_real_count->at(m_callstack_stack_idx->back())) + "\"",
 			logger_fatality::ABORT);
 		return gReal;
 	}
@@ -417,15 +474,18 @@ f64& cap::mod::block::pass::get_real_debug(u64 idx)
 	return value;
 }
 
-f64& cap::mod::block::pass::get_real_release(u64 idx) { return m_active_real[m_active_idx[m_callstack_block_idx->back()][idx]]; }
+f64& cap::mod::block::pass::get_real_release(u64 idx)
+{
+	return m_active_real[m_active_idx[m_callstack_block_idx->back()][idx]];
+}
 
 bool& cap::mod::block::pass::get_bool_debug(u64 idx)
 {
 	if (idx >= m_variables_bool_count->at(m_callstack_stack_idx->back()))
 	{
 		log_error(
-			"attempted to get bool out of range \"" + std::to_string(idx) + "\". registry size is \"" + std::to_string(m_variables_bool_count->at(m_callstack_stack_idx->back()))
-				+ "\"",
+			"attempted to get bool out of range \"" + std::to_string(idx) + "\". registry size is \""
+				+ std::to_string(m_variables_bool_count->at(m_callstack_stack_idx->back())) + "\"",
 			logger_fatality::ABORT);
 		return gBool;
 	}
@@ -435,7 +495,10 @@ bool& cap::mod::block::pass::get_bool_debug(u64 idx)
 	return value;
 }
 
-bool& cap::mod::block::pass::get_bool_release(u64 idx) { return m_active_bool[m_active_idx[m_callstack_block_idx->back()][idx]]; }
+bool& cap::mod::block::pass::get_bool_release(u64 idx)
+{
+	return m_active_bool[m_active_idx[m_callstack_block_idx->back()][idx]];
+}
 
 std::string& cap::mod::block::pass::get_string_debug(u64 idx)
 {
@@ -453,7 +516,10 @@ std::string& cap::mod::block::pass::get_string_debug(u64 idx)
 	return value;
 }
 
-std::string& cap::mod::block::pass::get_string_release(u64 idx) { return m_active_string[m_active_idx[m_callstack_block_idx->back()][idx]]; }
+std::string& cap::mod::block::pass::get_string_release(u64 idx)
+{
+	return m_active_string[m_active_idx[m_callstack_block_idx->back()][idx]];
+}
 
 void* cap::mod::block::pass::get_pre_data_debug(u64 idx)
 {
@@ -470,7 +536,10 @@ void* cap::mod::block::pass::get_pre_data_debug(u64 idx)
 	return value;
 }
 
-void* cap::mod::block::pass::get_pre_data_release(u64 idx) { return m_active_pre[m_callstack_block_idx->back()][idx]; }
+void* cap::mod::block::pass::get_pre_data_release(u64 idx)
+{
+	return m_active_pre[m_callstack_block_idx->back()][idx];
+}
 
 cap::mod::block::pass::initializer::initializer()
 {

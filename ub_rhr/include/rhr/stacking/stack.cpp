@@ -110,9 +110,15 @@ void rhr::stack::stack::remove_blocks_end(u64 offset)
 	update_size();
 }
 
-void rhr::stack::stack::update_size() { set_size_local({get_widest_block(), m_blocks.size() * rhr::stack::block::height}, true); }
+void rhr::stack::stack::update_size()
+{
+	set_size_local({get_widest_block(), m_blocks.size() * rhr::stack::block::height}, true);
+}
 
-const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks() { return m_blocks; }
+const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks()
+{
+	return m_blocks;
+}
 
 void rhr::stack::stack::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
@@ -135,7 +141,8 @@ void rhr::stack::stack::ui_reload_swap_chain()
 		block->reload_swap_chain();
 }
 
-void rhr::stack::stack::ui_update_buffers() {}
+void rhr::stack::stack::ui_update_buffers()
+{}
 
 void rhr::stack::stack::ui_chain_update_buffers()
 {
@@ -149,4 +156,7 @@ void rhr::stack::stack::ui_frame_update(f64 delta_time)
 		block->frame_update(delta_time);
 }
 
-void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update) { m_function_collection_update = function_collection_update; }
+void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
+{
+	m_function_collection_update = function_collection_update;
+}

@@ -18,7 +18,8 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 	for (u64 i = 0; i < rhr::stack::plane::primary_plane->get_collections().size(); i++)
 	{
-		const std::vector<std::shared_ptr<rhr::stack::stack>>& col_stacks = rhr::stack::plane::primary_plane->get_collections()[i]->get_stacks();
+		const std::vector<std::shared_ptr<rhr::stack::stack>>& col_stacks =
+			rhr::stack::plane::primary_plane->get_collections()[i]->get_stacks();
 
 		for (u64 a = 0; a < col_stacks.size(); a++)
 			stacks.push_back(col_stacks[a]);
@@ -32,11 +33,14 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		function_data[i] = new cap::mod::block::data[stacks[i]->get_blocks().size()];
 		mod_blocks[i]	 = new cap::mod::block::block*[stacks[i]->get_blocks().size()];
 
-		if (stacks[i]->get_blocks().size() >= 1 && std::string(stacks[i]->get_blocks()[0]->get_mod_block()->get_unlocalized_name()) == "essentials_main")
+		if (stacks[i]->get_blocks().size() >= 1
+			&& std::string(stacks[i]->get_blocks()[0]->get_mod_block()->get_unlocalized_name()) == "essentials_main")
 		{
 			if (function_main_found)
 			{
-				cap::logger::error(cap::logger::level::EDITOR, "program has more than 1 entry points; can not run program without exactly 1 entry point (essentials_main)");
+				cap::logger::error(
+					cap::logger::level::EDITOR,
+					"program has more than 1 entry points; can not run program without exactly 1 entry point (essentials_main)");
 				rhr::handler::build::confirm_terminated();
 				return;
 			}
@@ -67,9 +71,11 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 			for (u64 b = 0; b < stacks[i]->get_blocks()[a]->get_arguments().size(); b++)
 			{
-				cap::mod::block::block::argument::type type = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_type();
+				cap::mod::block::block::argument::type type =
+					stacks[i]->get_blocks()[a]->get_arguments()[b]->get_type();
 
-				if (stacks[i]->get_blocks()[a]->get_arguments()[b]->get_mode() == cap::mod::block::block::argument::variable_mode::VAR)
+				if (stacks[i]->get_blocks()[a]->get_arguments()[b]->get_mode()
+					== cap::mod::block::block::argument::variable_mode::VAR)
 				{
 					std::string* dt = new std::string();
 
@@ -162,18 +168,22 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 	if (!function_main_found)
 	{
-		cap::logger::error(cap::logger::level::EDITOR, "program has no entry points; can not run program without exactly 1 entry point (essentials_main)");
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			"program has no entry points; can not run program without exactly 1 entry point (essentials_main)");
 		rhr::handler::build::confirm_terminated();
 		return;
 	}
 
 	void (***calls)(cap::mod::block::pass*);
-	calls = (void (***)(cap::mod::block::pass*))malloc(sizeof(void (**)(cap::mod::block::pass*)) * function_calls.size());
+	calls =
+		(void (***)(cap::mod::block::pass*))malloc(sizeof(void (**)(cap::mod::block::pass*)) * function_calls.size());
 
 	for (u64 i = 0; i < function_calls.size(); i++)
 	{
 		void (**callsInside)(cap::mod::block::pass*);
-		callsInside = (void (**)(cap::mod::block::pass*))malloc(sizeof(void (*)(cap::mod::block::pass*)) * function_calls[i].size());
+		callsInside = (void (**)(cap::mod::block::pass*))malloc(
+			sizeof(void (*)(cap::mod::block::pass*)) * function_calls[i].size());
 
 		for (u64 a = 0; a < function_calls[i].size(); a++)
 			callsInside[a] = function_calls[i][a];
@@ -236,7 +246,10 @@ void rhr::handler::build::execute(cap::build_system::method build_method, cap::b
 	m_thread = std::thread(thread_build, build_method, build_type);
 }
 
-cap::build_system::status rhr::handler::build::get_status() { return m_status; }
+cap::build_system::status rhr::handler::build::get_status()
+{
+	return m_status;
+}
 
 void rhr::handler::build::terminate()
 {

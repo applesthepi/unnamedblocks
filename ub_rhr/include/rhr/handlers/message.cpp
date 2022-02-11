@@ -177,8 +177,8 @@
 // 		(*m_stop)();
 // 	};
 
-// 	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonOk->setPosition(120, 10);
+// 	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG,
+// MOD_BUTTON_TEXT_FG); 	m_buttonOk->setPosition(120, 10);
 
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonOk);
 // }
@@ -209,8 +209,8 @@
 // 		(*m_stop)();
 // 	};
 
-// 	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonOk->setPosition(120, 10);
+// 	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG,
+// MOD_BUTTON_TEXT_FG); 	m_buttonOk->setPosition(120, 10);
 
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonOk);
 // }
@@ -241,8 +241,8 @@
 // 		(*m_stop)();
 // 	};
 
-// 	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonOk->setPosition(120, 10);
+// 	m_buttonOk = new ButtonText(&m_buttonCallback, "ok", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG,
+// MOD_BUTTON_TEXT_FG); 	m_buttonOk->setPosition(120, 10);
 
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonOk);
 // }
@@ -279,11 +279,11 @@
 // 		(*m_stop)();
 // 	};
 
-// 	m_buttonContinue = new ButtonText(&m_buttonCallbackContinue, "continue", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonContinue->setPosition(120, 10);
+// 	m_buttonContinue = new ButtonText(&m_buttonCallbackContinue, "continue", 16, sf::Vector2f(100, 20),
+// MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG); 	m_buttonContinue->setPosition(120, 10);
 
-// 	m_buttonCancel = new ButtonText(&m_buttonCallbackCancel, "cancel", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonCancel->setPosition(230, 10);
+// 	m_buttonCancel = new ButtonText(&m_buttonCallbackCancel, "cancel", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG,
+// MOD_BUTTON_TEXT_FG); 	m_buttonCancel->setPosition(230, 10);
 
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonContinue);
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonCancel);
@@ -336,11 +336,11 @@
 
 // 	InputHandler::RegisterKeyCallback(&m_textCallback);
 
-// 	m_buttonEnter = new ButtonText(&m_enter, "enter", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonEnter->setPosition(120, 10);
+// 	m_buttonEnter = new ButtonText(&m_enter, "enter", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG,
+// MOD_BUTTON_TEXT_FG); 	m_buttonEnter->setPosition(120, 10);
 
-// 	m_buttonCancel = new ButtonText(&m_escape, "cancel", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG, MOD_BUTTON_TEXT_FG);
-// 	m_buttonCancel->setPosition(230, 10);
+// 	m_buttonCancel = new ButtonText(&m_escape, "cancel", 16, sf::Vector2f(100, 20), MOD_BUTTON_TEXT_BG,
+// MOD_BUTTON_TEXT_FG); 	m_buttonCancel->setPosition(230, 10);
 
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonEnter);
 // 	UIRegistry::GetRegistry().AddComponent(m_buttonCancel);

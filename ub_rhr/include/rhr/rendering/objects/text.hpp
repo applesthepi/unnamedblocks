@@ -18,7 +18,12 @@ class text
 	, public rhr::render::interfaces::i_field
 {
 public:
-	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register, glm::vec<2, i32>* plane_offset);
+	text(
+		rhr::registry::char_texture::texture_type texture_type,
+		u16 font_size,
+		bool read_only,
+		bool force_register,
+		glm::vec<2, i32>* plane_offset);
 	~text();
 
 	///
@@ -51,7 +56,9 @@ public:
 	void enable_background(bool enable);
 
 	///
-	void set_mouse_button(std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>& mouse_button);
+	void set_mouse_button(
+		std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>&
+			mouse_button);
 
 	///
 	std::optional<usize> pick_index(glm::vec<2, i32> position, bool ignore_y) override;
@@ -142,7 +149,8 @@ private:
 	bool m_read_only;
 
 	///
-	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)> m_mouse_button;
+	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>
+		m_mouse_button;
 
 	///
 	u16 m_font_size;

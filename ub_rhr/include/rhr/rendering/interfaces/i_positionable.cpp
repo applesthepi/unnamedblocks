@@ -39,7 +39,8 @@ glm::vec<S, T> rhr::render::interfaces::i_positionable<S, T>::get_super_position
 }
 
 template<usize S, typename T>
-bool rhr::render::interfaces::i_positionable<S, T>::pre_position_update(const glm::vec<S, T>& position, const glm::vec<S, T>& super_position)
+bool rhr::render::interfaces::i_positionable<S, T>::pre_position_update(
+	const glm::vec<S, T>& position, const glm::vec<S, T>& super_position)
 {
 	return true;
 }

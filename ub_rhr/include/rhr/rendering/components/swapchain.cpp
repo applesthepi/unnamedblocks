@@ -14,7 +14,8 @@ rhr::render::component::swapchain::swapchain()
 
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
 
-	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(window->get_physical_device(), window->get_surface());
+	rhr::render::tools::swap_chain_support_details swap_chain_support =
+		rhr::render::tools::query_swap_chain_support(window->get_physical_device(), window->get_surface());
 
 	m_surface_format	 = rhr::render::tools::choose_swap_surface_format(swap_chain_support.formats);
 	m_present_mode		 = rhr::render::tools::choose_swap_present_mode(swap_chain_support.present_modes);
@@ -22,7 +23,8 @@ rhr::render::component::swapchain::swapchain()
 
 	u32 image_count = swap_chain_support.capabilities.minImageCount + 1;
 
-	if (swap_chain_support.capabilities.maxImageCount > 0 && image_count > swap_chain_support.capabilities.maxImageCount)
+	if (swap_chain_support.capabilities.maxImageCount > 0
+		&& image_count > swap_chain_support.capabilities.maxImageCount)
 		image_count = swap_chain_support.capabilities.maxImageCount;
 
 	vk::swapchain_create_info_khr swapchain_create_info_khr = {};
@@ -36,8 +38,9 @@ rhr::render::component::swapchain::swapchain()
 	swapchain_create_info_khr.imageArrayLayers = 1;
 	swapchain_create_info_khr.imageUsage	   = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(window->get_physical_device(), window->get_surface());
-	u32 queue_family_indices[]						 = {indices.graphics_family.value(), indices.present_family.value()};
+	rhr::render::tools::queue_family_indices indices =
+		rhr::render::tools::find_queue_families(window->get_physical_device(), window->get_surface());
+	u32 queue_family_indices[] = {indices.graphics_family.value(), indices.present_family.value()};
 
 	if (indices.graphics_family != indices.present_family)
 	{
@@ -58,7 +61,8 @@ rhr::render::component::swapchain::swapchain()
 	swapchain_create_info_khr.clipped		 = VK_TRUE;
 	swapchain_create_info_khr.oldSwapchain	 = VK_NULL_HANDLE;
 
-	if (vk::create_swapchain_khr(*window->get_device(), &swapchain_create_info_khr, nullptr, &m_swapchain) != VK_SUCCESS)
+	if (vk::create_swapchain_khr(*window->get_device(), &swapchain_create_info_khr, nullptr, &m_swapchain)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create swap chain");
 
 	m_frames.resize(image_count);
@@ -75,7 +79,8 @@ rhr::render::component::swapchain::swapchain()
 	{
 		m_frames[i].frame_image = swapchain_images[i];
 
-		m_frames[i].frame_view = rhr::render::tools::create_image_view(m_frames[i].frame_image, m_image_format, VK_IMAGE_ASPECT_COLOR_BIT);
+		m_frames[i].frame_view =
+			rhr::render::tools::create_image_view(m_frames[i].frame_image, m_image_format, VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 }
 
@@ -114,7 +119,8 @@ void rhr::render::component::swapchain::create_framebuffers()
 		framebuffer_create_info.height			= m_extent.height;
 		framebuffer_create_info.layers			= 1;
 
-		if (vk::create_framebuffer(*window->get_device(), &framebuffer_create_info, nullptr, &frame.frame_buffer) != VK_SUCCESS)
+		if (vk::create_framebuffer(*window->get_device(), &framebuffer_create_info, nullptr, &frame.frame_buffer)
+			!= VK_SUCCESS)
 			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create frame buffers");
 	}
 }
@@ -132,20 +138,35 @@ void rhr::render::component::swapchain::create_synchronization()
 
 	for (auto& frame : m_frames)
 	{
-		if (vk::create_semaphore(*window->get_device(), &semaphore_create_info, nullptr, &frame.semaphore_image) != VK_SUCCESS
-			|| vk::create_semaphore(*window->get_device(), &semaphore_create_info, nullptr, &frame.semaphore_finished) != VK_SUCCESS
-			|| vk::create_fence(*window->get_device(), &fence_create_info, nullptr, &frame.fence_in_flight) != VK_SUCCESS)
+		if (vk::create_semaphore(*window->get_device(), &semaphore_create_info, nullptr, &frame.semaphore_image)
+				!= VK_SUCCESS
+			|| vk::create_semaphore(*window->get_device(), &semaphore_create_info, nullptr, &frame.semaphore_finished)
+				!= VK_SUCCESS
+			|| vk::create_fence(*window->get_device(), &fence_create_info, nullptr, &frame.fence_in_flight)
+				!= VK_SUCCESS)
 			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create semaphores");
 	}
 }
 
-vk::format& rhr::render::component::swapchain::get_format() { return m_image_format; }
+vk::format& rhr::render::component::swapchain::get_format()
+{
+	return m_image_format;
+}
 
-vk::surface_format_khr& rhr::render::component::swapchain::get_surface_format() { return m_surface_format; }
+vk::surface_format_khr& rhr::render::component::swapchain::get_surface_format()
+{
+	return m_surface_format;
+}
 
-vk::present_mode_khr& rhr::render::component::swapchain::get_present_mode() { return m_present_mode; }
+vk::present_mode_khr& rhr::render::component::swapchain::get_present_mode()
+{
+	return m_present_mode;
+}
 
-vk::extent_2d& rhr::render::component::swapchain::get_extent() { return m_extent; }
+vk::extent_2d& rhr::render::component::swapchain::get_extent()
+{
+	return m_extent;
+}
 
 vk::render_pass& rhr::render::component::swapchain::get_render_pass(u8 idx)
 {
@@ -153,7 +174,8 @@ vk::render_pass& rhr::render::component::swapchain::get_render_pass(u8 idx)
 	{
 		if (!m_render_passes.empty())
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch render pass using idx, using first one instead");
+			cap::logger::error(
+				cap::logger::level::SYSTEM, "failed to fetch render pass using idx, using first one instead");
 			return m_render_passes.front().get_render_pass();
 		}
 		else
@@ -163,7 +185,10 @@ vk::render_pass& rhr::render::component::swapchain::get_render_pass(u8 idx)
 	return m_render_passes[static_cast<usize>(idx)].get_render_pass();
 }
 
-u8 rhr::render::component::swapchain::get_framebuffer_count() { return static_cast<u8>(m_frames.size()); }
+u8 rhr::render::component::swapchain::get_framebuffer_count()
+{
+	return static_cast<u8>(m_frames.size());
+}
 
 vk::frame_buffer& rhr::render::component::swapchain::get_framebuffer(u8 idx)
 {
@@ -171,7 +196,8 @@ vk::frame_buffer& rhr::render::component::swapchain::get_framebuffer(u8 idx)
 	{
 		if (!m_frames.empty())
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch framebuffer using idx, using first one instead");
+			cap::logger::error(
+				cap::logger::level::SYSTEM, "failed to fetch framebuffer using idx, using first one instead");
 			return m_frames.front().frame_buffer;
 		}
 		else
@@ -181,7 +207,10 @@ vk::frame_buffer& rhr::render::component::swapchain::get_framebuffer(u8 idx)
 	return m_frames[static_cast<usize>(idx)].frame_buffer;
 }
 
-vk::swapchain_khr& rhr::render::component::swapchain::get_swapchain() { return m_swapchain; }
+vk::swapchain_khr& rhr::render::component::swapchain::get_swapchain()
+{
+	return m_swapchain;
+}
 
 rhr::render::component::frame& rhr::render::component::swapchain::get_frame(u8 idx)
 {

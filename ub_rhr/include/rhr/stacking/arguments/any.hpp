@@ -125,7 +125,8 @@ public:
 		//AddTriangle(vertices1, textureCoords1);
 
 		//for (u32 i = 0; i < text.length(); i++)
-		//	GetVAO().AddChar(sf::FloatRect(i * Global::BlockHeight, 0, Global::BlockHeight, Global::BlockHeight), text[i]);
+		//	GetVAO().AddChar(sf::FloatRect(i * Global::BlockHeight, 0, Global::BlockHeight, Global::BlockHeight),
+text[i]);
 	}
 
 	//bool UseVertexArrayTexture() override

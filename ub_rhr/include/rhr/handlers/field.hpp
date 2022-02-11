@@ -33,13 +33,19 @@ public:
 	void text_button(InputHandler::key_state state);
 
 	///
-	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer/*, glm::vec<2, i32>* plane_offset*/);
+	rhr::handler::field_data::location register_field(
+		std::weak_ptr<rhr::render::interfaces::i_field> text_field,
+		glm::vec<2, i32> position,
+		glm::vec<2, i32> size,
+		u8 layer /*, glm::vec<2, i32>* plane_offset*/);
 
 	///
 	void unregister_field(const rhr::handler::field_data::location& location);
 
 	///
-	rhr::handler::field_data::location update_field_position(const rhr::handler::field_data::location& location, glm::vec<2, i32> position/*, glm::vec<2, i32>* plane_offset*/);
+	rhr::handler::field_data::location update_field_position(
+		const rhr::handler::field_data::location& location,
+		glm::vec<2, i32> position /*, glm::vec<2, i32>* plane_offset*/);
 
 	///
 	void update_field_size(const rhr::handler::field_data::location& location, glm::vec<2, i32> size);
@@ -58,7 +64,8 @@ private:
 	std::optional<rhr::handler::field_data::data*> find_data(const rhr::handler::field_data::location& location);
 
 	///
-	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> get_cell(const glm::vec<2, usize>& cell_location);
+	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*>
+	get_cell(const glm::vec<2, usize>& cell_location);
 
 	///
 	void push_data(const rhr::handler::field_data::location& location, const rhr::handler::field_data::data& data);

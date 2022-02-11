@@ -19,7 +19,8 @@ public:
 
 	/// these are NOT a blocks' arguments! These are the variables' storage inside Cappuccino.
 	/// only use these if your know what your doing!
-	/// if your trying to use the  blocks' arguments during the initializations, then use the cap::mod::block::data, not this.
+	/// if your trying to use the  blocks' arguments during the initializations, then use the cap::mod::block::data, not
+	/// this.
 	u64 custom_put(void* mem);
 
 	// f64& GetReal(u64 idx);

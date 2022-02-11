@@ -5,7 +5,10 @@ cap::mod::block::flags::iterator::iterator(const u64* flag)
 	, m_flag(flag)
 {}
 
-void cap::mod::block::flags::iterator::reset() { m_iterator = 0; }
+void cap::mod::block::flags::iterator::reset()
+{
+	m_iterator = 0;
+}
 
 cap::mod::block::flags::type cap::mod::block::flags::iterator::pull_next()
 {
@@ -24,7 +27,10 @@ cap::mod::block::flags::flags()
 	m_flag = 0;
 }
 
-cap::mod::block::flags::iterator cap::mod::block::flags::use_iterator() const { return m_iterator; }
+cap::mod::block::flags::iterator cap::mod::block::flags::use_iterator() const
+{
+	return m_iterator;
+}
 
 cap::mod::block::flags& cap::mod::block::flags::check_heap()
 {

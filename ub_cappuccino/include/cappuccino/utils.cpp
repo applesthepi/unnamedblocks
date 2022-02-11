@@ -158,27 +158,81 @@ std::array<char, T> reverse(std::array<char, T> bytes)
 	}
 	return reversed;
 }
-std::array<char, 4> to_ne_bytes(f32 x) { return to_ne_bytes(*(u32*)(void*)&x); }
-std::array<char, 8> to_ne_bytes(f64 x) { return to_ne_bytes(*(u64*)(void*)&x); }
-std::array<char, 2> to_ne_bytes(i16 x) { return to_ne_bytes(*(u16*)(void*)&x); }
-std::array<char, 4> to_ne_bytes(i32 x) { return to_ne_bytes(*(u32*)(void*)&x); }
-std::array<char, 8> to_ne_bytes(i64 x) { return to_ne_bytes(*(u64*)(void*)&x); }
+std::array<char, 4> to_ne_bytes(f32 x)
+{
+	return to_ne_bytes(*(u32*)(void*)&x);
+}
+std::array<char, 8> to_ne_bytes(f64 x)
+{
+	return to_ne_bytes(*(u64*)(void*)&x);
+}
+std::array<char, 2> to_ne_bytes(i16 x)
+{
+	return to_ne_bytes(*(u16*)(void*)&x);
+}
+std::array<char, 4> to_ne_bytes(i32 x)
+{
+	return to_ne_bytes(*(u32*)(void*)&x);
+}
+std::array<char, 8> to_ne_bytes(i64 x)
+{
+	return to_ne_bytes(*(u64*)(void*)&x);
+}
 
-std::array<char, 4> to_le_bytes(f32 x) { return to_le_bytes(*(u32*)(void*)&x); }
-std::array<char, 8> to_le_bytes(f64 x) { return to_le_bytes(*(u64*)(void*)&x); }
-std::array<char, 2> to_le_bytes(i16 x) { return to_le_bytes(*(u16*)(void*)&x); }
-std::array<char, 4> to_le_bytes(i32 x) { return to_le_bytes(*(u32*)(void*)&x); }
-std::array<char, 8> to_le_bytes(i64 x) { return to_le_bytes(*(u64*)(void*)&x); }
+std::array<char, 4> to_le_bytes(f32 x)
+{
+	return to_le_bytes(*(u32*)(void*)&x);
+}
+std::array<char, 8> to_le_bytes(f64 x)
+{
+	return to_le_bytes(*(u64*)(void*)&x);
+}
+std::array<char, 2> to_le_bytes(i16 x)
+{
+	return to_le_bytes(*(u16*)(void*)&x);
+}
+std::array<char, 4> to_le_bytes(i32 x)
+{
+	return to_le_bytes(*(u32*)(void*)&x);
+}
+std::array<char, 8> to_le_bytes(i64 x)
+{
+	return to_le_bytes(*(u64*)(void*)&x);
+}
 
-std::array<char, 4> to_be_bytes(f32 x) { return to_be_bytes(*(u32*)(void*)&x); }
-std::array<char, 8> to_be_bytes(f64 x) { return to_be_bytes(*(u64*)(void*)&x); }
-std::array<char, 2> to_be_bytes(i16 x) { return to_be_bytes(*(u16*)(void*)&x); }
-std::array<char, 4> to_be_bytes(i32 x) { return to_be_bytes(*(u32*)(void*)&x); }
-std::array<char, 8> to_be_bytes(i64 x) { return to_be_bytes(*(u64*)(void*)&x); }
+std::array<char, 4> to_be_bytes(f32 x)
+{
+	return to_be_bytes(*(u32*)(void*)&x);
+}
+std::array<char, 8> to_be_bytes(f64 x)
+{
+	return to_be_bytes(*(u64*)(void*)&x);
+}
+std::array<char, 2> to_be_bytes(i16 x)
+{
+	return to_be_bytes(*(u16*)(void*)&x);
+}
+std::array<char, 4> to_be_bytes(i32 x)
+{
+	return to_be_bytes(*(u32*)(void*)&x);
+}
+std::array<char, 8> to_be_bytes(i64 x)
+{
+	return to_be_bytes(*(u64*)(void*)&x);
+}
 
-u16 u16_from_ne_bytes(std::array<char, 2> bytes) { return (u16)*bytes.data(); }
-u32 u32_from_ne_bytes(std::array<char, 4> bytes) { return (u32)*bytes.data(); }
-u64 u64_from_ne_bytes(std::array<char, 8> bytes) { return (u64)*bytes.data(); }
+u16 u16_from_ne_bytes(std::array<char, 2> bytes)
+{
+	return (u16)*bytes.data();
+}
+u32 u32_from_ne_bytes(std::array<char, 4> bytes)
+{
+	return (u32)*bytes.data();
+}
+u64 u64_from_ne_bytes(std::array<char, 8> bytes)
+{
+	return (u64)*bytes.data();
+}
 
 u16 u16_from_le_bytes(std::array<char, 2> bytes)
 {
@@ -224,11 +278,26 @@ u64 u64_from_be_bytes(std::array<char, 8> bytes)
 		return (u64) * (reverse<8>(bytes)).data();
 }
 
-i16 i16_from_ne_bytes(std::array<char, 2> bytes) { return (i16)*bytes.data(); }
-i32 i32_from_ne_bytes(std::array<char, 4> bytes) { return (i32)*bytes.data(); }
-i64 i64_from_ne_bytes(std::array<char, 8> bytes) { return (i64)*bytes.data(); }
-f32 f32_from_ne_bytes(std::array<char, 4> bytes) { return (f32)*bytes.data(); }
-f64 f64_from_ne_bytes(std::array<char, 8> bytes) { return (f64)*bytes.data(); }
+i16 i16_from_ne_bytes(std::array<char, 2> bytes)
+{
+	return (i16)*bytes.data();
+}
+i32 i32_from_ne_bytes(std::array<char, 4> bytes)
+{
+	return (i32)*bytes.data();
+}
+i64 i64_from_ne_bytes(std::array<char, 8> bytes)
+{
+	return (i64)*bytes.data();
+}
+f32 f32_from_ne_bytes(std::array<char, 4> bytes)
+{
+	return (f32)*bytes.data();
+}
+f64 f64_from_ne_bytes(std::array<char, 8> bytes)
+{
+	return (f64)*bytes.data();
+}
 
 i16 i16_from_le_bytes(std::array<char, 2> bytes)
 {

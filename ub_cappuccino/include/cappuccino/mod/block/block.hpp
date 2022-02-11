@@ -26,7 +26,8 @@ public:
 	struct argument
 	{
 		/// This is the argument type, an argument can only allow this variable type to be used.
-		/// "ANY" is indicated for any *variable* input. The type will unspecified in cappuccino and will be presented as a "void*".
+		/// "ANY" is indicated for any *variable* input. The type will unspecified in cappuccino and will be presented
+		/// as a "void*".
 		enum class type
 		{
 			TEXT,
@@ -46,8 +47,9 @@ public:
 			RESTRICTED
 		};
 
-		/// This is the default assignment of whether it starts as var or raw input. The user can change what they input.
-		/// If you want to restrict how data is inputted see the "cap::mod::block::argument::variable_mode_restriction" class.
+		/// This is the default assignment of whether it starts as var or raw input. The user can change what they
+		/// input. If you want to restrict how data is inputted see the
+		/// "cap::mod::block::argument::variable_mode_restriction" class.
 		enum class variable_mode
 		{
 			VAR,
@@ -58,7 +60,11 @@ public:
 		class initializer
 		{
 		public:
-			initializer(const type type, const variable_mode_restriction restriction, const variable_mode mode, std::string default_value)
+			initializer(
+				const type type,
+				const variable_mode_restriction restriction,
+				const variable_mode mode,
+				std::string default_value)
 				: m_type(type)
 				, m_restriction(restriction)
 				, m_mode(mode)
@@ -66,16 +72,28 @@ public:
 			{}
 
 			///
-			type& get_type() { return m_type; }
+			type& get_type()
+			{
+				return m_type;
+			}
 
 			///
-			variable_mode_restriction& get_restriction() { return m_restriction; }
+			variable_mode_restriction& get_restriction()
+			{
+				return m_restriction;
+			}
 
 			///
-			variable_mode& get_mode() { return m_mode; }
+			variable_mode& get_mode()
+			{
+				return m_mode;
+			}
 
 			///
-			std::string& get_default_value() { return m_default_value; }
+			std::string& get_default_value()
+			{
+				return m_default_value;
+			}
 
 		private:
 			///

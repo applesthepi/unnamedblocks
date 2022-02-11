@@ -10,6 +10,10 @@ void rhr::render::interfaces::i_enableable::set_enabled(bool enabled)
 	post_enable_update(enabled);
 }
 
-bool rhr::render::interfaces::i_enableable::get_enabled() { return m_enabled; }
+bool rhr::render::interfaces::i_enableable::get_enabled()
+{
+	return m_enabled;
+}
 
-void rhr::render::interfaces::i_enableable::post_enable_update(bool enabled) {}
+void rhr::render::interfaces::i_enableable::post_enable_update(bool enabled)
+{}

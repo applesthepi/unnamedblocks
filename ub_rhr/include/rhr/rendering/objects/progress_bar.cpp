@@ -2,22 +2,14 @@
 /*
 #include "ui/Renderer.hpp"
 
-vui::ProgressBar::ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge, HorizontalAlignment horizontal, f32 horizontalSizeOverride)
-	: IDiColorable(Color().FromU8({ 150, 150, 150, 255 }), Color().FromU8({ 100, 100, 100, 255 }))
-	, IEnableable(true)
-	, m_RenderRectangleCompleted(std::make_shared<RenderRectangle>())
-	, m_RenderRectangleIncompleted(std::make_shared<RenderRectangle>())
-	, m_RenderRectangleExtra(std::make_shared<RenderRectangle>())
-	, m_ColorGauge(colorGauge)
-	, m_Horizontal(horizontal)
-	, m_Vertical(vertical)
-	, m_StackOffset(stackOffset)
-	, m_Progress(0.0f)
-	, m_ProgressExtra(0.0f)
-	, m_HorizontalSizeOverride(horizontalSizeOverride)
-	, m_BoundsAccepted(false)
-	, m_UseExtra(false)
-	, m_Depth(8)
+vui::ProgressBar::ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge,
+HorizontalAlignment horizontal, f32 horizontalSizeOverride) : IDiColorable(Color().FromU8({ 150, 150, 150, 255 }),
+Color().FromU8({ 100, 100, 100, 255 })) , IEnableable(true) ,
+m_RenderRectangleCompleted(std::make_shared<RenderRectangle>()) ,
+m_RenderRectangleIncompleted(std::make_shared<RenderRectangle>()) ,
+m_RenderRectangleExtra(std::make_shared<RenderRectangle>()) , m_ColorGauge(colorGauge) , m_Horizontal(horizontal) ,
+m_Vertical(vertical) , m_StackOffset(stackOffset) , m_Progress(0.0f) , m_ProgressExtra(0.0f) ,
+m_HorizontalSizeOverride(horizontalSizeOverride) , m_BoundsAccepted(false) , m_UseExtra(false) , m_Depth(8)
 {
 	m_RenderRectangleCompleted->SetWeak(m_RenderRectangleCompleted);
 	m_RenderRectangleIncompleted->SetWeak(m_RenderRectangleIncompleted);
@@ -125,7 +117,8 @@ void vui::ProgressBar::OnUpdateBuffers()
 	else if (m_Vertical == VerticalAlignment::CENTER)
 		ypos = center.y + ((UI_VERTICAL_STACK + PROGRESS_BAR_HEIGHT) * m_StackOffset);
 	else if (m_Vertical == VerticalAlignment::BOTTOM)
-		ypos = (parentHigh.y - (UI_VERTICAL_STACK + PROGRESS_BAR_HEIGHT)) + ((UI_VERTICAL_STACK + PROGRESS_BAR_HEIGHT) * m_StackOffset);
+		ypos = (parentHigh.y - (UI_VERTICAL_STACK + PROGRESS_BAR_HEIGHT)) + ((UI_VERTICAL_STACK + PROGRESS_BAR_HEIGHT) *
+m_StackOffset);
 
 	ypos += m_SuperOffset.y;
 
@@ -137,8 +130,8 @@ void vui::ProgressBar::OnUpdateBuffers()
 	m_Size = { m_SuperBounds.x * horizontalSize, PROGRESS_BAR_HEIGHT };
 	m_Position = { m_SuperOffset.x + (m_SuperBounds.x - m_Size.x) / 2, ypos };
 
-	if (m_Position.y + m_Size.y > parentHigh.y || m_Position.y < m_SuperOffset.y || m_Position.x < m_SuperOffset.x || m_Position.x + m_Size.x > parentHigh.x || m_Progress < 0.0f ||
-m_Progress > 1.0f)
+	if (m_Position.y + m_Size.y > parentHigh.y || m_Position.y < m_SuperOffset.y || m_Position.x < m_SuperOffset.x ||
+m_Position.x + m_Size.x > parentHigh.x || m_Progress < 0.0f || m_Progress > 1.0f)
 	{
 		cap::logger::Error("ProgressBar's dimensions are out of range");
 		m_BoundsAccepted = false;

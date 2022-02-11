@@ -28,11 +28,12 @@ enum class VerticalAlignment
 	BOTTOM
 };
 
-class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public IPositionable<2, i32>, public ISizeable<i32>
+class ProgressBar : public IRenderable, public IUpdatable, public IDiColorable, public IEnableable, public
+IPositionable<2, i32>, public ISizeable<i32>
 {
 public:
-	ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT, HorizontalAlignment horizontal =
-HorizontalAlignment::CENTER, f32 horizontalSizeOverride = 0.0f);
+	ProgressBar(i32 stackOffset, VerticalAlignment vertical, HorizontalAlignment colorGauge = HorizontalAlignment::LEFT,
+HorizontalAlignment horizontal = HorizontalAlignment::CENTER, f32 horizontalSizeOverride = 0.0f);
 
 	void SetWeak(std::weak_ptr<ProgressBar>&& weak);
 	void SetDepth(u32 depth);

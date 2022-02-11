@@ -15,10 +15,12 @@ rhr::render::component::pipeline::pipeline()
 rhr::render::component::pipeline::~pipeline()
 {
 	for (auto& registered_pipeline : m_registered_pipelines)
-		vkDestroyPipeline(*rhr::render::renderer::get_window_primary()->get_device(), registered_pipeline.second, nullptr);
+		vkDestroyPipeline(
+			*rhr::render::renderer::get_window_primary()->get_device(), registered_pipeline.second, nullptr);
 
 	for (auto& registered_layout : m_registered_layouts)
-		vkDestroyPipelineLayout(*rhr::render::renderer::get_window_primary()->get_device(), registered_layout.second, nullptr);
+		vkDestroyPipelineLayout(
+			*rhr::render::renderer::get_window_primary()->get_device(), registered_layout.second, nullptr);
 }
 
 void rhr::render::component::pipeline::apply_active_pipeline(const std::string& name)
@@ -34,7 +36,15 @@ void rhr::render::component::pipeline::bind_color_pipeline(vk::descriptor_set* d
 {
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
 
-	vkCmdBindDescriptorSets(*window->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_active_pipeline_color_layout, 0, 1, descriptor_set, 0, nullptr);
+	vkCmdBindDescriptorSets(
+		*window->get_active_command_buffer(),
+		VK_PIPELINE_BIND_POINT_GRAPHICS,
+		m_active_pipeline_color_layout,
+		0,
+		1,
+		descriptor_set,
+		0,
+		nullptr);
 
 	vkCmdBindPipeline(*window->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_active_pipeline_color);
 }
@@ -43,31 +53,51 @@ void rhr::render::component::pipeline::bind_texture_pipeline(vk::descriptor_set*
 {
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
 
-	vkCmdBindDescriptorSets(*window->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_active_pipeline_texture_layout, 0, 1, descriptor_set, 0, nullptr);
+	vkCmdBindDescriptorSets(
+		*window->get_active_command_buffer(),
+		VK_PIPELINE_BIND_POINT_GRAPHICS,
+		m_active_pipeline_texture_layout,
+		0,
+		1,
+		descriptor_set,
+		0,
+		nullptr);
 
 	vkCmdBindPipeline(*window->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, m_active_pipeline_texture);
 }
 
-vk::pipeline& rhr::render::component::pipeline::get_color_pipeline(const std::string& name) { return m_registered_pipelines["c_" + name]; }
+vk::pipeline& rhr::render::component::pipeline::get_color_pipeline(const std::string& name)
+{
+	return m_registered_pipelines["c_" + name];
+}
 
-vk::pipeline& rhr::render::component::pipeline::get_texture_pipeline(const std::string& name) { return m_registered_pipelines["t_" + name]; }
+vk::pipeline& rhr::render::component::pipeline::get_texture_pipeline(const std::string& name)
+{
+	return m_registered_pipelines["t_" + name];
+}
 
 void rhr::render::component::pipeline::register_paired_pipeline(
-	const std::string& name, const std::string& shader_color, const std::string& shader_texture, vk::cull_mode_flags cull_mode_flags)
+	const std::string& name,
+	const std::string& shader_color,
+	const std::string& shader_texture,
+	vk::cull_mode_flags cull_mode_flags)
 {
 	create_pipeline("c_" + name, shader_color, cull_mode_flags);
 	create_pipeline("t_" + name, shader_texture, cull_mode_flags);
 }
 
-void rhr::render::component::pipeline::create_pipeline(const std::string& name, const std::string& shader, vk::cull_mode_flags cull_mode_flags)
+void rhr::render::component::pipeline::create_pipeline(
+	const std::string& name, const std::string& shader, vk::cull_mode_flags cull_mode_flags)
 {
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
 
 	auto vert_shader_code = rhr::render::tools::read_file_bytes("res/shaders/" + shader + ".vert.spv");
 	auto frag_shader_code = rhr::render::tools::read_file_bytes("res/shaders/" + shader + ".frag.spv");
 
-	vk::shader_module vert_shader_module = rhr::render::tools::create_shader_module(*vert_shader_code, window->get_device());
-	vk::shader_module frag_shader_module = rhr::render::tools::create_shader_module(*frag_shader_code, window->get_device());
+	vk::shader_module vert_shader_module =
+		rhr::render::tools::create_shader_module(*vert_shader_code, window->get_device());
+	vk::shader_module frag_shader_module =
+		rhr::render::tools::create_shader_module(*frag_shader_code, window->get_device());
 
 	vk::pipeline_shader_stage_create_info vert_pipeline_shader_stage_create_info		= {};
 	vk::pipeline_shader_stage_create_info frag_pipeline_shader_stage_create_info		= {};
@@ -97,16 +127,18 @@ void rhr::render::component::pipeline::create_pipeline(const std::string& name, 
 	frag_pipeline_shader_stage_create_info.module = frag_shader_module;
 	frag_pipeline_shader_stage_create_info.pName  = "main";
 
-	std::array<vk::pipeline_shader_stage_create_info, 2> shader_stages = {vert_pipeline_shader_stage_create_info, frag_pipeline_shader_stage_create_info};
+	std::array<vk::pipeline_shader_stage_create_info, 2> shader_stages = {
+		vert_pipeline_shader_stage_create_info, frag_pipeline_shader_stage_create_info};
 
 	auto binding_description	= rhr::render::vertex::get_binding_description();
 	auto attribute_descriptions = rhr::render::vertex::get_attribute_description();
 
-	pipeline_vertex_input_state_create_info.sType							= VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-	pipeline_vertex_input_state_create_info.vertexBindingDescriptionCount	= 1;
-	pipeline_vertex_input_state_create_info.vertexAttributeDescriptionCount = static_cast<u32>(attribute_descriptions.size());
-	pipeline_vertex_input_state_create_info.pVertexBindingDescriptions		= &binding_description;
-	pipeline_vertex_input_state_create_info.pVertexAttributeDescriptions	= attribute_descriptions.data();
+	pipeline_vertex_input_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	pipeline_vertex_input_state_create_info.vertexBindingDescriptionCount = 1;
+	pipeline_vertex_input_state_create_info.vertexAttributeDescriptionCount =
+		static_cast<u32>(attribute_descriptions.size());
+	pipeline_vertex_input_state_create_info.pVertexBindingDescriptions	 = &binding_description;
+	pipeline_vertex_input_state_create_info.pVertexAttributeDescriptions = attribute_descriptions.data();
 
 	input_assembly.sType				  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	input_assembly.topology				  = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
@@ -145,8 +177,9 @@ void rhr::render::component::pipeline::create_pipeline(const std::string& name, 
 	multisampling.sampleShadingEnable  = VK_FALSE;
 	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-	color_blend_attachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	color_blend_attachment.blendEnable	  = VK_TRUE;
+	color_blend_attachment.colorWriteMask =
+		VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+	color_blend_attachment.blendEnable = VK_TRUE;
 
 	color_blend_attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 	color_blend_attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
@@ -189,7 +222,8 @@ void rhr::render::component::pipeline::create_pipeline(const std::string& name, 
 
 	vk::pipeline pipeline;
 
-	if (vkCreateGraphicsPipelines(*window->get_device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline) != VK_SUCCESS)
+	if (vkCreateGraphicsPipelines(*window->get_device(), VK_NULL_HANDLE, 1, &pipeline_info, nullptr, &pipeline)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create graphics pipeline");
 
 	m_registered_pipelines[name] = pipeline;

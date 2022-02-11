@@ -21,9 +21,15 @@ public:
 		, Supported_LINUX(false)
 	{}
 
-	void SupportWIN() { Supported_WIN = true; }
+	void SupportWIN()
+	{
+		Supported_WIN = true;
+	}
 
-	void SupportLINUX() { Supported_LINUX = true; }
+	void SupportLINUX()
+	{
+		Supported_LINUX = true;
+	}
 
 	std::string FileName;
 	esp::mod::data* Data;

@@ -112,19 +112,40 @@ void cap::registration::unregister_execution_thread(cap::execution_thread* thr, 
 	}
 }
 
-void cap::registration::set_function_main(u64 main) { m_function_main = main; }
+void cap::registration::set_function_main(u64 main)
+{
+	m_function_main = main;
+}
 
-void cap::registration::set_function_call_count(u64* function_call_count) { m_function_call_count = function_call_count; }
+void cap::registration::set_function_call_count(u64* function_call_count)
+{
+	m_function_call_count = function_call_count;
+}
 
-void cap::registration::set_function_total_count(u64 function_total_count) { m_function_total_count = function_total_count; }
+void cap::registration::set_function_total_count(u64 function_total_count)
+{
+	m_function_total_count = function_total_count;
+}
 
-void cap::registration::set_calls(cap::execution_thread::function_stack_list calls) { m_calls = calls; }
+void cap::registration::set_calls(cap::execution_thread::function_stack_list calls)
+{
+	m_calls = calls;
+}
 
-void cap::registration::set_data(cap::mod::block::data** data) { m_data = data; }
+void cap::registration::set_data(cap::mod::block::data** data)
+{
+	m_data = data;
+}
 
-void cap::registration::set_blocks(cap::mod::block::block*** blocks) { m_blocks = blocks; }
+void cap::registration::set_blocks(cap::mod::block::block*** blocks)
+{
+	m_blocks = blocks;
+}
 
-void cap::registration::set_debug(bool debug_build) { m_debug_build = debug_build; }
+void cap::registration::set_debug(bool debug_build)
+{
+	m_debug_build = debug_build;
+}
 
 void cap::registration::set_super(u8* super, i64* super_data, void* super_mutex)
 {
@@ -164,19 +185,40 @@ void cap::registration::end_all(cap::mod::block::pass* whitelist)
 	}
 }
 
-void cap::registration::stop() { m_stop = true; }
+void cap::registration::stop()
+{
+	m_stop = true;
+}
 
-std::atomic<bool>& cap::registration::get_util_finished() { return m_util_finished; }
+std::atomic<bool>& cap::registration::get_util_finished()
+{
+	return m_util_finished;
+}
 
-std::atomic<bool>& cap::registration::get_stop() { return m_stop; }
+std::atomic<bool>& cap::registration::get_stop()
+{
+	return m_stop;
+}
 
-u64* cap::registration::get_function_call_count() { return m_function_call_count; }
+u64* cap::registration::get_function_call_count()
+{
+	return m_function_call_count;
+}
 
-u64 cap::registration::get_function_total_count() { return m_function_total_count; }
+u64 cap::registration::get_function_total_count()
+{
+	return m_function_total_count;
+}
 
-cap::execution_thread::function_stack_list cap::registration::get_calls() { return m_calls; }
+cap::execution_thread::function_stack_list cap::registration::get_calls()
+{
+	return m_calls;
+}
 
-void cap::registration::set_util_return_finished(bool finished) { m_util_return_finished = finished; }
+void cap::registration::set_util_return_finished(bool finished)
+{
+	m_util_return_finished = finished;
+}
 
 void cap::registration::run_utility_tick()
 {
@@ -403,23 +445,50 @@ bool cap::registration::is_all_done()
 	*/
 }
 
-const std::vector<f64*>& cap::registration::get_real_template() { return m_variable_real_template; }
+const std::vector<f64*>& cap::registration::get_real_template()
+{
+	return m_variable_real_template;
+}
 
-const std::vector<bool*>& cap::registration::get_bool_template() { return m_variable_bool_template; }
+const std::vector<bool*>& cap::registration::get_bool_template()
+{
+	return m_variable_bool_template;
+}
 
-const std::vector<std::string*>& cap::registration::get_string_template() { return m_variable_string_template; }
+const std::vector<std::string*>& cap::registration::get_string_template()
+{
+	return m_variable_string_template;
+}
 
-const std::vector<u64>* cap::registration::get_real_count() { return &m_variable_real_count; }
+const std::vector<u64>* cap::registration::get_real_count()
+{
+	return &m_variable_real_count;
+}
 
-const std::vector<u64>* cap::registration::get_bool_count() { return &m_variable_bool_count; }
+const std::vector<u64>* cap::registration::get_bool_count()
+{
+	return &m_variable_bool_count;
+}
 
-const std::vector<u64>* cap::registration::get_string_count() { return &m_variable_string_count; }
+const std::vector<u64>* cap::registration::get_string_count()
+{
+	return &m_variable_string_count;
+}
 
-std::mutex* cap::registration::get_custom_mutex() { return &m_custom_register_mutex; }
+std::mutex* cap::registration::get_custom_mutex()
+{
+	return &m_custom_register_mutex;
+}
 
-std::vector<void*>* cap::registration::get_custom_registry() { return &m_custom_register; }
+std::vector<void*>* cap::registration::get_custom_registry()
+{
+	return &m_custom_register;
+}
 
-cap::mod::block::data** cap::registration::get_data() { return m_data; }
+cap::mod::block::data** cap::registration::get_data()
+{
+	return m_data;
+}
 
 bool cap::registration::global_pre(cap::preprocessor_data& data)
 {
@@ -579,7 +648,8 @@ bool cap::registration::init(cap::preprocessor_data& pre_data, cap::mod::block::
 	{
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
-			std::vector<std::pair<cap::mod::block::block::data_initialization, u16>> init_stages = m_blocks[i][a]->get_runtime_stages();
+			std::vector<std::pair<cap::mod::block::block::data_initialization, u16>> init_stages =
+				m_blocks[i][a]->get_runtime_stages();
 
 			for (u64 b = 0; b < init_stages.size(); b++)
 			{
@@ -611,7 +681,8 @@ bool cap::registration::init(cap::preprocessor_data& pre_data, cap::mod::block::
 
 			if (!stages[i][a](pre_data, block_data[stage_stack_idx[i][a]][stage_block_idx[i][a]]))
 			{
-				cap::logger::error(cap::logger::level::EDITOR, "failed on initialization of stage \"" + std::to_string(i) + "\"");
+				cap::logger::error(
+					cap::logger::level::EDITOR, "failed on initialization of stage \"" + std::to_string(i) + "\"");
 				return false;
 			}
 		}
@@ -747,7 +818,8 @@ void cap::registration::compile_data_debug()
 	std::vector<std::vector<cap::mod::block::data::interpretation>> temp_regsitry_types;
 	std::vector<std::vector<void*>> temp_regsitry_values;
 
-	auto add_to_registry = [&](const std::string& name, u64 idx, const cap::mod::block::data::interpretation& interp, void* use = nullptr)
+	auto add_to_registry =
+		[&](const std::string& name, u64 idx, const cap::mod::block::data::interpretation& interp, void* use = nullptr)
 	{
 		for (u64 i = 0; i < m_variable_registry[idx].size(); i++)
 		{
@@ -780,9 +852,10 @@ void cap::registration::compile_data_debug()
 
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
-			const std::vector<void*>& data											  = m_data[i][a].get_data();
-			const std::vector<cap::mod::block::data::type>& types					  = m_data[i][a].get_types();
-			const std::vector<cap::mod::block::data::interpretation>& interpretations = m_data[i][a].get_interpretations();
+			const std::vector<void*>& data						  = m_data[i][a].get_data();
+			const std::vector<cap::mod::block::data::type>& types = m_data[i][a].get_types();
+			const std::vector<cap::mod::block::data::interpretation>& interpretations =
+				m_data[i][a].get_interpretations();
 
 			std::vector<u64>* hauled_variables_block = new std::vector<u64>();
 
@@ -809,7 +882,9 @@ void cap::registration::compile_data_debug()
 						}
 
 						if (!found)
-							cap::logger::warn(cap::logger::level::EDITOR, "*any* variable \"" + *(std::string*)data[b] + "\" was not found");
+							cap::logger::warn(
+								cap::logger::level::EDITOR,
+								"*any* variable \"" + *(std::string*)data[b] + "\" was not found");
 					}
 					else
 					{
@@ -823,11 +898,23 @@ void cap::registration::compile_data_debug()
 					sprintf(buffer, "_R_%lu_%lu_%lu", i, a, b);
 
 					if (interpretations[b] == cap::mod::block::data::interpretation::REAL)
-						add_to_registry(std::string(buffer), i, cap::mod::block::data::interpretation::REAL, new f64(*(f64*)data[b]));
+						add_to_registry(
+							std::string(buffer),
+							i,
+							cap::mod::block::data::interpretation::REAL,
+							new f64(*(f64*)data[b]));
 					else if (interpretations[b] == cap::mod::block::data::interpretation::BOOL)
-						add_to_registry(std::string(buffer), i, cap::mod::block::data::interpretation::BOOL, new bool(*(bool*)data[b]));
+						add_to_registry(
+							std::string(buffer),
+							i,
+							cap::mod::block::data::interpretation::BOOL,
+							new bool(*(bool*)data[b]));
 					else if (interpretations[b] == cap::mod::block::data::interpretation::STRING)
-						add_to_registry(std::string(buffer), i, cap::mod::block::data::interpretation::STRING, new std::string(*(std::string*)data[b]));
+						add_to_registry(
+							std::string(buffer),
+							i,
+							cap::mod::block::data::interpretation::STRING,
+							new std::string(*(std::string*)data[b]));
 
 					hauled_variables_block->push_back(variable_idx);
 				}
@@ -854,19 +941,22 @@ void cap::registration::compile_data_debug()
 
 		for (u64 a = 0; a < m_variable_real_count[i]; a++)
 		{
-			if (temp_regsitry_values[i][a] != nullptr && temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::REAL)
+			if (temp_regsitry_values[i][a] != nullptr
+				&& temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::REAL)
 				m_variable_real_template.back()[a] = *(f64*)temp_regsitry_values[i][a];
 		}
 
 		for (u64 a = 0; a < m_variable_bool_count[i]; a++)
 		{
-			if (temp_regsitry_values[i][a] != nullptr && temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::BOOL)
+			if (temp_regsitry_values[i][a] != nullptr
+				&& temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::BOOL)
 				m_variable_bool_template.back()[a] = *(bool*)temp_regsitry_values[i][a];
 		}
 
 		for (u64 a = 0; a < m_variable_string_count[i]; a++)
 		{
-			if (temp_regsitry_values[i][a] != nullptr && temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::STRING)
+			if (temp_regsitry_values[i][a] != nullptr
+				&& temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::STRING)
 				m_variable_string_template.back()[a] = *(std::string*)temp_regsitry_values[i][a];
 		}
 
@@ -975,9 +1065,10 @@ void cap::registration::compile_data_release()
 
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
-			const std::vector<void*>& data											  = m_data[i][a].get_data();
-			const std::vector<cap::mod::block::data::type>& types					  = m_data[i][a].get_types();
-			const std::vector<cap::mod::block::data::interpretation>& interpretations = m_data[i][a].get_interpretations();
+			const std::vector<void*>& data						  = m_data[i][a].get_data();
+			const std::vector<cap::mod::block::data::type>& types = m_data[i][a].get_types();
+			const std::vector<cap::mod::block::data::interpretation>& interpretations =
+				m_data[i][a].get_interpretations();
 
 			std::vector<u64>* hauled_variables_block = new std::vector<u64>();
 
@@ -1040,7 +1131,8 @@ void cap::registration::compile_data_release()
 									if (temp_registry_string[c][d] == "_L_" + *(std::string*)data[b])
 									{
 										hauled_variables_block->push_back(c);
-										m_data[i][a].set_interpretation(cap::mod::block::data::interpretation::STRING, b);
+										m_data[i][a].set_interpretation(
+											cap::mod::block::data::interpretation::STRING, b);
 
 										found = true;
 										break;
@@ -1053,7 +1145,9 @@ void cap::registration::compile_data_release()
 						}
 
 						if (!found)
-							cap::logger::warn(cap::logger::level::EDITOR, "*any* variable \"" + *(std::string*)data[b] + "\" was not found");
+							cap::logger::warn(
+								cap::logger::level::EDITOR,
+								"*any* variable \"" + *(std::string*)data[b] + "\" was not found");
 					}
 					else
 					{

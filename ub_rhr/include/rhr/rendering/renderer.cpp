@@ -31,7 +31,8 @@ vk::device_memory depthImageMemory;
 void rhr::render::renderer::initialize_window()
 {
 	glfwInit();
-	m_window_primary = std::make_unique<rhr::render::component::window>(std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720));
+	m_window_primary = std::make_unique<rhr::render::component::window>(
+		std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720));
 }
 
 void rhr::render::renderer::initialize()
@@ -42,10 +43,10 @@ void rhr::render::renderer::initialize()
 	m_window_primary->initialize_components();
 
 	VmaAllocatorCreateInfo allocator_info = {};
-	allocator_info.vulkanApiVersion = VK_API_VERSION_1_0;
-	allocator_info.physicalDevice = *m_window_primary->get_physical_device();
-	allocator_info.device = *m_window_primary->get_device();
-	allocator_info.instance = *m_window_primary->get_instance();
+	allocator_info.vulkanApiVersion		  = VK_API_VERSION_1_0;
+	allocator_info.physicalDevice		  = *m_window_primary->get_physical_device();
+	allocator_info.device				  = *m_window_primary->get_device();
+	allocator_info.instance				  = *m_window_primary->get_instance();
 
 	vmaCreateAllocator(&allocator_info, &vma_allocator);
 
@@ -67,7 +68,8 @@ void rhr::render::renderer::initialize()
 	ImGui::StyleColorsDark();
 	// ImGui::StyleColorsClassic();
 
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
+	// ones.
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
@@ -150,7 +152,10 @@ void rhr::render::renderer::initialize()
 #endif
 }
 
-std::unique_ptr<rhr::render::component::window>& rhr::render::renderer::get_window_primary() { return m_window_primary; }
+std::unique_ptr<rhr::render::component::window>& rhr::render::renderer::get_window_primary()
+{
+	return m_window_primary;
+}
 
 void rhr::render::renderer::reload_swapchain()
 {
@@ -166,7 +171,8 @@ void rhr::render::renderer::reload_swapchain()
 	vkDeviceWaitIdle(*m_window_primary->get_device());
 
 	cap::logger::info(cap::logger::level::SYSTEM, "recreating swapchain...");
-	cap::logger::info(cap::logger::level::SYSTEM, "framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
+	cap::logger::info(
+		cap::logger::level::SYSTEM, "framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
 
 	m_window_primary->recreate_swapchain();
 	initialize_imgui(false);
@@ -181,7 +187,10 @@ void rhr::render::renderer::reload_swapchain()
 	VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
 
 	if (err != VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to idle device during swapchain reload; vulkan error code: " + std::to_string(static_cast<i32>(err)));
+		cap::logger::fatal(
+			cap::logger::level::SYSTEM,
+			"failed to idle device during swapchain reload; vulkan error code: "
+				+ std::to_string(static_cast<i32>(err)));
 
 	rhr::stack::plane::primary_plane->reload_swap_chain();
 	rhr::stack::plane::toolbar_plane->reload_swap_chain();
@@ -198,12 +207,13 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 	(void)io;
 	ImGuiStyle& style = ImGui::GetStyle();
 
-	rhr::render::tools::swap_chain_support_details swap_chain_support =
-		rhr::render::tools::query_swap_chain_support(m_window_primary->get_physical_device(), m_window_primary->get_surface());
+	rhr::render::tools::swap_chain_support_details swap_chain_support = rhr::render::tools::query_swap_chain_support(
+		m_window_primary->get_physical_device(), m_window_primary->get_surface());
 	u8 image_count = m_window_primary->get_framebuffer_count();
 
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(m_window_primary->get_physical_device(), m_window_primary->get_surface());
-	std::set<u32> unique_queue_families				 = {indices.graphics_family.value(), indices.present_family.value()};
+	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(
+		m_window_primary->get_physical_device(), m_window_primary->get_surface());
+	std::set<u32> unique_queue_families = {indices.graphics_family.value(), indices.present_family.value()};
 
 	if (first_time)
 	{
@@ -261,7 +271,8 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 		.CheckVkResultFn = [](VkResult result)
 		{
 			if (result != VK_SUCCESS)
-				cap::logger::fatal(cap::logger::level::SYSTEM, "imgui fatal error: " + std::to_string(static_cast<i32>(result)));
+				cap::logger::fatal(
+					cap::logger::level::SYSTEM, "imgui fatal error: " + std::to_string(static_cast<i32>(result)));
 		}};
 
 	if (first_time)
@@ -325,17 +336,17 @@ void rhr::render::renderer::process_dirty()
 {
 	std::unique_lock lock(m_dirty_mutex);
 
-	//for (const auto& renderable : m_dirty_renderable)
+	// for (const auto& renderable : m_dirty_renderable)
 	//{
 	//	if (auto object = renderable.lock())
 	//		object->update_buffers();
-	//}
+	// }
 
-	//for (const auto& ui : m_dirty_ui)
+	// for (const auto& ui : m_dirty_ui)
 	//{
 	//	if (auto object = ui.lock())
 	//		object->update_buffers();
-	//}
+	// }
 
 	m_dirty_renderable.clear();
 	m_dirty_ui.clear();
@@ -343,14 +354,26 @@ void rhr::render::renderer::process_dirty()
 
 void rhr::render::renderer::render_pass_setup()
 {
-	rhr::render::renderer::ui_projection_matrix =
-		glm::ortho(0.0f, static_cast<f32>(m_window_primary->get_window_size().x), 0.0f, static_cast<f32>(m_window_primary->get_window_size().y), -10000.0f, 10000.0f);
+	rhr::render::renderer::ui_projection_matrix = glm::ortho(
+		0.0f,
+		static_cast<f32>(m_window_primary->get_window_size().x),
+		0.0f,
+		static_cast<f32>(m_window_primary->get_window_size().y),
+		-10000.0f,
+		10000.0f);
 
-	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
-	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+	VkSemaphore image_acquired_semaphore =
+		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
+	VkSemaphore render_complete_semaphore =
+		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 	// cap::logger::info("vkAcquireNextImageKHR");
-	VkResult err =
-		vkAcquireNextImageKHR(*m_window_primary->get_device(), imgui_local->data.Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &imgui_local->data.FrameIndex);
+	VkResult err = vkAcquireNextImageKHR(
+		*m_window_primary->get_device(),
+		imgui_local->data.Swapchain,
+		UINT64_MAX,
+		image_acquired_semaphore,
+		VK_NULL_HANDLE,
+		&imgui_local->data.FrameIndex);
 
 	if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
 	{
@@ -364,7 +387,12 @@ void rhr::render::renderer::render_pass_setup()
 
 	// frame sync
 
-	err = vkWaitForFences(*m_window_primary->get_device(), 1, &fd->Fence, VK_TRUE, UINT64_MAX); // wait indefinitely instead of periodically checking
+	err = vkWaitForFences(
+		*m_window_primary->get_device(),
+		1,
+		&fd->Fence,
+		VK_TRUE,
+		UINT64_MAX); // wait indefinitely instead of periodically checking
 	check_vk_result(err);
 
 	err = vkResetFences(*m_window_primary->get_device(), 1, &fd->Fence);
@@ -380,8 +408,10 @@ void rhr::render::renderer::render_pass_setup()
 	};
 	//	clear_values[1].depthStencil = { 1.0f, 0 };
 
-	//	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
-	//	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+	//	VkSemaphore image_acquired_semaphore  =
+	// imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore; 	VkSemaphore
+	// render_complete_semaphore =
+	// imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 
 	//	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
 
@@ -407,7 +437,7 @@ void rhr::render::renderer::render_pass_setup()
 	for (auto& grid_object : grid_objects)
 		grid_object->update_buffers();
 
-	//process_dirty();
+	// process_dirty();
 }
 
 void rhr::render::renderer::render_pass_master()
@@ -422,8 +452,10 @@ void rhr::render::renderer::render_pass_master()
 
 	ImGui_ImplVulkanH_Frame* fd = &imgui_local->data.Frames[imgui_local->data.FrameIndex];
 
-	VkSemaphore image_acquired_semaphore  = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
-	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+	VkSemaphore image_acquired_semaphore =
+		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
+	VkSemaphore render_complete_semaphore =
+		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 #if 0
 	{
 		// close out panel frame buffer
@@ -471,12 +503,14 @@ void rhr::render::renderer::render_pass_master()
 		info.clearValueCount		  = clear_values.size();
 		info.pClearValues			  = clear_values.data();
 
-		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
+		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+		// rhr::render::pipeline::ui_texture_pipeline);
 
 		vkCmdBeginRenderPass(*m_window_primary->get_active_command_buffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
 		ImGui_ImplVulkan_RenderDrawData(imgui_draw_data, *m_window_primary->get_active_command_buffer());
 
-		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS, rhr::render::pipeline::ui_texture_pipeline);
+		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
+		// rhr::render::pipeline::ui_texture_pipeline);
 
 		rhr::render::panel::run_master_render_pass();
 
@@ -514,7 +548,8 @@ void rhr::render::renderer::render_pass_master()
 
 void rhr::render::renderer::frame_present()
 {
-	VkSemaphore render_complete_semaphore = imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
+	VkSemaphore render_complete_semaphore =
+		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
 
 	VkPresentInfoKHR info	= {};
 	info.sType				= VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

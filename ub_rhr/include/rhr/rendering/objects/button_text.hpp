@@ -13,7 +13,11 @@ class button_text : public rhr::render::object::button
 {
 public:
 	///
-	button_text(const cap::color& primary_color, const cap::color& secondary_color, const std::string& text, glm::vec<2, i32>* plane_offset);
+	button_text(
+		const cap::color& primary_color,
+		const cap::color& secondary_color,
+		const std::string& text,
+		glm::vec<2, i32>* plane_offset);
 
 private:
 	///

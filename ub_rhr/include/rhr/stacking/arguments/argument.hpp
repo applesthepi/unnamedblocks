@@ -24,7 +24,10 @@ public:
 	};
 
 	///
-	argument(const cap::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset);
+	argument(
+		const cap::color& block_color,
+		std::function<void()>* function_collection_update,
+		glm::vec<2, i32>* plane_offset);
 
 	/// Sets data. Data of the argument is stored as a string.
 	/// \param Data to set the argument to.

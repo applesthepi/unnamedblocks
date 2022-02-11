@@ -23,7 +23,9 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 {
 	if (size < 2 || size > 1000)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "size to big; error processing font \"" + font_path + "\" of size \"" + std::to_string(size) + "\"");
+		cap::logger::error(
+			cap::logger::level::SYSTEM,
+			"size to big; error processing font \"" + font_path + "\" of size \"" + std::to_string(size) + "\"");
 		return;
 	}
 
@@ -51,14 +53,16 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 	error = FT_New_Face(local_map->library, font_path.c_str(), 0, &font_texture_data.face);
 	if (error)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to init freetype font \"" + std::to_string(error) + "\"");
+		cap::logger::error(
+			cap::logger::level::SYSTEM, "failed to init freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
 	error = FT_Set_Pixel_Sizes(font_texture_data.face, 0, size);
 	if (error)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
+		cap::logger::error(
+			cap::logger::level::SYSTEM, "failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
@@ -144,8 +148,9 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 	{
 		for (u16 x = 0; x < image_side_length; x++)
 		{
-			u8* texture_sheet_char = texture_sheet + (x * highest_width * 4) + (y * image_side_length * highest_width * highest_height * 4);
-			u16 char_idx		   = y * image_side_length + x;
+			u8* texture_sheet_char =
+				texture_sheet + (x * highest_width * 4) + (y * image_side_length * highest_width * highest_height * 4);
+			u16 char_idx = y * image_side_length + x;
 
 			if (char_idx >= char_sizes.size())
 				continue;
@@ -154,12 +159,18 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 				static_cast<f32>(x * highest_width) / static_cast<f32>(image_side_length * highest_width),
 				static_cast<f32>(y * highest_height) / static_cast<f32>(image_side_length * highest_height)};
 			glm::vec<2, f32> second = {
-				static_cast<f32>(x * highest_width + char_sizes[char_idx].x) / static_cast<f32>(image_side_length * highest_width),
-				static_cast<f32>(y * highest_height + char_sizes[char_idx].y) / static_cast<f32>(image_side_length * highest_height)};
-			font_texture_data.char_map[chars[char_idx]] = {first, second, char_sizes[char_idx], char_offsets[char_idx], char_advances[char_idx]};
+				static_cast<f32>(x * highest_width + char_sizes[char_idx].x)
+					/ static_cast<f32>(image_side_length * highest_width),
+				static_cast<f32>(y * highest_height + char_sizes[char_idx].y)
+					/ static_cast<f32>(image_side_length * highest_height)};
+			font_texture_data.char_map[chars[char_idx]] = {
+				first, second, char_sizes[char_idx], char_offsets[char_idx], char_advances[char_idx]};
 
 			for (u16 cy = 0; cy < char_sizes[char_idx].y; cy++)
-				memcpy(texture_sheet_char + (cy * image_side_length * highest_width * 4), char_images[char_idx] + (cy * char_sizes[char_idx].x * 4), char_sizes[char_idx].x * 4);
+				memcpy(
+					texture_sheet_char + (cy * image_side_length * highest_width * 4),
+					char_images[char_idx] + (cy * char_sizes[char_idx].x * 4),
+					char_sizes[char_idx].x * 4);
 		}
 	}
 
@@ -186,8 +197,10 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 	std::cout << std::flush;
 #endif
 
-	font_texture_data.image =
-		rhr::render::tools::create_texture_image({image_side_length * highest_width, image_side_length * highest_height}, texture_sheet, &font_texture_data.memory);
+	font_texture_data.image = rhr::render::tools::create_texture_image(
+		{image_side_length * highest_width, image_side_length * highest_height},
+		texture_sheet,
+		&font_texture_data.memory);
 
 	local_map->map[type] = font_texture_data;
 	if (!found)
@@ -213,7 +226,8 @@ rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_textu
 	{
 		if (font->texture_size == size)
 		{
-			cap::logger::info(cap::logger::level::SYSTEM, "successfuly generated char texture of size: " + std::to_string(size));
+			cap::logger::info(
+				cap::logger::level::SYSTEM, "successfuly generated char texture of size: " + std::to_string(size));
 			return font;
 		}
 	}

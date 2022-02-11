@@ -8,8 +8,12 @@
 #include "rhr/stacking/arguments/string.hpp"
 #include "rhr/stacking/arguments/text.hpp"
 
-#define BLOCK_SET_DATA_ERROR_MISSING(field) ("failed to set data for block. " + std::string(field) + " does not exist in the data provided to the block. The information is unchanged for this block.")
-#define BLOCK_SET_DATA_ERROR_TYPE(field)    ("failed to set data for block. " + std::string(field) + " is not the expected type. The information is unchanged for this block.")
+#define BLOCK_SET_DATA_ERROR_MISSING(field)                \
+	("failed to set data for block. " + std::string(field) \
+	 + " does not exist in the data provided to the block. The information is unchanged for this block.")
+#define BLOCK_SET_DATA_ERROR_TYPE(field)                   \
+	("failed to set data for block. " + std::string(field) \
+	 + " is not the expected type. The information is unchanged for this block.")
 
 static void block_update(void* data)
 {
@@ -29,7 +33,8 @@ rhr::stack::block::block(const std::string& unlocalized_name, glm::vec<2, i32>* 
 		(*m_function_stack_update)();
 	};
 
-	m_mod_category = rhr::registry::block::get_registry().get_categories(m_mod_block->get_category())->category_mod_category;
+	m_mod_category =
+		rhr::registry::block::get_registry().get_categories(m_mod_block->get_category())->category_mod_category;
 	m_background->set_offset(plane_offset);
 	m_background->set_color(m_mod_category->get_color() /*cap::color().from_u8({ 200, 200, 200, 0 })*/);
 	m_background->set_depth(rhr::render::renderer::depth_block);
@@ -88,13 +93,18 @@ void rhr::stack::block::set_data(const std::string& data)
 
 	if (document.HasParseError())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the block.");
+		cap::logger::error(
+			cap::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the block.");
 		return;
 	}
 
 	if (!document.IsObject())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "data provided to the block is not an object that can be parsed.");
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			__FILE__,
+			__LINE__,
+			"data provided to the block is not an object that can be parsed.");
 		return;
 	}
 
@@ -114,7 +124,11 @@ void rhr::stack::block::set_data(const std::string& data)
 
 	if (v_args.Size() != m_arguments.size())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "data provided to the block has a different argument count.");
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			__FILE__,
+			__LINE__,
+			"data provided to the block has a different argument count.");
 		return;
 	}
 
@@ -128,7 +142,7 @@ void rhr::stack::block::set_data(const std::string& data)
 			return;
 		}
 
-		const char* local_arg = v_arg.GetString();
+		const char* local_arg		 = v_arg.GetString();
 		std::string string_local_arg = std::move(std::string(local_arg));
 		m_arguments[static_cast<usize>(i)]->set_data_compact(string_local_arg);
 	}
@@ -136,15 +150,27 @@ void rhr::stack::block::set_data(const std::string& data)
 	update_width();
 }
 
-const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::get_arguments() { return m_arguments; }
+const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::get_arguments()
+{
+	return m_arguments;
+}
 
-u32 rhr::stack::block::get_width() { return m_width; }
+u32 rhr::stack::block::get_width()
+{
+	return m_width;
+}
 
-const cap::mod::block::block* rhr::stack::block::get_mod_block() { return m_mod_block; }
+const cap::mod::block::block* rhr::stack::block::get_mod_block()
+{
+	return m_mod_block;
+}
 
-const esp::mod::category* rhr::stack::block::get_mod_category() { return m_mod_category; }
-i16 rhr::stack::block::padding		  = 2;
-i16 rhr::stack::block::height		  = 20;
+const esp::mod::category* rhr::stack::block::get_mod_category()
+{
+	return m_mod_category;
+}
+i16 rhr::stack::block::padding = 2;
+i16 rhr::stack::block::height  = 20;
 
 i16 rhr::stack::block::height_content = height - (padding * 2);
 
@@ -172,7 +198,8 @@ void rhr::stack::block::ui_reload_swap_chain()
 		arg->reload_swap_chain();
 }
 
-void rhr::stack::block::ui_update_buffers() {}
+void rhr::stack::block::ui_update_buffers()
+{}
 
 void rhr::stack::block::ui_chain_update_buffers()
 {
@@ -195,8 +222,9 @@ void rhr::stack::block::update_arguments()
 
 	std::vector<cap::mod::block::block::argument::initializer> argument_init = m_mod_block->get_arguments();
 
-	u32 width			 = 0;
-	cap::color arg_color = cap::color().from_normalized(m_mod_category->get_color().get_normalized_scaled(0.25f, false));
+	u32 width = 0;
+	cap::color arg_color =
+		cap::color().from_normalized(m_mod_category->get_color().get_normalized_scaled(0.25f, false));
 
 	std::shared_ptr<rhr::stack::argument::argument> last_arg;
 
@@ -204,7 +232,8 @@ void rhr::stack::block::update_arguments()
 	{
 		if (argument_init[i].get_type() == cap::mod::block::block::argument::type::TEXT)
 		{
-			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(arg_color, &m_function_block_update, m_plane_offset);
+			std::shared_ptr<rhr::stack::argument::text> arg =
+				std::make_shared<rhr::stack::argument::text>(arg_color, &m_function_block_update, m_plane_offset);
 
 			m_arguments.push_back(arg);
 			last_arg = arg;
@@ -212,14 +241,15 @@ void rhr::stack::block::update_arguments()
 			pad_arguments(width, i, last_arg, arg);
 
 			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
-			arg->set_position_local_physical({ width, rhr::stack::block::padding }, true);
+			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
 			arg->set_data(argument_init[i].get_default_value());
 			arg->set_mode(argument_init[i].get_mode());
 			arg->set_mode_restriction(argument_init[i].get_restriction());
 		}
 		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::REAL)
 		{
-			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(arg_color, &m_function_block_update, m_plane_offset);
+			std::shared_ptr<rhr::stack::argument::real> arg =
+				std::make_shared<rhr::stack::argument::real>(arg_color, &m_function_block_update, m_plane_offset);
 
 			m_arguments.push_back(arg);
 			last_arg = arg;
@@ -234,7 +264,8 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::STRING)
 		{
-			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(arg_color, &m_function_block_update, m_plane_offset);
+			std::shared_ptr<rhr::stack::argument::string> arg =
+				std::make_shared<rhr::stack::argument::string>(arg_color, &m_function_block_update, m_plane_offset);
 
 			m_arguments.push_back(arg);
 			last_arg = arg;
@@ -249,7 +280,8 @@ void rhr::stack::block::update_arguments()
 		}
 		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::BOOL)
 		{
-			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(arg_color, &m_function_block_update, m_plane_offset);
+			std::shared_ptr<rhr::stack::argument::boolean> arg =
+				std::make_shared<rhr::stack::argument::boolean>(arg_color, &m_function_block_update, m_plane_offset);
 
 			m_arguments.push_back(arg);
 
@@ -300,10 +332,17 @@ bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 	return false;
 }
 
-void rhr::stack::block::set_stack_update_function(std::function<void()>* function_stack_update) { m_function_stack_update = function_stack_update; }
+void rhr::stack::block::set_stack_update_function(std::function<void()>* function_stack_update)
+{
+	m_function_stack_update = function_stack_update;
+}
 
 void rhr::stack::block::pad_arguments(
-	u32& width, usize i, const std::shared_ptr<rhr::stack::argument::argument>& last_arg, const std::shared_ptr<rhr::stack::argument::argument>& arg, bool last)
+	u32& width,
+	usize i,
+	const std::shared_ptr<rhr::stack::argument::argument>& last_arg,
+	const std::shared_ptr<rhr::stack::argument::argument>& arg,
+	bool last)
 {
 	static const u32 full_padding = rhr::stack::argument::argument::padding;
 	static const u32 no_padding	  = rhr::stack::block::padding;

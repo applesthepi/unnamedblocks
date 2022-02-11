@@ -110,7 +110,8 @@ private:
 	void drag_collection(std::shared_ptr<rhr::stack::collection> collection, bool up);
 
 	///
-	void drag_stack(std::shared_ptr<rhr::stack::collection> collection, std::shared_ptr<rhr::stack::stack> stack, bool up);
+	void
+	drag_stack(std::shared_ptr<rhr::stack::collection> collection, std::shared_ptr<rhr::stack::stack> stack, bool up);
 
 	///
 	void undrag(const glm::vec<2, i32>& position);
@@ -140,7 +141,8 @@ private:
 	bool m_dragging_up;
 
 	///
-	void set_snap(std::weak_ptr<rhr::stack::collection> collection, u64 stackLoc, std::weak_ptr<rhr::stack::stack> stack);
+	void
+	set_snap(std::weak_ptr<rhr::stack::collection> collection, u64 stackLoc, std::weak_ptr<rhr::stack::stack> stack);
 
 	///
 	void clear_snap();

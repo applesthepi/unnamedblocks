@@ -5,10 +5,15 @@
 
 #define ARG_REAL_DECORE_WIDTH 6
 
-rhr::stack::argument::real::real(const cap::color& color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
+rhr::stack::argument::real::real(
+	const cap::color& color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
 	: rhr::stack::argument::argument(color, function_collection_update, plane_offset)
 	, m_text(std::make_shared<rhr::render::object::text>(
-		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true, plane_offset))
+		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL,
+		  rhr::stack::block::height_content,
+		  false,
+		  true,
+		  plane_offset))
 	, m_decor_left_top(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_left_bottom(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right_top(std::make_shared<rhr::render::object::object>(true))
@@ -46,11 +51,20 @@ rhr::stack::argument::real::real(const cap::color& color, std::function<void()>*
 	m_text->set_mouse_button(m_mouse_button);
 }
 
-cap::mod::block::block::argument::type rhr::stack::argument::real::get_type() { return cap::mod::block::block::argument::type::REAL; }
+cap::mod::block::block::argument::type rhr::stack::argument::real::get_type()
+{
+	return cap::mod::block::block::argument::type::REAL;
+}
 
-u32 rhr::stack::argument::real::get_width() { return m_text->get_size_local().x + (2 * ARG_REAL_DECORE_WIDTH); }
+u32 rhr::stack::argument::real::get_width()
+{
+	return m_text->get_size_local().x + (2 * ARG_REAL_DECORE_WIDTH);
+}
 
-bool rhr::stack::argument::real::has_data() { return true; }
+bool rhr::stack::argument::real::has_data()
+{
+	return true;
+}
 
 void rhr::stack::argument::real::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
@@ -99,24 +113,43 @@ void rhr::stack::argument::real::ui_update_buffers()
 	if (m_mode == cap::mod::block::block::argument::variable_mode::VAR)
 		use_color = cap::color().from_u8({100, 0, 40, 255});
 
-	vertices[0] = rhr::render::vertex({static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[0] =
+		rhr::render::vertex({static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0}, use_color.get_normalized(), {0.0f, 0.0f});
 	vertices[1] = rhr::render::vertex({0, 0, 0}, use_color.get_normalized(), {0.0f, 0.0f});
-	vertices[2] =
-		rhr::render::vertex({static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[2] = rhr::render::vertex(
+		{static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0},
+		use_color.get_normalized(),
+		{0.0f, 0.0f});
 
-	vertices[3] =
-		rhr::render::vertex({static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0}, use_color.get_normalized(), {0.0f, 0.0f});
-	vertices[4] = rhr::render::vertex({0, static_cast<f32>(rhr::stack::block::height_content), 0}, use_color.get_normalized(), {0.0f, 0.0f});
-	vertices[5] = rhr::render::vertex({static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[3] = rhr::render::vertex(
+		{static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content / 2), 0},
+		use_color.get_normalized(),
+		{0.0f, 0.0f});
+	vertices[4] = rhr::render::vertex(
+		{0, static_cast<f32>(rhr::stack::block::height_content), 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[5] = rhr::render::vertex(
+		{static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0},
+		use_color.get_normalized(),
+		{0.0f, 0.0f});
 
 	vertices[6] = rhr::render::vertex({other_side, 0, 0}, use_color.get_normalized(), {0.0f, 0.0f});
-	vertices[7] = rhr::render::vertex({other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0}, use_color.get_normalized(), {0.0f, 0.0f});
-	vertices[8] = rhr::render::vertex({other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[7] = rhr::render::vertex(
+		{other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), 0, 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[8] = rhr::render::vertex(
+		{other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0},
+		use_color.get_normalized(),
+		{0.0f, 0.0f});
 
-	vertices[9]	 = rhr::render::vertex({other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0}, use_color.get_normalized(), {0.0f, 0.0f});
+	vertices[9] = rhr::render::vertex(
+		{other_side, static_cast<f32>(rhr::stack::block::height_content / 2), 0},
+		use_color.get_normalized(),
+		{0.0f, 0.0f});
 	vertices[10] = rhr::render::vertex(
-		{other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0}, use_color.get_normalized(), {0.0f, 0.0f});
-	vertices[11] = rhr::render::vertex({other_side, static_cast<f32>(rhr::stack::block::height_content), 0}, use_color.get_normalized(), {0.0f, 0.0f});
+		{other_side + static_cast<f32>(ARG_REAL_DECORE_WIDTH), static_cast<f32>(rhr::stack::block::height_content), 0},
+		use_color.get_normalized(),
+		{0.0f, 0.0f});
+	vertices[11] = rhr::render::vertex(
+		{other_side, static_cast<f32>(rhr::stack::block::height_content), 0}, use_color.get_normalized(), {0.0f, 0.0f});
 
 	m_decor_left_top->update_vertices(vertices + 0, 3, true);
 	m_decor_left_bottom->update_vertices(vertices + 3, 3, true);
@@ -125,23 +158,29 @@ void rhr::stack::argument::real::ui_update_buffers()
 }
 
 void rhr::stack::argument::real::ui_chain_update_buffers()
+{}
+
+void rhr::stack::argument::real::ui_frame_update(f64 delta_time)
+{}
+
+void rhr::stack::argument::real::on_set_data()
 {
-
+	m_text->set_text(m_data);
 }
-
-void rhr::stack::argument::real::ui_frame_update(f64 delta_time) {}
-
-void rhr::stack::argument::real::on_set_data() { m_text->set_text(m_data); }
 
 bool rhr::stack::argument::real::drag_bounds(glm::vec<2, i32> position)
 {
 	glm::vec<2, i32> arg_position = get_position_virtual_absolute();
 
 	return (
-		position.x > arg_position.x && position.x < arg_position.x + get_width() && position.y > arg_position.y && position.y < arg_position.y + rhr::stack::block::height_content);
+		position.x > arg_position.x && position.x < arg_position.x + get_width() && position.y > arg_position.y
+		&& position.y < arg_position.y + rhr::stack::block::height_content);
 }
 
-rhr::stack::argument::argument::padding_style rhr::stack::argument::real::get_padding_style() { return rhr::stack::argument::argument::padding_style::HARD; }
+rhr::stack::argument::argument::padding_style rhr::stack::argument::real::get_padding_style()
+{
+	return rhr::stack::argument::argument::padding_style::HARD;
+}
 
 void rhr::stack::argument::real::set_plane_offset(glm::vec<2, i32>* plane_offset)
 {

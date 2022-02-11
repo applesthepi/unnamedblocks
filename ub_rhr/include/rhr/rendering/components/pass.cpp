@@ -13,10 +13,12 @@ rhr::render::component::pass::pass()
 	vk::subpass_description color_subpass_description		   = {};
 	vk::render_pass_create_info render_pass_create_info		   = {};
 
-	subpass_dependencies[0].srcSubpass	  = VK_SUBPASS_EXTERNAL;
-	subpass_dependencies[0].dstSubpass	  = 0;
-	subpass_dependencies[0].srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	subpass_dependencies[0].dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+	subpass_dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+	subpass_dependencies[0].dstSubpass = 0;
+	subpass_dependencies[0].srcStageMask =
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+	subpass_dependencies[0].dstStageMask =
+		VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	subpass_dependencies[0].srcAccessMask = 0;
 	subpass_dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
@@ -50,6 +52,12 @@ rhr::render::component::pass::pass()
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create render pass");
 }
 
-rhr::render::component::pass::~pass() { vkDestroyRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), m_render_pass, nullptr); }
+rhr::render::component::pass::~pass()
+{
+	vkDestroyRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), m_render_pass, nullptr);
+}
 
-vk::render_pass& rhr::render::component::pass::get_render_pass() { return m_render_pass; }
+vk::render_pass& rhr::render::component::pass::get_render_pass()
+{
+	return m_render_pass;
+}

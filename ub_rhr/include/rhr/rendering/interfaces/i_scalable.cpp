@@ -39,7 +39,8 @@ glm::vec<S, T> rhr::render::interfaces::i_scaleable<S, T>::get_super_scale()
 }
 
 template<usize S, typename T>
-bool rhr::render::interfaces::i_scaleable<S, T>::pre_scale_update(const glm::vec<S, T>& scale, const glm::vec<S, T>& super_scale)
+bool rhr::render::interfaces::i_scaleable<S, T>::pre_scale_update(
+	const glm::vec<S, T>& scale, const glm::vec<S, T>& super_scale)
 {
 	return true;
 }

@@ -10,4 +10,5 @@ rhr::render::component::frame::frame()
 	, semaphore_finished(nullptr)
 {}
 
-rhr::render::component::frame::~frame() {}
+rhr::render::component::frame::~frame()
+{}

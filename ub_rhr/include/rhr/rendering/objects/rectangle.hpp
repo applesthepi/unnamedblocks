@@ -35,7 +35,10 @@ public:
 	void set_depth(i32 depth);
 
 	///
-	void enable_border(bool enable_border, rhr::render::cardinal::local_horizontal overhang_horizontal, rhr::render::cardinal::local_vertical overhang_vertical);
+	void enable_border(
+		bool enable_border,
+		rhr::render::cardinal::local_horizontal overhang_horizontal,
+		rhr::render::cardinal::local_vertical overhang_vertical);
 
 private:
 	///

@@ -43,7 +43,8 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 	else if (fileType == ".so")
 		mod.SupportLINUX();
 
-	mod.Data->set_logger_linkage(cap::logger::get_stream_system(), cap::logger::get_stream_editor(), cap::logger::get_stream_runtime());
+	mod.Data->set_logger_linkage(
+		cap::logger::get_stream_system(), cap::logger::get_stream_editor(), cap::logger::get_stream_runtime());
 	mods->push_back(mod);
 }
 
@@ -73,7 +74,9 @@ ModLoaderStatus run()
 #if LINUX
 		if (!(*mods)[i].Supported_LINUX)
 		{
-			cap::logger::warn(cap::logger::level::SYSTEM, "mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
+			cap::logger::warn(
+				cap::logger::level::SYSTEM,
+				"mod \"" + (*mods)[i].FileName + "\" does not support linux and can not be loaded");
 			continue;
 		}
 
@@ -88,7 +91,8 @@ ModLoaderStatus run()
 		f_initialize initialize = (f_initialize)dlsym(so, "Initialization");
 		if (initialize == nullptr)
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error(
+				cap::logger::level::SYSTEM, "failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
@@ -96,7 +100,9 @@ ModLoaderStatus run()
 #else
 		if (!(*mods)[i].Supported_WIN)
 		{
-			cap::logger::warn(cap::logger::level::SYSTEM, "mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
+			cap::logger::warn(
+				cap::logger::level::SYSTEM,
+				"mod \"" + (*mods)[i].FileName + "\" does not support windows and can not be loaded");
 			continue;
 		}
 
@@ -111,7 +117,8 @@ ModLoaderStatus run()
 		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "Initialization");
 		if (initialize == nullptr)
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
+			cap::logger::error(
+				cap::logger::level::SYSTEM, "failed to load proper functions for mod \"" + (*mods)[i].FileName + "\"");
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 #endif
@@ -122,10 +129,12 @@ ModLoaderStatus run()
 		esp::mod::data* mod_data = (*mods)[i].Data;
 
 		for (u32 j = 0; j < mod_data->get_categories().size(); j++)
-			rhr::registry::block::get_registry().register_category(mod_data->get_categories()[j], mods->at(i).Data->get_mod_unlocalized_name());
+			rhr::registry::block::get_registry().register_category(
+				mod_data->get_categories()[j], mods->at(i).Data->get_mod_unlocalized_name());
 
 		for (u32 j = 0; j < mod_data->get_blocks().size(); j++)
-			rhr::registry::block::get_registry().register_block(mod_data->get_blocks()[j], mods->at(i).Data->get_mod_unlocalized_name());
+			rhr::registry::block::get_registry().register_block(
+				mod_data->get_blocks()[j], mods->at(i).Data->get_mod_unlocalized_name());
 	}
 
 	return ModLoaderStatus::ModLoaderStatus_OK;

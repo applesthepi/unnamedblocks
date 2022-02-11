@@ -42,8 +42,8 @@ public:
 	/// \param update_child Notifies this of a transform update using i_ui::transform_update_spec_size
 	void set_size_parent(const glm::vec<2, i32>& size, bool update_child);
 
-	/// Maxes out the local size to the parent's size. Possible buffer update, use flags to make sure you need to call this.
-	/// \param update_child Notifies this of a transform update using i_ui::transform_update_spec_size
+	/// Maxes out the local size to the parent's size. Possible buffer update, use flags to make sure you need to call
+	/// this. \param update_child Notifies this of a transform update using i_ui::transform_update_spec_size
 	void set_size_max(bool update_child);
 
 	/// Retrieves this physical position (render space) relative to parent. See (TODO: link) for more clarification.
@@ -52,10 +52,12 @@ public:
 	/// Retrieves this virtual position (screen space) relative to parent. See (TODO: link) for more clarification.
 	const glm::vec<2, i32>& get_position_local_virtual_offset();
 
-	/// Retrieves this parent's physical position (render space) relative to { 0, 0 }. See (TODO: link) for more clarification.
+	/// Retrieves this parent's physical position (render space) relative to { 0, 0 }. See (TODO: link) for more
+	/// clarification.
 	const glm::vec<2, i32>& get_position_parent_physical();
 
-	/// Retrieves this parent's virtual position (screen space) relative to { 0, 0 }. See (TODO: link) for more clarification.
+	/// Retrieves this parent's virtual position (screen space) relative to { 0, 0 }. See (TODO: link) for more
+	/// clarification.
 	const glm::vec<2, i32>& get_position_parent_virtual_offset();
 
 	/// Retrieves this physical position (render space) relative to { 0, 0 }. See (TODO: link) for more clarification.
@@ -82,7 +84,8 @@ public:
 	/// \param ui Child element to update from parent this.
 	/// \param transform_update_spec Specification of what parts of the transform is being updated. Use 0x0 to only
 	/// 							 update the transform without updating the child's buffers.
-	void update_child_transform(const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, i_ui::transform_update_spec transform_update_spec);
+	void update_child_transform(
+		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, i_ui::transform_update_spec transform_update_spec);
 
 	///
 	void set_enabled(bool enabled);
@@ -91,10 +94,10 @@ public:
 	bool get_enabled();
 
 	///
-	//void serialize(std::string& buffer);
+	// void serialize(std::string& buffer);
 
 	///
-	//void deserialize(std::string_view buffer);
+	// void deserialize(std::string_view buffer);
 
 	///
 	void render();
@@ -131,10 +134,10 @@ protected:
 	virtual void ui_chain_update_buffers();
 
 	///
-	//virtual void ui_serialize(std::string& buffer);
+	// virtual void ui_serialize(std::string& buffer);
 
 	///
-	//virtual void ui_deserialize(std::string_view buffer);
+	// virtual void ui_deserialize(std::string_view buffer);
 
 	///
 	static transform_update_spec transform_update_spec_position;

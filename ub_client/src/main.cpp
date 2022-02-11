@@ -25,7 +25,10 @@ static void async_setup()
 	rhr::registry::char_texture::process_fonts();
 }
 
-static void button_callback_build_debug(void* data) { rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG); }
+static void button_callback_build_debug(void* data)
+{
+	rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
+}
 
 i32 main()
 {
@@ -84,25 +87,31 @@ i32 main()
 	run();
 	rhr::handler::category::populate();
 
-	rhr::stack::plane::primary_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
+	rhr::stack::plane::primary_plane->set_size_parent(
+		rhr::render::renderer::get_window_primary()->get_window_size(), false);
 	rhr::stack::plane::primary_plane->set_size_max(true);
 
-	rhr::stack::plane::toolbar_plane->set_size_parent(rhr::render::renderer::get_window_primary()->get_window_size(), false);
+	rhr::stack::plane::toolbar_plane->set_size_parent(
+		rhr::render::renderer::get_window_primary()->get_window_size(), false);
 	rhr::stack::plane::toolbar_plane->set_size_max(true);
 
 	// default blocks
 
-	std::shared_ptr<rhr::stack::collection> testCollection = std::make_shared<rhr::stack::collection>(rhr::stack::plane::primary_plane->get_offset());
+	std::shared_ptr<rhr::stack::collection> testCollection =
+		std::make_shared<rhr::stack::collection>(rhr::stack::plane::primary_plane->get_offset());
 	testCollection->set_position_local_physical({200, 200}, true);
 	testCollection->set_size_local({500, 300}, true);
 
-	std::shared_ptr<rhr::stack::stack> testStack1 = std::make_shared<rhr::stack::stack>(rhr::stack::plane::primary_plane->get_offset());
+	std::shared_ptr<rhr::stack::stack> testStack1 =
+		std::make_shared<rhr::stack::stack>(rhr::stack::plane::primary_plane->get_offset());
 	testStack1->set_position_local_physical({0, 0}, true);
 
-	std::shared_ptr<rhr::stack::block> testBlock1 = std::make_shared<rhr::stack::block>("essentials_main", rhr::stack::plane::primary_plane->get_offset());
+	std::shared_ptr<rhr::stack::block> testBlock1 =
+		std::make_shared<rhr::stack::block>("essentials_main", rhr::stack::plane::primary_plane->get_offset());
 	testStack1->add_block(testBlock1);
 
-	std::shared_ptr<rhr::stack::block> testBlock2 = std::make_shared<rhr::stack::block>("essentials_string_log", rhr::stack::plane::primary_plane->get_offset());
+	std::shared_ptr<rhr::stack::block> testBlock2 =
+		std::make_shared<rhr::stack::block>("essentials_string_log", rhr::stack::plane::primary_plane->get_offset());
 	testStack1->add_block(testBlock2);
 
 	testCollection->add_stack(testStack1);
@@ -134,7 +143,8 @@ i32 main()
 		//*/));
 
 		glfwPollEvents();
-		glfwGetWindowPos(rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
+		glfwGetWindowPos(
+			rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
 
 		if (rhr::render::renderer::get_window_primary()->get_swapchain_recreation_flag())
 			rhr::render::renderer::reload_swapchain();

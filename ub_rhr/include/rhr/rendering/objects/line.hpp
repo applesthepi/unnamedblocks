@@ -51,6 +51,7 @@ private:
 
 	///
 	void post_color_update() override;
+
 private:
 	/// Abstracted RenderObject to render the rectangle.
 	std::shared_ptr<rhr::render::object::object> m_render_object;

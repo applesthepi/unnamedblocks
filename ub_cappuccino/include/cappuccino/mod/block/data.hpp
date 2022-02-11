@@ -28,7 +28,10 @@ public:
 	};
 
 	data();
-	data(const std::vector<void*>& data, const std::vector<type>& types, const std::vector<interpretation>& interpretations);
+	data(
+		const std::vector<void*>& data,
+		const std::vector<type>& types,
+		const std::vector<interpretation>& interpretations);
 
 	///
 	const std::vector<void*>& get_data();

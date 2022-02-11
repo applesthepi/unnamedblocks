@@ -85,7 +85,9 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 		vk::debug_utils_messenger_create_info debug_utils_messenger_create_info;
 		rhr::render::tools::populate_debug_messenge_create_info(debug_utils_messenger_create_info);
 
-		if (rhr::render::tools::create_debug_utils_message_ext(&m_instance, &debug_utils_messenger_create_info, nullptr, &m_debug_messenger) != VK_SUCCESS)
+		if (rhr::render::tools::create_debug_utils_message_ext(
+				&m_instance, &debug_utils_messenger_create_info, nullptr, &m_debug_messenger)
+			!= VK_SUCCESS)
 		{
 			cap::logger::error(cap::logger::level::SYSTEM, "failed to create debug utils message EXT");
 			m_valid = false;
@@ -126,8 +128,9 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	// Initialize queue properties.
 
-	rhr::render::tools::queue_family_indices indices = rhr::render::tools::find_queue_families(&m_physical_device, m_surface);
-	std::set<u32> unique_queue_families				 = {indices.graphics_family.value(), indices.present_family.value()};
+	rhr::render::tools::queue_family_indices indices =
+		rhr::render::tools::find_queue_families(&m_physical_device, m_surface);
+	std::set<u32> unique_queue_families = {indices.graphics_family.value(), indices.present_family.value()};
 
 	f32 queue_priority = 1.0f;
 	for (u32 queue_family : unique_queue_families)
@@ -219,21 +222,45 @@ vk::instance& rhr::render::component::device::get_instance()
 	return m_instance;
 }
 
-vk::physical_device& rhr::render::component::device::get_physical_device() { return m_physical_device; }
+vk::physical_device& rhr::render::component::device::get_physical_device()
+{
+	return m_physical_device;
+}
 
-vk::device& rhr::render::component::device::get_device() { return m_device; }
+vk::device& rhr::render::component::device::get_device()
+{
+	return m_device;
+}
 
-vk::descriptor_set_layout& rhr::render::component::device::get_descriptor_set_layout() { return m_descriptor_set_layout; }
+vk::descriptor_set_layout& rhr::render::component::device::get_descriptor_set_layout()
+{
+	return m_descriptor_set_layout;
+}
 
-vk::queue& rhr::render::component::device::get_graphics_queue() { return m_graphics_queue; }
+vk::queue& rhr::render::component::device::get_graphics_queue()
+{
+	return m_graphics_queue;
+}
 
-vk::sampler& rhr::render::component::device::get_texture_sampler() { return m_texture_sampler; }
+vk::sampler& rhr::render::component::device::get_texture_sampler()
+{
+	return m_texture_sampler;
+}
 
-std::unique_ptr<rhr::render::component::swapchain>& rhr::render::component::device::get_swapchain() { return m_swapchain; }
+std::unique_ptr<rhr::render::component::swapchain>& rhr::render::component::device::get_swapchain()
+{
+	return m_swapchain;
+}
 
-std::unique_ptr<rhr::render::component::pipeline>& rhr::render::component::device::get_pipeline() { return m_pipeline; }
+std::unique_ptr<rhr::render::component::pipeline>& rhr::render::component::device::get_pipeline()
+{
+	return m_pipeline;
+}
 
-std::unique_ptr<rhr::render::component::command_pool>& rhr::render::component::device::get_command_pool() { return m_command_pool; }
+std::unique_ptr<rhr::render::component::command_pool>& rhr::render::component::device::get_command_pool()
+{
+	return m_command_pool;
+}
 
 void rhr::render::component::device::initialize_descriptor_set()
 {
@@ -253,13 +280,16 @@ void rhr::render::component::device::initialize_descriptor_set()
 	sampler_descriptor_set_layout_binding.pImmutableSamplers = nullptr;
 	sampler_descriptor_set_layout_binding.stageFlags		 = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-	std::array<vk::descriptor_set_layout_binding, 2> descriptor_set_layout_bindings = {ubo_descriptor_set_layout_binding, sampler_descriptor_set_layout_binding};
+	std::array<vk::descriptor_set_layout_binding, 2> descriptor_set_layout_bindings = {
+		ubo_descriptor_set_layout_binding, sampler_descriptor_set_layout_binding};
 
 	descriptor_set_layout_create_info.sType		   = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	descriptor_set_layout_create_info.bindingCount = static_cast<u32>(descriptor_set_layout_bindings.size());
 	descriptor_set_layout_create_info.pBindings	   = descriptor_set_layout_bindings.data();
 
-	if (vk::create_descriptor_set_layout(m_device, &descriptor_set_layout_create_info, nullptr, &m_descriptor_set_layout) != VK_SUCCESS)
+	if (vk::create_descriptor_set_layout(
+			m_device, &descriptor_set_layout_create_info, nullptr, &m_descriptor_set_layout)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create descriptor set layout");
 }
 

@@ -10,18 +10,21 @@ rhr::render::component::command_pool::command_pool()
 {
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
 
-	rhr::render::tools::queue_family_indices queue_family_indices = rhr::render::tools::find_queue_families(window->get_physical_device(), window->get_surface());
-	vk::command_pool_create_info command_pool_create_info		  = {};
+	rhr::render::tools::queue_family_indices queue_family_indices =
+		rhr::render::tools::find_queue_families(window->get_physical_device(), window->get_surface());
+	vk::command_pool_create_info command_pool_create_info = {};
 
 	command_pool_create_info.sType			  = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	command_pool_create_info.queueFamilyIndex = queue_family_indices.graphics_family.value();
 	command_pool_create_info.flags			  = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-	if (vk::create_command_pool(*window->get_device(), &command_pool_create_info, nullptr, &m_command_pool) != VK_SUCCESS)
+	if (vk::create_command_pool(*window->get_device(), &command_pool_create_info, nullptr, &m_command_pool)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create command pool");
 }
 
-rhr::render::component::command_pool::~command_pool() {}
+rhr::render::component::command_pool::~command_pool()
+{}
 
 void rhr::render::component::command_pool::initialize_descriptor_pool()
 {
@@ -42,7 +45,8 @@ void rhr::render::component::command_pool::initialize_descriptor_pool()
 	descriptor_pool_create_info.maxSets		  = 10000;
 	descriptor_pool_create_info.flags		  = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
-	if (vk::create_descriptor_pool(*window->get_device(), &descriptor_pool_create_info, nullptr, &m_descriptor_pool) != VK_SUCCESS)
+	if (vk::create_descriptor_pool(*window->get_device(), &descriptor_pool_create_info, nullptr, &m_descriptor_pool)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create descriptor pool");
 }
 
@@ -52,12 +56,20 @@ void rhr::render::component::command_pool::initialize_command_buffers()
 
 	if (!m_command_buffer_panels.empty())
 	{
-		vkFreeCommandBuffers(*window->get_device(), m_command_pool, static_cast<u32>(m_command_buffer_panels.size()), m_command_buffer_panels.data());
+		vkFreeCommandBuffers(
+			*window->get_device(),
+			m_command_pool,
+			static_cast<u32>(m_command_buffer_panels.size()),
+			m_command_buffer_panels.data());
 	}
 
 	if (!m_command_buffer_master.empty())
 	{
-		vkFreeCommandBuffers(*window->get_device(), m_command_pool, static_cast<u32>(m_command_buffer_master.size()), m_command_buffer_master.data());
+		vkFreeCommandBuffers(
+			*window->get_device(),
+			m_command_pool,
+			static_cast<u32>(m_command_buffer_master.size()),
+			m_command_buffer_master.data());
 	}
 
 	m_command_buffer_panels.clear();
@@ -76,7 +88,10 @@ void rhr::render::component::command_pool::initialize_command_buffers()
 		setup_command_buffer(&m_command_buffer_master[i], window->get_framebuffer(i));
 }
 
-vk::command_buffer* rhr::render::component::command_pool::get_active_command_buffer() { return m_active_command_buffer; }
+vk::command_buffer* rhr::render::component::command_pool::get_active_command_buffer()
+{
+	return m_active_command_buffer;
+}
 
 vk::command_buffer* rhr::render::component::command_pool::get_master_command_buffer(u8 idx)
 {
@@ -84,7 +99,8 @@ vk::command_buffer* rhr::render::component::command_pool::get_master_command_buf
 	{
 		if (!m_command_buffer_master.empty())
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch master command buffer using idx, using first one instead");
+			cap::logger::error(
+				cap::logger::level::SYSTEM, "failed to fetch master command buffer using idx, using first one instead");
 			return &m_command_buffer_master.front();
 		}
 		else
@@ -100,7 +116,8 @@ vk::command_buffer* rhr::render::component::command_pool::get_panel_command_buff
 	{
 		if (!m_command_buffer_panels.empty())
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to fetch panel command buffer using idx, using first one instead");
+			cap::logger::error(
+				cap::logger::level::SYSTEM, "failed to fetch panel command buffer using idx, using first one instead");
 			return &m_command_buffer_panels.front();
 		}
 		else
@@ -120,11 +137,13 @@ void rhr::render::component::command_pool::generate_command_buffer(u32 count, vk
 	command_buffer_allocate_info.level				= VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	command_buffer_allocate_info.commandBufferCount = count;
 
-	if (vk::allocate_command_buffers(*window->get_device(), &command_buffer_allocate_info, command_buffer) != VK_SUCCESS)
+	if (vk::allocate_command_buffers(*window->get_device(), &command_buffer_allocate_info, command_buffer)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create command buffers");
 }
 
-void rhr::render::component::command_pool::setup_command_buffer(vk::command_buffer* command_buffer, vk::frame_buffer* frame_buffer)
+void rhr::render::component::command_pool::setup_command_buffer(
+	vk::command_buffer* command_buffer, vk::frame_buffer* frame_buffer)
 {
 	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
 
@@ -158,8 +177,17 @@ void rhr::render::component::command_pool::setup_command_buffer(vk::command_buff
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to stop recording the command buffer during setup");
 }
 
-vk::command_pool& rhr::render::component::command_pool::get_command_pool() { return m_command_pool; }
+vk::command_pool& rhr::render::component::command_pool::get_command_pool()
+{
+	return m_command_pool;
+}
 
-vk::descriptor_pool& rhr::render::component::command_pool::get_descriptor_pool() { return m_descriptor_pool; }
+vk::descriptor_pool& rhr::render::component::command_pool::get_descriptor_pool()
+{
+	return m_descriptor_pool;
+}
 
-void rhr::render::component::command_pool::set_active_command_buffer(u8 idx) { m_active_command_buffer = &m_command_buffer_master[idx]; }
+void rhr::render::component::command_pool::set_active_command_buffer(u8 idx)
+{
+	m_active_command_buffer = &m_command_buffer_master[idx];
+}

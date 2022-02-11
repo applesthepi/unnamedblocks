@@ -43,25 +43,40 @@ void rhr::render::panel::create_panel(
 
 		VkMemoryRequirements memReqs;
 
-		vkCreateImage(*rhr::render::renderer::get_window_primary()->get_device(), &image, nullptr, &local_data.color_image);
-		vkGetImageMemoryRequirements(*rhr::render::renderer::get_window_primary()->get_device(), local_data.color_image, &memReqs);
-		memAlloc.allocationSize	 = memReqs.size;
-		memAlloc.memoryTypeIndex = rhr::render::tools::find_memory_type(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		vkAllocateMemory(*rhr::render::renderer::get_window_primary()->get_device(), &memAlloc, nullptr, &local_data.color_device_memory);
-		vkBindImageMemory(*rhr::render::renderer::get_window_primary()->get_device(), local_data.color_image, local_data.color_device_memory, 0);
+		vkCreateImage(
+			*rhr::render::renderer::get_window_primary()->get_device(), &image, nullptr, &local_data.color_image);
+		vkGetImageMemoryRequirements(
+			*rhr::render::renderer::get_window_primary()->get_device(), local_data.color_image, &memReqs);
+		memAlloc.allocationSize = memReqs.size;
+		memAlloc.memoryTypeIndex =
+			rhr::render::tools::find_memory_type(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		vkAllocateMemory(
+			*rhr::render::renderer::get_window_primary()->get_device(),
+			&memAlloc,
+			nullptr,
+			&local_data.color_device_memory);
+		vkBindImageMemory(
+			*rhr::render::renderer::get_window_primary()->get_device(),
+			local_data.color_image,
+			local_data.color_device_memory,
+			0);
 
-		VkImageViewCreateInfo colorImageView		   = {};
-		colorImageView.sType						   = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		colorImageView.viewType						   = VK_IMAGE_VIEW_TYPE_2D;
-		colorImageView.format						   = rhr::render::renderer::get_window_primary()->get_surface_format()->format;
-		colorImageView.subresourceRange				   = {};
+		VkImageViewCreateInfo colorImageView = {};
+		colorImageView.sType				 = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		colorImageView.viewType				 = VK_IMAGE_VIEW_TYPE_2D;
+		colorImageView.format			= rhr::render::renderer::get_window_primary()->get_surface_format()->format;
+		colorImageView.subresourceRange = {};
 		colorImageView.subresourceRange.aspectMask	   = VK_IMAGE_ASPECT_COLOR_BIT;
 		colorImageView.subresourceRange.baseMipLevel   = 0;
 		colorImageView.subresourceRange.levelCount	   = 1;
 		colorImageView.subresourceRange.baseArrayLayer = 0;
 		colorImageView.subresourceRange.layerCount	   = 1;
 		colorImageView.image						   = local_data.color_image;
-		vkCreateImageView(*rhr::render::renderer::get_window_primary()->get_device(), &colorImageView, nullptr, &local_data.color_image_view);
+		vkCreateImageView(
+			*rhr::render::renderer::get_window_primary()->get_device(),
+			&colorImageView,
+			nullptr,
+			&local_data.color_image_view);
 
 		// Create sampler to sample from the attachment in the fragment shader
 		VkSamplerCreateInfo samplerInfo = {};
@@ -77,7 +92,8 @@ void rhr::render::panel::create_panel(
 		samplerInfo.minLod				= 0.0f;
 		samplerInfo.maxLod				= 1.0f;
 		samplerInfo.borderColor			= VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		vkCreateSampler(*rhr::render::renderer::get_window_primary()->get_device(), &samplerInfo, nullptr, &local_data.sampler);
+		vkCreateSampler(
+			*rhr::render::renderer::get_window_primary()->get_device(), &samplerInfo, nullptr, &local_data.sampler);
 
 		// Depth stencil attachment
 		//		image.format = fbDepthFormat;
@@ -86,9 +102,10 @@ void rhr::render::panel::create_panel(
 		//		VK_CHECK_RESULT(vkCreateImage(device, &image, nullptr, &offscreenPass.depth.image));
 		//		vkGetImageMemoryRequirements(device, offscreenPass.depth.image, &memReqs);
 		//		memAlloc.allocationSize = memReqs.size;
-		//		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		//		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr, &offscreenPass.depth.mem));
-		//		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.depth.image, offscreenPass.depth.mem, 0));
+		//		memAlloc.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits,
+		// VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); 		VK_CHECK_RESULT(vkAllocateMemory(device, &memAlloc, nullptr,
+		//&offscreenPass.depth.mem)); 		VK_CHECK_RESULT(vkBindImageMemory(device, offscreenPass.depth.image,
+		// offscreenPass.depth.mem, 0));
 
 		//		VkImageViewCreateInfo depthStencilView = vks::initializers::imageViewCreateInfo();
 		//		depthStencilView.viewType = VK_IMAGE_VIEW_TYPE_2D;
@@ -103,14 +120,15 @@ void rhr::render::panel::create_panel(
 		//		depthStencilView.image = offscreenPass.depth.image;
 		//		VK_CHECK_RESULT(vkCreateImageView(device, &depthStencilView, nullptr, &offscreenPass.depth.view));
 
-		// Create a separate render pass for the offscreen rendering as it may differ from the one used for scene rendering
+		// Create a separate render pass for the offscreen rendering as it may differ from the one used for scene
+		// rendering
 
 		std::array<VkAttachmentDescription, 1> attchmentDescriptions = {};
 		// Color attachment
-		attchmentDescriptions[0].format			= rhr::render::renderer::get_window_primary()->get_surface_format()->format;
-		attchmentDescriptions[0].samples		= VK_SAMPLE_COUNT_1_BIT;
-		attchmentDescriptions[0].loadOp			= VK_ATTACHMENT_LOAD_OP_CLEAR;
-		attchmentDescriptions[0].storeOp		= VK_ATTACHMENT_STORE_OP_STORE;
+		attchmentDescriptions[0].format	 = rhr::render::renderer::get_window_primary()->get_surface_format()->format;
+		attchmentDescriptions[0].samples = VK_SAMPLE_COUNT_1_BIT;
+		attchmentDescriptions[0].loadOp	 = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		attchmentDescriptions[0].storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 		attchmentDescriptions[0].stencilLoadOp	= VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 		attchmentDescriptions[0].stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 		attchmentDescriptions[0].initialLayout	= VK_IMAGE_LAYOUT_UNDEFINED;
@@ -155,10 +173,12 @@ void rhr::render::panel::create_panel(
 
 		std::array<VkSubpassDependency, 1> dependencies {};
 
-		dependencies[0].srcSubpass	  = VK_SUBPASS_EXTERNAL;
-		dependencies[0].dstSubpass	  = 0;
-		dependencies[0].srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		dependencies[0].dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+		dependencies[0].dstSubpass = 0;
+		dependencies[0].srcStageMask =
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		dependencies[0].dstStageMask =
+			VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		dependencies[0].srcAccessMask = 0;
 		dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
@@ -171,7 +191,12 @@ void rhr::render::panel::create_panel(
 		render_pass_info.dependencyCount = static_cast<u32>(dependencies.size());
 		render_pass_info.pDependencies	 = dependencies.data();
 
-		if (vkCreateRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), &render_pass_info, nullptr, &local_data.render_pass) != VK_SUCCESS)
+		if (vkCreateRenderPass(
+				*rhr::render::renderer::get_window_primary()->get_device(),
+				&render_pass_info,
+				nullptr,
+				&local_data.render_pass)
+			!= VK_SUCCESS)
 			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create render pass");
 	}
 
@@ -226,7 +251,12 @@ void rhr::render::panel::create_panel(
 	frame_buffer_info.height		  = rhr::render::renderer::get_window_primary()->get_swapchain_extent()->height;
 	frame_buffer_info.layers		  = 1;
 
-	if (vkCreateFramebuffer(*rhr::render::renderer::get_window_primary()->get_device(), &frame_buffer_info, nullptr, &local_data.frame_buffer) != VK_SUCCESS)
+	if (vkCreateFramebuffer(
+			*rhr::render::renderer::get_window_primary()->get_device(),
+			&frame_buffer_info,
+			nullptr,
+			&local_data.frame_buffer)
+		!= VK_SUCCESS)
 		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create frame buffers");
 
 	// create panel texture sampler
@@ -255,7 +285,9 @@ void rhr::render::panel::create_panel(
 		sampler_info.minLod		= 0.0f;
 		sampler_info.maxLod		= 0.0f;
 
-		if (vkCreateSampler(*rhr::render::renderer::get_window_primary()->get_device(), &sampler_info, nullptr, &local_data.sampler) != VK_SUCCESS)
+		if (vkCreateSampler(
+				*rhr::render::renderer::get_window_primary()->get_device(), &sampler_info, nullptr, &local_data.sampler)
+			!= VK_SUCCESS)
 			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create texture sampler");
 	}
 
@@ -265,7 +297,8 @@ void rhr::render::panel::create_panel(
 	local_data.descriptor.imageView	  = local_data.color_image_view;
 	local_data.descriptor.sampler	  = local_data.sampler;
 
-	local_data.descriptor_set = ImGui_ImplVulkan_AddTexture(local_data.descriptor.sampler, local_data.descriptor.imageView, local_data.descriptor.imageLayout);
+	local_data.descriptor_set = ImGui_ImplVulkan_AddTexture(
+		local_data.descriptor.sampler, local_data.descriptor.imageView, local_data.descriptor.imageLayout);
 
 	rhr::render::renderer::get_window_primary()->register_paired_pipeline("panel_" + id, "ui", "ui_texture");
 }
@@ -281,9 +314,10 @@ void rhr::render::panel::create_panel(const std::string& id, const std::function
 
 void rhr::render::panel::run_imgui()
 {
-	ImGui_ImplVulkanH_Frame* fd = &rhr::render::renderer::imgui_local->data.Frames[rhr::render::renderer::imgui_local->data.FrameIndex];
+	ImGui_ImplVulkanH_Frame* fd =
+		&rhr::render::renderer::imgui_local->data.Frames[rhr::render::renderer::imgui_local->data.FrameIndex];
 
-	//ImGui::ShowDemoWindow();
+	// ImGui::ShowDemoWindow();
 
 	for (auto& data : panels)
 	{
@@ -293,7 +327,9 @@ void rhr::render::panel::run_imgui()
 		if (!data.basic_imgui)
 		{
 			glm::vec<2, i32> panel_size		= {ImGui::GetWindowSize().x, ImGui::GetWindowSize().y};
-			glm::vec<2, i32> panel_position = {ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x, ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y};
+			glm::vec<2, i32> panel_position = {
+				ImGui::GetWindowPos().x + ImGui::GetWindowContentRegionMin().x,
+				ImGui::GetWindowPos().y + ImGui::GetWindowContentRegionMin().y};
 
 			if (panel_size != data.panel_last_size)
 			{
@@ -327,7 +363,10 @@ void rhr::render::panel::run_imgui()
 				info.clearValueCount		  = clear_values.size();
 				info.pClearValues			  = clear_values.data();
 
-				vkCmdBeginRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer(), &info, VK_SUBPASS_CONTENTS_INLINE);
+				vkCmdBeginRenderPass(
+					*rhr::render::renderer::get_window_primary()->get_active_command_buffer(),
+					&info,
+					VK_SUBPASS_CONTENTS_INLINE);
 				data.function_render(data);
 				vkCmdEndRenderPass(*rhr::render::renderer::get_window_primary()->get_active_command_buffer());
 			}
@@ -360,10 +399,19 @@ void rhr::render::panel::initialize_panels()
 
 	create_panel(
 		"plane_primary",
-		[](panel::data& data) { rhr::stack::plane::primary_plane->render(); },
-		[](panel::data& data) { rhr::stack::plane::primary_plane->render_master_pass(); },
 		[](panel::data& data)
-		{ rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position(), true); },
+		{
+			rhr::stack::plane::primary_plane->render();
+		},
+		[](panel::data& data)
+		{
+			rhr::stack::plane::primary_plane->render_master_pass();
+		},
+		[](panel::data& data)
+		{
+			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(
+				data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position(), true);
+		},
 		[](panel::data& data)
 		{
 			rhr::stack::plane::primary_plane->set_size_parent(data.panel_last_size, false);
@@ -372,10 +420,19 @@ void rhr::render::panel::initialize_panels()
 
 	create_panel(
 		"plane_toolbar",
-		[](panel::data& data) { rhr::stack::plane::toolbar_plane->render(); },
-		[](panel::data& data) { rhr::stack::plane::toolbar_plane->render_master_pass(); },
 		[](panel::data& data)
-		{ rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position(), true); },
+		{
+			rhr::stack::plane::toolbar_plane->render();
+		},
+		[](panel::data& data)
+		{
+			rhr::stack::plane::toolbar_plane->render_master_pass();
+		},
+		[](panel::data& data)
+		{
+			rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(
+				data.panel_last_position - rhr::render::renderer::get_window_primary()->get_window_position(), true);
+		},
 		[](panel::data& data)
 		{
 			rhr::stack::plane::toolbar_plane->set_size_parent(data.panel_last_size, false);
@@ -450,7 +507,8 @@ void rhr::render::panel::initialize_panels()
 			ImGui::Separator();
 
 			const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
-			ImGui::BeginChild("ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar);
+			ImGui::BeginChild(
+				"ScrollingRegion", ImVec2(0, -footer_height_to_reserve), false, ImGuiWindowFlags_HorizontalScrollbar);
 
 			switch (button_idx)
 			{
@@ -476,7 +534,9 @@ void rhr::render::panel::initialize_panels()
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {2, 2});
 
 			if (button_idx == 0)
-				ImGui::PushStyleColor(ImGuiCol_Button, {button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w});
+				ImGui::PushStyleColor(
+					ImGuiCol_Button,
+					{button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w});
 			if (ImGui::Button("system"))
 				n_button_idx = 0;
 			if (button_idx == 0)
@@ -485,7 +545,9 @@ void rhr::render::panel::initialize_panels()
 			ImGui::SameLine();
 
 			if (button_idx == 1)
-				ImGui::PushStyleColor(ImGuiCol_Button, {button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w});
+				ImGui::PushStyleColor(
+					ImGuiCol_Button,
+					{button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w});
 			if (ImGui::Button("editor"))
 				n_button_idx = 1;
 			if (button_idx == 1)
@@ -494,7 +556,9 @@ void rhr::render::panel::initialize_panels()
 			ImGui::SameLine();
 
 			if (button_idx == 2)
-				ImGui::PushStyleColor(ImGuiCol_Button, {button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w});
+				ImGui::PushStyleColor(
+					ImGuiCol_Button,
+					{button_active_color.x, button_active_color.y, button_active_color.z, button_active_color.w});
 			if (ImGui::Button("runtime"))
 				n_button_idx = 2;
 			if (button_idx == 2)

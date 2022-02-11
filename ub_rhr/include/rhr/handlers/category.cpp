@@ -29,8 +29,10 @@ void rhr::handler::category::populate()
 	//	m_render_frame->enable_background(cap::color::background_color_2);
 	//	m_render_frame->disable_bar_movement();
 
-	const std::vector<rhr::registry::block::category_info>& category_infos = rhr::registry::block::get_registry().get_categories();
-	const std::vector<rhr::registry::block::block_info>& block_infos	   = rhr::registry::block::get_registry().get_blocks();
+	const std::vector<rhr::registry::block::category_info>& category_infos =
+		rhr::registry::block::get_registry().get_categories();
+	const std::vector<rhr::registry::block::block_info>& block_infos =
+		rhr::registry::block::get_registry().get_blocks();
 
 	// std::vector<std::string> binnedMods;
 	std::vector<std::vector<esp::mod::category*>> binned_catagories;
@@ -64,7 +66,8 @@ void rhr::handler::category::populate()
 				for (usize b = 0; b < block_infos.size(); b++)
 				{
 					if (block_infos[b].block_mod_unlocalized_name == rhr::handler::project::mods[i]
-						&& block_infos[b].block_mod_block->get_category() == category_infos[a].category_mod_category->get_unlocalized_name())
+						&& block_infos[b].block_mod_block->get_category()
+							== category_infos[a].category_mod_category->get_unlocalized_name())
 					{
 						binned_blocks[i][ac].push_back(block_infos[b].block_mod_block);
 					}
@@ -99,9 +102,11 @@ void rhr::handler::category::populate()
 		//		group.categories_render_frame = std::make_shared<rhr::render::frame>();
 
 		//		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
-		//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
+		//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame,
+		// rhr::render::cardinal::local::DOWN);
 
-		//		group.mod_button_render_frame->add_content(group.mod_button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button,
+		//		group.mod_button_render_frame->add_content(group.mod_button,
+		// std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button,
 		// rhr::render::cardinal::local::DOWN);
 
 		offset += rhr::stack::block::padding / 2;
@@ -117,14 +122,19 @@ void rhr::handler::category::populate()
 			active_catagories[a].mod_group_category = static_cast<u16>(a);
 
 			std::shared_ptr<rhr::render::object::button_text> button =
-				std::make_shared<rhr::render::object::button_text>(cap::color::black, cap::color::background_color_3, binned_catagories[i][a]->get_display_name(), nullptr);
+				std::make_shared<rhr::render::object::button_text>(
+					cap::color::black,
+					cap::color::background_color_3,
+					binned_catagories[i][a]->get_display_name(),
+					nullptr);
 			button->set_color_secondary(binned_catagories[i][a]->get_color());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);
 			button->set_size_local({200, 16}, false);
 			button->set_position_local_physical({16, 0}, false);
 
-			//			group.categories_render_frame->add_content(button, std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button,
+			//			group.categories_render_frame->add_content(button,
+			// std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button,
 			// rhr::render::cardinal::local::DOWN);
 
 			offset += rhr::stack::block::padding / 2 + button->get_size_local().y;
@@ -136,13 +146,17 @@ void rhr::handler::category::populate()
 
 			for (usize b = 0; b < binned_blocks[i][a].size(); b++)
 			{
-				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_offset());
+				std::shared_ptr<rhr::stack::collection> collection =
+					std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_offset());
 				collection->display_vanity(false);
-				collection->set_position_local_physical({0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b}, true);
+				collection->set_position_local_physical(
+					{0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b}, true);
 
-				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_offset());
+				std::shared_ptr<rhr::stack::stack> stack =
+					std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_offset());
 
-				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(binned_blocks[i][a][b]->get_unlocalized_name(), rhr::stack::plane::toolbar_plane->get_offset());
+				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(
+					binned_blocks[i][a][b]->get_unlocalized_name(), rhr::stack::plane::toolbar_plane->get_offset());
 
 				stack->add_block(block);
 				collection->add_stack(stack);
@@ -156,8 +170,8 @@ void rhr::handler::category::populate()
 		}
 
 		//		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
-		//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
-		//		m_render_frame->set_bar(0, 30);
+		//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame,
+		// rhr::render::cardinal::local::DOWN); 		m_render_frame->set_bar(0, 30);
 
 		m_mod_groups.push_back(std::move(group));
 	}
@@ -192,17 +206,26 @@ void rhr::handler::category::render()
 				auto category_color_10	= group.mod_category_colors[i].get_normalized_scaled(0.1f, false);
 
 				std::string cb_id = "cb_" + group.mod_category_ids[i];
-				ImGui::ColorButton(cb_id.c_str(), {category_color_100.x, category_color_100.y, category_color_100.z, category_color_100.w});
+				ImGui::ColorButton(
+					cb_id.c_str(),
+					{category_color_100.x, category_color_100.y, category_color_100.z, category_color_100.w});
 
 				ImGui::SameLine();
 
 				ImGuiStyle& style			= ImGui::GetStyle();
-				glm::vec<4, f32> base_color = {style.Colors[ImGuiCol_Button].x, style.Colors[ImGuiCol_Button].y, style.Colors[ImGuiCol_Button].z, style.Colors[ImGuiCol_Button].w};
+				glm::vec<4, f32> base_color = {
+					style.Colors[ImGuiCol_Button].x,
+					style.Colors[ImGuiCol_Button].y,
+					style.Colors[ImGuiCol_Button].z,
+					style.Colors[ImGuiCol_Button].w};
 				base_color *= 0.8f;
 
 				ImGui::PushStyleColor(
 					ImGuiCol_Button,
-					{category_color_10.x + base_color.x, category_color_10.y + base_color.y, category_color_10.z + base_color.z, category_color_10.w + base_color.w});
+					{category_color_10.x + base_color.x,
+					 category_color_10.y + base_color.y,
+					 category_color_10.z + base_color.z,
+					 category_color_10.w + base_color.w});
 
 				if (ImGui::Button(group.mod_category_ids[i].c_str()))
 					select_category({group.idx_mod, i});
@@ -225,7 +248,8 @@ void rhr::handler::category::select_category(active active_category)
 	{
 		cap::logger::warn(
 			cap::logger::level::EDITOR,
-			"Failed to load category. Mod idx out of range (" + std::to_string(m_active_category.mod_group) + " >= " + std::to_string(m_mod_groups.size()) + ")");
+			"Failed to load category. Mod idx out of range (" + std::to_string(m_active_category.mod_group)
+				+ " >= " + std::to_string(m_mod_groups.size()) + ")");
 		return;
 	}
 
@@ -233,14 +257,16 @@ void rhr::handler::category::select_category(active active_category)
 	{
 		cap::logger::warn(
 			cap::logger::level::EDITOR,
-			"Failed to load category. Category idx out of range (" + std::to_string(m_active_category.mod_group_category)
+			"Failed to load category. Category idx out of range ("
+				+ std::to_string(m_active_category.mod_group_category)
 				+ " >= " + std::to_string(m_mod_groups[m_active_category.mod_group].mod_category_ids.size()) + ")");
 		return;
 	}
 
 	rhr::stack::plane::toolbar_plane->delete_contents(true);
 
-	for (auto collection : m_mod_groups[m_active_category.mod_group].mod_category_collections[m_active_category.mod_group_category])
+	for (auto collection :
+		 m_mod_groups[m_active_category.mod_group].mod_category_collections[m_active_category.mod_group_category])
 	{
 		collection->set_enabled(true);
 		rhr::stack::plane::toolbar_plane->add_collection(collection, false);

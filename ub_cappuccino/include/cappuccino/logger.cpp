@@ -135,11 +135,12 @@
 	std::cout << std::flush;                                           \
 	use_stream->log_update = true;
 
-#define LOG_EXE3(__UCS)                                                                                                                                  \
-	LOG_SWITCH_STREAM                                                                                                                                    \
-	std::string& out = use_stream->cached_logs.emplace_back();                                                                                           \
-	out				 = "\n [" + std::string(__UCS) + "] [" + file + "] [" + std::to_string(line) + "]\n [" + std::string(__UCS) + "] " + message + "\n"; \
-	std::cout << out << "\n" << std::flush;                                                                                                              \
+#define LOG_EXE3(__UCS)                                                                                            \
+	LOG_SWITCH_STREAM                                                                                              \
+	std::string& out = use_stream->cached_logs.emplace_back();                                                     \
+	out = "\n [" + std::string(__UCS) + "] [" + file + "] [" + std::to_string(line) + "]\n [" + std::string(__UCS) \
+		+ "] " + message + "\n";                                                                                   \
+	std::cout << out << "\n" << std::flush;                                                                        \
 	use_stream->log_update = true;
 
 #define LOG_EXE4(__UCS)                                                                                  \
@@ -198,12 +199,15 @@ void cap::logger::buffer::reserve(size_t size)
 	m_recorded_4.reserve(size);
 }
 
-bool cap::logger::buffer::has_recorded_information() const { return !m_recorded_1.empty() || !m_recorded_2.empty() || !m_recorded_3.empty() || !m_recorded_4.empty(); }
+bool cap::logger::buffer::has_recorded_information() const
+{
+	return !m_recorded_1.empty() || !m_recorded_2.empty() || !m_recorded_3.empty() || !m_recorded_4.empty();
+}
 
 void cap::logger::buffer::setup_push()
 {
-	if (m_recorded_1.size() == m_recorded_1.capacity() || m_recorded_2.size() == m_recorded_2.capacity() || m_recorded_3.size() == m_recorded_3.capacity()
-		|| m_recorded_4.size() == m_recorded_4.capacity())
+	if (m_recorded_1.size() == m_recorded_1.capacity() || m_recorded_2.size() == m_recorded_2.capacity()
+		|| m_recorded_3.size() == m_recorded_3.capacity() || m_recorded_4.size() == m_recorded_4.capacity())
 		flush();
 }
 
@@ -348,15 +352,39 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 #define LOG_LCR info_raw
 #define LOG_UCS "INFO"
 
-void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT }
-void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT }
-void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT }
-void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A1)
+{
+	PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT
+}
+void cap::logger::LOG_LC(LOG_A2)
+{
+	PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT
+}
+void cap::logger::LOG_LC(LOG_A3)
+{
+	PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT
+}
+void cap::logger::LOG_LC(LOG_A4)
+{
+	PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT
+}
 
-void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A1)
+{
+	PREP_LOG_RAW LOG_EXE1(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A2)
+{
+	PREP_LOG_RAW LOG_EXE2(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A3)
+{
+	PREP_LOG_RAW LOG_EXE3(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A4)
+{
+	PREP_LOG_RAW LOG_EXE4(LOG_UCS)
+}
 
 #undef LOG_LC
 #undef LOG_LCR
@@ -366,15 +394,39 @@ void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
 #define LOG_LCR warn_raw
 
 #define LOG_UCS "WARN"
-void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT }
-void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT }
-void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT }
-void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT }
+void cap::logger::LOG_LC(LOG_A1)
+{
+	PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT
+}
+void cap::logger::LOG_LC(LOG_A2)
+{
+	PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT
+}
+void cap::logger::LOG_LC(LOG_A3)
+{
+	PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT
+}
+void cap::logger::LOG_LC(LOG_A4)
+{
+	PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT
+}
 
-void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A1)
+{
+	PREP_LOG_RAW LOG_EXE1(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A2)
+{
+	PREP_LOG_RAW LOG_EXE2(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A3)
+{
+	PREP_LOG_RAW LOG_EXE3(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A4)
+{
+	PREP_LOG_RAW LOG_EXE4(LOG_UCS)
+}
 
 #undef LOG_LC
 #undef LOG_LCR
@@ -405,10 +457,22 @@ void cap::logger::LOG_LC(LOG_A4)
 	ASSERT_ABORT FINISH_LOG_MUT
 }
 
-void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) }
-void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
+void cap::logger::LOG_LCR(LOG_A1)
+{
+	PREP_LOG_RAW LOG_EXE1(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A2)
+{
+	PREP_LOG_RAW LOG_EXE2(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A3)
+{
+	PREP_LOG_RAW LOG_EXE3(LOG_UCS)
+}
+void cap::logger::LOG_LCR(LOG_A4)
+{
+	PREP_LOG_RAW LOG_EXE4(LOG_UCS)
+}
 
 #undef LOG_LC
 #undef LOG_LCR
@@ -417,15 +481,39 @@ void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) }
 #define LOG_LCR fatal_raw
 
 #define LOG_UCS "FATAL"
-void cap::logger::LOG_LC(LOG_A1) { PREP_LOG_MUT LOG_EXE1(LOG_UCS) abort(); }
-void cap::logger::LOG_LC(LOG_A2) { PREP_LOG_MUT LOG_EXE2(LOG_UCS) abort(); }
-void cap::logger::LOG_LC(LOG_A3) { PREP_LOG_MUT LOG_EXE3(LOG_UCS) abort(); }
-void cap::logger::LOG_LC(LOG_A4) { PREP_LOG_MUT LOG_EXE4(LOG_UCS) abort(); }
+void cap::logger::LOG_LC(LOG_A1)
+{
+	PREP_LOG_MUT LOG_EXE1(LOG_UCS) abort();
+}
+void cap::logger::LOG_LC(LOG_A2)
+{
+	PREP_LOG_MUT LOG_EXE2(LOG_UCS) abort();
+}
+void cap::logger::LOG_LC(LOG_A3)
+{
+	PREP_LOG_MUT LOG_EXE3(LOG_UCS) abort();
+}
+void cap::logger::LOG_LC(LOG_A4)
+{
+	PREP_LOG_MUT LOG_EXE4(LOG_UCS) abort();
+}
 
-void cap::logger::LOG_LCR(LOG_A1) { PREP_LOG_RAW LOG_EXE1(LOG_UCS) abort(); }
-void cap::logger::LOG_LCR(LOG_A2) { PREP_LOG_RAW LOG_EXE2(LOG_UCS) abort(); }
-void cap::logger::LOG_LCR(LOG_A3) { PREP_LOG_RAW LOG_EXE3(LOG_UCS) abort(); }
-void cap::logger::LOG_LCR(LOG_A4) { PREP_LOG_RAW LOG_EXE4(LOG_UCS) abort(); }
+void cap::logger::LOG_LCR(LOG_A1)
+{
+	PREP_LOG_RAW LOG_EXE1(LOG_UCS) abort();
+}
+void cap::logger::LOG_LCR(LOG_A2)
+{
+	PREP_LOG_RAW LOG_EXE2(LOG_UCS) abort();
+}
+void cap::logger::LOG_LCR(LOG_A3)
+{
+	PREP_LOG_RAW LOG_EXE3(LOG_UCS) abort();
+}
+void cap::logger::LOG_LCR(LOG_A4)
+{
+	PREP_LOG_RAW LOG_EXE4(LOG_UCS) abort();
+}
 
 #undef LOG_LC
 #undef LOG_LCR

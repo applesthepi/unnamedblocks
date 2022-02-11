@@ -84,7 +84,11 @@ static void thread_execution(cap::execution_thread* thr)
 	}
 }
 
-cap::execution_thread::execution_thread(u64 function_start, u64* function_call_count, cap::execution_thread::function_stack_list calls, cap::mod::block::pass* pass)
+cap::execution_thread::execution_thread(
+	u64 function_start,
+	u64* function_call_count,
+	cap::execution_thread::function_stack_list calls,
+	cap::mod::block::pass* pass)
 	: m_function_start(function_start)
 	, m_function_call_count(function_call_count)
 	, m_calls(calls)
@@ -100,29 +104,65 @@ cap::execution_thread::execution_thread(u64 function_start, u64* function_call_c
 	m_thread = std::thread(thread_execution, this);
 }
 
-u64 cap::execution_thread::get_function_start() { return m_function_start; }
+u64 cap::execution_thread::get_function_start()
+{
+	return m_function_start;
+}
 
-const u64* cap::execution_thread::get_function_call_count() { return m_function_call_count; }
+const u64* cap::execution_thread::get_function_call_count()
+{
+	return m_function_call_count;
+}
 
-const cap::execution_thread::function_stack_list& cap::execution_thread::get_calls() { return m_calls; }
+const cap::execution_thread::function_stack_list& cap::execution_thread::get_calls()
+{
+	return m_calls;
+}
 
-const std::atomic<bool>& cap::execution_thread::get_finished() { return m_finished; }
+const std::atomic<bool>& cap::execution_thread::get_finished()
+{
+	return m_finished;
+}
 
-const std::atomic<bool>& cap::execution_thread::get_kill() { return m_kill; }
+const std::atomic<bool>& cap::execution_thread::get_kill()
+{
+	return m_kill;
+}
 
-const std::atomic<bool>& cap::execution_thread::get_breaked() { return m_breaked; }
+const std::atomic<bool>& cap::execution_thread::get_breaked()
+{
+	return m_breaked;
+}
 
-const std::atomic<bool>* cap::execution_thread::get_resume() { return m_resume; }
+const std::atomic<bool>* cap::execution_thread::get_resume()
+{
+	return m_resume;
+}
 
-const std::atomic<bool>& cap::execution_thread::get_step() { return m_step; }
+const std::atomic<bool>& cap::execution_thread::get_step()
+{
+	return m_step;
+}
 
-cap::mod::block::pass* cap::execution_thread::get_pass() { return m_pass; }
+cap::mod::block::pass* cap::execution_thread::get_pass()
+{
+	return m_pass;
+}
 
-void cap::execution_thread::set_finished(bool finished) { m_finished = finished; }
+void cap::execution_thread::set_finished(bool finished)
+{
+	m_finished = finished;
+}
 
-void cap::execution_thread::set_step(bool step) { m_step = step; }
+void cap::execution_thread::set_step(bool step)
+{
+	m_step = step;
+}
 
-void cap::execution_thread::set_break(bool breaked) { m_breaked = breaked; }
+void cap::execution_thread::set_break(bool breaked)
+{
+	m_breaked = breaked;
+}
 
 void cap::execution_thread::end()
 {

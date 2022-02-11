@@ -22,6 +22,7 @@ public:
 	bool has_data() override;
 	rhr::stack::argument::argument::padding_style get_padding_style() override;
 	void set_plane_offset(glm::vec<2, i32>* plane_offset) override;
+
 private:
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 	void ui_render() override;
