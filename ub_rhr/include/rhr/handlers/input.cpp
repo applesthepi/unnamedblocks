@@ -263,8 +263,13 @@ void InputHandler::FireMouseScroll(f32 scroll)
 {
 	std::unique_lock lock(m_MouseMutex);
 
+	MouseOperation op = MouseOperation::ScrollVertical;
+
+	if (m_ShiftDown)
+		op = MouseOperation::ScrollHorizontal;
+
 	for (usize i = 0; i < m_MouseCallbacks.size(); i++)
-		m_MouseCallbacks[i](m_MousePosition, scroll, MouseOperation::Scroll, m_LastMouseButton, m_MouseDatas[i]);
+		m_MouseCallbacks[i](m_MousePosition, scroll, op, m_LastMouseButton, m_MouseDatas[i]);
 }
 
 glm::vec<2, i32> InputHandler::GetMousePosition() { return m_MousePosition; }

@@ -8,7 +8,7 @@
 rhr::stack::argument::real::real(const cap::color& color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
 	: rhr::stack::argument::argument(color, function_collection_update, plane_offset)
 	, m_text(std::make_shared<rhr::render::object::text>(
-		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true))
+		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true, plane_offset))
 	, m_decor_left_top(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_left_bottom(std::make_shared<rhr::render::object::object>(true))
 	, m_decor_right_top(std::make_shared<rhr::render::object::object>(true))
@@ -31,16 +31,11 @@ rhr::stack::argument::real::real(const cap::color& color, std::function<void()>*
 		(*m_function_collection_update)();
 	};
 
-	m_decor_left_top->set_weak(m_decor_left_top);
 	m_decor_left_top->set_offset(plane_offset);
-	m_decor_left_bottom->set_weak(m_decor_left_bottom);
 	m_decor_left_bottom->set_offset(plane_offset);
-	m_decor_right_top->set_weak(m_decor_right_top);
 	m_decor_right_top->set_offset(plane_offset);
-	m_decor_right_bottom->set_weak(m_decor_right_bottom);
 	m_decor_right_bottom->set_offset(plane_offset);
 
-	m_text->set_weak(m_text);
 	m_text->set_offset(plane_offset);
 	m_text->set_update_function(&m_function_text_update);
 	m_text->set_weak_field(m_text);

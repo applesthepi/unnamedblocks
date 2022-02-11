@@ -9,6 +9,7 @@
 
 namespace rhr::handler
 {
+/// TODO: Tie field handler to each *panel* with there own offset pointers through an interface.
 ///
 class field
 {
@@ -20,19 +21,25 @@ public:
 	void render();
 
 	///
+	void update_buffers();
+
+	///
+	void reload_swap_chain();
+
+	///
 	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
 
 	///
 	void text_button(InputHandler::key_state state);
 
 	///
-	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer);
+	rhr::handler::field_data::location register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer/*, glm::vec<2, i32>* plane_offset*/);
 
 	///
 	void unregister_field(const rhr::handler::field_data::location& location);
 
 	///
-	rhr::handler::field_data::location update_field_position(const rhr::handler::field_data::location& location, glm::vec<2, i32> position);
+	rhr::handler::field_data::location update_field_position(const rhr::handler::field_data::location& location, glm::vec<2, i32> position/*, glm::vec<2, i32>* plane_offset*/);
 
 	///
 	void update_field_size(const rhr::handler::field_data::location& location, glm::vec<2, i32> size);

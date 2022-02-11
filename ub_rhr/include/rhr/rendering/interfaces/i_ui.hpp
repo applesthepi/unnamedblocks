@@ -12,9 +12,6 @@ public:
 	i_ui();
 	typedef u8 transform_update_spec;
 
-	///
-	void set_weak(std::weak_ptr<i_ui> weak);
-
 	/// Possible buffer update, use flags to make sure you need to call this.
 	/// \param offset This object's physical position (render space). See (TODO: link) for more clarification.
 	/// \param update_child Notifies this of a transform update using i_ui::transform_update_spec_position
@@ -94,6 +91,12 @@ public:
 	bool get_enabled();
 
 	///
+	//void serialize(std::string& buffer);
+
+	///
+	//void deserialize(std::string_view buffer);
+
+	///
 	void render();
 
 	///
@@ -113,6 +116,9 @@ protected:
 	virtual void ui_transform_update(i_ui::transform_update_spec transform_update_spec);
 
 	///
+	virtual void ui_frame_update(f64 delta_time);
+
+	///
 	virtual void ui_render();
 
 	///
@@ -125,7 +131,10 @@ protected:
 	virtual void ui_chain_update_buffers();
 
 	///
-	virtual void ui_frame_update(f64 delta_time);
+	//virtual void ui_serialize(std::string& buffer);
+
+	///
+	//virtual void ui_deserialize(std::string_view buffer);
 
 	///
 	static transform_update_spec transform_update_spec_position;
@@ -171,9 +180,6 @@ private:
 	bool m_dirty;
 
 	///
-	bool m_weak_set;
-
-	///
-	std::weak_ptr<i_ui> m_weak;
+	std::string m_serialized_data;
 };
 } // namespace rhr::render::interfaces

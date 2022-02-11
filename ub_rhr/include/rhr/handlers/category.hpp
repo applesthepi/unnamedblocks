@@ -49,7 +49,6 @@ private:
 		mod_group(const cap::color& primary_color, const cap::color& secondary_color)
 		//			: mod_button(std::make_shared<rhr::render::object::button>(primary_color, secondary_color))
 		{
-			//			mod_button->set_weak(mod_button);
 			enabled = true;
 		}
 

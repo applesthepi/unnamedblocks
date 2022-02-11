@@ -26,6 +26,7 @@ rhr::handler::field_data::data::data(
 	usize idx, glm::vec<2, i32> position, glm::vec<2, i32> size, std::weak_ptr<rhr::render::interfaces::i_field>&& text_field, location location, bool is_host)
 	: m_idx(idx)
 	, m_position(position)
+	//, m_plane_offset(plane_offset)
 	, m_size(size)
 	, m_host_size({0, 0})
 	, m_text_field(text_field)
@@ -40,6 +41,16 @@ rhr::handler::field_data::data::data(
 glm::vec<2, i32> rhr::handler::field_data::data::get_position() { return m_position; }
 
 void rhr::handler::field_data::data::set_position(glm::vec<2, i32> position) { m_position = position; }
+
+glm::vec<2, i32>* rhr::handler::field_data::data::get_plane_offset()
+{
+	return m_plane_offset;
+}
+
+void rhr::handler::field_data::data::set_plane_offset(glm::vec<2, i32>* plane_offset)
+{
+	m_plane_offset = plane_offset;
+}
 
 glm::vec<2, i32> rhr::handler::field_data::data::get_size() { return m_size; }
 

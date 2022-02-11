@@ -13,7 +13,6 @@ rhr::render::object::rectangle::rectangle()
 	, m_overhang_horizontal(rhr::render::cardinal::local_horizontal::RIGHT)
 	, m_overhang_vertical(rhr::render::cardinal::local_vertical::DOWN)
 {
-	m_render_object->set_weak(m_render_object);
 }
 
 void rhr::render::object::rectangle::set_offset(glm::vec<2, i32>* offset)

@@ -30,7 +30,6 @@ rhr::stack::block::block(const std::string& unlocalized_name, glm::vec<2, i32>* 
 	};
 
 	m_mod_category = rhr::registry::block::get_registry().get_categories(m_mod_block->get_category())->category_mod_category;
-	m_background->set_weak(m_background);
 	m_background->set_offset(plane_offset);
 	m_background->set_color(m_mod_category->get_color() /*cap::color().from_u8({ 200, 200, 200, 0 })*/);
 	m_background->set_depth(rhr::render::renderer::depth_block);
@@ -206,7 +205,6 @@ void rhr::stack::block::update_arguments()
 		if (argument_init[i].get_type() == cap::mod::block::block::argument::type::TEXT)
 		{
 			std::shared_ptr<rhr::stack::argument::text> arg = std::make_shared<rhr::stack::argument::text>(arg_color, &m_function_block_update, m_plane_offset);
-			arg->set_weak(arg);
 
 			m_arguments.push_back(arg);
 			last_arg = arg;
@@ -222,7 +220,6 @@ void rhr::stack::block::update_arguments()
 		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::REAL)
 		{
 			std::shared_ptr<rhr::stack::argument::real> arg = std::make_shared<rhr::stack::argument::real>(arg_color, &m_function_block_update, m_plane_offset);
-			arg->set_weak(arg);
 
 			m_arguments.push_back(arg);
 			last_arg = arg;
@@ -238,7 +235,6 @@ void rhr::stack::block::update_arguments()
 		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::STRING)
 		{
 			std::shared_ptr<rhr::stack::argument::string> arg = std::make_shared<rhr::stack::argument::string>(arg_color, &m_function_block_update, m_plane_offset);
-			arg->set_weak(arg);
 
 			m_arguments.push_back(arg);
 			last_arg = arg;
@@ -254,7 +250,6 @@ void rhr::stack::block::update_arguments()
 		else if (argument_init[i].get_type() == cap::mod::block::block::argument::type::BOOL)
 		{
 			std::shared_ptr<rhr::stack::argument::boolean> arg = std::make_shared<rhr::stack::argument::boolean>(arg_color, &m_function_block_update, m_plane_offset);
-			arg->set_weak(arg);
 
 			m_arguments.push_back(arg);
 

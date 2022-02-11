@@ -95,10 +95,8 @@ void rhr::handler::category::populate()
 		//		group.mod_button->set_callback(button_callback_mod, category_idx);
 		//
 		//		group.mod_button_render_frame = std::make_shared<rhr::render::frame>();
-		//		group.mod_button_render_frame->set_weak(group.mod_button_render_frame);
 		//
 		//		group.categories_render_frame = std::make_shared<rhr::render::frame>();
-		//		group.categories_render_frame->set_weak(group.categories_render_frame);
 
 		//		m_render_frame->add_frame(group.mod_button_render_frame, rhr::render::cardinal::local::DOWN);
 		//		group.categories_frame_idx = m_render_frame->add_frame(group.categories_render_frame, rhr::render::cardinal::local::DOWN);
@@ -119,8 +117,7 @@ void rhr::handler::category::populate()
 			active_catagories[a].mod_group_category = static_cast<u16>(a);
 
 			std::shared_ptr<rhr::render::object::button_text> button =
-				std::make_shared<rhr::render::object::button_text>(cap::color::black, cap::color::background_color_3, binned_catagories[i][a]->get_display_name());
-			button->set_weak(button);
+				std::make_shared<rhr::render::object::button_text>(cap::color::black, cap::color::background_color_3, binned_catagories[i][a]->get_display_name(), nullptr);
 			button->set_color_secondary(binned_catagories[i][a]->get_color());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);
@@ -140,15 +137,12 @@ void rhr::handler::category::populate()
 			for (usize b = 0; b < binned_blocks[i][a].size(); b++)
 			{
 				std::shared_ptr<rhr::stack::collection> collection = std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_offset());
-				collection->set_weak(collection);
 				collection->display_vanity(false);
 				collection->set_position_local_physical({0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b}, true);
 
 				std::shared_ptr<rhr::stack::stack> stack = std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_offset());
-				stack->set_weak(stack);
 
 				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(binned_blocks[i][a][b]->get_unlocalized_name(), rhr::stack::plane::toolbar_plane->get_offset());
-				block->set_weak(block);
 
 				stack->add_block(block);
 				collection->add_stack(stack);

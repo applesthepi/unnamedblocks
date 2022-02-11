@@ -1,10 +1,16 @@
 #include "project.hpp"
 
-#include "rhr/registries/block.hpp"
-#include "rhr/stacking/collection.hpp"
-#include "rhr/stacking/stack.hpp"
+void rhr::handler::project::load_project(const std::string& path)
+{
 
-using namespace cap::endianness;
+}
+
+void rhr::handler::project::save_project(const std::string& path)
+{
+
+}
+
+/*using namespace cap::endianness;
 
 inline void push(std::vector<char>& vec, u32 value)
 {
@@ -45,7 +51,7 @@ inline void push(std::vector<char>& vec, std::string_view value)
 		vec.push_back(i);
 	}
 }
-inline void push(std::vector<char>& vec, char value) { vec.push_back(value); }
+inline void push(std::vector<char>& vec, char value) { vec.push_back(value); }*/
 /*
 // Reads count elements and converts them to the native endian. Stores the result in buffer
 // Ensure buffer is atleast size * count bytes

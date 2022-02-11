@@ -7,7 +7,6 @@ rhr::render::object::button_image::button_image(const std::string& texture)
 	: rhr::render::object::button(cap::color::alpha, cap::color::alpha)
 	, m_rectangle(std::make_shared<rhr::render::object::rectangle>())
 {
-	m_rectangle->set_weak(m_rectangle);
 	m_rectangle->set_depth(rhr::render::renderer::depth_ui_background);
 	m_rectangle->set_texture(texture);
 }

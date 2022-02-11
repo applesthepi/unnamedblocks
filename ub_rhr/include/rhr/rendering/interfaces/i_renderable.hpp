@@ -12,9 +12,6 @@ public:
 	///
 	i_renderable();
 
-	/// Required to operate.
-	void set_weak(std::weak_ptr<i_renderable>&& weak);
-
 	/// Add draw calls to cmd buffer prebound by Renderer.
 	void render();
 
@@ -23,13 +20,6 @@ public:
 
 	/// Regenerates descriptor sets including uniforms.
 	void reload_swap_chain();
-
-	/// Gets the weak reference.
-	/// \return Weak reference to itself.
-	std::weak_ptr<i_renderable>& get_weak();
-
-	/// If i_renderable::set_weak() was run then this returns true.
-	bool is_weak();
 
 protected:
 	/// Add draw calls to cmd buffer prebound by Renderer.
@@ -40,9 +30,6 @@ protected:
 
 	/// Regenerates descriptor sets including uniforms.
 	virtual void on_reload_swap_chain();
-
-	/// Called when i_renderable::set_weak is called.
-	virtual void on_set_weak();
 
 	/// Called when i_renderable::mark_dirty is called.
 	virtual void on_mark_dirty();
@@ -55,11 +42,5 @@ protected:
 
 	/// Guarantees only one i_renderable::mark_dirty(); call.
 	bool m_dirty;
-
-	/// Flag if weak is set.
-	bool m_weak_set;
-
-	/// Weak reference to itself.
-	std::weak_ptr<i_renderable> m_weak;
 };
 } // namespace rhr::render::interfaces

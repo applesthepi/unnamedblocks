@@ -129,7 +129,6 @@ void rhr::render::renderer::initialize()
 	while (x < width)
 	{
 		auto& rect = grid_objects.emplace_back(std::make_shared<rhr::render::object::rectangle>());
-		rect->set_weak(rect);
 		rect->set_depth(depth_ui_background);
 
 		rect->set_size_local({ 1, height }, true);
@@ -141,7 +140,6 @@ void rhr::render::renderer::initialize()
 	while (y < height)
 	{
 		auto& rect = grid_objects.emplace_back(std::make_shared<rhr::render::object::rectangle>());
-		rect->set_weak(rect);
 		rect->set_depth(depth_ui_background);
 
 		rect->set_size_local({ width, 1 }, true);

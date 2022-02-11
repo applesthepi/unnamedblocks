@@ -10,7 +10,7 @@
 
 static i64 DEBUG_COUNT = 0;
 
-rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register)
+rhr::render::object::text::text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register, glm::vec<2, i32>* plane_offset)
 	: i_dicolorable(cap::color().from_normalized({0.0f, 0.0f, 0.0f, 1.0f}), cap::color().from_u8({25, 25, 25, 255}))
 	, m_depth(10)
 	, m_render_object_background(std::make_shared<rhr::render::object::object>(true))
@@ -23,9 +23,8 @@ rhr::render::object::text::text(rhr::registry::char_texture::texture_type textur
 	, m_registered(false)
 	, m_force_register(force_register)
 	, m_texture_type(texture_type)
+	, m_plane_offset(plane_offset)
 {
-	m_render_object_background->set_weak(m_render_object_background);
-	m_render_object_text->set_weak(m_render_object_text);
 	m_render_object_text->set_texture_char(texture_type, m_font_size);
 	m_render_object_text->set_enabled(false);
 }
@@ -275,7 +274,7 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 		if (position_virtual.x < 0 || position_virtual.y < 0)
 			unregister_field();
 		else
-			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual);
+			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(m_location.value(), position_virtual/*, m_plane_offset*/);
 	}
 }
 
@@ -405,7 +404,7 @@ void rhr::render::object::text::register_field()
 		if (!m_read_only)
 		{
 			m_location =
-				rhr::stack::plane::primary_plane->get_field().register_field(m_weak_field, get_position_virtual_absolute(), get_size_local(), InputHandler::BullishLayerArguments);
+				rhr::stack::plane::primary_plane->get_field().register_field(m_weak_field, get_position_virtual_absolute(), get_size_local(), InputHandler::BullishLayerArguments/*, m_plane_offset*/);
 		}
 	}
 }

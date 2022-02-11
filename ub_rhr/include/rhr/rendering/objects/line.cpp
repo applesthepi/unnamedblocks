@@ -10,7 +10,6 @@ rhr::render::object::line::line()
 	, m_point_2({100, 100})
 	, m_line_half_width(5)
 {
-	m_render_object->set_weak(m_render_object);
 }
 
 void rhr::render::object::line::set_depth(i32 depth)

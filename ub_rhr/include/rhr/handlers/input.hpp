@@ -31,7 +31,8 @@ enum class MouseOperation
 	TripplePress,
 	Release,
 	Move,
-	Scroll
+	ScrollVertical,
+	ScrollHorizontal
 };
 
 enum class MouseButton

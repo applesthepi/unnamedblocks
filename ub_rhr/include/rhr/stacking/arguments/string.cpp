@@ -7,7 +7,7 @@
 rhr::stack::argument::string::string(const cap::color& color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
 	: rhr::stack::argument::argument(color, function_collection_update, plane_offset)
 	, m_text(std::make_shared<rhr::render::object::text>(
-		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true))
+		  rhr::registry::char_texture::texture_type::LIGHT_NORMAL, rhr::stack::block::height_content, false, true, plane_offset))
 {
 	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 	{
@@ -26,7 +26,6 @@ rhr::stack::argument::string::string(const cap::color& color, std::function<void
 		(*m_function_collection_update)();
 	};
 
-	m_text->set_weak(m_text);
 	m_text->set_offset(plane_offset);
 	m_text->set_update_function(&m_function_text_update);
 	m_text->set_weak_field(m_text);

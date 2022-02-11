@@ -12,10 +12,10 @@ class project
 {
 public:
 	///
-	// static void LoadProject(const std::string& path);
+	static void load_project(const std::string& path);
 
 	///
-	// static void SaveProject(const std::string& path);
+	static void save_project(const std::string& path);
 
 	///
 	static std::string current_path;

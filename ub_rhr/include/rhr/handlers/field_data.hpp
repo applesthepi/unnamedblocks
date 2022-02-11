@@ -58,6 +58,12 @@ public:
 	void set_position(glm::vec<2, i32> position);
 
 	///
+	glm::vec<2, i32>* get_plane_offset();
+
+	///
+	void set_plane_offset(glm::vec<2, i32>* plane_offset);
+
+	///
 	glm::vec<2, i32> get_size();
 
 	///
@@ -93,6 +99,9 @@ private:
 
 	///
 	glm::vec<2, i32> m_position;
+
+	///
+	glm::vec<2, i32>* m_plane_offset;
 
 	///
 	glm::vec<2, i32> m_size;

@@ -15,7 +15,6 @@ rhr::render::object::button::button(const cap::color& primary_color, const cap::
 	, m_callback_data(nullptr)
 	, m_enable_fill_width(false)
 {
-	m_background->set_weak(m_background);
 	m_background->set_color(m_color_secondary);
 	m_background->set_depth(rhr::render::renderer::depth_ui_background);
 

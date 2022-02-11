@@ -39,8 +39,6 @@ rhr::handler::field::field()
 {
 	resize({5, 5});
 
-	m_rectangle_cursor->set_weak(m_rectangle_cursor);
-	m_rectangle_highlight->set_weak(m_rectangle_highlight);
 	m_rectangle_highlight->enable_border(false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_cursor->set_color(cap::color::text_primary_color);
@@ -92,8 +90,22 @@ void rhr::handler::field::render()
 		m_rectangle_highlight->render();
 }
 
+void rhr::handler::field::update_buffers()
+{
+	m_rectangle_cursor->update_buffers();
+	m_rectangle_highlight->update_buffers();
+}
+
+void rhr::handler::field::reload_swap_chain()
+{
+	m_rectangle_cursor->reload_swap_chain();
+	m_rectangle_highlight->reload_swap_chain();
+}
+
 void rhr::handler::field::mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
 {
+	position -= *rhr::stack::plane::primary_plane->get_offset();
+
 	std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
 
 	if (operation == MouseOperation::Move)
@@ -493,9 +505,16 @@ void rhr::handler::field::text_button(InputHandler::key_state state)
 }
 
 rhr::handler::field_data::location
-rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer)
+rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_field> text_field, glm::vec<2, i32> position, glm::vec<2, i32> size, u8 layer/*, glm::vec<2, i32>* plane_offset*/)
 {
-	glm::vec<2, usize> cell_position = calculate_cell_position(position);
+	glm::vec<2, usize> cell_position;
+
+	/*if (plane_offset != nullptr)
+		cell_position = calculate_cell_position(position + *plane_offset);
+	else*/
+
+	cell_position = calculate_cell_position(position);
+
 	resize(cell_position + glm::vec<2, usize>(1, 1));
 
 	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> cell = get_cell(cell_position);
@@ -503,7 +522,7 @@ rhr::handler::field::register_field(std::weak_ptr<rhr::render::interfaces::i_fie
 		cap::logger::error(cap::logger::level::SYSTEM, "rhr::handler::field::register_field failed");
 
 	rhr::handler::field_data::location local_location = rhr::handler::field_data::location(cell_position, m_idx, layer);
-	rhr::handler::field_data::data local_data(m_idx, position, size, std::move(text_field), local_location, true);
+	rhr::handler::field_data::data local_data(m_idx, position, /*plane_offset, */size, std::move(text_field), local_location, true);
 	local_data.copy_to_host();
 
 	push_data(local_location, local_data);
@@ -519,11 +538,16 @@ void rhr::handler::field::unregister_field(const rhr::handler::field_data::locat
 	remove_guests(location);
 }
 
-rhr::handler::field_data::location rhr::handler::field::update_field_position(const rhr::handler::field_data::location& location, glm::vec<2, i32> position)
+rhr::handler::field_data::location rhr::handler::field::update_field_position(const rhr::handler::field_data::location& location, glm::vec<2, i32> position/*, glm::vec<2, i32>* plane_offset*/)
 {
+	glm::vec<2, i32> local_position = position;
+
+	/*if (plane_offset != nullptr)
+		position += *plane_offset;*/
+
 	if (position.x < 0 || position.y < 0)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to update field position");
+		cap::logger::warn(cap::logger::level::SYSTEM, "failed to update field position; position is less then 0");
 		return location;
 	}
 
@@ -541,7 +565,7 @@ rhr::handler::field_data::location rhr::handler::field::update_field_position(co
 		if (!data.has_value())
 			return location;
 
-		data.value()->set_position(position);
+		data.value()->set_position(local_position);
 		update_guests(location);
 
 		return location;
@@ -558,7 +582,7 @@ rhr::handler::field_data::location rhr::handler::field::update_field_position(co
 		rhr::handler::field_data::location moved_cell_location = rhr::handler::field_data::location(cell_position, location.get_idx(), location.get_layer());
 
 		rhr::handler::field_data::data local_data = *data.value();
-		local_data.set_position(position);
+		local_data.set_position(local_position);
 		local_data.set_location(moved_cell_location);
 
 		remove_guests(location);
@@ -693,13 +717,13 @@ glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2
 void rhr::handler::field::update_cursor()
 {
 	m_rectangle_cursor->set_position_local_physical(
-		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset(), true);
+		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y) - rhr::stack::plane::primary_plane->get_position_virtual_offset() + *rhr::stack::plane::primary_plane->get_offset(), true);
 }
 
 void rhr::handler::field::update_highlight()
 {
 	m_rectangle_highlight->set_position_local_physical(
-		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset(), true);
+		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2) - rhr::stack::plane::primary_plane->get_position_virtual_offset() + *rhr::stack::plane::primary_plane->get_offset(), true);
 	m_rectangle_highlight->set_size_local({m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4}, true);
 }
 
@@ -968,7 +992,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			{
 				usize guest_idx = m_idx++;
 				rhr::handler::field_data::location guest_location({location.get_cell().x + x, location.get_cell().y + y}, guest_idx, location.get_layer());
-				rhr::handler::field_data::data guest_data(guest_idx, local_low, local_high - local_low, std::move(data.value()->get_text_field()), guest_location, false);
+				rhr::handler::field_data::data guest_data(guest_idx, local_low/*, data.value()->get_plane_offset()*/, local_high - local_low, std::move(data.value()->get_text_field()), guest_location, false);
 
 #if DEBUG_FIELDS
 				cap::logger::info("adding cell " + std::to_string(guest_location.get_cell().x) + ", " + std::to_string(guest_location.get_cell().y));

@@ -13,14 +13,7 @@ rhr::render::interfaces::i_ui::i_ui()
 	, m_size_parent({})
 	, m_enabled(true)
 	, m_dirty(false)
-	, m_weak_set(false)
 {}
-
-void rhr::render::interfaces::i_ui::set_weak(std::weak_ptr<i_ui> weak)
-{
-	m_weak	   = std::move(weak);
-	m_weak_set = true;
-}
 
 void rhr::render::interfaces::i_ui::set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child)
 {
@@ -120,6 +113,12 @@ void rhr::render::interfaces::i_ui::set_enabled(bool enabled) { m_enabled = enab
 
 bool rhr::render::interfaces::i_ui::get_enabled() { return m_enabled; }
 
+void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
+{
+	if (m_enabled)
+		ui_frame_update(delta_time);
+}
+
 void rhr::render::interfaces::i_ui::render()
 {
 	if (m_enabled)
@@ -137,12 +136,6 @@ void rhr::render::interfaces::i_ui::update_buffers()
 	}
 
 	ui_chain_update_buffers();
-}
-
-void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
-{
-	if (m_enabled)
-		ui_frame_update(delta_time);
 }
 
 void rhr::render::interfaces::i_ui::mark_dirty()
@@ -170,14 +163,3 @@ void rhr::render::interfaces::i_ui::ui_frame_update(f64 delta_time) {}
 rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_position = 0x1;
 
 rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_size = 0x2;
-
-bool rhr::render::interfaces::i_ui::is_weak()
-{
-	if (!m_weak_set)
-	{
-		cap::logger::warn(cap::logger::level::SYSTEM, "rhr::render::interfaces::i_ui::is_weak() returning false");
-		return false;
-	}
-
-	return true;
-}

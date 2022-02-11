@@ -18,7 +18,7 @@ class text
 	, public rhr::render::interfaces::i_field
 {
 public:
-	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register);
+	text(rhr::registry::char_texture::texture_type texture_type, u16 font_size, bool read_only, bool force_register, glm::vec<2, i32>* plane_offset);
 	~text();
 
 	///
@@ -158,5 +158,8 @@ private:
 
 	///
 	rhr::registry::char_texture::texture_type m_texture_type;
+
+	///
+	glm::vec<2, i32>* m_plane_offset;
 };
 } // namespace rhr::render::object

@@ -77,10 +77,8 @@ i32 main()
 		cap::logger::info(cap::logger::level::EDITOR, "all unsaved progress will be lost if this window is closed");
 
 		rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
-		rhr::stack::plane::primary_plane->set_weak(rhr::stack::plane::primary_plane);
 
 		rhr::stack::plane::toolbar_plane = std::make_shared<rhr::stack::plane>(true);
-		rhr::stack::plane::toolbar_plane->set_weak(rhr::stack::plane::toolbar_plane);
 	}
 
 	run();
@@ -95,20 +93,16 @@ i32 main()
 	// default blocks
 
 	std::shared_ptr<rhr::stack::collection> testCollection = std::make_shared<rhr::stack::collection>(rhr::stack::plane::primary_plane->get_offset());
-	testCollection->set_weak(testCollection);
 	testCollection->set_position_local_physical({200, 200}, true);
 	testCollection->set_size_local({500, 300}, true);
 
 	std::shared_ptr<rhr::stack::stack> testStack1 = std::make_shared<rhr::stack::stack>(rhr::stack::plane::primary_plane->get_offset());
-	testStack1->set_weak(testStack1);
 	testStack1->set_position_local_physical({0, 0}, true);
 
 	std::shared_ptr<rhr::stack::block> testBlock1 = std::make_shared<rhr::stack::block>("essentials_main", rhr::stack::plane::primary_plane->get_offset());
-	testBlock1->set_weak(testBlock1);
 	testStack1->add_block(testBlock1);
 
 	std::shared_ptr<rhr::stack::block> testBlock2 = std::make_shared<rhr::stack::block>("essentials_string_log", rhr::stack::plane::primary_plane->get_offset());
-	testBlock2->set_weak(testBlock2);
 	testStack1->add_block(testBlock2);
 
 	testCollection->add_stack(testStack1);
