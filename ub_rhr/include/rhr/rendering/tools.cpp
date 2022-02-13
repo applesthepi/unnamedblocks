@@ -43,7 +43,8 @@ bool rhr::render::tools::check_validation_layer_support()
 	available_validation_layers.resize(layer_count);
 	vkEnumerateInstanceLayerProperties(&layer_count, available_validation_layers.data());
 
-#if 1
+	bool layers_supported = true;
+
 	for (const char* layer_name : validation_layers)
 	{
 		bool layer_found = false;
@@ -60,15 +61,20 @@ bool rhr::render::tools::check_validation_layer_support()
 		if (!layer_found)
 		{
 			cap::logger::warn(cap::logger::level::SYSTEM, "layer \"" + std::string(layer_name) + "\" not supported");
-			return false;
+			layers_supported = false;
 		}
 	}
-#else
-	validation_layers.clear();
 
-	for (const auto& layer_properties : available_validation_layers)
-		validation_layers.push_back(layer_properties.layerName);
-#endif
+	if (!layers_supported)
+	{
+		validation_layers.clear();
+		cap::logger::warn(cap::logger::level::SYSTEM, "atleast one vulkan layer was not supported. Disabling all vulkan layers.");
+	}
+
+	//validation_layers.clear();
+	//
+	//for (const auto& layer_properties : available_validation_layers)
+	//	validation_layers.push_back(layer_properties.layerName);
 
 	for (const auto& validation_layer : validation_layers)
 		cap::logger::info(cap::logger::level::SYSTEM, "loading validation layer " + std::string(validation_layer));
