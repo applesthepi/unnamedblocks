@@ -6,6 +6,8 @@
 
 #include <cappuccino/utils.hpp>
 
+#define COLLECTION_SERIALIZE { "p_x", "p_y", "s_x", "s_y" }
+
 //#define COLLECTION_COLOR_OUTLINE_R 61
 //#define COLLECTION_COLOR_OUTLINE_G 61
 //#define COLLECTION_COLOR_OUTLINE_B 81
@@ -63,23 +65,14 @@ public:
 	const std::vector<std::shared_ptr<rhr::stack::stack>>& get_stacks();
 
 private:
-	///
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
-
-	///
-	void ui_render() override;
-
-	///
-	void ui_reload_swap_chain() override;
-
-	///
-	void ui_update_buffers() override;
-
-	///
-	void ui_chain_update_buffers() override;
-
-	///
 	void ui_frame_update(f64 delta_time) override;
+	void ui_render() override;
+	void ui_reload_swap_chain() override;
+	void ui_update_buffers() override;
+	void ui_chain_update_buffers() override;
+	void ui_serialize(rhr::handler::serializer::node& node) override;
+	void ui_deserialize(rhr::handler::serializer::node& node) override;
 
 	///
 	std::vector<std::shared_ptr<rhr::stack::stack>> m_stacks;

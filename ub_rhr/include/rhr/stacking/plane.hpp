@@ -58,23 +58,14 @@ public:
 	void render_master_pass();
 
 private:
-	///
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
-
-	///
-	void ui_render() override;
-
-	///
-	void ui_reload_swap_chain() override;
-
-	///
-	void ui_update_buffers() override;
-
-	///
-	void ui_chain_update_buffers() override;
-
-	///
 	void ui_frame_update(f64 delta_time) override;
+	void ui_render() override;
+	void ui_reload_swap_chain() override;
+	void ui_update_buffers() override;
+	void ui_chain_update_buffers() override;
+	void ui_serialize(rhr::handler::serializer::node& node) override;
+	void ui_deserialize(rhr::handler::serializer::node& node) override;
 
 	///
 	void select(u64 collection, u64 stack, u64 block, u64 argument);

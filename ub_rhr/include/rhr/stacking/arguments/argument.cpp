@@ -217,3 +217,63 @@ void rhr::stack::argument::argument::set_mode_restriction(
 
 void rhr::stack::argument::argument::on_set_mode(cap::mod::block::block::argument::variable_mode mode)
 {}
+
+void rhr::stack::argument::argument::ui_serialize(rhr::handler::serializer::node& node)
+{
+	node.data_names.reserve(2);
+	node.data_values.reserve(2);
+
+	node.data_names.emplace_back("mode");
+	node.data_names.emplace_back("data");
+
+	switch (m_mode)
+	{
+	case cap::mod::block::block::argument::variable_mode::RAW:
+		node.data_values.emplace_back("0");
+		break;
+	case cap::mod::block::block::argument::variable_mode::VAR:
+		node.data_values.emplace_back("1");
+		break;
+	default:
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			__FILE__,
+			__LINE__,
+			"unknown cap::mod::block::block::argument::variable_mode; using 0 instead");
+		node.data_values.emplace_back("0");
+		break;
+	}
+
+	node.data_values.emplace_back(m_data);
+}
+
+void rhr::stack::argument::argument::ui_deserialize(rhr::handler::serializer::node& node)
+{
+	if (!node.verify_data(ARGUMENT_SERIALIZE))
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize argument");
+		return;
+	}
+
+	char variable_mode_char = node.data_values[0][0];
+
+	switch (variable_mode_char)
+	{
+	case '0':
+		set_mode(cap::mod::block::block::argument::variable_mode::RAW);
+		break;
+	case '1':
+		set_mode(cap::mod::block::block::argument::variable_mode::VAR);
+		break;
+	default:
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			__FILE__,
+			__LINE__,
+			"unknown index of cap::mod::block::block::argument::variable_mode; using RAW instead");
+		set_mode(cap::mod::block::block::argument::variable_mode::RAW);
+		break;
+	}
+
+	set_data(node.data_values[1]);
+}

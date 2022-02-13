@@ -7,11 +7,14 @@
 #include "rhr/rendering/panel.hpp"
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/tools.hpp"
+#include "rhr/handlers/serializer.hpp"
 
 #if LINUX
 #include <dlfcn.h>
 #else
 #include <windows.h>
+#include <rhr/handlers/project.hpp>
+
 #endif
 
 // include last, has defines that conflict with enums
@@ -135,6 +138,20 @@ i32 main()
 	glfwGetWindowPos(rhr::render::renderer::get_window_primary()->get_window(), &window_position.x, &window_position.y);
 	rhr::render::renderer::get_window_primary()->set_window_position(window_position);
 
+	/*rhr::handler::serializer::node child_node_1;
+	child_node_1.data_names = { "name1", "name2" };
+	child_node_1.data_values = { "value1", "value2" };
+
+	rhr::handler::serializer::node base_node;
+	base_node.data_names = { "name1", "name2" };
+	base_node.data_values = { "value1", "value2" };
+
+	base_node.children.push_back(child_node_1);
+
+	rhr::handler::serializer serial(base_node);
+	auto& serial_output = serial.serialize();
+	LOG_DEBUG(serial_output);*/
+
 	while (!glfwWindowShouldClose(rhr::render::renderer::get_window_primary()->get_window()))
 	{
 		// TODO: config
@@ -198,6 +215,16 @@ i32 main()
 
 			if (ImGui::Button("run"))
 				rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("save"))
+				rhr::handler::project::save_project("test.ub");
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("load"))
+				rhr::handler::project::load_project("test.ub");
 
 			if (opt_fullscreen)
 				ImGui::PopStyleVar(2);

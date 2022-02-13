@@ -8,6 +8,8 @@
 #include <cappuccino/mod/block/block.hpp>
 #include <cappuccino/utils.hpp>
 
+#define ARGUMENT_SERIALIZE { "mode", "data" }
+
 namespace rhr::stack::argument
 {
 /// Base class for visual block arguments.
@@ -113,5 +115,9 @@ protected:
 
 	///
 	glm::vec<2, i32>* m_plane_offset;
+
+private:
+	void ui_serialize(rhr::handler::serializer::node& node) override;
+	void ui_deserialize(rhr::handler::serializer::node& node) override;
 };
 } // namespace rhr::stack::argument

@@ -273,6 +273,12 @@ void rhr::stack::collection::ui_transform_update(i_ui::transform_update_spec tra
 		update_child_transform(stack, true);
 }
 
+void rhr::stack::collection::ui_frame_update(f64 delta_time)
+{
+	for (auto& stack : m_stacks)
+		stack->frame_update(delta_time);
+}
+
 void rhr::stack::collection::ui_render()
 {
 	if (m_display_vanity)
@@ -301,8 +307,53 @@ void rhr::stack::collection::ui_chain_update_buffers()
 		stack->update_buffers();
 }
 
-void rhr::stack::collection::ui_frame_update(f64 delta_time)
+void rhr::stack::collection::ui_serialize(rhr::handler::serializer::node& node)
 {
+	node.data_names.reserve(4);
+	node.data_values.reserve(4);
+	node.children.reserve(m_stacks.size());
+
+	node.data_names.emplace_back("p_x");
+	node.data_names.emplace_back("p_y");
+	node.data_names.emplace_back("s_x");
+	node.data_names.emplace_back("s_y");
+
+	node.data_values.emplace_back(std::to_string(get_position_local_physical().x));
+	node.data_values.emplace_back(std::to_string(get_position_local_physical().y));
+	node.data_values.emplace_back(std::to_string(get_size_local().x));
+	node.data_values.emplace_back(std::to_string(get_size_local().y));
+
 	for (auto& stack : m_stacks)
-		stack->frame_update(delta_time);
+	{
+		auto& child_node = node.children.emplace_back();
+		stack->serialize(child_node);
+	}
+}
+
+void rhr::stack::collection::ui_deserialize(rhr::handler::serializer::node& node)
+{
+	if (!node.verify_data(COLLECTION_SERIALIZE))
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize collection");
+		return;
+	}
+
+	set_position_local_physical({
+		std::stoi(node.data_values[0]),
+		std::stoi(node.data_values[1])
+	}, true);
+
+	set_size_local({
+		std::stoi(node.data_values[2]),
+		std::stoi(node.data_values[3])
+	}, true);
+
+	remove_all();
+
+	for (auto& child : node.children)
+	{
+		auto stack = std::make_shared<rhr::stack::stack>(m_plane_offset);
+		add_stack(stack, false);
+		stack->deserialize(child);
+	}
 }

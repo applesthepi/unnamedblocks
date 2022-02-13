@@ -6,6 +6,8 @@
 
 #include <cappuccino/utils.hpp>
 
+#define STACK_SERIALIZE { "p_x", "p_y", "s_x", "s_y" }
+
 namespace rhr::stack
 {
 ///
@@ -49,23 +51,17 @@ public:
 	void set_collection_update_function(std::function<void()>* function_collection_update);
 
 private:
-	///
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
-
-	///
-	void ui_render() override;
-
-	///
-	void ui_reload_swap_chain() override;
-
-	///
-	void ui_update_buffers() override;
-
-	///
-	void ui_chain_update_buffers() override;
-
-	///
 	void ui_frame_update(f64 delta_time) override;
+	void ui_render() override;
+	void ui_reload_swap_chain() override;
+	void ui_update_buffers() override;
+	void ui_chain_update_buffers() override;
+	void ui_serialize(rhr::handler::serializer::node& node) override;
+	void ui_deserialize(rhr::handler::serializer::node& node) override;
+
+	///
+	void remove_all();
 
 	///
 	std::vector<std::shared_ptr<rhr::stack::block>> m_blocks;

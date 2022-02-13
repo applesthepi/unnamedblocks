@@ -1,6 +1,8 @@
 #pragma once
 #include "config.h"
 
+#include "rhr/handlers/serializer.hpp"
+
 #include <cappuccino/utils.hpp>
 
 namespace rhr::render::interfaces
@@ -94,10 +96,13 @@ public:
 	bool get_enabled();
 
 	///
-	// void serialize(std::string& buffer);
+	void serialize(rhr::handler::serializer::node& node);
 
 	///
-	// void deserialize(std::string_view buffer);
+	void deserialize(rhr::handler::serializer::node& node);
+
+	///
+	void frame_update(f64 delta_time);
 
 	///
 	void render();
@@ -107,9 +112,6 @@ public:
 
 	///
 	void update_buffers();
-
-	///
-	void frame_update(f64 delta_time);
 
 protected:
 	///
@@ -134,10 +136,10 @@ protected:
 	virtual void ui_chain_update_buffers();
 
 	///
-	// virtual void ui_serialize(std::string& buffer);
+	virtual void ui_serialize(rhr::handler::serializer::node& node);
 
 	///
-	// virtual void ui_deserialize(std::string_view buffer);
+	virtual void ui_deserialize(rhr::handler::serializer::node& node);
 
 	///
 	static transform_update_spec transform_update_spec_position;
@@ -146,9 +148,6 @@ protected:
 	static transform_update_spec transform_update_spec_size;
 
 private:
-	///
-	bool is_weak();
-
 	///
 	glm::vec<2, i32> m_position_local_physical;
 

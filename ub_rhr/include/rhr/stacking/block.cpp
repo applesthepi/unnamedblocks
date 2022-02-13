@@ -182,6 +182,12 @@ void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transfor
 		update_child_transform(arg, true);
 }
 
+void rhr::stack::block::ui_frame_update(f64 delta_time)
+{
+	for (auto& arg : m_arguments)
+		arg->frame_update(delta_time);
+}
+
 void rhr::stack::block::ui_render()
 {
 	m_background->render();
@@ -209,10 +215,35 @@ void rhr::stack::block::ui_chain_update_buffers()
 		arg->update_buffers();
 }
 
-void rhr::stack::block::ui_frame_update(f64 delta_time)
+void rhr::stack::block::ui_serialize(rhr::handler::serializer::node& node)
 {
-	for (auto& arg : m_arguments)
-		arg->frame_update(delta_time);
+	node.data_names.reserve(1);
+	node.data_values.reserve(1);
+	node.children.reserve(m_arguments.size());
+
+	// Block does not need the unlocalized name, the stack uses it to spawn it.
+	node.data_names.emplace_back("un");
+	node.data_values.emplace_back(m_mod_block->get_unlocalized_name());
+
+	for (auto& argument : m_arguments)
+	{
+		auto& child_node = node.children.emplace_back();
+		argument->serialize(child_node);
+	}
+}
+
+void rhr::stack::block::ui_deserialize(rhr::handler::serializer::node& node)
+{
+	if (!node.verify_children(m_arguments.size()))
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize block; invalid argument count");
+		return;
+	}
+
+	for (usize i = 0; i < m_arguments.size(); i++)
+		m_arguments[i]->deserialize(node.children[i]);
+
+	update_width();
 }
 
 void rhr::stack::block::update_arguments()

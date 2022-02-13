@@ -152,6 +152,16 @@ bool rhr::render::interfaces::i_ui::get_enabled()
 	return m_enabled;
 }
 
+void rhr::render::interfaces::i_ui::serialize(rhr::handler::serializer::node& node)
+{
+	ui_serialize(node);
+}
+
+void rhr::render::interfaces::i_ui::deserialize(rhr::handler::serializer::node& node)
+{
+	ui_deserialize(node);
+}
+
 void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
 {
 	if (m_enabled)
@@ -183,11 +193,6 @@ void rhr::render::interfaces::i_ui::update_buffers()
 void rhr::render::interfaces::i_ui::mark_dirty()
 {
 	m_dirty = true;
-	// if (!is_weak() || m_dirty)
-	//	return;
-	//
-	// m_dirty = true;
-	// rhr::render::renderer::add_dirty(m_weak);
 }
 
 void rhr::render::interfaces::i_ui::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
@@ -212,3 +217,13 @@ rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_
 	0x1;
 
 rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_size = 0x2;
+
+void rhr::render::interfaces::i_ui::ui_serialize(rhr::handler::serializer::node& node)
+{
+
+}
+
+void rhr::render::interfaces::i_ui::ui_deserialize(rhr::handler::serializer::node& node)
+{
+
+}

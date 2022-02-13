@@ -120,6 +120,11 @@ const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_bl
 	return m_blocks;
 }
 
+void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
+{
+	m_function_collection_update = function_collection_update;
+}
+
 void rhr::stack::stack::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	for (usize i = 0; i < m_blocks.size(); i++)
@@ -127,6 +132,12 @@ void rhr::stack::stack::ui_transform_update(i_ui::transform_update_spec transfor
 		update_child_transform(m_blocks[i], 0x0);
 		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i}, true);
 	}
+}
+
+void rhr::stack::stack::ui_frame_update(f64 delta_time)
+{
+	for (auto& block : m_blocks)
+		block->frame_update(delta_time);
 }
 
 void rhr::stack::stack::ui_render()
@@ -150,13 +161,65 @@ void rhr::stack::stack::ui_chain_update_buffers()
 		block->update_buffers();
 }
 
-void rhr::stack::stack::ui_frame_update(f64 delta_time)
+void rhr::stack::stack::ui_serialize(rhr::handler::serializer::node& node)
 {
+	node.data_names.reserve(4);
+	node.data_values.reserve(4);
+	node.children.reserve(m_blocks.size());
+
+	node.data_names.emplace_back("p_x");
+	node.data_names.emplace_back("p_y");
+	node.data_names.emplace_back("s_x");
+	node.data_names.emplace_back("s_y");
+
+	node.data_values.emplace_back(std::to_string(get_position_local_physical().x));
+	node.data_values.emplace_back(std::to_string(get_position_local_physical().y));
+	node.data_values.emplace_back(std::to_string(get_size_local().x));
+	node.data_values.emplace_back(std::to_string(get_size_local().y));
+
 	for (auto& block : m_blocks)
-		block->frame_update(delta_time);
+	{
+		auto& child_node = node.children.emplace_back();
+		block->serialize(child_node);
+	}
 }
 
-void rhr::stack::stack::set_collection_update_function(std::function<void()>* function_collection_update)
+void rhr::stack::stack::ui_deserialize(rhr::handler::serializer::node& node)
 {
-	m_function_collection_update = function_collection_update;
+	if (!node.verify_data(STACK_SERIALIZE))
+	{
+		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize stack");
+		return;
+	}
+
+	set_position_local_physical({
+		std::stoi(node.data_values[0]),
+		std::stoi(node.data_values[1])
+	}, true);
+
+	set_size_local({
+		std::stoi(node.data_values[2]),
+		std::stoi(node.data_values[3])
+	}, true);
+
+	remove_all();
+
+	for (auto& child : node.children)
+	{
+		if (!child.verify_data(BLOCK_SERIALIZE))
+		{
+			cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize block");
+			return;
+		}
+
+		auto block = std::make_shared<rhr::stack::block>(child.data_values[0], m_plane_offset);
+		add_block(block);
+		block->deserialize(child);
+	}
+}
+
+void rhr::stack::stack::remove_all()
+{
+	m_blocks.clear();
+	update_size();
 }

@@ -1,10 +1,59 @@
 #include "project.hpp"
 
 void rhr::handler::project::load_project(const std::string& path)
-{}
+{
+	std::ifstream stream(path);
+
+	if (!stream)
+	{
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			__FILE__, __LINE__,
+			"failed to load project; opening file failed"
+		);
+		return;
+	}
+
+	stream.seekg(0, std::ifstream::end);
+	usize length = stream.tellg();
+	stream.seekg(0, std::ifstream::beg);
+
+	std::string buffer;
+	buffer.resize(length);
+
+	stream.read(buffer.data(), length);
+	stream.close();
+
+	rhr::handler::serializer::node base_node;
+	rhr::handler::serializer serial(base_node);
+	serial.deserialize(buffer);
+
+	rhr::stack::plane::primary_plane->deserialize(base_node);
+}
 
 void rhr::handler::project::save_project(const std::string& path)
-{}
+{
+	rhr::handler::serializer::node base_node;
+	rhr::stack::plane::primary_plane->serialize(base_node);
+
+	rhr::handler::serializer serial(base_node);
+	auto& buffer = serial.serialize();
+
+	std::ofstream stream(path);
+
+	if (!stream)
+	{
+		cap::logger::error(
+			cap::logger::level::EDITOR,
+			__FILE__, __LINE__,
+			"failed to save project; opening file failed"
+		);
+		return;
+	}
+
+	stream.write(buffer.c_str(), buffer.size());
+	stream.close();
+}
 
 /*using namespace cap::endianness;
 

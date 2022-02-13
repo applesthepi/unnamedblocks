@@ -9,6 +9,8 @@
 #include <cappuccino/utils.hpp>
 #include <espresso/mod/category.hpp>
 
+#define BLOCK_SERIALIZE { "un" }
+
 namespace rhr::stack
 {
 ///
@@ -23,12 +25,6 @@ public:
 
 	///
 	glm::vec<2, i32>* get_plane_offset();
-
-	/// Builds data everytime so be careful when you call it.
-	const std::string& get_data();
-
-	///
-	void set_data(const std::string& data);
 
 	///
 	const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& get_arguments();
@@ -51,6 +47,9 @@ public:
 	///
 	void set_stack_update_function(std::function<void()>* function_stack_update);
 
+	const std::string& get_data();
+	void set_data(const std::string& data);
+
 	///
 	static i16 padding;
 
@@ -61,23 +60,14 @@ public:
 	static i16 height_content;
 
 private:
-	///
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
-
-	///
-	void ui_render() override;
-
-	///
-	void ui_reload_swap_chain() override;
-
-	///
-	void ui_update_buffers() override;
-
-	///
-	void ui_chain_update_buffers() override;
-
-	///
 	void ui_frame_update(f64 delta_time) override;
+	void ui_render() override;
+	void ui_reload_swap_chain() override;
+	void ui_update_buffers() override;
+	void ui_chain_update_buffers() override;
+	void ui_serialize(rhr::handler::serializer::node& node) override;
+	void ui_deserialize(rhr::handler::serializer::node& node) override;
 
 	///
 	void update_arguments();

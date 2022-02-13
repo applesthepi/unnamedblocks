@@ -533,6 +533,23 @@ void rhr::stack::plane::ui_transform_update(i_ui::transform_update_spec transfor
 		update_child_transform(collection, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 }
 
+void rhr::stack::plane::ui_frame_update(f64 delta_time)
+{
+	m_background->frame_update(delta_time);
+
+	for (auto& collection : m_collections)
+		collection->frame_update(delta_time);
+
+	if (dragging_stack() || dragging_collection())
+	{
+		m_dragging_collection->frame_update(delta_time);
+		m_dragging_connecting_line->frame_update(delta_time);
+	}
+
+	if (dragging_stack())
+		dragging_stack_update();
+}
+
 void rhr::stack::plane::ui_render()
 {
 	for (auto& collection : m_collections)
@@ -576,21 +593,25 @@ void rhr::stack::plane::ui_chain_update_buffers()
 	m_field.update_buffers();
 }
 
-void rhr::stack::plane::ui_frame_update(f64 delta_time)
+void rhr::stack::plane::ui_serialize(rhr::handler::serializer::node& node)
 {
-	m_background->frame_update(delta_time);
-
 	for (auto& collection : m_collections)
-		collection->frame_update(delta_time);
-
-	if (dragging_stack() || dragging_collection())
 	{
-		m_dragging_collection->frame_update(delta_time);
-		m_dragging_connecting_line->frame_update(delta_time);
+		auto& child_node = node.children.emplace_back();
+		collection->serialize(child_node);
 	}
+}
 
-	if (dragging_stack())
-		dragging_stack_update();
+void rhr::stack::plane::ui_deserialize(rhr::handler::serializer::node& node)
+{
+	delete_contents();
+
+	for (auto& child : node.children)
+	{
+		auto collection = std::make_shared<rhr::stack::collection>(&m_offset);
+		add_collection(collection, true);
+		collection->deserialize(child);
+	}
 }
 
 std::shared_ptr<rhr::stack::plane> rhr::stack::plane::primary_plane;
