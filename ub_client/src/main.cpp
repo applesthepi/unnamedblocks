@@ -8,13 +8,12 @@
 #include "rhr/rendering/renderer.hpp"
 #include "rhr/rendering/tools.hpp"
 #include "rhr/handlers/serializer.hpp"
+#include "rhr/handlers/project.hpp"
 
 #if LINUX
 #include <dlfcn.h>
 #else
 #include <windows.h>
-#include <rhr/handlers/project.hpp>
-
 #endif
 
 // include last, has defines that conflict with enums
