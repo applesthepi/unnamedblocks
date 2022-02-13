@@ -415,14 +415,14 @@ const std::string& rhr::render::object::text::get_text()
 }
 
 void rhr::render::object::text::mouse_button(
-	glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 {
 	if (m_mouse_button != nullptr)
 		m_mouse_button(position, scroll, operation, button);
 }
 
 void rhr::render::object::text::set_mouse_button(
-	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>&
+	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>&
 		mouse_button)
 {
 	m_mouse_button = mouse_button;
@@ -454,7 +454,7 @@ void rhr::render::object::text::register_field()
 				m_weak_field,
 				get_position_virtual_absolute(),
 				get_size_local(),
-				InputHandler::BullishLayerArguments /*, m_plane_offset*/);
+				rhr::handler::input::bullish_layer_arguments /*, m_plane_offset*/);
 		}
 	}
 }

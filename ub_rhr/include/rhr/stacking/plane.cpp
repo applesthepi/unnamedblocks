@@ -4,13 +4,13 @@
 #include "rhr/rendering/renderer.hpp"
 
 static void primary_plane_mouse_button(
-	glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
+	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
 {
 	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation, button);
 }
 
 static void toolbar_plane_mouse_button(
-	glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
+	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
 {
 	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation, button);
 }
@@ -26,9 +26,9 @@ rhr::stack::plane::plane(bool toolbar)
 	, m_offset {}
 {
 	if (toolbar)
-		InputHandler::RegisterMouseCallback(toolbar_plane_mouse_button, nullptr);
+		rhr::handler::input::register_mouse_callback(toolbar_plane_mouse_button, nullptr);
 	else
-		InputHandler::RegisterMouseCallback(primary_plane_mouse_button, nullptr);
+		rhr::handler::input::register_mouse_callback(primary_plane_mouse_button, nullptr);
 
 	update_child_transform(m_background, i_ui::transform_update_spec_position);
 
@@ -113,9 +113,9 @@ void rhr::stack::plane::delete_contents(bool disable_collections)
 }
 
 void rhr::stack::plane::mouse_button(
-	glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 {
-	if (operation == MouseOperation::ScrollVertical)
+	if (operation == rhr::handler::input::mouse_operation::SCROLL_VERTICAL)
 	{
 		auto& virtual_position = get_position_virtual_absolute();
 		auto& virtual_size	   = get_size_local();
@@ -124,7 +124,7 @@ void rhr::stack::plane::mouse_button(
 			&& position.y >= virtual_position.y && position.y < virtual_position.y + virtual_size.y)
 			m_offset.y += static_cast<i32>(scroll * 100.0f);
 	}
-	else if (operation == MouseOperation::ScrollHorizontal)
+	else if (operation == rhr::handler::input::mouse_operation::SCROLL_HORIZONTAL)
 	{
 		auto& virtual_position = get_position_virtual_absolute();
 		auto& virtual_size	   = get_size_local();
@@ -134,7 +134,7 @@ void rhr::stack::plane::mouse_button(
 			m_offset.x += static_cast<i32>(scroll * 100.0f);
 	}
 
-	if (operation != MouseOperation::Press && operation != MouseOperation::Release)
+	if (operation != rhr::handler::input::mouse_operation::PRESS && operation != rhr::handler::input::mouse_operation::RELEASE)
 		return;
 
 	if ((m_toolbar && rhr::stack::plane::primary_plane->dragging_stack())
@@ -145,12 +145,12 @@ void rhr::stack::plane::mouse_button(
 
 	if (dragging_stack())
 	{
-		if (operation == MouseOperation::Release && !m_dragging_up)
+		if (operation == rhr::handler::input::mouse_operation::RELEASE && !m_dragging_up)
 		{
 			// dragging and mouse released (used when dragging a stack)
 			undrag(position);
 		}
-		else if (operation == MouseOperation::Press && m_dragging_up)
+		else if (operation == rhr::handler::input::mouse_operation::PRESS && m_dragging_up)
 		{
 			// dragging and mouse pressed (used when duplicating stack)
 			undrag(position);
@@ -195,11 +195,11 @@ void rhr::stack::plane::mouse_button(
 						if (position.x >= block_position.x && position.x < block_position.x + block_size.x
 							&& position.y >= block_position.y && position.y < block_position.y + block_size.y)
 						{
-							if (operation == MouseOperation::Press && !dragging_stack())
+							if (operation == rhr::handler::input::mouse_operation::PRESS && !dragging_stack())
 							{
 								// not dragging and mouse down
 
-								if (button == MouseButton::LEFT)
+								if (button == rhr::handler::input::mouse_button::LEFT)
 								{
 									unselect();
 
@@ -289,7 +289,7 @@ void rhr::stack::plane::mouse_button(
 
 									return;
 								}
-								else if (button == MouseButton::RIGHT)
+								else if (button == rhr::handler::input::mouse_button::RIGHT)
 								{
 									unselect();
 
@@ -658,7 +658,7 @@ void rhr::stack::plane::drag_collection(std::shared_ptr<rhr::stack::collection> 
 	m_dragging_up		  = up;
 	m_dragging_collection = collection;
 	m_dragging_stack.reset();
-	m_dragging_begin_mouse = InputHandler::GetMousePosition();
+	m_dragging_begin_mouse = rhr::handler::input::get_mouse_position();
 }
 
 void rhr::stack::plane::drag_stack(
@@ -689,7 +689,7 @@ void rhr::stack::plane::drag_stack(
 
 	m_dragging_begin_object = virtual_absolute;
 	m_dragging_up			= up;
-	m_dragging_begin_mouse	= InputHandler::GetMousePosition();
+	m_dragging_begin_mouse	= rhr::handler::input::get_mouse_position();
 	m_dragging_collection	= collection;
 	m_dragging_stack		= stack;
 }
@@ -820,9 +820,9 @@ void rhr::stack::plane::dragging_stack_update()
 	// pixel_position += m_offset;
 
 	m_dragging_collection->set_position_local_physical(
-		InputHandler::GetMousePosition() - m_dragging_begin_mouse + m_dragging_begin_object, true);
+		rhr::handler::input::get_mouse_position() - m_dragging_begin_mouse + m_dragging_begin_object, true);
 	m_dragging_connecting_line->set_position_local_physical(
-		InputHandler::GetMousePosition() - m_dragging_begin_mouse + m_dragging_begin_object, true);
+		rhr::handler::input::get_mouse_position() - m_dragging_begin_mouse + m_dragging_begin_object, true);
 
 	glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_physical_absolute();
 

@@ -9,13 +9,13 @@
 constexpr usize FIELD_CELL_SIZE = 5000;
 
 static void
-mouse_button_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
+mouse_button_caller(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
 {
 	rhr::handler::field* field = (rhr::handler::field*)data;
 	field->mouse_button(position, scroll, operation, button);
 }
 
-static void text_button_caller(InputHandler::key_state state, void* data)
+static void text_button_caller(rhr::handler::input::key_state state, void* data)
 {
 	rhr::handler::field* field = (rhr::handler::field*)data;
 	field->text_button(state);
@@ -51,8 +51,8 @@ rhr::handler::field::field()
 
 	m_rectangle_highlight->set_color(cap::color().from_u8({30, 70, 210, 80}));
 
-	InputHandler::RegisterMouseCallback(mouse_button_caller, this);
-	InputHandler::RegisterTextCallback(text_button_caller, this);
+	rhr::handler::input::register_mouse_callback(mouse_button_caller, this);
+	rhr::handler::input::register_text_callback(text_button_caller, this);
 }
 
 void rhr::handler::field::resize(const glm::vec<2, usize>& size)
@@ -106,20 +106,20 @@ void rhr::handler::field::reload_swap_chain()
 }
 
 void rhr::handler::field::mouse_button(
-	glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 {
 	position -= *rhr::stack::plane::primary_plane->get_offset();
 
 	std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
 
-	if (operation == MouseOperation::Move)
+	if (operation == rhr::handler::input::mouse_operation::MOVE)
 	{
 		if (m_mouse_down_data == nullptr || !m_mouse_down)
 			return;
 
 		if (auto lock = m_mouse_down_data->get_text_field().lock())
 		{
-			if (button != MouseButton::LEFT)
+			if (button != rhr::handler::input::mouse_button::LEFT)
 				return;
 
 			std::optional<usize> idx = lock->pick_index(position, true);
@@ -153,12 +153,12 @@ void rhr::handler::field::mouse_button(
 
 		return;
 	}
-	else if (operation == MouseOperation::Release)
+	else if (operation == rhr::handler::input::mouse_operation::RELEASE)
 	{
 		m_mouse_down = false;
 		return;
 	}
-	else if (operation == MouseOperation::Click)
+	else if (operation == rhr::handler::input::mouse_operation::CLICK)
 		return;
 
 	if (!data.has_value())
@@ -170,7 +170,7 @@ void rhr::handler::field::mouse_button(
 	if (auto lock = data.value()->get_text_field().lock())
 		lock->mouse_button(position, scroll, operation, button);
 
-	if (operation == MouseOperation::Press)
+	if (operation == rhr::handler::input::mouse_operation::PRESS)
 	{
 		// TODO: drag selection box like on a desktop?
 		if (m_mouse_down)
@@ -190,7 +190,7 @@ void rhr::handler::field::mouse_button(
 
 			usize field_idx = idx.value();
 
-			if (button == MouseButton::RIGHT && m_mouse_drag)
+			if (button == rhr::handler::input::mouse_button::RIGHT && m_mouse_drag)
 			{
 				rhr::handler::context::open(
 					rhr::handler::context::flag::TEXT_SELECTION_ONLY,
@@ -242,7 +242,7 @@ void rhr::handler::field::mouse_button(
 
 			update_cursor();
 
-			if (button == MouseButton::RIGHT)
+			if (button == rhr::handler::input::mouse_button::RIGHT)
 			{
 				rhr::handler::context::open(
 					rhr::handler::context::flag::TEXT_STANDING_ONLY,
@@ -281,14 +281,14 @@ void rhr::handler::field::mouse_button(
 			m_mouse_down = true;
 		}
 	}
-	else if (operation == MouseOperation::DoublePress)
+	else if (operation == rhr::handler::input::mouse_operation::DOUBLE_PRESS)
 	{
 		if (m_mouse_down)
 			return;
 
 		if (auto lock = data.value()->get_text_field().lock())
 		{
-			if (button != MouseButton::LEFT)
+			if (button != rhr::handler::input::mouse_button::LEFT)
 				return;
 
 			std::optional<usize> idx = lock->pick_index(position, false);
@@ -329,7 +329,7 @@ void rhr::handler::field::mouse_button(
 	}
 }
 
-void rhr::handler::field::text_button(InputHandler::key_state state)
+void rhr::handler::field::text_button(rhr::handler::input::key_state state)
 {
 	if (!m_cursor)
 		return;

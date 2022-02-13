@@ -43,7 +43,7 @@ public:
 	void delete_contents(bool disable_collections = false);
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
+	void mouse_button(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button);
 
 	///
 	static std::shared_ptr<rhr::stack::plane> primary_plane;

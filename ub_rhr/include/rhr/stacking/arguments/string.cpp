@@ -14,9 +14,9 @@ rhr::stack::argument::string::string(
 		  true,
 		  plane_offset))
 {
-	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)
+	m_mouse_button = [&, color](glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 	{
-		if (button == MouseButton::MIDDLE && operation == MouseOperation::Press)
+		if (button == rhr::handler::input::mouse_button::MIDDLE && operation == rhr::handler::input::mouse_operation::PRESS)
 		{
 			if (m_mode == cap::mod::block::block::argument::variable_mode::RAW)
 				set_mode(cap::mod::block::block::argument::variable_mode::VAR);

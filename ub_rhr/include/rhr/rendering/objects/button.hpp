@@ -32,7 +32,7 @@ public:
 	void set_callback(void (*callback)(void*), void* data);
 
 	///
-	void mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation);
+	void mouse_update(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation);
 
 	///
 	void enable_fill_width(bool enable);

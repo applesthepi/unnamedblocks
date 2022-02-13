@@ -57,7 +57,7 @@ public:
 
 	///
 	void set_mouse_button(
-		std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>&
+		std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>&
 			mouse_button);
 
 	///
@@ -82,7 +82,7 @@ public:
 	bool remove_string(usize idx, usize size) override;
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button) override;
+	void mouse_button(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button) override;
 
 private:
 	///
@@ -149,7 +149,7 @@ private:
 	bool m_read_only;
 
 	///
-	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>
+	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>
 		m_mouse_button;
 
 	///

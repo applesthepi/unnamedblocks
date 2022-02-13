@@ -38,7 +38,7 @@ private:
 	std::shared_ptr<rhr::render::object::text> m_text;
 
 	///
-	std::function<void(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button)>
+	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>
 		m_mouse_button;
 
 	///

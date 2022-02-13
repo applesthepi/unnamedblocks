@@ -3,7 +3,7 @@
 #include "rhr/rendering/renderer.hpp"
 
 static void
-mouse_update_caller(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button, void* data)
+mouse_update_caller(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
 {
 	rhr::render::object::button* button_object = (rhr::render::object::button*)data;
 	button_object->mouse_update(position, scroll, operation);
@@ -21,12 +21,12 @@ rhr::render::object::button::button(const cap::color& primary_color, const cap::
 
 	set_size_local({100, 20}, true);
 
-	InputHandler::RegisterMouseCallback(mouse_update_caller, this);
+	rhr::handler::input::register_mouse_callback(mouse_update_caller, this);
 }
 
 rhr::render::object::button::~button()
 {
-	InputHandler::UnregisterMouseCallback(mouse_update_caller);
+	rhr::handler::input::unregister_mouse_callback(mouse_update_caller);
 }
 
 void rhr::render::object::button::set_depth(i32 depth)
@@ -40,12 +40,12 @@ void rhr::render::object::button::set_callback(void (*callback)(void*), void* da
 	m_callback_data = data;
 }
 
-void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 scroll, MouseOperation operation)
+void rhr::render::object::button::mouse_update(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation)
 {
 	if (!get_enabled())
 		return;
 
-	if (operation == MouseOperation::Click)
+	if (operation == rhr::handler::input::mouse_operation::CLICK)
 	{
 		glm::vec<2, i32> button_position = get_position_physical_absolute();
 

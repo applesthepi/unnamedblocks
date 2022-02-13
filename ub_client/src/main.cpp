@@ -69,7 +69,7 @@ i32 main()
 		// std::future<void> asyncSetup = std::async(std::launch::async,
 		// AsyncSetup);
 
-		InputHandler::Initialization();
+		rhr::handler::input::initialization();
 		rhr::handler::build::initialize();
 		rhr::handler::context::initialize();
 		rhr::registry::block::create_block_registry();

@@ -27,10 +27,10 @@ public:
 	void reload_swap_chain();
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, MouseOperation operation, MouseButton button);
+	void mouse_button(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button);
 
 	///
-	void text_button(InputHandler::key_state state);
+	void text_button(rhr::handler::input::key_state state);
 
 	///
 	rhr::handler::field_data::location register_field(

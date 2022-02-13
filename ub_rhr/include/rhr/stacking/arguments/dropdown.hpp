@@ -53,9 +53,9 @@ public:
 		return m_dropdown.GetWidth();
 	}
 
-	bool MouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
+	bool rhr::handler::InputHandler::MouseButton(bool down, const sf::Vector2i& position, const sf::Mouse::Button& button) override
 	{
-		if (!m_dropdown.MouseButton(down, position, button))
+		if (!m_dropdown.rhr::handler::InputHandler::MouseButton(down, position, button))
 			return false;
 		else
 		{
