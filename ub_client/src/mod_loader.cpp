@@ -1,8 +1,8 @@
 #include "mod_loader.hpp"
 
 #include <espresso/mod/data.hpp>
-#include <rhr/handlers/project.hpp>
-#include <rhr/registries/block.hpp>
+#include <mocha/handlers/project.hpp>
+#include <mocha/registries/block.hpp>
 
 // TODO temp
 //#include <RHR/config.h>

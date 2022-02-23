@@ -1,9 +1,9 @@
 #pragma once
 #include "config.h"
 
-#include "cappuccino/mod/block/pass.hpp"
+#include <espresso/mod/block/pass.hpp>
 
-#include "cappuccino/utils.hpp"
+#include <latte/utils.hpp>
 
 namespace cap
 {
@@ -12,17 +12,17 @@ class execution_thread
 {
 public:
 	///
-	typedef void (***function_stack_list)(cap::mod::block::pass*);
+	typedef void (***function_stack_list)(espresso::mod::block::pass*);
 
 	///
-	typedef void (*function)(cap::mod::block::pass*);
+	typedef void (*function)(espresso::mod::block::pass*);
 
 	///
-	typedef void (**function_stack)(cap::mod::block::pass*);
+	typedef void (**function_stack)(espresso::mod::block::pass*);
 
 	///
 	execution_thread(
-		u64 function_start, u64* function_call_count, function_stack_list calls, cap::mod::block::pass* pass);
+		u64 function_start, u64* function_call_count, function_stack_list calls, espresso::mod::block::pass* pass);
 
 	///
 	u64 get_function_start();
@@ -49,7 +49,7 @@ public:
 	const std::atomic<bool>& get_step();
 
 	///
-	cap::mod::block::pass* get_pass();
+	espresso::mod::block::pass* get_pass();
 
 	///
 	void set_finished(bool finished);
@@ -101,6 +101,6 @@ private:
 	std::thread m_thread;
 
 	///
-	cap::mod::block::pass* m_pass;
+	espresso::mod::block::pass* m_pass;
 };
 } // namespace cap

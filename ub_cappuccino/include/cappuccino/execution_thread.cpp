@@ -14,8 +14,8 @@ static void thread_execution(cap::execution_thread* thr)
 	bool successful					  = false;
 	const std::atomic<bool>& finished = thr->get_finished();
 
-	cap::mod::block::data** reg_data = cap::registration::get_data();
-	cap::mod::block::pass* pass		 = thr->get_pass();
+	espresso::mod::block::data** reg_data = cap::registration::get_data();
+	espresso::mod::block::pass* pass		 = thr->get_pass();
 
 	pass->set_callstack_stack(&callstack_stack_idx);
 	pass->set_callstack_block(&callstack_block_idx);
@@ -88,7 +88,7 @@ cap::execution_thread::execution_thread(
 	u64 function_start,
 	u64* function_call_count,
 	cap::execution_thread::function_stack_list calls,
-	cap::mod::block::pass* pass)
+	espresso::mod::block::pass* pass)
 	: m_function_start(function_start)
 	, m_function_call_count(function_call_count)
 	, m_calls(calls)
@@ -144,7 +144,7 @@ const std::atomic<bool>& cap::execution_thread::get_step()
 	return m_step;
 }
 
-cap::mod::block::pass* cap::execution_thread::get_pass()
+espresso::mod::block::pass* cap::execution_thread::get_pass()
 {
 	return m_pass;
 }

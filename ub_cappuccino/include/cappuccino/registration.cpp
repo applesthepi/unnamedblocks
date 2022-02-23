@@ -66,7 +66,7 @@ void cap::registration::initialize()
 	m_time_begin = std::chrono::steady_clock::now();
 }
 
-void cap::registration::register_pass(cap::mod::block::pass* pass)
+void cap::registration::register_pass(espresso::mod::block::pass* pass)
 {
 	std::unique_lock<std::mutex> lock(m_passes_mutex);
 
@@ -74,7 +74,7 @@ void cap::registration::register_pass(cap::mod::block::pass* pass)
 	m_passes_flagged.push_back(false);
 }
 
-void cap::registration::unregister_pass(cap::mod::block::pass* pass)
+void cap::registration::unregister_pass(espresso::mod::block::pass* pass)
 {
 	std::unique_lock<std::mutex> lock(m_passes_mutex);
 
@@ -132,12 +132,12 @@ void cap::registration::set_calls(cap::execution_thread::function_stack_list cal
 	m_calls = calls;
 }
 
-void cap::registration::set_data(cap::mod::block::data** data)
+void cap::registration::set_data(espresso::mod::block::data** data)
 {
 	m_data = data;
 }
 
-void cap::registration::set_blocks(cap::mod::block::block*** blocks)
+void cap::registration::set_blocks(espresso::mod::block::block*** blocks)
 {
 	m_blocks = blocks;
 }
@@ -154,7 +154,7 @@ void cap::registration::set_super(u8* super, i64* super_data, void* super_mutex)
 	m_super_mutex = (std::mutex*)super_mutex;
 }
 
-void cap::registration::end_all(cap::mod::block::pass* whitelist)
+void cap::registration::end_all(espresso::mod::block::pass* whitelist)
 {
 	// dont lock execution mutex because it is already locked
 
@@ -291,7 +291,7 @@ void cap::registration::run_utility_tick()
 	{
 		if (m_passes_flagged[i])
 		{
-			cap::mod::block::pass* pass = m_passes[i];
+			espresso::mod::block::pass* pass = m_passes[i];
 
 			m_passes.erase(m_passes.begin() + i);
 			m_passes_flagged.erase(m_passes_flagged.begin() + i);
@@ -364,7 +364,7 @@ void cap::registration::run()
 
 	printf("...postinitialization succeeded\n");
 
-	cap::mod::block::pass::initializer init;
+	espresso::mod::block::pass::initializer init(m_variable_real_template, m_variable_bool_template, m_variable_string_template);
 
 	init.data_size				= 0;
 	init.data					= nullptr;
@@ -377,8 +377,11 @@ void cap::registration::run()
 	init.variable_registry		= nullptr; // isnt working right now due to changes &m_variableRegistry;
 	init.debug_mode				= m_debug_build;
 	init.begin_time				= &m_time_begin;
+	init.block_data             = m_data;
+	init.function_total_count   = m_function_total_count;
+	init.function_call_count    = m_function_call_count;
 
-	cap::mod::block::pass* pass = new cap::mod::block::pass(init);
+	espresso::mod::block::pass* pass = new espresso::mod::block::pass(init);
 	register_pass(pass);
 
 	cap::execution_thread* thr = new cap::execution_thread(m_function_main, m_function_call_count, m_calls, pass);
@@ -445,19 +448,19 @@ bool cap::registration::is_all_done()
 	*/
 }
 
-const std::vector<f64*>& cap::registration::get_real_template()
+std::vector<f64*>* cap::registration::get_real_template()
 {
-	return m_variable_real_template;
+	return &m_variable_real_template;
 }
 
-const std::vector<bool*>& cap::registration::get_bool_template()
+std::vector<bool*>* cap::registration::get_bool_template()
 {
-	return m_variable_bool_template;
+	return &m_variable_bool_template;
 }
 
-const std::vector<std::string*>& cap::registration::get_string_template()
+std::vector<std::string*>* cap::registration::get_string_template()
 {
-	return m_variable_string_template;
+	return &m_variable_string_template;
 }
 
 const std::vector<u64>* cap::registration::get_real_count()
@@ -485,14 +488,14 @@ std::vector<void*>* cap::registration::get_custom_registry()
 	return &m_custom_register;
 }
 
-cap::mod::block::data** cap::registration::get_data()
+espresso::mod::block::data** cap::registration::get_data()
 {
 	return m_data;
 }
 
 bool cap::registration::global_pre(cap::preprocessor_data& data)
 {
-	std::vector<cap::mod::block::block*> single_blocks;
+	std::vector<espresso::mod::block::block*> single_blocks;
 
 	for (u64 i = 0; i < m_function_total_count; i++)
 	{
@@ -528,7 +531,7 @@ bool cap::registration::global_pre(cap::preprocessor_data& data)
 
 bool cap::registration::global_post(cap::preprocessor_data& data)
 {
-	std::vector<cap::mod::block::block*> single_blocks;
+	std::vector<espresso::mod::block::block*> single_blocks;
 
 	for (u64 i = 0; i < m_function_total_count; i++)
 	{
@@ -566,7 +569,7 @@ bool cap::registration::local_pre(cap::preprocessor_data& data)
 {
 	for (u64 i = 0; i < m_function_total_count; i++)
 	{
-		std::vector<cap::mod::block::block*> single_blocks;
+		std::vector<espresso::mod::block::block*> single_blocks;
 
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
@@ -604,7 +607,7 @@ bool cap::registration::local_post(cap::preprocessor_data& data)
 {
 	for (u64 i = 0; i < m_function_total_count; i++)
 	{
-		std::vector<cap::mod::block::block*> single_blocks;
+		std::vector<espresso::mod::block::block*> single_blocks;
 
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
@@ -638,9 +641,9 @@ bool cap::registration::local_post(cap::preprocessor_data& data)
 	return true;
 }
 
-bool cap::registration::init(cap::preprocessor_data& pre_data, cap::mod::block::data** block_data)
+bool cap::registration::init(cap::preprocessor_data& pre_data, espresso::mod::block::data** block_data)
 {
-	std::vector<std::vector<cap::mod::block::block::data_initialization>> stages;
+	std::vector<std::vector<espresso::mod::block::block::data_initialization>> stages;
 	std::vector<std::vector<u64>> stage_stack_idx;
 	std::vector<std::vector<u64>> stage_block_idx;
 
@@ -648,7 +651,7 @@ bool cap::registration::init(cap::preprocessor_data& pre_data, cap::mod::block::
 	{
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
-			std::vector<std::pair<cap::mod::block::block::data_initialization, u16>> init_stages =
+			std::vector<std::pair<espresso::mod::block::block::data_initialization, u16>> init_stages =
 				m_blocks[i][a]->get_runtime_stages();
 
 			for (u64 b = 0; b < init_stages.size(); b++)
@@ -659,7 +662,7 @@ bool cap::registration::init(cap::preprocessor_data& pre_data, cap::mod::block::
 
 					for (u64 c = 0; c < (init_stages[b].second - stages_size) + 1; c++)
 					{
-						stages.push_back(std::vector<cap::mod::block::block::data_initialization>());
+						stages.push_back(std::vector<espresso::mod::block::block::data_initialization>());
 						stage_stack_idx.push_back(std::vector<u64>());
 						stage_block_idx.push_back(std::vector<u64>());
 					}
@@ -815,11 +818,11 @@ void cap::registration::compile_data_debug()
 {
 	u64 temp_total	 = 0;
 	u64 variable_idx = 0;
-	std::vector<std::vector<cap::mod::block::data::interpretation>> temp_regsitry_types;
+	std::vector<std::vector<espresso::mod::block::data::interpretation>> temp_regsitry_types;
 	std::vector<std::vector<void*>> temp_regsitry_values;
 
 	auto add_to_registry =
-		[&](const std::string& name, u64 idx, const cap::mod::block::data::interpretation& interp, void* use = nullptr)
+		[&](const std::string& name, u64 idx, const espresso::mod::block::data::interpretation& interp, void* use = nullptr)
 	{
 		for (u64 i = 0; i < m_variable_registry[idx].size(); i++)
 		{
@@ -844,7 +847,7 @@ void cap::registration::compile_data_debug()
 	for (u64 i = 0; i < m_function_total_count; i++)
 	{
 		m_variable_registry.push_back(std::vector<std::string>());
-		temp_regsitry_types.push_back(std::vector<cap::mod::block::data::interpretation>());
+		temp_regsitry_types.push_back(std::vector<espresso::mod::block::data::interpretation>());
 		temp_regsitry_values.push_back(std::vector<void*>());
 		m_variable_registry_offsets.push_back(temp_total);
 
@@ -853,8 +856,8 @@ void cap::registration::compile_data_debug()
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
 			const std::vector<void*>& data						  = m_data[i][a].get_data();
-			const std::vector<cap::mod::block::data::type>& types = m_data[i][a].get_types();
-			const std::vector<cap::mod::block::data::interpretation>& interpretations =
+			const std::vector<espresso::mod::block::data::type>& types = m_data[i][a].get_types();
+			const std::vector<espresso::mod::block::data::interpretation>& interpretations =
 				m_data[i][a].get_interpretations();
 
 			std::vector<u64>* hauled_variables_block = new std::vector<u64>();
@@ -863,9 +866,9 @@ void cap::registration::compile_data_debug()
 			{
 				const u64 count_total = temp_total - m_variable_registry[i].size();
 
-				if (types[b] == cap::mod::block::data::type::VAR)
+				if (types[b] == espresso::mod::block::data::type::VAR)
 				{
-					if (interpretations[b] == cap::mod::block::data::interpretation::ANY)
+					if (interpretations[b] == espresso::mod::block::data::interpretation::ANY)
 					{
 						bool found = false;
 
@@ -897,23 +900,23 @@ void cap::registration::compile_data_debug()
 					char buffer[20];
 					sprintf(buffer, "_R_%lu_%lu_%lu", i, a, b);
 
-					if (interpretations[b] == cap::mod::block::data::interpretation::REAL)
+					if (interpretations[b] == espresso::mod::block::data::interpretation::REAL)
 						add_to_registry(
 							std::string(buffer),
 							i,
-							cap::mod::block::data::interpretation::REAL,
+							espresso::mod::block::data::interpretation::REAL,
 							new f64(*(f64*)data[b]));
-					else if (interpretations[b] == cap::mod::block::data::interpretation::BOOL)
+					else if (interpretations[b] == espresso::mod::block::data::interpretation::BOOL)
 						add_to_registry(
 							std::string(buffer),
 							i,
-							cap::mod::block::data::interpretation::BOOL,
+							espresso::mod::block::data::interpretation::BOOL,
 							new bool(*(bool*)data[b]));
-					else if (interpretations[b] == cap::mod::block::data::interpretation::STRING)
+					else if (interpretations[b] == espresso::mod::block::data::interpretation::STRING)
 						add_to_registry(
 							std::string(buffer),
 							i,
-							cap::mod::block::data::interpretation::STRING,
+							espresso::mod::block::data::interpretation::STRING,
 							new std::string(*(std::string*)data[b]));
 
 					hauled_variables_block->push_back(variable_idx);
@@ -942,21 +945,21 @@ void cap::registration::compile_data_debug()
 		for (u64 a = 0; a < m_variable_real_count[i]; a++)
 		{
 			if (temp_regsitry_values[i][a] != nullptr
-				&& temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::REAL)
+				&& temp_regsitry_types[i][a] == espresso::mod::block::data::interpretation::REAL)
 				m_variable_real_template.back()[a] = *(f64*)temp_regsitry_values[i][a];
 		}
 
 		for (u64 a = 0; a < m_variable_bool_count[i]; a++)
 		{
 			if (temp_regsitry_values[i][a] != nullptr
-				&& temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::BOOL)
+				&& temp_regsitry_types[i][a] == espresso::mod::block::data::interpretation::BOOL)
 				m_variable_bool_template.back()[a] = *(bool*)temp_regsitry_values[i][a];
 		}
 
 		for (u64 a = 0; a < m_variable_string_count[i]; a++)
 		{
 			if (temp_regsitry_values[i][a] != nullptr
-				&& temp_regsitry_types[i][a] == cap::mod::block::data::interpretation::STRING)
+				&& temp_regsitry_types[i][a] == espresso::mod::block::data::interpretation::STRING)
 				m_variable_string_template.back()[a] = *(std::string*)temp_regsitry_values[i][a];
 		}
 
@@ -1066,17 +1069,17 @@ void cap::registration::compile_data_release()
 		for (u64 a = 0; a < m_function_call_count[i]; a++)
 		{
 			const std::vector<void*>& data						  = m_data[i][a].get_data();
-			const std::vector<cap::mod::block::data::type>& types = m_data[i][a].get_types();
-			const std::vector<cap::mod::block::data::interpretation>& interpretations =
+			const std::vector<espresso::mod::block::data::type>& types = m_data[i][a].get_types();
+			const std::vector<espresso::mod::block::data::interpretation>& interpretations =
 				m_data[i][a].get_interpretations();
 
 			std::vector<u64>* hauled_variables_block = new std::vector<u64>();
 
 			for (u64 b = 0; b < data.size(); b++)
 			{
-				if (types[b] == cap::mod::block::data::type::VAR)
+				if (types[b] == espresso::mod::block::data::type::VAR)
 				{
-					if (interpretations[b] == cap::mod::block::data::interpretation::ANY)
+					if (interpretations[b] == espresso::mod::block::data::interpretation::ANY)
 					{
 						bool found = false;
 
@@ -1089,7 +1092,7 @@ void cap::registration::compile_data_release()
 									if (temp_registry_real[c][d] == "_L_" + *(std::string*)data[b])
 									{
 										hauled_variables_block->push_back(c);
-										m_data[i][a].set_interpretation(cap::mod::block::data::interpretation::REAL, b);
+										m_data[i][a].set_interpretation(espresso::mod::block::data::interpretation::REAL, b);
 
 										found = true;
 										break;
@@ -1110,7 +1113,7 @@ void cap::registration::compile_data_release()
 									if (temp_registry_bool[c][d] == "_L_" + *(std::string*)data[b])
 									{
 										hauled_variables_block->push_back(c);
-										m_data[i][a].set_interpretation(cap::mod::block::data::interpretation::BOOL, b);
+										m_data[i][a].set_interpretation(espresso::mod::block::data::interpretation::BOOL, b);
 
 										found = true;
 										break;
@@ -1132,7 +1135,7 @@ void cap::registration::compile_data_release()
 									{
 										hauled_variables_block->push_back(c);
 										m_data[i][a].set_interpretation(
-											cap::mod::block::data::interpretation::STRING, b);
+											espresso::mod::block::data::interpretation::STRING, b);
 
 										found = true;
 										break;
@@ -1151,17 +1154,17 @@ void cap::registration::compile_data_release()
 					}
 					else
 					{
-						if (interpretations[b] == cap::mod::block::data::interpretation::REAL)
+						if (interpretations[b] == espresso::mod::block::data::interpretation::REAL)
 						{
 							add_to_registry_real("_L_" + *(std::string*)data[b], i);
 							hauled_variables_block->push_back(variable_idx);
 						}
-						else if (interpretations[b] == cap::mod::block::data::interpretation::BOOL)
+						else if (interpretations[b] == espresso::mod::block::data::interpretation::BOOL)
 						{
 							add_to_registry_bool("_L_" + *(std::string*)data[b], i);
 							hauled_variables_block->push_back(variable_idx);
 						}
-						else if (interpretations[b] == cap::mod::block::data::interpretation::STRING)
+						else if (interpretations[b] == espresso::mod::block::data::interpretation::STRING)
 						{
 							add_to_registry_string("_L_" + *(std::string*)data[b], i);
 							hauled_variables_block->push_back(variable_idx);
@@ -1173,17 +1176,17 @@ void cap::registration::compile_data_release()
 					char buffer[20];
 					sprintf(buffer, "_R_%lu_%lu_%lu", i, a, b);
 
-					if (interpretations[b] == cap::mod::block::data::interpretation::REAL)
+					if (interpretations[b] == espresso::mod::block::data::interpretation::REAL)
 					{
 						add_to_registry_real(std::string(buffer), i, new f64(*(f64*)data[b]));
 						hauled_variables_block->push_back(variable_idx);
 					}
-					else if (interpretations[b] == cap::mod::block::data::interpretation::BOOL)
+					else if (interpretations[b] == espresso::mod::block::data::interpretation::BOOL)
 					{
 						add_to_registry_bool(std::string(buffer), i, new bool(*(bool*)data[b]));
 						hauled_variables_block->push_back(variable_idx);
 					}
-					else if (interpretations[b] == cap::mod::block::data::interpretation::STRING)
+					else if (interpretations[b] == espresso::mod::block::data::interpretation::STRING)
 					{
 						add_to_registry_string(std::string(buffer), i, new std::string(*(std::string*)data[b]));
 						hauled_variables_block->push_back(variable_idx);
@@ -1273,7 +1276,7 @@ void cap::registration::run_context()
 
 std::mutex cap::registration::m_passes_mutex;
 
-std::vector<cap::mod::block::pass*> cap::registration::m_passes;
+std::vector<espresso::mod::block::pass*> cap::registration::m_passes;
 
 std::vector<bool> cap::registration::m_passes_flagged;
 
@@ -1293,9 +1296,9 @@ u64 cap::registration::m_function_total_count;
 
 cap::execution_thread::function_stack_list cap::registration::m_calls;
 
-cap::mod::block::data** cap::registration::m_data;
+espresso::mod::block::data** cap::registration::m_data;
 
-cap::mod::block::block*** cap::registration::m_blocks;
+espresso::mod::block::block*** cap::registration::m_blocks;
 
 std::vector<u64> cap::registration::m_variable_real_count;
 

@@ -15,9 +15,9 @@ std::string esp::mod::category::get_mod_display_name()
 	return m_mod_display_name;
 }
 
-cap::color esp::mod::category::get_color() const
+espresso::color esp::mod::category::get_color() const
 {
-	return cap::color().from_u8({255, 0, 255, 255});
+	return espresso::color().from_u8({255, 0, 255, 255});
 }
 
 std::string esp::mod::category::get_unlocalized_name() const

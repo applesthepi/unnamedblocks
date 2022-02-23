@@ -17,18 +17,17 @@ if(MSVC)
 endif()
 
 add_dependencies(
-	UB_CLIENT ${UB_DEPENDENCIES} UB_CAPPUCCINO UB_ESPRESSO UB_RHR)
+	UB_CLIENT ${UB_DEPENDENCIES} UB_LUNGO UB_MOCHA)
 
 target_link_libraries(
 	UB_CLIENT
 	PUBLIC ${UB_DEPENDENCIES_LINK}
-		   # imm32.lib
-		   UB_CAPPUCCINO UB_ESPRESSO UB_RHR)
+	UB_LUNGO UB_MOCHA)
 
 target_include_directories(
 	UB_CLIENT
-	PUBLIC SYSTEM "${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
-		   "${CMAKE_SOURCE_DIR}/ub_espresso/include" "${CMAKE_SOURCE_DIR}/ub_rhr/include")
+	PUBLIC SYSTEM ${UB_INCLUDES}
+)
 
 target_include_directories(
 	UB_CLIENT

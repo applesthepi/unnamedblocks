@@ -17,17 +17,17 @@ void cap::build_system::set_function_total_count(u64 function_total_count)
 	cap::registration::set_function_total_count(function_total_count);
 }
 
-void cap::build_system::set_calls(void (***calls)(cap::mod::block::pass*))
+void cap::build_system::set_calls(void (***calls)(espresso::mod::block::pass*))
 {
 	cap::registration::set_calls(calls);
 }
 
-void cap::build_system::set_function_data(cap::mod::block::data** function_data)
+void cap::build_system::set_function_data(espresso::mod::block::data** function_data)
 {
 	cap::registration::set_data(function_data);
 }
 
-void cap::build_system::set_mod_blocks(cap::mod::block::block*** mod_blocks)
+void cap::build_system::set_mod_blocks(espresso::mod::block::block*** mod_blocks)
 {
 	cap::registration::set_blocks(mod_blocks);
 }

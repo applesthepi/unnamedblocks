@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "cappuccino/utils.hpp"
+#include <latte/utils.hpp>
 
 namespace cap
 {
@@ -19,7 +19,7 @@ public:
 
 	/// these are NOT a blocks' arguments! These are the variables' storage inside Cappuccino.
 	/// only use these if your know what your doing!
-	/// if your trying to use the  blocks' arguments during the initializations, then use the cap::mod::block::data, not
+	/// if your trying to use the  blocks' arguments during the initializations, then use the espresso::mod::block::data, not
 	/// this.
 	u64 custom_put(void* mem);
 
@@ -41,13 +41,13 @@ private:
 	std::vector<void*> m_structures;
 
 	///
-	const std::vector<f64*>& m_v_real;
+	std::vector<f64*>* m_v_real;
 
 	///
-	const std::vector<bool*>& m_v_bool;
+	std::vector<bool*>* m_v_bool;
 
 	///
-	const std::vector<std::string*>& m_v_string;
+	std::vector<std::string*>* m_v_string;
 
 	///
 	std::vector<void*>& m_v_custom;

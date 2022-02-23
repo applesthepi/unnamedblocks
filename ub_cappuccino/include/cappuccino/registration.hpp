@@ -2,10 +2,10 @@
 #include "config.h"
 
 #include "cappuccino/execution_thread.hpp"
-#include "cappuccino/mod/block/block.hpp"
-#include "cappuccino/mod/block/data.hpp"
-#include "cappuccino/mod/block/pass.hpp"
-#include "cappuccino/utils.hpp"
+#include "espresso/mod/block/block.hpp"
+#include "espresso/mod/block/data.hpp"
+#include <espresso/mod/block/pass.hpp>
+#include <latte/utils.hpp>
 
 namespace cap
 {
@@ -17,10 +17,10 @@ public:
 	static void initialize();
 
 	///
-	static void register_pass(cap::mod::block::pass* pass);
+	static void register_pass(espresso::mod::block::pass* pass);
 
 	///
-	static void unregister_pass(cap::mod::block::pass* pass);
+	static void unregister_pass(espresso::mod::block::pass* pass);
 
 	///
 	static void register_execution_thread(cap::execution_thread* thr);
@@ -41,10 +41,10 @@ public:
 	static void set_calls(cap::execution_thread::function_stack_list calls);
 
 	///
-	static void set_data(cap::mod::block::data** data);
+	static void set_data(espresso::mod::block::data** data);
 
 	///
-	static void set_blocks(cap::mod::block::block*** blocks);
+	static void set_blocks(espresso::mod::block::block*** blocks);
 
 	///
 	static void set_debug(bool debug_build);
@@ -53,7 +53,7 @@ public:
 	static void set_super(u8* super, i64* super_data, void* super_mutex);
 
 	///
-	static void end_all(cap::mod::block::pass* whitelist = nullptr);
+	static void end_all(espresso::mod::block::pass* whitelist = nullptr);
 
 	///
 	static void stop();
@@ -86,13 +86,13 @@ public:
 	static bool is_all_done();
 
 	///
-	static const std::vector<f64*>& get_real_template();
+	static std::vector<f64*>* get_real_template();
 
 	///
-	static const std::vector<bool*>& get_bool_template();
+	static std::vector<bool*>* get_bool_template();
 
 	///
-	static const std::vector<std::string*>& get_string_template();
+	static std::vector<std::string*>* get_string_template();
 
 	///
 	static const std::vector<u64>* get_real_count();
@@ -110,7 +110,7 @@ public:
 	static std::vector<void*>* get_custom_registry();
 
 	///
-	static cap::mod::block::data** get_data();
+	static espresso::mod::block::data** get_data();
 
 private:
 	///
@@ -126,7 +126,7 @@ private:
 	static bool local_post(cap::preprocessor_data& data);
 
 	///
-	static bool init(cap::preprocessor_data& pre_data, cap::mod::block::data** block_data);
+	static bool init(cap::preprocessor_data& pre_data, espresso::mod::block::data** block_data);
 
 	/*
 		1 - [ R/D ] stop; kill all
@@ -158,7 +158,7 @@ private:
 	static std::mutex m_passes_mutex;
 
 	///
-	static std::vector<cap::mod::block::pass*> m_passes;
+	static std::vector<espresso::mod::block::pass*> m_passes;
 
 	///
 	static std::vector<bool> m_passes_flagged;
@@ -188,10 +188,10 @@ private:
 	static cap::execution_thread::function_stack_list m_calls;
 
 	///
-	static cap::mod::block::data** m_data;
+	static espresso::mod::block::data** m_data;
 
 	///
-	static cap::mod::block::block*** m_blocks;
+	static espresso::mod::block::block*** m_blocks;
 
 	///
 	static std::vector<u64> m_variable_real_count;

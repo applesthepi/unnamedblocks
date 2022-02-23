@@ -12,18 +12,15 @@ if(MSVC)
 endif()
 
 add_dependencies(
-	UB_CAPPUCCINO ${UB_DEPENDENCIES})
+	UB_CAPPUCCINO ${UB_DEPENDENCIES} UB_ESPRESSO)
 
 target_link_libraries(
 	UB_CAPPUCCINO
 	PUBLIC ${UB_DEPENDENCIES_LINK}
-	# imm32.lib
+	UB_ESPRESSO
 )
 
 target_include_directories(
 	UB_CAPPUCCINO
 	PUBLIC SYSTEM ${PROJECT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include
 		   ${UB_DEPENDENCIES_INCLUDE} ${CMAKE_INCLUDES})
-
-# TODO: what is this for?
-set_target_properties(UB_CAPPUCCINO PROPERTIES PREFIX "lib")

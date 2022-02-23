@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include <cappuccino/color.hpp>
-#include <cappuccino/utils.hpp>
+#include "espresso/color.hpp"
+#include <latte/utils.hpp>
 
 namespace esp::mod
 {
@@ -19,7 +19,7 @@ public:
 	std::string get_mod_display_name();
 
 	/// The color of the category, and the background color of all of the blocks registered to this category.
-	virtual cap::color get_color() const;
+	virtual espresso::color get_color() const;
 
 	/// The name the engine uses to refer to this category as. Convention example: "mymod_some_category".
 	virtual std::string get_unlocalized_name() const;

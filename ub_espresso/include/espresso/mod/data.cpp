@@ -1,6 +1,6 @@
 #include "data.hpp"
 
-void esp::mod::data::register_block(cap::mod::block::block* block)
+void esp::mod::data::register_block(espresso::mod::block::block* block)
 {
 	m_blocks.push_back(block);
 }
@@ -10,7 +10,7 @@ void esp::mod::data::register_category(esp::mod::category* category)
 	m_categories.push_back(category);
 }
 
-const std::vector<cap::mod::block::block*>& esp::mod::data::get_blocks()
+const std::vector<espresso::mod::block::block*>& esp::mod::data::get_blocks()
 {
 	return m_blocks;
 }

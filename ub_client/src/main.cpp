@@ -1,14 +1,14 @@
 #include "config.h"
 
 #include "mod_loader.hpp"
-#include "rhr/handlers/build.hpp"
-#include "rhr/handlers/category.hpp"
-#include "rhr/handlers/context.hpp"
-#include "rhr/rendering/panel.hpp"
-#include "rhr/rendering/renderer.hpp"
-#include "rhr/rendering/tools.hpp"
-#include "rhr/handlers/serializer.hpp"
-#include "rhr/handlers/project.hpp"
+#include "mocha/handlers/build.hpp"
+#include "mocha/handlers/category.hpp"
+#include "mocha/handlers/context.hpp"
+#include "lungo/panel.hpp"
+#include "lungo/renderer.hpp"
+#include "lungo/tools.hpp"
+#include "mocha/handlers/serializer.hpp"
+#include "mocha/handlers/project.hpp"
 
 #if LINUX
 #include <dlfcn.h>
@@ -36,7 +36,7 @@ i32 main()
 {
 	// clip::set_text("Hello World");
 
-	//	cap::color testColor = cap::color().FromU8({ 10, 10, 10, 255 });
+	//	espresso::color testColor = espresso::color().FromU8({ 10, 10, 10, 255 });
 	//	auto testColorN = testColor.GetNormalized();
 	//	std::cout << testColorN.r << ", " << testColorN.g << ", " <<
 	// testColorN.b << ", " << testColorN.a << std::endl;

@@ -39,6 +39,7 @@ endif()
 # find_package(glm CONFIG REQUIRED) find_package(glfw3 CONFIG REQUIRED) find_package(RapidJSON
 # CONFIG REQUIRED)
 find_package(Vulkan REQUIRED FATAL_ERROR)
+#find_package(LLVM REQUIRED)
 # find_package(ZSTD REQUIRED FATAL_ERROR) find_package(freetype CONFIG REQUIRED) find_package(glad
 # CONFIG REQUIRED)
 
@@ -96,16 +97,25 @@ add_subdirectory("dependencies")
 set(UB_DEPENDENCIES imgui glfw glm freetype VulkanMemoryAllocator)
 
 if(LINUX)
-	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan VulkanMemoryAllocator X11 # Link X11 for linux
-	)
+	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan VulkanMemoryAllocator X11) # Link X11 for linux
 else()
-	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan VulkanMemoryAllocator imm32)
+	set(UB_DEPENDENCIES_LINK imgui glfw glm freetype Vulkan::Vulkan VulkanMemoryAllocator imm32) # Link imm32 for windows
 endif()
 
+set(UB_INCLUDES
+	"${CMAKE_SOURCE_DIR}/ub_lungo/include"
+	"${CMAKE_SOURCE_DIR}/ub_mocha/include"
+	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
+	"${CMAKE_SOURCE_DIR}/ub_espresso/include"
+	"${CMAKE_SOURCE_DIR}/ub_latte/include"
+	)
+
 add_subdirectory("ub_client")
+add_subdirectory("ub_lungo")
+add_subdirectory("ub_mocha")
+add_subdirectory("ub_latte")
 add_subdirectory("ub_cappuccino")
 add_subdirectory("ub_espresso")
-add_subdirectory("ub_rhr")
 
 if(MODS)
 	add_subdirectory("mods")
