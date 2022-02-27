@@ -37,7 +37,7 @@ rhr::render::component::device::device()
 
 		if (!rhr::render::tools::check_validation_layer_support())
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "vulkan validation layers unsupported");
+			latte::logger::error(latte::logger::level::SYSTEM, "vulkan validation layers unsupported");
 			m_valid = false;
 			return;
 		}
@@ -56,7 +56,7 @@ rhr::render::component::device::device()
 
 	if (vk::create_instance(&create_info, nullptr, &m_instance) != VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create vulkan instance");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create vulkan instance");
 		m_valid = false;
 		return;
 	}
@@ -74,7 +74,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (!m_valid)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "cannot initialize invalid device");
+		latte::logger::error(latte::logger::level::SYSTEM, "cannot initialize invalid device");
 		return;
 	}
 
@@ -89,7 +89,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 				&m_instance, &debug_utils_messenger_create_info, nullptr, &m_debug_messenger)
 			!= VK_SUCCESS)
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed to create debug utils message EXT");
+			latte::logger::error(latte::logger::level::SYSTEM, "failed to create debug utils message EXT");
 			m_valid = false;
 			return;
 		}
@@ -102,7 +102,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (device_count == 0)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "no supported vulkan devices found");
+		latte::logger::error(latte::logger::level::SYSTEM, "no supported vulkan devices found");
 		m_valid = false;
 		return;
 	}
@@ -121,7 +121,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (m_physical_device == nullptr)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to pick appropriate device");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to pick appropriate device");
 		m_valid = false;
 		return;
 	}
@@ -173,7 +173,7 @@ void rhr::render::component::device::initialize(vk::surface_khr* surface)
 
 	if (vk::create_device(m_physical_device, &device_create_info, nullptr, &m_device) != VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create logical device link to gpu");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create logical device link to gpu");
 		m_valid = false;
 		return;
 	}
@@ -217,7 +217,7 @@ void rhr::render::component::device::recreate_swapchain()
 vk::instance& rhr::render::component::device::get_instance()
 {
 	if (!m_valid)
-		cap::logger::warn(cap::logger::level::SYSTEM, "get_instance - device marked as invalid");
+		latte::logger::warn(latte::logger::level::SYSTEM, "get_instance - device marked as invalid");
 
 	return m_instance;
 }
@@ -290,7 +290,7 @@ void rhr::render::component::device::initialize_descriptor_set()
 	if (vk::create_descriptor_set_layout(
 			m_device, &descriptor_set_layout_create_info, nullptr, &m_descriptor_set_layout)
 		!= VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create descriptor set layout");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create descriptor set layout");
 }
 
 void rhr::render::component::device::initialize_texture_sampler()
@@ -320,7 +320,7 @@ void rhr::render::component::device::initialize_texture_sampler()
 	sampler_create_info.maxLod	   = 0.0f;
 
 	if (vk::create_sampler(m_device, &sampler_create_info, nullptr, &m_texture_sampler) != VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create texture sampler");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create texture sampler");
 }
 
 #ifdef NDEBUG

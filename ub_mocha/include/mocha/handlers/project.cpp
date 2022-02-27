@@ -6,8 +6,8 @@ void rhr::handler::project::load_project(const std::string& path)
 
 	if (!stream)
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__, __LINE__,
 			"failed to load project; opening file failed"
 		);
@@ -43,8 +43,8 @@ void rhr::handler::project::save_project(const std::string& path)
 
 	if (!stream)
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__, __LINE__,
 			"failed to save project; opening file failed"
 		);
@@ -243,7 +243,7 @@ void ProjectHandler::LoadProject(const std::string& path)
 
 	if (!file.is_open())
 	{
-		cap::logger::Error("unable to open file \"" + path + "\"");
+		latte::logger::Error("unable to open file \"" + path + "\"");
 		return;
 	}
 	// Reset plane

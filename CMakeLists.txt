@@ -9,6 +9,21 @@ set(CMAKE_BUILD_PARALLEL_LEVEL 12)
 enable_language(C CXX ASM)
 # SET(ASM_OPTIONS "-x assembler-with-cpp")
 
+#set(LLVM_DIR "dependencies/llvm/llvm/build/lib/cmake/llvm")
+#set(Clang_DIR "dependencies/llvm/llvm/build/lib/cmake/clang")
+#find_package(LLVM REQUIRED CONFIG)
+#find_package(Clang REQUIRED)
+
+#set(CMAKE_MODULE_PATH
+#	${CMAKE_MODULE_PATH}
+#	"${LLVM_CMAKE_DIR}"
+#	)
+
+#include(AddLLVM)
+
+#message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+#message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
 macro(print_all_variables)
 	message(STATUS "print_all_variables------------------------------------------{")
 	get_cmake_property(_variableNames VARIABLES)
@@ -109,6 +124,21 @@ set(UB_INCLUDES
 	"${CMAKE_SOURCE_DIR}/ub_espresso/include"
 	"${CMAKE_SOURCE_DIR}/ub_latte/include"
 	)
+
+#find_package(LLVM REQUIRED CONFIG)
+
+#message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+#message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+
+#find_package(Clang REQUIRED)
+
+# Add path to LLVM modules
+#set(CMAKE_MODULE_PATH
+#	${CMAKE_MODULE_PATH}
+#	"${LLVM_CMAKE_DIR}"
+#	)
+
+#include(AddLLVM)
 
 add_subdirectory("ub_client")
 add_subdirectory("ub_lungo")

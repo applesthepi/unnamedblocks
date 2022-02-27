@@ -4,7 +4,7 @@ bool rhr::handler::serializer::node::verify_data(const std::vector<std::string>&
 {
 	if (names.size() != data_names.size() || names.size() != data_values.size())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to verify data");
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to verify data");
 		return false;
 	}
 
@@ -21,7 +21,7 @@ bool rhr::handler::serializer::node::verify_children(usize count)
 {
 	if (children.size() != count)
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to verify children");
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to verify children");
 		return false;
 	}
 
@@ -117,19 +117,19 @@ void rhr::handler::serializer::deserialize_node(const std::string& buffer, rhr::
 
 	if (!document.IsObject())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, SERIALIZER_FAILED_PARSE);
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, SERIALIZER_FAILED_PARSE);
 		return;
 	}
 
 	if (!document.HasMember("ch") || !document.HasMember("dn") || !document.HasMember("dv"))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, SERIALIZER_FAILED_PARSE);
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, SERIALIZER_FAILED_PARSE);
 		return;
 	}
 
 	if (!document["ch"].IsArray() || !document["dn"].IsArray() || !document["dv"].IsArray())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, SERIALIZER_FAILED_PARSE);
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, SERIALIZER_FAILED_PARSE);
 		return;
 	}
 

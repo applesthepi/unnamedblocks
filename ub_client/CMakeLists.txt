@@ -41,6 +41,13 @@ add_custom_command(
 	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/res"
 			$<TARGET_FILE_DIR:UB_CLIENT>/res)
 
+# Copy Toolchain
+add_custom_command(
+	TARGET UB_CLIENT
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/toolchain"
+	$<TARGET_FILE_DIR:UB_CLIENT>/toolchain)
+
 # Mods Folder
 add_custom_command(
 	TARGET UB_CLIENT

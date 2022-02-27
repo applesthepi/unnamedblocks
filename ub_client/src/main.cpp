@@ -41,15 +41,15 @@ i32 main()
 	//	std::cout << testColorN.r << ", " << testColorN.g << ", " <<
 	// testColorN.b << ", " << testColorN.a << std::endl;
 	//
-	//	 cap::logger::Info("CLIENT  - " std::string(VER_CLIENT));
-	//	 cap::logger::Info("SERVER  - " std::string(VER_SERVER));
+	//	 latte::logger::Info("CLIENT  - " std::string(VER_CLIENT));
+	//	 latte::logger::Info("SERVER  - " std::string(VER_SERVER));
 
 	// #if MODS
-	// 	cap::logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
+	// 	latte::logger::Info("MOD_VIN - " std::string(VER_MOD_VIN));
 	// #endif
 
 	// #if BETA
-	// 	cap::logger::Warn("this is a beta build! There is likely bugs. Please be
+	// 	latte::logger::Warn("this is a beta build! There is likely bugs. Please be
 	// careful and save often. Report any issues to the github page
 	// https://github.com/applesthepi/unnamedblocks"); #endif
 
@@ -61,7 +61,7 @@ i32 main()
 	// Application setup.
 
 	{
-		cap::logger::initialize();
+		latte::logger::initialize();
 		rhr::render::tools::initialize();
 		rhr::render::renderer::initialize_window();
 		async_setup();
@@ -79,7 +79,7 @@ i32 main()
 	// Plane setup.
 
 	{
-		cap::logger::info(cap::logger::level::EDITOR, "all unsaved progress will be lost if this window is closed");
+		latte::logger::info(latte::logger::level::EDITOR, "all unsaved progress will be lost if this window is closed");
 
 		rhr::stack::plane::primary_plane = std::make_shared<rhr::stack::plane>(false);
 
@@ -239,7 +239,7 @@ i32 main()
 			ImGui::End();
 		}
 #endif
-		// cap::logger::info("rhr::render::renderer::render_pass_setup();");
+		// latte::logger::info("rhr::render::renderer::render_pass_setup();");
 		rhr::render::renderer::render_pass_setup();
 
 		// if

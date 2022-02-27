@@ -14,7 +14,7 @@ void rhr::registry::char_texture::process_fonts()
 	//	error = FT_Init_FreeType(&m_library);
 	//	if (error)
 	//	{
-	//		cap::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
+	//		latte::logger::error("failed to init freetype \"" + std::to_string(error) + "\"");
 	//		return;
 	//	}
 }
@@ -23,8 +23,8 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 {
 	if (size < 2 || size > 1000)
 	{
-		cap::logger::error(
-			cap::logger::level::SYSTEM,
+		latte::logger::error(
+			latte::logger::level::SYSTEM,
 			"size to big; error processing font \"" + font_path + "\" of size \"" + std::to_string(size) + "\"");
 		return;
 	}
@@ -53,16 +53,16 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 	error = FT_New_Face(local_map->library, font_path.c_str(), 0, &font_texture_data.face);
 	if (error)
 	{
-		cap::logger::error(
-			cap::logger::level::SYSTEM, "failed to init freetype font \"" + std::to_string(error) + "\"");
+		latte::logger::error(
+			latte::logger::level::SYSTEM, "failed to init freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
 	error = FT_Set_Pixel_Sizes(font_texture_data.face, 0, size);
 	if (error)
 	{
-		cap::logger::error(
-			cap::logger::level::SYSTEM, "failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
+		latte::logger::error(
+			latte::logger::level::SYSTEM, "failed to set pixel size of freetype font \"" + std::to_string(error) + "\"");
 		return;
 	}
 
@@ -79,14 +79,14 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 		error = FT_Load_Glyph(font_texture_data.face, glyph_index, FT_LOAD_DEFAULT);
 		if (error)
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed load glyph \"" + std::to_string(error) + "\"");
+			latte::logger::error(latte::logger::level::SYSTEM, "failed load glyph \"" + std::to_string(error) + "\"");
 			continue;
 		}
 
 		error = FT_Render_Glyph(font_texture_data.face->glyph, FT_RENDER_MODE_NORMAL);
 		if (error)
 		{
-			cap::logger::error(cap::logger::level::SYSTEM, "failed render glyph \"" + std::to_string(error) + "\"");
+			latte::logger::error(latte::logger::level::SYSTEM, "failed render glyph \"" + std::to_string(error) + "\"");
 			continue;
 		}
 
@@ -105,7 +105,7 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 #endif
 
 		if (i == 'A')
-			cap::logger::info(cap::logger::level::SYSTEM, std::to_string(map.width) + ", " + std::to_string(map.rows));
+			latte::logger::info(latte::logger::level::SYSTEM, std::to_string(map.width) + ", " + std::to_string(map.rows));
 
 		u8* char_image = (u8*)malloc(map.width * map.rows * 4);
 		glm::vec<4, u8> fill_color_bytes;
@@ -209,7 +209,7 @@ void rhr::registry::char_texture::process_font(const std::string& font_path, tex
 
 rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_texture_map(u16 size)
 {
-	//	cap::logger::info("size: " + std::to_string(size));
+	//	latte::logger::info("size: " + std::to_string(size));
 
 	for (auto font : m_texture_maps)
 	{
@@ -226,13 +226,13 @@ rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_textu
 	{
 		if (font->texture_size == size)
 		{
-			cap::logger::info(
-				cap::logger::level::SYSTEM, "successfuly generated char texture of size: " + std::to_string(size));
+			latte::logger::info(
+				latte::logger::level::SYSTEM, "successfuly generated char texture of size: " + std::to_string(size));
 			return font;
 		}
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "failed to generate char texture");
+	latte::logger::error(latte::logger::level::SYSTEM, "failed to generate char texture");
 	return nullptr;
 }
 

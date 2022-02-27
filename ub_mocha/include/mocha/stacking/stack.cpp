@@ -188,7 +188,7 @@ void rhr::stack::stack::ui_deserialize(rhr::handler::serializer::node& node)
 {
 	if (!node.verify_data(STACK_SERIALIZE))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize stack");
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize stack");
 		return;
 	}
 
@@ -208,7 +208,7 @@ void rhr::stack::stack::ui_deserialize(rhr::handler::serializer::node& node)
 	{
 		if (!child.verify_data(BLOCK_SERIALIZE))
 		{
-			cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize block");
+			latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize block");
 			return;
 		}
 

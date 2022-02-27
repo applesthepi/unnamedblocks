@@ -53,7 +53,7 @@ rhr::render::component::window::window(std::string title, glm::vec<2, i32> windo
 
 	if (m_window == nullptr)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create window");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create window");
 		return;
 	}
 
@@ -61,7 +61,7 @@ rhr::render::component::window::window(std::string title, glm::vec<2, i32> windo
 
 	if (glfw::create_window_surface(m_device->get_instance(), m_window, nullptr, &m_surface) != VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create window surface");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create window surface");
 		return;
 	}
 

@@ -11,6 +11,12 @@ if(MSVC)
 	target_compile_options(UB_CAPPUCCINO PRIVATE "/MP")
 endif()
 
+#include_directories(${LLVM_INCLUDE_DIRS})
+#separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+#add_definitions(${LLVM_DEFINITIONS_LIST})
+
+#llvm_map_components_to_libnames(llvm_libs support core irreader)
+
 add_dependencies(
 	UB_CAPPUCCINO ${UB_DEPENDENCIES} UB_ESPRESSO)
 

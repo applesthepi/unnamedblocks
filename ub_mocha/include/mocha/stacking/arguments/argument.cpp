@@ -33,15 +33,15 @@ void rhr::stack::argument::argument::set_data_compact(const std::string& data)
 
 	if (document.HasParseError())
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the argument.");
+		latte::logger::error(
+			latte::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the argument.");
 		return;
 	}
 
 	if (!document.IsObject())
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"data provided to the argument is not an object that can be parsed.");
@@ -50,13 +50,13 @@ void rhr::stack::argument::argument::set_data_compact(const std::string& data)
 
 	if (!document.HasMember("mode"))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_MISSING("mode"));
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_MISSING("mode"));
 		return;
 	}
 
 	if (!document.HasMember("data"))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_MISSING("data"));
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_MISSING("data"));
 		return;
 	}
 
@@ -65,13 +65,13 @@ void rhr::stack::argument::argument::set_data_compact(const std::string& data)
 
 	if (!v_mode.IsInt())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_TYPE("mode"));
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_TYPE("mode"));
 		return;
 	}
 
 	if (!v_data.IsString())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_TYPE("data"));
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_TYPE("data"));
 		return;
 	}
 
@@ -87,8 +87,8 @@ void rhr::stack::argument::argument::set_data_compact(const std::string& data)
 		m_mode = espresso::mod::block::block::argument::variable_mode::VAR;
 		break;
 	default:
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"unknown espresso::mod::block::block::argument::variable_mode index; using RAW instead");
@@ -184,8 +184,8 @@ void rhr::stack::argument::argument::build_data_distribute()
 		v_mode.SetInt(1);
 		break;
 	default:
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"unknown espresso::mod::block::block::argument::variable_mode; using 0 instead");
@@ -235,8 +235,8 @@ void rhr::stack::argument::argument::ui_serialize(rhr::handler::serializer::node
 		node.data_values.emplace_back("1");
 		break;
 	default:
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"unknown espresso::mod::block::block::argument::variable_mode; using 0 instead");
@@ -251,7 +251,7 @@ void rhr::stack::argument::argument::ui_deserialize(rhr::handler::serializer::no
 {
 	if (!node.verify_data(ARGUMENT_SERIALIZE))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize argument");
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize argument");
 		return;
 	}
 
@@ -266,8 +266,8 @@ void rhr::stack::argument::argument::ui_deserialize(rhr::handler::serializer::no
 		set_mode(espresso::mod::block::block::argument::variable_mode::VAR);
 		break;
 	default:
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"unknown index of espresso::mod::block::block::argument::variable_mode; using RAW instead");

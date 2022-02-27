@@ -25,6 +25,7 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 
 #include <stb/stb_image.h>
 #include <zstd.h>

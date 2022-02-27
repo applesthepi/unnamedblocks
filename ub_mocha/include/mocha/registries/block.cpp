@@ -12,15 +12,15 @@ void rhr::registry::block::register_category(esp::mod::category* category, const
 
 const rhr::registry::block::block_info* rhr::registry::block::get_block(const std::string& unlocalized_name)
 {
-	//	cap::logger::info("block registry get block: " + unlocalized_name);
+	//	latte::logger::info("block registry get block: " + unlocalized_name);
 
 	for (auto& info : m_blocks)
 	{
-		//		cap::logger::info("block registry get block --- testing block: " + info.block_mod_unlocalized_name);
+		//		latte::logger::info("block registry get block --- testing block: " + info.block_mod_unlocalized_name);
 
 		if (info.block_mod_block->get_unlocalized_name() == unlocalized_name)
 		{
-			//			cap::logger::info("block registry get block --- FOUND block: " +
+			//			latte::logger::info("block registry get block --- FOUND block: " +
 			// info.block_mod_unlocalized_name);
 			return &info;
 		}
@@ -32,7 +32,7 @@ const rhr::registry::block::block_info* rhr::registry::block::get_block(const st
 			return &info;
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "Unexpected failure to receive vin_null block. Mod loading error?");
+	latte::logger::error(latte::logger::level::SYSTEM, "Unexpected failure to receive vin_null block. Mod loading error?");
 	return nullptr;
 }
 
@@ -44,7 +44,7 @@ const rhr::registry::block::category_info* rhr::registry::block::get_categories(
 			return &info;
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "Unexpected failure to get a catagory. Mod loading error?");
+	latte::logger::error(latte::logger::level::SYSTEM, "Unexpected failure to get a catagory. Mod loading error?");
 	return nullptr;
 }
 

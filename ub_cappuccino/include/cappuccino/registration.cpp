@@ -4,6 +4,12 @@
 
 #include <iostream>
 
+#if LINUX
+
+#else
+#include <windows.h>
+#endif
+
 static void thread_util_release()
 {
 	while (!cap::registration::get_util_finished())
@@ -225,7 +231,7 @@ void cap::registration::run_utility_tick()
 	std::unique_lock<std::mutex> lock1(m_passes_mutex);
 	std::unique_lock<std::mutex> lock2(m_execution_mutex);
 
-	static cap::logger::buffer* logging_buffer = new cap::logger::buffer(false);
+	static latte::logger::buffer* logging_buffer = new latte::logger::buffer(false);
 	logging_buffer->reserve(256 * 3 + 10);
 
 	for (u64 i = 0; i < m_passes.size(); i++)
@@ -241,11 +247,11 @@ void cap::registration::run_utility_tick()
 			if (amount > 256)
 			{
 				amount = 256;
-				logging_buffer->warn(cap::logger::level::RUNTIME, "restricting to 256 messages per tick...");
+				logging_buffer->warn(latte::logger::level::RUNTIME, "restricting to 256 messages per tick...");
 			}
 
 			for (u64 a = 0; a < amount; a++)
-				logging_buffer->info(cap::logger::level::RUNTIME, messages[a]);
+				logging_buffer->info(latte::logger::level::RUNTIME, messages[a]);
 		}
 
 		// Warn.
@@ -257,11 +263,11 @@ void cap::registration::run_utility_tick()
 			if (amount > 256)
 			{
 				amount = 256;
-				logging_buffer->warn(cap::logger::level::RUNTIME, "restricting to 256 messages per tick...");
+				logging_buffer->warn(latte::logger::level::RUNTIME, "restricting to 256 messages per tick...");
 			}
 
 			for (u64 a = 0; a < amount; a++)
-				logging_buffer->warn(cap::logger::level::RUNTIME, messages[a]);
+				logging_buffer->warn(latte::logger::level::RUNTIME, messages[a]);
 		}
 
 		// Error.
@@ -273,11 +279,11 @@ void cap::registration::run_utility_tick()
 			if (amount > 256)
 			{
 				amount = 256;
-				logging_buffer->warn(cap::logger::level::RUNTIME, "restricting to 256 messages per tick...");
+				logging_buffer->warn(latte::logger::level::RUNTIME, "restricting to 256 messages per tick...");
 			}
 
 			for (u64 a = 0; a < amount; a++)
-				logging_buffer->error(cap::logger::level::RUNTIME, messages[a]);
+				logging_buffer->error(latte::logger::level::RUNTIME, messages[a]);
 		}
 
 		m_passes[i]->unlock_messages();
@@ -330,6 +336,72 @@ void cap::registration::run_utility_tick()
 
 void cap::registration::run()
 {
+#if LINUX
+
+#else
+
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+
+	ZeroMemory(&si, sizeof(si));
+	si.cb = sizeof(si);
+	ZeroMemory(&pi, sizeof(pi));
+
+	if (!CreateProcess( NULL,   // No module name (use command line)
+		"cargo.exe build --release",
+		NULL,           // Process handle not inheritable
+		NULL,           // Thread handle not inheritable
+		FALSE,          // Set handle inheritance to FALSE
+		0,              // No creation flags
+		NULL,           // Use parent's environment block
+		"toolchain\\ubbs\\",           // Use parent's starting directory
+		&si,            // Pointer to STARTUPINFO structure
+		&pi )           // Pointer to PROCESS_INFORMATION structure
+		)
+	{
+		std::ostringstream stream;
+		stream << GetLastError();
+		latte::logger::error(latte::logger::level::EDITOR, std::string("failed to create a windows process: ") + stream.str());
+		return;
+	}
+
+	WaitForSingleObject(pi.hProcess, INFINITE);
+
+	DWORD exit_code;
+	GetExitCodeProcess(pi.hProcess, &exit_code);
+
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+
+	if (exit_code != 0)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, "failed to build project. Submit an issue to the repo with the project \".ub\" file or \".rs\" files in \"toolchain/ubbs/\"");
+		return;
+	}
+
+	HINSTANCE hGetProcIDDLL = LoadLibrary("toolchain\\ubbs\\target\\release\\ubbs.dll");
+
+	if (!hGetProcIDDLL)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, "failed to load ubbs");
+		return;
+	}
+
+	typedef void (*f_ub_run)();
+	f_ub_run ub_run = (f_ub_run)GetProcAddress(hGetProcIDDLL, "ub_run");
+
+	if (!ub_run)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, "failed to load ubbs \"ub_run\" function");
+		return;
+	}
+
+	printf("running ub_run");
+	ub_run();
+	printf("done ub_run");
+
+#endif
+
 	printf("#########[ Started Cappuccino\n");
 
 	if (m_debug_build)
@@ -521,7 +593,7 @@ bool cap::registration::global_pre(cap::preprocessor_data& data)
 	{
 		if (!single_blocks[i]->get_runtime_global_pre_init()(data))
 		{
-			cap::logger::error(cap::logger::level::EDITOR, "failed on globalPreInit");
+			latte::logger::error(latte::logger::level::EDITOR, "failed on globalPreInit");
 			return false;
 		}
 	}
@@ -557,7 +629,7 @@ bool cap::registration::global_post(cap::preprocessor_data& data)
 	{
 		if (!single_blocks[i]->get_runtime_global_post_init()(data))
 		{
-			cap::logger::error(cap::logger::level::EDITOR, "failed on globalPostInit");
+			latte::logger::error(latte::logger::level::EDITOR, "failed on globalPostInit");
 			return false;
 		}
 	}
@@ -594,7 +666,7 @@ bool cap::registration::local_pre(cap::preprocessor_data& data)
 		{
 			if (!single_blocks[a]->get_runtime_local_pre_init()(data))
 			{
-				cap::logger::error(cap::logger::level::EDITOR, "failed on localPreInit");
+				latte::logger::error(latte::logger::level::EDITOR, "failed on localPreInit");
 				return false;
 			}
 		}
@@ -632,7 +704,7 @@ bool cap::registration::local_post(cap::preprocessor_data& data)
 		{
 			if (!single_blocks[a]->get_runtime_local_post_init()(data))
 			{
-				cap::logger::error(cap::logger::level::EDITOR, "failed on localPostInit");
+				latte::logger::error(latte::logger::level::EDITOR, "failed on localPostInit");
 				return false;
 			}
 		}
@@ -684,8 +756,8 @@ bool cap::registration::init(cap::preprocessor_data& pre_data, espresso::mod::bl
 
 			if (!stages[i][a](pre_data, block_data[stage_stack_idx[i][a]][stage_block_idx[i][a]]))
 			{
-				cap::logger::error(
-					cap::logger::level::EDITOR, "failed on initialization of stage \"" + std::to_string(i) + "\"");
+				latte::logger::error(
+					latte::logger::level::EDITOR, "failed on initialization of stage \"" + std::to_string(i) + "\"");
 				return false;
 			}
 		}
@@ -885,8 +957,8 @@ void cap::registration::compile_data_debug()
 						}
 
 						if (!found)
-							cap::logger::warn(
-								cap::logger::level::EDITOR,
+							latte::logger::warn(
+								latte::logger::level::EDITOR,
 								"*any* variable \"" + *(std::string*)data[b] + "\" was not found");
 					}
 					else
@@ -1148,8 +1220,8 @@ void cap::registration::compile_data_release()
 						}
 
 						if (!found)
-							cap::logger::warn(
-								cap::logger::level::EDITOR,
+							latte::logger::warn(
+								latte::logger::level::EDITOR,
 								"*any* variable \"" + *(std::string*)data[b] + "\" was not found");
 					}
 					else

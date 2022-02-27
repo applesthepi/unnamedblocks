@@ -100,8 +100,8 @@ void rhr::handler::context::generate_functions(rhr::handler::context::flag::info
 				if (context_callback.has_value())
 					context_callback.value()(menu_flag, i);
 				else
-					cap::logger::warn(
-						cap::logger::level::SYSTEM, "context menu has no callback \"" + menu_items[i] + "\"");
+					latte::logger::warn(
+						latte::logger::level::SYSTEM, "context menu has no callback \"" + menu_items[i] + "\"");
 			}
 
 			if (!menu_items_enabled[i])

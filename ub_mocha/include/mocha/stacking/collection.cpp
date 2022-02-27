@@ -334,7 +334,7 @@ void rhr::stack::collection::ui_deserialize(rhr::handler::serializer::node& node
 {
 	if (!node.verify_data(COLLECTION_SERIALIZE))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize collection");
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize collection");
 		return;
 	}
 

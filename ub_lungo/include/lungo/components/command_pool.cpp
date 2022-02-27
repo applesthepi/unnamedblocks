@@ -20,7 +20,7 @@ rhr::render::component::command_pool::command_pool()
 
 	if (vk::create_command_pool(*window->get_device(), &command_pool_create_info, nullptr, &m_command_pool)
 		!= VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create command pool");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create command pool");
 }
 
 rhr::render::component::command_pool::~command_pool()
@@ -47,7 +47,7 @@ void rhr::render::component::command_pool::initialize_descriptor_pool()
 
 	if (vk::create_descriptor_pool(*window->get_device(), &descriptor_pool_create_info, nullptr, &m_descriptor_pool)
 		!= VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create descriptor pool");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create descriptor pool");
 }
 
 void rhr::render::component::command_pool::initialize_command_buffers()
@@ -99,12 +99,12 @@ vk::command_buffer* rhr::render::component::command_pool::get_master_command_buf
 	{
 		if (!m_command_buffer_master.empty())
 		{
-			cap::logger::error(
-				cap::logger::level::SYSTEM, "failed to fetch master command buffer using idx, using first one instead");
+			latte::logger::error(
+				latte::logger::level::SYSTEM, "failed to fetch master command buffer using idx, using first one instead");
 			return &m_command_buffer_master.front();
 		}
 		else
-			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch master command buffer, none registered");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "failed to fetch master command buffer, none registered");
 	}
 
 	return &m_command_buffer_master[static_cast<usize>(idx)];
@@ -116,12 +116,12 @@ vk::command_buffer* rhr::render::component::command_pool::get_panel_command_buff
 	{
 		if (!m_command_buffer_panels.empty())
 		{
-			cap::logger::error(
-				cap::logger::level::SYSTEM, "failed to fetch panel command buffer using idx, using first one instead");
+			latte::logger::error(
+				latte::logger::level::SYSTEM, "failed to fetch panel command buffer using idx, using first one instead");
 			return &m_command_buffer_panels.front();
 		}
 		else
-			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to fetch panel command buffer, none registered");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "failed to fetch panel command buffer, none registered");
 	}
 
 	return &m_command_buffer_panels[static_cast<usize>(idx)];
@@ -139,7 +139,7 @@ void rhr::render::component::command_pool::generate_command_buffer(u32 count, vk
 
 	if (vk::allocate_command_buffers(*window->get_device(), &command_buffer_allocate_info, command_buffer)
 		!= VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create command buffers");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create command buffers");
 }
 
 void rhr::render::component::command_pool::setup_command_buffer(
@@ -155,7 +155,7 @@ void rhr::render::component::command_pool::setup_command_buffer(
 
 	if (vk::begin_command_buffer(*command_buffer, &begin_info) != VK_SUCCESS)
 	{
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to begin recording the command buffer during setup");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to begin recording the command buffer during setup");
 	}
 
 	// render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -174,7 +174,7 @@ void rhr::render::component::command_pool::setup_command_buffer(
 	// vk::cmd::end_render_pass(*command_buffer);
 
 	if (vk::end_command_buffer(*command_buffer) != VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to stop recording the command buffer during setup");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to stop recording the command buffer during setup");
 }
 
 vk::command_pool& rhr::render::component::command_pool::get_command_pool()

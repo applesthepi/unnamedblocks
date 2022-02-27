@@ -1,32 +1,38 @@
-[![CMake](https://github.com/applesthepi/unnamedblocks/actions/workflows/cmake.yml/badge.svg?branch=master)](https://github.com/applesthepi/unnamedblocks/actions/workflows/cmake.yml)
-[![CodeQL](https://github.com/applesthepi/unnamedblocks/actions/workflows/codeql-analysis.yml/badge.svg?branch=master)](https://github.com/applesthepi/unnamedblocks/actions/workflows/codeql-analysis.yml)
+# ATTENTION
+Please note that this project isn't setup properly for public use. There are probably issues with the setup and usage. There also isn't any help for when things go wrong. In the future there will be more downloads. For now, the only demo available is from 2 years ago on the stable and nightly branches. You can download the prebuilt zip/7z for windows here https://unnamedblocks.com/downloads
 
 # Installation
-### General User
-Please note that this project isnt setup properly for public use. In the future there will be more downloads. For now, the only demo availible is from 2 years ago is for windows only here https://unnamedblocks.com/downloads
-
-### Development Installation
 **master** - active development branch  
 **stable** - stable releases (major and minor)  
 **nightly** - bleeding edge releases (beta and alpha)  
 
-Your expected to have cmake, git, vulkan, and clang installed and in your path. Follow these steps for repo setup:
-#### Windows / Visual Studio
-1. `git clone https://github.com/applesthepi/unnamedblocks --recurse-submodules`
+You're expected to have cmake, git, vulkan, and clang installed and in your path. Follow these steps for repo setup:
+### Windows / Visual Studio
+1. `git clone https://github.com/applesthepi/unnamedblocks`
 2. `cd unnamedblocks/`
-3. `.\win_configure_debug.bat`
-4. copy the imgui_XX-XX-XXXX.ini file to `build/debug/ub_client/` and rename it to `imgui.ini` (**FIRST TIME ONLY**)
-5. open `UB.sln` inside `build/debug/` directory
-6. rebuild solution
-7. run `UB_CLIENT.exe` in `build/debug/ub_client/` or run in Visual Studio
+3. `.\initialize.bat`
+4. `.\win_configure_debug.bat`
+5. copy the imgui_XX-XX-XXXX.ini file to `build/debug/ub_client/` and rename it to `imgui.ini` (**FIRST TIME ONLY**)
+6. open `UB.sln` inside `build/debug/` directory
+7. rebuild solution
+8. run `UB_CLIENT.exe` in `build/debug/ub_client/` or run in Visual Studio
 
-#### Linux Shell
-1. `git clone https://github.com/applesthepi/unnamedblocks --recurse-submodules && cd unnamedblocks`
-2. `./configure_debug.sh`
-3. copy the imgui_XX-XX-XXXX.ini file to `build/debug/ub_client/` and rename it to `imgui.ini` (**FIRST TIME ONLY**)
-4. `cd build/debug/`
-5. `make -j8`
-6. run `./UB_CLIENT` in `ub_client/`
+### Linux Shell
+1. `git clone https://github.com/applesthepi/unnamedblocks`
+2. `cd unnamedblocks`
+3. `./initialize.sh`
+4. `./configure_debug.sh`
+5. copy the imgui_XX-XX-XXXX.ini file to `build/debug/ub_client/` and rename it to `imgui.ini` (**FIRST TIME ONLY**)
+6. `cd build/debug/`
+7. `make -j8`
+8. run `./UB_CLIENT` in `ub_client/`
+
+# Tools
+### Formating
+There is a formatting shell script that will format the repo files based on the clang format provided in the repo root. If you want the script to format cmake as well, you need to install `cmake-format` package on linux.
+
+### Configuring
+Debug and Release configuration scripts are provided in the repo root for both linux and windows (prefixed with `win_`).
 
 # Code Style
 This describes the code style that should be used throughout the Unnamed Blocks repository. External additions like mods absolutely do not have to follow this strict standard. I plan to add bindings using different case styles for c++ in the future.
@@ -63,9 +69,9 @@ cpp
 
 ### File Structure
 - If inside the class, you can reference objects without using the absolute namespace.
-- You may use `using namespace` in a cpp file for namespaces that you dont want to type out, though it is still recommended you type it out so its clear. That way you can easily do `handler::project` instead of `project_handler`.
+- You may use `using namespace` in a cpp file for namespaces that you don't want to type out, though it is still recommended you type it out so its clear. That way you can easily do `handler::project` instead of `project_handler`.
 - Use the absolute paths for including files unless your including the hpp file of a class from the class's cpp file.
-- namespaces should follow the path. Have the path be plural/verb and the namespace be singular/noun. For example you might have a path of `rendering/objects/text.hpp` and you would reference it though `render::object::text`.
+- namespaces should follow the path. Have the path be plural/verb and the namespace be singular/noun. For example, you might have a path of `rendering/objects/text.hpp` and you would reference it though `render::object::text`.
 
 hpp
 ```cpp
@@ -146,10 +152,3 @@ This is the version standard Unnamed Blocks will be following.
 Major . Minor . Beta
 
 All Major and Minor updates should be user tested extensively while beta updates will have tests ran on it and briefly user tested with some projects. Major and Minor updates will both use the stable branch while beta releases will be merged to nightly. Master will just be the development branch that isnt ready for public use and may have issues.
-
-# Tools
-### Formating
-There is a formatting shell script that will format the repo files based on the clang format provided in the repo root. If you want the script to format cmake as well, you need to install `cmake-format` package on linux.
-
-### Configuring
-Debug and Release configuration scripts are provided in the repo root for both linux and windows (prefixed with `win_`).

@@ -67,7 +67,7 @@ void rhr::render::object::object::update_vertices(
 {
 	if (vertices->size() < 3 || indices->size() < 3)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "object does not support less then 3 vertices or indices");
+		latte::logger::error(latte::logger::level::SYSTEM, "object does not support less then 3 vertices or indices");
 		return;
 	}
 
@@ -79,7 +79,7 @@ void rhr::render::object::object::update_vertices(
 		rhr::render::vertex* staged_vertices = new rhr::render::vertex[vertices->size() * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!staged_vertices)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "out of memory");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "out of memory");
 
 		memcpy(staged_vertices, vertices->data(), vertices_size);
 
@@ -102,7 +102,7 @@ void rhr::render::object::object::update_vertices(
 		u32* staged_indices = new u32[indices->size() * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!staged_indices)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "out of memory");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "out of memory");
 
 		memcpy(staged_indices, indices->data(), indices_size);
 
@@ -133,7 +133,7 @@ void rhr::render::object::object::update_vertices(
 {
 	if (vertex_count < 3 || index_count < 3)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "object does not support less then 3 vertices or indices");
+		latte::logger::error(latte::logger::level::SYSTEM, "object does not support less then 3 vertices or indices");
 		return;
 	}
 
@@ -145,7 +145,7 @@ void rhr::render::object::object::update_vertices(
 		rhr::render::vertex* staged_vertices = new rhr::render::vertex[vertex_count * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!staged_vertices)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "out of memory");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "out of memory");
 
 		memcpy(staged_vertices, vertices, vertices_size);
 
@@ -168,7 +168,7 @@ void rhr::render::object::object::update_vertices(
 		u32* staged_indices = new u32[index_count * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!staged_indices)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "out of memory");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "out of memory");
 
 		memcpy(staged_indices, indices, indices_size);
 
@@ -199,7 +199,7 @@ void rhr::render::object::object::update_vertices(
 {
 	if (vertex_count < 3)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "object does not support less then 3 vertices or indices");
+		latte::logger::error(latte::logger::level::SYSTEM, "object does not support less then 3 vertices or indices");
 		return;
 	}
 
@@ -210,7 +210,7 @@ void rhr::render::object::object::update_vertices(
 		rhr::render::vertex* staged_vertices = new rhr::render::vertex[vertex_count * RENDER_OBJECT_ALLOC_FACTOR];
 
 		if (!staged_vertices)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "out of memory");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "out of memory");
 
 		memcpy(staged_vertices, vertices, vertices_size);
 
@@ -254,7 +254,7 @@ void rhr::render::object::object::on_render()
 			rhr::render::renderer::get_window_primary()->bind_color_pipeline(&m_descriptor_set);
 	}
 	else
-		cap::logger::fatal(cap::logger::level::SYSTEM, "not implemented");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "not implemented");
 
 	vk::command_buffer* active_command_buffer =
 		rhr::render::renderer::get_window_primary()->get_active_command_buffer();

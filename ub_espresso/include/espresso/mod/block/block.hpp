@@ -13,7 +13,7 @@
 /*
 Important Modding Information
 
-- Do NOT use the "cap::logger" class during runtime! Use the logger methods inside the ModBlockPass.
+- Do NOT use the "latte::logger" class during runtime! Use the logger methods inside the ModBlockPass.
 
 */
 

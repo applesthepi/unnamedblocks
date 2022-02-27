@@ -240,8 +240,8 @@ void rhr::stack::plane::mouse_button(
 									{
 										if (m_toolbar)
 										{
-											cap::logger::error(
-												cap::logger::level::EDITOR,
+											latte::logger::error(
+												latte::logger::level::EDITOR,
 												"splitting stacks inside toolbar is not supported");
 											return;
 										}
@@ -723,14 +723,14 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 		// pixel_position -= m_offset;
 
 		//		if (over_toolbar)
-		//			cap::logger::info("over toolbar");
+		//			latte::logger::info("over toolbar");
 		//		else
-		//			cap::logger::info("NOT over toolbar");
+		//			latte::logger::info("NOT over toolbar");
 		//
 		//		if (over_primary)
-		//			cap::logger::info("over primary");
+		//			latte::logger::info("over primary");
 		//		else
-		//			cap::logger::info("NOT over primary");
+		//			latte::logger::info("NOT over primary");
 
 		if (is_snap())
 		{
@@ -801,7 +801,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 			else
 			{
 				// TODO: undo support (or recently deleted)
-				cap::logger::warn(cap::logger::level::EDITOR, "letting stack deallocate; undo not supported yet");
+				latte::logger::warn(latte::logger::level::EDITOR, "letting stack deallocate; undo not supported yet");
 			}
 		}
 	}
@@ -939,8 +939,8 @@ void rhr::stack::plane::set_snap(
 		if (auto lk_collection = m_dragging_snap_collection.lock())
 			plane_offset = lk_collection->get_plane_offset();
 		else
-			cap::logger::fatal(
-				cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to lock dragging snap collection");
+			latte::logger::fatal(
+				latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to lock dragging snap collection");
 
 		m_dragging_connecting_line->set_point_1(m_dragging_collection->get_position_physical_absolute());
 

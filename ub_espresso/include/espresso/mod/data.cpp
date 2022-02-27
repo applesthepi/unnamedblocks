@@ -35,17 +35,17 @@ const std::string& esp::mod::data::get_version()
 	return m_version;
 }
 
-cap::logger::stream* esp::mod::data::get_stream_system()
+latte::logger::stream* esp::mod::data::get_stream_system()
 {
 	return m_stream_system;
 }
 
-cap::logger::stream* esp::mod::data::get_stream_editor()
+latte::logger::stream* esp::mod::data::get_stream_editor()
 {
 	return m_stream_editor;
 }
 
-cap::logger::stream* esp::mod::data::get_stream_runtime()
+latte::logger::stream* esp::mod::data::get_stream_runtime()
 {
 	return m_stream_runtime;
 }
@@ -66,7 +66,7 @@ void esp::mod::data::set_version(const std::string& version)
 }
 
 void esp::mod::data::set_logger_linkage(
-	cap::logger::stream* stream_system, cap::logger::stream* stream_editor, cap::logger::stream* stream_runtime)
+	latte::logger::stream* stream_system, latte::logger::stream* stream_editor, latte::logger::stream* stream_runtime)
 {
 	m_stream_system	 = stream_system;
 	m_stream_editor	 = stream_editor;

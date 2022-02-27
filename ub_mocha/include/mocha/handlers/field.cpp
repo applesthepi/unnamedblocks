@@ -142,7 +142,7 @@ void rhr::handler::field::mouse_button(
 			update_cursor();
 			update_highlight();
 
-			//			cap::logger::info("move from " + std::to_string(m_mouse_drag_start) + " to " +
+			//			latte::logger::info("move from " + std::to_string(m_mouse_drag_start) + " to " +
 			// std::to_string(m_mouse_drag_end));
 		}
 		else
@@ -301,7 +301,7 @@ void rhr::handler::field::mouse_button(
 			if (!cursor_position_start.has_value() || !cursor_position_end.has_value())
 				return;
 #if DEBUG_FIELDS
-			cap::logger::info("double press");
+			latte::logger::info("double press");
 #endif
 			m_mouse_down				= true;
 			m_mouse_down_data			= data.value();
@@ -527,7 +527,7 @@ rhr::handler::field_data::location rhr::handler::field::register_field(
 
 	std::optional<std::vector<std::vector<rhr::handler::field_data::data>>*> cell = get_cell(cell_position);
 	if (!cell.has_value())
-		cap::logger::error(cap::logger::level::SYSTEM, "rhr::handler::field::register_field failed");
+		latte::logger::error(latte::logger::level::SYSTEM, "rhr::handler::field::register_field failed");
 
 	rhr::handler::field_data::location local_location = rhr::handler::field_data::location(cell_position, m_idx, layer);
 	rhr::handler::field_data::data local_data(
@@ -557,7 +557,7 @@ rhr::handler::field_data::location rhr::handler::field::update_field_position(
 
 	if (position.x < 0 || position.y < 0)
 	{
-		cap::logger::warn(cap::logger::level::SYSTEM, "failed to update field position; position is less then 0");
+		latte::logger::warn(latte::logger::level::SYSTEM, "failed to update field position; position is less then 0");
 		return location;
 	}
 
@@ -566,7 +566,7 @@ rhr::handler::field_data::location rhr::handler::field::update_field_position(
 	cell_position.y *= FIELD_CELL_SIZE;
 
 #if DEBUG_FIELDS
-	cap::logger::info(std::to_string(cell_position.x) + ", " + std::to_string(cell_position.y));
+	latte::logger::info(std::to_string(cell_position.x) + ", " + std::to_string(cell_position.y));
 #endif
 	if (static_cast<usize>(position.x) > cell_position.x
 		&& static_cast<usize>(position.x) < cell_position.x + FIELD_CELL_SIZE
@@ -630,12 +630,12 @@ std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_first_d
 		std::optional<rhr::handler::field_data::data*> data = find_data(position, i);
 		if (data.has_value())
 		{
-			//			cap::logger::info("first find");
+			//			latte::logger::info("first find");
 			return data;
 		}
 	}
 
-	//	cap::logger::info("nothing first find");
+	//	latte::logger::info("nothing first find");
 	return std::nullopt;
 }
 
@@ -720,7 +720,7 @@ void rhr::handler::field::pop_data(const rhr::handler::field_data::location& loc
 		}
 	}
 
-	cap::logger::warn(cap::logger::level::SYSTEM, "rhr::handler::field::pop_data failed to remove data from cell");
+	latte::logger::warn(latte::logger::level::SYSTEM, "rhr::handler::field::pop_data failed to remove data from cell");
 }
 
 glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2, usize>& position)
@@ -774,7 +774,7 @@ void rhr::handler::field::process_highlight(bool copy)
 	if (auto lock = m_mouse_down_data->get_text_field().lock())
 	{
 		if (copy)
-			cap::logger::warn(cap::logger::level::SYSTEM, "copy not implemented");
+			latte::logger::warn(latte::logger::level::SYSTEM, "copy not implemented");
 		else
 		{
 			if (m_mouse_drag_end > m_mouse_drag_start)
@@ -888,8 +888,8 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{
-		cap::logger::warn(
-			cap::logger::level::SYSTEM,
+		latte::logger::warn(
+			latte::logger::level::SYSTEM,
 			"failed to update guests of field data location. host cell is after the guests cells.");
 		return;
 	}
@@ -907,7 +907,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			|| local_guest.get_cell().x > cell_last.x || local_guest.get_cell().y > cell_last.y)
 		{
 #if DEBUG_FIELDS
-			cap::logger::info(
+			latte::logger::info(
 				"popping " + std::to_string(local_guest.get_cell().x) + ", "
 				+ std::to_string(local_guest.get_cell().y));
 #endif
@@ -931,7 +931,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 				if (guest.get_cell().x == location.get_cell().x + x && guest.get_cell().y == location.get_cell().y + y)
 				{
 #if DEBUG_FIELDS
-					cap::logger::info(
+					latte::logger::info(
 						"keeping " + std::to_string(guest.get_cell().x) + ", " + std::to_string(guest.get_cell().y));
 #endif
 					found_location = guest;
@@ -1001,7 +1001,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			if (found)
 			{
 #if DEBUG_FIELDS
-				cap::logger::info(
+				latte::logger::info(
 					"updating guest cell " + std::to_string(found_location.get_cell().x) + ", "
 					+ std::to_string(found_location.get_cell().y));
 #endif
@@ -1015,7 +1015,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 			else if (x == 0 && y == 0)
 			{
 #if DEBUG_FIELDS
-				cap::logger::info(
+				latte::logger::info(
 					"size is now " + std::to_string(data.value()->get_size().x) + ", "
 					+ std::to_string(data.value()->get_size().y));
 #endif
@@ -1036,7 +1036,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 					false);
 
 #if DEBUG_FIELDS
-				cap::logger::info(
+				latte::logger::info(
 					"adding cell " + std::to_string(guest_location.get_cell().x) + ", "
 					+ std::to_string(guest_location.get_cell().y));
 #endif
@@ -1058,8 +1058,8 @@ void rhr::handler::field::remove_guests(const rhr::handler::field_data::location
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{
-		cap::logger::error(
-			cap::logger::level::SYSTEM,
+		latte::logger::error(
+			latte::logger::level::SYSTEM,
 			"failed to remove guests of field data location. host cell is after the guests cells.");
 		return;
 	}
@@ -1074,7 +1074,7 @@ void rhr::handler::field::remove_guests(const rhr::handler::field_data::location
 	{
 		rhr::handler::field_data::location& local_guest = guests.value()->at(i);
 #if DEBUG_FIELDS
-		cap::logger::info(
+		latte::logger::info(
 			"poping " + std::to_string(local_guest.get_cell().x) + ", " + std::to_string(local_guest.get_cell().y));
 #endif
 		pop_data(local_guest);

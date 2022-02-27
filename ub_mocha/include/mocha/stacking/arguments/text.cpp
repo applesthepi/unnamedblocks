@@ -29,7 +29,7 @@ espresso::mod::block::block::argument::type rhr::stack::argument::text::get_type
 
 u32 rhr::stack::argument::text::get_width()
 {
-	//	cap::logger::info("arg text width: " + std::to_string(m_text->get_size_local().x));
+	//	latte::logger::info("arg text width: " + std::to_string(m_text->get_size_local().x));
 	return m_text->get_size_local().x;
 }
 

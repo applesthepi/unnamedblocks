@@ -60,13 +60,13 @@
 #define PREP_LOG_RAW                  \
 	switch (level)                    \
 	{                                 \
-	case cap::logger::level::SYSTEM:  \
+	case latte::logger::level::SYSTEM:  \
 		CHECK_SYSTEM                  \
 		break;                        \
-	case cap::logger::level::EDITOR:  \
+	case latte::logger::level::EDITOR:  \
 		CHECK_EDITOR                  \
 		break;                        \
-	case cap::logger::level::RUNTIME: \
+	case latte::logger::level::RUNTIME: \
 		CHECK_RUNTIME                 \
 		break;                        \
 	}
@@ -74,15 +74,15 @@
 #define PREP_LOG_MUT                  \
 	switch (level)                    \
 	{                                 \
-	case cap::logger::level::SYSTEM:  \
+	case latte::logger::level::SYSTEM:  \
 		CHECK_SYSTEM                  \
 		MUTEX_LOCK_SYSTEM             \
 		break;                        \
-	case cap::logger::level::EDITOR:  \
+	case latte::logger::level::EDITOR:  \
 		CHECK_EDITOR                  \
 		MUTEX_LOCK_EDITOR             \
 		break;                        \
-	case cap::logger::level::RUNTIME: \
+	case latte::logger::level::RUNTIME: \
 		CHECK_RUNTIME                 \
 		MUTEX_LOCK_RUNTIME            \
 		break;                        \
@@ -91,28 +91,28 @@
 #define FINISH_LOG_MUT                \
 	switch (level)                    \
 	{                                 \
-	case cap::logger::level::SYSTEM:  \
+	case latte::logger::level::SYSTEM:  \
 		MUTEX_UNLOCK_SYSTEM           \
 		break;                        \
-	case cap::logger::level::EDITOR:  \
+	case latte::logger::level::EDITOR:  \
 		MUTEX_UNLOCK_EDITOR           \
 		break;                        \
-	case cap::logger::level::RUNTIME: \
+	case latte::logger::level::RUNTIME: \
 		MUTEX_UNLOCK_RUNTIME          \
 		break;                        \
 	}
 
 #define LOG_SWITCH_STREAM                      \
-	cap::logger::stream* use_stream = nullptr; \
+	latte::logger::stream* use_stream = nullptr; \
 	switch (level)                             \
 	{                                          \
-	case cap::logger::level::SYSTEM:           \
+	case latte::logger::level::SYSTEM:           \
 		use_stream = m_stream_system;          \
 		break;                                 \
-	case cap::logger::level::EDITOR:           \
+	case latte::logger::level::EDITOR:           \
 		use_stream = m_stream_editor;          \
 		break;                                 \
-	case cap::logger::level::RUNTIME:          \
+	case latte::logger::level::RUNTIME:          \
 		use_stream = m_stream_runtime;         \
 		break;                                 \
 	}
@@ -163,22 +163,22 @@
 #define ASSERT_ABORT abort();
 #endif
 
-cap::logger::buffer::buffer(bool destruction_flush)
+latte::logger::buffer::buffer(bool destruction_flush)
 	: m_destruction_flush(destruction_flush)
 {
 	reserve(10);
 }
 
-cap::logger::buffer::~buffer()
+latte::logger::buffer::~buffer()
 {
 	if (m_destruction_flush)
 		flush();
 }
 
-void cap::logger::buffer::flush()
+void latte::logger::buffer::flush()
 {
 	if (has_recorded_information())
-		cap::logger::flush_buffer(this);
+		latte::logger::flush_buffer(this);
 
 	m_recorded_1.clear();
 	m_recorded_2.clear();
@@ -186,7 +186,7 @@ void cap::logger::buffer::flush()
 	m_recorded_4.clear();
 }
 
-void cap::logger::buffer::reserve(size_t size)
+void latte::logger::buffer::reserve(size_t size)
 {
 	m_recorded_1.clear();
 	m_recorded_2.clear();
@@ -199,26 +199,26 @@ void cap::logger::buffer::reserve(size_t size)
 	m_recorded_4.reserve(size);
 }
 
-bool cap::logger::buffer::has_recorded_information() const
+bool latte::logger::buffer::has_recorded_information() const
 {
 	return !m_recorded_1.empty() || !m_recorded_2.empty() || !m_recorded_3.empty() || !m_recorded_4.empty();
 }
 
-void cap::logger::buffer::setup_push()
+void latte::logger::buffer::setup_push()
 {
 	if (m_recorded_1.size() == m_recorded_1.capacity() || m_recorded_2.size() == m_recorded_2.capacity()
 		|| m_recorded_3.size() == m_recorded_3.capacity() || m_recorded_4.size() == m_recorded_4.capacity())
 		flush();
 }
 
-void cap::logger::initialize()
+void latte::logger::initialize()
 {
-	m_stream_system	 = new cap::logger::stream();
-	m_stream_editor	 = new cap::logger::stream();
-	m_stream_runtime = new cap::logger::stream();
+	m_stream_system	 = new latte::logger::stream();
+	m_stream_editor	 = new latte::logger::stream();
+	m_stream_runtime = new latte::logger::stream();
 }
 
-cap::logger::stream* cap::logger::get_stream_system()
+latte::logger::stream* latte::logger::get_stream_system()
 {
 	CHECK_SYSTEM
 	CHECK_OWNER_SYSTEM
@@ -226,7 +226,7 @@ cap::logger::stream* cap::logger::get_stream_system()
 	return m_stream_system;
 }
 
-cap::logger::stream* cap::logger::get_stream_editor()
+latte::logger::stream* latte::logger::get_stream_editor()
 {
 	CHECK_EDITOR
 	CHECK_OWNER_EDITOR
@@ -234,7 +234,7 @@ cap::logger::stream* cap::logger::get_stream_editor()
 	return m_stream_editor;
 }
 
-cap::logger::stream* cap::logger::get_stream_runtime()
+latte::logger::stream* latte::logger::get_stream_runtime()
 {
 	CHECK_RUNTIME
 	CHECK_OWNER_RUNTIME
@@ -242,25 +242,25 @@ cap::logger::stream* cap::logger::get_stream_runtime()
 	return m_stream_runtime;
 }
 
-void cap::logger::set_stream_system(cap::logger::stream* stream_system)
+void latte::logger::set_stream_system(latte::logger::stream* stream_system)
 {
 	m_stream_system_owner = false;
 	m_stream_system		  = stream_system;
 }
 
-void cap::logger::set_stream_editor(cap::logger::stream* stream_editor)
+void latte::logger::set_stream_editor(latte::logger::stream* stream_editor)
 {
 	m_stream_editor_owner = false;
 	m_stream_editor		  = stream_editor;
 }
 
-void cap::logger::set_stream_runtime(cap::logger::stream* stream_runtime)
+void latte::logger::set_stream_runtime(latte::logger::stream* stream_runtime)
 {
 	m_stream_runtime_owner = false;
 	m_stream_runtime	   = stream_runtime;
 }
 
-void cap::logger::flush_buffer(cap::logger::buffer* b)
+void latte::logger::flush_buffer(latte::logger::buffer* b)
 {
 	CHECK_ALL
 	MUTEX_LOCK_ALL
@@ -271,13 +271,13 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 		switch (g._type)
 		{
 		case 1:
-			cap::logger::info_raw(LOG_A1P);
+			latte::logger::info_raw(LOG_A1P);
 			break;
 		case 2:
-			cap::logger::warn_raw(LOG_A1P);
+			latte::logger::warn_raw(LOG_A1P);
 			break;
 		case 3:
-			cap::logger::error_raw(LOG_A1P);
+			latte::logger::error_raw(LOG_A1P);
 			break;
 		default:
 			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
@@ -291,13 +291,13 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 		switch (g._type)
 		{
 		case 1:
-			cap::logger::info_raw(LOG_A2P);
+			latte::logger::info_raw(LOG_A2P);
 			break;
 		case 2:
-			cap::logger::warn_raw(LOG_A2P);
+			latte::logger::warn_raw(LOG_A2P);
 			break;
 		case 3:
-			cap::logger::error_raw(LOG_A2P);
+			latte::logger::error_raw(LOG_A2P);
 			break;
 		default:
 			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
@@ -311,13 +311,13 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 		switch (g._type)
 		{
 		case 1:
-			cap::logger::info_raw(LOG_A3P);
+			latte::logger::info_raw(LOG_A3P);
 			break;
 		case 2:
-			cap::logger::warn_raw(LOG_A3P);
+			latte::logger::warn_raw(LOG_A3P);
 			break;
 		case 3:
-			cap::logger::error_raw(LOG_A3P);
+			latte::logger::error_raw(LOG_A3P);
 			break;
 		default:
 			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
@@ -331,13 +331,13 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 		switch (g._type)
 		{
 		case 1:
-			cap::logger::info_raw(LOG_A4P);
+			latte::logger::info_raw(LOG_A4P);
 			break;
 		case 2:
-			cap::logger::warn_raw(LOG_A4P);
+			latte::logger::warn_raw(LOG_A4P);
 			break;
 		case 3:
-			cap::logger::error_raw(LOG_A4P);
+			latte::logger::error_raw(LOG_A4P);
 			break;
 		default:
 			internal_fatal(ERROR_BUFFER_IDX_FAILURE);
@@ -352,36 +352,36 @@ void cap::logger::flush_buffer(cap::logger::buffer* b)
 #define LOG_LCR info_raw
 #define LOG_UCS "INFO"
 
-void cap::logger::LOG_LC(LOG_A1)
+void latte::logger::LOG_LC(LOG_A1)
 {
 	PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A2)
+void latte::logger::LOG_LC(LOG_A2)
 {
 	PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A3)
+void latte::logger::LOG_LC(LOG_A3)
 {
 	PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A4)
+void latte::logger::LOG_LC(LOG_A4)
 {
 	PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT
 }
 
-void cap::logger::LOG_LCR(LOG_A1)
+void latte::logger::LOG_LCR(LOG_A1)
 {
 	PREP_LOG_RAW LOG_EXE1(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A2)
+void latte::logger::LOG_LCR(LOG_A2)
 {
 	PREP_LOG_RAW LOG_EXE2(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A3)
+void latte::logger::LOG_LCR(LOG_A3)
 {
 	PREP_LOG_RAW LOG_EXE3(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A4)
+void latte::logger::LOG_LCR(LOG_A4)
 {
 	PREP_LOG_RAW LOG_EXE4(LOG_UCS)
 }
@@ -394,36 +394,36 @@ void cap::logger::LOG_LCR(LOG_A4)
 #define LOG_LCR warn_raw
 
 #define LOG_UCS "WARN"
-void cap::logger::LOG_LC(LOG_A1)
+void latte::logger::LOG_LC(LOG_A1)
 {
 	PREP_LOG_MUT LOG_EXE1(LOG_UCS) FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A2)
+void latte::logger::LOG_LC(LOG_A2)
 {
 	PREP_LOG_MUT LOG_EXE2(LOG_UCS) FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A3)
+void latte::logger::LOG_LC(LOG_A3)
 {
 	PREP_LOG_MUT LOG_EXE3(LOG_UCS) FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A4)
+void latte::logger::LOG_LC(LOG_A4)
 {
 	PREP_LOG_MUT LOG_EXE4(LOG_UCS) FINISH_LOG_MUT
 }
 
-void cap::logger::LOG_LCR(LOG_A1)
+void latte::logger::LOG_LCR(LOG_A1)
 {
 	PREP_LOG_RAW LOG_EXE1(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A2)
+void latte::logger::LOG_LCR(LOG_A2)
 {
 	PREP_LOG_RAW LOG_EXE2(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A3)
+void latte::logger::LOG_LCR(LOG_A3)
 {
 	PREP_LOG_RAW LOG_EXE3(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A4)
+void latte::logger::LOG_LCR(LOG_A4)
 {
 	PREP_LOG_RAW LOG_EXE4(LOG_UCS)
 }
@@ -436,40 +436,40 @@ void cap::logger::LOG_LCR(LOG_A4)
 #define LOG_LCR error_raw
 
 #define LOG_UCS "ERROR"
-void cap::logger::LOG_LC(LOG_A1)
+void latte::logger::LOG_LC(LOG_A1)
 {
 	PREP_LOG_MUT LOG_EXE1(LOG_UCS)
 	ASSERT_ABORT FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A2)
+void latte::logger::LOG_LC(LOG_A2)
 {
 	PREP_LOG_MUT LOG_EXE2(LOG_UCS)
 	ASSERT_ABORT FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A3)
+void latte::logger::LOG_LC(LOG_A3)
 {
 	PREP_LOG_MUT LOG_EXE3(LOG_UCS)
 	ASSERT_ABORT FINISH_LOG_MUT
 }
-void cap::logger::LOG_LC(LOG_A4)
+void latte::logger::LOG_LC(LOG_A4)
 {
 	PREP_LOG_MUT LOG_EXE4(LOG_UCS)
 	ASSERT_ABORT FINISH_LOG_MUT
 }
 
-void cap::logger::LOG_LCR(LOG_A1)
+void latte::logger::LOG_LCR(LOG_A1)
 {
 	PREP_LOG_RAW LOG_EXE1(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A2)
+void latte::logger::LOG_LCR(LOG_A2)
 {
 	PREP_LOG_RAW LOG_EXE2(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A3)
+void latte::logger::LOG_LCR(LOG_A3)
 {
 	PREP_LOG_RAW LOG_EXE3(LOG_UCS)
 }
-void cap::logger::LOG_LCR(LOG_A4)
+void latte::logger::LOG_LCR(LOG_A4)
 {
 	PREP_LOG_RAW LOG_EXE4(LOG_UCS)
 }
@@ -481,36 +481,36 @@ void cap::logger::LOG_LCR(LOG_A4)
 #define LOG_LCR fatal_raw
 
 #define LOG_UCS "FATAL"
-void cap::logger::LOG_LC(LOG_A1)
+void latte::logger::LOG_LC(LOG_A1)
 {
 	PREP_LOG_MUT LOG_EXE1(LOG_UCS) abort();
 }
-void cap::logger::LOG_LC(LOG_A2)
+void latte::logger::LOG_LC(LOG_A2)
 {
 	PREP_LOG_MUT LOG_EXE2(LOG_UCS) abort();
 }
-void cap::logger::LOG_LC(LOG_A3)
+void latte::logger::LOG_LC(LOG_A3)
 {
 	PREP_LOG_MUT LOG_EXE3(LOG_UCS) abort();
 }
-void cap::logger::LOG_LC(LOG_A4)
+void latte::logger::LOG_LC(LOG_A4)
 {
 	PREP_LOG_MUT LOG_EXE4(LOG_UCS) abort();
 }
 
-void cap::logger::LOG_LCR(LOG_A1)
+void latte::logger::LOG_LCR(LOG_A1)
 {
 	PREP_LOG_RAW LOG_EXE1(LOG_UCS) abort();
 }
-void cap::logger::LOG_LCR(LOG_A2)
+void latte::logger::LOG_LCR(LOG_A2)
 {
 	PREP_LOG_RAW LOG_EXE2(LOG_UCS) abort();
 }
-void cap::logger::LOG_LCR(LOG_A3)
+void latte::logger::LOG_LCR(LOG_A3)
 {
 	PREP_LOG_RAW LOG_EXE3(LOG_UCS) abort();
 }
-void cap::logger::LOG_LCR(LOG_A4)
+void latte::logger::LOG_LCR(LOG_A4)
 {
 	PREP_LOG_RAW LOG_EXE4(LOG_UCS) abort();
 }
@@ -519,16 +519,16 @@ void cap::logger::LOG_LCR(LOG_A4)
 #undef LOG_LCR
 #undef LOG_UCS
 
-void cap::logger::internal_fatal(const std::string& error)
+void latte::logger::internal_fatal(const std::string& error)
 {
 	std::cout << " [FATAL] " + error << std::endl;
 	abort();
 }
 
-cap::logger::stream* cap::logger::m_stream_system;
-cap::logger::stream* cap::logger::m_stream_editor;
-cap::logger::stream* cap::logger::m_stream_runtime;
+latte::logger::stream* latte::logger::m_stream_system;
+latte::logger::stream* latte::logger::m_stream_editor;
+latte::logger::stream* latte::logger::m_stream_runtime;
 
-bool cap::logger::m_stream_system_owner	 = true;
-bool cap::logger::m_stream_editor_owner	 = true;
-bool cap::logger::m_stream_runtime_owner = true;
+bool latte::logger::m_stream_system_owner	 = true;
+bool latte::logger::m_stream_editor_owner	 = true;
+bool latte::logger::m_stream_runtime_owner = true;

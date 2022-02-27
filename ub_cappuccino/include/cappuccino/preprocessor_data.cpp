@@ -26,7 +26,7 @@ void* cap::preprocessor_data::get_structure(const std::string& name)
 			return m_structures[i];
 	}
 
-	cap::logger::error(cap::logger::level::EDITOR, "failed to locate structure \"" + name + "\"");
+	latte::logger::error(latte::logger::level::EDITOR, "failed to locate structure \"" + name + "\"");
 	return nullptr;
 }
 /*

@@ -42,7 +42,7 @@ std::vector<StatmentIf> StatmentHandler::ProcessIfStatments(Stack* stack)
 				if (currentIfs.back().HasElse)
 				{
 					//if (!muteErrors)
-					//	cap::logger::Error("failed to construct if statement track, you can not have an \"else if\"
+					//	latte::logger::Error("failed to construct if statement track, you can not have an \"else if\"
 block after an \"else\" block in an if statement");
 
 					return std::vector<StatmentIf>();
@@ -60,7 +60,7 @@ block after an \"else\" block in an if statement");
 	if (currentIfs.size() > 0)
 	{
 		//if (!muteErrors)
-		//	cap::logger::Error("failed to construct if statement track, unbalanced statements");
+		//	latte::logger::Error("failed to construct if statement track, unbalanced statements");
 
 		return std::vector<StatmentIf>();
 	}

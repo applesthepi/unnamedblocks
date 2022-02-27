@@ -22,7 +22,7 @@ std::vector<char>* rhr::render::tools::read_file_bytes(const std::string& file_n
 	std::ifstream file(file_name, std::ios::ate | std::ios::binary);
 
 	if (!file.is_open())
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to open file \"" + file_name + "\"");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to open file \"" + file_name + "\"");
 
 	usize file_size			  = (usize)file.tellg();
 	std::vector<char>* buffer = new std::vector<char>(file_size);
@@ -60,7 +60,7 @@ bool rhr::render::tools::check_validation_layer_support()
 
 		if (!layer_found)
 		{
-			cap::logger::warn(cap::logger::level::SYSTEM, "layer \"" + std::string(layer_name) + "\" not supported");
+			latte::logger::warn(latte::logger::level::SYSTEM, "layer \"" + std::string(layer_name) + "\" not supported");
 			layers_supported = false;
 		}
 	}
@@ -68,7 +68,7 @@ bool rhr::render::tools::check_validation_layer_support()
 	if (!layers_supported)
 	{
 		validation_layers.clear();
-		cap::logger::warn(cap::logger::level::SYSTEM, "atleast one vulkan layer was not supported. Disabling all vulkan layers.");
+		latte::logger::warn(latte::logger::level::SYSTEM, "atleast one vulkan layer was not supported. Disabling all vulkan layers.");
 	}
 
 	//validation_layers.clear();
@@ -77,7 +77,7 @@ bool rhr::render::tools::check_validation_layer_support()
 	//	validation_layers.push_back(layer_properties.layerName);
 
 	for (const auto& validation_layer : validation_layers)
-		cap::logger::info(cap::logger::level::SYSTEM, "loading validation layer " + std::string(validation_layer));
+		latte::logger::info(latte::logger::level::SYSTEM, "loading validation layer " + std::string(validation_layer));
 
 	return true;
 }
@@ -100,7 +100,7 @@ rhr::render::tools::create_image_view(vk::image image, vk::format format, vk::im
 
 	if (vkCreateImageView(*rhr::render::renderer::get_window_primary()->get_device(), &view_info, nullptr, &image_view)
 		!= VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create image view");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create image view");
 
 	return image_view;
 }
@@ -222,7 +222,7 @@ vk::format rhr::render::tools::find_supported_format(
 		}
 	}
 
-	cap::logger::fatal(cap::logger::level::SYSTEM, "failed to find supported format");
+	latte::logger::fatal(latte::logger::level::SYSTEM, "failed to find supported format");
 	return candidates.front();
 }
 
@@ -303,7 +303,7 @@ void rhr::render::tools::transition_image_layout(
 		destination_stage = VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 	}
 	else
-		cap::logger::fatal(cap::logger::level::SYSTEM, "unsupported layout transition");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "unsupported layout transition");
 
 	vkCmdPipelineBarrier(command_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
@@ -322,7 +322,7 @@ u32 rhr::render::tools::find_memory_type(u32 type_filter, vk::memory_property_fl
 			return i;
 	}
 
-	cap::logger::fatal(cap::logger::level::SYSTEM, "failed to find suitable memory type");
+	latte::logger::fatal(latte::logger::level::SYSTEM, "failed to find suitable memory type");
 	return 0;
 }
 
@@ -364,7 +364,7 @@ void rhr::render::tools::create_buffer(
 	if (vkCreateBuffer(*rhr::render::renderer::get_window_primary()->get_device(), &buffer_info, nullptr, &buffer)
 		!= VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create buffer");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create buffer");
 		return;
 	}
 
@@ -381,7 +381,7 @@ void rhr::render::tools::create_buffer(
 			*rhr::render::renderer::get_window_primary()->get_device(), &allocate_info, nullptr, &buffer_memory)
 		!= VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to allocate buffer memory");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to allocate buffer memory");
 		return;
 	}
 
@@ -457,7 +457,7 @@ void rhr::render::tools::create_image(
 	if (vkCreateImage(*rhr::render::renderer::get_window_primary()->get_device(), &image_info, nullptr, &image)
 		!= VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create image");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create image");
 		return;
 	}
 
@@ -474,7 +474,7 @@ void rhr::render::tools::create_image(
 			*rhr::render::renderer::get_window_primary()->get_device(), &allocation_info, nullptr, &image_memory)
 		!= VK_SUCCESS)
 	{
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to allocate image memory");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to allocate image memory");
 		return;
 	}
 
@@ -494,7 +494,7 @@ rhr::render::tools::create_texture_image(const std::string& texture_path, vk::de
 	vk::device_size image_size = texture_width * texture_height * 4;
 
 	if (!pixels)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to load texture \"" + texture_path + "\"");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to load texture \"" + texture_path + "\"");
 
 	vk::buffer staging_buffer;
 	vk::device_memory staging_buffer_memory;
@@ -546,7 +546,7 @@ rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pixels, vk::
 	// 	u8* pixels = (u8*)malloc(size.x * size.y * 4);
 
 	// 	if (pixels == nullptr)
-	// 		cap::logger::Fatal("failed to allocate texture in ram.");
+	// 		latte::logger::Fatal("failed to allocate texture in ram.");
 
 	// 	glm::vec<4, u8> fill_color = color.GetU8();
 	//
@@ -782,7 +782,7 @@ vk::shader_module rhr::render::tools::create_shader_module(const std::vector<cha
 	vk::shader_module shader_module;
 
 	if (vkCreateShaderModule(*device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
-		cap::logger::error(cap::logger::level::SYSTEM, "failed to create shader modules");
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to create shader modules");
 
 	return shader_module;
 }
@@ -822,9 +822,9 @@ VKAPI_ATTR vk::bool32 VKAPI_CALL rhr::render::tools::debug_callback(
 	void* user_data)
 {
 	if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
-		cap::logger::warn(cap::logger::level::SYSTEM, std::string(callback_data->pMessage));
+		latte::logger::warn(latte::logger::level::SYSTEM, std::string(callback_data->pMessage));
 	else if (message_severity == VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
-		cap::logger::error(cap::logger::level::SYSTEM, std::string(callback_data->pMessage));
+		latte::logger::error(latte::logger::level::SYSTEM, std::string(callback_data->pMessage));
 
 	return VK_FALSE;
 }

@@ -8,39 +8,39 @@
 #include <string>
 #include <vector>
 
-#define LOG_DEBUG(message) cap::logger::info(cap::logger::level::SYSTEM, __FILE__, __LINE__, message)
+#define LOG_DEBUG(message) latte::logger::info(latte::logger::level::SYSTEM, __FILE__, __LINE__, message)
 #define LOG_DEBUG_VEC2(vec) \
-	cap::logger::info(      \
-		cap::logger::level::SYSTEM, __FILE__, __LINE__, std::to_string(vec.x) + ", " + std::to_string(vec.y))
+	latte::logger::info(      \
+		latte::logger::level::SYSTEM, __FILE__, __LINE__, std::to_string(vec.x) + ", " + std::to_string(vec.y))
 #define LOG_DEBUG_VEC3(vec)         \
-	cap::logger::info(              \
-		cap::logger::level::SYSTEM, \
+	latte::logger::info(              \
+		latte::logger::level::SYSTEM, \
 		__FILE__,                   \
 		__LINE__,                   \
 		std::to_string(vec.x) + ", " + std::to_string(vec.y) + ", " + std::to_string(vec.z))
 
-#define LOG_A1 cap::logger::level level, const std::string &message
-#define LOG_A2 cap::logger::level level, const std::vector<std::string>&messages
-#define LOG_A3 cap::logger::level level, const std::string &file, int line, const std::string &message
-#define LOG_A4 cap::logger::level level, const std::string &file, int line, const std::vector<std::string>&messages
+#define LOG_A1 latte::logger::level level, const std::string &message
+#define LOG_A2 latte::logger::level level, const std::vector<std::string>&messages
+#define LOG_A3 latte::logger::level level, const std::string &file, int line, const std::string &message
+#define LOG_A4 latte::logger::level level, const std::string &file, int line, const std::vector<std::string>&messages
 
 #define LOG_A1G                \
 	uint8_t _type;             \
-	cap::logger::level _level; \
+	latte::logger::level _level; \
 	std::string _message;
 #define LOG_A2G                \
 	uint8_t _type;             \
-	cap::logger::level _level; \
+	latte::logger::level _level; \
 	std::vector<std::string> _messages;
 #define LOG_A3G                \
 	uint8_t _type;             \
-	cap::logger::level _level; \
+	latte::logger::level _level; \
 	std::string _file;         \
 	int _line;                 \
 	std::string _message;
 #define LOG_A4G                \
 	uint8_t _type;             \
-	cap::logger::level _level; \
+	latte::logger::level _level; \
 	std::string _file;         \
 	int _line;                 \
 	std::vector<std::string> _messages;
@@ -55,7 +55,7 @@
 #define LOG_A3P g._level, g._file, g._line, g._message
 #define LOG_A4P g._level, g._file, g._line, g._messages
 
-namespace cap
+namespace latte
 {
 ///
 class logger

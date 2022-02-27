@@ -93,15 +93,15 @@ void rhr::stack::block::set_data(const std::string& data)
 
 	if (document.HasParseError())
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the block.");
+		latte::logger::error(
+			latte::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the block.");
 		return;
 	}
 
 	if (!document.IsObject())
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"data provided to the block is not an object that can be parsed.");
@@ -110,7 +110,7 @@ void rhr::stack::block::set_data(const std::string& data)
 
 	if (!document.HasMember("args"))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_MISSING("args"));
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_MISSING("args"));
 		return;
 	}
 
@@ -118,14 +118,14 @@ void rhr::stack::block::set_data(const std::string& data)
 
 	if (!v_args.IsArray())
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_TYPE("args"));
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_TYPE("args"));
 		return;
 	}
 
 	if (v_args.Size() != m_arguments.size())
 	{
-		cap::logger::error(
-			cap::logger::level::EDITOR,
+		latte::logger::error(
+			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
 			"data provided to the block has a different argument count.");
@@ -138,7 +138,7 @@ void rhr::stack::block::set_data(const std::string& data)
 
 		if (!v_arg.IsString())
 		{
-			cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_TYPE("args"));
+			latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, BLOCK_SET_DATA_ERROR_TYPE("args"));
 			return;
 		}
 
@@ -236,7 +236,7 @@ void rhr::stack::block::ui_deserialize(rhr::handler::serializer::node& node)
 {
 	if (!node.verify_children(m_arguments.size()))
 	{
-		cap::logger::error(cap::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize block; invalid argument count");
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize block; invalid argument count");
 		return;
 	}
 

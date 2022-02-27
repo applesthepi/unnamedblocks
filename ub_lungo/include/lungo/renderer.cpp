@@ -22,7 +22,7 @@ static std::vector<std::shared_ptr<rhr::render::object::rectangle>> grid_objects
 static void check_vk_result(VkResult err)
 {
 	if (err != VK_SUCCESS)
-		cap::logger::error(cap::logger::level::SYSTEM, "vulkan error code \"" + std::to_string(err) + "\"");
+		latte::logger::error(latte::logger::level::SYSTEM, "vulkan error code \"" + std::to_string(err) + "\"");
 }
 
 vk::image depthImage;
@@ -170,16 +170,16 @@ void rhr::render::renderer::reload_swapchain()
 
 	vkDeviceWaitIdle(*m_window_primary->get_device());
 
-	cap::logger::info(cap::logger::level::SYSTEM, "recreating swapchain...");
-	cap::logger::info(
-		cap::logger::level::SYSTEM, "framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
+	latte::logger::info(latte::logger::level::SYSTEM, "recreating swapchain...");
+	latte::logger::info(
+		latte::logger::level::SYSTEM, "framebuffer new size: " + std::to_string(width) + ", " + std::to_string(height));
 
 	m_window_primary->recreate_swapchain();
 	initialize_imgui(false);
 	rhr::render::panel::initialize_panels();
 
-	cap::logger::info(cap::logger::level::SYSTEM, "...recreated swapchain");
-	cap::logger::info(cap::logger::level::SYSTEM, "reloading swapchain dependent objects...");
+	latte::logger::info(latte::logger::level::SYSTEM, "...recreated swapchain");
+	latte::logger::info(latte::logger::level::SYSTEM, "reloading swapchain dependent objects...");
 
 	rhr::render::renderer::imgui_local->data.FrameIndex = 0;
 	rhr::render::renderer::get_window_primary()->flag_clear_swapchain_recreation();
@@ -187,8 +187,8 @@ void rhr::render::renderer::reload_swapchain()
 	VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
 
 	if (err != VK_SUCCESS)
-		cap::logger::fatal(
-			cap::logger::level::SYSTEM,
+		latte::logger::fatal(
+			latte::logger::level::SYSTEM,
 			"failed to idle device during swapchain reload; vulkan error code: "
 				+ std::to_string(static_cast<i32>(err)));
 
@@ -198,7 +198,7 @@ void rhr::render::renderer::reload_swapchain()
 	for (auto& grid_object : grid_objects)
 		grid_object->reload_swap_chain();
 
-	cap::logger::info(cap::logger::level::SYSTEM, "...reloaded swapchain dependent objects");
+	latte::logger::info(latte::logger::level::SYSTEM, "...reloaded swapchain dependent objects");
 }
 
 void rhr::render::renderer::initialize_imgui(bool first_time)
@@ -271,8 +271,8 @@ void rhr::render::renderer::initialize_imgui(bool first_time)
 		.CheckVkResultFn = [](VkResult result)
 		{
 			if (result != VK_SUCCESS)
-				cap::logger::fatal(
-					cap::logger::level::SYSTEM, "imgui fatal error: " + std::to_string(static_cast<i32>(result)));
+				latte::logger::fatal(
+					latte::logger::level::SYSTEM, "imgui fatal error: " + std::to_string(static_cast<i32>(result)));
 		}};
 
 	if (first_time)
@@ -366,7 +366,7 @@ void rhr::render::renderer::render_pass_setup()
 		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].ImageAcquiredSemaphore;
 	VkSemaphore render_complete_semaphore =
 		imgui_local->data.FrameSemaphores[imgui_local->data.SemaphoreIndex].RenderCompleteSemaphore;
-	// cap::logger::info("vkAcquireNextImageKHR");
+	// latte::logger::info("vkAcquireNextImageKHR");
 	VkResult err = vkAcquireNextImageKHR(
 		*m_window_primary->get_device(),
 		imgui_local->data.Swapchain,

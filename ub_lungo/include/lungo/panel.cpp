@@ -197,7 +197,7 @@ void rhr::render::panel::create_panel(
 				nullptr,
 				&local_data.render_pass)
 			!= VK_SUCCESS)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create render pass");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create render pass");
 	}
 
 	// create panel image
@@ -257,7 +257,7 @@ void rhr::render::panel::create_panel(
 			nullptr,
 			&local_data.frame_buffer)
 		!= VK_SUCCESS)
-		cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create frame buffers");
+		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create frame buffers");
 
 	// create panel texture sampler
 
@@ -288,7 +288,7 @@ void rhr::render::panel::create_panel(
 		if (vkCreateSampler(
 				*rhr::render::renderer::get_window_primary()->get_device(), &sampler_info, nullptr, &local_data.sampler)
 			!= VK_SUCCESS)
-			cap::logger::fatal(cap::logger::level::SYSTEM, "failed to create texture sampler");
+			latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create texture sampler");
 	}
 
 	// create panel descriptor set
@@ -317,7 +317,7 @@ void rhr::render::panel::run_imgui()
 	ImGui_ImplVulkanH_Frame* fd =
 		&rhr::render::renderer::imgui_local->data.Frames[rhr::render::renderer::imgui_local->data.FrameIndex];
 
-	// ImGui::ShowDemoWindow();
+	 ImGui::ShowDemoWindow();
 
 	for (auto& data : panels)
 	{
@@ -460,9 +460,9 @@ void rhr::render::panel::initialize_panels()
 
 			n_button_idx = button_idx;
 
-			cap::logger::stream* system_stream	= cap::logger::get_stream_system();
-			cap::logger::stream* editor_stream	= cap::logger::get_stream_editor();
-			cap::logger::stream* runtime_stream = cap::logger::get_stream_runtime();
+			latte::logger::stream* system_stream	= latte::logger::get_stream_system();
+			latte::logger::stream* editor_stream	= latte::logger::get_stream_editor();
+			latte::logger::stream* runtime_stream = latte::logger::get_stream_runtime();
 
 			if (system_stream->log_update)
 			{
@@ -526,6 +526,9 @@ void rhr::render::panel::initialize_panels()
 				break;
 			}
 
+			if (scroll_to_bottom || (auto_scroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
+				ImGui::SetScrollHereY(1.0f);
+
 			ImGui::EndChild();
 			ImGui::Separator();
 
@@ -565,11 +568,6 @@ void rhr::render::panel::initialize_panels()
 				ImGui::PopStyleColor();
 
 			ImGui::PopStyleVar();
-
-			if (scroll_to_bottom || (auto_scroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()))
-			{
-				ImGui::SetScrollHereY(1.0f);
-			}
 
 			button_idx		 = n_button_idx;
 			scroll_to_bottom = false;

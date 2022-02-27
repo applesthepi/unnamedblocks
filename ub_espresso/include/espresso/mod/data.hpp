@@ -34,13 +34,13 @@ public:
 	const std::string& get_version();
 
 	///
-	cap::logger::stream* get_stream_system();
+	latte::logger::stream* get_stream_system();
 
 	///
-	cap::logger::stream* get_stream_editor();
+	latte::logger::stream* get_stream_editor();
 
 	///
-	cap::logger::stream* get_stream_runtime();
+	latte::logger::stream* get_stream_runtime();
 
 	///
 	void set_mod_display_name(const std::string& display_name);
@@ -53,7 +53,7 @@ public:
 
 	///
 	void set_logger_linkage(
-		cap::logger::stream* stream_system, cap::logger::stream* stream_editor, cap::logger::stream* stream_runtime);
+		latte::logger::stream* stream_system, latte::logger::stream* stream_editor, latte::logger::stream* stream_runtime);
 
 private:
 	///
@@ -72,12 +72,12 @@ private:
 	std::string m_version;
 
 	///
-	cap::logger::stream* m_stream_system;
+	latte::logger::stream* m_stream_system;
 
 	///
-	cap::logger::stream* m_stream_editor;
+	latte::logger::stream* m_stream_editor;
 
 	///
-	cap::logger::stream* m_stream_runtime;
+	latte::logger::stream* m_stream_runtime;
 };
 } // namespace esp::mod

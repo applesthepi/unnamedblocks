@@ -33,7 +33,7 @@ void rhr::handler::input::unregister_key_callback(void (*callback)(key_state sta
 		}
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister key callback");
+	latte::logger::error(latte::logger::level::SYSTEM, "failed to unregister key callback");
 }
 
 void rhr::handler::input::register_text_callback(void (*callback)(key_state state, void* data), void* data)
@@ -58,7 +58,7 @@ void rhr::handler::input::unregister_text_callback(void (*callback)(key_state st
 		}
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister text callback");
+	latte::logger::error(latte::logger::level::SYSTEM, "failed to unregister text callback");
 }
 
 void rhr::handler::input::register_mouse_callback(
@@ -86,7 +86,7 @@ void rhr::handler::input::unregister_mouse_callback(
 		}
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister mouse callback");
+	latte::logger::error(latte::logger::level::SYSTEM, "failed to unregister mouse callback");
 }
 
 void rhr::handler::input::register_bullish_mouse_callback(
@@ -130,7 +130,7 @@ void rhr::handler::input::unregister_bullish_mouse_callback(
 		}
 	}
 
-	cap::logger::error(cap::logger::level::SYSTEM, "failed to unregister bullish mouse callback");
+	latte::logger::error(latte::logger::level::SYSTEM, "failed to unregister bullish mouse callback");
 }
 
 void rhr::handler::input::fire_key(i16 key, u8 operation)
