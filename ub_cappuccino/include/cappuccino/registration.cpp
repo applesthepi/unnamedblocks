@@ -5,10 +5,15 @@
 #include <iostream>
 
 #if LINUX
-
+#include <spawn.h>
+#include <sys/wait.h>
+#include <dlfcn.h>
+extern char **environ;
 #else
 #include <windows.h>
 #endif
+
+#define UB_BUILD_FAILED "Failed to build project. Submit an issue with the relavant project files for help."
 
 static void thread_util_release()
 {
@@ -336,7 +341,55 @@ void cap::registration::run_utility_tick()
 
 void cap::registration::run()
 {
+	typedef void (*f_ub_run)();
+
 #if LINUX
+
+	pid_t pid = 0;
+	char* argv[] = { "sh", "-c", "cd toolchain/ubbs/ && ./cargo build --release", NULL };
+	i32 pstatus = posix_spawn(&pid, "/bin/sh", NULL, NULL, argv, environ);
+	
+	if (pstatus)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, "failed to create a posix process: " + std::to_string(pstatus));
+		return;
+	}
+
+	do
+	{
+		if (waitpid(pid, &pstatus, 0) == -1)
+		{
+			latte::logger::error(latte::logger::level::EDITOR, "failed to wait for posix process");
+			return;
+		}
+	}
+	while (!WIFEXITED(pstatus) && !WIFSIGNALED(pstatus));
+	
+	if (pstatus != 0)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, UB_BUILD_FAILED);
+		return;
+	}
+
+	void* so = dlopen("toolchain/ubbs/target/release/libubbs.so", RTLD_NOW);
+
+	if (!so)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, "failed to load ubbs");
+		return;
+	}
+
+	f_ub_run ub_run = (f_ub_run)dlsym(so, "ub_run");
+
+	if (!ub_run)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, "failed to load ubbs \"ub_run\" function");
+		return;
+	}
+
+	printf("running ub_run");
+	ub_run();
+	printf("done ub_run");
 
 #else
 
@@ -375,7 +428,7 @@ void cap::registration::run()
 
 	if (exit_code != 0)
 	{
-		latte::logger::error(latte::logger::level::EDITOR, "failed to build project. Submit an issue to the repo with the project \".ub\" file or \".rs\" files in \"toolchain/ubbs/\"");
+		latte::logger::error(latte::logger::level::EDITOR, UB_BUILD_FAILED);
 		return;
 	}
 
@@ -387,7 +440,6 @@ void cap::registration::run()
 		return;
 	}
 
-	typedef void (*f_ub_run)();
 	f_ub_run ub_run = (f_ub_run)GetProcAddress(hGetProcIDDLL, "ub_run");
 
 	if (!ub_run)

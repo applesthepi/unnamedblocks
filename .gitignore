@@ -27,4 +27,5 @@ compile_commands.json
 html
 latex
 .idea
+.vscode
 toolchain
