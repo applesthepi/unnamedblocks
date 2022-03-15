@@ -57,8 +57,8 @@ private:
 	void ui_reload_swap_chain() override;
 	void ui_update_buffers() override;
 	void ui_chain_update_buffers() override;
-	void ui_serialize(rhr::handler::serializer::node& node) override;
-	void ui_deserialize(rhr::handler::serializer::node& node) override;
+	void ui_serialize(latte::serializer::node& node) override;
+	void ui_deserialize(latte::serializer::node& node) override;
 
 	///
 	void remove_all();

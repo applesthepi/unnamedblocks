@@ -1,8 +1,7 @@
 #include "mod_loader.hpp"
 
-#include <espresso/mod/data.hpp>
+#include <espresso/mod_data.hpp>
 #include <mocha/handlers/project.hpp>
-#include <mocha/registries/block.hpp>
 
 // TODO temp
 //#include <RHR/config.h>
@@ -45,13 +44,14 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 
 	mod.Data->set_logger_linkage(
 		latte::logger::get_stream_system(), latte::logger::get_stream_editor(), latte::logger::get_stream_runtime());
+	mod.Data->set_registry(esp::registry::get_registry());
 	mods->push_back(mod);
 }
 
 ModLoaderStatus run()
 {
 	rhr::handler::project::mods.clear();
-	typedef void (*f_initialize)(esp::mod::data*);
+	typedef void (*f_initialize)(esp::mod_data*);
 
 	mods = new std::vector<RegMod>();
 
@@ -93,7 +93,7 @@ ModLoaderStatus run()
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
-		f_initialize initialize = (f_initialize)dlsym(so, "Initialization");
+		f_initialize initialize = (f_initialize)dlsym(so, "initialization");
 		if (initialize == nullptr)
 		{
 			latte::logger::error(
@@ -119,7 +119,7 @@ ModLoaderStatus run()
 			return ModLoaderStatus::ModLoaderStatus_ERROR;
 		}
 
-		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "Initialization");
+		f_initialize initialize = (f_initialize)GetProcAddress(hGetProcIDDLL, "initialization");
 		if (initialize == nullptr)
 		{
 			latte::logger::error(
@@ -131,15 +131,7 @@ ModLoaderStatus run()
 
 		rhr::handler::project::mods.push_back((*mods)[i].Data->get_mod_unlocalized_name());
 
-		esp::mod::data* mod_data = (*mods)[i].Data;
-
-		for (u32 j = 0; j < mod_data->get_categories().size(); j++)
-			rhr::registry::block::get_registry().register_category(
-				mod_data->get_categories()[j], mods->at(i).Data->get_mod_unlocalized_name());
-
-		for (u32 j = 0; j < mod_data->get_blocks().size(); j++)
-			rhr::registry::block::get_registry().register_block(
-				mod_data->get_blocks()[j], mods->at(i).Data->get_mod_unlocalized_name());
+		esp::mod_data* mod_data = (*mods)[i].Data;
 	}
 
 	return ModLoaderStatus::ModLoaderStatus_OK;

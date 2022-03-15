@@ -192,8 +192,9 @@ void rhr::render::renderer::reload_swapchain()
 			"failed to idle device during swapchain reload; vulkan error code: "
 				+ std::to_string(static_cast<i32>(err)));
 
-	rhr::stack::plane::primary_plane->reload_swap_chain();
-	rhr::stack::plane::toolbar_plane->reload_swap_chain();
+	// TODO: render fix
+	//rhr::stack::plane::primary_plane->reload_swap_chain();
+	//rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
 	for (auto& grid_object : grid_objects)
 		grid_object->reload_swap_chain();
@@ -425,14 +426,16 @@ void rhr::render::renderer::render_pass_setup()
 		check_vk_result(err);
 	}
 
-	rhr::stack::plane::primary_plane->frame_update(1.0);
-	rhr::stack::plane::toolbar_plane->frame_update(1.0);
+	// TODO: render fix
+	//rhr::stack::plane::primary_plane->frame_update(1.0);
+	//rhr::stack::plane::toolbar_plane->frame_update(1.0);
 
 	for (auto& grid_object : grid_objects)
 		grid_object->frame_update(1.0);
 
-	rhr::stack::plane::primary_plane->update_buffers();
-	rhr::stack::plane::toolbar_plane->update_buffers();
+	// TODO: render fix
+	//rhr::stack::plane::primary_plane->update_buffers();
+	//rhr::stack::plane::toolbar_plane->update_buffers();
 
 	for (auto& grid_object : grid_objects)
 		grid_object->update_buffers();

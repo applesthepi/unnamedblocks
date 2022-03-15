@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include <espresso/mod/data.hpp>
+#include <espresso/mod_data.hpp>
 
 // TODO: fix case
 
@@ -16,7 +16,7 @@ class RegMod
 public:
 	RegMod(const std::string fileName)
 		: FileName(fileName)
-		, Data(new esp::mod::data())
+		, Data(new esp::mod_data())
 		, Supported_WIN(false)
 		, Supported_LINUX(false)
 	{}
@@ -32,7 +32,7 @@ public:
 	}
 
 	std::string FileName;
-	esp::mod::data* Data;
+	esp::mod_data* Data;
 
 	bool Supported_WIN;
 	bool Supported_LINUX;

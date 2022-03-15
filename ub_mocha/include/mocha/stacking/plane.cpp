@@ -227,7 +227,9 @@ void rhr::stack::plane::mouse_button(
 										{
 											std::shared_ptr<rhr::stack::block> cloned_block =
 												std::make_shared<rhr::stack::block>(
-													block->get_mod_block()->get_unlocalized_name(), &m_offset);
+													block->get_esp_block()->get_unlocalized_name());
+
+											cloned_block->set_static_offset(&m_offset);
 
 											cloned_blocks.push_back(std::move(cloned_block));
 										}
@@ -261,7 +263,7 @@ void rhr::stack::plane::mouse_button(
 
 										m_collections[i]->add_stack(left_stack, false);
 										stack_position += glm::vec<2, i32>(
-											0, static_cast<i32>(b) * static_cast<i32>(rhr::stack::block::height));
+											0, static_cast<i32>(b) * static_cast<i32>(BLOCK_HEIGHT));
 									}
 
 									// active_collection->set_position_parent_physical(get_position_virtual_absolute(),
@@ -271,7 +273,7 @@ void rhr::stack::plane::mouse_button(
 									active_collection->set_size_local(stack_size, true);
 
 									m_dragging_connecting_line->set_color(
-										active_stack->get_blocks().front()->get_mod_category()->get_color());
+										active_stack->get_blocks().front()->get_esp_category()->get_color());
 
 									active_stack->set_position_parent_physical({0, 0}, false);
 									active_stack->set_position_local_physical({0, 0}, true);
@@ -348,9 +350,10 @@ void rhr::stack::plane::mouse_button(
 														{
 															std::shared_ptr<rhr::stack::block> cloned_block =
 																std::make_shared<rhr::stack::block>(
-																	blocks[i]->get_mod_block()->get_unlocalized_name(),
-																	&m_offset);
-															cloned_block->set_data(blocks[i]->get_data());
+																	blocks[i]->get_esp_block()->get_unlocalized_name());
+															cloned_block->set_static_offset(&m_offset);
+															// TODO: copy blocks fix for serialization
+															//cloned_block->set_data(blocks[i]->get_data());
 
 															cloned_blocks.push_back(std::move(cloned_block));
 														}
@@ -367,13 +370,13 @@ void rhr::stack::plane::mouse_button(
 																+ glm::vec<2, i32>(
 																	0,
 																	static_cast<i32>(local_block_idx)
-																		* static_cast<i32>(rhr::stack::block::height)),
+																		* static_cast<i32>(BLOCK_HEIGHT)),
 															false);
 														new_collection->set_size_local(stack_size, true);
 
 														m_dragging_connecting_line->set_color(new_stack->get_blocks()
 																								  .front()
-																								  ->get_mod_category()
+																								  ->get_esp_category()
 																								  ->get_color());
 
 														new_stack->set_position_parent_physical({0, 0}, false);
@@ -422,10 +425,11 @@ void rhr::stack::plane::mouse_button(
 														std::shared_ptr<rhr::stack::block> cloned_block =
 															std::make_shared<rhr::stack::block>(
 																blocks[local_block_idx]
-																	->get_mod_block()
-																	->get_unlocalized_name(),
-																&m_offset);
-														cloned_block->set_data(blocks[local_block_idx]->get_data());
+																	->get_esp_block()
+																	->get_unlocalized_name());
+														cloned_block->set_static_offset(&m_offset);
+														// TODO: copy blocks fix for serialization
+														//cloned_block->set_data(blocks[local_block_idx]->get_data());
 
 														new_stack->add_block(cloned_block);
 
@@ -439,13 +443,13 @@ void rhr::stack::plane::mouse_button(
 																+ glm::vec<2, i32>(
 																	0,
 																	static_cast<i32>(local_block_idx)
-																		* static_cast<i32>(rhr::stack::block::height)),
+																		* static_cast<i32>(BLOCK_HEIGHT)),
 															false);
 														new_collection->set_size_local(stack_size, true);
 
 														m_dragging_connecting_line->set_color(new_stack->get_blocks()
 																								  .front()
-																								  ->get_mod_category()
+																								  ->get_esp_category()
 																								  ->get_color());
 
 														new_stack->set_position_parent_physical({0, 0}, false);
@@ -593,7 +597,7 @@ void rhr::stack::plane::ui_chain_update_buffers()
 	m_field.update_buffers();
 }
 
-void rhr::stack::plane::ui_serialize(rhr::handler::serializer::node& node)
+void rhr::stack::plane::ui_serialize(latte::serializer::node& node)
 {
 	for (auto& collection : m_collections)
 	{
@@ -602,7 +606,7 @@ void rhr::stack::plane::ui_serialize(rhr::handler::serializer::node& node)
 	}
 }
 
-void rhr::stack::plane::ui_deserialize(rhr::handler::serializer::node& node)
+void rhr::stack::plane::ui_deserialize(latte::serializer::node& node)
 {
 	delete_contents();
 
@@ -625,7 +629,7 @@ void rhr::stack::plane::select(u64 collection, u64 stack, u64 block, u64 argumen
 	m_selected_stack	  = m_collections[collection]->get_stacks()[stack];
 	m_selected_block	  = m_collections[collection]->get_stacks()[stack]->get_blocks()[block];
 	m_selected_argument =
-		m_collections[collection]->get_stacks()[stack]->get_blocks()[block]->get_arguments()[argument];
+		&(m_collections[collection]->get_stacks()[stack]->get_blocks()[block]->get_arguments()[argument]);
 }
 
 void rhr::stack::plane::select_context(u64 collection, u64 stack, u64 block)
@@ -635,7 +639,7 @@ void rhr::stack::plane::select_context(u64 collection, u64 stack, u64 block)
 	m_selected_collection = m_collections[collection];
 	m_selected_stack	  = m_collections[collection]->get_stacks()[stack];
 	m_selected_block	  = m_collections[collection]->get_stacks()[stack]->get_blocks()[block];
-	m_selected_argument.reset();
+	m_selected_argument = nullptr;
 }
 
 void rhr::stack::plane::unselect()
@@ -645,7 +649,7 @@ void rhr::stack::plane::unselect()
 	m_selected_collection.reset();
 	m_selected_stack.reset();
 	m_selected_block.reset();
-	m_selected_argument.reset();
+	m_selected_argument = nullptr;
 }
 
 void rhr::stack::plane::drag_collection(std::shared_ptr<rhr::stack::collection> collection, bool up)
@@ -880,15 +884,15 @@ void rhr::stack::plane::dragging_stack_update()
 						glm::vec<2, i32> bounding_size = {
 							use_collections[i]->get_stacks()[a]->get_blocks()[refIdx]->get_width()
 								+ (SNAP_DISTANCE * 2),
-							rhr::stack::block::height};
+							BLOCK_HEIGHT};
 						glm::vec<2, i32> bounding_pos =
 							use_collections[i]->get_stacks()[a]->get_position_virtual_absolute()
 							+ *use_collections[i]->get_stacks()[a]->get_plane_offset();
 
 						bounding_pos.x -= SNAP_DISTANCE;
 
-						bounding_pos.y += static_cast<i32>(rhr::stack::block::height) * static_cast<i32>(b);
-						bounding_pos.y -= static_cast<i32>(static_cast<f32>(rhr::stack::block::height) / 2.0f);
+						bounding_pos.y += static_cast<i32>(BLOCK_HEIGHT) * static_cast<i32>(b);
+						bounding_pos.y -= static_cast<i32>(static_cast<f32>(BLOCK_HEIGHT) / 2.0f);
 
 						if (pixel_position.x >= bounding_pos.x && pixel_position.x < bounding_pos.x + bounding_size.x
 							&& pixel_position.y >= bounding_pos.y
@@ -947,7 +951,7 @@ void rhr::stack::plane::set_snap(
 		if (auto dragging_stack = stack.lock())
 			m_dragging_connecting_line->set_point_2(
 				dragging_stack->get_position_virtual_absolute()
-				+ glm::vec<2, i32>(0, stackLoc * rhr::stack::block::height) + *plane_offset);
+				+ glm::vec<2, i32>(0, stackLoc * BLOCK_HEIGHT) + *plane_offset);
 		else
 			return;
 	}

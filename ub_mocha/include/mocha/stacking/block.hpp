@@ -5,9 +5,9 @@
 #include "lungo/objects/rectangle.hpp"
 #include "mocha/stacking/arguments/argument.hpp"
 
-#include <espresso/mod/block/block.hpp>
+#include <espresso/block.hpp>
+#include <espresso/category.hpp>
 #include <latte/utils.hpp>
-#include <espresso/mod/category.hpp>
 
 #define BLOCK_SERIALIZE { "un" }
 
@@ -18,25 +18,22 @@ class block : public rhr::render::interfaces::i_ui
 {
 public:
 	///
-	block(const std::string& unlocalized_name, glm::vec<2, i32>* plane_offset);
+	block(const std::string& unlocalized_name);
 
 	///
-	void set_plane_offset(glm::vec<2, i32>* plane_offset);
-
-	///
-	glm::vec<2, i32>* get_plane_offset();
-
-	///
-	const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& get_arguments();
+	std::vector<rhr::stack::argument::argument>& get_arguments();
 
 	///
 	u32 get_width();
 
 	///
-	const espresso::mod::block::block* get_mod_block();
+	esp::block* get_esp_block();
 
 	///
-	const esp::mod::category* get_mod_category();
+	esp::category* get_esp_category();
+
+	///
+	//const esp::mod::category* get_mod_category();
 
 	///
 	bool drag_bounds(glm::vec<2, i32> position);
@@ -47,18 +44,6 @@ public:
 	///
 	void set_stack_update_function(std::function<void()>* function_stack_update);
 
-	const std::string& get_data();
-	void set_data(const std::string& data);
-
-	///
-	static i16 padding;
-
-	///
-	static i16 height;
-
-	///
-	static i16 height_content;
-
 private:
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 	void ui_frame_update(f64 delta_time) override;
@@ -66,8 +51,9 @@ private:
 	void ui_reload_swap_chain() override;
 	void ui_update_buffers() override;
 	void ui_chain_update_buffers() override;
-	void ui_serialize(rhr::handler::serializer::node& node) override;
-	void ui_deserialize(rhr::handler::serializer::node& node) override;
+	void ui_static_offset_update() override;
+	void ui_serialize(latte::serializer::node& node) override;
+	void ui_deserialize(latte::serializer::node& node) override;
 
 	///
 	void update_arguments();
@@ -76,21 +62,21 @@ private:
 	static void pad_arguments(
 		u32& width,
 		usize i,
-		const std::shared_ptr<rhr::stack::argument::argument>& last_arg,
-		const std::shared_ptr<rhr::stack::argument::argument>& arg,
-		bool last = false);
+		rhr::stack::argument::argument* last_arg,
+		rhr::stack::argument::argument* arg,
+		bool last);
 
 	///
 	u32 m_width;
 
 	///
-	std::vector<std::shared_ptr<rhr::stack::argument::argument>> m_arguments;
+	std::vector<rhr::stack::argument::argument> m_arguments;
 
 	///
-	const espresso::mod::block::block* m_mod_block;
+	esp::block* m_esp_block;
 
 	///
-	const esp::mod::category* m_mod_category;
+	esp::category* m_esp_category;
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_background;
@@ -103,8 +89,5 @@ private:
 
 	///
 	std::string m_data_compact_cache;
-
-	///
-	glm::vec<2, i32>* m_plane_offset;
 };
 } // namespace rhr::stack

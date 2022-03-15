@@ -3,8 +3,10 @@
 #include "mocha/handlers/build.hpp"
 #include "mocha/handlers/message.hpp"
 #include "mocha/handlers/project.hpp"
-#include "mocha/registries/char_texture.hpp"
+#include "lungo/registries/char_texture.hpp"
 #include "mocha/stacking/plane.hpp"
+
+#include <espresso/registry.hpp>
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -29,14 +31,12 @@ void rhr::handler::category::populate()
 	//	m_render_frame->enable_background(espresso::color::background_color_2);
 	//	m_render_frame->disable_bar_movement();
 
-	const std::vector<rhr::registry::block::category_info>& category_infos =
-		rhr::registry::block::get_registry().get_categories();
-	const std::vector<rhr::registry::block::block_info>& block_infos =
-		rhr::registry::block::get_registry().get_blocks();
+	auto& categories = esp::registry::get_registry()->categories();
+	auto& blocks = esp::registry::get_registry()->blocks();
 
 	// std::vector<std::string> binnedMods;
-	std::vector<std::vector<esp::mod::category*>> binned_catagories;
-	std::vector<std::vector<std::vector<espresso::mod::block::block*>>> binned_blocks;
+	std::vector<std::vector<esp::category*>> binned_categories;
+	std::vector<std::vector<std::vector<esp::block*>>> binned_blocks;
 
 	bool found = false;
 
@@ -44,15 +44,15 @@ void rhr::handler::category::populate()
 
 	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
 	{
-		binned_catagories.emplace_back();
+		binned_categories.emplace_back();
 		binned_blocks.emplace_back();
 
 		usize ac				= 0;
 		bool first_mod_category = false;
 
-		for (usize a = 0; a < category_infos.size(); a++, ac++)
+		for (usize a = 0; a < categories.size(); a++, ac++)
 		{
-			if (category_infos[a].category_mod_unlocalized_name == rhr::handler::project::mods[i])
+			if (categories[a]->get_mod_unlocalized_name() == rhr::handler::project::mods[i])
 			{
 				if (!first_mod_category)
 				{
@@ -60,16 +60,16 @@ void rhr::handler::category::populate()
 					ac				   = 0;
 				}
 
-				binned_catagories[i].push_back(category_infos[a].category_mod_category);
-				binned_blocks[i].push_back(std::vector<espresso::mod::block::block*>());
+				binned_categories[i].push_back(categories[a]);
+				binned_blocks[i].push_back(std::vector<esp::block*>());
 
-				for (usize b = 0; b < block_infos.size(); b++)
+				for (usize b = 0; b < blocks.size(); b++)
 				{
-					if (block_infos[b].block_mod_unlocalized_name == rhr::handler::project::mods[i]
-						&& block_infos[b].block_mod_block->get_category()
-							== category_infos[a].category_mod_category->get_unlocalized_name())
+					if (blocks[b]->get_mod_unlocalized_name() == rhr::handler::project::mods[i]
+						&& blocks[b]->get_category()
+							== categories[a]->get_unlocalized_name())
 					{
-						binned_blocks[i][ac].push_back(block_infos[b].block_mod_block);
+						binned_blocks[i][ac].push_back(blocks[b]);
 					}
 				}
 			}
@@ -77,13 +77,13 @@ void rhr::handler::category::populate()
 	}
 
 	m_mod_groups.reserve(rhr::handler::project::mods.size());
-	i32 offset = rhr::stack::block::padding / 2;
+	i32 offset = BLOCK_PADDING / 2;
 
 	for (usize i = 0; i < rhr::handler::project::mods.size(); i++)
 	{
-		offset += rhr::stack::block::padding / 2;
+		offset += BLOCK_PADDING / 2;
 
-		usize* category_idx = new usize;
+		auto* category_idx = new usize;
 		*category_idx		= i;
 
 		mod_group group = mod_group(espresso::color::text_primary_color, espresso::color::background_color_3);
@@ -109,14 +109,14 @@ void rhr::handler::category::populate()
 		// std::weak_ptr<rhr::render::interfaces::i_updateable>(), group.mod_button, group.mod_button,
 		// rhr::render::cardinal::local::DOWN);
 
-		offset += rhr::stack::block::padding / 2;
+		offset += BLOCK_PADDING / 2;
 
-		active* active_catagories = new active[binned_catagories[i].size()];
+		active* active_catagories = new active[binned_categories[i].size()];
 
-		for (usize a = 0; a < binned_catagories[i].size(); a++)
+		for (usize a = 0; a < binned_categories[i].size(); a++)
 		{
-			group.mod_category_ids.push_back(binned_catagories[i][a]->get_display_name());
-			group.mod_category_colors.push_back(binned_catagories[i][a]->get_color());
+			group.mod_category_ids.push_back(binned_categories[i][a]->get_display_name());
+			group.mod_category_colors.push_back(binned_categories[i][a]->get_color());
 
 			active_catagories[a].mod_group			= static_cast<u16>(i);
 			active_catagories[a].mod_group_category = static_cast<u16>(a);
@@ -125,9 +125,9 @@ void rhr::handler::category::populate()
 				std::make_shared<rhr::render::object::button_text>(
 					espresso::color::black,
 					espresso::color::background_color_3,
-					binned_catagories[i][a]->get_display_name(),
+					binned_categories[i][a]->get_display_name(),
 					nullptr);
-			button->set_color_secondary(binned_catagories[i][a]->get_color());
+			button->set_color_secondary(binned_categories[i][a]->get_color());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);
 			button->set_size_local({200, 16}, false);
@@ -137,7 +137,7 @@ void rhr::handler::category::populate()
 			// std::weak_ptr<rhr::render::interfaces::i_updateable>(), button, button,
 			// rhr::render::cardinal::local::DOWN);
 
-			offset += rhr::stack::block::padding / 2 + button->get_size_local().y;
+			offset += BLOCK_PADDING / 2 + button->get_size_local().y;
 			//			group.mod_category.push_back(std::move(button));
 
 			group.mod_category_collections.emplace_back();
@@ -150,13 +150,14 @@ void rhr::handler::category::populate()
 					std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_offset());
 				collection->display_vanity(false);
 				collection->set_position_local_physical(
-					{0, (rhr::stack::block::height + (rhr::stack::block::padding * 2)) * b}, true);
+					{0, (BLOCK_HEIGHT + (BLOCK_PADDING * 2)) * b}, true);
 
 				std::shared_ptr<rhr::stack::stack> stack =
 					std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_offset());
 
 				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(
-					binned_blocks[i][a][b]->get_unlocalized_name(), rhr::stack::plane::toolbar_plane->get_offset());
+					binned_blocks[i][a][b]->get_unlocalized_name());
+				block->set_static_offset(rhr::stack::plane::toolbar_plane->get_offset());
 
 				stack->add_block(block);
 				collection->add_stack(stack);

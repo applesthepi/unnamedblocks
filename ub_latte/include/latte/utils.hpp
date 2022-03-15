@@ -71,6 +71,10 @@
 
 #include "cutils.h"
 
+#define BLOCK_PADDING 2
+#define BLOCK_HEIGHT 20
+#define BLOCK_HEIGHT_CONTENT (BLOCK_HEIGHT - (BLOCK_PADDING * 2))
+
 // https://stackoverflow.com/a/9864472
 #define FF_TMP	template<typename... Args>
 #define FF_FARG std::forward<Args>(args)...

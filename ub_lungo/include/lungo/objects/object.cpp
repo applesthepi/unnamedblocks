@@ -1,6 +1,6 @@
 #include "object.hpp"
 
-#include "mocha/registries/char_texture.hpp"
+#include "lungo/registries/char_texture.hpp"
 #include "lungo/renderer.hpp"
 #include "lungo/tools.hpp"
 

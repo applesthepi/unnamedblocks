@@ -1,12 +1,8 @@
 #include "block.hpp"
 
-#include "mocha/registries/block.hpp"
+#include "espresso/block.hpp"
+#include "espresso/registry.hpp"
 #include "lungo/renderer.hpp"
-#include "mocha/stacking/arguments/any.hpp"
-#include "mocha/stacking/arguments/boolean.hpp"
-#include "mocha/stacking/arguments/real.hpp"
-#include "mocha/stacking/arguments/string.hpp"
-#include "mocha/stacking/arguments/text.hpp"
 
 #define BLOCK_SET_DATA_ERROR_MISSING(field)                \
 	("failed to set data for block. " + std::string(field) \
@@ -21,11 +17,10 @@ static void block_update(void* data)
 	block->update_width();
 }
 
-rhr::stack::block::block(const std::string& unlocalized_name, glm::vec<2, i32>* plane_offset)
-	: m_mod_block(rhr::registry::block::get_registry().get_block(unlocalized_name)->block_mod_block)
+rhr::stack::block::block(const std::string& unlocalized_name)
+	: m_esp_block(esp::registry::get_registry()->get_block(unlocalized_name.c_str()))
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_function_stack_update(nullptr)
-	, m_plane_offset(plane_offset)
 {
 	m_function_block_update = [&]()
 	{
@@ -33,32 +28,16 @@ rhr::stack::block::block(const std::string& unlocalized_name, glm::vec<2, i32>* 
 		(*m_function_stack_update)();
 	};
 
-	m_mod_category =
-		rhr::registry::block::get_registry().get_categories(m_mod_block->get_category())->category_mod_category;
-	m_background->set_offset(plane_offset);
-	m_background->set_color(m_mod_category->get_color() /*espresso::color().from_u8({ 200, 200, 200, 0 })*/);
+	m_esp_category = esp::registry::get_registry()->get_category(m_esp_block->get_category());
+
+	m_background->set_color(m_esp_category->get_color() /*espresso::color().from_u8({ 200, 200, 200, 0 })*/);
 	m_background->set_depth(rhr::render::renderer::depth_block);
 
-	set_size_local({100, rhr::stack::block::height}, true);
+	set_size_local({100, BLOCK_HEIGHT}, true);
 	update_arguments();
 }
 
-void rhr::stack::block::set_plane_offset(glm::vec<2, i32>* plane_offset)
-{
-	m_plane_offset = plane_offset;
-
-	m_background->set_offset(plane_offset);
-
-	for (auto& argument : m_arguments)
-		argument->set_plane_offset(plane_offset);
-}
-
-glm::vec<2, i32>* rhr::stack::block::get_plane_offset()
-{
-	return m_plane_offset;
-}
-
-const std::string& rhr::stack::block::get_data()
+/*const std::string& rhr::stack::block::get_data()
 {
 	rapidjson::Document document;
 	document.SetObject();
@@ -148,9 +127,9 @@ void rhr::stack::block::set_data(const std::string& data)
 	}
 
 	update_width();
-}
+}*/
 
-const std::vector<std::shared_ptr<rhr::stack::argument::argument>>& rhr::stack::block::get_arguments()
+std::vector<rhr::stack::argument::argument>& rhr::stack::block::get_arguments()
 {
 	return m_arguments;
 }
@@ -160,32 +139,38 @@ u32 rhr::stack::block::get_width()
 	return m_width;
 }
 
-const espresso::mod::block::block* rhr::stack::block::get_mod_block()
+esp::block* rhr::stack::block::get_esp_block()
 {
-	return m_mod_block;
+	return m_esp_block;
 }
 
-const esp::mod::category* rhr::stack::block::get_mod_category()
+esp::category* rhr::stack::block::get_esp_category()
 {
-	return m_mod_category;
+	return m_esp_category;
 }
-i16 rhr::stack::block::padding = 2;
-i16 rhr::stack::block::height  = 20;
 
-i16 rhr::stack::block::height_content = height - (padding * 2);
+//const esp::argument* rhr::stack::block::get_mod_block()
+//{
+//	return m_mod_block;
+//}
+//
+//const esp::mod::category* rhr::stack::block::get_mod_category()
+//{
+//	return m_mod_category;
+//}
 
 void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	update_child_transform(m_background, true);
 
 	for (auto& arg : m_arguments)
-		update_child_transform(arg, true);
+		update_child_transform(&arg, true);
 }
 
 void rhr::stack::block::ui_frame_update(f64 delta_time)
 {
 	for (auto& arg : m_arguments)
-		arg->frame_update(delta_time);
+		arg.frame_update(delta_time);
 }
 
 void rhr::stack::block::ui_render()
@@ -193,7 +178,7 @@ void rhr::stack::block::ui_render()
 	m_background->render();
 
 	for (auto& arg : m_arguments)
-		arg->render();
+		arg.render();
 }
 
 void rhr::stack::block::ui_reload_swap_chain()
@@ -201,7 +186,7 @@ void rhr::stack::block::ui_reload_swap_chain()
 	m_background->reload_swap_chain();
 
 	for (auto& arg : m_arguments)
-		arg->reload_swap_chain();
+		arg.reload_swap_chain();
 }
 
 void rhr::stack::block::ui_update_buffers()
@@ -212,10 +197,18 @@ void rhr::stack::block::ui_chain_update_buffers()
 	m_background->update_buffers();
 
 	for (auto& arg : m_arguments)
-		arg->update_buffers();
+		arg.update_buffers();
 }
 
-void rhr::stack::block::ui_serialize(rhr::handler::serializer::node& node)
+void rhr::stack::block::ui_static_offset_update()
+{
+	m_background->set_offset(get_static_offset());
+
+	for (auto& argument : m_arguments)
+		argument.set_static_offset(get_static_offset());
+}
+
+void rhr::stack::block::ui_serialize(latte::serializer::node& node)
 {
 	node.data_names.reserve(1);
 	node.data_values.reserve(1);
@@ -223,16 +216,16 @@ void rhr::stack::block::ui_serialize(rhr::handler::serializer::node& node)
 
 	// Block does not need the unlocalized name, the stack uses it to spawn it.
 	node.data_names.emplace_back("un");
-	node.data_values.emplace_back(m_mod_block->get_unlocalized_name());
+	node.data_values.emplace_back(m_esp_block->get_unlocalized_name());
 
 	for (auto& argument : m_arguments)
 	{
 		auto& child_node = node.children.emplace_back();
-		argument->serialize(child_node);
+		argument.serialize(child_node);
 	}
 }
 
-void rhr::stack::block::ui_deserialize(rhr::handler::serializer::node& node)
+void rhr::stack::block::ui_deserialize(latte::serializer::node& node)
 {
 	if (!node.verify_children(m_arguments.size()))
 	{
@@ -241,90 +234,31 @@ void rhr::stack::block::ui_deserialize(rhr::handler::serializer::node& node)
 	}
 
 	for (usize i = 0; i < m_arguments.size(); i++)
-		m_arguments[i]->deserialize(node.children[i]);
+		m_arguments[i].deserialize(node.children[i]);
 
 	update_width();
 }
 
 void rhr::stack::block::update_arguments()
 {
+	auto argument_inits = m_esp_block->get_arguments();
+	espresso::color block_color = m_esp_category->get_color();
+
 	m_arguments.clear();
-	m_arguments.reserve(m_mod_block->get_arguments().size());
+	m_arguments.reserve(argument_inits.size());
 
-	std::vector<espresso::mod::block::block::argument::initializer> argument_init = m_mod_block->get_arguments();
-
+	rhr::stack::argument::argument* last_arg = nullptr;
 	u32 width = 0;
-	espresso::color arg_color =
-		espresso::color().from_normalized(m_mod_category->get_color().get_normalized_scaled(0.25f, false));
 
-	std::shared_ptr<rhr::stack::argument::argument> last_arg;
-
-	for (usize i = 0; i < argument_init.size(); i++)
+	for (usize i = 0; i < argument_inits.size(); i++)
 	{
-		if (argument_init[i].get_type() == espresso::mod::block::block::argument::type::TEXT)
-		{
-			std::shared_ptr<rhr::stack::argument::text> arg =
-				std::make_shared<rhr::stack::argument::text>(arg_color, &m_function_block_update, m_plane_offset);
+		auto& arg = m_arguments.emplace_back(rhr::stack::argument::argument(block_color, &m_function_block_update, get_static_offset(), argument_inits[i].argument));
 
-			m_arguments.push_back(arg);
-			last_arg = arg;
+		pad_arguments(width, i, last_arg, &arg, i == argument_inits.size() - 1);
+		last_arg = &arg;
 
-			pad_arguments(width, i, last_arg, arg);
-
-			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
-			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
-			arg->set_data(argument_init[i].get_default_value());
-			arg->set_mode(argument_init[i].get_mode());
-			arg->set_mode_restriction(argument_init[i].get_restriction());
-		}
-		else if (argument_init[i].get_type() == espresso::mod::block::block::argument::type::REAL)
-		{
-			std::shared_ptr<rhr::stack::argument::real> arg =
-				std::make_shared<rhr::stack::argument::real>(arg_color, &m_function_block_update, m_plane_offset);
-
-			m_arguments.push_back(arg);
-			last_arg = arg;
-
-			pad_arguments(width, i, last_arg, arg);
-
-			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
-			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
-			arg->set_data(argument_init[i].get_default_value());
-			arg->set_mode(argument_init[i].get_mode());
-			arg->set_mode_restriction(argument_init[i].get_restriction());
-		}
-		else if (argument_init[i].get_type() == espresso::mod::block::block::argument::type::STRING)
-		{
-			std::shared_ptr<rhr::stack::argument::string> arg =
-				std::make_shared<rhr::stack::argument::string>(arg_color, &m_function_block_update, m_plane_offset);
-
-			m_arguments.push_back(arg);
-			last_arg = arg;
-
-			pad_arguments(width, i, last_arg, arg);
-
-			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
-			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
-			arg->set_data(argument_init[i].get_default_value());
-			arg->set_mode(argument_init[i].get_mode());
-			arg->set_mode_restriction(argument_init[i].get_restriction());
-		}
-		else if (argument_init[i].get_type() == espresso::mod::block::block::argument::type::BOOL)
-		{
-			std::shared_ptr<rhr::stack::argument::boolean> arg =
-				std::make_shared<rhr::stack::argument::boolean>(arg_color, &m_function_block_update, m_plane_offset);
-
-			m_arguments.push_back(arg);
-
-			pad_arguments(width, i, last_arg, arg);
-			last_arg = arg;
-
-			update_child_transform(arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
-			arg->set_position_local_physical({width, rhr::stack::block::padding}, true);
-			arg->set_data(argument_init[i].get_default_value());
-			arg->set_mode(argument_init[i].get_mode());
-			arg->set_mode_restriction(argument_init[i].get_restriction());
-		}
+		update_child_transform(&arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+		arg.set_position_local_physical({ width, BLOCK_PADDING }, true);
 	}
 
 	update_width();
@@ -333,17 +267,17 @@ void rhr::stack::block::update_arguments()
 void rhr::stack::block::update_width()
 {
 	m_width = 0;
-	std::shared_ptr<argument::argument> last_arg;
+	rhr::stack::argument::argument* last_arg;
 
 	for (usize i = 0; i < m_arguments.size(); i++)
 	{
-		std::shared_ptr<argument::argument>& arg = m_arguments[i];
+		rhr::stack::argument::argument* arg = &(m_arguments[i]);
 
-		pad_arguments(m_width, i, last_arg, arg);
+		pad_arguments(m_width, i, last_arg, arg, i == m_arguments.size() - 1);
 		last_arg = arg;
 
-		arg->set_position_local_physical({m_width, rhr::stack::block::padding}, true);
-		m_width += m_arguments[i]->get_width();
+		arg->set_position_local_physical({ m_width, BLOCK_PADDING }, true);
+		m_width += m_arguments[i].get_width();
 	}
 
 	pad_arguments(m_width, 0, last_arg, last_arg, true);
@@ -354,9 +288,12 @@ void rhr::stack::block::update_width()
 
 bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 {
-	for (auto arg : m_arguments)
+	for (auto& arg : m_arguments)
 	{
-		if (arg->drag_bounds(position))
+		auto& arg_pos = arg.get_position_virtual_absolute();
+
+		if (position.x > arg_pos.x && position.x < arg_pos.x + arg.get_width() &&
+			position.y > arg_pos.y && position.y < arg_pos.y + BLOCK_HEIGHT_CONTENT)
 			return true;
 	}
 
@@ -371,32 +308,26 @@ void rhr::stack::block::set_stack_update_function(std::function<void()>* functio
 void rhr::stack::block::pad_arguments(
 	u32& width,
 	usize i,
-	const std::shared_ptr<rhr::stack::argument::argument>& last_arg,
-	const std::shared_ptr<rhr::stack::argument::argument>& arg,
+	rhr::stack::argument::argument* last_arg,
+	rhr::stack::argument::argument* arg,
 	bool last)
 {
-	static const u32 full_padding = rhr::stack::argument::argument::padding;
-	static const u32 no_padding	  = rhr::stack::block::padding;
+	static const u32 full_padding = esp::argument::padding;
+	static const u32 no_padding	  = BLOCK_PADDING;
 
 	if (last)
 	{
 		switch (arg->get_padding_style())
 		{
-		case rhr::stack::argument::argument::padding_style::HARD:
-		{
+		case esp::argument::padding_style::HARD:
 			width += no_padding;
 			break;
-		}
-		case rhr::stack::argument::argument::padding_style::SOFT:
-		{
+		case esp::argument::padding_style::SOFT:
 			width += full_padding;
 			break;
-		}
-		case rhr::stack::argument::argument::padding_style::NONE:
-		{
+		case esp::argument::padding_style::NONE:
 			width += no_padding;
 			break;
-		}
 		}
 
 		return;
@@ -404,7 +335,7 @@ void rhr::stack::block::pad_arguments(
 
 	switch (arg->get_padding_style())
 	{
-	case rhr::stack::argument::argument::padding_style::HARD:
+	case esp::argument::padding_style::HARD:
 	{
 		if (i == 0)
 			width += no_padding;
@@ -413,7 +344,7 @@ void rhr::stack::block::pad_arguments(
 
 		break;
 	}
-	case rhr::stack::argument::argument::padding_style::SOFT:
+	case esp::argument::padding_style::SOFT:
 	{
 		if (i == 0)
 			width += full_padding;
@@ -421,17 +352,17 @@ void rhr::stack::block::pad_arguments(
 		{
 			switch (last_arg->get_padding_style())
 			{
-			case rhr::stack::argument::argument::padding_style::HARD:
+			case esp::argument::padding_style::HARD:
 			{
 				width += full_padding;
 				break;
 			}
-			case rhr::stack::argument::argument::padding_style::SOFT:
+			case esp::argument::padding_style::SOFT:
 			{
 				width += full_padding;
 				break;
 			}
-			case rhr::stack::argument::argument::padding_style::NONE:
+			case esp::argument::padding_style::NONE:
 			{
 				width += no_padding;
 				break;
@@ -441,7 +372,7 @@ void rhr::stack::block::pad_arguments(
 
 		break;
 	}
-	case rhr::stack::argument::argument::padding_style::NONE:
+	case esp::argument::padding_style::NONE:
 	{
 		if (i == 0)
 			width += no_padding;
@@ -449,17 +380,17 @@ void rhr::stack::block::pad_arguments(
 		{
 			switch (last_arg->get_padding_style())
 			{
-			case rhr::stack::argument::argument::padding_style::HARD:
+			case esp::argument::padding_style::HARD:
 			{
 				width += full_padding;
 				break;
 			}
-			case rhr::stack::argument::argument::padding_style::SOFT:
+			case esp::argument::padding_style::SOFT:
 			{
 				width += no_padding;
 				break;
 			}
-			case rhr::stack::argument::argument::padding_style::NONE:
+			case esp::argument::padding_style::NONE:
 			{
 				width += no_padding;
 				break;

@@ -1,6 +1,6 @@
 ﻿#include "text.hpp"
 
-#include "mocha/registries/char_texture.hpp"
+#include "lungo/registries/char_texture.hpp"
 #include "lungo/renderer.hpp"
 #include "lungo/vertex.hpp"
 #include "mocha/stacking/block.hpp"
@@ -291,6 +291,8 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 			 static_cast<f64>(m_depth) - 0.1});
 	}
 
+	// TODO: fields fix
+	/*
 	if (!m_read_only && !m_registered && position_virtual.x >= 0 && position_virtual.y >= 0)
 		register_field();
 
@@ -300,8 +302,10 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 			unregister_field();
 		else
 			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(
-				m_location.value(), position_virtual /*, m_plane_offset*/);
+				m_location.value(), position_virtual);
+
 	}
+	*/
 }
 
 void rhr::render::object::text::ui_render()
@@ -362,7 +366,7 @@ void rhr::render::object::text::ui_update_buffers()
 			rhr::registry::char_texture::char_data char_data =
 				rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]];
 			f32 y_offset = static_cast<f32>(m_font_size) - static_cast<f32>(char_data.offset.y)
-				- static_cast<f32>(rhr::stack::block::padding);
+				- static_cast<f32>(BLOCK_PADDING);
 
 			vertices[i * 4 + 0] = rhr::render::vertex(
 				{static_cast<f32>(running_x + char_data.offset.x), y_offset, 0.0f},
@@ -394,13 +398,16 @@ void rhr::render::object::text::ui_update_buffers()
 		}
 
 		m_render_object_text->update_vertices(vertices, m_text.size() * 4, indices, m_text.size() * 6, true);
-		set_size_local({(running_x + static_cast<f32>(m_padding)), rhr::stack::block::height_content}, false);
+		set_size_local({(running_x + static_cast<f32>(m_padding)), BLOCK_HEIGHT_CONTENT}, false);
 	}
 	else
-		set_size_local({(static_cast<f32>(m_padding) * 2.0f), rhr::stack::block::height_content}, false);
+		set_size_local({(static_cast<f32>(m_padding) * 2.0f), BLOCK_HEIGHT_CONTENT}, false);
 
+	// TODO: fields fix
+	/*
 	if (!m_read_only && m_registered)
 		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), size_local);
+	*/
 }
 
 void rhr::render::object::text::ui_chain_update_buffers()
@@ -444,6 +451,8 @@ void rhr::render::object::text::set_font_size(u16 font_size)
 
 void rhr::render::object::text::register_field()
 {
+	// TODO: fields fix
+	/*
 	if (!m_registered)
 	{
 		m_registered = true;
@@ -454,16 +463,20 @@ void rhr::render::object::text::register_field()
 				m_weak_field,
 				get_position_virtual_absolute(),
 				get_size_local(),
-				rhr::handler::input::bullish_layer_arguments /*, m_plane_offset*/);
+				rhr::handler::input::bullish_layer_arguments);
 		}
 	}
+	*/
 }
 
 void rhr::render::object::text::unregister_field()
 {
+	// TODO: fields fix
+	/*
 	if (!m_read_only && m_registered)
 	{
 		m_registered = false;
 		rhr::stack::plane::primary_plane->get_field().unregister_field(m_location.value());
 	}
+	*/
 }

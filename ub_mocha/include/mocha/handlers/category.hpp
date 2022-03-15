@@ -1,7 +1,6 @@
 #pragma once
 #include "config.h"
 
-#include "mocha/registries/block.hpp"
 #include "lungo/objects/button_text.hpp"
 #include "mocha/stacking/block.hpp"
 #include "mocha/stacking/collection.hpp"

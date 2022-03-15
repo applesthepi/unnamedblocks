@@ -44,7 +44,7 @@ rhr::handler::field::field()
 		false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 
 	m_rectangle_cursor->set_color(espresso::color::text_primary_color);
-	m_rectangle_cursor->set_size_local({1, rhr::stack::block::height_content}, true);
+	m_rectangle_cursor->set_size_local({1, BLOCK_HEIGHT_CONTENT}, true);
 	m_rectangle_cursor->enable_border(
 		false, rhr::render::cardinal::local_horizontal::RIGHT, rhr::render::cardinal::local_vertical::DOWN);
 	m_rectangle_cursor->set_depth(rhr::render::renderer::depth_cursor);
@@ -747,7 +747,7 @@ void rhr::handler::field::update_highlight()
 			+ *rhr::stack::plane::primary_plane->get_offset(),
 		true);
 	m_rectangle_highlight->set_size_local(
-		{m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, rhr::stack::block::height_content - 4}, true);
+		{m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, BLOCK_HEIGHT_CONTENT - 4}, true);
 }
 
 void rhr::handler::field::reset_all()

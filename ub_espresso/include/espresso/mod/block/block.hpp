@@ -5,10 +5,15 @@
 
 #include "data.hpp"
 #include "flags.hpp"
+#include "lungo/interfaces/i_ui.hpp"
+#include "lungo/vertex.hpp"
+#include "espresso/argument.hpp"
 
 #include <espresso/mod/block/pass.hpp>
 #include <cappuccino/preprocessor_data.hpp>
 #include <latte/utils.hpp>
+#include <espresso/color.hpp>
+#include <espresso/mod/block/block.hpp>
 
 /*
 Important Modding Information
@@ -39,32 +44,13 @@ public:
 		};
 
 		///
-		enum class variable_mode_restriction
-		{
-			/// Excepts either raw or var, raw will be raw, var will be the value.
-			NONE,
-
-			/// Does not change from initial "espresso::mod::block::argument::variable_mode".
-			RESTRICTED
-		};
-
-		/// This is the default assignment of whether it starts as var or raw input. The user can change what they
-		/// input. If you want to restrict how data is inputted see the
-		/// "espresso::mod::block::argument::variable_mode_restriction" class.
-		enum class variable_mode
-		{
-			VAR,
-			RAW
-		};
-
-		///
 		class initializer
 		{
 		public:
 			initializer(
 				const type type,
-				const variable_mode_restriction restriction,
-				const variable_mode mode,
+				const esp::argument::mode_restriction restriction,
+				const esp::argument::mode mode,
 				std::string default_value)
 				: m_type(type)
 				, m_restriction(restriction)
@@ -79,13 +65,13 @@ public:
 			}
 
 			///
-			variable_mode_restriction& get_restriction()
+			esp::argument::mode_restriction& get_restriction()
 			{
 				return m_restriction;
 			}
 
 			///
-			variable_mode& get_mode()
+			esp::argument::mode& get_mode()
 			{
 				return m_mode;
 			}
@@ -101,10 +87,10 @@ public:
 			type m_type;
 
 			///
-			variable_mode_restriction m_restriction;
+			esp::argument::mode_restriction m_restriction;
 
 			///
-			variable_mode m_mode;
+			esp::argument::mode m_mode;
 
 			///
 			std::string m_default_value;

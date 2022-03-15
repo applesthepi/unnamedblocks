@@ -16,7 +16,7 @@ rhr::render::object::button_text::button_text(
 	m_text->set_depth(rhr::render::renderer::depth_ui_text);
 	m_text->set_color_primary(primary_color);
 	m_text->set_color_secondary(espresso::color::alpha);
-	m_text->set_padding(rhr::stack::argument::argument::padding);
+	m_text->set_padding(esp::argument::padding);
 	m_text->set_text(text);
 }
 

@@ -24,8 +24,8 @@ void rhr::handler::project::load_project(const std::string& path)
 	stream.read(buffer.data(), length);
 	stream.close();
 
-	rhr::handler::serializer::node base_node;
-	rhr::handler::serializer serial(base_node);
+	latte::serializer::node base_node;
+	latte::serializer serial(base_node);
 	serial.deserialize(buffer);
 
 	rhr::stack::plane::primary_plane->deserialize(base_node);
@@ -33,10 +33,10 @@ void rhr::handler::project::load_project(const std::string& path)
 
 void rhr::handler::project::save_project(const std::string& path)
 {
-	rhr::handler::serializer::node base_node;
+	latte::serializer::node base_node;
 	rhr::stack::plane::primary_plane->serialize(base_node);
 
-	rhr::handler::serializer serial(base_node);
+	latte::serializer serial(base_node);
 	auto& buffer = serial.serialize();
 
 	std::ofstream stream(path);

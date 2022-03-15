@@ -18,7 +18,7 @@ void rhr::stack::stack::set_plane_offset(glm::vec<2, i32>* plane_offset)
 	m_plane_offset = plane_offset;
 
 	for (auto& block : m_blocks)
-		block->set_plane_offset(plane_offset);
+		block->set_static_offset(plane_offset);
 }
 
 glm::vec<2, i32>* rhr::stack::stack::get_plane_offset()
@@ -29,7 +29,7 @@ glm::vec<2, i32>* rhr::stack::stack::get_plane_offset()
 void rhr::stack::stack::add_block(std::shared_ptr<rhr::stack::block> block)
 {
 	update_child_transform(block, 0x0);
-	block->set_position_local_physical({0, rhr::stack::block::height * m_blocks.size()}, true);
+	block->set_position_local_physical({0, BLOCK_HEIGHT * m_blocks.size()}, true);
 	block->set_stack_update_function(&m_function_stack_update);
 	m_blocks.push_back(block);
 
@@ -44,7 +44,7 @@ void rhr::stack::stack::add_blocks(const std::vector<std::shared_ptr<rhr::stack:
 	for (u64 i = 0; i < blocks.size(); i++)
 	{
 		update_child_transform(blocks[i], 0x0);
-		blocks[i]->set_position_local_physical({0, rhr::stack::block::height * (m_blocks.size() + i)}, true);
+		blocks[i]->set_position_local_physical({0, BLOCK_HEIGHT * (m_blocks.size() + i)}, true);
 		blocks[i]->set_stack_update_function(&m_function_stack_update);
 		m_blocks.push_back(blocks[i]);
 	}
@@ -57,7 +57,7 @@ void rhr::stack::stack::insert_blocks(const std::vector<std::shared_ptr<rhr::sta
 	for (usize i = 0; i < blocks.size(); i++)
 	{
 		update_child_transform(blocks[i], 0x0);
-		blocks[i]->set_position_local_physical({0, rhr::stack::block::height * (idx + i)}, true);
+		blocks[i]->set_position_local_physical({0, BLOCK_HEIGHT * (idx + i)}, true);
 		blocks[i]->set_stack_update_function(&m_function_stack_update);
 		m_blocks.insert(m_blocks.begin() + idx + i, blocks[i]);
 	}
@@ -65,7 +65,7 @@ void rhr::stack::stack::insert_blocks(const std::vector<std::shared_ptr<rhr::sta
 	for (usize i = idx + blocks.size(); i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i], 0x0);
-		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i}, true);
+		m_blocks[i]->set_position_local_physical({0, BLOCK_HEIGHT * i}, true);
 	}
 
 	update_size();
@@ -91,7 +91,7 @@ void rhr::stack::stack::remove_block(u64 idx)
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i], 0x0);
-		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i}, true);
+		m_blocks[i]->set_position_local_physical({0, BLOCK_HEIGHT * i}, true);
 	}
 
 	update_size();
@@ -104,7 +104,7 @@ void rhr::stack::stack::remove_blocks_end(u64 offset)
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i], 0x0);
-		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i}, true);
+		m_blocks[i]->set_position_local_physical({0, BLOCK_HEIGHT * i}, true);
 	}
 
 	update_size();
@@ -112,7 +112,7 @@ void rhr::stack::stack::remove_blocks_end(u64 offset)
 
 void rhr::stack::stack::update_size()
 {
-	set_size_local({get_widest_block(), m_blocks.size() * rhr::stack::block::height}, true);
+	set_size_local({get_widest_block(), m_blocks.size() * BLOCK_HEIGHT}, true);
 }
 
 const std::vector<std::shared_ptr<rhr::stack::block>>& rhr::stack::stack::get_blocks()
@@ -130,7 +130,7 @@ void rhr::stack::stack::ui_transform_update(i_ui::transform_update_spec transfor
 	for (usize i = 0; i < m_blocks.size(); i++)
 	{
 		update_child_transform(m_blocks[i], 0x0);
-		m_blocks[i]->set_position_local_physical({0, rhr::stack::block::height * i}, true);
+		m_blocks[i]->set_position_local_physical({0, BLOCK_HEIGHT * i}, true);
 	}
 }
 
@@ -161,7 +161,7 @@ void rhr::stack::stack::ui_chain_update_buffers()
 		block->update_buffers();
 }
 
-void rhr::stack::stack::ui_serialize(rhr::handler::serializer::node& node)
+void rhr::stack::stack::ui_serialize(latte::serializer::node& node)
 {
 	node.data_names.reserve(4);
 	node.data_values.reserve(4);
@@ -184,7 +184,7 @@ void rhr::stack::stack::ui_serialize(rhr::handler::serializer::node& node)
 	}
 }
 
-void rhr::stack::stack::ui_deserialize(rhr::handler::serializer::node& node)
+void rhr::stack::stack::ui_deserialize(latte::serializer::node& node)
 {
 	if (!node.verify_data(STACK_SERIALIZE))
 	{
@@ -212,7 +212,7 @@ void rhr::stack::stack::ui_deserialize(rhr::handler::serializer::node& node)
 			return;
 		}
 
-		auto block = std::make_shared<rhr::stack::block>(child.data_values[0], m_plane_offset);
+		auto block = std::make_shared<rhr::stack::block>(child.data_values[0]);
 		add_block(block);
 		block->deserialize(child);
 	}

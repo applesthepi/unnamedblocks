@@ -6,9 +6,10 @@
 
 #include <espresso/color.hpp>
 #include <espresso/mod/block/block.hpp>
+#include <espresso/argument.hpp>
 #include <latte/utils.hpp>
 
-#define ARGUMENT_SERIALIZE { "mode", "data" }
+#define ARGUMENT_SERIALIZE { "mode" }
 
 namespace rhr::stack::argument
 {
@@ -16,108 +17,36 @@ namespace rhr::stack::argument
 class argument : public rhr::render::interfaces::i_ui
 {
 public:
-	/// See "dev/padding.png" for information on how argument padding works.
-	enum class padding_style
-	{
-		///
-		NONE,
-		SOFT,
-		HARD
-	};
 
 	///
 	argument(
 		const espresso::color& block_color,
 		std::function<void()>* function_collection_update,
-		glm::vec<2, i32>* plane_offset);
-
-	/// Sets data. Data of the argument is stored as a string.
-	/// \param Data to set the argument to.
-	void set_data(const std::string& data);
-
-	/// Sets all local information. Gets parsed as json and sets the fields.
-	/// \param Data to set the argument to.
-	void set_data_compact(const std::string& data);
-
-	/// Sets mode. Mode can either be raw (rvalue) or var (lvalue).
-	/// \param Argument variable mode.
-	bool set_mode(espresso::mod::block::block::argument::variable_mode mode);
+		glm::vec<2, i32>* plane_offset,
+		esp::argument* esp_argument);
 
 	///
-	void set_mode_restriction(espresso::mod::block::block::argument::variable_mode_restriction mode_restriction);
-
-	/// Gets mode. Mode can either be raw (rvalue) or var (lvalue).
-	/// \return Argument variable mode.
-	espresso::mod::block::block::argument::variable_mode get_mode();
-
-	/// Gets data. Data of the argument is stored as a string.
-	/// \return Data from the argument.
-	virtual const std::string& get_data();
-
-	/// Gets data. Data of the argument is stored as a string.
-	/// \return Data from the argument.
-	virtual const std::string& get_data_compact();
-
-	/// How to interpret the data.
-	/// \return Type of argument.
-	virtual espresso::mod::block::block::argument::type get_type();
-
-	/// Get width for surrounding argument spacing.
-	/// \return Width of argument.
-	virtual u32 get_width();
-
-	/// Whether or not the argument contains data for storing.
-	/// \return Has data.
-	virtual bool has_data();
+	u32 get_width();
 
 	///
-	virtual bool drag_bounds(glm::vec<2, i32> position);
-
-	///
-	virtual padding_style get_padding_style();
-
-	///
-	virtual void set_plane_offset(glm::vec<2, i32>* plane_offset);
-
-	///
-	static i32 padding;
-
-protected:
-	///
-	void build_data_distribute();
-
-	/// Sets data. Data of the argument is stored as a string.
-	virtual void on_set_data();
-
-	///
-	virtual void on_set_mode(espresso::mod::block::block::argument::variable_mode mode);
-
-	/// Data of argument stored as a string.
-	std::string m_data;
-
-	/// Mode of argument.
-	espresso::mod::block::block::argument::variable_mode m_mode;
-
-	///
-	espresso::mod::block::block::argument::variable_mode_restriction m_mode_restriction;
-
-	///
-	espresso::color m_block_color;
-
-	///
-	std::function<void()>* m_function_collection_update;
-
-	///
-	bool m_dirty;
-
-	///
-	std::string m_data_distribute;
-
-	///
-	glm::vec<2, i32>* m_plane_offset;
+	esp::argument::padding_style get_padding_style();
 
 private:
-	void ui_serialize(rhr::handler::serializer::node& node) override;
-	void ui_deserialize(rhr::handler::serializer::node& node) override;
+
+	void ui_transform_update(i_ui::transform_update_spec transform_update_spec);
+	void ui_frame_update(f64 delta_time);
+	void ui_render();
+	void ui_reload_swap_chain();
+	void ui_update_buffers();
+	void ui_chain_update_buffers();
+	void ui_static_offset_update();
+	void ui_serialize(latte::serializer::node& node) override;
+	void ui_deserialize(latte::serializer::node& node) override;
+
+	///
+	esp::argument::state m_esp_argument_state;
+
+	///
+	esp::argument* m_esp_argument;
 };
 } // namespace rhr::stack::argument

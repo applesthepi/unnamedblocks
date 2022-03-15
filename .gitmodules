@@ -1,5 +1,5 @@
-[submodule "mods/ub_essentials"]
-	path = mods/ub_essentials
+[submodule "mods/essentials"]
+	path = mods/essentials
 	url = https://github.com/applesthepi/ub-essentials
 [submodule "mods/ub_vanilla"]
 	path = mods/ub_vanilla

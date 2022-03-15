@@ -7,6 +7,7 @@
 
 void thread_build(cap::build_system::method build_method, cap::build_system::type build_type)
 {
+	/*
 	std::vector<std::string> function_references;
 	std::vector<u32> function_ids;
 	std::vector<u64> function_call_count;
@@ -35,7 +36,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		mod_blocks[i]	 = new espresso::mod::block::block*[stacks[i]->get_blocks().size()];
 
 		if (stacks[i]->get_blocks().size() >= 1
-			&& std::string(stacks[i]->get_blocks()[0]->get_mod_block()->get_unlocalized_name()) == "essentials_main")
+			&& std::string(stacks[i]->get_blocks()[0]->get_esp_block()->get_unlocalized_name()) == "essentials_main")
 		{
 			if (function_main_found)
 			{
@@ -60,11 +61,11 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		for (u64 a = 0; a < stacks[i]->get_blocks().size(); a++)
 		{
 			if (build_type == cap::build_system::type::DEBUG)
-				trans_calls.push_back(stacks[i]->get_blocks()[a]->get_mod_block()->pull_execute_debug());
+				trans_calls.push_back(stacks[i]->get_blocks()[a]->get_esp_block()->pull_execute_debug());
 			else
-				trans_calls.push_back(stacks[i]->get_blocks()[a]->get_mod_block()->pull_execute_release());
+				trans_calls.push_back(stacks[i]->get_blocks()[a]->get_esp_block()->pull_execute_release());
 
-			mod_blocks[i][a] = (espresso::mod::block::block*)stacks[i]->get_blocks()[a]->get_mod_block();
+			mod_blocks[i][a] = (espresso::mod::block::block*)stacks[i]->get_blocks()[a]->get_esp_block();
 
 			std::vector<void*> arg_data;
 			std::vector<espresso::mod::block::data::type> arg_types;
@@ -222,7 +223,10 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		delete[] function_data[i];
 	delete[] function_data;
 
+	*/
+
 	rhr::handler::build::confirm_terminated();
+
 }
 
 void rhr::handler::build::initialize()

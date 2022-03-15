@@ -65,10 +65,10 @@ void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack,
 			stack->set_position_local_physical(stack->get_position_local_physical() + glm::vec<2, i32>(diff, 0), true);
 		}
 
-		if (stack->get_position_local_physical().y + (stack->get_blocks().size() * rhr::stack::block::height)
+		if (stack->get_position_local_physical().y + (stack->get_blocks().size() * BLOCK_HEIGHT)
 			> size.y - empty_space)
 			size.y = stack->get_position_local_physical().y
-				+ (static_cast<i32>(stack->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height))
+				+ (static_cast<i32>(stack->get_blocks().size()) * static_cast<i32>(BLOCK_HEIGHT))
 				+ empty_space;
 
 		if (stack->get_position_local_physical().y < empty_space)
@@ -116,10 +116,10 @@ void rhr::stack::collection::add_stacks(const std::vector<std::shared_ptr<rhr::s
 			}
 
 			if (stacks[i]->get_position_local_physical().y
-					+ (stacks[i]->get_blocks().size() * rhr::stack::block::height)
+					+ (stacks[i]->get_blocks().size() * BLOCK_HEIGHT)
 				> size.y - empty_space)
 				size.y = stacks[i]->get_position_local_physical().y
-					+ (static_cast<i32>(stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height))
+					+ (static_cast<i32>(stacks[i]->get_blocks().size()) * static_cast<i32>(BLOCK_HEIGHT))
 					+ empty_space;
 
 			if (stacks[i]->get_position_local_physical().y < empty_space)
@@ -223,10 +223,10 @@ void rhr::stack::collection::check_bounds()
 		}
 
 		if (m_stacks[i]->get_position_local_physical().y
-				+ (m_stacks[i]->get_blocks().size() * rhr::stack::block::height)
+				+ (m_stacks[i]->get_blocks().size() * BLOCK_HEIGHT)
 			> size.y - empty_space)
 			size.y = m_stacks[i]->get_position_local_physical().y
-				+ (static_cast<i32>(m_stacks[i]->get_blocks().size()) * static_cast<i32>(rhr::stack::block::height))
+				+ (static_cast<i32>(m_stacks[i]->get_blocks().size()) * static_cast<i32>(BLOCK_HEIGHT))
 				+ empty_space;
 
 		if (m_stacks[i]->get_position_local_physical().y < empty_space)
@@ -307,7 +307,7 @@ void rhr::stack::collection::ui_chain_update_buffers()
 		stack->update_buffers();
 }
 
-void rhr::stack::collection::ui_serialize(rhr::handler::serializer::node& node)
+void rhr::stack::collection::ui_serialize(latte::serializer::node& node)
 {
 	node.data_names.reserve(4);
 	node.data_values.reserve(4);
@@ -330,7 +330,7 @@ void rhr::stack::collection::ui_serialize(rhr::handler::serializer::node& node)
 	}
 }
 
-void rhr::stack::collection::ui_deserialize(rhr::handler::serializer::node& node)
+void rhr::stack::collection::ui_deserialize(latte::serializer::node& node)
 {
 	if (!node.verify_data(COLLECTION_SERIALIZE))
 	{

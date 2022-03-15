@@ -75,7 +75,7 @@ std::vector<espresso::mod::block::block::argument::initializer> espresso::mod::b
 {
 	return {espresso::mod::block::block::argument::initializer(
 		espresso::mod::block::block::argument::type::TEXT,
-		espresso::mod::block::block::argument::variable_mode_restriction::NONE,
-		espresso::mod::block::block::argument::variable_mode::RAW,
+		esp::argument::mode_restriction::NONE,
+		esp::argument::mode::RAW,
 		"NULL")};
 }

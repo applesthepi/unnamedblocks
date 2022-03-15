@@ -2,236 +2,42 @@
 
 #include "mocha/stacking/block.hpp"
 
-#define ARG_SET_DATA_ERROR_MISSING(field)                     \
-	("failed to set data for argument. " + std::string(field) \
-	 + " does not exist in the data provided to the argument. The information is unchanged for this argument.")
-#define ARG_SET_DATA_ERROR_TYPE(field)                        \
-	("failed to set data for argument. " + std::string(field) \
-	 + " is not the expected type. The information is unchanged for this argument.")
-
 rhr::stack::argument::argument::argument(
-	const espresso::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset)
-	: m_mode(espresso::mod::block::block::argument::variable_mode::RAW)
-	, m_block_color(block_color)
-	, m_function_collection_update(function_collection_update)
-	, m_mode_restriction(espresso::mod::block::block::argument::variable_mode_restriction::NONE)
-	, m_dirty(true)
-	, m_plane_offset(plane_offset)
-{}
-
-void rhr::stack::argument::argument::set_data(const std::string& data)
+	const espresso::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset
+	, esp::argument* esp_argument)
+	: m_esp_argument(esp_argument)
 {
-	m_data	= data;
-	m_dirty = true;
-	on_set_data();
-}
+	m_esp_argument_state.parent = static_cast<rhr::render::interfaces::i_ui*>(this);
+	m_esp_argument_state.plane_offset = plane_offset;
+	m_esp_argument_state.function_collection_update = function_collection_update;
+	m_esp_argument_state.block_color = block_color;
 
-void rhr::stack::argument::argument::set_data_compact(const std::string& data)
-{
-	rapidjson::Document document;
-	document.Parse(data.c_str(), data.size());
-
-	if (document.HasParseError())
-	{
-		latte::logger::error(
-			latte::logger::level::EDITOR, __FILE__, __LINE__, "parsing error on data provided to the argument.");
-		return;
-	}
-
-	if (!document.IsObject())
-	{
-		latte::logger::error(
-			latte::logger::level::EDITOR,
-			__FILE__,
-			__LINE__,
-			"data provided to the argument is not an object that can be parsed.");
-		return;
-	}
-
-	if (!document.HasMember("mode"))
-	{
-		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_MISSING("mode"));
-		return;
-	}
-
-	if (!document.HasMember("data"))
-	{
-		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_MISSING("data"));
-		return;
-	}
-
-	rapidjson::Value& v_mode = document["mode"];
-	rapidjson::Value& v_data = document["data"];
-
-	if (!v_mode.IsInt())
-	{
-		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_TYPE("mode"));
-		return;
-	}
-
-	if (!v_data.IsString())
-	{
-		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, ARG_SET_DATA_ERROR_TYPE("data"));
-		return;
-	}
-
-	u8 local_mode		   = static_cast<u8>(v_mode.GetInt());
-	const char* local_data = v_data.GetString();
-
-	switch (local_mode)
-	{
-	case 0:
-		m_mode = espresso::mod::block::block::argument::variable_mode::RAW;
-		break;
-	case 1:
-		m_mode = espresso::mod::block::block::argument::variable_mode::VAR;
-		break;
-	default:
-		latte::logger::error(
-			latte::logger::level::EDITOR,
-			__FILE__,
-			__LINE__,
-			"unknown espresso::mod::block::block::argument::variable_mode index; using RAW instead");
-		m_mode = espresso::mod::block::block::argument::variable_mode::RAW;
-		break;
-	}
-
-	m_data	= std::move(std::string(local_data));
-	m_dirty = true;
-
-	on_set_data();
-	on_set_mode(m_mode);
-}
-
-bool rhr::stack::argument::argument::set_mode(espresso::mod::block::block::argument::variable_mode mode)
-{
-	if (m_mode_restriction == espresso::mod::block::block::argument::variable_mode_restriction::NONE)
-	{
-		m_mode	= mode;
-		m_dirty = true;
-		on_set_mode(mode);
-		return true;
-	}
-
-	return false;
-}
-
-espresso::mod::block::block::argument::variable_mode rhr::stack::argument::argument::get_mode()
-{
-	return m_mode;
-}
-
-const std::string& rhr::stack::argument::argument::get_data()
-{
-	return m_data;
-}
-
-const std::string& rhr::stack::argument::argument::get_data_compact()
-{
-	build_data_distribute();
-	return m_data_distribute;
-}
-
-espresso::mod::block::block::argument::type rhr::stack::argument::argument::get_type()
-{
-	return espresso::mod::block::block::argument::type::TEXT;
+	m_esp_argument->create(&m_esp_argument_state);
 }
 
 u32 rhr::stack::argument::argument::get_width()
 {
-	return 50;
+	return m_esp_argument->get_width(&m_esp_argument_state);
 }
 
-bool rhr::stack::argument::argument::has_data()
+esp::argument::padding_style rhr::stack::argument::argument::get_padding_style()
 {
-	return false;
+	return m_esp_argument->get_padding_style();
 }
 
-bool rhr::stack::argument::argument::drag_bounds(glm::vec<2, i32> position)
+void rhr::stack::argument::argument::ui_serialize(latte::serializer::node& node)
 {
-	return false;
-}
-
-rhr::stack::argument::argument::padding_style rhr::stack::argument::argument::get_padding_style()
-{
-	return rhr::stack::argument::argument::padding_style::HARD;
-}
-
-void rhr::stack::argument::argument::set_plane_offset(glm::vec<2, i32>* plane_offset)
-{
-	m_plane_offset = plane_offset;
-}
-
-i32 rhr::stack::argument::argument::padding = rhr::stack::block::padding * 4;
-
-void rhr::stack::argument::argument::build_data_distribute()
-{
-	if (!m_dirty)
-		return;
-
-	rapidjson::Document document;
-	document.SetObject();
-
-	rapidjson::Value v_mode;
-	rapidjson::Value v_data;
-
-	switch (m_mode)
-	{
-	case espresso::mod::block::block::argument::variable_mode::RAW:
-		v_mode.SetInt(0);
-		break;
-	case espresso::mod::block::block::argument::variable_mode::VAR:
-		v_mode.SetInt(1);
-		break;
-	default:
-		latte::logger::error(
-			latte::logger::level::EDITOR,
-			__FILE__,
-			__LINE__,
-			"unknown espresso::mod::block::block::argument::variable_mode; using 0 instead");
-		v_mode.SetInt(0);
-		break;
-	}
-
-	v_data.SetString(m_data.c_str(), m_data.size());
-
-	document.AddMember("mode", v_mode, document.GetAllocator());
-	document.AddMember("data", v_data, document.GetAllocator());
-
-	rapidjson::StringBuffer string_buffer;
-	rapidjson::Writer<rapidjson::StringBuffer> writer(string_buffer);
-	document.Accept(writer);
-
-	m_data_distribute = std::move(std::string(string_buffer.GetString()));
-	m_dirty			  = false;
-}
-
-void rhr::stack::argument::argument::on_set_data()
-{}
-
-void rhr::stack::argument::argument::set_mode_restriction(
-	espresso::mod::block::block::argument::variable_mode_restriction mode_restriction)
-{
-	m_mode_restriction = mode_restriction;
-}
-
-void rhr::stack::argument::argument::on_set_mode(espresso::mod::block::block::argument::variable_mode mode)
-{}
-
-void rhr::stack::argument::argument::ui_serialize(rhr::handler::serializer::node& node)
-{
-	node.data_names.reserve(2);
-	node.data_values.reserve(2);
+	node.data_names.reserve(1);
+	node.data_values.reserve(1);
 
 	node.data_names.emplace_back("mode");
-	node.data_names.emplace_back("data");
 
-	switch (m_mode)
+	switch (m_esp_argument_state.mode)
 	{
-	case espresso::mod::block::block::argument::variable_mode::RAW:
+	case esp::argument::mode::RAW:
 		node.data_values.emplace_back("0");
 		break;
-	case espresso::mod::block::block::argument::variable_mode::VAR:
+	case esp::argument::mode::VAR:
 		node.data_values.emplace_back("1");
 		break;
 	default:
@@ -239,17 +45,18 @@ void rhr::stack::argument::argument::ui_serialize(rhr::handler::serializer::node
 			latte::logger::level::EDITOR,
 			__FILE__,
 			__LINE__,
-			"unknown espresso::mod::block::block::argument::variable_mode; using 0 instead");
+			"unknown esp::argument::mode; using 0 instead");
 		node.data_values.emplace_back("0");
 		break;
 	}
 
-	node.data_values.emplace_back(m_data);
+	auto& child_node = node.children.emplace_back();
+	m_esp_argument->ui_serialize(&m_esp_argument_state, child_node);
 }
 
-void rhr::stack::argument::argument::ui_deserialize(rhr::handler::serializer::node& node)
+void rhr::stack::argument::argument::ui_deserialize(latte::serializer::node& node)
 {
-	if (!node.verify_data(ARGUMENT_SERIALIZE))
+	if (!node.verify_data(ARGUMENT_SERIALIZE) || !node.verify_children(1))
 	{
 		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to deserialize argument");
 		return;
@@ -260,10 +67,10 @@ void rhr::stack::argument::argument::ui_deserialize(rhr::handler::serializer::no
 	switch (variable_mode_char)
 	{
 	case '0':
-		set_mode(espresso::mod::block::block::argument::variable_mode::RAW);
+		m_esp_argument_state.mode = esp::argument::mode::RAW;
 		break;
 	case '1':
-		set_mode(espresso::mod::block::block::argument::variable_mode::VAR);
+		m_esp_argument_state.mode = esp::argument::mode::VAR;
 		break;
 	default:
 		latte::logger::error(
@@ -271,9 +78,46 @@ void rhr::stack::argument::argument::ui_deserialize(rhr::handler::serializer::no
 			__FILE__,
 			__LINE__,
 			"unknown index of espresso::mod::block::block::argument::variable_mode; using RAW instead");
-		set_mode(espresso::mod::block::block::argument::variable_mode::RAW);
+		m_esp_argument_state.mode = esp::argument::mode::RAW;
 		break;
 	}
 
-	set_data(node.data_values[1]);
+	m_esp_argument->ui_deserialize(&m_esp_argument_state, node.children[0]);
+}
+
+void rhr::stack::argument::argument::ui_transform_update(
+	rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
+)
+{
+	m_esp_argument->ui_transform_update(&m_esp_argument_state, transform_update_spec);
+}
+
+void rhr::stack::argument::argument::ui_frame_update(f64 delta_time)
+{
+	m_esp_argument->ui_frame_update(&m_esp_argument_state, delta_time);
+}
+
+void rhr::stack::argument::argument::ui_render()
+{
+	m_esp_argument->ui_render(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_reload_swap_chain()
+{
+	m_esp_argument->ui_reload_swap_chain(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_update_buffers()
+{
+	m_esp_argument->ui_update_buffers(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_chain_update_buffers()
+{
+	m_esp_argument->ui_chain_update_buffers(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_static_offset_update()
+{
+	m_esp_argument->ui_static_offset_update(&m_esp_argument_state);
 }

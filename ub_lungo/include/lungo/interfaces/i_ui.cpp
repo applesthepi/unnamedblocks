@@ -142,6 +142,18 @@ void rhr::render::interfaces::i_ui::update_child_transform(
 		ui->update_transform(transform_update_spec);
 }
 
+void rhr::render::interfaces::i_ui::update_child_transform(
+	rhr::render::interfaces::i_ui* ui, rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
+)
+{
+	ui->set_position_parent_physical(get_position_physical_absolute(), false);
+	ui->set_position_parent_virtual_offset(get_position_virtual_offset(), false);
+	ui->set_size_parent(get_size_local(), false);
+
+	if (transform_update_spec)
+		ui->update_transform(transform_update_spec);
+}
+
 void rhr::render::interfaces::i_ui::set_enabled(bool enabled)
 {
 	m_enabled = enabled;
@@ -152,12 +164,12 @@ bool rhr::render::interfaces::i_ui::get_enabled()
 	return m_enabled;
 }
 
-void rhr::render::interfaces::i_ui::serialize(rhr::handler::serializer::node& node)
+void rhr::render::interfaces::i_ui::serialize(latte::serializer::node& node)
 {
 	ui_serialize(node);
 }
 
-void rhr::render::interfaces::i_ui::deserialize(rhr::handler::serializer::node& node)
+void rhr::render::interfaces::i_ui::deserialize(latte::serializer::node& node)
 {
 	ui_deserialize(node);
 }
@@ -190,9 +202,20 @@ void rhr::render::interfaces::i_ui::update_buffers()
 	ui_chain_update_buffers();
 }
 
+void rhr::render::interfaces::i_ui::set_static_offset(glm::vec<2, i32>* offset)
+{
+	m_offset = offset;
+	ui_static_offset_update();
+}
+
 void rhr::render::interfaces::i_ui::mark_dirty()
 {
 	m_dirty = true;
+}
+
+glm::vec<2, i32>* rhr::render::interfaces::i_ui::get_static_offset()
+{
+	return m_offset;
 }
 
 void rhr::render::interfaces::i_ui::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
@@ -213,17 +236,22 @@ void rhr::render::interfaces::i_ui::ui_chain_update_buffers()
 void rhr::render::interfaces::i_ui::ui_frame_update(f64 delta_time)
 {}
 
+void rhr::render::interfaces::i_ui::ui_serialize(latte::serializer::node& node)
+{
+
+}
+
+void rhr::render::interfaces::i_ui::ui_deserialize(latte::serializer::node& node)
+{
+
+}
+
+void rhr::render::interfaces::i_ui::ui_static_offset_update()
+{
+
+}
+
 rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_position =
 	0x1;
 
 rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_size = 0x2;
-
-void rhr::render::interfaces::i_ui::ui_serialize(rhr::handler::serializer::node& node)
-{
-
-}
-
-void rhr::render::interfaces::i_ui::ui_deserialize(rhr::handler::serializer::node& node)
-{
-
-}

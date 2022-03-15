@@ -5,7 +5,7 @@
 
 #define SERIALIZER_FAILED_PARSE "failed to parse save"
 
-namespace rhr::handler
+namespace latte
 {
 ///
 class serializer

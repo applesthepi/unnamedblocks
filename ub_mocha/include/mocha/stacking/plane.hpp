@@ -64,8 +64,8 @@ private:
 	void ui_reload_swap_chain() override;
 	void ui_update_buffers() override;
 	void ui_chain_update_buffers() override;
-	void ui_serialize(rhr::handler::serializer::node& node) override;
-	void ui_deserialize(rhr::handler::serializer::node& node) override;
+	void ui_serialize(latte::serializer::node& node) override;
+	void ui_deserialize(latte::serializer::node& node) override;
 
 	///
 	void select(u64 collection, u64 stack, u64 block, u64 argument);
@@ -92,7 +92,7 @@ private:
 	std::weak_ptr<rhr::stack::block> m_selected_block;
 
 	///
-	std::weak_ptr<rhr::stack::argument::argument> m_selected_argument;
+	rhr::stack::argument::argument* m_selected_argument;
 
 	///
 	std::function<void(u8)> m_context_callback;

@@ -1,6 +1,6 @@
 #include "serializer.hpp"
 
-bool rhr::handler::serializer::node::verify_data(const std::vector<std::string>& names)
+bool latte::serializer::node::verify_data(const std::vector<std::string>& names)
 {
 	if (names.size() != data_names.size() || names.size() != data_values.size())
 	{
@@ -17,7 +17,7 @@ bool rhr::handler::serializer::node::verify_data(const std::vector<std::string>&
 	return true;
 }
 
-bool rhr::handler::serializer::node::verify_children(usize count)
+bool latte::serializer::node::verify_children(usize count)
 {
 	if (children.size() != count)
 	{
@@ -28,29 +28,29 @@ bool rhr::handler::serializer::node::verify_children(usize count)
 	return true;
 }
 
-rhr::handler::serializer::serializer(rhr::handler::serializer::node& node)
+latte::serializer::serializer(latte::serializer::node& node)
 	: m_node(node)
 {
 
 }
 
-const std::string& rhr::handler::serializer::serialize()
+const std::string& latte::serializer::serialize()
 {
 	serialize_node(m_node, m_serialized);
 	return m_serialized;
 }
 
-void rhr::handler::serializer::deserialize(std::string& buffer)
+void latte::serializer::deserialize(std::string& buffer)
 {
 	deserialize_node(buffer, m_node);
 }
 
-rhr::handler::serializer::node& rhr::handler::serializer::get_node()
+latte::serializer::node& latte::serializer::get_node()
 {
 	return m_node;
 }
 
-void rhr::handler::serializer::serialize_node(node& node, std::string& buffer)
+void latte::serializer::serialize_node(node& node, std::string& buffer)
 {
 	rapidjson::Document document;
 	document.SetObject();
@@ -110,7 +110,7 @@ void rhr::handler::serializer::serialize_node(node& node, std::string& buffer)
 	buffer = string_buffer.GetString();
 }
 
-void rhr::handler::serializer::deserialize_node(const std::string& buffer, rhr::handler::serializer::node& node)
+void latte::serializer::deserialize_node(const std::string& buffer, latte::serializer::node& node)
 {
 	rapidjson::Document document;
 	document.Parse(buffer.c_str(), buffer.size());

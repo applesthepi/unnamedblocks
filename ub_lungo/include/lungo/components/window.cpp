@@ -12,22 +12,26 @@ void framebuffer_resize(glfw::window* glfw_window, i32 width, i32 height)
 
 void key(glfw::window* glfw_window, i32 key, i32 scancode, i32 action, i32 mode)
 {
-	rhr::handler::input::fire_key(static_cast<i16>(key), action);
+	// TODO: input fix
+	//rhr::handler::input::fire_key(static_cast<i16>(key), action);
 }
 
 void mouse_button(glfw::window* glfw_window, i32 button, i32 action, i32 mods)
 {
-	rhr::handler::input::fire_mouse_button(button, action);
+	// TODO: input fix
+	//rhr::handler::input::fire_mouse_button(button, action);
 }
 
 void scroll(glfw::window* glfw_window, f64 x_offset, f64 y_offset)
 {
-	rhr::handler::input::fire_mouse_scroll(static_cast<f32>(y_offset));
+	// TODO: input fix
+	//rhr::handler::input::fire_mouse_scroll(static_cast<f32>(y_offset));
 }
 
 void cursor_position(glfw::window* glfw_window, f64 x_position, f64 y_position)
 {
-	rhr::handler::input::fire_mouse_move({static_cast<i32>(x_position), static_cast<i32>(y_position)});
+	// TODO: input fix
+	//rhr::handler::input::fire_mouse_move({static_cast<i32>(x_position), static_cast<i32>(y_position)});
 }
 
 void window_position(glfw::window* glfw_window, i32 x, i32 y)

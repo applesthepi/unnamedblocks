@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "mocha/registries/char_texture.hpp"
+#include "lungo/registries/char_texture.hpp"
 #include "lungo/interfaces/i_enableable.hpp"
 #include "lungo/interfaces/i_positionable.hpp"
 #include "lungo/interfaces/i_renderable.hpp"

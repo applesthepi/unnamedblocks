@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "mocha/handlers/serializer.hpp"
+#include "latte/serializer.hpp"
 
 #include <latte/utils.hpp>
 
@@ -89,6 +89,14 @@ public:
 	void update_child_transform(
 		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, i_ui::transform_update_spec transform_update_spec);
 
+	/// This parent updates a child based on this transform data. Possible buffer update, use flags to make sure you
+	/// need to call this.
+	/// \param ui Child element to update from parent this.
+	/// \param transform_update_spec Specification of what parts of the transform is being updated. Use 0x0 to only
+	/// 							 update the transform without updating the child's buffers.
+	void update_child_transform(
+		rhr::render::interfaces::i_ui* ui, i_ui::transform_update_spec transform_update_spec);
+
 	///
 	void set_enabled(bool enabled);
 
@@ -96,10 +104,10 @@ public:
 	bool get_enabled();
 
 	///
-	void serialize(rhr::handler::serializer::node& node);
+	void serialize(latte::serializer::node& node);
 
 	///
-	void deserialize(rhr::handler::serializer::node& node);
+	void deserialize(latte::serializer::node& node);
 
 	///
 	void frame_update(f64 delta_time);
@@ -113,9 +121,14 @@ public:
 	///
 	void update_buffers();
 
-protected:
+	///
+	void set_static_offset(glm::vec<2, i32>* offset);
+
 	///
 	void mark_dirty();
+protected:
+	///
+	glm::vec<2, i32>* get_static_offset();
 
 	/// Called after any set transform related functions get called during frame update.
 	virtual void ui_transform_update(i_ui::transform_update_spec transform_update_spec);
@@ -136,10 +149,13 @@ protected:
 	virtual void ui_chain_update_buffers();
 
 	///
-	virtual void ui_serialize(rhr::handler::serializer::node& node);
+	virtual void ui_static_offset_update();
 
 	///
-	virtual void ui_deserialize(rhr::handler::serializer::node& node);
+	virtual void ui_serialize(latte::serializer::node& node);
+
+	///
+	virtual void ui_deserialize(latte::serializer::node& node);
 
 	///
 	static transform_update_spec transform_update_spec_position;
@@ -183,5 +199,8 @@ private:
 
 	///
 	std::string m_serialized_data;
+
+	///
+	glm::vec<2, i32>* m_offset;
 };
 } // namespace rhr::render::interfaces
