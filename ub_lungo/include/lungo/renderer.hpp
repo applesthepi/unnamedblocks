@@ -52,46 +52,52 @@ public:
 	};
 
 	///
-	static void initialize_window();
+	static renderer* get();
 
 	///
-	static void initialize();
+	static void set(renderer* reg);
 
 	///
-	static std::unique_ptr<rhr::render::component::window>& get_window_primary();
+	void initialize_window();
 
 	///
-	static void reload_swapchain();
+	void initialize();
 
 	///
-	static void initialize_imgui(bool first_time);
+	std::unique_ptr<rhr::render::component::window>& get_window_primary();
 
 	///
-	static void add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable);
+	void reload_swapchain();
 
 	///
-	static void add_dirty(std::weak_ptr<rhr::render::interfaces::i_ui> ui);
+	void initialize_imgui(bool first_time);
 
 	///
-	static void process_dirty();
+	void add_dirty(std::weak_ptr<rhr::render::interfaces::i_renderable> renderable);
 
 	///
-	static void render_pass_setup();
+	void add_dirty(std::weak_ptr<rhr::render::interfaces::i_ui> ui);
 
 	///
-	static void render_pass_master();
+	void process_dirty();
 
 	///
-	static void frame_present();
+	void render_pass_setup();
 
 	///
-	static glm::mat4 view_matrix;
+	void render_pass_master();
 
 	///
-	static glm::mat4 projection_matrix;
+	void frame_present();
 
 	///
-	static glm::mat4 ui_projection_matrix;
+	glm::mat4 view_matrix;
+
+	///
+	glm::mat4 projection_matrix;
+
+	///
+	glm::mat4 ui_projection_matrix;
 
 	///
 	static u32 depth_background;
@@ -107,13 +113,13 @@ public:
 	static u32 depth_ui_text;
 
 	///
-	static imgui_data* imgui_local;
+	imgui_data* imgui_local;
 
 	///
-	static ImDrawData* imgui_draw_data;
+	ImDrawData* imgui_draw_data;
 
 	///
-	static VmaAllocator vma_allocator;
+	VmaAllocator vma_allocator;
 
 	///
 #ifdef NDEBUG
@@ -123,15 +129,18 @@ public:
 #endif
 private:
 	///
-	static std::unique_ptr<rhr::render::component::window> m_window_primary;
+	static renderer* m_renderer;
 
 	///
-	static std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> m_dirty_renderable;
+	std::unique_ptr<rhr::render::component::window> m_window_primary;
 
 	///
-	static std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> m_dirty_ui;
+	std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> m_dirty_renderable;
 
 	///
-	static std::shared_mutex m_dirty_mutex;
+	std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> m_dirty_ui;
+
+	///
+	std::shared_mutex m_dirty_mutex;
 };
 } // namespace rhr::render

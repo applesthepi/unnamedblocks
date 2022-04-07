@@ -125,6 +125,11 @@ void rhr::stack::stack::set_collection_update_function(std::function<void()>* fu
 	m_function_collection_update = function_collection_update;
 }
 
+void rhr::stack::stack::ui_initialize()
+{
+
+}
+
 void rhr::stack::stack::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	for (usize i = 0; i < m_blocks.size(); i++)
@@ -159,6 +164,11 @@ void rhr::stack::stack::ui_chain_update_buffers()
 {
 	for (auto& block : m_blocks)
 		block->update_buffers();
+}
+
+void rhr::stack::stack::ui_static_offset_update()
+{
+
 }
 
 void rhr::stack::stack::ui_serialize(latte::serializer::node& node)

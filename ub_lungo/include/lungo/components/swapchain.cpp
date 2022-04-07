@@ -12,7 +12,7 @@ rhr::render::component::swapchain::swapchain()
 {
 	// Initialize swapchain.
 
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	rhr::render::tools::swap_chain_support_details swap_chain_support =
 		rhr::render::tools::query_swap_chain_support(window->get_physical_device(), window->get_surface());
@@ -88,11 +88,11 @@ rhr::render::component::swapchain::~swapchain()
 {
 	for (auto& frame : m_frames)
 	{
-		vkDestroyFramebuffer(*rhr::render::renderer::get_window_primary()->get_device(), frame.frame_buffer, nullptr);
-		vkDestroyImageView(*rhr::render::renderer::get_window_primary()->get_device(), frame.frame_view, nullptr);
+		vkDestroyFramebuffer(*rhr::render::renderer::get()->get_window_primary()->get_device(), frame.frame_buffer, nullptr);
+		vkDestroyImageView(*rhr::render::renderer::get()->get_window_primary()->get_device(), frame.frame_view, nullptr);
 	}
 
-	vkDestroySwapchainKHR(*rhr::render::renderer::get_window_primary()->get_device(), m_swapchain, nullptr);
+	vkDestroySwapchainKHR(*rhr::render::renderer::get()->get_window_primary()->get_device(), m_swapchain, nullptr);
 }
 
 void rhr::render::component::swapchain::create_render_passes()
@@ -104,7 +104,7 @@ void rhr::render::component::swapchain::create_render_passes()
 
 void rhr::render::component::swapchain::create_framebuffers()
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	for (auto& frame : m_frames)
 	{
@@ -127,7 +127,7 @@ void rhr::render::component::swapchain::create_framebuffers()
 
 void rhr::render::component::swapchain::create_synchronization()
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	vk::semaphore_create_info semaphore_create_info {};
 	semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

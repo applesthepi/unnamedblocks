@@ -44,7 +44,10 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 
 	mod.Data->set_logger_linkage(
 		latte::logger::get_stream_system(), latte::logger::get_stream_editor(), latte::logger::get_stream_runtime());
-	mod.Data->set_registry(esp::registry::get_registry());
+	mod.Data->set_registry_esp(esp::registry::get());
+	mod.Data->set_registry_char_texture(rhr::registry::char_texture::get());
+	mod.Data->set_renderer(rhr::render::renderer::get());
+
 	mods->push_back(mod);
 }
 

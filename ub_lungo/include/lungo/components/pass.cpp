@@ -5,7 +5,7 @@
 rhr::render::component::pass::pass()
 	: m_render_pass(nullptr)
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	std::array<vk::subpass_dependency, 1> subpass_dependencies = {};
 	vk::attachment_description color_attachment_description	   = {};
@@ -54,7 +54,7 @@ rhr::render::component::pass::pass()
 
 rhr::render::component::pass::~pass()
 {
-	vkDestroyRenderPass(*rhr::render::renderer::get_window_primary()->get_device(), m_render_pass, nullptr);
+	vkDestroyRenderPass(*rhr::render::renderer::get()->get_window_primary()->get_device(), m_render_pass, nullptr);
 }
 
 vk::render_pass& rhr::render::component::pass::get_render_pass()

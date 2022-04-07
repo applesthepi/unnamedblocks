@@ -16,11 +16,11 @@ rhr::render::component::pipeline::~pipeline()
 {
 	for (auto& registered_pipeline : m_registered_pipelines)
 		vkDestroyPipeline(
-			*rhr::render::renderer::get_window_primary()->get_device(), registered_pipeline.second, nullptr);
+			*rhr::render::renderer::get()->get_window_primary()->get_device(), registered_pipeline.second, nullptr);
 
 	for (auto& registered_layout : m_registered_layouts)
 		vkDestroyPipelineLayout(
-			*rhr::render::renderer::get_window_primary()->get_device(), registered_layout.second, nullptr);
+			*rhr::render::renderer::get()->get_window_primary()->get_device(), registered_layout.second, nullptr);
 }
 
 void rhr::render::component::pipeline::apply_active_pipeline(const std::string& name)
@@ -34,7 +34,7 @@ void rhr::render::component::pipeline::apply_active_pipeline(const std::string& 
 
 void rhr::render::component::pipeline::bind_color_pipeline(vk::descriptor_set* descriptor_set)
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	vkCmdBindDescriptorSets(
 		*window->get_active_command_buffer(),
@@ -51,7 +51,7 @@ void rhr::render::component::pipeline::bind_color_pipeline(vk::descriptor_set* d
 
 void rhr::render::component::pipeline::bind_texture_pipeline(vk::descriptor_set* descriptor_set)
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	vkCmdBindDescriptorSets(
 		*window->get_active_command_buffer(),
@@ -89,7 +89,7 @@ void rhr::render::component::pipeline::register_paired_pipeline(
 void rhr::render::component::pipeline::create_pipeline(
 	const std::string& name, const std::string& shader, vk::cull_mode_flags cull_mode_flags)
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	auto vert_shader_code = rhr::render::tools::read_file_bytes("res/shaders/" + shader + ".vert.spv");
 	auto frag_shader_code = rhr::render::tools::read_file_bytes("res/shaders/" + shader + ".frag.spv");

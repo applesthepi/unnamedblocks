@@ -20,10 +20,10 @@ class registry
 {
 public:
 	///
-	static registry* get_registry();
+	static registry* get();
 
 	///
-	static void set_registry(registry* reg);
+	static void set(registry* reg);
 
 	///
 	std::vector<esp::reg::type*>& types();

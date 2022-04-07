@@ -75,7 +75,9 @@ public:
 		void* custom;
 	};
 
-	///
+	/// IMPORTANT! The custom field is a default template from esp::argument::get_initializer, NOT the
+	/// instance that you should instantiate in esp::argument::create. This struct is used to initialize
+	/// the esp::argument::state (other then custom).
 	struct initializer
 	{
 		///
@@ -95,10 +97,12 @@ public:
 	/// will be INVALID and will change once the deserialization has been invoked. Called when an
 	/// argument::state has been created and ready for the custom argument to have access to it.
 	/// You can set the argument::state::custom if you want, or do any initialization needed on your end.
-	virtual void create(argument::state* state) = 0;
+	/// The state's main info has already been set from the initializer except for custom, you would set that
+	/// using the initializer custom.
+	virtual void create(argument::state* state, argument::initializer* initializer) = 0;
 
 	/// Don't deallocate the argument::state. If you allocated something for argument::state::custom, this is the
-	/// place to deallocated that.
+	/// place to deallocate that.
 	virtual void destroy(argument::state* state) = 0;
 
 	/// Name for registry storage. Convention example: "mymod_some_arg_name".

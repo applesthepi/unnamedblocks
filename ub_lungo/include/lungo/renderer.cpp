@@ -4,7 +4,7 @@
 #include "mocha/handlers/input.hpp"
 #include "lungo/objects/object.hpp"
 #include "lungo/objects/rectangle.hpp"
-#include "lungo/panel.hpp"
+#include "lungo/handlers/panel.hpp"
 #include "lungo/tools.hpp"
 #include "lungo/vertex.hpp"
 #include "mocha/stacking/plane.hpp"
@@ -27,6 +27,16 @@ static void check_vk_result(VkResult err)
 
 vk::image depthImage;
 vk::device_memory depthImageMemory;
+
+rhr::render::renderer* rhr::render::renderer::get()
+{
+	return m_renderer;
+}
+
+void rhr::render::renderer::set(rhr::render::renderer* reg)
+{
+	m_renderer = reg;
+}
 
 void rhr::render::renderer::initialize_window()
 {
@@ -176,15 +186,15 @@ void rhr::render::renderer::reload_swapchain()
 
 	m_window_primary->recreate_swapchain();
 	initialize_imgui(false);
-	rhr::render::panel::initialize_panels();
+	lungo::handler::panel::initialize();
 
 	latte::logger::info(latte::logger::level::SYSTEM, "...recreated swapchain");
 	latte::logger::info(latte::logger::level::SYSTEM, "reloading swapchain dependent objects...");
 
-	rhr::render::renderer::imgui_local->data.FrameIndex = 0;
-	rhr::render::renderer::get_window_primary()->flag_clear_swapchain_recreation();
+	rhr::render::renderer::get()->imgui_local->data.FrameIndex = 0;
+	rhr::render::renderer::get()->get_window_primary()->flag_clear_swapchain_recreation();
 
-	VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get_window_primary()->get_device());
+	VkResult err = vkDeviceWaitIdle(*rhr::render::renderer::get()->get_window_primary()->get_device());
 
 	if (err != VK_SUCCESS)
 		latte::logger::fatal(
@@ -193,6 +203,7 @@ void rhr::render::renderer::reload_swapchain()
 				+ std::to_string(static_cast<i32>(err)));
 
 	// TODO: render fix
+	lungo::handler::panel::run_reload_swap_chain();
 	//rhr::stack::plane::primary_plane->reload_swap_chain();
 	//rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
@@ -427,6 +438,7 @@ void rhr::render::renderer::render_pass_setup()
 	}
 
 	// TODO: render fix
+	lungo::handler::panel::run_frame_update(1.0);
 	//rhr::stack::plane::primary_plane->frame_update(1.0);
 	//rhr::stack::plane::toolbar_plane->frame_update(1.0);
 
@@ -434,6 +446,7 @@ void rhr::render::renderer::render_pass_setup()
 		grid_object->frame_update(1.0);
 
 	// TODO: render fix
+	lungo::handler::panel::run_update_buffers();
 	//rhr::stack::plane::primary_plane->update_buffers();
 	//rhr::stack::plane::toolbar_plane->update_buffers();
 
@@ -515,7 +528,7 @@ void rhr::render::renderer::render_pass_master()
 		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
 		// rhr::render::pipeline::ui_texture_pipeline);
 
-		rhr::render::panel::run_master_render_pass();
+		lungo::handler::panel::run_master_render_pass();
 
 		for (auto& grid_object : grid_objects)
 			grid_object->render();
@@ -576,14 +589,6 @@ void rhr::render::renderer::frame_present()
 	imgui_local->data.SemaphoreIndex = (imgui_local->data.SemaphoreIndex + 1) % imgui_local->data.ImageCount;
 }
 
-glm::mat4 rhr::render::renderer::view_matrix;
-glm::mat4 rhr::render::renderer::projection_matrix;
-glm::mat4 rhr::render::renderer::ui_projection_matrix;
-
-rhr::render::renderer::imgui_data* rhr::render::renderer::imgui_local;
-ImDrawData* rhr::render::renderer::imgui_draw_data;
-VmaAllocator rhr::render::renderer::vma_allocator;
-
 u32 rhr::render::renderer::depth_background		  = 10;
 u32 rhr::render::renderer::depth_plane			  = 15;
 u32 rhr::render::renderer::depth_frame_background = 20;
@@ -596,12 +601,4 @@ u32 rhr::render::renderer::depth_cursor			  = 46;
 u32 rhr::render::renderer::depth_ui_background	  = 50;
 u32 rhr::render::renderer::depth_ui_text		  = 55;
 
-////////////////////////////////////////////////////////////////////////////
-
-std::unique_ptr<rhr::render::component::window> rhr::render::renderer::m_window_primary;
-
-////////////////////////////////////////////////////////////////////////////
-
-std::vector<std::weak_ptr<rhr::render::interfaces::i_renderable>> rhr::render::renderer::m_dirty_renderable;
-std::vector<std::weak_ptr<rhr::render::interfaces::i_ui>> rhr::render::renderer::m_dirty_ui;
-std::shared_mutex rhr::render::renderer::m_dirty_mutex;
+rhr::render::renderer* rhr::render::renderer::m_renderer = nullptr;

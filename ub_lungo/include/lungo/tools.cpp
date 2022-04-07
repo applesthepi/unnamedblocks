@@ -98,7 +98,7 @@ rhr::render::tools::create_image_view(vk::image image, vk::format format, vk::im
 
 	vk::image_view image_view;
 
-	if (vkCreateImageView(*rhr::render::renderer::get_window_primary()->get_device(), &view_info, nullptr, &image_view)
+	if (vkCreateImageView(*rhr::render::renderer::get()->get_window_primary()->get_device(), &view_info, nullptr, &image_view)
 		!= VK_SUCCESS)
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create image view");
 
@@ -116,7 +116,7 @@ void rhr::render::tools::create_aux_command_buffer()
 	// allocInfo.commandPool = rhr::render::renderer::CommandPool;
 	// allocInfo.commandBufferCount = 1;
 	//
-	// vkAllocateCommandBuffers(*rhr::render::renderer::get_window_primary()->get_device(), &allocInfo,
+	// vkAllocateCommandBuffers(*rhr::render::renderer::get()->get_window_primary()->get_device(), &allocInfo,
 	// &rhr::render::renderer::AuxCommandBuffer);
 	//
 	// vk::command_buffer_begin_info beginInfo {};
@@ -153,11 +153,11 @@ void rhr::render::tools::clean_aux_command_buffer()
 {
 	return;
 	// for (u32 i = 0; i < rhr::render::renderer::AuxBufferMemory.size(); i++)
-	//	vkDestroyBuffer(*rhr::render::renderer::get_window_primary()->get_device(),
+	//	vkDestroyBuffer(*rhr::render::renderer::get()->get_window_primary()->get_device(),
 	// rhr::render::renderer::AuxBufferMemory[i], nullptr);
 	//
 	// for (u32 i = 0; i < rhr::render::renderer::AuxDeviceMemory.size(); i++)
-	//	vkFreeMemory(*rhr::render::renderer::get_window_primary()->get_device(),
+	//	vkFreeMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(),
 	// rhr::render::renderer::AuxDeviceMemory[i], nullptr);
 	//
 	// rhr::render::renderer::AuxBufferMemory.clear();
@@ -171,11 +171,11 @@ vk::command_buffer rhr::render::tools::begin_single_time_command()
 	vk::command_buffer_allocate_info allocate_info {};
 	allocate_info.sType				 = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 	allocate_info.level				 = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocate_info.commandPool		 = *rhr::render::renderer::get_window_primary()->get_command_pool();
+	allocate_info.commandPool		 = *rhr::render::renderer::get()->get_window_primary()->get_command_pool();
 	allocate_info.commandBufferCount = 1;
 
 	vkAllocateCommandBuffers(
-		*rhr::render::renderer::get_window_primary()->get_device(), &allocate_info, &command_buffer);
+		*rhr::render::renderer::get()->get_window_primary()->get_device(), &allocate_info, &command_buffer);
 
 	vk::command_buffer_begin_info begin_info {};
 	begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -194,11 +194,11 @@ void rhr::render::tools::end_single_time_command(vk::command_buffer command_buff
 	submit_info.commandBufferCount = 1;
 	submit_info.pCommandBuffers	   = &command_buffer;
 
-	vkQueueSubmit(*rhr::render::renderer::get_window_primary()->get_graphics_queue(), 1, &submit_info, VK_NULL_HANDLE);
-	vkQueueWaitIdle(*rhr::render::renderer::get_window_primary()->get_graphics_queue());
+	vkQueueSubmit(*rhr::render::renderer::get()->get_window_primary()->get_graphics_queue(), 1, &submit_info, VK_NULL_HANDLE);
+	vkQueueWaitIdle(*rhr::render::renderer::get()->get_window_primary()->get_graphics_queue());
 	vkFreeCommandBuffers(
-		*rhr::render::renderer::get_window_primary()->get_device(),
-		*rhr::render::renderer::get_window_primary()->get_command_pool(),
+		*rhr::render::renderer::get()->get_window_primary()->get_device(),
+		*rhr::render::renderer::get()->get_window_primary()->get_command_pool(),
 		1,
 		&command_buffer);
 }
@@ -210,7 +210,7 @@ vk::format rhr::render::tools::find_supported_format(
 	{
 		VkFormatProperties props;
 		vkGetPhysicalDeviceFormatProperties(
-			*rhr::render::renderer::get_window_primary()->get_physical_device(), format, &props);
+			*rhr::render::renderer::get()->get_window_primary()->get_physical_device(), format, &props);
 
 		if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
 		{
@@ -314,7 +314,7 @@ u32 rhr::render::tools::find_memory_type(u32 type_filter, vk::memory_property_fl
 {
 	vk::physical_device_memory_properties memory_properties;
 	vkGetPhysicalDeviceMemoryProperties(
-		*rhr::render::renderer::get_window_primary()->get_physical_device(), &memory_properties);
+		*rhr::render::renderer::get()->get_window_primary()->get_physical_device(), &memory_properties);
 
 	for (u32 i = 0; i < memory_properties.memoryTypeCount; i++)
 	{
@@ -361,7 +361,7 @@ void rhr::render::tools::create_buffer(
 	buffer_info.usage		= usage;
 	buffer_info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateBuffer(*rhr::render::renderer::get_window_primary()->get_device(), &buffer_info, nullptr, &buffer)
+	if (vkCreateBuffer(*rhr::render::renderer::get()->get_window_primary()->get_device(), &buffer_info, nullptr, &buffer)
 		!= VK_SUCCESS)
 	{
 		latte::logger::error(latte::logger::level::SYSTEM, "failed to create buffer");
@@ -370,7 +370,7 @@ void rhr::render::tools::create_buffer(
 
 	vk::memory_requirements memory_requirements;
 	vkGetBufferMemoryRequirements(
-		*rhr::render::renderer::get_window_primary()->get_device(), buffer, &memory_requirements);
+		*rhr::render::renderer::get()->get_window_primary()->get_device(), buffer, &memory_requirements);
 
 	vk::memory_allocate_info allocate_info {};
 	allocate_info.sType			  = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -378,20 +378,20 @@ void rhr::render::tools::create_buffer(
 	allocate_info.memoryTypeIndex = find_memory_type(memory_requirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(
-			*rhr::render::renderer::get_window_primary()->get_device(), &allocate_info, nullptr, &buffer_memory)
+			*rhr::render::renderer::get()->get_window_primary()->get_device(), &allocate_info, nullptr, &buffer_memory)
 		!= VK_SUCCESS)
 	{
 		latte::logger::error(latte::logger::level::SYSTEM, "failed to allocate buffer memory");
 		return;
 	}
 
-	vkBindBufferMemory(*rhr::render::renderer::get_window_primary()->get_device(), buffer, buffer_memory, 0);
+	vkBindBufferMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), buffer, buffer_memory, 0);
 }
 
 void rhr::render::tools::delete_buffer(vk::buffer& buffer, vk::device_memory& buffer_memory)
 {
-	vkDestroyBuffer(*rhr::render::renderer::get_window_primary()->get_device(), buffer, nullptr);
-	vkFreeMemory(*rhr::render::renderer::get_window_primary()->get_device(), buffer_memory, nullptr);
+	vkDestroyBuffer(*rhr::render::renderer::get()->get_window_primary()->get_device(), buffer, nullptr);
+	vkFreeMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), buffer_memory, nullptr);
 }
 
 void rhr::render::tools::copy_buffer(vk::buffer src_buffer, vk::buffer dst_buffer, vk::device_size size)
@@ -454,7 +454,7 @@ void rhr::render::tools::create_image(
 	image_info.samples		 = VK_SAMPLE_COUNT_1_BIT;
 	image_info.sharingMode	 = VK_SHARING_MODE_EXCLUSIVE;
 
-	if (vkCreateImage(*rhr::render::renderer::get_window_primary()->get_device(), &image_info, nullptr, &image)
+	if (vkCreateImage(*rhr::render::renderer::get()->get_window_primary()->get_device(), &image_info, nullptr, &image)
 		!= VK_SUCCESS)
 	{
 		latte::logger::error(latte::logger::level::SYSTEM, "failed to create image");
@@ -463,7 +463,7 @@ void rhr::render::tools::create_image(
 
 	vk::memory_requirements memory_requirements;
 	vkGetImageMemoryRequirements(
-		*rhr::render::renderer::get_window_primary()->get_device(), image, &memory_requirements);
+		*rhr::render::renderer::get()->get_window_primary()->get_device(), image, &memory_requirements);
 
 	vk::memory_allocate_info allocation_info {};
 	allocation_info.sType			= VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -471,14 +471,14 @@ void rhr::render::tools::create_image(
 	allocation_info.memoryTypeIndex = find_memory_type(memory_requirements.memoryTypeBits, properties);
 
 	if (vkAllocateMemory(
-			*rhr::render::renderer::get_window_primary()->get_device(), &allocation_info, nullptr, &image_memory)
+			*rhr::render::renderer::get()->get_window_primary()->get_device(), &allocation_info, nullptr, &image_memory)
 		!= VK_SUCCESS)
 	{
 		latte::logger::error(latte::logger::level::SYSTEM, "failed to allocate image memory");
 		return;
 	}
 
-	vkBindImageMemory(*rhr::render::renderer::get_window_primary()->get_device(), image, image_memory, 0);
+	vkBindImageMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), image, image_memory, 0);
 }
 
 vk::image
@@ -507,15 +507,15 @@ rhr::render::tools::create_texture_image(const std::string& texture_path, vk::de
 
 	void* data;
 	vkMapMemory(
-		*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer_memory, 0, image_size, 0, &data);
+		*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer_memory, 0, image_size, 0, &data);
 	memcpy(data, pixels, static_cast<usize>(image_size));
-	vkUnmapMemory(*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer_memory);
+	vkUnmapMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer_memory);
 
 	vk::image image;
 	create_image(
 		texture_width,
 		texture_height,
-		*rhr::render::renderer::get_window_primary()->get_swapchain_format(),
+		*rhr::render::renderer::get()->get_window_primary()->get_swapchain_format(),
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -524,18 +524,18 @@ rhr::render::tools::create_texture_image(const std::string& texture_path, vk::de
 
 	transition_image_layout(
 		image,
-		*rhr::render::renderer::get_window_primary()->get_swapchain_format(),
+		*rhr::render::renderer::get()->get_window_primary()->get_swapchain_format(),
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copy_buffer_to_image(staging_buffer, image, static_cast<u32>(texture_width), static_cast<u32>(texture_height));
 	transition_image_layout(
 		image,
-		*rhr::render::renderer::get_window_primary()->get_swapchain_format(),
+		*rhr::render::renderer::get()->get_window_primary()->get_swapchain_format(),
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkDestroyBuffer(*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer, nullptr);
-	vkFreeMemory(*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer_memory, nullptr);
+	vkDestroyBuffer(*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer, nullptr);
+	vkFreeMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer_memory, nullptr);
 
 	return image;
 }
@@ -569,15 +569,15 @@ rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pixels, vk::
 
 	void* data;
 	vkMapMemory(
-		*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer_memory, 0, image_size, 0, &data);
+		*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer_memory, 0, image_size, 0, &data);
 	memcpy(data, pixels, static_cast<usize>(image_size));
-	vkUnmapMemory(*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer_memory);
+	vkUnmapMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer_memory);
 
 	vk::image image;
 	create_image(
 		size.x,
 		size.y,
-		*rhr::render::renderer::get_window_primary()->get_swapchain_format(),
+		*rhr::render::renderer::get()->get_window_primary()->get_swapchain_format(),
 		VK_IMAGE_TILING_OPTIMAL,
 		VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
@@ -586,18 +586,18 @@ rhr::render::tools::create_texture_image(glm::vec<2, u32> size, u8* pixels, vk::
 
 	transition_image_layout(
 		image,
-		*rhr::render::renderer::get_window_primary()->get_swapchain_format(),
+		*rhr::render::renderer::get()->get_window_primary()->get_swapchain_format(),
 		VK_IMAGE_LAYOUT_UNDEFINED,
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 	copy_buffer_to_image(staging_buffer, image, size.x, size.y);
 	transition_image_layout(
 		image,
-		*rhr::render::renderer::get_window_primary()->get_swapchain_format(),
+		*rhr::render::renderer::get()->get_window_primary()->get_swapchain_format(),
 		VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 		VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-	vkDestroyBuffer(*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer, nullptr);
-	vkFreeMemory(*rhr::render::renderer::get_window_primary()->get_device(), staging_buffer_memory, nullptr);
+	vkDestroyBuffer(*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer, nullptr);
+	vkFreeMemory(*rhr::render::renderer::get()->get_window_primary()->get_device(), staging_buffer_memory, nullptr);
 
 	return image;
 }
@@ -759,7 +759,7 @@ vk::extent_2d rhr::render::tools::choose_swap_extent(const vk::surface_capabilit
 	{
 		i32 width;
 		i32 height;
-		glfwGetFramebufferSize(rhr::render::renderer::get_window_primary()->get_window(), &width, &height);
+		glfwGetFramebufferSize(rhr::render::renderer::get()->get_window_primary()->get_window(), &width, &height);
 
 		vk::extent_2d actual_extent = {static_cast<u32>(width), static_cast<u32>(height)};
 

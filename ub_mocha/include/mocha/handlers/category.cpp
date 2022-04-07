@@ -31,8 +31,8 @@ void rhr::handler::category::populate()
 	//	m_render_frame->enable_background(espresso::color::background_color_2);
 	//	m_render_frame->disable_bar_movement();
 
-	auto& categories = esp::registry::get_registry()->categories();
-	auto& blocks = esp::registry::get_registry()->blocks();
+	auto& categories = esp::registry::get()->categories();
+	auto& blocks = esp::registry::get()->blocks();
 
 	// std::vector<std::string> binnedMods;
 	std::vector<std::vector<esp::category*>> binned_categories;
@@ -127,6 +127,7 @@ void rhr::handler::category::populate()
 					espresso::color::background_color_3,
 					binned_categories[i][a]->get_display_name(),
 					nullptr);
+			button->initialize();
 			button->set_color_secondary(binned_categories[i][a]->get_color());
 			button->enable_fill_width(true);
 			button->set_callback(button_callback_category, active_catagories + a);

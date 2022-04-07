@@ -157,10 +157,12 @@
 	std::cout << std::flush;                                                                             \
 	use_stream->log_update = true;
 
+#define FORCE_ABORT abort();
+
 #ifdef NDEBUG
 #define ASSERT_ABORT
 #else
-#define ASSERT_ABORT abort();
+#define ASSERT_ABORT FORCE_ABORT;
 #endif
 
 latte::logger::buffer::buffer(bool destruction_flush)
@@ -483,36 +485,36 @@ void latte::logger::LOG_LCR(LOG_A4)
 #define LOG_UCS "FATAL"
 void latte::logger::LOG_LC(LOG_A1)
 {
-	PREP_LOG_MUT LOG_EXE1(LOG_UCS) abort();
+	PREP_LOG_MUT LOG_EXE1(LOG_UCS) FORCE_ABORT
 }
 void latte::logger::LOG_LC(LOG_A2)
 {
-	PREP_LOG_MUT LOG_EXE2(LOG_UCS) abort();
+	PREP_LOG_MUT LOG_EXE2(LOG_UCS) FORCE_ABORT
 }
 void latte::logger::LOG_LC(LOG_A3)
 {
-	PREP_LOG_MUT LOG_EXE3(LOG_UCS) abort();
+	PREP_LOG_MUT LOG_EXE3(LOG_UCS) FORCE_ABORT
 }
 void latte::logger::LOG_LC(LOG_A4)
 {
-	PREP_LOG_MUT LOG_EXE4(LOG_UCS) abort();
+	PREP_LOG_MUT LOG_EXE4(LOG_UCS) FORCE_ABORT
 }
 
 void latte::logger::LOG_LCR(LOG_A1)
 {
-	PREP_LOG_RAW LOG_EXE1(LOG_UCS) abort();
+	PREP_LOG_RAW LOG_EXE1(LOG_UCS) FORCE_ABORT
 }
 void latte::logger::LOG_LCR(LOG_A2)
 {
-	PREP_LOG_RAW LOG_EXE2(LOG_UCS) abort();
+	PREP_LOG_RAW LOG_EXE2(LOG_UCS) FORCE_ABORT
 }
 void latte::logger::LOG_LCR(LOG_A3)
 {
-	PREP_LOG_RAW LOG_EXE3(LOG_UCS) abort();
+	PREP_LOG_RAW LOG_EXE3(LOG_UCS) FORCE_ABORT
 }
 void latte::logger::LOG_LCR(LOG_A4)
 {
-	PREP_LOG_RAW LOG_EXE4(LOG_UCS) abort();
+	PREP_LOG_RAW LOG_EXE4(LOG_UCS) FORCE_ABORT
 }
 
 #undef LOG_LC
@@ -522,7 +524,7 @@ void latte::logger::LOG_LCR(LOG_A4)
 void latte::logger::internal_fatal(const std::string& error)
 {
 	std::cout << " [FATAL] " + error << std::endl;
-	abort();
+	FORCE_ABORT
 }
 
 latte::logger::stream* latte::logger::m_stream_system;

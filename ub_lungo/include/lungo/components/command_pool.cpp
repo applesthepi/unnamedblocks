@@ -8,7 +8,7 @@ rhr::render::component::command_pool::command_pool()
 	, m_command_pool {}
 	, m_descriptor_pool {}
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	rhr::render::tools::queue_family_indices queue_family_indices =
 		rhr::render::tools::find_queue_families(window->get_physical_device(), window->get_surface());
@@ -28,7 +28,7 @@ rhr::render::component::command_pool::~command_pool()
 
 void rhr::render::component::command_pool::initialize_descriptor_pool()
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	std::array<vk::descriptor_pool_size, 2> descriptor_pool_sizes = {};
 	vk::descriptor_pool_create_info descriptor_pool_create_info	  = {};
@@ -52,7 +52,7 @@ void rhr::render::component::command_pool::initialize_descriptor_pool()
 
 void rhr::render::component::command_pool::initialize_command_buffers()
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	if (!m_command_buffer_panels.empty())
 	{
@@ -129,7 +129,7 @@ vk::command_buffer* rhr::render::component::command_pool::get_panel_command_buff
 
 void rhr::render::component::command_pool::generate_command_buffer(u32 count, vk::command_buffer* command_buffer)
 {
-	std::unique_ptr<rhr::render::component::window>& window		  = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window		  = rhr::render::renderer::get()->get_window_primary();
 	vk::command_buffer_allocate_info command_buffer_allocate_info = {};
 
 	command_buffer_allocate_info.sType				= VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -145,7 +145,7 @@ void rhr::render::component::command_pool::generate_command_buffer(u32 count, vk
 void rhr::render::component::command_pool::setup_command_buffer(
 	vk::command_buffer* command_buffer, vk::frame_buffer* frame_buffer)
 {
-	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get_window_primary();
+	std::unique_ptr<rhr::render::component::window>& window = rhr::render::renderer::get()->get_window_primary();
 
 	vk::command_buffer_begin_info begin_info	= {};
 	vk::render_pass_begin_info render_pass_info = {};

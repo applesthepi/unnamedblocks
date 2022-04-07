@@ -78,6 +78,11 @@ void rhr::render::object::text::set_text(const std::string& text)
 	mark_dirty();
 }
 
+const std::string& rhr::render::object::text::get_text()
+{
+	return m_text;
+}
+
 void rhr::render::object::text::set_depth(i32 depth)
 {
 	m_depth = depth;
@@ -91,9 +96,25 @@ void rhr::render::object::text::set_padding(i32 padding)
 	mark_dirty();
 }
 
+void rhr::render::object::text::set_font_size(u16 font_size)
+{
+	m_font_size = font_size;
+	m_render_object_text->set_texture_char_size(font_size);
+
+	update_size();
+	mark_dirty();
+}
+
 void rhr::render::object::text::enable_background(bool enable)
 {
 	m_enable_background = enable;
+}
+
+void rhr::render::object::text::set_mouse_button(
+	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>&
+	mouse_button)
+{
+	m_mouse_button = mouse_button;
 }
 
 std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> position, bool ignore_y)
@@ -233,44 +254,16 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	return true;
 }
 
-void rhr::render::object::text::update_size()
+void rhr::render::object::text::mouse_button(
+	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 {
-	m_char_offsets.clear();
-	m_char_contacts.clear();
+	if (m_mouse_button != nullptr)
+		m_mouse_button(position, scroll, operation, button);
+}
 
-	f32 running_char_offsets  = static_cast<f32>(m_padding);
-	f32 running_char_contacts = static_cast<f32>(m_padding);
+void rhr::render::object::text::ui_initialize()
+{
 
-	for (usize i = 0; i < m_text.size(); i++)
-	{
-		i16 char_width =
-			rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]].advance.x
-			>> 6;
-
-		running_char_offsets += static_cast<f32>(char_width);
-		running_char_contacts += static_cast<f32>(char_width) / 2.0f;
-
-		if (i > 0)
-		{
-			i16 last_char_width = rhr::registry::char_texture::get_texture_map(m_font_size)
-									  ->map[m_texture_type]
-									  .char_map[m_text[i - 1]]
-									  .advance.x
-				>> 6;
-			running_char_contacts += static_cast<f32>(last_char_width) / 2.0f;
-		}
-
-		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
-		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
-	}
-
-	if (m_text.empty())
-	{
-		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
-		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
-	}
-
-	set_size_local({static_cast<i32>(running_char_offsets) + m_padding, m_font_size}, false);
 }
 
 void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
@@ -287,8 +280,8 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 			{static_cast<f64>(position_physical.x), static_cast<f64>(position_physical.y), static_cast<f64>(m_depth)});
 		m_render_object_text->set_position(
 			{static_cast<f64>(position_physical.x),
-			 static_cast<f64>(position_physical.y),
-			 static_cast<f64>(m_depth) - 0.1});
+				static_cast<f64>(position_physical.y),
+				static_cast<f64>(m_depth) - 0.1});
 	}
 
 	// TODO: fields fix
@@ -307,6 +300,9 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 	}
 	*/
 }
+
+void rhr::render::object::text::ui_frame_update(f64 delta_time)
+{}
 
 void rhr::render::object::text::ui_render()
 {
@@ -364,7 +360,7 @@ void rhr::render::object::text::ui_update_buffers()
 		for (usize i = 0; i < m_text.size(); i++)
 		{
 			rhr::registry::char_texture::char_data char_data =
-				rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]];
+				rhr::registry::char_texture::get()->get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]];
 			f32 y_offset = static_cast<f32>(m_font_size) - static_cast<f32>(char_data.offset.y)
 				- static_cast<f32>(BLOCK_PADDING);
 
@@ -378,8 +374,8 @@ void rhr::render::object::text::ui_update_buffers()
 				{char_data.second.x, char_data.first.y});
 			vertices[i * 4 + 2] = rhr::render::vertex(
 				{static_cast<f32>(running_x + char_data.offset.x + char_data.size.x),
-				 static_cast<f32>(char_data.size.y) + y_offset,
-				 0.0f},
+					static_cast<f32>(char_data.size.y) + y_offset,
+					0.0f},
 				m_color_primary.get_normalized(),
 				{char_data.second.x, char_data.second.y});
 			vertices[i * 4 + 3] = rhr::render::vertex(
@@ -413,26 +409,19 @@ void rhr::render::object::text::ui_update_buffers()
 void rhr::render::object::text::ui_chain_update_buffers()
 {}
 
-void rhr::render::object::text::ui_frame_update(f64 delta_time)
-{}
-
-const std::string& rhr::render::object::text::get_text()
+void rhr::render::object::text::ui_static_offset_update()
 {
-	return m_text;
+
 }
 
-void rhr::render::object::text::mouse_button(
-	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
+void rhr::render::object::text::ui_serialize(latte::serializer::node& node)
 {
-	if (m_mouse_button != nullptr)
-		m_mouse_button(position, scroll, operation, button);
+
 }
 
-void rhr::render::object::text::set_mouse_button(
-	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>&
-		mouse_button)
+void rhr::render::object::text::ui_deserialize(latte::serializer::node& node)
 {
-	m_mouse_button = mouse_button;
+
 }
 
 void rhr::render::object::text::post_color_update()
@@ -440,13 +429,44 @@ void rhr::render::object::text::post_color_update()
 	mark_dirty();
 }
 
-void rhr::render::object::text::set_font_size(u16 font_size)
+void rhr::render::object::text::update_size()
 {
-	m_font_size = font_size;
-	m_render_object_text->set_texture_char_size(font_size);
+	m_char_offsets.clear();
+	m_char_contacts.clear();
 
-	update_size();
-	mark_dirty();
+	f32 running_char_offsets  = static_cast<f32>(m_padding);
+	f32 running_char_contacts = static_cast<f32>(m_padding);
+
+	for (usize i = 0; i < m_text.size(); i++)
+	{
+		i16 char_width =
+			rhr::registry::char_texture::get()->get_texture_map(m_font_size)->map[m_texture_type].char_map[m_text[i]].advance.x
+				>> 6;
+
+		running_char_offsets += static_cast<f32>(char_width);
+		running_char_contacts += static_cast<f32>(char_width) / 2.0f;
+
+		if (i > 0)
+		{
+			i16 last_char_width = rhr::registry::char_texture::get()->get_texture_map(m_font_size)
+				->map[m_texture_type]
+				.char_map[m_text[i - 1]]
+				.advance.x
+				>> 6;
+			running_char_contacts += static_cast<f32>(last_char_width) / 2.0f;
+		}
+
+		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
+		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
+	}
+
+	if (m_text.empty())
+	{
+		m_char_offsets.push_back(static_cast<i16>(running_char_offsets));
+		m_char_contacts.push_back(static_cast<i16>(running_char_contacts));
+	}
+
+	set_size_local({static_cast<i32>(running_char_offsets) + m_padding, m_font_size}, false);
 }
 
 void rhr::render::object::text::register_field()

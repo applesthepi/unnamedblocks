@@ -78,20 +78,26 @@ public:
 		ft::library library;
 	};
 
-	/// Loads and processes fonts.
-	static void process_fonts();
+	///
+	static char_texture* get();
 
 	///
-	static texture_map* get_texture_map(u16 size);
+	static void set(char_texture* reg);
+
+	/// Loads and processes fonts.
+	void process_fonts();
+
+	///
+	texture_map* get_texture_map(u16 size);
 
 private:
 	///
-	static void process_font(const std::string& font_path, texture_type type, u16 size);
-
-	/// Used to load ttf fonts.
-	//	static ft::library m_library;
+	static char_texture* m_registry;
 
 	///
-	static std::vector<texture_map*> m_texture_maps;
+	void process_font(const std::string& font_path, texture_type type, u16 size);
+
+	///
+	std::vector<texture_map*> m_texture_maps;
 };
 } // namespace rhr::registry

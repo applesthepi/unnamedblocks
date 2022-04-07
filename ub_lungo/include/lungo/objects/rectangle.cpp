@@ -46,6 +46,22 @@ void rhr::render::object::rectangle::set_depth(i32 depth)
 	mark_dirty();
 }
 
+void rhr::render::object::rectangle::enable_border(
+	bool enable_border,
+	rhr::render::cardinal::local_horizontal overhang_horizontal,
+	rhr::render::cardinal::local_vertical overhang_vertical)
+{
+	m_border_enabled	  = enable_border;
+	m_overhang_horizontal = overhang_horizontal;
+	m_overhang_vertical	  = overhang_vertical;
+	mark_dirty();
+}
+
+void rhr::render::object::rectangle::ui_initialize()
+{
+
+}
+
 void rhr::render::object::rectangle::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
@@ -88,6 +104,11 @@ void rhr::render::object::rectangle::ui_transform_update(i_ui::transform_update_
 	}
 
 	mark_dirty();
+}
+
+void rhr::render::object::rectangle::ui_frame_update(f64 delta_time)
+{
+
 }
 
 void rhr::render::object::rectangle::ui_render()
@@ -247,19 +268,23 @@ void rhr::render::object::rectangle::ui_update_buffers()
 void rhr::render::object::rectangle::ui_chain_update_buffers()
 {}
 
+void rhr::render::object::rectangle::ui_static_offset_update()
+{
+
+}
+
+void rhr::render::object::rectangle::ui_serialize(latte::serializer::node& node)
+{
+
+}
+
+void rhr::render::object::rectangle::ui_deserialize(latte::serializer::node& node)
+{
+
+}
+
 void rhr::render::object::rectangle::post_color_update()
 {
 	m_has_color = true;
-	mark_dirty();
-}
-
-void rhr::render::object::rectangle::enable_border(
-	bool enable_border,
-	rhr::render::cardinal::local_horizontal overhang_horizontal,
-	rhr::render::cardinal::local_vertical overhang_vertical)
-{
-	m_border_enabled	  = enable_border;
-	m_overhang_horizontal = overhang_horizontal;
-	m_overhang_vertical	  = overhang_vertical;
 	mark_dirty();
 }

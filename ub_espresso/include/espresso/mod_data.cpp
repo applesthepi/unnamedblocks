@@ -30,9 +30,19 @@ latte::logger::stream* esp::mod_data::get_stream_runtime()
 	return m_stream_runtime;
 }
 
-esp::registry* esp::mod_data::get_registry()
+esp::registry* esp::mod_data::get_registry_esp()
 {
-	return m_registry;
+	return m_registry_esp;
+}
+
+rhr::registry::char_texture* esp::mod_data::get_registry_char_texture()
+{
+	return m_registry_char_texture;
+}
+
+rhr::render::renderer* esp::mod_data::get_renderer()
+{
+	return m_renderer;
 }
 
 void esp::mod_data::set_mod_display_name(const std::string& display_name)
@@ -58,7 +68,17 @@ void esp::mod_data::set_logger_linkage(
 	m_stream_runtime = stream_runtime;
 }
 
-void esp::mod_data::set_registry(esp::registry* registry)
+void esp::mod_data::set_registry_esp(esp::registry* registry)
 {
-	m_registry = registry;
+	m_registry_esp = registry;
+}
+
+void esp::mod_data::set_registry_char_texture(rhr::registry::char_texture* registry)
+{
+	m_registry_char_texture = registry;
+}
+
+void esp::mod_data::set_renderer(rhr::render::renderer* renderer)
+{
+	m_renderer = renderer;
 }

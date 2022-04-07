@@ -45,6 +45,7 @@ public:
 	void set_stack_update_function(std::function<void()>* function_stack_update);
 
 private:
+	void ui_initialize() override;
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 	void ui_frame_update(f64 delta_time) override;
 	void ui_render() override;

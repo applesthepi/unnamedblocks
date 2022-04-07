@@ -8,6 +8,8 @@
 #include "espresso/registry.hpp"
 
 #include <latte/utils.hpp>
+#include <lungo/registries/char_texture.hpp>
+#include <lungo/renderer.hpp>
 
 namespace esp
 {
@@ -34,7 +36,13 @@ public:
 	latte::logger::stream* get_stream_runtime();
 
 	///
-	esp::registry* get_registry();
+	esp::registry* get_registry_esp();
+
+	///
+	rhr::registry::char_texture* get_registry_char_texture();
+
+	///
+	rhr::render::renderer* get_renderer();
 
 	///
 	void set_mod_display_name(const std::string& display_name);
@@ -50,7 +58,13 @@ public:
 		latte::logger::stream* stream_system, latte::logger::stream* stream_editor, latte::logger::stream* stream_runtime);
 
 	///
-	void set_registry(esp::registry* registry);
+	void set_registry_esp(esp::registry* registry);
+
+	///
+	void set_registry_char_texture(rhr::registry::char_texture* registry);
+
+	///
+	void set_renderer(rhr::render::renderer* renderer);
 private:
 	///
 	std::string m_mod_display_name;
@@ -71,6 +85,12 @@ private:
 	latte::logger::stream* m_stream_runtime;
 
 	///
-	esp::registry* m_registry;
+	esp::registry* m_registry_esp;
+
+	///
+	rhr::registry::char_texture* m_registry_char_texture;
+
+	///
+	rhr::render::renderer* m_renderer;
 };
 }

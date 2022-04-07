@@ -264,6 +264,11 @@ const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::g
 	return m_stacks;
 }
 
+void rhr::stack::collection::ui_initialize()
+{
+
+}
+
 void rhr::stack::collection::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	update_child_transform(m_background, i_ui::transform_update_spec_position);
@@ -305,6 +310,11 @@ void rhr::stack::collection::ui_chain_update_buffers()
 
 	for (auto& stack : m_stacks)
 		stack->update_buffers();
+}
+
+void rhr::stack::collection::ui_static_offset_update()
+{
+
 }
 
 void rhr::stack::collection::ui_serialize(latte::serializer::node& node)

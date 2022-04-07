@@ -2,12 +2,10 @@
 #include "config.h"
 
 #include <latte/utils.hpp>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_vulkan.h>
 
-namespace rhr::render
+namespace lungo::handler
 {
+// TODO: make panels override methods instead of passing functionals.
 ///
 class panel
 {
@@ -22,7 +20,16 @@ public:
 		std::string id;
 
 		///
+		std::function<void(panel::data&, double delta_time)> function_frame_update;
+
+		///
 		std::function<void(panel::data&)> function_render;
+
+		///
+		std::function<void(panel::data&)> function_reload_swap_chain;
+
+		///
+		std::function<void(panel::data&)> function_update_buffers;
 
 		///
 		std::function<void(panel::data&)> function_render_master;
@@ -77,9 +84,15 @@ public:
 	};
 
 	///
+	static void initialize();
+
+	///
 	static void create_panel(
 		const std::string& id,
+		const std::function<void(panel::data&, double delta_time)>& function_frame_update,
 		const std::function<void(panel::data&)>& function_render,
+		const std::function<void(panel::data&)>& function_reload_swap_chain,
+		const std::function<void(panel::data&)>& function_update_buffers,
 		const std::function<void(panel::data&)>& function_render_master,
 		const std::function<void(panel::data&)>& function_update_position,
 		const std::function<void(panel::data&)>& function_update_size);
@@ -88,15 +101,21 @@ public:
 	static void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_imgui);
 
 	///
+	static void run_frame_update(double delta_time);
+
+	/// Either uses imgui for the master render pass or starts a custom render pass.
 	static void run_imgui();
+
+	///
+	static void run_reload_swap_chain();
+
+	///
+	static void run_update_buffers();
 
 	///
 	static void run_master_render_pass();
 
 	///
-	static void initialize_panels();
-
-	///
 	static std::vector<data> panels;
 };
-} // namespace rhr::render
+}

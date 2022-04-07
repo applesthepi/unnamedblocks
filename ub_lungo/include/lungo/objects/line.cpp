@@ -23,6 +23,30 @@ void rhr::render::object::line::enable_border(bool enable_border)
 	mark_dirty();
 }
 
+void rhr::render::object::line::set_point_1(const glm::vec<2, i32>& point)
+{
+	//	latte::logger::info("set_point_1", point);
+	m_point_1 = point;
+	mark_dirty();
+}
+
+void rhr::render::object::line::set_point_2(const glm::vec<2, i32>& point)
+{
+	//	latte::logger::info("set_point_2", point);
+	m_point_2 = point;
+	mark_dirty();
+}
+
+void rhr::render::object::line::set_line_half_width(u8 line_half_width)
+{
+	m_line_half_width = line_half_width;
+}
+
+void rhr::render::object::line::ui_initialize()
+{
+
+}
+
 void rhr::render::object::line::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	const glm::vec<2, i32>& size_local	   = get_size_local();
@@ -36,6 +60,11 @@ void rhr::render::object::line::ui_transform_update(i_ui::transform_update_spec 
 			(position_local.x + size_local.x < size_parent.x) && (position_local.y + size_local.y < size_parent.y);
 
 	mark_dirty();
+}
+
+void rhr::render::object::line::ui_frame_update(f64 delta_time)
+{
+
 }
 
 void rhr::render::object::line::ui_render()
@@ -279,28 +308,26 @@ void rhr::render::object::line::ui_update_buffers()
 }
 
 void rhr::render::object::line::ui_chain_update_buffers()
-{}
+{
+
+}
+
+void rhr::render::object::line::ui_static_offset_update()
+{
+
+}
+
+void rhr::render::object::line::ui_serialize(latte::serializer::node& node)
+{
+
+}
+
+void rhr::render::object::line::ui_deserialize(latte::serializer::node& node)
+{
+
+}
 
 void rhr::render::object::line::post_color_update()
 {
 	mark_dirty();
-}
-
-void rhr::render::object::line::set_point_1(const glm::vec<2, i32>& point)
-{
-	//	latte::logger::info("set_point_1", point);
-	m_point_1 = point;
-	mark_dirty();
-}
-
-void rhr::render::object::line::set_point_2(const glm::vec<2, i32>& point)
-{
-	//	latte::logger::info("set_point_2", point);
-	m_point_2 = point;
-	mark_dirty();
-}
-
-void rhr::render::object::line::set_line_half_width(u8 line_half_width)
-{
-	m_line_half_width = line_half_width;
 }

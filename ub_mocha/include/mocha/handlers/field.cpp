@@ -38,6 +38,9 @@ rhr::handler::field::field()
 	, m_rectangle_cursor(std::make_shared<rhr::render::object::rectangle>())
 	, m_rectangle_highlight(std::make_shared<rhr::render::object::rectangle>())
 {
+	m_rectangle_cursor->initialize();
+	m_rectangle_highlight->initialize();
+
 	resize({5, 5});
 
 	m_rectangle_highlight->enable_border(

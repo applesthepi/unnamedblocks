@@ -1,11 +1,16 @@
 #include "char_texture.hpp"
 
 #include "lungo/tools.hpp"
-#include "mocha/stacking/block.hpp"
 
-#include <espresso/color.hpp>
-// TODO: remove
-#include <iostream>
+rhr::registry::char_texture* rhr::registry::char_texture::get()
+{
+	return m_registry;
+}
+
+void rhr::registry::char_texture::set(rhr::registry::char_texture* reg)
+{
+	m_registry = reg;
+}
 
 void rhr::registry::char_texture::process_fonts()
 {
@@ -236,6 +241,4 @@ rhr::registry::char_texture::texture_map* rhr::registry::char_texture::get_textu
 	return nullptr;
 }
 
-// ft::library rhr::registry::char_texture::m_library;
-
-std::vector<rhr::registry::char_texture::texture_map*> rhr::registry::char_texture::m_texture_maps;
+rhr::registry::char_texture* rhr::registry::char_texture::m_registry = nullptr;

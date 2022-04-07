@@ -31,6 +31,7 @@ rhr::stack::plane::plane(bool toolbar)
 		rhr::handler::input::register_mouse_callback(primary_plane_mouse_button, nullptr);
 
 	update_child_transform(m_background, i_ui::transform_update_spec_position);
+	m_background->initialize();
 
 	m_background->set_size_local(get_size_local(), true);
 	m_background->set_color(espresso::color().from_u8({0, 0, 0, 255}));
@@ -38,6 +39,7 @@ rhr::stack::plane::plane(bool toolbar)
 
 	update_child_transform(
 		m_dragging_connecting_line, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+	m_dragging_connecting_line->initialize();
 
 	m_dragging_connecting_line->set_color(espresso::color().from_u8({255, 255, 255, 255}));
 	m_dragging_connecting_line->set_depth(rhr::render::renderer::depth_argument_text);
@@ -528,6 +530,11 @@ void rhr::stack::plane::render_master_pass()
 	}
 }
 
+void rhr::stack::plane::ui_initialize()
+{
+
+}
+
 void rhr::stack::plane::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	set_size_max(false);
@@ -597,6 +604,11 @@ void rhr::stack::plane::ui_chain_update_buffers()
 	m_field.update_buffers();
 }
 
+void rhr::stack::plane::ui_static_offset_update()
+{
+
+}
+
 void rhr::stack::plane::ui_serialize(latte::serializer::node& node)
 {
 	for (auto& collection : m_collections)
@@ -617,8 +629,8 @@ void rhr::stack::plane::ui_deserialize(latte::serializer::node& node)
 		collection->deserialize(child);
 	}
 }
-
 std::shared_ptr<rhr::stack::plane> rhr::stack::plane::primary_plane;
+
 std::shared_ptr<rhr::stack::plane> rhr::stack::plane::toolbar_plane;
 
 void rhr::stack::plane::select(u64 collection, u64 stack, u64 block, u64 argument)

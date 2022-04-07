@@ -14,6 +14,11 @@ public:
 	i_ui();
 	typedef u8 transform_update_spec;
 
+	/// Many i_ui objects are appended to a parent after the child's constructor is called. This can lead to issues
+	/// with the child depending on the parent's transform in the constructor. This should be called by the parent
+	/// after it is added as a child. If the element isn't a child, the initializer should call this after the constructor.
+	void initialize();
+
 	/// Possible buffer update, use flags to make sure you need to call this.
 	/// \param offset This object's physical position (render space). See (TODO: link) for more clarification.
 	/// \param update_child Notifies this of a transform update using i_ui::transform_update_spec_position
@@ -97,6 +102,17 @@ public:
 	void update_child_transform(
 		rhr::render::interfaces::i_ui* ui, i_ui::transform_update_spec transform_update_spec);
 
+	/// This parent updates a child based on this transform data. Possible buffer update, use flags to make sure you
+	/// need to call this.
+	/// \param ui_parent Parent element to update the child element from.
+	/// \param ui_child Child element that will be updated form the parent element.
+	/// \param transform_update_spec Specification of what parts of the transform is being updated. Use 0x0 to only
+	/// 							 update the transform without updating the child's buffers.
+	static void update_child_transform(
+		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui_parent,
+		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui_child,
+		i_ui::transform_update_spec transform_update_spec);
+
 	///
 	void set_enabled(bool enabled);
 
@@ -130,32 +146,37 @@ protected:
 	///
 	glm::vec<2, i32>* get_static_offset();
 
+	/// Many i_ui objects are appended to a parent after the child's constructor is called. This can lead to issues
+	/// with the child depending on the parent's transform in the constructor. This should be called by the parent
+	/// after it is added as a child. If the element isn't a child, the initializer should call this after the constructor.
+	virtual void ui_initialize() = 0;
+
 	/// Called after any set transform related functions get called during frame update.
-	virtual void ui_transform_update(i_ui::transform_update_spec transform_update_spec);
+	virtual void ui_transform_update(i_ui::transform_update_spec transform_update_spec) = 0;
 
 	///
-	virtual void ui_frame_update(f64 delta_time);
+	virtual void ui_frame_update(f64 delta_time) = 0;
 
 	///
-	virtual void ui_render();
+	virtual void ui_render() = 0;
 
 	///
-	virtual void ui_reload_swap_chain();
+	virtual void ui_reload_swap_chain() = 0;
 
 	///
-	virtual void ui_update_buffers();
+	virtual void ui_update_buffers() = 0;
 
 	///
-	virtual void ui_chain_update_buffers();
+	virtual void ui_chain_update_buffers() = 0;
 
 	///
-	virtual void ui_static_offset_update();
+	virtual void ui_static_offset_update() = 0;
 
 	///
-	virtual void ui_serialize(latte::serializer::node& node);
+	virtual void ui_serialize(latte::serializer::node& node) = 0;
 
 	///
-	virtual void ui_deserialize(latte::serializer::node& node);
+	virtual void ui_deserialize(latte::serializer::node& node) = 0;
 
 	///
 	static transform_update_spec transform_update_spec_position;
@@ -196,6 +217,9 @@ private:
 
 	///
 	bool m_dirty;
+
+	///
+	bool m_initialized;
 
 	///
 	std::string m_serialized_data;

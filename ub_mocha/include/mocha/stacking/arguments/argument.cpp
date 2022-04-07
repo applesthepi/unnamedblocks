@@ -4,15 +4,17 @@
 
 rhr::stack::argument::argument::argument(
 	const espresso::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset
-	, esp::argument* esp_argument)
-	: m_esp_argument(esp_argument)
+	, esp::argument::initializer* esp_argument_initializer)
+	: m_esp_argument(esp_argument_initializer->argument)
+	, m_esp_argument_initializer(esp_argument_initializer)
 {
-	m_esp_argument_state.parent = static_cast<rhr::render::interfaces::i_ui*>(this);
+	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
 	m_esp_argument_state.plane_offset = plane_offset;
 	m_esp_argument_state.function_collection_update = function_collection_update;
 	m_esp_argument_state.block_color = block_color;
-
-	m_esp_argument->create(&m_esp_argument_state);
+	m_esp_argument_state.mode = esp_argument_initializer->mode;
+	m_esp_argument_state.mode_restriction = esp_argument_initializer->mode_restriction;
+	m_esp_argument_state.custom = esp_argument_initializer->custom;
 }
 
 u32 rhr::stack::argument::argument::get_width()
@@ -23,6 +25,51 @@ u32 rhr::stack::argument::argument::get_width()
 esp::argument::padding_style rhr::stack::argument::argument::get_padding_style()
 {
 	return m_esp_argument->get_padding_style();
+}
+
+void rhr::stack::argument::argument::ui_initialize()
+{
+	m_esp_argument->create(&m_esp_argument_state, m_esp_argument_initializer);
+
+	// Becomes invalid after the initializer's scope ends, so we make sure we don't use that memory again.
+	m_esp_argument_initializer = nullptr;
+}
+
+void rhr::stack::argument::argument::ui_transform_update(
+	rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
+)
+{
+	m_esp_argument->ui_transform_update(&m_esp_argument_state, transform_update_spec);
+}
+
+void rhr::stack::argument::argument::ui_frame_update(f64 delta_time)
+{
+	m_esp_argument->ui_frame_update(&m_esp_argument_state, delta_time);
+}
+
+void rhr::stack::argument::argument::ui_render()
+{
+	m_esp_argument->ui_render(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_reload_swap_chain()
+{
+	m_esp_argument->ui_reload_swap_chain(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_update_buffers()
+{
+	m_esp_argument->ui_update_buffers(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_chain_update_buffers()
+{
+	m_esp_argument->ui_chain_update_buffers(&m_esp_argument_state);
+}
+
+void rhr::stack::argument::argument::ui_static_offset_update()
+{
+	m_esp_argument->ui_static_offset_update(&m_esp_argument_state);
 }
 
 void rhr::stack::argument::argument::ui_serialize(latte::serializer::node& node)
@@ -83,41 +130,4 @@ void rhr::stack::argument::argument::ui_deserialize(latte::serializer::node& nod
 	}
 
 	m_esp_argument->ui_deserialize(&m_esp_argument_state, node.children[0]);
-}
-
-void rhr::stack::argument::argument::ui_transform_update(
-	rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
-)
-{
-	m_esp_argument->ui_transform_update(&m_esp_argument_state, transform_update_spec);
-}
-
-void rhr::stack::argument::argument::ui_frame_update(f64 delta_time)
-{
-	m_esp_argument->ui_frame_update(&m_esp_argument_state, delta_time);
-}
-
-void rhr::stack::argument::argument::ui_render()
-{
-	m_esp_argument->ui_render(&m_esp_argument_state);
-}
-
-void rhr::stack::argument::argument::ui_reload_swap_chain()
-{
-	m_esp_argument->ui_reload_swap_chain(&m_esp_argument_state);
-}
-
-void rhr::stack::argument::argument::ui_update_buffers()
-{
-	m_esp_argument->ui_update_buffers(&m_esp_argument_state);
-}
-
-void rhr::stack::argument::argument::ui_chain_update_buffers()
-{
-	m_esp_argument->ui_chain_update_buffers(&m_esp_argument_state);
-}
-
-void rhr::stack::argument::argument::ui_static_offset_update()
-{
-	m_esp_argument->ui_static_offset_update(&m_esp_argument_state);
 }

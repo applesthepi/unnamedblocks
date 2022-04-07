@@ -1,11 +1,11 @@
 #include "registry.hpp"
 
-esp::registry* esp::registry::get_registry()
+esp::registry* esp::registry::get()
 {
 	return m_registry;
 }
 
-void esp::registry::set_registry(esp::registry* reg)
+void esp::registry::set(esp::registry* reg)
 {
 	m_registry = reg;
 }

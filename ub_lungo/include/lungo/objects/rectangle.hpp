@@ -41,22 +41,17 @@ public:
 		rhr::render::cardinal::local_vertical overhang_vertical);
 
 private:
-	///
+	void ui_initialize() override;
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
-
-	///
+	void ui_frame_update(f64 delta_time) override;
 	void ui_render() override;
-
-	///
 	void ui_reload_swap_chain() override;
-
-	///
 	void ui_update_buffers() override;
-
-	///
 	void ui_chain_update_buffers() override;
+	void ui_static_offset_update() override;
+	void ui_serialize(latte::serializer::node& node) override;
+	void ui_deserialize(latte::serializer::node& node) override;
 
-	///
 	void post_color_update() override;
 
 	/// Abstracted RenderObject to render the rectangle.

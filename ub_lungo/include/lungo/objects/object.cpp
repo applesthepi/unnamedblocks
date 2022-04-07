@@ -249,15 +249,15 @@ void rhr::render::object::object::on_render()
 	if (m_ui)
 	{
 		if (m_has_texture)
-			rhr::render::renderer::get_window_primary()->bind_texture_pipeline(&m_descriptor_set);
+			rhr::render::renderer::get()->get_window_primary()->bind_texture_pipeline(&m_descriptor_set);
 		else
-			rhr::render::renderer::get_window_primary()->bind_color_pipeline(&m_descriptor_set);
+			rhr::render::renderer::get()->get_window_primary()->bind_color_pipeline(&m_descriptor_set);
 	}
 	else
 		latte::logger::fatal(latte::logger::level::SYSTEM, "not implemented");
 
 	vk::command_buffer* active_command_buffer =
-		rhr::render::renderer::get_window_primary()->get_active_command_buffer();
+		rhr::render::renderer::get()->get_window_primary()->get_active_command_buffer();
 	vk::cmd::bind_vertex_buffers(*active_command_buffer, 0, 1, vb, offsets);
 
 	if (m_has_indices)
@@ -285,15 +285,15 @@ void rhr::render::object::object::on_update_buffers()
 				m_image		 = rhr::render::tools::create_texture_image(m_texture_path, &m_image_memory);
 				m_image_view = rhr::render::tools::create_image_view(
 					m_image,
-					rhr::render::renderer::get_window_primary()->get_surface_format()->format,
+					rhr::render::renderer::get()->get_window_primary()->get_surface_format()->format,
 					VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 			else if (m_texture_type == texture_type::TEXT_SHEET)
 			{
-				m_image = rhr::registry::char_texture::get_texture_map(m_font_size)->map[m_char_texture_type].image;
+				m_image = rhr::registry::char_texture::get()->get_texture_map(m_font_size)->map[m_char_texture_type].image;
 				m_image_view = rhr::render::tools::create_image_view(
 					m_image,
-					rhr::render::renderer::get_window_primary()->get_surface_format()->format,
+					rhr::render::renderer::get()->get_window_primary()->get_surface_format()->format,
 					VK_IMAGE_ASPECT_COLOR_BIT);
 			}
 		}
@@ -306,7 +306,7 @@ void rhr::render::object::object::on_update_buffers()
 		alloc_info.usage				   = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
 		vmaCreateBuffer(
-			rhr::render::renderer::vma_allocator,
+			rhr::render::renderer::get()->vma_allocator,
 			&buffer_info,
 			&alloc_info,
 			&m_uniform_buffer,
@@ -327,8 +327,8 @@ void rhr::render::object::object::on_update_buffers()
 		if (m_vertex_buffer)
 		{
 			vmaDestroyBuffer(
-				rhr::render::renderer::vma_allocator, m_vertex_staging_buffer, m_vertex_staging_buffer_allocation);
-			vmaDestroyBuffer(rhr::render::renderer::vma_allocator, m_vertex_buffer, m_vertex_buffer_allocation);
+				rhr::render::renderer::get()->vma_allocator, m_vertex_staging_buffer, m_vertex_staging_buffer_allocation);
+			vmaDestroyBuffer(rhr::render::renderer::get()->vma_allocator, m_vertex_buffer, m_vertex_buffer_allocation);
 
 			m_vertex_buffer			= nullptr;
 			m_vertex_staging_buffer = nullptr;
@@ -349,7 +349,7 @@ void rhr::render::object::object::on_update_buffers()
 		alloc_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
 		vmaCreateBuffer(
-			rhr::render::renderer::vma_allocator,
+			rhr::render::renderer::get()->vma_allocator,
 			&buffer_info,
 			&alloc_info,
 			&m_vertex_staging_buffer,
@@ -366,7 +366,7 @@ void rhr::render::object::object::on_update_buffers()
 		alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
 		vmaCreateBuffer(
-			rhr::render::renderer::vma_allocator,
+			rhr::render::renderer::get()->vma_allocator,
 			&buffer_info,
 			&alloc_info,
 			&m_vertex_buffer,
@@ -376,9 +376,9 @@ void rhr::render::object::object::on_update_buffers()
 		// Move memory.
 
 		void* data;
-		vmaMapMemory(rhr::render::renderer::vma_allocator, m_vertex_staging_buffer_allocation, &data);
+		vmaMapMemory(rhr::render::renderer::get()->vma_allocator, m_vertex_staging_buffer_allocation, &data);
 		memcpy(data, m_vertices, buffer_size);
-		vmaUnmapMemory(rhr::render::renderer::vma_allocator, m_vertex_staging_buffer_allocation);
+		vmaUnmapMemory(rhr::render::renderer::get()->vma_allocator, m_vertex_staging_buffer_allocation);
 
 		rhr::render::tools::copy_buffer(m_vertex_staging_buffer, m_vertex_buffer, buffer_size);
 	}
@@ -388,8 +388,8 @@ void rhr::render::object::object::on_update_buffers()
 		if (m_index_buffer)
 		{
 			vmaDestroyBuffer(
-				rhr::render::renderer::vma_allocator, m_index_staging_buffer, m_index_staging_buffer_allocation);
-			vmaDestroyBuffer(rhr::render::renderer::vma_allocator, m_index_buffer, m_index_buffer_allocation);
+				rhr::render::renderer::get()->vma_allocator, m_index_staging_buffer, m_index_staging_buffer_allocation);
+			vmaDestroyBuffer(rhr::render::renderer::get()->vma_allocator, m_index_buffer, m_index_buffer_allocation);
 
 			m_index_buffer		   = nullptr;
 			m_index_staging_buffer = nullptr;
@@ -410,7 +410,7 @@ void rhr::render::object::object::on_update_buffers()
 		alloc_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
 		vmaCreateBuffer(
-			rhr::render::renderer::vma_allocator,
+			rhr::render::renderer::get()->vma_allocator,
 			&buffer_info,
 			&alloc_info,
 			&m_index_staging_buffer,
@@ -427,7 +427,7 @@ void rhr::render::object::object::on_update_buffers()
 		alloc_info.usage = VMA_MEMORY_USAGE_GPU_ONLY;
 
 		vmaCreateBuffer(
-			rhr::render::renderer::vma_allocator,
+			rhr::render::renderer::get()->vma_allocator,
 			&buffer_info,
 			&alloc_info,
 			&m_index_buffer,
@@ -437,9 +437,9 @@ void rhr::render::object::object::on_update_buffers()
 		// Move memory.
 
 		void* data;
-		vmaMapMemory(rhr::render::renderer::vma_allocator, m_index_staging_buffer_allocation, &data);
+		vmaMapMemory(rhr::render::renderer::get()->vma_allocator, m_index_staging_buffer_allocation, &data);
 		memcpy(data, m_indices, buffer_size);
-		vmaUnmapMemory(rhr::render::renderer::vma_allocator, m_index_staging_buffer_allocation);
+		vmaUnmapMemory(rhr::render::renderer::get()->vma_allocator, m_index_staging_buffer_allocation);
 
 		rhr::render::tools::copy_buffer(m_index_staging_buffer, m_index_buffer, buffer_size);
 	}
@@ -452,11 +452,11 @@ void rhr::render::object::object::on_reload_swap_chain()
 
 	VkDescriptorSetAllocateInfo allocInfo {};
 	allocInfo.sType				 = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-	allocInfo.descriptorPool	 = *rhr::render::renderer::get_window_primary()->get_descriptor_pool();
+	allocInfo.descriptorPool	 = *rhr::render::renderer::get()->get_window_primary()->get_descriptor_pool();
 	allocInfo.descriptorSetCount = 1;
-	allocInfo.pSetLayouts		 = rhr::render::renderer::get_window_primary()->get_descriptor_set_layout();
+	allocInfo.pSetLayouts		 = rhr::render::renderer::get()->get_window_primary()->get_descriptor_set_layout();
 
-	vkAllocateDescriptorSets(*rhr::render::renderer::get_window_primary()->get_device(), &allocInfo, &m_descriptor_set);
+	vkAllocateDescriptorSets(*rhr::render::renderer::get()->get_window_primary()->get_device(), &allocInfo, &m_descriptor_set);
 
 	VkDescriptorBufferInfo bufferInfo {};
 	bufferInfo.buffer = m_uniform_buffer;
@@ -468,7 +468,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		VkDescriptorImageInfo imageInfo {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		imageInfo.imageView	  = m_image_view;
-		imageInfo.sampler	  = *rhr::render::renderer::get_window_primary()->get_texture_sampler();
+		imageInfo.sampler	  = *rhr::render::renderer::get()->get_window_primary()->get_texture_sampler();
 
 		std::array<VkWriteDescriptorSet, 2> descriptorWrites {};
 
@@ -489,7 +489,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		descriptorWrites[1].pImageInfo		= &imageInfo;
 
 		vkUpdateDescriptorSets(
-			*rhr::render::renderer::get_window_primary()->get_device(),
+			*rhr::render::renderer::get()->get_window_primary()->get_device(),
 			static_cast<u32>(descriptorWrites.size()),
 			descriptorWrites.data(),
 			0,
@@ -508,7 +508,7 @@ void rhr::render::object::object::on_reload_swap_chain()
 		descriptorWrites[0].pBufferInfo		= &bufferInfo;
 
 		vkUpdateDescriptorSets(
-			*rhr::render::renderer::get_window_primary()->get_device(),
+			*rhr::render::renderer::get()->get_window_primary()->get_device(),
 			static_cast<u32>(descriptorWrites.size()),
 			descriptorWrites.data(),
 			0,
@@ -545,13 +545,13 @@ void rhr::render::object::object::update_uniforms(bool ui)
 	// ubo.View = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	// ubo.projection = glm::perspective(glm::radians(45.0f), rhr::render::renderer::SwapChainExtent.width /
 	// (f32)rhr::render::renderer::SwapChainExtent.height, 0.1f, 10.0f);
-	ubo.view = rhr::render::renderer::view_matrix;
+	ubo.view = rhr::render::renderer::get()->view_matrix;
 
 	if (ui)
-		ubo.projection = rhr::render::renderer::ui_projection_matrix;
+		ubo.projection = rhr::render::renderer::get()->ui_projection_matrix;
 	else
 	{
-		ubo.projection = rhr::render::renderer::projection_matrix;
+		ubo.projection = rhr::render::renderer::get()->projection_matrix;
 		ubo.projection[1][1] *= -1;
 	}
 
@@ -560,9 +560,9 @@ void rhr::render::object::object::update_uniforms(bool ui)
 	// Move memory.
 
 	void* data;
-	vmaMapMemory(rhr::render::renderer::vma_allocator, m_uniform_allocation, &data);
+	vmaMapMemory(rhr::render::renderer::get()->vma_allocator, m_uniform_allocation, &data);
 	memcpy(data, &ubo, sizeof(ubo));
-	vmaUnmapMemory(rhr::render::renderer::vma_allocator, m_uniform_allocation);
+	vmaUnmapMemory(rhr::render::renderer::get()->vma_allocator, m_uniform_allocation);
 }
 
 void rhr::render::object::object::set_queue(u8 queue)

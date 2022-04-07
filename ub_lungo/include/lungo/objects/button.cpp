@@ -19,8 +19,6 @@ rhr::render::object::button::button(const espresso::color& primary_color, const 
 	m_background->set_color(m_color_secondary);
 	m_background->set_depth(rhr::render::renderer::depth_ui_background);
 
-	set_size_local({100, 20}, true);
-
 	rhr::handler::input::register_mouse_callback(mouse_update_caller, this);
 }
 
@@ -65,6 +63,11 @@ void rhr::render::object::button::enable_fill_width(bool enable)
 	m_enable_fill_width = enable;
 }
 
+void rhr::render::object::button::ui_initialize()
+{
+	set_size_local({100, 20}, true);
+}
+
 void rhr::render::object::button::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
 	bool position_update = transform_update_spec & i_ui::transform_update_spec_position;
@@ -101,6 +104,9 @@ void rhr::render::object::button::ui_transform_update(i_ui::transform_update_spe
 	}
 }
 
+void rhr::render::object::button::ui_frame_update(f64 delta_time)
+{}
+
 void rhr::render::object::button::ui_render()
 {
 	m_background->render();
@@ -119,8 +125,20 @@ void rhr::render::object::button::ui_chain_update_buffers()
 	m_background->update_buffers();
 }
 
-void rhr::render::object::button::ui_frame_update(f64 delta_time)
-{}
+void rhr::render::object::button::ui_static_offset_update()
+{
+
+}
+
+void rhr::render::object::button::ui_serialize(latte::serializer::node& node)
+{
+
+}
+
+void rhr::render::object::button::ui_deserialize(latte::serializer::node& node)
+{
+
+}
 
 void rhr::render::object::button::post_color_update()
 {
