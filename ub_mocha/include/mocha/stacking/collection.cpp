@@ -12,6 +12,7 @@ rhr::stack::collection::collection(glm::vec<2, i32>* plane_offset)
 		check_bounds();
 	};
 
+	m_background->initialize();
 	m_background->set_depth(1000);
 	m_background->set_color(espresso::color().from_u8({25, 25, 30, 255}));
 	m_stacks.reserve(5);

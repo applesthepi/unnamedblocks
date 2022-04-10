@@ -25,25 +25,13 @@ rhr::stack::plane::plane(bool toolbar)
 	, m_dragging_connecting_line(std::make_shared<rhr::render::object::line>())
 	, m_offset {}
 {
+	m_background->initialize();
+	m_dragging_connecting_line->initialize();
+
 	if (toolbar)
 		rhr::handler::input::register_mouse_callback(toolbar_plane_mouse_button, nullptr);
 	else
 		rhr::handler::input::register_mouse_callback(primary_plane_mouse_button, nullptr);
-
-	update_child_transform(m_background, i_ui::transform_update_spec_position);
-	m_background->initialize();
-
-	m_background->set_size_local(get_size_local(), true);
-	m_background->set_color(espresso::color().from_u8({0, 0, 0, 255}));
-	m_background->set_depth(rhr::render::renderer::depth_plane);
-
-	update_child_transform(
-		m_dragging_connecting_line, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
-	m_dragging_connecting_line->initialize();
-
-	m_dragging_connecting_line->set_color(espresso::color().from_u8({255, 255, 255, 255}));
-	m_dragging_connecting_line->set_depth(rhr::render::renderer::depth_argument_text);
-	m_dragging_connecting_line->set_line_half_width(3);
 
 	m_collections.reserve(5);
 	m_collection_vanity.reserve(5);
@@ -532,7 +520,18 @@ void rhr::stack::plane::render_master_pass()
 
 void rhr::stack::plane::ui_initialize()
 {
+	update_child_transform(m_background, i_ui::transform_update_spec_position);
 
+	m_background->set_size_local(get_size_local(), true);
+	m_background->set_color(espresso::color().from_u8({0, 0, 0, 255}));
+	m_background->set_depth(rhr::render::renderer::depth_plane);
+
+	update_child_transform(
+		m_dragging_connecting_line, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+
+	m_dragging_connecting_line->set_color(espresso::color().from_u8({255, 255, 255, 255}));
+	m_dragging_connecting_line->set_depth(rhr::render::renderer::depth_argument_text);
+	m_dragging_connecting_line->set_line_half_width(3);
 }
 
 void rhr::stack::plane::ui_transform_update(i_ui::transform_update_spec transform_update_spec)

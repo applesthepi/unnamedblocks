@@ -81,13 +81,13 @@ public:
 	struct initializer
 	{
 		///
-		argument* argument;
+		esp::argument* argument;
 
 		///
-		argument::mode mode;
+		esp::argument::mode mode;
 
 		///
-		argument::mode_restriction mode_restriction;
+		esp::argument::mode_restriction mode_restriction;
 
 		///
 		void* custom;

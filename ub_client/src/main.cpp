@@ -10,16 +10,16 @@
 #include "latte/serializer.hpp"
 #include "mocha/handlers/project.hpp"
 
-#if LINUX
-#include <dlfcn.h>
-#else
-#include <windows.h>
-#endif
+//#if LINUX
+//#include <dlfcn.h>
+//#else
+//#include <windows.h>
+//#endif
 
 // include last, has defines that conflict with enums
-#if LINUX
-#include <X11/Xlib.h>
-#endif
+//#if LINUX
+//#include <X11/Xlib.h>
+//#endif
 
 static void async_setup()
 {
@@ -324,14 +324,14 @@ i32 main()
 
 	std::shared_ptr<rhr::stack::block> testBlock1 =
 		std::make_shared<rhr::stack::block>("essentials_real_log");
-	testBlock1->initialize();
 	testBlock1->set_static_offset(rhr::stack::plane::primary_plane->get_offset());
+	testBlock1->initialize();
 	testStack1->add_block(testBlock1);
 
 	std::shared_ptr<rhr::stack::block> testBlock2 =
 		std::make_shared<rhr::stack::block>("essentials_real_log");
-	testBlock2->initialize();
 	testBlock2->set_static_offset(rhr::stack::plane::primary_plane->get_offset());
+	testBlock2->initialize();
 	testStack1->add_block(testBlock2);
 
 	testCollection->add_stack(testStack1);

@@ -29,9 +29,6 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 	};
 
 	m_esp_category = esp::registry::get()->get_category(m_esp_block->get_category());
-
-	m_background->set_color(m_esp_category->get_color() /*espresso::color().from_u8({ 200, 200, 200, 0 })*/);
-	m_background->set_depth(rhr::render::renderer::depth_block);
 }
 
 std::vector<rhr::stack::argument::argument>& rhr::stack::block::get_arguments()
@@ -56,17 +53,21 @@ esp::category* rhr::stack::block::get_esp_category()
 
 void rhr::stack::block::ui_initialize()
 {
+	update_child_transform(m_background, 0);
+	m_background->initialize();
+	m_background->set_color(m_esp_category->get_color() /*espresso::color().from_u8({ 200, 200, 200, 0 })*/);
+	m_background->set_depth(rhr::render::renderer::depth_block);
+
 	set_size_local({100, BLOCK_HEIGHT}, true);
 	update_arguments();
 }
 
 void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_background, true);
-	m_background->initialize();
+	update_child_transform(m_background, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 
 	for (auto& arg : m_arguments)
-		update_child_transform(&arg, true);
+		update_child_transform(&arg, i_ui::transform_update_spec_position);
 }
 
 void rhr::stack::block::ui_frame_update(f64 delta_time)
@@ -154,14 +155,15 @@ void rhr::stack::block::update_arguments()
 
 	for (usize i = 0; i < argument_inits.size(); i++)
 	{
-		auto& arg = m_arguments.emplace_back(rhr::stack::argument::argument(block_color, &m_function_block_update, get_static_offset(), &argument_inits[i]));
+		auto& arg = m_arguments.emplace_back(std::move(rhr::stack::argument::argument(block_color, &m_function_block_update, get_static_offset(), &argument_inits[i])));
 
 		pad_arguments(width, i, last_arg, &arg, i == argument_inits.size() - 1);
 		last_arg = &arg;
 
-		update_child_transform(&arg, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+		update_child_transform(&arg, 0);
 		arg.initialize();
-		arg.set_position_local_physical({ width, BLOCK_PADDING }, true);
+		arg.set_position_local_physical({ width, BLOCK_PADDING }, false);
+		arg.update_transform(i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 	}
 
 	update_width();

@@ -17,13 +17,14 @@ namespace rhr::stack::argument
 class argument : public rhr::render::interfaces::i_ui
 {
 public:
-
-	///
 	argument(
 		const espresso::color& block_color,
 		std::function<void()>* function_collection_update,
 		glm::vec<2, i32>* plane_offset,
 		esp::argument::initializer* esp_argument_initializer);
+	argument(const argument& other);
+	argument(const argument&& other);
+
 
 	///
 	u32 get_width();

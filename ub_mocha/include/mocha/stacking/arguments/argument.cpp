@@ -17,6 +17,26 @@ rhr::stack::argument::argument::argument(
 	m_esp_argument_state.custom = esp_argument_initializer->custom;
 }
 
+rhr::stack::argument::argument::argument(const rhr::stack::argument::argument& other)
+	: i_ui(other)
+ {
+	m_esp_argument = other.m_esp_argument;
+	m_esp_argument_state = other.m_esp_argument_state;
+	m_esp_argument_initializer = other.m_esp_argument_initializer;
+
+	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
+}
+
+rhr::stack::argument::argument::argument(const rhr::stack::argument::argument&& other)
+	: i_ui(other)
+{
+	m_esp_argument = other.m_esp_argument;
+	m_esp_argument_state = other.m_esp_argument_state;
+	m_esp_argument_initializer = other.m_esp_argument_initializer;
+
+	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
+}
+
 u32 rhr::stack::argument::argument::get_width()
 {
 	return m_esp_argument->get_width(&m_esp_argument_state);
