@@ -146,6 +146,9 @@ protected:
 	///
 	glm::vec<2, i32>* get_static_offset();
 
+	// TODO: work around for messy system. Have a more restrictive child setup so the parent doesnt have to worry about
+	// the child all the time. Also init can be messy, see plane.cpp:250-300 area.
+	
 	/// Many i_ui objects are appended to a parent after the child's constructor is called. This can lead to issues
 	/// with the child depending on the parent's transform in the constructor. This should be called by the parent
 	/// after it is added as a child. If the element isn't a child, the initializer should call this after the constructor.

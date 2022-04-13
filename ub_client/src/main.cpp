@@ -67,7 +67,22 @@ i32 main()
 
 	latte::logger::initialize();
 	rhr::render::tools::initialize();
-	rhr::render::renderer::get()->initialize_window();
+
+	rhr::render::renderer::get()->initialize_window(
+		[](i16 p0, i32 p1) {
+			rhr::handler::input::fire_key(p0, p1);
+		},
+		[](i32 p0, i32 p1) {
+			rhr::handler::input::fire_mouse_button(p0, p1);
+		},
+		[](f32 p0) {
+			rhr::handler::input::fire_mouse_scroll(p0);
+		},
+		[](i32 p0, i32 p1) {
+			rhr::handler::input::fire_mouse_move({ p0, p1 });
+		}
+	);
+
 	async_setup();
 	lungo::handler::panel::initialize();
 	// std::future<void> asyncSetup = std::async(std::launch::async,

@@ -34,6 +34,11 @@ glm::vec<4, f32> espresso::color::get_normalized_scaled(f32 scale, bool scale_al
 		return {m_color.r * scale, m_color.g * scale, m_color.b * scale, m_color.a};
 }
 
+espresso::color espresso::color::get_scaled(f32 scale, bool scale_alpha) const
+{
+	return espresso::color().from_normalized(get_normalized_scaled(scale, scale_alpha));
+}
+
 glm::vec<4, u8> espresso::color::get_u8() const
 {
 	return glm::vec<4, u8>(

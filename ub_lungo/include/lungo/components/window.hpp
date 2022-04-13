@@ -11,7 +11,12 @@ namespace rhr::render::component
 class window
 {
 public:
-	window(std::string title, glm::vec<2, i32> window_size);
+	window(std::string title, glm::vec<2, i32> window_size,
+		const std::function<void(i16, i32)>& key,
+		const std::function<void(i32, i32)>& mouse_button,
+		const std::function<void(f32)>& scroll,
+		const std::function<void(i32, i32)>& cursor_position
+		);
 
 	///
 	void initialize_components();
@@ -134,6 +139,18 @@ public:
 	///
 	void update_window_position(glm::vec<2, i32> window_position);
 
+	///
+	void invoke_key(i16 p0, i32 p1);
+
+	///
+	void invoke_mouse_button(i32 p0, i32 p1);
+
+	///
+	void invoke_scroll(f32 p0);
+
+	///
+	void invoke_cursor_position(i32 p0, i32 p1);
+
 private:
 	///
 	glfw::window* m_window;
@@ -158,5 +175,17 @@ private:
 
 	///
 	vk::surface_khr m_surface;
+
+	///
+	std::function<void(i16, i32)> m_key;
+
+	///
+	std::function<void(i32, i32)> m_mouse_button;
+
+	///
+	std::function<void(f32)> m_scroll;
+
+	///
+	std::function<void(i32, i32)> m_cursor_position;
 };
 } // namespace rhr::render::component

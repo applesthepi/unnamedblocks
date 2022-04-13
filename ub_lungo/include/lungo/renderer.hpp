@@ -58,7 +58,12 @@ public:
 	static void set(renderer* reg);
 
 	///
-	void initialize_window();
+	void initialize_window(
+		const std::function<void(i16, i32)>& key,
+		const std::function<void(i32, i32)>& mouse_button,
+		const std::function<void(f32)>& scroll,
+		const std::function<void(i32, i32)>& cursor_position
+		);
 
 	///
 	void initialize();

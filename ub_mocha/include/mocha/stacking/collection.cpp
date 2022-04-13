@@ -12,9 +12,6 @@ rhr::stack::collection::collection(glm::vec<2, i32>* plane_offset)
 		check_bounds();
 	};
 
-	m_background->initialize();
-	m_background->set_depth(1000);
-	m_background->set_color(espresso::color().from_u8({25, 25, 30, 255}));
 	m_stacks.reserve(5);
 }
 
@@ -267,7 +264,9 @@ const std::vector<std::shared_ptr<rhr::stack::stack>>& rhr::stack::collection::g
 
 void rhr::stack::collection::ui_initialize()
 {
-
+	m_background->initialize();
+	m_background->set_depth(1000);
+	m_background->set_color(espresso::color().from_u8({25, 25, 30, 255}));
 }
 
 void rhr::stack::collection::ui_transform_update(i_ui::transform_update_spec transform_update_spec)

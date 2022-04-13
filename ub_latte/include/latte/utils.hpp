@@ -74,6 +74,7 @@
 #define BLOCK_PADDING 2
 #define BLOCK_HEIGHT 20
 #define BLOCK_HEIGHT_CONTENT (BLOCK_HEIGHT - (BLOCK_PADDING * 2))
+#define BLOCK_ARG_DIFF 0.25
 
 // https://stackoverflow.com/a/9864472
 #define FF_TMP	template<typename... Args>

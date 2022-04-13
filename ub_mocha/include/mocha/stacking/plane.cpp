@@ -194,13 +194,16 @@ void rhr::stack::plane::mouse_button(
 									unselect();
 
 									if (m_collections[i]->get_stacks()[a]->get_blocks()[b]->drag_bounds(position))
+									{
+										LOG_DEBUG("drag bounds true");
 										return;
+									}
 
 									std::shared_ptr<rhr::stack::collection> active_collection =
 										std::make_shared<rhr::stack::collection>(&m_offset);
-									update_child_transform(
-										active_collection,
-										i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+									update_child_transform(active_collection, 0);
+									active_collection->initialize();
+									update_child_transform(active_collection, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 
 									std::shared_ptr<rhr::stack::stack> active_stack = m_collections[i]->get_stacks()[a];
 
@@ -208,6 +211,7 @@ void rhr::stack::plane::mouse_button(
 									{
 										std::shared_ptr<rhr::stack::stack> dragging_stack =
 											std::make_shared<rhr::stack::stack>(&m_offset);
+										dragging_stack->initialize();
 
 										const std::vector<std::shared_ptr<rhr::stack::block>>& blocks =
 											active_stack->get_blocks();
@@ -218,7 +222,7 @@ void rhr::stack::plane::mouse_button(
 											std::shared_ptr<rhr::stack::block> cloned_block =
 												std::make_shared<rhr::stack::block>(
 													block->get_esp_block()->get_unlocalized_name());
-
+											cloned_block->initialize();
 											cloned_block->set_static_offset(&m_offset);
 
 											cloned_blocks.push_back(std::move(cloned_block));
@@ -243,7 +247,9 @@ void rhr::stack::plane::mouse_button(
 										std::shared_ptr<rhr::stack::stack> left_stack =
 											std::make_shared<rhr::stack::stack>(&m_offset);
 										left_stack->set_position_local_physical(
-											active_stack->get_position_local_physical(), true);
+											active_stack->get_position_local_physical(), false);
+										left_stack->initialize();
+										left_stack->update_transform(i_ui::transform_update_spec_position);
 
 										for (u64 c = 0; c < b; c++)
 											left_stack->add_block(m_collections[i]->get_stacks()[a]->get_blocks()[c]);

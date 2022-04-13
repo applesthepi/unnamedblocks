@@ -69,7 +69,7 @@ void rhr::render::object::rectangle::ui_transform_update(i_ui::transform_update_
 
 	if (position_update)
 		m_render_object->set_position(
-			{get_position_physical_absolute().x, get_position_physical_absolute().y, static_cast<f64>(m_depth - 1)});
+			{get_position_physical_absolute().x, get_position_physical_absolute().y, static_cast<f64>(m_depth)});
 
 	if (!size_update)
 		return;
@@ -134,13 +134,13 @@ void rhr::render::object::rectangle::ui_update_buffers()
 	glm::vec<2, f32> use_size		   = static_cast<glm::vec<2, f32>>(m_use_size);
 
 	rhr::render::vertex v0 =
-		rhr::render::vertex({0.0, 0.0, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 0.0f});
+		rhr::render::vertex({0.0, 0.0, 0.0}, m_color.get_normalized(), {0.0f, 0.0f});
 	rhr::render::vertex v1 =
-		rhr::render::vertex({use_size.x, 0.0, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {1.0f, 0.0f});
+		rhr::render::vertex({use_size.x, 0.0, 0.0}, m_color.get_normalized(), {1.0f, 0.0f});
 	rhr::render::vertex v2 = rhr::render::vertex(
-		{use_size.x, use_size.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {1.0f, 1.0f});
+		{use_size.x, use_size.y, 0.0}, m_color.get_normalized(), {1.0f, 1.0f});
 	rhr::render::vertex v3 =
-		rhr::render::vertex({0.0, use_size.y, static_cast<i32>(m_depth) * -1}, m_color.get_normalized(), {0.0f, 1.0f});
+		rhr::render::vertex({0.0, use_size.y, 0.0}, m_color.get_normalized(), {0.0f, 1.0f});
 
 	vertices.push_back(v0);
 	vertices.push_back(v1);

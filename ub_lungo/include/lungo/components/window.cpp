@@ -12,24 +12,36 @@ void framebuffer_resize(glfw::window* glfw_window, i32 width, i32 height)
 
 void key(glfw::window* glfw_window, i32 key, i32 scancode, i32 action, i32 mode)
 {
+	auto window = reinterpret_cast<rhr::render::component::window*>(glfw::get_window_user_pointer(glfw_window));
+	window->invoke_key(static_cast<i16>(key), action);
+
 	// TODO: input fix
 	//rhr::handler::input::fire_key(static_cast<i16>(key), action);
 }
 
 void mouse_button(glfw::window* glfw_window, i32 button, i32 action, i32 mods)
 {
+	auto window = reinterpret_cast<rhr::render::component::window*>(glfw::get_window_user_pointer(glfw_window));
+	window->invoke_mouse_button(button, action);
+
 	// TODO: input fix
 	//rhr::handler::input::fire_mouse_button(button, action);
 }
 
 void scroll(glfw::window* glfw_window, f64 x_offset, f64 y_offset)
 {
+	auto window = reinterpret_cast<rhr::render::component::window*>(glfw::get_window_user_pointer(glfw_window));
+	window->invoke_scroll(static_cast<f32>(y_offset));
+
 	// TODO: input fix
 	//rhr::handler::input::fire_mouse_scroll(static_cast<f32>(y_offset));
 }
 
 void cursor_position(glfw::window* glfw_window, f64 x_position, f64 y_position)
 {
+	auto window = reinterpret_cast<rhr::render::component::window*>(glfw::get_window_user_pointer(glfw_window));
+	window->invoke_cursor_position(static_cast<i32>(x_position), static_cast<i32>(y_position));
+
 	// TODO: input fix
 	//rhr::handler::input::fire_mouse_move({static_cast<i32>(x_position), static_cast<i32>(y_position)});
 }
@@ -41,7 +53,11 @@ void window_position(glfw::window* glfw_window, i32 x, i32 y)
 }
 } // namespace rhr::render::component::window_callback
 
-rhr::render::component::window::window(std::string title, glm::vec<2, i32> window_size)
+rhr::render::component::window::window(std::string title, glm::vec<2, i32> window_size,
+	const std::function<void(i16, i32)>& key,
+	const std::function<void(i32, i32)>& mouse_button,
+	const std::function<void(f32)>& scroll,
+	const std::function<void(i32, i32)>& cursor_position)
 	: m_window {}
 	, m_recreate_swapchain(false)
 	, m_valid(false)
@@ -49,6 +65,10 @@ rhr::render::component::window::window(std::string title, glm::vec<2, i32> windo
 	, m_window_position({0, 0})
 	, m_window_title(std::move(title))
 	, m_surface {}
+	, m_key(key)
+	, m_mouse_button(mouse_button)
+	, m_scroll(scroll)
+	, m_cursor_position(cursor_position)
 {
 	glfw::set_window_hint(GLFW_CLIENT_API, GLFW_NO_API);
 	glfw::set_window_hint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -279,4 +299,24 @@ void rhr::render::component::window::register_paired_pipeline(
 	vk::cull_mode_flags cull_mode_flags)
 {
 	m_device->get_pipeline()->register_paired_pipeline(name, shader_color, shader_texture, cull_mode_flags);
+}
+
+void rhr::render::component::window::invoke_key(i16 p0, i32 p1)
+{
+	m_key(p0, p1);
+}
+
+void rhr::render::component::window::invoke_mouse_button(i32 p0, i32 p1)
+{
+	m_mouse_button(p0, p1);
+}
+
+void rhr::render::component::window::invoke_scroll(f32 p0)
+{
+	m_scroll(p0);
+}
+
+void rhr::render::component::window::invoke_cursor_position(i32 p0, i32 p1)
+{
+	m_cursor_position(p0, p1);
 }

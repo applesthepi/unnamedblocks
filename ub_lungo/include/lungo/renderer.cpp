@@ -38,11 +38,17 @@ void rhr::render::renderer::set(rhr::render::renderer* reg)
 	m_renderer = reg;
 }
 
-void rhr::render::renderer::initialize_window()
+void rhr::render::renderer::initialize_window(
+	const std::function<void(i16, i32)>& key,
+	const std::function<void(i32, i32)>& mouse_button,
+	const std::function<void(f32)>& scroll,
+	const std::function<void(i32, i32)>& cursor_position
+	)
 {
 	glfwInit();
 	m_window_primary = std::make_unique<rhr::render::component::window>(
-		std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720));
+		std::string("Unnamed Blocks ") + VER_CLIENT, glm::vec<2, i32>(1280, 720),
+		    key, mouse_button, scroll, cursor_position);
 }
 
 void rhr::render::renderer::initialize()
