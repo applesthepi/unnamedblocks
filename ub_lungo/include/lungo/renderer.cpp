@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 
 #include "mocha/handlers/category.hpp"
-#include "mocha/handlers/input.hpp"
+#include "lungo/handlers/input.hpp"
 #include "lungo/objects/object.hpp"
 #include "lungo/objects/rectangle.hpp"
 #include "lungo/handlers/panel.hpp"

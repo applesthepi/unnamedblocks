@@ -9,11 +9,13 @@ rhr::render::interfaces::i_ui::i_ui()
 	, m_position_parent_virtual_offset({})
 	, m_position_physical_absolute({})
 	, m_position_virtual_offset({})
+	, m_position_virtual_absolute({})
 	, m_size_local({})
 	, m_size_parent({})
 	, m_enabled(true)
 	, m_dirty(false)
 	, m_initialized(false)
+	, m_offset_cap(false)
 {}
 
 void rhr::render::interfaces::i_ui::initialize()
@@ -275,6 +277,9 @@ void rhr::render::interfaces::i_ui::update_child_transform(
 	ui->set_position_parent_virtual_offset(get_position_virtual_offset(), false);
 	ui->set_size_parent(get_size_local(), false);
 
+	// TODO: for now it says here but move to an initialize style function that adds or creates the child.
+	ui->set_static_offset(get_static_offset());
+
 	// Update transform is called on the child here after the parent information is given to the child. This all happens
 	// before initialization. Once the initializer runs this on the parent with the child, it will run initialize next. That
 	// will unlock the access to the child's transform because now it has the information required from the parent to have
@@ -427,14 +432,24 @@ void rhr::render::interfaces::i_ui::set_static_offset(glm::vec<2, i32>* offset)
 	ui_static_offset_update();
 }
 
+glm::vec<2, i32>* rhr::render::interfaces::i_ui::get_static_offset()
+{
+	return m_offset;
+}
+
 void rhr::render::interfaces::i_ui::mark_dirty()
 {
 	m_dirty = true;
 }
 
-glm::vec<2, i32>* rhr::render::interfaces::i_ui::get_static_offset()
+void rhr::render::interfaces::i_ui::cap_offset()
 {
-	return m_offset;
+	if (m_offset_cap)
+		return;
+
+	m_offset_cap = true;
+	m_offset = new glm::vec<2, i32>();
+	*m_offset = { 0, 0 };
 }
 
 rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_position =

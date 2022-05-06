@@ -5,7 +5,6 @@
 rhr::stack::collection::collection(glm::vec<2, i32>* plane_offset)
 	: m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_display_vanity(true)
-	, m_plane_offset(plane_offset)
 {
 	m_function_collection_update = [&]()
 	{
@@ -13,27 +12,14 @@ rhr::stack::collection::collection(glm::vec<2, i32>* plane_offset)
 	};
 
 	m_stacks.reserve(5);
-}
 
-void rhr::stack::collection::set_plane_offset(glm::vec<2, i32>* plane_offset)
-{
-	m_plane_offset = plane_offset;
-	m_background->set_offset(plane_offset);
-
-	for (auto& stack : m_stacks)
-		stack->set_plane_offset(plane_offset);
-}
-
-glm::vec<2, i32>* rhr::stack::collection::get_plane_offset()
-{
-	return m_plane_offset;
+	set_static_offset(plane_offset);
 }
 
 void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size)
 {
 	update_child_transform(stack, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 	stack->set_collection_update_function(&m_function_collection_update);
-	stack->set_plane_offset(m_plane_offset);
 	m_stacks.push_back(stack);
 
 	if (auto_size)
@@ -314,7 +300,8 @@ void rhr::stack::collection::ui_chain_update_buffers()
 
 void rhr::stack::collection::ui_static_offset_update()
 {
-
+	for (auto& stack : m_stacks)
+		stack->set_static_offset(get_static_offset());
 }
 
 void rhr::stack::collection::ui_serialize(latte::serializer::node& node)
@@ -362,7 +349,7 @@ void rhr::stack::collection::ui_deserialize(latte::serializer::node& node)
 
 	for (auto& child : node.children)
 	{
-		auto stack = std::make_shared<rhr::stack::stack>(m_plane_offset);
+		auto stack = std::make_shared<rhr::stack::stack>(get_static_offset());
 		add_stack(stack, false);
 		stack->deserialize(child);
 	}

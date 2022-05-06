@@ -32,6 +32,12 @@ public:
 	///
 	esp::argument::padding_style get_padding_style();
 
+	///
+	esp::argument* get_esp_argument();
+
+	///
+	esp::argument::state* get_esp_argument_state();
+
 private:
 	void ui_initialize() override;
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;

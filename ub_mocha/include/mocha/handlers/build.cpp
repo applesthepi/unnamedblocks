@@ -4,45 +4,42 @@
 
 #include <espresso/mod/block/data.hpp>
 #include <cappuccino/registration.hpp>
+#include <latte/file_synthesiser.hpp>
 
 void thread_build(cap::build_system::method build_method, cap::build_system::type build_type)
 {
-	/*
-	std::vector<std::string> function_references;
-	std::vector<u32> function_ids;
-	std::vector<u64> function_call_count;
-	std::vector<std::vector<void (*)(espresso::mod::block::pass * pass)>> function_calls;
+	auto build_file = latte::file_synthesiser::write("toolchain/ubbs/src/lib.rs");
 
 	u64 function_main		 = 0;
 	bool function_main_found = false;
 
 	std::vector<std::shared_ptr<rhr::stack::stack>> stacks;
 
-	for (u64 i = 0; i < rhr::stack::plane::primary_plane->get_collections().size(); i++)
-	{
-		const std::vector<std::shared_ptr<rhr::stack::stack>>& col_stacks =
-			rhr::stack::plane::primary_plane->get_collections()[i]->get_stacks();
+	// Get all the stacks regardless of collection status.
 
-		for (u64 a = 0; a < col_stacks.size(); a++)
-			stacks.push_back(col_stacks[a]);
+	for (const auto& collection : rhr::stack::plane::primary_plane->get_collections())
+	{
+		for (const auto& stack : collection->get_stacks())
+			stacks.push_back(stack);
 	}
 
-	espresso::mod::block::data** function_data = new espresso::mod::block::data*[stacks.size()];
-	espresso::mod::block::block*** mod_blocks  = new espresso::mod::block::block**[stacks.size()];
-
-	for (u64 i = 0; i < stacks.size(); i++)
+	for (usize i = 0; i < stacks.size(); i++)
 	{
-		function_data[i] = new espresso::mod::block::data[stacks[i]->get_blocks().size()];
-		mod_blocks[i]	 = new espresso::mod::block::block*[stacks[i]->get_blocks().size()];
+		if (stacks[i]->get_blocks().empty())
+		{
+			latte::logger::warn(
+				latte::logger::level::EDITOR,
+				"stack is empty; ignoring");
+			continue;
+		}
 
-		if (stacks[i]->get_blocks().size() >= 1
-			&& std::string(stacks[i]->get_blocks()[0]->get_esp_block()->get_unlocalized_name()) == "essentials_main")
+		if (std::string(stacks[i]->get_blocks()[0]->get_esp_block()->get_unlocalized_name()) == "b_essentials_main")
 		{
 			if (function_main_found)
 			{
 				latte::logger::error(
 					latte::logger::level::EDITOR,
-					"program has more than 1 entry points; can not run program without exactly 1 entry point (essentials_main)");
+					"program has more than 1 entry points; can not run program without exactly 1 entry point (b_essentials_main)");
 				rhr::handler::build::confirm_terminated();
 				return;
 			}
@@ -51,122 +48,154 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 			function_main_found = true;
 		}
 
-		// TODO: function references to indices (use lambda code in Cappuccino/cap::registration.cpp)
+		//
+		// R VALUES
+		//
 
-		// functionReferences.push_back(*stacks->at(i)->GetBlock(0)->GetArgument(1)->GetDataRaw());
-		// functionIds.push_back(functionReferences.size());
+		// If an argument is an r value (esp::argument::mode::RAW), then it must be defined at the top of the stack
+		// function. For every r value, we take the ubbs instance of its type and the editor data to construct the
+		// value at the top of the stacking function.
 
-		std::vector<void (*)(espresso::mod::block::pass * pass)> trans_calls;
+		// Instance records for the r values from the type that it is.
+		std::vector<std::string> type_instances_r;
 
-		for (u64 a = 0; a < stacks[i]->get_blocks().size(); a++)
+		// Instance record data for the r values from what it was in the editor.
+		std::vector<std::string> type_instance_data_r;
+
+		//
+		// L VALUES
+		//
+
+		// If an argument is an l value (esp::argument::mode::VAR), then it can be used multiple times throughout the
+		// stack function. So we need to define and initialize it at the top and continue to reference it throughout
+		// the stack function. For every l value, we take the ubbs instance of its type and the editor data (name) to
+		// construct the value at the top of the stacking function.
+
+		// Variable names to which they are referred to as in the editor.
+		std::vector<std::string> type_instance_names_l;
+
+		// Variable names to which they are referred to as in ubbs.
+		std::vector<std::string> type_instance_ubbs_names_l;
+
+		// Instance records for the l values from the type that it is.
+		std::vector<std::string> type_instances_l;
+
+		for (usize a = 0; a < stacks[i]->get_blocks().size(); a++)
 		{
-			if (build_type == cap::build_system::type::DEBUG)
-				trans_calls.push_back(stacks[i]->get_blocks()[a]->get_esp_block()->pull_execute_debug());
-			else
-				trans_calls.push_back(stacks[i]->get_blocks()[a]->get_esp_block()->pull_execute_release());
-
-			mod_blocks[i][a] = (espresso::mod::block::block*)stacks[i]->get_blocks()[a]->get_esp_block();
-
-			std::vector<void*> arg_data;
-			std::vector<espresso::mod::block::data::type> arg_types;
-			std::vector<espresso::mod::block::data::interpretation> arg_interpretations;
-
-			for (u64 b = 0; b < stacks[i]->get_blocks()[a]->get_arguments().size(); b++)
+			for (usize b = 0; b < stacks[i]->get_blocks()[a]->get_arguments().size(); b++)
 			{
-				espresso::mod::block::block::argument::type type =
-					stacks[i]->get_blocks()[a]->get_arguments()[b]->get_type();
+				auto& mocha_argument = stacks[i]->get_blocks()[a]->get_arguments()[b];
+				auto esp_argument = mocha_argument.get_esp_argument();
+				auto esp_argument_state = stacks[i]->get_blocks()[a]->get_arguments()[b].get_esp_argument_state();
 
-				if (stacks[i]->get_blocks()[a]->get_arguments()[b]->get_mode()
-					== espresso::mod::block::block::argument::variable_mode::VAR)
+				switch (esp_argument_state->mode)
 				{
-					std::string* dt = new std::string();
-
-					try
-					{
-						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data();
-					}
-					catch (const std::invalid_argument&)
-					{
-						latte::logger::error(latte::logger::level::EDITOR, "invalid argument exception in preprocessor");
-						return;
-					}
-
-					arg_data.push_back((void*)dt);
-					arg_types.push_back(espresso::mod::block::data::type::VAR);
-
-					if (type == espresso::mod::block::block::argument::type::TEXT)
-						arg_interpretations.push_back(espresso::mod::block::data::interpretation::TEXT);
-					else if (type == espresso::mod::block::block::argument::type::BOOL)
-						arg_interpretations.push_back(espresso::mod::block::data::interpretation::BOOL);
-					else if (type == espresso::mod::block::block::argument::type::REAL)
-						arg_interpretations.push_back(espresso::mod::block::data::interpretation::REAL);
-					else if (type == espresso::mod::block::block::argument::type::STRING)
-						arg_interpretations.push_back(espresso::mod::block::data::interpretation::STRING);
-					else if (type == espresso::mod::block::block::argument::type::ANY)
-						arg_interpretations.push_back(espresso::mod::block::data::interpretation::ANY);
+				case esp::argument::mode::RAW:
+				{
+					type_instances_r.emplace_back(esp_argument->get_type()->get_ubbs_instance_r());
+					type_instance_data_r.emplace_back(esp_argument->get_ubbs_value(esp_argument_state));
+					break;
 				}
-				else if (type == espresso::mod::block::block::argument::type::STRING)
+				case esp::argument::mode::VAR:
 				{
-					std::string* dt = new std::string();
+					bool found_var = false;
+					const auto ubbs_value = esp_argument->get_ubbs_value(esp_argument_state);
 
-					try
+					for (const auto& var_name : type_instance_names_l)
 					{
-						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data();
-					}
-					catch (const std::invalid_argument&)
-					{
-						latte::logger::error(latte::logger::level::EDITOR, "invalid argument exception in preprocessor");
-						return;
+						if (var_name == ubbs_value)
+						{
+							found_var = true;
+							break;
+						}
 					}
 
-					arg_data.push_back((void*)dt);
-					arg_types.push_back(espresso::mod::block::data::type::RAW);
-					arg_interpretations.push_back(espresso::mod::block::data::interpretation::STRING);
+					if (!found_var)
+					{
+						type_instance_names_l.emplace_back(ubbs_value);
+						type_instance_ubbs_names_l.emplace_back("l_" + std::to_string(type_instance_ubbs_names_l.size()));
+						type_instances_l.emplace_back(esp_argument->get_type()->get_ubbs_instance_l());
+					}
+
+					break;
 				}
-				else if (type == espresso::mod::block::block::argument::type::BOOL)
-				{
-					bool* dt = new bool;
-
-					try
-					{
-						*dt = stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data() == "1";
-					}
-					catch (const std::invalid_argument&)
-					{
-						latte::logger::error(latte::logger::level::EDITOR, "invalid argument exception in preprocessor");
-						return;
-					}
-
-					arg_data.push_back((void*)dt);
-					arg_types.push_back(espresso::mod::block::data::type::RAW);
-					arg_interpretations.push_back(espresso::mod::block::data::interpretation::BOOL);
-				}
-				else if (type == espresso::mod::block::block::argument::type::REAL)
-				{
-					f64* dt = new f64;
-
-					try
-					{
-						*dt = std::stod(stacks[i]->get_blocks()[a]->get_arguments()[b]->get_data());
-					}
-					catch (const std::invalid_argument&)
-					{
-						latte::logger::error(latte::logger::level::EDITOR, "invalid argument exception in preprocessor");
-						return;
-					}
-
-					arg_data.push_back((void*)dt);
-					arg_types.push_back(espresso::mod::block::data::type::RAW);
-					arg_interpretations.push_back(espresso::mod::block::data::interpretation::REAL);
 				}
 			}
-			espresso::mod::block::data blockdata = espresso::mod::block::data(arg_data, arg_types, arg_interpretations, cap::registration::get_real_template(), cap::registration::get_bool_template(), cap::registration::get_string_template());
-			function_data[i][a]				= blockdata;
 		}
 
-		function_calls.push_back(trans_calls);
-		function_call_count.push_back(trans_calls.size());
+		//
+		// R VALUE EVALUATION
+		//
+
+		std::vector<std::string> type_instances_r_replacements;
+		u8 repeating = 0;
+
+		for (usize a = 0; a < type_instances_r.size(); a++)
+		{
+			std::string& instance_r = type_instances_r_replacements.emplace_back();
+			instance_r.reserve(50);
+
+			for (usize b = 0; b < type_instances_r[a].size(); b++)
+			{
+				char next_char = type_instances_r[a][b];
+
+				if ((next_char == '<' && repeating >= 0 && repeating < 3) ||
+					(next_char == '>' && repeating >= 3 && repeating < 6))
+					repeating++;
+				else
+					instance_r += next_char;
+
+				if (repeating == 6)
+				{
+					instance_r += type_instance_data_r[a];
+					repeating = 0;
+				}
+			}
+		}
+
+		//
+		// BUILD RUST FILE
+		//
+
+		std::string fn_str;
+		fn_str.reserve(1000);
+
+		fn_str += "fn sx_";
+		fn_str += std::to_string(i);
+		fn_str += "() {\n\t// R VALUES\n";
+
+		// R VALUES
+
+		for (usize a = 0; a < type_instances_r_replacements.size(); a++)
+		{
+			fn_str += "\tlet r_";
+			fn_str += std::to_string(a);
+			fn_str += ": ";
+			fn_str += type_instances_r_replacements[a];
+			fn_str += ";\n";
+		}
+
+		// L VALUES
+
+		fn_str += "\t\n\t// L VALUES\n";
+
+		for (usize a = 0; a < type_instances_l.size(); a++)
+		{
+			fn_str += "\tlet mut l_";
+			fn_str += std::to_string(a);
+			fn_str += ": ";
+			fn_str += type_instances_l[a];
+			fn_str += ";\n";
+		}
+
+		fn_str += "\t\n\t// BLOCKS\n";
+
+		for
+
+		build_file->push_back(fn_str);
 	}
+
+	build_file->overwrite();
 
 	if (!function_main_found)
 	{
@@ -177,56 +206,8 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		return;
 	}
 
-	void (***calls)(espresso::mod::block::pass*);
-	calls =
-		(void (***)(espresso::mod::block::pass*))malloc(sizeof(void (**)(espresso::mod::block::pass*)) * function_calls.size());
-
-	for (u64 i = 0; i < function_calls.size(); i++)
-	{
-		void (**callsInside)(espresso::mod::block::pass*);
-		callsInside = (void (**)(espresso::mod::block::pass*))malloc(
-			sizeof(void (*)(espresso::mod::block::pass*)) * function_calls[i].size());
-
-		for (u64 a = 0; a < function_calls[i].size(); a++)
-			callsInside[a] = function_calls[i][a];
-
-		calls[i] = callsInside;
-	}
-
-	u64* functionCallCountC = new u64[function_calls.size()];
-
-	for (u64 i = 0; i < function_call_count.size(); i++)
-		functionCallCountC[i] = function_call_count[i];
-
-	bool buildType = build_type == cap::build_system::type::DEBUG;
-
-	u64 functionTotalCount = stacks.size();
-
-	cap::build_system::setup();
-
-	cap::build_system::set_main(function_main);
-	cap::build_system::set_function_call_count(function_call_count.data());
-	cap::build_system::set_function_total_count(functionTotalCount);
-	cap::build_system::set_calls(calls);
-	cap::build_system::set_function_data(function_data);
-	cap::build_system::set_mod_blocks(mod_blocks);
-
-	cap::build_system::execute(build_method, build_type);
-
-	for (u64 i = 0; i < functionTotalCount; i++)
-		free(calls[i]);
-	free(calls);
-
-	delete[] functionCallCountC;
-
-	for (u64 i = 0; i < functionTotalCount; i++)
-		delete[] function_data[i];
-	delete[] function_data;
-
-	*/
 
 	rhr::handler::build::confirm_terminated();
-
 }
 
 void rhr::handler::build::initialize()

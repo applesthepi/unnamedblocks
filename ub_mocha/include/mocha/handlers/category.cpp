@@ -148,19 +148,19 @@ void rhr::handler::category::populate()
 			for (usize b = 0; b < binned_blocks[i][a].size(); b++)
 			{
 				std::shared_ptr<rhr::stack::collection> collection =
-					std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_offset());
+					std::make_shared<rhr::stack::collection>(rhr::stack::plane::toolbar_plane->get_static_offset());
 				collection->initialize();
 				collection->display_vanity(false);
 				collection->set_position_local_physical(
 					{0, (BLOCK_HEIGHT + (BLOCK_PADDING * 2)) * b}, true);
 
 				std::shared_ptr<rhr::stack::stack> stack =
-					std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_offset());
+					std::make_shared<rhr::stack::stack>(rhr::stack::plane::toolbar_plane->get_static_offset());
 				stack->initialize();
 
 				std::shared_ptr<rhr::stack::block> block = std::make_shared<rhr::stack::block>(
 					binned_blocks[i][a][b]->get_unlocalized_name());
-				block->set_static_offset(rhr::stack::plane::toolbar_plane->get_offset());
+				block->set_static_offset(rhr::stack::plane::toolbar_plane->get_static_offset());
 				block->initialize();
 
 				stack->add_block(block);

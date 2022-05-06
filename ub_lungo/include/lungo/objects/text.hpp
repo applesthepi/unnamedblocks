@@ -1,11 +1,12 @@
 #pragma once
 #include "config.h"
 
-#include "mocha/handlers/field.hpp"
+#include "lungo/handlers/field.hpp"
 #include "lungo/interfaces/i_dicolorable.hpp"
 #include "lungo/interfaces/i_field.hpp"
 #include "lungo/interfaces/i_ui.hpp"
 #include "lungo/objects/object.hpp"
+#include "lungo/handlers/input.hpp"
 
 #include <latte/utils.hpp>
 
@@ -22,15 +23,14 @@ public:
 		rhr::registry::char_texture::texture_type texture_type,
 		u16 font_size,
 		bool read_only,
-		bool force_register,
 		glm::vec<2, i32>* plane_offset);
 	~text();
 
 	///
-	void set_update_function(std::function<void()>* function_update);
+	void set_field_handler(rhr::handler::field* field);
 
 	///
-	void set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field);
+	void set_update_function(std::function<void()>* function_update);
 
 	/// Sets text.
 	/// \param Text.
@@ -53,9 +53,7 @@ public:
 	void enable_background(bool enable);
 
 	///
-	void set_mouse_button(
-		std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>&
-			mouse_button);
+	void set_mouse_button(std::function<void(rhr::handler::input::mouse_button_data)>& mouse_button);
 
 	///
 	std::optional<usize> pick_index(glm::vec<2, i32> position, bool ignore_y) override;
@@ -77,9 +75,6 @@ public:
 
 	///
 	bool remove_string(usize idx, usize size) override;
-
-	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button) override;
 
 private:
 	void ui_initialize() override;
@@ -138,8 +133,7 @@ private:
 	bool m_read_only;
 
 	///
-	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>
-		m_mouse_button;
+	std::function<void(rhr::handler::input::mouse_button_data)> m_mouse_button;
 
 	///
 	u16 m_font_size;
@@ -148,15 +142,12 @@ private:
 	bool m_registered;
 
 	///
-	std::weak_ptr<rhr::render::interfaces::i_field> m_weak_field;
-
-	///
-	bool m_force_register;
-
-	///
 	rhr::registry::char_texture::texture_type m_texture_type;
 
 	///
-	glm::vec<2, i32>* m_plane_offset;
+	u64 m_mouse_callback_idx;
+
+	///
+	rhr::handler::field* m_field;
 };
 } // namespace rhr::render::object

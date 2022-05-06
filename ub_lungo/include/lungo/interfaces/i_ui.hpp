@@ -141,10 +141,15 @@ public:
 	void set_static_offset(glm::vec<2, i32>* offset);
 
 	///
-	void mark_dirty();
-protected:
-	///
 	glm::vec<2, i32>* get_static_offset();
+
+	///
+	void cap_offset();
+
+	///
+	void mark_dirty();
+
+protected:
 
 	// TODO: work around for messy system. Have a more restrictive child setup so the parent doesnt have to worry about
 	// the child all the time. Also init can be messy, see plane.cpp:250-300 area.
@@ -223,6 +228,9 @@ private:
 
 	///
 	bool m_initialized;
+
+	///
+	bool m_offset_cap;
 
 	///
 	std::string m_serialized_data;

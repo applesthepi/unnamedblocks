@@ -1,10 +1,10 @@
 #pragma once
 #include "config.h"
 
-#include "mocha/handlers/field_data.hpp"
+#include "field_data.hpp"
 #include "lungo/objects/rectangle.hpp"
 
-#include "mocha/handlers/input.hpp"
+#include "lungo/handlers/input.hpp"
 #include <latte/utils.hpp>
 
 namespace rhr::handler
@@ -34,10 +34,11 @@ public:
 
 	///
 	rhr::handler::field_data::location register_field(
-		std::weak_ptr<rhr::render::interfaces::i_field> text_field,
-		glm::vec<2, i32> position,
+		rhr::render::interfaces::i_field* text_field,
+		glm::vec<2, i32> v_position,
+		glm::vec<2, i32> p_position,
 		glm::vec<2, i32> size,
-		u8 layer /*, glm::vec<2, i32>* plane_offset*/);
+		u8 layer);
 
 	///
 	void unregister_field(const rhr::handler::field_data::location& location);
@@ -45,7 +46,9 @@ public:
 	///
 	rhr::handler::field_data::location update_field_position(
 		const rhr::handler::field_data::location& location,
-		glm::vec<2, i32> position /*, glm::vec<2, i32>* plane_offset*/);
+		glm::vec<2, i32> v_position,
+		glm::vec<2, i32> p_position
+		);
 
 	///
 	void update_field_size(const rhr::handler::field_data::location& location, glm::vec<2, i32> size);
@@ -140,7 +143,7 @@ private:
 	usize m_cursor_idx;
 
 	///
-	std::weak_ptr<rhr::render::interfaces::i_field> m_cursor_weak;
+	rhr::render::interfaces::i_field* m_cursor_weak;
 
 	///
 	usize m_idx;

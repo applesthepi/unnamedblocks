@@ -108,10 +108,13 @@ public:
 	/// Name for registry storage. Convention example: "mymod_some_arg_name".
 	virtual const char* get_unlocalized_name() = 0;
 
+	///
+	virtual std::string get_ubbs_value(esp::argument::state* state) = 0;
+
 	/// If you want this argument in the block to store information in ubbs, then set this to a valid type from
 	/// the esp::registry. Otherwise, just return nullptr.
 	/// \return Type of argument.
-	[[nodiscard]] virtual esp::reg::type* get_type() = 0;
+	virtual esp::reg::type* get_type() = 0;
 
 	/// If you want similar arguments to cast into this block argument, then return which types you want. For
 	/// example, if you have a "u8" type, you allow "real" type to cast.
@@ -166,5 +169,8 @@ public:
 protected:
 	///
 	void toggle_mode(argument::state* state);
+
+	///
+	bool check_bounds(argument::state* state, glm::vec<2, i32> position);
 };
 }

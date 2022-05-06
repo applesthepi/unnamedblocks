@@ -47,6 +47,7 @@ void registerMod(const std::string& fileName, const std::string& fileType)
 	mod.Data->set_registry_esp(esp::registry::get());
 	mod.Data->set_registry_char_texture(rhr::registry::char_texture::get());
 	mod.Data->set_renderer(rhr::render::renderer::get());
+	mod.Data->set_planes(&rhr::stack::plane::primary_plane, &rhr::stack::plane::toolbar_plane);
 
 	mods->push_back(mod);
 }
@@ -131,10 +132,10 @@ ModLoaderStatus run()
 		}
 #endif
 		initialize((*mods)[i].Data);
-
-		rhr::handler::project::mods.push_back((*mods)[i].Data->get_mod_unlocalized_name());
-
 		esp::mod_data* mod_data = (*mods)[i].Data;
+
+		rhr::handler::project::mods.push_back(mod_data->get_mod_unlocalized_name());
+		rhr::handler::input::add_alt_stream(mod_data->get_stream_input());
 	}
 
 	return ModLoaderStatus::ModLoaderStatus_OK;

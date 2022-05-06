@@ -47,9 +47,20 @@ esp::argument::padding_style rhr::stack::argument::argument::get_padding_style()
 	return m_esp_argument->get_padding_style();
 }
 
+esp::argument* rhr::stack::argument::argument::get_esp_argument()
+{
+	return m_esp_argument;
+}
+
+esp::argument::state* rhr::stack::argument::argument::get_esp_argument_state()
+{
+	return &m_esp_argument_state;
+}
+
 void rhr::stack::argument::argument::ui_initialize()
 {
 	m_esp_argument->create(&m_esp_argument_state, m_esp_argument_initializer);
+	m_esp_argument->on_set_mode(&m_esp_argument_state);
 
 	// Becomes invalid after the initializer's scope ends, so we make sure we don't use that memory again.
 	m_esp_argument_initializer = nullptr;
@@ -89,6 +100,7 @@ void rhr::stack::argument::argument::ui_chain_update_buffers()
 
 void rhr::stack::argument::argument::ui_static_offset_update()
 {
+	m_esp_argument_state.plane_offset = get_static_offset();
 	m_esp_argument->ui_static_offset_update(&m_esp_argument_state);
 }
 

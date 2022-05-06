@@ -1,19 +1,19 @@
 #include "field.hpp"
 
-#include "mocha/handlers/context.hpp"
+#include "lungo/handlers/context.hpp"
 #include "lungo/renderer.hpp"
-#include "mocha/stacking/plane.hpp"
+//#include "mocha/stacking/plane.hpp"
 
 #define DEBUG_FIELDS 0
 
 constexpr usize FIELD_CELL_SIZE = 5000;
 
-static void
-mouse_button_caller(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
-{
-	rhr::handler::field* field = (rhr::handler::field*)data;
-	field->mouse_button(position, scroll, operation, button);
-}
+//static void
+//mouse_button_caller(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
+//{
+//	rhr::handler::field* field = (rhr::handler::field*)data;
+//	field->mouse_button(position, scroll, operation, button);
+//}
 
 static void text_button_caller(rhr::handler::input::key_state state, void* data)
 {
@@ -54,7 +54,11 @@ rhr::handler::field::field()
 
 	m_rectangle_highlight->set_color(espresso::color().from_u8({30, 70, 210, 80}));
 
-	rhr::handler::input::register_mouse_callback(mouse_button_caller, this);
+	rhr::handler::input::register_mouse_callback([](rhr::handler::input::mouse_button_data data){
+		rhr::handler::field* field = (rhr::handler::field*)data.data;
+		field->mouse_button(data.position, data.scroll, data.operation, data.button);
+	}, this);
+
 	rhr::handler::input::register_text_callback(text_button_caller, this);
 }
 
@@ -111,7 +115,8 @@ void rhr::handler::field::reload_swap_chain()
 void rhr::handler::field::mouse_button(
 	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 {
-	position -= *rhr::stack::plane::primary_plane->get_offset();
+	// TODO: static offset
+	//position -= *rhr::stack::plane::primary_plane->get_static_offset();
 
 	std::optional<rhr::handler::field_data::data*> data = find_first_data(position);
 
@@ -120,39 +125,30 @@ void rhr::handler::field::mouse_button(
 		if (m_mouse_down_data == nullptr || !m_mouse_down)
 			return;
 
-		if (auto lock = m_mouse_down_data->get_text_field().lock())
-		{
-			if (button != rhr::handler::input::mouse_button::LEFT)
-				return;
+		auto text_field = m_mouse_down_data->get_text_field();
 
-			std::optional<usize> idx = lock->pick_index(position, true);
-			if (!idx.has_value())
-				return;
+		if (button != rhr::handler::input::mouse_button::LEFT)
+			return;
 
-			std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(*idx);
-			if (!cursor_position.has_value())
-				return;
+		std::optional<usize> idx = text_field->pick_index(position, true);
+		if (!idx.has_value())
+			return;
 
-			if (m_mouse_drag_start != *idx)
-				m_mouse_drag = true;
+		std::optional<glm::vec<2, i32>> cursor_position = text_field->get_index_position(*idx);
+		if (!cursor_position.has_value())
+			return;
 
-			m_mouse_drag_end		  = *idx;
-			m_mouse_drag_end_position = *cursor_position;
+		if (m_mouse_drag_start != *idx)
+			m_mouse_drag = true;
 
-			m_cursor_position = *cursor_position;
-			m_cursor_idx	  = *idx;
+		m_mouse_drag_end		  = *idx;
+		m_mouse_drag_end_position = *cursor_position;
 
-			update_cursor();
-			update_highlight();
+		m_cursor_position = *cursor_position;
+		m_cursor_idx	  = *idx;
 
-			//			latte::logger::info("move from " + std::to_string(m_mouse_drag_start) + " to " +
-			// std::to_string(m_mouse_drag_end));
-		}
-		else
-		{
-			pop_data(m_mouse_down_data->get_location());
-			reset_all();
-		}
+		update_cursor();
+		update_highlight();
 
 		return;
 	}
@@ -170,8 +166,7 @@ void rhr::handler::field::mouse_button(
 		return;
 	}
 
-	if (auto lock = data.value()->get_text_field().lock())
-		lock->mouse_button(position, scroll, operation, button);
+	data.value()->get_text_field()->mouse_button(position, scroll, operation, button);
 
 	if (operation == rhr::handler::input::mouse_operation::PRESS)
 	{
@@ -179,109 +174,99 @@ void rhr::handler::field::mouse_button(
 		if (m_mouse_down)
 			return;
 
-		std::weak_ptr<rhr::render::interfaces::i_field> text_field_weak = data.value()->get_text_field();
+		rhr::render::interfaces::i_field* text_field = data.value()->get_text_field();
 
-		if (auto lock = text_field_weak.lock())
+		std::optional<usize> idx = text_field->pick_index(position, false);
+		if (!idx.has_value())
+			return;
+
+		std::optional<glm::vec<2, i32>> cursor_position = text_field->get_index_position(*idx);
+		if (!cursor_position.has_value())
+			return;
+
+		usize field_idx = idx.value();
+
+		if (button == rhr::handler::input::mouse_button::RIGHT && m_mouse_drag)
 		{
-			std::optional<usize> idx = lock->pick_index(position, false);
-			if (!idx.has_value())
-				return;
+			rhr::handler::context::open(
+				rhr::handler::context::flag::TEXT_SELECTION_ONLY,
+				[text_field, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+				{
+					// if (flag == rhr::handler::context::flag::TEXT_SELECTION_ONLY)
+					//{
+					//	bool flag_delete_collection = false;
+					//
+					//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
+					//	{
+					//	case rhr::handler::context::flag::menu_text::PASTE:
+					//
+					//		if (clip::has(clip::text_format()))
+					//		{
+					//			std::string value;
+					//			clip::get_text(value);
+					//
+					//			if (auto data = text_field_weak.lock())
+					//				data->insert_string(value, field_idx);
+					//		}
+					//
+					//		break;
+					//	case rhr::handler::context::flag::menu_text::COPY:
+					//
+					//		if (auto data = text_field_weak.lock())
+					//			data->
+					//
+					//		break;
+					//	}
+					// }
+				});
 
-			std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(*idx);
-			if (!cursor_position.has_value())
-				return;
-
-			usize field_idx = idx.value();
-
-			if (button == rhr::handler::input::mouse_button::RIGHT && m_mouse_drag)
-			{
-				rhr::handler::context::open(
-					rhr::handler::context::flag::TEXT_SELECTION_ONLY,
-					[text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
-					{
-						// if (flag == rhr::handler::context::flag::TEXT_SELECTION_ONLY)
-						//{
-						//	bool flag_delete_collection = false;
-						//
-						//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
-						//	{
-						//	case rhr::handler::context::flag::menu_text::PASTE:
-						//
-						//		if (clip::has(clip::text_format()))
-						//		{
-						//			std::string value;
-						//			clip::get_text(value);
-						//
-						//			if (auto data = text_field_weak.lock())
-						//				data->insert_string(value, field_idx);
-						//		}
-						//
-						//		break;
-						//	case rhr::handler::context::flag::menu_text::COPY:
-						//
-						//		if (auto data = text_field_weak.lock())
-						//			data->
-						//
-						//		break;
-						//	}
-						// }
-					});
-
-				return;
-			}
-
-			m_mouse_down				= true;
-			m_mouse_down_data			= data.value();
-			m_mouse_drag				= false;
-			m_mouse_drag_start			= *idx;
-			m_mouse_drag_end			= *idx;
-			m_mouse_drag_start_position = *cursor_position;
-			m_mouse_drag_end_position	= *cursor_position;
-
-			m_cursor		  = true;
-			m_cursor_position = *cursor_position;
-			m_cursor_idx	  = *idx;
-			m_cursor_weak	  = data.value()->get_text_field();
-
-			update_cursor();
-
-			if (button == rhr::handler::input::mouse_button::RIGHT)
-			{
-				rhr::handler::context::open(
-					rhr::handler::context::flag::TEXT_STANDING_ONLY,
-					[text_field_weak, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
-					{
-						// if (flag == rhr::handler::context::flag::TEXT_STANDING_ONLY)
-						//{
-						//	bool flag_delete_collection = false;
-						//
-						//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
-						//	{
-						//	case rhr::handler::context::flag::menu_text::PASTE:
-						//
-						//		if (clip::has(clip::text_format()))
-						//		{
-						//			std::string value;
-						//			clip::get_text(value);
-						//
-						//			if (auto data = text_field_weak.lock())
-						//				data->insert_string(value, field_idx);
-						//		}
-						//
-						//		break;
-						//	}
-						// }
-					});
-
-				return;
-			}
+			return;
 		}
-		else
-		{
-			pop_data(data.value()->get_location());
 
-			reset_all();
-			m_mouse_down = true;
+		m_mouse_down				= true;
+		m_mouse_down_data			= data.value();
+		m_mouse_drag				= false;
+		m_mouse_drag_start			= *idx;
+		m_mouse_drag_end			= *idx;
+		m_mouse_drag_start_position = *cursor_position;
+		m_mouse_drag_end_position	= *cursor_position;
+
+		m_cursor		  = true;
+		m_cursor_position = *cursor_position;
+		m_cursor_idx	  = *idx;
+		m_cursor_weak	  = data.value()->get_text_field();
+
+		update_cursor();
+
+		if (button == rhr::handler::input::mouse_button::RIGHT)
+		{
+			rhr::handler::context::open(
+				rhr::handler::context::flag::TEXT_STANDING_ONLY,
+				[text_field, field_idx](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+				{
+					// if (flag == rhr::handler::context::flag::TEXT_STANDING_ONLY)
+					//{
+					//	bool flag_delete_collection = false;
+					//
+					//	switch (rhr::handler::context::flag::hashed_menu_text[flag_menu_item])
+					//	{
+					//	case rhr::handler::context::flag::menu_text::PASTE:
+					//
+					//		if (clip::has(clip::text_format()))
+					//		{
+					//			std::string value;
+					//			clip::get_text(value);
+					//
+					//			if (auto data = text_field_weak.lock())
+					//				data->insert_string(value, field_idx);
+					//		}
+					//
+					//		break;
+					//	}
+					// }
+				});
+
+			return;
 		}
 	}
 	else if (operation == rhr::handler::input::mouse_operation::DOUBLE_PRESS)
@@ -289,46 +274,38 @@ void rhr::handler::field::mouse_button(
 		if (m_mouse_down)
 			return;
 
-		if (auto lock = data.value()->get_text_field().lock())
-		{
-			if (button != rhr::handler::input::mouse_button::LEFT)
-				return;
+		auto text_field = data.value()->get_text_field();
 
-			std::optional<usize> idx = lock->pick_index(position, false);
-			if (!idx.has_value())
-				return;
+		if (button != rhr::handler::input::mouse_button::LEFT)
+			return;
 
-			std::optional<glm::vec<2, i32>> cursor_position_start = lock->get_index_position(0);
-			std::optional<glm::vec<2, i32>> cursor_position_end	  = lock->get_index_position(lock->get_index_count());
+		std::optional<usize> idx = text_field->pick_index(position, false);
+		if (!idx.has_value())
+			return;
 
-			if (!cursor_position_start.has_value() || !cursor_position_end.has_value())
-				return;
+		std::optional<glm::vec<2, i32>> cursor_position_start = text_field->get_index_position(0);
+		std::optional<glm::vec<2, i32>> cursor_position_end	  = text_field->get_index_position(text_field->get_index_count());
+
+		if (!cursor_position_start.has_value() || !cursor_position_end.has_value())
+			return;
 #if DEBUG_FIELDS
-			latte::logger::info("double press");
+		latte::logger::info("double press");
 #endif
-			m_mouse_down				= true;
-			m_mouse_down_data			= data.value();
-			m_mouse_drag				= true;
-			m_mouse_drag_start			= 0;
-			m_mouse_drag_end			= lock->get_index_count();
-			m_mouse_drag_start_position = *cursor_position_start;
-			m_mouse_drag_end_position	= *cursor_position_end;
+		m_mouse_down				= true;
+		m_mouse_down_data			= data.value();
+		m_mouse_drag				= true;
+		m_mouse_drag_start			= 0;
+		m_mouse_drag_end			= text_field->get_index_count();
+		m_mouse_drag_start_position = *cursor_position_start;
+		m_mouse_drag_end_position	= *cursor_position_end;
 
-			m_cursor		  = true;
-			m_cursor_position = *cursor_position_end;
-			m_cursor_idx	  = lock->get_index_count();
-			m_cursor_weak	  = data.value()->get_text_field();
+		m_cursor		  = true;
+		m_cursor_position = *cursor_position_end;
+		m_cursor_idx	  = text_field->get_index_count();
+		m_cursor_weak	  = data.value()->get_text_field();
 
-			update_cursor();
-			update_highlight();
-		}
-		else
-		{
-			pop_data(data.value()->get_location());
-
-			reset_all();
-			m_mouse_down = true;
-		}
+		update_cursor();
+		update_highlight();
 	}
 }
 
@@ -337,194 +314,188 @@ void rhr::handler::field::text_button(rhr::handler::input::key_state state)
 	if (!m_cursor)
 		return;
 
-	if (auto lock = m_mouse_down_data->get_text_field().lock())
+	auto text_field = m_mouse_down_data->get_text_field();
+
+	switch (state.key)
 	{
-		switch (state.key)
-		{
-		case GLFW_KEY_BACKSPACE:
-			if (m_mouse_drag)
-				process_highlight(false);
-			else
-			{
-				lock->remove_char(m_cursor_idx - 1);
-				advance_cursor(-1, true);
-			}
-			return;
-		case GLFW_KEY_DELETE:
-			if (m_mouse_drag)
-				process_highlight(false);
-			else
-				lock->remove_char(m_cursor_idx);
-			return;
-		case GLFW_KEY_ESCAPE:
-			reset_all();
-			return;
-		case GLFW_KEY_ENTER:
-			reset_all();
-			return;
-		case GLFW_KEY_RIGHT:
-			if (state.shift)
-				m_mouse_drag = true;
-			else if (m_mouse_drag)
-			{
-				m_mouse_drag = false;
-				set_cursor(glm::max(m_mouse_drag_start, m_mouse_drag_end), !state.shift);
-				return;
-			}
-			advance_cursor(1, !state.shift);
-			return;
-		case GLFW_KEY_LEFT:
-			if (state.shift)
-				m_mouse_drag = true;
-			else if (m_mouse_drag)
-			{
-				m_mouse_drag = false;
-				set_cursor(glm::min(m_mouse_drag_start, m_mouse_drag_end), !state.shift);
-				return;
-			}
-			advance_cursor(-1, !state.shift);
-			return;
-		case GLFW_KEY_UP:
-			set_cursor(0, !state.shift);
-			return;
-		case GLFW_KEY_DOWN:
-			set_cursor(lock->get_index_count(), !state.shift);
-			return;
-		case GLFW_KEY_HOME:
-			set_cursor(0, !state.shift);
-			return;
-		case GLFW_KEY_END:
-			set_cursor(lock->get_index_count(), !state.shift);
-			return;
-		case 'A':
-			if (state.ctrl)
-			{
-				set_cursor(0, true);
-				m_mouse_drag_start = 0;
-				m_mouse_drag_end   = 0;
-				m_mouse_drag	   = true;
-				set_cursor(lock->get_index_count(), false);
-				return;
-			}
-		}
-
-		if (state.key >= 32 && state.key <= 96)
+	case GLFW_KEY_BACKSPACE:
+		if (m_mouse_drag)
 			process_highlight(false);
-
-		if (state.key < 32 || state.key > 96)
-			return;
-
-		if (state.shift)
-		{
-			char insert_key;
-			bool insert_key_valid = true;
-
-			switch (state.key)
-			{
-			case '\'':
-				insert_key = '"';
-				break;
-			case ',':
-				insert_key = '<';
-				break;
-			case '-':
-				insert_key = '_';
-				break;
-			case '.':
-				insert_key = '>';
-				break;
-			case '/':
-				insert_key = '?';
-				break;
-			case '0':
-				insert_key = ')';
-				break;
-			case '1':
-				insert_key = '!';
-				break;
-			case '2':
-				insert_key = '@';
-				break;
-			case '3':
-				insert_key = '#';
-				break;
-			case '4':
-				insert_key = '$';
-				break;
-			case '5':
-				insert_key = '%';
-				break;
-			case '6':
-				insert_key = '^';
-				break;
-			case '7':
-				insert_key = '&';
-				break;
-			case '8':
-				insert_key = '*';
-				break;
-			case '9':
-				insert_key = '(';
-				break;
-			case ';':
-				insert_key = ':';
-				break;
-			case '=':
-				insert_key = '+';
-				break;
-			case '[':
-				insert_key = '{';
-				break;
-			case '\\':
-				insert_key = '|';
-				break;
-			case ']':
-				insert_key = '}';
-				break;
-			case '`':
-				insert_key = '~';
-				break;
-			default:
-				insert_key_valid = false;
-				break;
-			}
-
-			if (state.key >= 'A' && state.key <= 'Z')
-			{
-				insert_key		 = state.key;
-				insert_key_valid = true;
-			}
-
-			if (!insert_key_valid)
-				return;
-
-			lock->insert_char(insert_key, m_cursor_idx);
-		}
 		else
 		{
-			if (state.key >= 'A' && state.key <= 'Z')
-				lock->insert_char(state.key + 32 /* make lowercase */, m_cursor_idx);
-			else
-				lock->insert_char(state.key, m_cursor_idx);
+			text_field->remove_char(m_cursor_idx - 1);
+			advance_cursor(-1, true);
 		}
+		return;
+	case GLFW_KEY_DELETE:
+		if (m_mouse_drag)
+			process_highlight(false);
+		else
+			text_field->remove_char(m_cursor_idx);
+		return;
+	case GLFW_KEY_ESCAPE:
+		reset_all();
+		return;
+	case GLFW_KEY_ENTER:
+		reset_all();
+		return;
+	case GLFW_KEY_RIGHT:
+		if (state.shift)
+			m_mouse_drag = true;
+		else if (m_mouse_drag)
+		{
+			m_mouse_drag = false;
+			set_cursor(glm::max(m_mouse_drag_start, m_mouse_drag_end), !state.shift);
+			return;
+		}
+		advance_cursor(1, !state.shift);
+		return;
+	case GLFW_KEY_LEFT:
+		if (state.shift)
+			m_mouse_drag = true;
+		else if (m_mouse_drag)
+		{
+			m_mouse_drag = false;
+			set_cursor(glm::min(m_mouse_drag_start, m_mouse_drag_end), !state.shift);
+			return;
+		}
+		advance_cursor(-1, !state.shift);
+		return;
+	case GLFW_KEY_UP:
+		set_cursor(0, !state.shift);
+		return;
+	case GLFW_KEY_DOWN:
+		set_cursor(text_field->get_index_count(), !state.shift);
+		return;
+	case GLFW_KEY_HOME:
+		set_cursor(0, !state.shift);
+		return;
+	case GLFW_KEY_END:
+		set_cursor(text_field->get_index_count(), !state.shift);
+		return;
+	case 'A':
+		if (state.ctrl)
+		{
+			set_cursor(0, true);
+			m_mouse_drag_start = 0;
+			m_mouse_drag_end   = 0;
+			m_mouse_drag	   = true;
+			set_cursor(text_field->get_index_count(), false);
+			return;
+		}
+	}
+
+	if (state.key >= 32 && state.key <= 96)
+		process_highlight(false);
+
+	if (state.key < 32 || state.key > 96)
+		return;
+
+	if (state.shift)
+	{
+		char insert_key;
+		bool insert_key_valid = true;
+
+		switch (state.key)
+		{
+		case '\'':
+			insert_key = '"';
+			break;
+		case ',':
+			insert_key = '<';
+			break;
+		case '-':
+			insert_key = '_';
+			break;
+		case '.':
+			insert_key = '>';
+			break;
+		case '/':
+			insert_key = '?';
+			break;
+		case '0':
+			insert_key = ')';
+			break;
+		case '1':
+			insert_key = '!';
+			break;
+		case '2':
+			insert_key = '@';
+			break;
+		case '3':
+			insert_key = '#';
+			break;
+		case '4':
+			insert_key = '$';
+			break;
+		case '5':
+			insert_key = '%';
+			break;
+		case '6':
+			insert_key = '^';
+			break;
+		case '7':
+			insert_key = '&';
+			break;
+		case '8':
+			insert_key = '*';
+			break;
+		case '9':
+			insert_key = '(';
+			break;
+		case ';':
+			insert_key = ':';
+			break;
+		case '=':
+			insert_key = '+';
+			break;
+		case '[':
+			insert_key = '{';
+			break;
+		case '\\':
+			insert_key = '|';
+			break;
+		case ']':
+			insert_key = '}';
+			break;
+		case '`':
+			insert_key = '~';
+			break;
+		default:
+			insert_key_valid = false;
+			break;
+		}
+
+		if (state.key >= 'A' && state.key <= 'Z')
+		{
+			insert_key		 = state.key;
+			insert_key_valid = true;
+		}
+
+		if (!insert_key_valid)
+			return;
+
+		text_field->insert_char(insert_key, m_cursor_idx);
+	}
+	else
+	{
+		if (state.key >= 'A' && state.key <= 'Z')
+			text_field->insert_char(state.key + 32 /* make lowercase */, m_cursor_idx);
+		else
+			text_field->insert_char(state.key, m_cursor_idx);
 	}
 
 	advance_cursor(1, false);
 }
 
 rhr::handler::field_data::location rhr::handler::field::register_field(
-	std::weak_ptr<rhr::render::interfaces::i_field> text_field,
-	glm::vec<2, i32> position,
+	rhr::render::interfaces::i_field* text_field,
+	glm::vec<2, i32> v_position,
+	glm::vec<2, i32> p_position,
 	glm::vec<2, i32> size,
-	u8 layer /*, glm::vec<2, i32>* plane_offset*/)
+	u8 layer)
 {
-	glm::vec<2, usize> cell_position;
-
-	/*if (plane_offset != nullptr)
-		cell_position = calculate_cell_position(position + *plane_offset);
-	else*/
-
-	cell_position = calculate_cell_position(position);
+	glm::vec<2, usize> cell_position = calculate_cell_position(v_position);
 
 	resize(cell_position + glm::vec<2, usize>(1, 1));
 
@@ -534,7 +505,7 @@ rhr::handler::field_data::location rhr::handler::field::register_field(
 
 	rhr::handler::field_data::location local_location = rhr::handler::field_data::location(cell_position, m_idx, layer);
 	rhr::handler::field_data::data local_data(
-		m_idx, position, /*plane_offset, */ size, std::move(text_field), local_location, true);
+		m_idx, v_position, p_position, size, text_field, local_location, true);
 	local_data.copy_to_host();
 
 	push_data(local_location, local_data);
@@ -551,14 +522,12 @@ void rhr::handler::field::unregister_field(const rhr::handler::field_data::locat
 }
 
 rhr::handler::field_data::location rhr::handler::field::update_field_position(
-	const rhr::handler::field_data::location& location, glm::vec<2, i32> position /*, glm::vec<2, i32>* plane_offset*/)
+	const rhr::handler::field_data::location& location,
+	glm::vec<2, i32> v_position,
+	glm::vec<2, i32> p_position
+)
 {
-	glm::vec<2, i32> local_position = position;
-
-	/*if (plane_offset != nullptr)
-		position += *plane_offset;*/
-
-	if (position.x < 0 || position.y < 0)
+	if (v_position.x < 0 || v_position.y < 0)
 	{
 		latte::logger::warn(latte::logger::level::SYSTEM, "failed to update field position; position is less then 0");
 		return location;
@@ -571,16 +540,17 @@ rhr::handler::field_data::location rhr::handler::field::update_field_position(
 #if DEBUG_FIELDS
 	latte::logger::info(std::to_string(cell_position.x) + ", " + std::to_string(cell_position.y));
 #endif
-	if (static_cast<usize>(position.x) > cell_position.x
-		&& static_cast<usize>(position.x) < cell_position.x + FIELD_CELL_SIZE
-		&& static_cast<usize>(position.y) > cell_position.y
-		&& static_cast<usize>(position.y) < cell_position.y + FIELD_CELL_SIZE)
+	if (static_cast<usize>(v_position.x) > cell_position.x
+		&& static_cast<usize>(v_position.x) < cell_position.x + FIELD_CELL_SIZE
+		&& static_cast<usize>(v_position.y) > cell_position.y
+		&& static_cast<usize>(v_position.y) < cell_position.y + FIELD_CELL_SIZE)
 	{
 		std::optional<rhr::handler::field_data::data*> data = find_data(location);
 		if (!data.has_value())
 			return location;
 
-		data.value()->set_position(local_position);
+		data.value()->set_position_virtual(v_position);
+		data.value()->set_position_physical(p_position);
 		update_guests(location);
 
 		return location;
@@ -591,14 +561,15 @@ rhr::handler::field_data::location rhr::handler::field::update_field_position(
 		if (!data.has_value())
 			return location;
 
-		glm::vec<2, usize> cell_position = calculate_cell_position(position);
+		glm::vec<2, usize> cell_position = calculate_cell_position(v_position);
 		resize(cell_position + glm::vec<2, usize>(1, 1));
 
 		rhr::handler::field_data::location moved_cell_location =
 			rhr::handler::field_data::location(cell_position, location.get_idx(), location.get_layer());
 
 		rhr::handler::field_data::data local_data = *data.value();
-		local_data.set_position(local_position);
+		local_data.set_position_virtual(v_position);
+		local_data.set_position_physical(p_position);
 		local_data.set_location(moved_cell_location);
 
 		remove_guests(location);
@@ -653,7 +624,7 @@ std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_data(gl
 
 	for (usize i = 0; i < cell.value()->at(layer).size(); i++)
 	{
-		glm::vec<2, i32> cell_pixel_position = cell.value()->at(layer)[i].get_position();
+		glm::vec<2, i32> cell_pixel_position = cell.value()->at(layer)[i].get_position_virtual();
 		glm::vec<2, i32> cell_pixel_size	 = cell.value()->at(layer)[i].get_size();
 
 		if (position.x >= cell_pixel_position.x && position.x < cell_pixel_position.x + cell_pixel_size.x
@@ -735,19 +706,21 @@ glm::vec<2, usize> rhr::handler::field::calculate_cell_position(const glm::vec<2
 
 void rhr::handler::field::update_cursor()
 {
+	// TODO: static offset
 	m_rectangle_cursor->set_position_local_physical(
-		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y)
-			- rhr::stack::plane::primary_plane->get_position_virtual_offset()
-			+ *rhr::stack::plane::primary_plane->get_offset(),
+		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y),
+			//- rhr::stack::plane::primary_plane->get_position_virtual_offset()
+			//+ *rhr::stack::plane::primary_plane->get_static_offset(),
 		true);
 }
 
 void rhr::handler::field::update_highlight()
 {
+	// TODO: static offset
 	m_rectangle_highlight->set_position_local_physical(
-		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2)
-			- rhr::stack::plane::primary_plane->get_position_virtual_offset()
-			+ *rhr::stack::plane::primary_plane->get_offset(),
+		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2),
+			//- rhr::stack::plane::primary_plane->get_position_virtual_offset()
+			//+ *rhr::stack::plane::primary_plane->get_static_offset(),
 		true);
 	m_rectangle_highlight->set_size_local(
 		{m_mouse_drag_end_position.x - m_mouse_drag_start_position.x, BLOCK_HEIGHT_CONTENT - 4}, true);
@@ -774,35 +747,34 @@ void rhr::handler::field::process_highlight(bool copy)
 		return;
 
 	// TODO: segfault possible, later on make this use the weakptr so no segfault possibility.
-	if (auto lock = m_mouse_down_data->get_text_field().lock())
+	auto text_field = m_mouse_down_data->get_text_field();
+
+	if (copy)
+		latte::logger::warn(latte::logger::level::SYSTEM, "copy not implemented");
+	else
 	{
-		if (copy)
-			latte::logger::warn(latte::logger::level::SYSTEM, "copy not implemented");
+		if (m_mouse_drag_end > m_mouse_drag_start)
+			text_field->remove_string(m_mouse_drag_start, m_mouse_drag_end - m_mouse_drag_start);
 		else
-		{
-			if (m_mouse_drag_end > m_mouse_drag_start)
-				lock->remove_string(m_mouse_drag_start, m_mouse_drag_end - m_mouse_drag_start);
-			else
-				lock->remove_string(m_mouse_drag_end, m_mouse_drag_start - m_mouse_drag_end);
-		}
-
-		m_cursor_idx = glm::min(m_mouse_drag_start, m_mouse_drag_end);
-
-		m_mouse_drag	   = false;
-		m_mouse_drag_start = m_cursor_idx;
-		m_mouse_drag_end   = m_cursor_idx;
-
-		std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(m_cursor_idx);
-		if (!cursor_position.has_value())
-			return;
-
-		m_cursor_position			= cursor_position.value();
-		m_mouse_drag_start_position = cursor_position.value();
-		m_mouse_drag_end_position	= cursor_position.value();
-
-		update_cursor();
-		update_highlight();
+			text_field->remove_string(m_mouse_drag_end, m_mouse_drag_start - m_mouse_drag_end);
 	}
+
+	m_cursor_idx = glm::min(m_mouse_drag_start, m_mouse_drag_end);
+
+	m_mouse_drag	   = false;
+	m_mouse_drag_start = m_cursor_idx;
+	m_mouse_drag_end   = m_cursor_idx;
+
+	std::optional<glm::vec<2, i32>> cursor_position = text_field->get_index_position(m_cursor_idx);
+	if (!cursor_position.has_value())
+		return;
+
+	m_cursor_position			= cursor_position.value();
+	m_mouse_drag_start_position = cursor_position.value();
+	m_mouse_drag_end_position	= cursor_position.value();
+
+	update_cursor();
+	update_highlight();
 }
 
 void rhr::handler::field::advance_cursor(i64 idx, bool break_highlight)
@@ -810,36 +782,35 @@ void rhr::handler::field::advance_cursor(i64 idx, bool break_highlight)
 	if (!m_cursor)
 		return;
 
-	if (auto lock = m_mouse_down_data->get_text_field().lock())
+	auto text_field = m_mouse_down_data->get_text_field();
+
+	if (static_cast<i64>(m_cursor_idx) + idx < 0 || static_cast<i64>(m_cursor_idx) + idx > text_field->get_index_count())
+		return;
+
+	m_cursor_idx = static_cast<i64>(m_cursor_idx) + idx;
+
+	std::optional<glm::vec<2, i32>> cursor_position = text_field->get_index_position(m_cursor_idx);
+	if (!cursor_position.has_value())
+		return;
+
+	m_cursor_position = cursor_position.value();
+
+	if (m_mouse_drag && !break_highlight)
 	{
-		if (static_cast<i64>(m_cursor_idx) + idx < 0 || static_cast<i64>(m_cursor_idx) + idx > lock->get_index_count())
-			return;
-
-		m_cursor_idx = static_cast<i64>(m_cursor_idx) + idx;
-
-		std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(m_cursor_idx);
-		if (!cursor_position.has_value())
-			return;
-
-		m_cursor_position = cursor_position.value();
-
-		if (m_mouse_drag && !break_highlight)
-		{
-			m_mouse_drag_end		  = static_cast<i64>(m_mouse_drag_end) + idx;
-			m_mouse_drag_end_position = cursor_position.value();
-		}
-		else
-		{
-			m_mouse_drag_start			= static_cast<i64>(m_mouse_drag_start) + idx;
-			m_mouse_drag_start_position = cursor_position.value();
-
-			m_mouse_drag_end		  = static_cast<i64>(m_mouse_drag_end) + idx;
-			m_mouse_drag_end_position = cursor_position.value();
-		}
-
-		update_cursor();
-		update_highlight();
+		m_mouse_drag_end		  = static_cast<i64>(m_mouse_drag_end) + idx;
+		m_mouse_drag_end_position = cursor_position.value();
 	}
+	else
+	{
+		m_mouse_drag_start			= static_cast<i64>(m_mouse_drag_start) + idx;
+		m_mouse_drag_start_position = cursor_position.value();
+
+		m_mouse_drag_end		  = static_cast<i64>(m_mouse_drag_end) + idx;
+		m_mouse_drag_end_position = cursor_position.value();
+	}
+
+	update_cursor();
+	update_highlight();
 }
 
 void rhr::handler::field::set_cursor(usize idx, bool break_highlight)
@@ -847,36 +818,35 @@ void rhr::handler::field::set_cursor(usize idx, bool break_highlight)
 	if (!m_cursor)
 		return;
 
-	if (auto lock = m_mouse_down_data->get_text_field().lock())
+	auto text_field = m_mouse_down_data->get_text_field();
+
+	if (idx < 0 || idx > text_field->get_index_count())
+		return;
+
+	m_cursor_idx = idx;
+
+	std::optional<glm::vec<2, i32>> cursor_position = text_field->get_index_position(m_cursor_idx);
+	if (!cursor_position.has_value())
+		return;
+
+	m_cursor_position = cursor_position.value();
+
+	if (m_mouse_drag && !break_highlight)
 	{
-		if (idx < 0 || idx > lock->get_index_count())
-			return;
-
-		m_cursor_idx = idx;
-
-		std::optional<glm::vec<2, i32>> cursor_position = lock->get_index_position(m_cursor_idx);
-		if (!cursor_position.has_value())
-			return;
-
-		m_cursor_position = cursor_position.value();
-
-		if (m_mouse_drag && !break_highlight)
-		{
-			m_mouse_drag_end		  = idx;
-			m_mouse_drag_end_position = cursor_position.value();
-		}
-		else
-		{
-			m_mouse_drag_start			= idx;
-			m_mouse_drag_start_position = cursor_position.value();
-
-			m_mouse_drag_end		  = idx;
-			m_mouse_drag_end_position = cursor_position.value();
-		}
-
-		update_cursor();
-		update_highlight();
+		m_mouse_drag_end		  = idx;
+		m_mouse_drag_end_position = cursor_position.value();
 	}
+	else
+	{
+		m_mouse_drag_start			= idx;
+		m_mouse_drag_start_position = cursor_position.value();
+
+		m_mouse_drag_end		  = idx;
+		m_mouse_drag_end_position = cursor_position.value();
+	}
+
+	update_cursor();
+	update_highlight();
 }
 
 void rhr::handler::field::update_guests(const rhr::handler::field_data::location& location)
@@ -885,9 +855,9 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 	if (!data.has_value())
 		return;
 
-	glm::vec<2, usize> cell_first = calculate_cell_position(data.value()->get_position());
+	glm::vec<2, usize> cell_first = calculate_cell_position(data.value()->get_position_virtual());
 	glm::vec<2, usize> cell_last =
-		calculate_cell_position(data.value()->get_position() + data.value()->get_host_size());
+		calculate_cell_position(data.value()->get_position_virtual() + data.value()->get_host_size());
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{
@@ -953,19 +923,19 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 
 			if (cell_last.x - cell_first.x == 0)
 			{
-				local_low.x	 = data.value()->get_position().x;
-				local_high.x = data.value()->get_position().x + data.value()->get_host_size().x;
+				local_low.x	 = data.value()->get_position_virtual().x;
+				local_high.x = data.value()->get_position_virtual().x + data.value()->get_host_size().x;
 			}
 			else
 			{
 				if (x == cell_last.x - cell_first.x)
 				{
 					local_low.x	 = ((location.get_cell().x + x) * FIELD_CELL_SIZE);
-					local_high.x = data.value()->get_position().x + data.value()->get_host_size().x;
+					local_high.x = data.value()->get_position_virtual().x + data.value()->get_host_size().x;
 				}
 				else if (x == 0)
 				{
-					local_low.x	 = data.value()->get_position().x;
+					local_low.x	 = data.value()->get_position_virtual().x;
 					local_high.x = ((location.get_cell().x + 1) * FIELD_CELL_SIZE);
 				}
 				else
@@ -979,19 +949,19 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 
 			if (cell_last.y - cell_first.y == 0)
 			{
-				local_low.y	 = data.value()->get_position().y;
-				local_high.y = data.value()->get_position().y + data.value()->get_host_size().y;
+				local_low.y	 = data.value()->get_position_virtual().y;
+				local_high.y = data.value()->get_position_virtual().y + data.value()->get_host_size().y;
 			}
 			else
 			{
 				if (y == cell_last.y - cell_first.y)
 				{
 					local_low.y	 = ((location.get_cell().y + y) * FIELD_CELL_SIZE);
-					local_high.y = data.value()->get_position().y + data.value()->get_host_size().y;
+					local_high.y = data.value()->get_position_virtual().y + data.value()->get_host_size().y;
 				}
 				else if (y == 0)
 				{
-					local_low.y	 = data.value()->get_position().y;
+					local_low.y	 = data.value()->get_position_virtual().y;
 					local_high.y = ((location.get_cell().y + 1) * FIELD_CELL_SIZE);
 				}
 				else
@@ -1013,7 +983,7 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 					return;
 
 				guest_data.value()->set_size(local_high - local_low);
-				guest_data.value()->set_position(local_low);
+				guest_data.value()->set_position_virtual(local_low);
 			}
 			else if (x == 0 && y == 0)
 			{
@@ -1023,28 +993,32 @@ void rhr::handler::field::update_guests(const rhr::handler::field_data::location
 					+ std::to_string(data.value()->get_size().y));
 #endif
 				data.value()->set_size(local_high - local_low);
-				data.value()->set_position(local_low);
+				data.value()->set_position_virtual(local_low);
 			}
 			else
 			{
 				usize guest_idx = m_idx++;
 				rhr::handler::field_data::location guest_location(
 					{location.get_cell().x + x, location.get_cell().y + y}, guest_idx, location.get_layer());
+				// TODO: fix this; good luck btw, i have no idea what any of this shit does anymore.
+				/*
 				rhr::handler::field_data::data guest_data(
 					guest_idx,
-					local_low /*, data.value()->get_plane_offset()*/,
+					local_low,
+
 					local_high - local_low,
-					std::move(data.value()->get_text_field()),
+					data.value()->get_text_field(),
 					guest_location,
 					false);
-
+				*/
 #if DEBUG_FIELDS
 				latte::logger::info(
 					"adding cell " + std::to_string(guest_location.get_cell().x) + ", "
 					+ std::to_string(guest_location.get_cell().y));
 #endif
 				guests.value()->push_back(guest_location);
-				push_data(guest_location, guest_data);
+				// TODO: fix this
+				//push_data(guest_location, guest_data);
 			}
 		}
 	}
@@ -1056,8 +1030,8 @@ void rhr::handler::field::remove_guests(const rhr::handler::field_data::location
 	if (!data.has_value())
 		return;
 
-	glm::vec<2, usize> cell_first = calculate_cell_position(data.value()->get_position());
-	glm::vec<2, usize> cell_last  = calculate_cell_position(data.value()->get_position() + data.value()->get_size());
+	glm::vec<2, usize> cell_first = calculate_cell_position(data.value()->get_position_virtual());
+	glm::vec<2, usize> cell_last  = calculate_cell_position(data.value()->get_position_virtual() + data.value()->get_size());
 
 	if (cell_first.x > cell_last.x || cell_first.y > cell_last.y)
 	{

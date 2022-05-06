@@ -34,14 +34,15 @@ rhr::handler::field_data::location rhr::handler::field_data::location::none =
 
 rhr::handler::field_data::data::data(
 	usize idx,
-	glm::vec<2, i32> position,
+	glm::vec<2, i32> v_position,
+	glm::vec<2, i32> p_position,
 	glm::vec<2, i32> size,
-	std::weak_ptr<rhr::render::interfaces::i_field>&& text_field,
+	rhr::render::interfaces::i_field* text_field,
 	location location,
 	bool is_host)
 	: m_idx(idx)
-	, m_position(position)
-	//, m_plane_offset(plane_offset)
+	, m_v_position(v_position)
+	, m_p_position(p_position)
 	, m_size(size)
 	, m_host_size({0, 0})
 	, m_text_field(text_field)
@@ -53,24 +54,24 @@ rhr::handler::field_data::data::data(
 		m_other_locations = nullptr;
 }
 
-glm::vec<2, i32> rhr::handler::field_data::data::get_position()
+glm::vec<2, i32> rhr::handler::field_data::data::get_position_virtual()
 {
-	return m_position;
+	return m_v_position;
 }
 
-void rhr::handler::field_data::data::set_position(glm::vec<2, i32> position)
+glm::vec<2, i32> rhr::handler::field_data::data::get_position_physical()
 {
-	m_position = position;
+	return m_p_position;
 }
 
-glm::vec<2, i32>* rhr::handler::field_data::data::get_plane_offset()
+void rhr::handler::field_data::data::set_position_virtual(glm::vec<2, i32> v_position)
 {
-	return m_plane_offset;
+	m_v_position = v_position;
 }
 
-void rhr::handler::field_data::data::set_plane_offset(glm::vec<2, i32>* plane_offset)
+void rhr::handler::field_data::data::set_position_physical(glm::vec<2, i32> p_position)
 {
-	m_plane_offset = plane_offset;
+	m_p_position = p_position;
 }
 
 glm::vec<2, i32> rhr::handler::field_data::data::get_size()
@@ -88,7 +89,7 @@ usize rhr::handler::field_data::data::get_idx()
 	return m_idx;
 }
 
-std::weak_ptr<rhr::render::interfaces::i_field>& rhr::handler::field_data::data::get_text_field()
+rhr::render::interfaces::i_field*& rhr::handler::field_data::data::get_text_field()
 {
 	return m_text_field;
 }

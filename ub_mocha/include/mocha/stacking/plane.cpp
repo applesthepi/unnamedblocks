@@ -1,19 +1,19 @@
 #include "plane.hpp"
 
-#include "mocha/handlers/context.hpp"
+#include "lungo/handlers/context.hpp"
 #include "lungo/renderer.hpp"
 
-static void primary_plane_mouse_button(
-	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
-{
-	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation, button);
-}
-
-static void toolbar_plane_mouse_button(
-	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
-{
-	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation, button);
-}
+//static void primary_plane_mouse_button(
+//	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
+//{
+//	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation, button);
+//}
+//
+//static void toolbar_plane_mouse_button(
+//	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
+//{
+//	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation, button);
+//}
 
 rhr::stack::plane::plane(bool toolbar)
 	: m_toolbar(toolbar)
@@ -23,18 +23,27 @@ rhr::stack::plane::plane(bool toolbar)
 	, m_dragging_snap(false)
 	, m_background(std::make_shared<rhr::render::object::rectangle>())
 	, m_dragging_connecting_line(std::make_shared<rhr::render::object::line>())
-	, m_offset {}
+	, m_mouse_button_idx(0)
 {
+	cap_offset();
+
 	m_background->initialize();
 	m_dragging_connecting_line->initialize();
 
-	if (toolbar)
-		rhr::handler::input::register_mouse_callback(toolbar_plane_mouse_button, nullptr);
-	else
-		rhr::handler::input::register_mouse_callback(primary_plane_mouse_button, nullptr);
+	//if (toolbar)
+	//	rhr::handler::input::register_mouse_callback(toolbar_plane_mouse_button, nullptr);
+	//else
+	//	rhr::handler::input::register_mouse_callback(primary_plane_mouse_button, nullptr);
 
 	m_collections.reserve(5);
 	m_collection_vanity.reserve(5);
+
+	m_mouse_button = [this](rhr::handler::input::mouse_button_data mouse_button_data)
+	{
+		mouse_button(mouse_button_data.position, mouse_button_data.scroll, mouse_button_data.operation, mouse_button_data.button);
+	};
+
+	m_mouse_button_idx = rhr::handler::input::register_mouse_callback(m_mouse_button, nullptr);
 
 	m_context_callback = [](u8 idx)
 	{
@@ -59,11 +68,6 @@ rhr::stack::plane::plane(bool toolbar)
 	};
 }
 
-glm::vec<2, i32>* rhr::stack::plane::get_offset()
-{
-	return &m_offset;
-}
-
 void rhr::stack::plane::add_collection(
 	std::shared_ptr<rhr::stack::collection>& collection, bool display_collection_vanity)
 {
@@ -71,7 +75,7 @@ void rhr::stack::plane::add_collection(
 	m_collections.push_back(collection);
 	m_collection_vanity.push_back(display_collection_vanity);
 
-	collection->set_plane_offset(&m_offset);
+	collection->set_static_offset(get_static_offset());
 	collection->display_vanity(display_collection_vanity);
 }
 
@@ -112,7 +116,7 @@ void rhr::stack::plane::mouse_button(
 
 		if (position.x >= virtual_position.x && position.x < virtual_position.x + virtual_size.x
 			&& position.y >= virtual_position.y && position.y < virtual_position.y + virtual_size.y)
-			m_offset.y += static_cast<i32>(scroll * 100.0f);
+			get_static_offset()->y += static_cast<i32>(scroll * 100.0f);
 	}
 	else if (operation == rhr::handler::input::mouse_operation::SCROLL_HORIZONTAL)
 	{
@@ -121,7 +125,7 @@ void rhr::stack::plane::mouse_button(
 
 		if (position.x >= virtual_position.x && position.x < virtual_position.x + virtual_size.x
 			&& position.y >= virtual_position.y && position.y < virtual_position.y + virtual_size.y)
-			m_offset.x += static_cast<i32>(scroll * 100.0f);
+			get_static_offset()->x += static_cast<i32>(scroll * 100.0f);
 	}
 
 	if (operation != rhr::handler::input::mouse_operation::PRESS && operation != rhr::handler::input::mouse_operation::RELEASE)
@@ -131,7 +135,7 @@ void rhr::stack::plane::mouse_button(
 		|| (!m_toolbar && rhr::stack::plane::toolbar_plane->dragging_stack()))
 		return;
 
-	position -= m_offset;
+	position -= *get_static_offset();
 
 	if (dragging_stack())
 	{
@@ -194,13 +198,18 @@ void rhr::stack::plane::mouse_button(
 									unselect();
 
 									if (m_collections[i]->get_stacks()[a]->get_blocks()[b]->drag_bounds(position))
-									{
-										LOG_DEBUG("drag bounds true");
 										return;
-									}
 
 									std::shared_ptr<rhr::stack::collection> active_collection =
-										std::make_shared<rhr::stack::collection>(&m_offset);
+										std::make_shared<rhr::stack::collection>(get_static_offset());
+
+									// TODO: doing these 3 things is unnecessary. Make it so you can just CREATE the
+									//  collection AS a child of the parent in one go.
+
+									// TODO: mabye also make a require system so before the child can be used at
+									//  all, it must have the data it requires.
+
+									active_collection->set_static_offset(get_static_offset());
 									update_child_transform(active_collection, 0);
 									active_collection->initialize();
 									update_child_transform(active_collection, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
@@ -210,7 +219,8 @@ void rhr::stack::plane::mouse_button(
 									if (m_toolbar)
 									{
 										std::shared_ptr<rhr::stack::stack> dragging_stack =
-											std::make_shared<rhr::stack::stack>(&m_offset);
+											std::make_shared<rhr::stack::stack>(get_static_offset());
+										dragging_stack->set_static_offset(get_static_offset());
 										dragging_stack->initialize();
 
 										const std::vector<std::shared_ptr<rhr::stack::block>>& blocks =
@@ -223,7 +233,7 @@ void rhr::stack::plane::mouse_button(
 												std::make_shared<rhr::stack::block>(
 													block->get_esp_block()->get_unlocalized_name());
 											cloned_block->initialize();
-											cloned_block->set_static_offset(&m_offset);
+											cloned_block->set_static_offset(get_static_offset());
 
 											cloned_blocks.push_back(std::move(cloned_block));
 										}
@@ -245,7 +255,7 @@ void rhr::stack::plane::mouse_button(
 										// create stack that is left behind (not the one picked up)
 
 										std::shared_ptr<rhr::stack::stack> left_stack =
-											std::make_shared<rhr::stack::stack>(&m_offset);
+											std::make_shared<rhr::stack::stack>(get_static_offset());
 										left_stack->set_position_local_physical(
 											active_stack->get_position_local_physical(), false);
 										left_stack->initialize();
@@ -327,14 +337,14 @@ void rhr::stack::plane::mouse_button(
 													if (auto stack = local_stack.lock())
 													{
 														std::shared_ptr<rhr::stack::collection> new_collection =
-															std::make_shared<rhr::stack::collection>(&m_offset);
+															std::make_shared<rhr::stack::collection>(get_static_offset());
 														update_child_transform(
 															new_collection,
 															i_ui::transform_update_spec_position
 																| i_ui::transform_update_spec_size);
 
 														std::shared_ptr<rhr::stack::stack> new_stack =
-															std::make_shared<rhr::stack::stack>(&m_offset);
+															std::make_shared<rhr::stack::stack>(get_static_offset());
 
 														// clone blocks
 
@@ -347,7 +357,7 @@ void rhr::stack::plane::mouse_button(
 															std::shared_ptr<rhr::stack::block> cloned_block =
 																std::make_shared<rhr::stack::block>(
 																	blocks[i]->get_esp_block()->get_unlocalized_name());
-															cloned_block->set_static_offset(&m_offset);
+															cloned_block->set_static_offset(get_static_offset());
 															// TODO: copy blocks fix for serialization
 															//cloned_block->set_data(blocks[i]->get_data());
 
@@ -405,14 +415,14 @@ void rhr::stack::plane::mouse_button(
 													if (auto stack = local_stack.lock())
 													{
 														std::shared_ptr<rhr::stack::collection> new_collection =
-															std::make_shared<rhr::stack::collection>(&m_offset);
+															std::make_shared<rhr::stack::collection>(get_static_offset());
 														update_child_transform(
 															new_collection,
 															i_ui::transform_update_spec_position
 																| i_ui::transform_update_spec_size);
 
 														std::shared_ptr<rhr::stack::stack> new_stack =
-															std::make_shared<rhr::stack::stack>(&m_offset);
+															std::make_shared<rhr::stack::stack>(get_static_offset());
 
 														// clone block
 
@@ -423,7 +433,7 @@ void rhr::stack::plane::mouse_button(
 																blocks[local_block_idx]
 																	->get_esp_block()
 																	->get_unlocalized_name());
-														cloned_block->set_static_offset(&m_offset);
+														cloned_block->set_static_offset(get_static_offset());
 														// TODO: copy blocks fix for serialization
 														//cloned_block->set_data(blocks[local_block_idx]->get_data());
 
@@ -629,7 +639,7 @@ void rhr::stack::plane::ui_deserialize(latte::serializer::node& node)
 
 	for (auto& child : node.children)
 	{
-		auto collection = std::make_shared<rhr::stack::collection>(&m_offset);
+		auto collection = std::make_shared<rhr::stack::collection>(get_static_offset());
 		add_collection(collection, true);
 		collection->deserialize(child);
 	}
@@ -692,7 +702,7 @@ void rhr::stack::plane::drag_stack(
 	// auto virtual_absolute = collection->get_position_parent_virtual_offset() +
 	// collection->get_position_local_physical() + stack->get_position_local_physical();
 
-	auto virtual_absolute = collection->get_position_virtual_absolute() + m_offset;
+	auto virtual_absolute = collection->get_position_virtual_absolute() + *get_static_offset();
 
 	stack->set_position_parent_physical({}, false);
 	stack->set_position_local_physical({}, false);
@@ -704,7 +714,7 @@ void rhr::stack::plane::drag_stack(
 	collection->set_position_parent_virtual_offset({}, false);
 	collection->set_position_local_virtual_offset({}, true);
 
-	collection->set_plane_offset(nullptr);
+	//collection->set_static_offset(nullptr);
 
 	// LOG_DEBUG_VEC2(virtual_absolute);
 
@@ -721,7 +731,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 	{
 		glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_virtual_absolute();
 		// LOG_DEBUG(std::to_string(pixel_position.x) + ", " + std::to_string(pixel_position.y));
-		// pixel_position += m_offset;
+		// pixel_position += *get_static_offset();
 
 		const glm::vec<2, i32>& plane_primary_position =
 			rhr::stack::plane::primary_plane->get_position_virtual_absolute();
@@ -741,7 +751,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 			&& pixel_position.y >= plane_primary_position.y
 			&& pixel_position.y < plane_primary_size.y + plane_primary_position.y;
 
-		// pixel_position -= m_offset;
+		// pixel_position -= *get_static_offset();
 
 		//		if (over_toolbar)
 		//			latte::logger::info("over toolbar");
@@ -781,7 +791,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 					return;
 				}
 
-				m_dragging_collection->set_plane_offset(rhr::stack::plane::primary_plane->get_offset());
+				m_dragging_collection->set_static_offset(rhr::stack::plane::primary_plane->get_static_offset());
 			}
 		}
 		else
@@ -792,7 +802,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 
 				for (const auto& i : rhr::stack::plane::primary_plane->get_collections())
 				{
-					glm::vec<2, i32> collectionPosition = i->get_position_virtual_absolute() + *i->get_plane_offset();
+					glm::vec<2, i32> collectionPosition = i->get_position_virtual_absolute() + *i->get_static_offset();
 					glm::vec<2, i32> collectionSize		= i->get_size_local();
 
 					if (pixel_position.x > collectionPosition.x
@@ -812,12 +822,12 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 				{
 					rhr::stack::plane::primary_plane->add_collection(m_dragging_collection, true);
 					m_dragging_collection->set_position_local_physical(
-						pixel_position - plane_primary_position - *rhr::stack::plane::primary_plane->get_offset(),
+						pixel_position - plane_primary_position - *rhr::stack::plane::primary_plane->get_static_offset(),
 						true);
 					m_dragging_collection->size_to_stacks(false, true);
 				}
 
-				m_dragging_collection->set_plane_offset(rhr::stack::plane::primary_plane->get_offset());
+				m_dragging_collection->set_static_offset(rhr::stack::plane::primary_plane->get_static_offset());
 			}
 			else
 			{
@@ -838,7 +848,7 @@ void rhr::stack::plane::dragging_stack_update()
 {
 	clear_snap();
 
-	// pixel_position += m_offset;
+	// pixel_position += *get_static_offset();
 
 	m_dragging_collection->set_position_local_physical(
 		rhr::handler::input::get_mouse_position() - m_dragging_begin_mouse + m_dragging_begin_object, true);
@@ -869,7 +879,7 @@ void rhr::stack::plane::dragging_stack_update()
 
 		glm::vec<2, i32> collection_size = use_collections[i]->get_size_local();
 		glm::vec<2, i32> collection_position =
-			use_collections[i]->get_position_virtual_absolute() + *use_collections[i]->get_plane_offset();
+			use_collections[i]->get_position_virtual_absolute() + *use_collections[i]->get_static_offset();
 
 		collection_position -= glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE);
 		collection_size += glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE) * 2;
@@ -883,7 +893,7 @@ void rhr::stack::plane::dragging_stack_update()
 
 				glm::vec<2, i32> stack_size		= use_collections[i]->get_stacks()[a]->get_size_local();
 				glm::vec<2, i32> stack_position = use_collections[i]->get_stacks()[a]->get_position_virtual_absolute()
-					+ *use_collections[i]->get_stacks()[a]->get_plane_offset();
+					+ *use_collections[i]->get_stacks()[a]->get_static_offset();
 
 				stack_position -= glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE);
 				stack_size += glm::vec<2, i32>(SNAP_DISTANCE, SNAP_DISTANCE) * 2;
@@ -904,7 +914,7 @@ void rhr::stack::plane::dragging_stack_update()
 							BLOCK_HEIGHT};
 						glm::vec<2, i32> bounding_pos =
 							use_collections[i]->get_stacks()[a]->get_position_virtual_absolute()
-							+ *use_collections[i]->get_stacks()[a]->get_plane_offset();
+							+ *use_collections[i]->get_stacks()[a]->get_static_offset();
 
 						bounding_pos.x -= SNAP_DISTANCE;
 
@@ -958,7 +968,7 @@ void rhr::stack::plane::set_snap(
 		glm::vec<2, i32>* plane_offset = nullptr;
 
 		if (auto lk_collection = m_dragging_snap_collection.lock())
-			plane_offset = lk_collection->get_plane_offset();
+			plane_offset = lk_collection->get_static_offset();
 		else
 			latte::logger::fatal(
 				latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to lock dragging snap collection");

@@ -105,7 +105,7 @@ void rhr::stack::block::ui_chain_update_buffers()
 
 void rhr::stack::block::ui_static_offset_update()
 {
-	m_background->set_offset(get_static_offset());
+	m_background->set_static_offset(get_static_offset());
 
 	for (auto& argument : m_arguments)
 		argument.set_static_offset(get_static_offset());

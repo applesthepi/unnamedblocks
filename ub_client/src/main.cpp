@@ -3,7 +3,7 @@
 #include "mod_loader.hpp"
 #include "mocha/handlers/build.hpp"
 #include "mocha/handlers/category.hpp"
-#include "mocha/handlers/context.hpp"
+#include "lungo/handlers/context.hpp"
 #include "lungo/handlers/panel.hpp"
 #include "lungo/renderer.hpp"
 #include "lungo/tools.hpp"
@@ -88,7 +88,7 @@ i32 main()
 	// std::future<void> asyncSetup = std::async(std::launch::async,
 	// AsyncSetup);
 
-	rhr::handler::input::initialization();
+	rhr::handler::input::initialize();
 	rhr::handler::build::initialize();
 	rhr::handler::context::initialize();
 	//rhr::registry::block::create_block_registry();
@@ -327,30 +327,34 @@ i32 main()
 	//
 
 	std::shared_ptr<rhr::stack::collection> testCollection =
-		std::make_shared<rhr::stack::collection>(rhr::stack::plane::primary_plane->get_offset());
+		std::make_shared<rhr::stack::collection>(rhr::stack::plane::primary_plane->get_static_offset());
 	testCollection->initialize();
 	testCollection->set_position_local_physical({200, 200}, true);
 	testCollection->set_size_local({500, 300}, true);
 
 	std::shared_ptr<rhr::stack::stack> testStack1 =
-		std::make_shared<rhr::stack::stack>(rhr::stack::plane::primary_plane->get_offset());
+		std::make_shared<rhr::stack::stack>(rhr::stack::plane::primary_plane->get_static_offset());
 	testStack1->initialize();
 	testStack1->set_position_local_physical({0, 0}, true);
 
 	std::shared_ptr<rhr::stack::block> testBlock1 =
-		std::make_shared<rhr::stack::block>("essentials_real_log");
-	testBlock1->set_static_offset(rhr::stack::plane::primary_plane->get_offset());
+		std::make_shared<rhr::stack::block>("b_essentials_log_real");
+	testBlock1->set_static_offset(rhr::stack::plane::primary_plane->get_static_offset());
 	testBlock1->initialize();
 	testStack1->add_block(testBlock1);
 
 	std::shared_ptr<rhr::stack::block> testBlock2 =
-		std::make_shared<rhr::stack::block>("essentials_real_log");
-	testBlock2->set_static_offset(rhr::stack::plane::primary_plane->get_offset());
+		std::make_shared<rhr::stack::block>("b_essentials_log_real");
+	testBlock2->set_static_offset(rhr::stack::plane::primary_plane->get_static_offset());
 	testBlock2->initialize();
 	testStack1->add_block(testBlock2);
 
 	testCollection->add_stack(testStack1);
 	rhr::stack::plane::primary_plane->add_collection(testCollection, true);
+
+	auto testBlock2State = testBlock2->get_arguments()[0].get_esp_argument_state();
+	testBlock2State->mode = esp::argument::mode::VAR;
+	testBlock2->get_arguments()[0].get_esp_argument()->on_set_mode(testBlock2State);
 
 	//
 	// LOOP SETUP

@@ -14,11 +14,6 @@ rhr::render::object::rectangle::rectangle()
 	, m_overhang_vertical(rhr::render::cardinal::local_vertical::DOWN)
 {}
 
-void rhr::render::object::rectangle::set_offset(glm::vec<2, i32>* offset)
-{
-	m_render_object->set_offset(offset);
-}
-
 void rhr::render::object::rectangle::set_texture(const std::string& texture)
 {
 	m_has_texture  = true;
@@ -270,7 +265,7 @@ void rhr::render::object::rectangle::ui_chain_update_buffers()
 
 void rhr::render::object::rectangle::ui_static_offset_update()
 {
-
+	m_render_object->set_offset(get_static_offset());
 }
 
 void rhr::render::object::rectangle::ui_serialize(latte::serializer::node& node)

@@ -3,7 +3,7 @@
 
 #include "lungo/interfaces/i_field.hpp"
 
-#include "mocha/handlers/input.hpp"
+#include "lungo/handlers/input.hpp"
 #include <latte/utils.hpp>
 
 namespace rhr::handler::field_data
@@ -51,23 +51,24 @@ public:
 	///
 	data(
 		usize idx,
-		glm::vec<2, i32> position,
+		glm::vec<2, i32> v_position,
+		glm::vec<2, i32> p_position,
 		glm::vec<2, i32> size,
-		std::weak_ptr<rhr::render::interfaces::i_field>&& text_field,
+		rhr::render::interfaces::i_field* text_field,
 		location location,
 		bool is_host);
 
 	///
-	glm::vec<2, i32> get_position();
+	glm::vec<2, i32> get_position_virtual();
 
 	///
-	void set_position(glm::vec<2, i32> position);
+	glm::vec<2, i32> get_position_physical();
 
 	///
-	glm::vec<2, i32>* get_plane_offset();
+	void set_position_virtual(glm::vec<2, i32> v_position);
 
 	///
-	void set_plane_offset(glm::vec<2, i32>* plane_offset);
+	void set_position_physical(glm::vec<2, i32> p_position);
 
 	///
 	glm::vec<2, i32> get_size();
@@ -85,7 +86,7 @@ public:
 	usize get_idx();
 
 	///
-	std::weak_ptr<rhr::render::interfaces::i_field>& get_text_field();
+	rhr::render::interfaces::i_field*& get_text_field();
 
 	///
 	void set_location(location location);
@@ -104,10 +105,10 @@ private:
 	usize m_idx;
 
 	///
-	glm::vec<2, i32> m_position;
+	glm::vec<2, i32> m_v_position;
 
 	///
-	glm::vec<2, i32>* m_plane_offset;
+	glm::vec<2, i32> m_p_position;
 
 	///
 	glm::vec<2, i32> m_size;
@@ -116,7 +117,7 @@ private:
 	glm::vec<2, i32> m_host_size;
 
 	///
-	std::weak_ptr<rhr::render::interfaces::i_field> m_text_field;
+	rhr::render::interfaces::i_field* m_text_field;
 
 	///
 	location m_location;

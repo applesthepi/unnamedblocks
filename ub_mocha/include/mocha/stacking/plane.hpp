@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
-#include "mocha/handlers/field.hpp"
-#include "mocha/handlers/input.hpp"
+#include "lungo/handlers/field.hpp"
+#include "lungo/handlers/input.hpp"
 #include "lungo/interfaces/i_ui.hpp"
 #include "lungo/objects/line.hpp"
 #include "lungo/objects/rectangle.hpp"
@@ -23,9 +23,6 @@ class plane : public rhr::render::interfaces::i_ui
 public:
 	///
 	plane(bool toolbar);
-
-	///
-	glm::vec<2, i32>* get_offset();
 
 	/// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
 	void add_collection(std::shared_ptr<rhr::stack::collection>& collection, bool displayCollectionVanity);
@@ -180,6 +177,9 @@ private:
 	rhr::handler::field m_field;
 
 	///
-	glm::vec<2, i32> m_offset;
+	std::function<void(rhr::handler::input::mouse_button_data)> m_mouse_button;
+
+	///
+	u64 m_mouse_button_idx;
 };
 } // namespace rhr::stack

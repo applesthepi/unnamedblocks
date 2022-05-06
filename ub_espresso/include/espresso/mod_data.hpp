@@ -10,6 +10,8 @@
 #include <latte/utils.hpp>
 #include <lungo/registries/char_texture.hpp>
 #include <lungo/renderer.hpp>
+#include <lungo/handlers/input.hpp>
+#include <mocha/stacking/plane.hpp>
 
 namespace esp
 {
@@ -36,6 +38,9 @@ public:
 	latte::logger::stream* get_stream_runtime();
 
 	///
+	rhr::handler::input::stream* get_stream_input();
+
+	///
 	esp::registry* get_registry_esp();
 
 	///
@@ -43,6 +48,12 @@ public:
 
 	///
 	rhr::render::renderer* get_renderer();
+
+	///
+	std::shared_ptr<rhr::stack::plane>* get_primary_plane();
+
+	///
+	std::shared_ptr<rhr::stack::plane>* get_toolbar_plane();
 
 	///
 	void set_mod_display_name(const std::string& display_name);
@@ -58,6 +69,9 @@ public:
 		latte::logger::stream* stream_system, latte::logger::stream* stream_editor, latte::logger::stream* stream_runtime);
 
 	///
+	void set_input_stream(rhr::handler::input::stream* input_stream);
+
+	///
 	void set_registry_esp(esp::registry* registry);
 
 	///
@@ -65,6 +79,9 @@ public:
 
 	///
 	void set_renderer(rhr::render::renderer* renderer);
+
+	///
+	void set_planes(std::shared_ptr<rhr::stack::plane>* primary_plane, std::shared_ptr<rhr::stack::plane>* toolbar_plane);
 private:
 	///
 	std::string m_mod_display_name;
@@ -85,6 +102,9 @@ private:
 	latte::logger::stream* m_stream_runtime;
 
 	///
+	rhr::handler::input::stream* m_stream_input;
+
+	///
 	esp::registry* m_registry_esp;
 
 	///
@@ -92,5 +112,11 @@ private:
 
 	///
 	rhr::render::renderer* m_renderer;
+
+	///
+	std::shared_ptr<rhr::stack::plane>* m_primary_plane;
+
+	///
+	std::shared_ptr<rhr::stack::plane>* m_toolbar_plane;
 };
 }

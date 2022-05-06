@@ -2,7 +2,6 @@
 
 rhr::stack::stack::stack(glm::vec<2, i32>* plane_offset)
 	: m_function_collection_update(nullptr)
-	, m_plane_offset(plane_offset)
 {
 	m_function_stack_update = [&]()
 	{
@@ -11,19 +10,8 @@ rhr::stack::stack::stack(glm::vec<2, i32>* plane_offset)
 	};
 
 	m_blocks.reserve(10);
-}
 
-void rhr::stack::stack::set_plane_offset(glm::vec<2, i32>* plane_offset)
-{
-	m_plane_offset = plane_offset;
-
-	for (auto& block : m_blocks)
-		block->set_static_offset(plane_offset);
-}
-
-glm::vec<2, i32>* rhr::stack::stack::get_plane_offset()
-{
-	return m_plane_offset;
+	set_static_offset(plane_offset);
 }
 
 void rhr::stack::stack::add_block(std::shared_ptr<rhr::stack::block> block)
@@ -168,7 +156,8 @@ void rhr::stack::stack::ui_chain_update_buffers()
 
 void rhr::stack::stack::ui_static_offset_update()
 {
-
+	for (auto& block : m_blocks)
+		block->set_static_offset(get_static_offset());
 }
 
 void rhr::stack::stack::ui_serialize(latte::serializer::node& node)

@@ -2,12 +2,12 @@
 
 #include "lungo/renderer.hpp"
 
-static void
-mouse_update_caller(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
-{
-	rhr::render::object::button* button_object = (rhr::render::object::button*)data;
-	button_object->mouse_update(position, scroll, operation);
-}
+//static void
+//mouse_update_caller(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
+//{
+//	rhr::render::object::button* button_object = (rhr::render::object::button*)data;
+//	button_object->mouse_update(position, scroll, operation);
+//}
 
 rhr::render::object::button::button(const espresso::color& primary_color, const espresso::color& secondary_color)
 	: i_dicolorable(primary_color, secondary_color)
@@ -19,12 +19,12 @@ rhr::render::object::button::button(const espresso::color& primary_color, const 
 	m_background->set_color(m_color_secondary);
 	m_background->set_depth(rhr::render::renderer::depth_ui_background);
 
-	rhr::handler::input::register_mouse_callback(mouse_update_caller, this);
+	//rhr::handler::input::register_mouse_callback(mouse_update_caller, this);
 }
 
 rhr::render::object::button::~button()
 {
-	rhr::handler::input::unregister_mouse_callback(mouse_update_caller);
+	//rhr::handler::input::unregister_mouse_callback(mouse_update_caller);
 }
 
 void rhr::render::object::button::set_depth(i32 depth)

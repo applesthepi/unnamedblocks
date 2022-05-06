@@ -20,6 +20,12 @@ public:
 	/// Category of the block.
 	virtual const char* get_category() = 0;
 
+	/// Example: "println!("{}", <<<0>>>);".
+	virtual const char* get_ubbs_instance() = 0;
+
+	///
+	virtual const char* get_ubbs_definition() = 0;
+
 	/// Does the block start a stack.
 	virtual bool is_topical() = 0;
 

@@ -1,10 +1,7 @@
-﻿#include "text.hpp"
+﻿#include <lungo/handlers/panel.hpp>
+#include "text.hpp"
 
-#include "lungo/registries/char_texture.hpp"
 #include "lungo/renderer.hpp"
-#include "lungo/vertex.hpp"
-#include "mocha/stacking/block.hpp"
-#include "mocha/stacking/plane.hpp"
 
 #define EDGE_CLICK_OVERHANG 5
 
@@ -14,7 +11,6 @@ rhr::render::object::text::text(
 	rhr::registry::char_texture::texture_type texture_type,
 	u16 font_size,
 	bool read_only,
-	bool force_register,
 	glm::vec<2, i32>* plane_offset)
 	: i_dicolorable(espresso::color().from_normalized({0.0f, 0.0f, 0.0f, 1.0f}), espresso::color().from_u8({25, 25, 25, 255}))
 	, m_depth(10)
@@ -26,9 +22,9 @@ rhr::render::object::text::text(
 	, m_mouse_button(nullptr)
 	, m_font_size(font_size)
 	, m_registered(false)
-	, m_force_register(force_register)
 	, m_texture_type(texture_type)
-	, m_plane_offset(plane_offset)
+	, m_mouse_callback_idx(0)
+	, m_field(nullptr)
 {
 	m_render_object_text->set_texture_char(texture_type, m_font_size);
 	m_render_object_text->set_enabled(false);
@@ -36,7 +32,16 @@ rhr::render::object::text::text(
 
 rhr::render::object::text::~text()
 {
-	unregister_field();
+	if (!m_read_only)
+		unregister_field();
+}
+
+void rhr::render::object::text::set_field_handler(rhr::handler::field* field)
+{
+	if (m_read_only)
+		latte::logger::warn(latte::logger::level::EDITOR, __FILE__, __LINE__, "text object does not need field handler when set to read only");
+
+	m_field = field;
 }
 
 void rhr::render::object::text::set_update_function(std::function<void()>* function_update)
@@ -44,29 +49,19 @@ void rhr::render::object::text::set_update_function(std::function<void()>* funct
 	m_function_update = function_update;
 }
 
-void rhr::render::object::text::set_weak_field(std::weak_ptr<rhr::render::interfaces::i_field>&& weak_field)
-{
-	m_weak_field = weak_field;
-
-	//	if (m_force_register)
-	//		register_field();
-}
-
 void rhr::render::object::text::set_text(const std::string& text)
 {
-	if (text.size() == 0)
+	if (text.empty())
 	{
 		m_text.clear();
 		m_render_object_text->set_enabled(false);
 		update_size();
-		register_field();
 	}
 	else
 	{
 		m_text = text;
 		m_render_object_text->set_enabled(true);
 		update_size();
-		register_field();
 	}
 
 	mark_dirty();
@@ -104,11 +99,12 @@ void rhr::render::object::text::enable_background(bool enable)
 	m_enable_background = enable;
 }
 
-void rhr::render::object::text::set_mouse_button(
-	std::function<void(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)>&
-	mouse_button)
+void rhr::render::object::text::set_mouse_button(std::function<void(rhr::handler::input::mouse_button_data)>& mouse_button)
 {
 	m_mouse_button = mouse_button;
+
+	if (!m_read_only)
+		register_field();
 }
 
 std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> position, bool ignore_y)
@@ -176,7 +172,7 @@ std::optional<glm::vec<2, i32>> rhr::render::object::text::get_index_position(us
 	if (/*m_char_offsets.size() == 0 ||*/ idx > m_char_offsets.size())
 		return std::nullopt;
 
-	glm::vec<2, i32> field_position = get_position_virtual_absolute();
+	glm::vec<2, i32> field_position = get_position_physical_absolute();
 
 	if (idx > 0)
 		field_position.x += static_cast<i32>(m_char_offsets[idx - 1]);
@@ -248,13 +244,6 @@ bool rhr::render::object::text::remove_string(usize idx, usize size)
 	return true;
 }
 
-void rhr::render::object::text::mouse_button(
-	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
-{
-	if (m_mouse_button != nullptr)
-		m_mouse_button(position, scroll, operation, button);
-}
-
 void rhr::render::object::text::ui_initialize()
 {
 
@@ -279,7 +268,6 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 	}
 
 	// TODO: fields fix
-	/*
 	if (!m_read_only && !m_registered && position_virtual.x >= 0 && position_virtual.y >= 0)
 		register_field();
 
@@ -288,11 +276,10 @@ void rhr::render::object::text::ui_transform_update(i_ui::transform_update_spec 
 		if (position_virtual.x < 0 || position_virtual.y < 0)
 			unregister_field();
 		else
-			m_location = rhr::stack::plane::primary_plane->get_field().update_field_position(
-				m_location.value(), position_virtual);
+			m_location = m_field->update_field_position(
+				m_location.value(), position_virtual, position_physical);
 
 	}
-	*/
 }
 
 void rhr::render::object::text::ui_frame_update(f64 delta_time)
@@ -394,10 +381,8 @@ void rhr::render::object::text::ui_update_buffers()
 		set_size_local({(static_cast<f32>(m_padding) * 2.0f), BLOCK_HEIGHT_CONTENT}, false);
 
 	// TODO: fields fix
-	/*
 	if (!m_read_only && m_registered)
-		rhr::stack::plane::primary_plane->get_field().update_field_size(m_location.value(), size_local);
-	*/
+		m_field->update_field_size(m_location.value(), size_local);
 }
 
 void rhr::render::object::text::ui_chain_update_buffers()
@@ -466,32 +451,32 @@ void rhr::render::object::text::update_size()
 
 void rhr::render::object::text::register_field()
 {
-	// TODO: fields fix
-	/*
-	if (!m_registered)
-	{
-		m_registered = true;
+	if (m_registered)
+		return;
 
-		if (!m_read_only)
-		{
-			m_location = rhr::stack::plane::primary_plane->get_field().register_field(
-				m_weak_field,
-				get_position_virtual_absolute(),
-				get_size_local(),
-				rhr::handler::input::bullish_layer_arguments);
-		}
+	if (m_mouse_button == nullptr)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to register mouse callbacks for text object because no callback is given");
+		return;
 	}
-	*/
+
+	if (m_field == nullptr)
+	{
+		latte::logger::error(latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to register field of text because field was never set");
+		return;
+	}
+
+	m_registered = true;
+	m_mouse_callback_idx = rhr::handler::input::register_mouse_callback(m_mouse_button, nullptr);
+	m_location = m_field->register_field(this, get_position_virtual_absolute(), get_position_physical_absolute(), get_size_local(), rhr::render::renderer::depth_ui_text);
 }
 
 void rhr::render::object::text::unregister_field()
 {
-	// TODO: fields fix
-	/*
-	if (!m_read_only && m_registered)
-	{
-		m_registered = false;
-		rhr::stack::plane::primary_plane->get_field().unregister_field(m_location.value());
-	}
-	*/
+	if (!m_registered)
+		return;
+
+	m_registered = false;
+	rhr::handler::input::unregister_mouse_callback(m_mouse_callback_idx);
+	m_field->unregister_field(m_location.value());
 }
