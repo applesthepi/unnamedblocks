@@ -5,6 +5,7 @@
 #include <espresso/mod/block/data.hpp>
 #include <cappuccino/registration.hpp>
 #include <latte/file_synthesiser.hpp>
+#include <espresso/registry.hpp>
 
 #if LINUX
 #include <spawn.h>
@@ -19,7 +20,44 @@ extern char **environ;
 
 void thread_build(cap::build_system::method build_method, cap::build_system::type build_type)
 {
+	//
+	// SETUP
+	//
+
 	auto build_file = latte::file_synthesiser::write("toolchain/ubbs/src/lib.rs");
+	auto cargo_file = latte::file_synthesiser::write("toolchain/ubbs/Cargo.toml");
+
+	esp::registry* registry = esp::registry::get();
+
+	auto& registry_definitions = registry->definitions();
+	auto& registry_initialization = registry->initialization();
+	auto& registry_parameters = registry->parameters();
+	auto& registry_libraries = registry->libraries();
+
+	//
+	// BUILD RUST DEFINITIONS
+	//
+
+	{
+		std::string fn_str;
+		fn_str.reserve(100);
+
+		fn_str += "// DEFINITIONS\n\n";
+
+		for (auto definition : registry_definitions)
+		{
+			fn_str += definition;
+			fn_str += "\n";
+		}
+
+		fn_str += "\n// STACKS\n";
+
+		build_file->push_back(fn_str);
+	}
+
+	//
+	// BUILD STACKS
+	//
 
 	u64 function_main		 = 0;
 	bool function_main_found = false;
@@ -356,16 +394,35 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 			}
 		}
 
+		if (!function_main_found)
+		{
+			latte::logger::error(
+				latte::logger::level::EDITOR,
+				"program has no entry points; can not run program without exactly 1 entry point (essentials_main)");
+			rhr::handler::build::confirm_terminated();
+			return;
+		}
+
 		//
-		// BUILD RUST FILE
+		// BUILD RUST FUNCTION
 		//
 
 		std::string fn_str;
 		fn_str.reserve(1000);
 
-		fn_str += "fn sx_";
+		fn_str += "async fn sx_";
 		fn_str += std::to_string(i);
-		fn_str += "() {\n\t// R VALUES\n";
+		fn_str += "(";
+
+		for (usize a = 0; a < registry_parameters.size(); a++)
+		{
+			fn_str += registry_parameters[a].second;
+
+			if (a + 1 < registry_parameters.size())
+				fn_str += ", ";
+		}
+
+		fn_str += ") {\n\t\n\t// R VALUES\n\t\n";
 
 		// R VALUES
 
@@ -380,7 +437,7 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 
 		// L VALUES
 
-		fn_str += "\t\n\t// L VALUES\n";
+		fn_str += "\t\n\t// L VALUES\n\t\n";
 
 		for (usize a = 0; a < type_instances_l.size(); a++)
 		{
@@ -391,7 +448,9 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 			fn_str += ";\n";
 		}
 
-		fn_str += "\t\n\t// BLOCKS\n";
+		// BLOCKS
+
+		fn_str += "\t\n\t// BLOCKS\n\t\n";
 
 		for (auto& replacement : block_instance_replacements)
 		{
@@ -405,25 +464,70 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 		build_file->push_back(fn_str);
 	}
 
-	std::string fn_str;
-	fn_str.reserve(100);
+	//
+	// BUILD RUST MAIN
+	//
 
-	fn_str += "#[no_mangle]\npub extern \"C\" fn ub_run() {\n\tsx_";
-	fn_str += std::to_string(function_main);
-	fn_str += "();\n}";
-
-	build_file->push_back(fn_str);
-
-	build_file->overwrite();
-
-	if (!function_main_found)
 	{
-		latte::logger::error(
-			latte::logger::level::EDITOR,
-			"program has no entry points; can not run program without exactly 1 entry point (essentials_main)");
-		rhr::handler::build::confirm_terminated();
-		return;
+		std::string fn_str;
+		fn_str.reserve(100);
+
+		fn_str += "// MAIN FUNCTION\n\n#[no_mangle]\n#[tokio::main]\npub async extern \"C\" fn ub_run() {\n\t\n\t// INITIALIZATION\n\t\n";
+
+		for (auto initialization : registry_initialization)
+		{
+			fn_str += initialization;
+			fn_str += "\n\t\n";
+		}
+
+		fn_str += "\t// EXECUTE\n\t\n\tsx_";
+		fn_str += std::to_string(function_main);
+		fn_str += "(";
+
+		for (usize a = 0; a < registry_parameters.size(); a++)
+		{
+			fn_str += registry_parameters[a].first;
+
+			if (a + 1 < registry_parameters.size())
+				fn_str += ", ";
+		}
+
+		fn_str += ").await;\n}";
+
+		build_file->push_back(fn_str);
 	}
+
+	//
+	// BUILD CARGO FILE
+	//
+
+	{
+		std::string fn_str;
+		fn_str.reserve(300);
+
+		fn_str += "[package]\n"
+				  "name = \"ubbs\"\n"
+				  "version = \"0.1.0\"\n"
+				  "edition = \"2021\"\n"
+				  "\n"
+				  "[dependencies]\n"
+				  "tokio = { version = \"1.18.1\", features = [\"rt-multi-thread\", \"macros\"] }\n";
+
+		for (auto library : registry_libraries)
+		{
+			fn_str += library;
+			fn_str += "\n";
+		}
+
+		fn_str += "[lib]\n"
+				  "name = \"ubbs\"\n"
+				  "crate-type = [\"cdylib\"]";
+
+		cargo_file->push_back(fn_str);
+	}
+
+	cargo_file->overwrite();
+	build_file->overwrite();
 
 	//
 	// PERFORM BUILD

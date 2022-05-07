@@ -13,6 +13,11 @@
 #define REGISTER_BLOCK(b) registry->blocks().emplace_back(reinterpret_cast<esp::block*>(b))
 #define REGISTER_CATEGORY(c) registry->categories().emplace_back(reinterpret_cast<esp::category*>(c))
 
+#define REGISTER_DEFINITION(d) registry->definitions().emplace_back(d)
+#define REGISTER_INITIALIZATION(i) registry->initialization().emplace_back(i)
+#define REGISTER_PARAMETER(p_sender, p_receiver) registry->parameters().emplace_back(std::make_pair(p_sender, p_receiver))
+#define REGISTER_LIBRARY(l) registry->libraries().emplace_back(l)
+
 namespace esp
 {
 /// Registry for modded classes to be used in the editor.
@@ -36,6 +41,18 @@ public:
 
 	///
 	std::vector<esp::category*>& categories();
+
+	///
+	std::vector<const char*>& definitions();
+
+	///
+	std::vector<const char*>& initialization();
+
+	///
+	std::vector<std::pair<const char*, const char*>>& parameters();
+
+	///
+	std::vector<const char*>& libraries();
 
 	///
 	esp::reg::type* get_type(const char* unlocalized_name);
@@ -70,5 +87,18 @@ private:
 
 	///
 	std::vector<esp::category*> m_categories;
+
+	/// Declared at the top of the rust file. Usually used for defining structs to instantiate for initialization.
+	std::vector<const char*> m_definitions;
+
+	/// Put in the main method of the rust code before the main stack is called. Used for either initializing definitions
+	/// or setting up other external libraries.
+	std::vector<const char*> m_initialization;
+
+	/// Carried to all stacks; Expected variable to exist in the main method from initialization.
+	std::vector<std::pair<const char*, const char*>> m_parameters;
+
+	/// Libraries added to the Cargo.toml of the rust program. Add the imports ("use") in imports.
+	std::vector<const char*> m_libraries;
 };
 }

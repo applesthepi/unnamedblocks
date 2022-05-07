@@ -11,8 +11,9 @@ namespace esp
 class block
 {
 public:
+	// TODO: should not exist
 	///
-	virtual std::string get_mod_unlocalized_name() = 0;
+	virtual const char* get_mod_unlocalized_name() = 0;
 
 	/// How the block will be identified as. Convention example: "mymod_some_block_name".
 	virtual const char* get_unlocalized_name() = 0;
@@ -22,9 +23,6 @@ public:
 
 	/// Example: "println!("{}", <<<0>>>);".
 	virtual const char* get_ubbs_instance() = 0;
-
-	///
-	virtual const char* get_ubbs_definition() = 0;
 
 	/// Does the block start a stack.
 	virtual bool is_topical() = 0;

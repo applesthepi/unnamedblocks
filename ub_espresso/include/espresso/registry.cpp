@@ -30,6 +30,26 @@ std::vector<esp::category*>& esp::registry::categories()
 	return m_categories;
 }
 
+std::vector<const char*>& esp::registry::definitions()
+{
+	return m_definitions;
+}
+
+std::vector<const char*>& esp::registry::initialization()
+{
+	return m_initialization;
+}
+
+std::vector<std::pair<const char*, const char*>>& esp::registry::parameters()
+{
+	return m_parameters;
+}
+
+std::vector<const char*>& esp::registry::libraries()
+{
+	return m_libraries;
+}
+
 esp::reg::type* esp::registry::get_type(const char* unlocalized_name)
 {
 	for (auto type : m_types)
