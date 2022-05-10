@@ -137,6 +137,9 @@ public:
 	/// \return Width of argument.
 	virtual u32 get_width(argument::state* state) = 0;
 
+	///
+	virtual bool capture_mouse() = 0;
+
 	/// Called after any set transform related functions get called during frame update.
 	virtual void ui_transform_update(argument::state* state, rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec) = 0;
 

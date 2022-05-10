@@ -65,7 +65,7 @@ void rhr::handler::category::populate()
 
 				for (usize b = 0; b < blocks.size(); b++)
 				{
-					if (blocks[b]->get_mod_unlocalized_name() == rhr::handler::project::mods[i]
+					if (blocks[b]->mod_unlocalized_name == rhr::handler::project::mods[i]
 						&& blocks[b]->get_category()
 							== categories[a]->get_unlocalized_name())
 					{

@@ -350,6 +350,7 @@ void rhr::stack::collection::ui_deserialize(latte::serializer::node& node)
 	for (auto& child : node.children)
 	{
 		auto stack = std::make_shared<rhr::stack::stack>(get_static_offset());
+		stack->initialize();
 		add_stack(stack, false);
 		stack->deserialize(child);
 	}

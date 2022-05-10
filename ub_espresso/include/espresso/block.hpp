@@ -11,10 +11,6 @@ namespace esp
 class block
 {
 public:
-	// TODO: should not exist
-	///
-	virtual const char* get_mod_unlocalized_name() = 0;
-
 	/// How the block will be identified as. Convention example: "mymod_some_block_name".
 	virtual const char* get_unlocalized_name() = 0;
 
@@ -29,5 +25,8 @@ public:
 
 	///
 	virtual std::vector<esp::argument::initializer> get_arguments() = 0;
+
+	///
+	const char* mod_unlocalized_name;
 };
 }

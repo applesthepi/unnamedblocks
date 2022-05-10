@@ -10,7 +10,7 @@
 
 #define REGISTER_TYPE(t) registry->types().emplace_back(new esp::reg::type(t))
 #define REGISTER_ARGUMENT(a) registry->arguments().emplace_back(reinterpret_cast<esp::argument*>(a))
-#define REGISTER_BLOCK(b) registry->blocks().emplace_back(reinterpret_cast<esp::block*>(b))
+#define REGISTER_BLOCK(b) registry->blocks().emplace_back(reinterpret_cast<esp::block*>(b))->mod_unlocalized_name = MOD_UNLOCALIZED
 #define REGISTER_CATEGORY(c) registry->categories().emplace_back(reinterpret_cast<esp::category*>(c))
 
 #define REGISTER_DEFINITION(d) registry->definitions().emplace_back(d)

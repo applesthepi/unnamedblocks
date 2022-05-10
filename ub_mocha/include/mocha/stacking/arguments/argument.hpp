@@ -24,7 +24,7 @@ public:
 		esp::argument::initializer* esp_argument_initializer);
 	argument(const argument& other);
 	argument(const argument&& other);
-
+	~argument();
 
 	///
 	u32 get_width();

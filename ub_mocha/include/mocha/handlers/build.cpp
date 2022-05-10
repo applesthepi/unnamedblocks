@@ -151,12 +151,17 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 				auto esp_argument = mocha_argument.get_esp_argument();
 				auto esp_argument_state = stacks[i]->get_blocks()[a]->get_arguments()[b].get_esp_argument_state();
 
+				auto ubbs_value = esp_argument->get_ubbs_value(esp_argument_state);
+
+				if (ubbs_value.empty())
+					continue;
+
 				switch (esp_argument_state->mode)
 				{
 				case esp::argument::mode::RAW:
 				{
 					type_instances_r.emplace_back(esp_argument->get_type()->get_ubbs_instance_r());
-					type_instance_data_r.emplace_back(esp_argument->get_ubbs_value(esp_argument_state));
+					type_instance_data_r.emplace_back(ubbs_value);
 
 					auto& ubbs_argument = ubbs_arguments.emplace_back();
 					ubbs_argument += "r_";
@@ -168,7 +173,6 @@ void thread_build(cap::build_system::method build_method, cap::build_system::typ
 				{
 					bool found_var = false;
 					std::string found_var_name;
-					const auto ubbs_value = esp_argument->get_ubbs_value(esp_argument_state);
 
 					for (const auto& var_name : type_instance_ubbs_names_l)
 					{

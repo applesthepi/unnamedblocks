@@ -235,7 +235,7 @@ void rhr::stack::plane::mouse_button(
 											cloned_block->initialize();
 											cloned_block->set_static_offset(get_static_offset());
 
-											cloned_blocks.push_back(std::move(cloned_block));
+											cloned_blocks.emplace_back(cloned_block);
 										}
 
 										dragging_stack->add_blocks(cloned_blocks);
@@ -338,6 +338,7 @@ void rhr::stack::plane::mouse_button(
 													{
 														std::shared_ptr<rhr::stack::collection> new_collection =
 															std::make_shared<rhr::stack::collection>(get_static_offset());
+														new_collection->initialize();
 														update_child_transform(
 															new_collection,
 															i_ui::transform_update_spec_position
@@ -345,6 +346,7 @@ void rhr::stack::plane::mouse_button(
 
 														std::shared_ptr<rhr::stack::stack> new_stack =
 															std::make_shared<rhr::stack::stack>(get_static_offset());
+														new_stack->initialize();
 
 														// clone blocks
 
@@ -357,9 +359,12 @@ void rhr::stack::plane::mouse_button(
 															std::shared_ptr<rhr::stack::block> cloned_block =
 																std::make_shared<rhr::stack::block>(
 																	blocks[i]->get_esp_block()->get_unlocalized_name());
+															cloned_block->initialize();
 															cloned_block->set_static_offset(get_static_offset());
-															// TODO: copy blocks fix for serialization
-															//cloned_block->set_data(blocks[i]->get_data());
+
+															latte::serializer::node base_node;
+															blocks[i]->serialize(base_node);
+															cloned_block->deserialize(base_node);
 
 															cloned_blocks.push_back(std::move(cloned_block));
 														}
@@ -416,6 +421,7 @@ void rhr::stack::plane::mouse_button(
 													{
 														std::shared_ptr<rhr::stack::collection> new_collection =
 															std::make_shared<rhr::stack::collection>(get_static_offset());
+														new_collection->initialize();
 														update_child_transform(
 															new_collection,
 															i_ui::transform_update_spec_position
@@ -423,6 +429,7 @@ void rhr::stack::plane::mouse_button(
 
 														std::shared_ptr<rhr::stack::stack> new_stack =
 															std::make_shared<rhr::stack::stack>(get_static_offset());
+														new_stack->initialize();
 
 														// clone block
 
@@ -433,6 +440,7 @@ void rhr::stack::plane::mouse_button(
 																blocks[local_block_idx]
 																	->get_esp_block()
 																	->get_unlocalized_name());
+														cloned_block->initialize();
 														cloned_block->set_static_offset(get_static_offset());
 														// TODO: copy blocks fix for serialization
 														//cloned_block->set_data(blocks[local_block_idx]->get_data());
@@ -640,6 +648,7 @@ void rhr::stack::plane::ui_deserialize(latte::serializer::node& node)
 	for (auto& child : node.children)
 	{
 		auto collection = std::make_shared<rhr::stack::collection>(get_static_offset());
+		collection->initialize();
 		add_collection(collection, true);
 		collection->deserialize(child);
 	}

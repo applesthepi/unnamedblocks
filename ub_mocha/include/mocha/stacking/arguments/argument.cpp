@@ -37,6 +37,11 @@ rhr::stack::argument::argument::argument(const rhr::stack::argument::argument&& 
 	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
 }
 
+rhr::stack::argument::argument::~argument()
+{
+	m_esp_argument->destroy(&m_esp_argument_state);
+}
+
 u32 rhr::stack::argument::argument::get_width()
 {
 	return m_esp_argument->get_width(&m_esp_argument_state);
@@ -162,4 +167,5 @@ void rhr::stack::argument::argument::ui_deserialize(latte::serializer::node& nod
 	}
 
 	m_esp_argument->ui_deserialize(&m_esp_argument_state, node.children[0]);
+	m_esp_argument->on_set_mode(&m_esp_argument_state);
 }

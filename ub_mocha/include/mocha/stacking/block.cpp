@@ -155,7 +155,7 @@ void rhr::stack::block::update_arguments()
 
 	for (usize i = 0; i < argument_inits.size(); i++)
 	{
-		auto& arg = m_arguments.emplace_back(std::move(rhr::stack::argument::argument(block_color, &m_function_block_update, get_static_offset(), &argument_inits[i])));
+		auto& arg = m_arguments.emplace_back(block_color, &m_function_block_update, get_static_offset(), &argument_inits[i]);
 
 		pad_arguments(width, i, last_arg, &arg, i == argument_inits.size() - 1);
 		last_arg = &arg;
@@ -199,7 +199,7 @@ bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 
 		if (position.x > arg_pos.x && position.x < arg_pos.x + arg.get_width() &&
 			position.y > arg_pos.y && position.y < arg_pos.y + BLOCK_HEIGHT_CONTENT)
-			return true;
+			return arg.get_esp_argument()->capture_mouse();
 	}
 
 	return false;

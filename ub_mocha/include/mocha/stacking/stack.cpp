@@ -74,6 +74,7 @@ u64 rhr::stack::stack::get_widest_block()
 
 void rhr::stack::stack::remove_block(u64 idx)
 {
+	//auto t = m_blocks[idx].use_count();
 	m_blocks.erase(m_blocks.begin() + static_cast<i64>(idx));
 
 	for (usize i = 0; i < m_blocks.size(); i++)
@@ -212,6 +213,7 @@ void rhr::stack::stack::ui_deserialize(latte::serializer::node& node)
 		}
 
 		auto block = std::make_shared<rhr::stack::block>(child.data_values[0]);
+		block->initialize();
 		add_block(block);
 		block->deserialize(child);
 	}
