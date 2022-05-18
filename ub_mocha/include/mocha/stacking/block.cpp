@@ -195,7 +195,7 @@ bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 {
 	for (auto& arg : m_arguments)
 	{
-		auto& arg_pos = arg.get_position_virtual_absolute();
+		auto arg_pos = arg.get_position_virtual_absolute();
 
 		if (position.x > arg_pos.x && position.x < arg_pos.x + arg.get_width() &&
 			position.y > arg_pos.y && position.y < arg_pos.y + BLOCK_HEIGHT_CONTENT)

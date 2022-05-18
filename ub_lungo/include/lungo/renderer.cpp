@@ -53,6 +53,8 @@ void rhr::render::renderer::initialize_window(
 
 void rhr::render::renderer::initialize()
 {
+	lungo::handler::panel::set(new lungo::handler::panel());
+
 	view_matrix		  = glm::mat4(1.0);
 	projection_matrix = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
 
@@ -192,7 +194,6 @@ void rhr::render::renderer::reload_swapchain()
 
 	m_window_primary->recreate_swapchain();
 	initialize_imgui(false);
-	lungo::handler::panel::initialize();
 
 	latte::logger::info(latte::logger::level::SYSTEM, "...recreated swapchain");
 	latte::logger::info(latte::logger::level::SYSTEM, "reloading swapchain dependent objects...");
@@ -208,8 +209,7 @@ void rhr::render::renderer::reload_swapchain()
 			"failed to idle device during swapchain reload; vulkan error code: "
 				+ std::to_string(static_cast<i32>(err)));
 
-	// TODO: render fix
-	lungo::handler::panel::run_reload_swap_chain();
+	lungo::handler::panel::get()->run_reload_swap_chain();
 	//rhr::stack::plane::primary_plane->reload_swap_chain();
 	//rhr::stack::plane::toolbar_plane->reload_swap_chain();
 
@@ -443,16 +443,14 @@ void rhr::render::renderer::render_pass_setup()
 		check_vk_result(err);
 	}
 
-	// TODO: render fix
-	lungo::handler::panel::run_frame_update(1.0);
+	lungo::handler::panel::get()->run_frame_update(1.0);
 	//rhr::stack::plane::primary_plane->frame_update(1.0);
 	//rhr::stack::plane::toolbar_plane->frame_update(1.0);
 
 	for (auto& grid_object : grid_objects)
 		grid_object->frame_update(1.0);
 
-	// TODO: render fix
-	lungo::handler::panel::run_update_buffers();
+	lungo::handler::panel::get()->run_update_buffers();
 	//rhr::stack::plane::primary_plane->update_buffers();
 	//rhr::stack::plane::toolbar_plane->update_buffers();
 
@@ -534,7 +532,7 @@ void rhr::render::renderer::render_pass_master()
 		//		vkCmdBindPipeline(*m_window_primary->get_active_command_buffer(), VK_PIPELINE_BIND_POINT_GRAPHICS,
 		// rhr::render::pipeline::ui_texture_pipeline);
 
-		lungo::handler::panel::run_master_render_pass();
+		lungo::handler::panel::get()->run_master_render_pass();
 
 		for (auto& grid_object : grid_objects)
 			grid_object->render();

@@ -37,6 +37,7 @@ rhr::handler::field::field()
 	, m_idx(0)
 	, m_rectangle_cursor(std::make_shared<rhr::render::object::rectangle>())
 	, m_rectangle_highlight(std::make_shared<rhr::render::object::rectangle>())
+	, m_static_offset(nullptr)
 {
 	m_rectangle_cursor->initialize();
 	m_rectangle_highlight->initialize();
@@ -115,6 +116,8 @@ void rhr::handler::field::reload_swap_chain()
 void rhr::handler::field::mouse_button(
 	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
 {
+	position -= *m_static_offset;
+
 	// TODO: static offset
 	//position -= *rhr::stack::plane::primary_plane->get_static_offset();
 
@@ -591,6 +594,11 @@ void rhr::handler::field::update_field_size(const rhr::handler::field_data::loca
 	update_guests(location);
 }
 
+void rhr::handler::field::set_static_offset(glm::vec<2, i32>* static_offset)
+{
+	m_static_offset = static_offset;
+}
+
 std::optional<rhr::handler::field_data::data*> rhr::handler::field::find_first_data(glm::vec<2, i32> position)
 {
 	glm::vec<2, usize> cell_position = calculate_cell_position(position);
@@ -708,7 +716,8 @@ void rhr::handler::field::update_cursor()
 {
 	// TODO: static offset
 	m_rectangle_cursor->set_position_local_physical(
-		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y),
+		glm::vec<2, i32>(m_cursor_position.x - 1, m_cursor_position.y)
+		    + *m_static_offset,
 			//- rhr::stack::plane::primary_plane->get_position_virtual_offset()
 			//+ *rhr::stack::plane::primary_plane->get_static_offset(),
 		true);
@@ -718,7 +727,8 @@ void rhr::handler::field::update_highlight()
 {
 	// TODO: static offset
 	m_rectangle_highlight->set_position_local_physical(
-		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2),
+		glm::vec<2, i32>(m_mouse_drag_start_position.x, m_mouse_drag_start_position.y + 2)
+			+ *m_static_offset,
 			//- rhr::stack::plane::primary_plane->get_position_virtual_offset()
 			//+ *rhr::stack::plane::primary_plane->get_static_offset(),
 		true);

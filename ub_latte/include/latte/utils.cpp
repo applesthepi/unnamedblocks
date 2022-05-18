@@ -1,5 +1,20 @@
 #include "utils.hpp"
 
+void STRING_DOUBLE_ZERO(std::string& str)
+{
+	usize offset = 1;
+
+	if (str.find_last_not_of('0') == str.find('.'))
+		offset = 2;
+
+	auto last_not_of = str.find_last_not_of('0');
+
+	if (last_not_of + offset >= str.size())
+		return;
+
+	str.erase(last_not_of + offset, std::string::npos);
+}
+
 namespace cap::endianness
 {
 std::array<char, 2> to_ne_bytes(u16 x)

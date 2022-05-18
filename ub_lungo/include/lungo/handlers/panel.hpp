@@ -84,10 +84,16 @@ public:
 	};
 
 	///
-	static void initialize();
+	static panel* get();
 
 	///
-	static void create_panel(
+	static void set(panel* pan);
+
+	///
+	void initialize();
+
+	///
+	void create_panel(
 		const std::string& id,
 		const std::function<void(panel::data&, double delta_time)>& function_frame_update,
 		const std::function<void(panel::data&)>& function_render,
@@ -98,24 +104,30 @@ public:
 		const std::function<void(panel::data&)>& function_update_size);
 
 	///
-	static void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_imgui);
+	void create_panel(const std::string& id, const std::function<void(panel::data&)>& function_imgui);
 
 	///
-	static void run_frame_update(double delta_time);
+	void run_frame_update(double delta_time);
 
 	/// Either uses imgui for the master render pass or starts a custom render pass.
-	static void run_imgui();
+	void run_imgui();
 
 	///
-	static void run_reload_swap_chain();
+	void run_reload_swap_chain();
 
 	///
-	static void run_update_buffers();
+	void run_update_buffers();
 
 	///
-	static void run_master_render_pass();
+	void run_master_render_pass();
 
 	///
-	static std::vector<data> panels;
+	std::vector<data> panels;
+private:
+	///
+	void create_panel_render_pass(data& local_data);
+
+	///
+	static panel* m_panel;
 };
 }

@@ -26,6 +26,7 @@ rhr::stack::plane::plane(bool toolbar)
 	, m_mouse_button_idx(0)
 {
 	cap_offset();
+	m_field.set_static_offset(get_static_offset());
 
 	m_background->initialize();
 	m_dragging_connecting_line->initialize();
@@ -442,6 +443,11 @@ void rhr::stack::plane::mouse_button(
 																	->get_unlocalized_name());
 														cloned_block->initialize();
 														cloned_block->set_static_offset(get_static_offset());
+
+														latte::serializer::node base_node;
+														blocks[local_block_idx]->serialize(base_node);
+														cloned_block->deserialize(base_node);
+
 														// TODO: copy blocks fix for serialization
 														//cloned_block->set_data(blocks[local_block_idx]->get_data());
 
@@ -727,7 +733,7 @@ void rhr::stack::plane::drag_stack(
 
 	// LOG_DEBUG_VEC2(virtual_absolute);
 
-	m_dragging_begin_object = virtual_absolute;
+	m_dragging_begin_object = virtual_absolute - *get_static_offset();
 	m_dragging_up			= up;
 	m_dragging_begin_mouse	= rhr::handler::input::get_mouse_position();
 	m_dragging_collection	= collection;
@@ -738,7 +744,7 @@ void rhr::stack::plane::undrag(const glm::vec<2, i32>& position)
 {
 	if (dragging_stack())
 	{
-		glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_virtual_absolute();
+		glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_virtual_absolute() + *get_static_offset();
 		// LOG_DEBUG(std::to_string(pixel_position.x) + ", " + std::to_string(pixel_position.y));
 		// pixel_position += *get_static_offset();
 
@@ -864,7 +870,7 @@ void rhr::stack::plane::dragging_stack_update()
 	m_dragging_connecting_line->set_position_local_physical(
 		rhr::handler::input::get_mouse_position() - m_dragging_begin_mouse + m_dragging_begin_object, true);
 
-	glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_physical_absolute();
+	glm::vec<2, i32> pixel_position = m_dragging_collection->get_position_physical_absolute() + *get_static_offset();
 
 	if (!(pixel_position.x >= rhr::stack::plane::primary_plane->get_position_virtual_absolute().x
 		  && pixel_position.x < rhr::stack::plane::primary_plane->get_size_local().x
@@ -982,7 +988,7 @@ void rhr::stack::plane::set_snap(
 			latte::logger::fatal(
 				latte::logger::level::EDITOR, __FILE__, __LINE__, "failed to lock dragging snap collection");
 
-		m_dragging_connecting_line->set_point_1(m_dragging_collection->get_position_physical_absolute());
+		m_dragging_connecting_line->set_point_1(m_dragging_collection->get_position_physical_absolute() + *plane_offset);
 
 		if (auto dragging_stack = stack.lock())
 			m_dragging_connecting_line->set_point_2(

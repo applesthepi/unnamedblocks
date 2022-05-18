@@ -76,6 +76,10 @@
 #define BLOCK_HEIGHT_CONTENT (BLOCK_HEIGHT - (BLOCK_PADDING * 2))
 #define BLOCK_ARG_DIFF 0.25
 
+//namespace util { template <typename T> std::string to_string(const T& t) {     std::string str{std::to_string (t)};     int offset{1};     if (str.find_last_not_of('0') == str.find('.')) {         offset = 0;     }     str.erase(str.find_last_not_of('0') + offset, std::string::npos);      return str; } }
+
+void STRING_DOUBLE_ZERO(std::string& str);
+
 // https://stackoverflow.com/a/9864472
 #define FF_TMP	template<typename... Args>
 #define FF_FARG std::forward<Args>(args)...

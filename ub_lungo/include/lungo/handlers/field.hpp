@@ -53,6 +53,9 @@ public:
 	///
 	void update_field_size(const rhr::handler::field_data::location& location, glm::vec<2, i32> size);
 
+	///
+	void set_static_offset(glm::vec<2, i32>* static_offset);
+
 private:
 	///
 	void resize(const glm::vec<2, usize>& size);
@@ -153,5 +156,8 @@ private:
 
 	///
 	std::shared_ptr<rhr::render::object::rectangle> m_rectangle_highlight;
+
+	///
+	glm::vec<2, i32>* m_static_offset;
 };
 } // namespace rhr::handler

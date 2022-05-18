@@ -84,7 +84,7 @@ i32 main()
 	);
 
 	async_setup();
-	lungo::handler::panel::initialize();
+	lungo::handler::panel::get()->initialize();
 	// std::future<void> asyncSetup = std::async(std::launch::async,
 	// AsyncSetup);
 
@@ -98,7 +98,7 @@ i32 main()
 	// CREATE PANELS
 	//
 
-	lungo::handler::panel::create_panel(
+	lungo::handler::panel::get()->create_panel(
 		"plane_primary",
 		[](lungo::handler::panel::data& data, double delta_time)
 		{
@@ -131,7 +131,7 @@ i32 main()
 			rhr::stack::plane::primary_plane->set_size_max(true);
 		});
 
-	lungo::handler::panel::create_panel(
+	lungo::handler::panel::get()->create_panel(
 		"plane_toolbar",
 		[](lungo::handler::panel::data& data, double delta_time)
 		{
@@ -165,7 +165,7 @@ i32 main()
 		}
 	);
 
-	lungo::handler::panel::create_panel(
+	lungo::handler::panel::get()->create_panel(
 		"console",
 		[](lungo::handler::panel::data& data)
 		{
@@ -326,6 +326,7 @@ i32 main()
 	// DEFAULT BLOCKS
 	//
 
+#if 0
 	{
 		std::shared_ptr<rhr::stack::collection> testCollection =
 			std::make_shared<rhr::stack::collection>(rhr::stack::plane::primary_plane->get_static_offset());
@@ -364,6 +365,9 @@ i32 main()
 		testBlock2State->mode = esp::argument::mode::VAR;
 		testBlock2->get_arguments()[1].get_esp_argument()->on_set_mode(testBlock2State);
 	}
+#endif
+
+	rhr::handler::project::load_project("save.ub");
 
 	//
 	// LOOP SETUP
@@ -472,12 +476,12 @@ i32 main()
 			ImGui::SameLine();
 
 			if (ImGui::Button("save"))
-				rhr::handler::project::save_project("test.ub");
+				rhr::handler::project::save_project("save.ub");
 
 			ImGui::SameLine();
 
 			if (ImGui::Button("load"))
-				rhr::handler::project::load_project("test.ub");
+				rhr::handler::project::load_project("save.ub");
 
 			if (opt_fullscreen)
 				ImGui::PopStyleVar(2);
@@ -500,7 +504,7 @@ i32 main()
 		// (rhr::render::renderer::get()->get_window_primary()->get_swapchain_recreation_flag())
 		//	continue;
 
-		lungo::handler::panel::run_imgui();
+		lungo::handler::panel::get()->run_imgui();
 		rhr::handler::category::render();
 		rhr::handler::context::run_imgui();
 

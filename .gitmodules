@@ -25,3 +25,6 @@
 [submodule "dependencies/vma"]
 	path = dependencies/vma
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+[submodule "dependencies/macchiato"]
+	path = dependencies/macchiato
+	url = https://github.com/applesthepi/macchiato

@@ -111,7 +111,7 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 {
 	if (ignore_y)
 	{
-		i32 field_position = get_position_virtual_absolute().x;
+		i32 field_position = get_position_virtual_absolute().x + get_static_offset()->x;
 		i32 delta_position = position.x - field_position;
 
 		if (/*m_char_contacts.size() == 0 ||*/
@@ -141,6 +141,8 @@ std::optional<usize> rhr::render::object::text::pick_index(glm::vec<2, i32> posi
 	{
 		glm::vec<2, i32> field_position = get_position_virtual_absolute();
 		glm::vec<2, i32> delta_position = position - field_position;
+
+		//LOG_DEBUG_VEC2(delta_position);
 
 		if (delta_position.x < -EDGE_CLICK_OVERHANG || delta_position.x > get_size_local().x + EDGE_CLICK_OVERHANG
 			|| delta_position.y < 0 || delta_position.y > get_size_local().y)
