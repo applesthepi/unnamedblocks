@@ -27,4 +27,4 @@
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
 [submodule "dependencies/macchiato"]
 	path = dependencies/macchiato
-	url = https://github.com/applesthepi/macchiato
+	url = https://github.com/applesthepi/ub_macchiato
