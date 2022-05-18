@@ -103,6 +103,7 @@ set(UB_DEPENDENCIES_INCLUDE
 	${CMAKE_SOURCE_DIR}/dependencies/glm
 	${CMAKE_SOURCE_DIR}/dependencies/freetype/include
 	${CMAKE_SOURCE_DIR}/dependencies/vma/include
+	${CMAKE_SOURCE_DIR}/dependencies/macchiato
 	${Vulkan_INCLUDE_DIRS})
 
 message(STATUS "VULKAN ------------- ${VULKAN_PATH}")
