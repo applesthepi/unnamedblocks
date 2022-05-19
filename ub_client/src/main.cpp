@@ -31,6 +31,8 @@ static void button_callback_build_debug(void* data)
 	rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
 }
 
+#include <macchiato/window.hpp>
+
 i32 main()
 {
 

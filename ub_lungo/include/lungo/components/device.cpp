@@ -61,6 +61,8 @@ rhr::render::component::device::device()
 		return;
 	}
 
+	// ignoring in macchiato
+
 	u32 extension_count = 0;
 	vk::enumerate_instance_extension_properties(nullptr, &extension_count, nullptr);
 

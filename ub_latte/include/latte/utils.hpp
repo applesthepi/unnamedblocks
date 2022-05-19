@@ -69,6 +69,8 @@
 #define TIME_POINT std::chrono::steady_clock::time_point
 #endif
 
+#define TIME_POINT_NOW std::chrono::high_resolution_clock::now()
+
 #include "cutils.h"
 
 #define BLOCK_PADDING 2
@@ -146,6 +148,34 @@ FF_TMP auto get_physical_device_properties(FF_ARG) -> decltype(vkGetPhysicalDevi
 {
 	return vkGetPhysicalDeviceProperties(FF_FARG);
 }
+FF_TMP auto get_instance_proc_addr(FF_ARG) -> decltype(vkGetInstanceProcAddr(FF_FARG))
+{
+	return vkGetInstanceProcAddr(FF_FARG);
+}
+FF_TMP auto get_physical_device_queue_family_properties(FF_ARG) -> decltype(vkGetPhysicalDeviceQueueFamilyProperties(FF_FARG))
+{
+	return vkGetPhysicalDeviceQueueFamilyProperties(FF_FARG);
+}
+FF_TMP auto get_physical_device_surface_support_khr(FF_ARG) -> decltype(vkGetPhysicalDeviceSurfaceSupportKHR(FF_FARG))
+{
+	return vkGetPhysicalDeviceSurfaceSupportKHR(FF_FARG);
+}
+FF_TMP auto get_physical_device_surface_capabilities_khr(FF_ARG) -> decltype(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(FF_FARG))
+{
+	return vkGetPhysicalDeviceSurfaceCapabilitiesKHR(FF_FARG);
+}
+FF_TMP auto get_physical_device_surface_formats_khr(FF_ARG) -> decltype(vkGetPhysicalDeviceSurfaceFormatsKHR(FF_FARG))
+{
+	return vkGetPhysicalDeviceSurfaceFormatsKHR(FF_FARG);
+}
+FF_TMP auto get_physical_device_surface_present_modes_khr(FF_ARG) -> decltype(vkGetPhysicalDeviceSurfacePresentModesKHR(FF_FARG))
+{
+	return vkGetPhysicalDeviceSurfacePresentModesKHR(FF_FARG);
+}
+FF_TMP auto get_physical_device_features(FF_ARG) -> decltype(vkGetPhysicalDeviceFeatures(FF_FARG))
+{
+	return vkGetPhysicalDeviceFeatures(FF_FARG);
+}
 
 // API Enumeration.
 FF_TMP auto enumerate_instance_extension_properties(FF_ARG) -> decltype(vkEnumerateInstanceExtensionProperties(FF_FARG))
@@ -155,6 +185,14 @@ FF_TMP auto enumerate_instance_extension_properties(FF_ARG) -> decltype(vkEnumer
 FF_TMP auto enumerate_physical_device(FF_ARG) -> decltype(vkEnumeratePhysicalDevices(FF_FARG))
 {
 	return vkEnumeratePhysicalDevices(FF_FARG);
+}
+FF_TMP auto enumerate_instance_layer_properties(FF_ARG) -> decltype(vkEnumerateInstanceLayerProperties(FF_FARG))
+{
+	return vkEnumerateInstanceLayerProperties(FF_FARG);
+}
+FF_TMP auto enumerate_device_extension_properties(FF_ARG) -> decltype(vkEnumerateDeviceExtensionProperties(FF_FARG))
+{
+	return vkEnumerateDeviceExtensionProperties(FF_FARG);
 }
 
 // API Allocation.

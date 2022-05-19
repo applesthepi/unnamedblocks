@@ -103,7 +103,6 @@ set(UB_DEPENDENCIES_INCLUDE
 	${CMAKE_SOURCE_DIR}/dependencies/glm
 	${CMAKE_SOURCE_DIR}/dependencies/freetype/include
 	${CMAKE_SOURCE_DIR}/dependencies/vma/include
-	${CMAKE_SOURCE_DIR}/dependencies/macchiato
 	${Vulkan_INCLUDE_DIRS})
 
 message(STATUS "VULKAN ------------- ${VULKAN_PATH}")
@@ -124,6 +123,7 @@ set(UB_INCLUDES
 	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
 	"${CMAKE_SOURCE_DIR}/ub_espresso/include"
 	"${CMAKE_SOURCE_DIR}/ub_latte/include"
+	"${CMAKE_SOURCE_DIR}/ub_macchiato/include"
 	)
 
 #find_package(LLVM REQUIRED CONFIG)
@@ -143,6 +143,7 @@ set(UB_INCLUDES
 
 add_subdirectory("ub_client")
 add_subdirectory("ub_lungo")
+add_subdirectory("ub_macchiato")
 add_subdirectory("ub_mocha")
 add_subdirectory("ub_latte")
 add_subdirectory("ub_cappuccino")
