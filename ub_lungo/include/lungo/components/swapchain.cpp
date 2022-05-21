@@ -65,6 +65,11 @@ rhr::render::component::swapchain::swapchain()
 		!= VK_SUCCESS)
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create swap chain");
 
+
+
+
+
+
 	m_frames.resize(image_count);
 
 	std::vector<vk::image> swapchain_images(image_count);

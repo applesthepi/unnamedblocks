@@ -1,65 +1,20 @@
 #pragma once
 #include "config.h"
 
+#include "input.hpp"
 #include "device.hpp"
+#include "swapchain.hpp"
+#include "pipeline.hpp"
+#include "command_pool.hpp"
+#include "renderpass.hpp"
+#include "descriptor_set.hpp"
+#include "framebuffer.hpp"
+#include "texture_sampler.hpp"
 
 #include <latte/utils.hpp>
 
 namespace mac::window
 {
-///
-enum class mouse_operation
-{
-	HOVER_ON,
-	HOVER_OFF,
-	CLICK,
-	PRESS,
-	DOUBLE_PRESS,
-	TRIPLE_PRESS,
-	RELEASE,
-	MOVE,
-	SCROLL_VERTICAL,
-	SCROLL_HORIZONTAL
-};
-
-///
-enum class mouse_button
-{
-	LEFT,
-	MIDDLE,
-	RIGHT
-};
-
-///
-struct key_state
-{
-	i16 key;
-
-	bool down;
-	bool shift;
-	bool ctrl;
-	bool alt;
-};
-
-///
-struct mouse_state
-{
-	glm::vec<2, i32> position;
-	f32 scroll;
-	mac::window::mouse_operation operation;
-	mac::window::mouse_button button;
-};
-
-///
-enum class capture
-{
-	BLOCK, PASS
-};
-
-using callback_key = void(const mac::window::key_state&);
-using callback_text = void(const mac::window::key_state&);
-using callback_mouse = mac::window::capture(const mac::window::mouse_state&);
-
 ///
 struct state
 {
@@ -67,62 +22,41 @@ struct state
 	glfw::window* window;
 
 	///
-	mac::device::state* device;
-
-	///
 	vk::surface_khr surface;
 
 	///
-	std::vector<std::function<callback_key>> key_callbacks;
+	mac::input::state* input_state;
 
 	///
-	std::vector<u64> key_callback_idx;
+	mac::device::state* device_state;
 
 	///
-	u64 key_callback_idx_counter;
+	mac::swapchain::state* swapchain_state;
 
 	///
-	std::vector<std::function<callback_text>> text_callbacks;
+	mac::command_pool::state* command_pool_state;
 
 	///
-	std::vector<u64> text_callback_idx;
+	vk::descriptor_pool descriptor_pool;
 
 	///
-	u64 text_callback_idx_counter;
+	std::vector<std::pair<std::string, mac::renderpass::state*>> renderpasses;
 
 	///
-	std::vector<std::function<callback_mouse>> mouse_callbacks;
+	std::vector<std::pair<std::string, mac::pipeline::state*>> pipelines;
 
 	///
-	std::vector<i64> mouse_callback_layers;
+	std::vector<std::pair<std::string, mac::descriptor_set::state*>> descriptor_sets;
 
 	///
-	std::vector<u64> mouse_callback_idx;
+	std::vector<std::pair<std::string, mac::texture_sampler::state*>> texture_samplers;
 
 	///
-	u64 mouse_callback_idx_counter;
-
-	///
-	bool shift_down;
-
-	///
-	bool control_down;
-
-	///
-	bool alt_down;
-
-	///
-	std::vector<TIME_POINT> press_log;
-
-	///
-	glm::vec<2, i32> mouse_position;
-
-	///
-	glm::vec<2, i32> screen_position;
+	std::vector<mac::framebuffer::state*> framebuffers;
 };
 
 ///
-void initialize();
+void global_initialization();
 
 ///
 mac::window::state* create(const std::string& title, glm::vec<2, i32> size);
@@ -131,38 +65,14 @@ mac::window::state* create(const std::string& title, glm::vec<2, i32> size);
 void destroy(mac::window::state* window_state);
 
 ///
-void setup_rendering(mac::window::state* window_state);
+mac::renderpass::state* get_renderpass(mac::window::state* window_state, const std::string& name);
 
 ///
-u64 register_key_callback(mac::window::state* window_state, std::function<mac::window::callback_key> key_callback);
+mac::pipeline::state* get_pipeline(mac::window::state* window_state, const std::string& name);
 
 ///
-u64 register_text_callback(mac::window::state* window_state, std::function<mac::window::callback_text> text_callback);
+mac::descriptor_set::state* get_descriptor_set(mac::window::state* window_state, const std::string& name);
 
 ///
-u64 register_mouse_callback(mac::window::state* window_state, i64 layer, std::function<mac::window::callback_mouse> mouse_callback);
-
-///
-void unregister_key_callback(mac::window::state* window_state, u64 key_callback_idx);
-
-///
-void unregister_text_callback(mac::window::state* window_state, u64 text_callback_idx);
-
-///
-void unregister_mouse_callback(mac::window::state* window_state, u64 mouse_callback_idx);
-
-///
-std::optional<i64> check_key_callback(mac::window::state* window_state, u64 key_callback_idx);
-
-///
-std::optional<i64> check_text_callback(mac::window::state* window_state, u64 text_callback_idx);
-
-///
-std::optional<i64> check_mouse_callback(mac::window::state* window_state, u64 mouse_callback_idx);
-
-// Lower layers get invoked first, then it goes up.
-i64 layer_text  = 0;
-i64 layer_block = 1000000;
-i64 layer_collection = 2000000;
-i64 layer_plane = 3000000;
+mac::texture_sampler::state* get_texture_sampler(mac::window::state* window_state, const std::string& name);
 }

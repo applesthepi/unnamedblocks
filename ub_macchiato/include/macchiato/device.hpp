@@ -8,35 +8,6 @@
 namespace mac::device
 {
 ///
-struct queue_family_indices
-{
-	///
-	std::optional<u32> graphics_family;
-
-	///
-	std::optional<u32> present_family;
-
-	///
-	[[nodiscard]] bool complete() const
-	{
-		return graphics_family.has_value() && present_family.has_value();
-	}
-};
-
-///
-struct swap_chain_support_details
-{
-	///
-	vk::surface_capabilities_khr capabilities;
-
-	///
-	std::vector<vk::surface_format_khr> formats;
-
-	///
-	std::vector<vk::present_mode_khr> present_modes;
-};
-
-///
 struct state
 {
 	///
@@ -55,7 +26,7 @@ struct state
 	vk::physical_device physical_device;
 
 	///
-	vk::device device;
+	vk::device logical_device;
 
 	///
 	vk::queue graphics_queue;
@@ -75,12 +46,6 @@ bool shave_validation_layer_support(std::vector<mac::validation_layer>& validati
 
 ///
 void populate_debug_utils_messenger_create_info(vk::debug_utils_messenger_create_info& debug_utils_messenger_create_info);
-
-///
-mac::device::queue_family_indices find_queue_families(vk::physical_device& device, vk::surface_khr* surface);
-
-///
-mac::device::swap_chain_support_details query_swap_chain_support(vk::physical_device& device, vk::surface_khr* surface);
 
 ///
 VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(

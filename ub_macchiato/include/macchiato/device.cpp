@@ -1,5 +1,7 @@
 #include "device.hpp"
 
+#include "swapchain.hpp"
+
 mac::device::state* mac::device::create(bool enable_validation, const std::string& application_name)
 {
 	auto* device_state = new mac::device::state {
@@ -125,7 +127,7 @@ void mac::device::setup_rendering(mac::device::state* device_state, vk::surface_
 
 	auto function_is_device_suitable = [surface, &device_extensions](vk::physical_device& device)
 	{
-		mac::device::queue_family_indices device_queue_family_indices = find_queue_families(device, surface);
+		auto device_queue_family_indices = mac::swapchain::find_queue_families(device, surface);
 
 		u32 extension_count;
 		vk::enumerate_device_extension_properties(device, nullptr, &extension_count, nullptr);
@@ -152,7 +154,7 @@ void mac::device::setup_rendering(mac::device::state* device_state, vk::surface_
 			}
 		}
 
-		auto swap_chain_support = query_swap_chain_support(device, surface);
+		auto swap_chain_support = mac::swapchain::query_swapchain_support(device, surface);
 		bool swap_chain_adequate = !swap_chain_support.formats.empty() && !swap_chain_support.present_modes.empty();
 
 		vk::physical_device_features physical_device_features;
@@ -178,7 +180,7 @@ void mac::device::setup_rendering(mac::device::state* device_state, vk::surface_
 
 	// CREATE LOGICAL DEVICE
 
-	auto indices = mac::device::find_queue_families(device_state->physical_device, surface);
+	auto indices = mac::swapchain::find_queue_families(device_state->physical_device, surface);
 	std::set<u32> unique_queue_families = {indices.graphics_family.value(), indices.present_family.value()};
 	std::vector<vk::device_queue_create_info> device_queue_create_infos;
 
@@ -219,13 +221,13 @@ void mac::device::setup_rendering(mac::device::state* device_state, vk::surface_
 	else
 		device_create_info.enabledLayerCount = 0;
 
-	if (vk::create_device(device_state->physical_device, &device_create_info, nullptr, &device_state->device) != VK_SUCCESS)
+	if (vk::create_device(device_state->physical_device, &device_create_info, nullptr, &device_state->logical_device) != VK_SUCCESS)
 	{
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create logical device link to gpu");
 		return;
 	}
 
-	vk::get_device_queue(device_state->device, indices.graphics_family.value(), 0, &device_state->graphics_queue);
+	vk::get_device_queue(device_state->logical_device, indices.graphics_family.value(), 0, &device_state->graphics_queue);
 }
 
 bool mac::device::shave_validation_layer_support(std::vector<mac::validation_layer>& validation_layers)
@@ -280,73 +282,6 @@ void mac::device::populate_debug_utils_messenger_create_info(
 	debug_utils_messenger_create_info.messageSeverity   = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
 	debug_utils_messenger_create_info.messageType       = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
 	debug_utils_messenger_create_info.pfnUserCallback   = debug_callback;
-}
-
-mac::device::queue_family_indices
-mac::device::find_queue_families(vk::physical_device& device, vk::surface_khr* surface)
-{
-	mac::device::queue_family_indices queue_family_indices = {};
-
-	u32 queue_family_count = 0;
-	vk::get_physical_device_queue_family_properties(device, &queue_family_count, nullptr);
-
-	std::vector<vk::queue_family_properties> queue_families(queue_family_count);
-	vk::get_physical_device_queue_family_properties(device, &queue_family_count, queue_families.data());
-
-	for (i64 i = 0; i < queue_families.size(); i++)
-	{
-		vk::bool32 present_support = false;
-		vk::get_physical_device_surface_support_khr(device, i, *surface, &present_support);
-
-		if (present_support)
-			queue_family_indices.present_family.emplace(i);
-
-		if (queue_families[i].queueFlags & VK_QUEUE_GRAPHICS_BIT)
-			queue_family_indices.graphics_family.emplace(i);
-
-		if (queue_family_indices.complete())
-			return queue_family_indices;
-
-		queue_family_indices.present_family.reset();
-		queue_family_indices.graphics_family.reset();
-	}
-
-	latte::logger::fatal(latte::logger::level::SYSTEM, "no supported vulkan devices found");
-	return queue_family_indices;
-}
-
-mac::device::swap_chain_support_details
-mac::device::query_swap_chain_support(vk::physical_device& device, vk::surface_khr* surface)
-{
-	mac::device::swap_chain_support_details details = {};
-
-	vk::get_physical_device_surface_capabilities_khr(device, *surface, &details.capabilities);
-
-	u32 format_count;
-	vk::get_physical_device_surface_formats_khr(device, *surface, &format_count, nullptr);
-
-	if (format_count == 0)
-	{
-		latte::logger::fatal(latte::logger::level::SYSTEM, "no supported vulkan formats found");
-		return details;
-	}
-
-	details.formats.resize(format_count);
-	vk::get_physical_device_surface_formats_khr(device, *surface, &format_count, details.formats.data());
-
-	u32 present_mode_count;
-	vk::get_physical_device_surface_present_modes_khr(device, *surface, &present_mode_count, nullptr);
-
-	if (present_mode_count == 0)
-	{
-		latte::logger::fatal(latte::logger::level::SYSTEM, "no supported vulkan present modes found");
-		return details;
-	}
-
-	details.present_modes.resize(present_mode_count);
-	vk::get_physical_device_surface_present_modes_khr(device, *surface, &present_mode_count, details.present_modes.data());
-
-	return details;
 }
 
 VkBool32 mac::device::debug_callback(

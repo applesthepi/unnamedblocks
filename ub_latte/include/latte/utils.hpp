@@ -26,6 +26,7 @@
 #include <unordered_map>
 #include <vector>
 #include <sstream>
+#include <stack>
 
 #include <stb/stb_image.h>
 #include <zstd.h>
@@ -82,6 +83,27 @@
 
 void STRING_DOUBLE_ZERO(std::string& str);
 
+/// Reads file bytes into a char vector allocated on heap.
+std::vector<char>* READ_FILE_BYTES_VC(const std::string& file_name)
+{
+	std::ifstream file(file_name, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open())
+	{
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to open file \"" + file_name + "\"");
+		return nullptr;
+	}
+
+	i64 file_size = static_cast<i64>(file.tellg());
+	auto buffer   = new std::vector<char>(file_size);
+
+	file.seekg(0);
+	file.read(buffer->data(), file_size);
+	file.close();
+
+	return buffer;
+}
+
 // https://stackoverflow.com/a/9864472
 #define FF_TMP	template<typename... Args>
 #define FF_FARG std::forward<Args>(args)...
@@ -133,6 +155,18 @@ FF_TMP auto create_descriptor_pool(FF_ARG) -> decltype(vkCreateDescriptorPool(FF
 FF_TMP auto create_sampler(FF_ARG) -> decltype(vkCreateSampler(FF_FARG))
 {
 	return vkCreateSampler(FF_FARG);
+}
+FF_TMP auto create_shader_module(FF_ARG) -> decltype(vkCreateShaderModule(FF_FARG))
+{
+	return vkCreateShaderModule(FF_FARG);
+}
+FF_TMP auto create_pipeline_layout(FF_ARG) -> decltype(vkCreatePipelineLayout(FF_FARG))
+{
+	return vkCreatePipelineLayout(FF_FARG);
+}
+FF_TMP auto create_graphics_pipelines(FF_ARG) -> decltype(vkCreateGraphicsPipelines(FF_FARG))
+{
+	return vkCreateGraphicsPipelines(FF_FARG);
 }
 
 // API Getters.
@@ -199,6 +233,10 @@ FF_TMP auto enumerate_device_extension_properties(FF_ARG) -> decltype(vkEnumerat
 FF_TMP auto allocate_command_buffers(FF_ARG) -> decltype(vkAllocateCommandBuffers(FF_FARG))
 {
 	return vkAllocateCommandBuffers(FF_FARG);
+}
+FF_TMP auto allocate_descriptor_sets(FF_ARG) -> decltype(vkAllocateDescriptorSets(FF_FARG))
+{
+	return vkAllocateDescriptorSets(FF_FARG);
 }
 
 // API Begin & End.
@@ -301,6 +339,7 @@ typedef VkDescriptorSetLayoutBinding descriptor_set_layout_binding;
 typedef VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info;
 typedef VkDescriptorSetLayout descriptor_set_layout;
 typedef VkDescriptorSet descriptor_set;
+typedef VkDescriptorSetAllocateInfo descriptor_set_allocate_info;
 
 typedef VkPhysicalDeviceMemoryProperties physical_device_memory_properties;
 typedef VkPhysicalDevice physical_device;
@@ -347,15 +386,20 @@ typedef VkLayerProperties layer_properties;
 typedef VkSubmitInfo submit_info;
 typedef VkExtensionProperties extension_properties;
 typedef VkQueueFamilyProperties queue_family_properties;
+typedef VkShaderModuleCreateInfo shader_module_create_info;
 typedef VkShaderModule shader_module;
 typedef VkQueue queue;
 typedef VkResult result;
 typedef VkCullModeFlags cull_mode_flags;
 typedef VkViewport viewport;
 typedef VkDynamicState dynamic_state;
+typedef VkFilter filter;
+typedef VkSamplerAddressMode sampler_address_mode;
 
 typedef VkExtent2D extent_2d;
 typedef VkRect2D rect_2d;
+typedef VkVertexInputBindingDescription vertex_input_binding_description;
+typedef VkVertexInputAttributeDescription vertex_input_attribute_description;
 
 typedef VkSubpassDependency subpass_dependency;
 typedef VkAttachmentDescription attachment_description;
@@ -424,6 +468,10 @@ FF_TMP auto get_window_position(FF_ARG) -> decltype(glfwGetWindowPos(FF_FARG))
 FF_TMP auto get_required_instance_extensions(FF_ARG) -> decltype(glfwGetRequiredInstanceExtensions(FF_FARG))
 {
 	return glfwGetRequiredInstanceExtensions(FF_FARG);
+}
+FF_TMP auto get_framebuffer_size(FF_ARG) -> decltype(glfwGetFramebufferSize(FF_FARG))
+{
+	return glfwGetFramebufferSize(FF_FARG);
 }
 
 // API Types.
