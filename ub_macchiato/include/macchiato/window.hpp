@@ -10,11 +10,23 @@
 #include "descriptor_set.hpp"
 #include "framebuffer.hpp"
 #include "texture_sampler.hpp"
+#include "command_buffer.hpp"
+#include "objects/object.hpp"
 
 #include <latte/utils.hpp>
 
 namespace mac::window
 {
+///
+struct pipeline_bucket
+{
+	///
+	mac::pipeline::state* pipeline;
+
+	///
+	std::vector<mac::object*> objects;
+};
+
 ///
 struct state
 {
@@ -52,7 +64,16 @@ struct state
 	std::vector<std::pair<std::string, mac::texture_sampler::state*>> texture_samplers;
 
 	///
+	std::vector<std::pair<std::string, mac::command_buffer::state*>> command_buffers;
+
+	///
+	std::vector<std::pair<std::string, mac::window::pipeline_bucket*>> pipeline_buckets;
+
+	///
 	std::vector<mac::framebuffer::state*> framebuffers;
+
+	///
+	vma::allocator vma_allocator;
 };
 
 ///
@@ -75,4 +96,10 @@ mac::descriptor_set::state* get_descriptor_set(mac::window::state* window_state,
 
 ///
 mac::texture_sampler::state* get_texture_sampler(mac::window::state* window_state, const std::string& name);
+
+///
+mac::command_buffer::state* get_command_buffer(mac::window::state* window_state, const std::string& name);
+
+///
+mac::window::pipeline_bucket* get_pipeline_bucket(mac::window::state* window_state, const std::string& name);
 }

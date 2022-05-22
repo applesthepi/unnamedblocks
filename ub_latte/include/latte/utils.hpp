@@ -63,6 +63,7 @@
 #include FT_FREETYPE_H
 
 #include <GLFW/glfw3.h>
+#include <vk_mem_alloc.h>
 
 #if LINUX_TOOLCHAIN
 #define TIME_POINT std::chrono::system_clock::time_point
@@ -108,6 +109,24 @@ std::vector<char>* READ_FILE_BYTES_VC(const std::string& file_name)
 #define FF_TMP	template<typename... Args>
 #define FF_FARG std::forward<Args>(args)...
 #define FF_ARG	Args&&... args
+
+namespace vma
+{
+// API CREATION
+FF_TMP auto create_buffer(FF_ARG) -> decltype(vmaCreateBuffer(FF_FARG))
+{
+	return vmaCreateBuffer(FF_FARG);
+}
+FF_TMP auto create_allocator(FF_ARG) -> decltype(vmaCreateAllocator(FF_FARG))
+{
+	return vmaCreateAllocator(FF_FARG);
+}
+
+typedef VmaAllocatorCreateInfo allocator_create_info;
+typedef VmaAllocator allocator;
+typedef VmaAllocationCreateInfo allocation_create_info;
+typedef VmaAllocation allocation;
+}
 
 namespace vk
 {
@@ -257,6 +276,12 @@ FF_TMP auto unmap_memory(FF_ARG) -> decltype(vkUnmapMemory(FF_FARG))
 	return vkUnmapMemory(FF_FARG);
 }
 
+// API UPDATE
+FF_TMP auto update_descriptor_sets(FF_ARG) -> decltype(vkUpdateDescriptorSets(FF_FARG))
+{
+	return vkUpdateDescriptorSets(FF_FARG);
+}
+
 namespace cmd
 {
 // API CMD.
@@ -340,6 +365,9 @@ typedef VkDescriptorSetLayoutCreateInfo descriptor_set_layout_create_info;
 typedef VkDescriptorSetLayout descriptor_set_layout;
 typedef VkDescriptorSet descriptor_set;
 typedef VkDescriptorSetAllocateInfo descriptor_set_allocate_info;
+typedef VkDescriptorBufferInfo descriptor_buffer_info;
+typedef VkDescriptorImageInfo descriptor_image_info;
+typedef VkWriteDescriptorSet write_descriptor_set;
 
 typedef VkPhysicalDeviceMemoryProperties physical_device_memory_properties;
 typedef VkPhysicalDevice physical_device;
