@@ -15,12 +15,12 @@ mac::pipeline::state* mac::pipeline::create(
 	};
 
 	std::vector<vk::descriptor_set_layout> descriptor_set_layouts;
-	mac::descriptor_set::simplify(descriptor_set_states, descriptor_set_layouts);
+	mac::descriptor_set::simplify_descriptor_set_layouts(descriptor_set_states, descriptor_set_layouts);
 
 	auto vert_shader_code = READ_FILE_BYTES_VC("res/shaders/" + shader + ".vert.spv");
 	auto frag_shader_code = READ_FILE_BYTES_VC("res/shaders/" + shader + ".frag.spv");
 
-	auto function_create_shader_module = [logical_device](const std::vector<char>& code)
+	auto function_create_shader_module = [&logical_device](const std::vector<char>& code)
 	{
 		vk::shader_module_create_info shader_module_create_info = {};
 		vk::shader_module shader_module = {};
@@ -145,7 +145,7 @@ mac::pipeline::state* mac::pipeline::create(
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create pipeline layout");
 
 	pipeline_info.sType				  = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-	pipeline_info.stageCount		  = 2;
+	pipeline_info.stageCount		  = shader_stages.size();
 	pipeline_info.pStages			  = shader_stages.data();
 	pipeline_info.pVertexInputState	  = &pipeline_vertex_input_state_create_info;
 	pipeline_info.pInputAssemblyState = &input_assembly;

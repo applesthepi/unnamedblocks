@@ -12,7 +12,7 @@ class ubo_obj : public mac::ubo
 {
 public:
 	glm::mat4 model_matrix;
-	glm::vec<3, f32> color;
+	glm::vec<4, f32> color;
 
 	u32 size() override { return sizeof(ubo_obj); }
 };

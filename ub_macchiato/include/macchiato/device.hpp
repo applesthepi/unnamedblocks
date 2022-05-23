@@ -17,6 +17,9 @@ struct state
 	bool validation;
 
 	///
+	std::vector<mac::validation_layer> validation_layers;
+
+	///
 	std::vector<const char*> validation_layers_simplified;
 
 	///

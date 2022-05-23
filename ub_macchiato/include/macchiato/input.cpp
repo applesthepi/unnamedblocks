@@ -242,10 +242,24 @@ void mac::input::callback::window_position(glfw::window* glfw_window, i32 x, i32
 	input_state->screen_position = { x, y };
 }
 
+void mac::input::callback::window_focus_callback(glfw::window* glfw_window, i32 focused)
+{
+	auto input_state = reinterpret_cast<mac::input::state*>(glfw::get_window_user_pointer(glfw_window));
+	input_state->focused = focused;
+}
+
 mac::input::state* mac::input::create()
 {
 	return new mac::input::state {
-
+		.key_callback_idx_counter = 0,
+		.text_callback_idx_counter = 0,
+		.mouse_callback_idx_counter = 0,
+		.shift_down = false,
+		.control_down = false,
+		.alt_down = false,
+		.mouse_position = {},
+		.screen_position = {},
+		.focused = true,
 	};
 }
 

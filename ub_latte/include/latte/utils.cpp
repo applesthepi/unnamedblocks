@@ -15,6 +15,26 @@ void STRING_DOUBLE_ZERO(std::string& str)
 	str.erase(last_not_of + offset, std::string::npos);
 }
 
+std::vector<char>* READ_FILE_BYTES_VC(const std::string& file_name)
+{
+	std::ifstream file(file_name, std::ios::ate | std::ios::binary);
+
+	if (!file.is_open())
+	{
+		latte::logger::error(latte::logger::level::SYSTEM, "failed to open file \"" + file_name + "\"");
+		return nullptr;
+	}
+
+	i64 file_size = static_cast<i64>(file.tellg());
+	auto buffer   = new std::vector<char>(file_size);
+
+	file.seekg(0);
+	file.read(buffer->data(), file_size);
+	file.close();
+
+	return buffer;
+}
+
 namespace cap::endianness
 {
 std::array<char, 2> to_ne_bytes(u16 x)

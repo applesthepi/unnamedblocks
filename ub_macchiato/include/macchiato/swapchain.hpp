@@ -64,16 +64,4 @@ mac::swapchain::swap_chain_support_details query_swapchain_support(vk::physical_
 
 ///
 mac::swapchain::queue_family_indices find_queue_families(vk::physical_device& device, vk::surface_khr* surface);
-
-///
-void set_renderpasses(std::vector<mac::renderpass::state*> renderpasses);
-
-///
-void set_framebuffers(std::vector<mac::framebuffer::state*> framebuffers);
-
-///
-void set_semaphores(std::vector<mac::semaphores::state*> semaphores);
-
-///
-void set_fences(std::vector<mac::fences::state*> fences);
 }

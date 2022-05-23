@@ -33,6 +33,7 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -82,28 +83,11 @@
 
 //namespace util { template <typename T> std::string to_string(const T& t) {     std::string str{std::to_string (t)};     int offset{1};     if (str.find_last_not_of('0') == str.find('.')) {         offset = 0;     }     str.erase(str.find_last_not_of('0') + offset, std::string::npos);      return str; } }
 
+///
 void STRING_DOUBLE_ZERO(std::string& str);
 
 /// Reads file bytes into a char vector allocated on heap.
-std::vector<char>* READ_FILE_BYTES_VC(const std::string& file_name)
-{
-	std::ifstream file(file_name, std::ios::ate | std::ios::binary);
-
-	if (!file.is_open())
-	{
-		latte::logger::error(latte::logger::level::SYSTEM, "failed to open file \"" + file_name + "\"");
-		return nullptr;
-	}
-
-	i64 file_size = static_cast<i64>(file.tellg());
-	auto buffer   = new std::vector<char>(file_size);
-
-	file.seekg(0);
-	file.read(buffer->data(), file_size);
-	file.close();
-
-	return buffer;
-}
+std::vector<char>* READ_FILE_BYTES_VC(const std::string& file_name);
 
 // https://stackoverflow.com/a/9864472
 #define FF_TMP	template<typename... Args>
@@ -120,6 +104,22 @@ FF_TMP auto create_buffer(FF_ARG) -> decltype(vmaCreateBuffer(FF_FARG))
 FF_TMP auto create_allocator(FF_ARG) -> decltype(vmaCreateAllocator(FF_FARG))
 {
 	return vmaCreateAllocator(FF_FARG);
+}
+
+// API MEMORY
+FF_TMP auto map_memory(FF_ARG) -> decltype(vmaMapMemory(FF_FARG))
+{
+	return vmaMapMemory(FF_FARG);
+}
+FF_TMP auto unmap_memory(FF_ARG) -> decltype(vmaUnmapMemory(FF_FARG))
+{
+	return vmaUnmapMemory(FF_FARG);
+}
+
+// API BUFFERS
+FF_TMP auto destroy_buffer(FF_ARG) -> decltype(vmaDestroyBuffer(FF_FARG))
+{
+	return vmaDestroyBuffer(FF_FARG);
 }
 
 typedef VmaAllocatorCreateInfo allocator_create_info;
@@ -282,6 +282,28 @@ FF_TMP auto update_descriptor_sets(FF_ARG) -> decltype(vkUpdateDescriptorSets(FF
 	return vkUpdateDescriptorSets(FF_FARG);
 }
 
+// API OTHER
+FF_TMP auto wait_for_fences(FF_ARG) -> decltype(vkWaitForFences(FF_FARG))
+{
+	return vkWaitForFences(FF_FARG);
+}
+FF_TMP auto acquire_next_image(FF_ARG) -> decltype(vkAcquireNextImageKHR(FF_FARG))
+{
+	return vkAcquireNextImageKHR(FF_FARG);
+}
+FF_TMP auto reset_fences(FF_ARG) -> decltype(vkResetFences(FF_FARG))
+{
+	return vkResetFences(FF_FARG);
+}
+FF_TMP auto queue_submit(FF_ARG) -> decltype(vkQueueSubmit(FF_FARG))
+{
+	return vkQueueSubmit(FF_FARG);
+}
+FF_TMP auto queue_present(FF_ARG) -> decltype(vkQueuePresentKHR(FF_FARG))
+{
+	return vkQueuePresentKHR(FF_FARG);
+}
+
 namespace cmd
 {
 // API CMD.
@@ -312,6 +334,18 @@ FF_TMP auto draw_indexed(FF_ARG) -> decltype(vkCmdDrawIndexed(FF_FARG))
 FF_TMP auto draw(FF_ARG) -> decltype(vkCmdDraw(FF_FARG))
 {
 	return vkCmdDraw(FF_FARG);
+}
+FF_TMP auto copy_buffer(FF_ARG) -> decltype(vkCmdCopyBuffer(FF_FARG))
+{
+	return vkCmdCopyBuffer(FF_FARG);
+}
+FF_TMP auto bind_descriptor_sets(FF_ARG) -> decltype(vkCmdBindDescriptorSets(FF_FARG))
+{
+	return vkCmdBindDescriptorSets(FF_FARG);
+}
+FF_TMP auto pipeline_barrier(FF_ARG) -> decltype(vkCmdPipelineBarrier(FF_FARG))
+{
+	return vkCmdPipelineBarrier(FF_FARG);
 }
 } // namespace cmd
 
@@ -378,6 +412,7 @@ typedef VkSurfaceCapabilitiesKHR surface_capabilities_khr;
 typedef VkSurfaceFormatKHR surface_format_khr;
 typedef VkSurfaceKHR surface_khr;
 typedef VkPresentModeKHR present_mode_khr;
+typedef VkPresentInfoKHR present_info;
 
 typedef VkSwapchainCreateInfoKHR swapchain_create_info_khr;
 typedef VkSwapchainKHR swapchain_khr;
@@ -483,6 +518,10 @@ FF_TMP auto set_window_hint(FF_ARG) -> decltype(glfwWindowHint(FF_FARG))
 {
 	return glfwWindowHint(FF_FARG);
 }
+FF_TMP auto set_window_focus_callback(FF_ARG) -> decltype(glfwSetWindowFocusCallback(FF_FARG))
+{
+	return glfwSetWindowFocusCallback(FF_FARG);
+}
 
 // API Getters.
 FF_TMP auto get_window_user_pointer(FF_ARG) -> decltype(glfwGetWindowUserPointer(FF_FARG))
@@ -500,6 +539,16 @@ FF_TMP auto get_required_instance_extensions(FF_ARG) -> decltype(glfwGetRequired
 FF_TMP auto get_framebuffer_size(FF_ARG) -> decltype(glfwGetFramebufferSize(FF_FARG))
 {
 	return glfwGetFramebufferSize(FF_FARG);
+}
+
+// API OTHER
+FF_TMP auto window_should_close(FF_ARG) -> decltype(glfwWindowShouldClose(FF_FARG))
+{
+	return glfwWindowShouldClose(FF_FARG);
+}
+FF_TMP auto poll_events(FF_ARG) -> decltype(glfwPollEvents(FF_FARG))
+{
+	return glfwPollEvents(FF_FARG);
 }
 
 // API Types.

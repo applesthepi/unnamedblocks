@@ -1,29 +1,22 @@
 #include "object_color.hpp"
 
-mac::object_color::object_color(mac::window::state* window_state, vk::device& logical_device)
+mac::object_color::object_color(mac::window::state* window_state, vk::device& logical_device, mac::ubo_cam* ubo_cam)
 	: mac::object(logical_device)
+	, m_ubo_cam(ubo_cam)
+	, m_ubo_obj({})
+	, m_window_state(window_state)
 {
 
 }
 
-mac::object_color::~object_color()
+mac::ubo_obj& mac::object_color::ubo_obj()
 {
-
+	return m_ubo_obj;
 }
 
-void mac::object_color::set_data(mac::vertex* vertices, u32* indices)
+void mac::object_color::initial_update_buffers(vma::allocator& allocator, vk::command_buffer& command_buffer)
 {
-
-}
-
-void mac::object_color::update_buffers()
-{
-
-}
-
-void mac::object_color::render()
-{
-
+	create_ubos(m_window_state);
 }
 
 void mac::object_color::create_ubos(mac::window::state* window_state)
@@ -48,7 +41,11 @@ void mac::object_color::destroy_ubos()
 
 }
 
-void mac::object_color::update_ubos()
+void mac::object_color::update_ubos(vma::allocator& allocator)
 {
-
+	mac::descriptor_set::update_descriptor_buffer(
+		m_descriptor_set_instances[1]->descriptor_buffers[0],
+		allocator,
+		&m_ubo_obj
+	);
 }

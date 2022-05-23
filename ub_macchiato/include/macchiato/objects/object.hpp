@@ -12,25 +12,21 @@ class object
 {
 public:
 	object(vk::device& logical_device);
-	~object();
 
 	///
-	virtual void set_data(mac::vertex* vertices, u32* indices) = 0;
+	void set_data(vma::allocator& allocator, vk::command_buffer& command_buffer, std::vector<mac::vertex>* vertices, std::vector<u32>* indices);
 
 	///
-	virtual void update_buffers() = 0;
+	void update_buffers(vma::allocator& allocator, vk::command_buffer& command_buffer);
 
 	///
-	virtual void render() = 0;
+	void render(vk::command_buffer& command_buffer, vma::allocator& allocator, vk::pipeline_layout& pipeline_layout);
+
+	///
+	virtual void initial_update_buffers(vma::allocator& allocator, vk::command_buffer& command_buffer) = 0;
 protected:
 	///
-	virtual void create_ubos() = 0;
-
-	///
-	virtual void destroy_ubos() = 0;
-
-	///
-	virtual void update_ubos() = 0;
+	virtual void update_ubos(vma::allocator& allocator) = 0;
 
 	///
 	vk::device& m_logical_device;
@@ -40,5 +36,23 @@ protected:
 
 	///
 	std::vector<mac::descriptor_set::instance*> m_descriptor_set_instances;
+
+	///
+	std::vector<mac::vertex>* m_vertices;
+
+	///
+	std::vector<u32>* m_indices;
+
+	///
+	vk::buffer m_vertex_staging_buffer;
+	vk::buffer m_vertex_buffer;
+	vma::allocation m_vertex_staging_buffer_allocation;
+	vma::allocation m_vertex_buffer_allocation;
+
+	///
+	vk::buffer m_index_staging_buffer;
+	vk::buffer m_index_buffer;
+	vma::allocation m_index_staging_buffer_allocation;
+	vma::allocation m_index_buffer_allocation;
 };
 }

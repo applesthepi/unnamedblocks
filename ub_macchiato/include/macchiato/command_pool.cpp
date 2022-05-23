@@ -21,6 +21,8 @@ mac::command_pool::state* mac::command_pool::create(vk::device& logical_device, 
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create command pool");
 		return nullptr;
 	}
+
+	return command_pool_state;
 }
 
 void mac::command_pool::destroy(mac::command_pool::state* command_pool_state)

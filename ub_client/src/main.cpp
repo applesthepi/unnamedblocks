@@ -35,7 +35,11 @@ static void button_callback_build_debug(void* data)
 
 i32 main()
 {
+	latte::logger::initialize();
 
+	mac::window::global_initialization();
+	auto window_state = mac::window::create("unnamedblocks", { 1920, 1080 });
+	mac::window::run(window_state);
 
 	return 0;
 

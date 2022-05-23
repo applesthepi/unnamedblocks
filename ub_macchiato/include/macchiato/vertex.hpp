@@ -14,7 +14,7 @@ public:
 
 	///
 	std::vector<vk::vertex_input_attribute_description> get_attribute_description();
-private:
+
 	///
 	virtual u32 stride() = 0;
 

@@ -16,12 +16,6 @@ struct state
 
 	///
 	vk::image_view image_view;
-
-	///
-	std::vector<std::pair<std::string, vk::semaphore>> semaphores;
-
-	///
-	std::vector<std::pair<std::string, vk::fence>> fences;
 };
 
 ///
@@ -32,10 +26,4 @@ mac::framebuffer::state* create(vk::device& logical_device, vk::render_pass& ren
 
 ///
 vk::image_view create_image_view(vk::device& logical_device, vk::image& image, vk::format format, vk::image_aspect_flags aspect_flags);
-
-///
-void create_semaphore(mac::framebuffer::state* framebuffer_state, vk::device& logical_device, const std::string& name);
-
-///
-void create_fence(mac::framebuffer::state* framebuffer_state, vk::device& logical_device, const std::string& name);
 }

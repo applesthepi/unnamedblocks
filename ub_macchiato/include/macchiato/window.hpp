@@ -52,6 +52,9 @@ struct state
 	vk::descriptor_pool descriptor_pool;
 
 	///
+	std::vector<mac::command_buffer::state*> command_buffers;
+
+	///
 	std::vector<std::pair<std::string, mac::renderpass::state*>> renderpasses;
 
 	///
@@ -64,16 +67,25 @@ struct state
 	std::vector<std::pair<std::string, mac::texture_sampler::state*>> texture_samplers;
 
 	///
-	std::vector<std::pair<std::string, mac::command_buffer::state*>> command_buffers;
-
-	///
 	std::vector<std::pair<std::string, mac::window::pipeline_bucket*>> pipeline_buckets;
 
 	///
 	std::vector<mac::framebuffer::state*> framebuffers;
 
 	///
+	u8 command_buffer_idx;
+
+	///
 	vma::allocator vma_allocator;
+
+	///
+	std::vector<mac::object*> dirty_objects;
+
+	///
+	std::vector<mac::object*> spawn_objects;
+
+	///
+	std::thread thread_rendering;
 };
 
 ///
@@ -86,6 +98,15 @@ mac::window::state* create(const std::string& title, glm::vec<2, i32> size);
 void destroy(mac::window::state* window_state);
 
 ///
+void run(mac::window::state* window_state);
+
+///
+void thread_rendering(mac::window::state* window_state);
+
+///
+void add_dirty_object(mac::window::state* window_state, mac::object* object);
+
+///
 mac::renderpass::state* get_renderpass(mac::window::state* window_state, const std::string& name);
 
 ///
@@ -96,9 +117,6 @@ mac::descriptor_set::state* get_descriptor_set(mac::window::state* window_state,
 
 ///
 mac::texture_sampler::state* get_texture_sampler(mac::window::state* window_state, const std::string& name);
-
-///
-mac::command_buffer::state* get_command_buffer(mac::window::state* window_state, const std::string& name);
 
 ///
 mac::window::pipeline_bucket* get_pipeline_bucket(mac::window::state* window_state, const std::string& name);

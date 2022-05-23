@@ -1,9 +1,8 @@
 #include "vertex_std.hpp"
 
-mac::vertex_std::vertex_std(glm::vec<3, f32> _position, glm::vec<4, f32> _color, glm::vec<2, f32> _texture_coordinates)
+mac::vertex_std::vertex_std(glm::vec<3, f32> _position, glm::vec<4, f32> _color)
 	: position(_position)
 	, color(_color)
-	, texture_coordinates(_texture_coordinates)
 {
 
 }
@@ -16,9 +15,8 @@ u32 mac::vertex_std::stride()
 std::vector<u32> mac::vertex_std::offsets()
 {
 	return {
-		sizeof(f32) * 3, // pos
-		sizeof(f32) * 4, // color
-		sizeof(f32) * 2  // tex coord
+		offsetof(mac::vertex_std, position), // pos
+		offsetof(mac::vertex_std, color)     // color
 	};
 }
 
@@ -26,7 +24,6 @@ std::vector<vk::format> mac::vertex_std::formats()
 {
 	return {
 		VK_FORMAT_R32G32B32_SFLOAT,    // pos
-		VK_FORMAT_R32G32B32A32_SFLOAT, // color
-		VK_FORMAT_R32G32_SFLOAT        // tex coord
+		VK_FORMAT_R32G32B32A32_SFLOAT  // color
 	};
 }

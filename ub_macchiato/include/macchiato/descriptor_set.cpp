@@ -1,6 +1,6 @@
 #include "descriptor_set.hpp"
 
-mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_device, const std::vector<mac::ubo*>& descriptor_buffer_ubos, u32 descriptor_image_count)
+mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_device, const std::vector<mac::ubo*>& descriptor_buffer_ubos, u32 descriptor_image_count, u32* binding_idx)
 {
 	auto descriptor_set_state = new mac::descriptor_set::state {
 		.descriptor_pool = nullptr,
@@ -16,7 +16,7 @@ mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_devi
 		auto& descriptor_set_layout_binding = descriptor_set_layout_bindings.emplace_back();
 		descriptor_set_layout_binding = {};
 
-		descriptor_set_layout_binding.binding = i;
+		descriptor_set_layout_binding.binding = i + *binding_idx;
 		descriptor_set_layout_binding.descriptorCount = 1;
 		descriptor_set_layout_binding.pImmutableSamplers = nullptr;
 
@@ -29,13 +29,15 @@ mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_devi
 		auto& descriptor_set_layout_binding = descriptor_set_layout_bindings.emplace_back();
 		descriptor_set_layout_binding = {};
 
-		descriptor_set_layout_binding.binding = i;
+		descriptor_set_layout_binding.binding = i + descriptor_buffer_ubos.size() + *binding_idx;
 		descriptor_set_layout_binding.descriptorCount = 1;
 		descriptor_set_layout_binding.pImmutableSamplers = nullptr;
 
 		descriptor_set_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptor_set_layout_binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 	}
+
+	*binding_idx += descriptor_buffer_ubos.size() + descriptor_image_count;
 
 	vk::descriptor_set_layout_create_info descriptor_set_layout_create_info = {};
 
@@ -74,7 +76,7 @@ mac::descriptor_set::instance* mac::descriptor_set::create_instance(
 
 	auto instance = new mac::descriptor_set::instance {};
 
-	for (auto& descriptor_buffer_ubo : descriptor_set_state->descriptor_buffer_ubos)
+	for (auto descriptor_buffer_ubo : descriptor_set_state->descriptor_buffer_ubos)
 	{
 		instance->descriptor_buffers.emplace_back(create_descriptor_buffer(
 			allocator,
@@ -172,6 +174,7 @@ mac::descriptor_set::descriptor_buffer* mac::descriptor_set::create_descriptor_b
 	buffer_create_info.size	 = ubo->size();
 	buffer_create_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
 
+	allocation_create_info.flags = VMA_ALLOCATION_CREATE_MAPPED_BIT;
 	allocation_create_info.usage = VMA_MEMORY_USAGE_CPU_TO_GPU;
 
 	if (vma::create_buffer(
@@ -185,6 +188,8 @@ mac::descriptor_set::descriptor_buffer* mac::descriptor_set::create_descriptor_b
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to allocate a buffer for a descriptor buffer");
 		return nullptr;
 	}
+
+	return descriptor_buffer;
 }
 
 mac::descriptor_set::descriptor_image*
@@ -198,6 +203,15 @@ mac::descriptor_set::create_descriptor_image(vk::image_view& image_view, vk::sam
 	return descriptor_image;
 }
 
+void
+mac::descriptor_set::update_descriptor_buffer(mac::descriptor_set::descriptor_buffer* descriptor_buffer, vma::allocator& allocator, mac::ubo* ubo)
+{
+	void* data;
+	vma::map_memory(allocator, descriptor_buffer->allocation, &data);
+	memcpy(data, reinterpret_cast<const void*>(ubo), ubo->size());
+	vma::unmap_memory(allocator, descriptor_buffer->allocation);
+}
+
 void mac::descriptor_set::set_descriptor_pool(
 	mac::descriptor_set::state* descriptor_set_state, vk::descriptor_pool* descriptor_pool
 )
@@ -205,7 +219,7 @@ void mac::descriptor_set::set_descriptor_pool(
 	descriptor_set_state->descriptor_pool = descriptor_pool;
 }
 
-void mac::descriptor_set::simplify(
+void mac::descriptor_set::simplify_descriptor_set_layouts(
 	const std::vector<mac::descriptor_set::state*>& descriptor_set_states,
 	std::vector<vk::descriptor_set_layout>& descriptor_sets
 )
@@ -214,6 +228,15 @@ void mac::descriptor_set::simplify(
 
 	for (const auto& descriptor_set_state : descriptor_set_states)
 		descriptor_sets.emplace_back(descriptor_set_state->descriptor_set_layout);
+}
+
+void mac::descriptor_set::simplify_descriptor_sets(
+	const std::vector<mac::descriptor_set::instance*>& instances,
+	std::vector<vk::descriptor_set>& descriptor_sets
+)
+{
+	for (auto instance : instances)
+		descriptor_sets.emplace_back(instance->descriptor_set);
 }
 
 vk::descriptor_pool mac::descriptor_set::create_pool(vk::device& logical_device)

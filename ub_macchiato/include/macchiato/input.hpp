@@ -5,6 +5,12 @@
 
 namespace mac::input
 {
+// Lower layers get invoked first, then it goes up.
+static i64 layer_text  = 0;
+static i64 layer_block = 1000000;
+static i64 layer_collection = 2000000;
+static i64 layer_plane = 3000000;
+
 ///
 enum class mouse_operation
 {
@@ -108,6 +114,9 @@ struct state
 
 	///
 	glm::vec<2, i32> screen_position;
+
+	///
+	bool focused;
 };
 
 namespace callback
@@ -129,6 +138,9 @@ void cursor_position(glfw::window* glfw_window, f64 x_position, f64 y_position);
 
 ///
 void window_position(glfw::window* glfw_window, i32 x, i32 y);
+
+///
+void window_focus_callback(glfw::window* glfw_window, i32 focused);
 }
 
 ///
@@ -163,10 +175,4 @@ std::optional<i64> check_text_callback(mac::input::state* input_state, u64 text_
 
 ///
 std::optional<i64> check_mouse_callback(mac::input::state* input_state, u64 mouse_callback_idx);
-
-// Lower layers get invoked first, then it goes up.
-i64 layer_text  = 0;
-i64 layer_block = 1000000;
-i64 layer_collection = 2000000;
-i64 layer_plane = 3000000;
 }

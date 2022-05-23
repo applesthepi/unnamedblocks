@@ -23,10 +23,6 @@ mac::framebuffer::state* mac::framebuffer::create(vk::device& logical_device, vk
 		!= VK_SUCCESS)
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create frame buffers");
 
-	mac::framebuffer::create_semaphore(framebuffer_state, logical_device, "acquired");
-	mac::framebuffer::create_semaphore(framebuffer_state, logical_device, "finished");
-	mac::framebuffer::create_fence(framebuffer_state, logical_device, "flight");
-
 	return framebuffer_state;
 }
 
@@ -58,43 +54,4 @@ vk::image_view mac::framebuffer::create_image_view(vk::device& logical_device, v
 	}
 
 	return image_view;
-}
-
-void mac::framebuffer::create_semaphore(mac::framebuffer::state* framebuffer_state, vk::device& logical_device, const std::string& name)
-{
-	vk::semaphore_create_info semaphore_create_info = {};
-	semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-	vk::semaphore semaphore = {};
-
-	if (vk::create_semaphore(logical_device, &semaphore_create_info, nullptr, &semaphore) != VK_SUCCESS)
-	{
-		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create semaphore \"" + name + "\"");
-		return;
-	}
-
-	framebuffer_state->semaphores.emplace_back(std::make_pair(
-		name,
-		semaphore
-	));
-}
-
-void mac::framebuffer::create_fence(mac::framebuffer::state* framebuffer_state, vk::device& logical_device, const std::string& name)
-{
-	vk::fence_create_info fence_create_info = {};
-	fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-	fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-	vk::fence fence = {};
-
-	if (vk::create_fence(logical_device, &fence_create_info, nullptr, &fence) != VK_SUCCESS)
-	{
-		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create fence \"" + name + "\"");
-		return;
-	}
-
-	framebuffer_state->fences.emplace_back(std::make_pair(
-		name,
-		fence
-	));
 }

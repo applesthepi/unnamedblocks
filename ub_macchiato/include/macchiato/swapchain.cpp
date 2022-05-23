@@ -25,9 +25,9 @@ mac::swapchain::state* mac::swapchain::create(vk::device& logical_device, vk::ph
 		return false;
 	};
 
-	if (!function_surface_format(VK_FORMAT_R8G8B8A8_UNORM))
+	if (!function_surface_format(VK_FORMAT_B8G8R8A8_UNORM))
 	{
-		if (!function_surface_format(VK_FORMAT_R8G8B8_SRGB))
+		if (!function_surface_format(VK_FORMAT_B8G8R8_SRGB))
 		{
 			latte::logger::fatal(latte::logger::level::SYSTEM, "no supported surface formats found");
 			return nullptr;
@@ -50,7 +50,7 @@ mac::swapchain::state* mac::swapchain::create(vk::device& logical_device, vk::ph
 		return false;
 	};
 
-	if (!function_present_mode(VK_PRESENT_MODE_MAILBOX_KHR))
+	if (!function_present_mode(/*VK_PRESENT_MODE_MAILBOX_KHR*/ VK_PRESENT_MODE_FIFO_KHR))
 	{
 		if (!function_present_mode(VK_PRESENT_MODE_FIFO_KHR))
 		{
@@ -205,24 +205,4 @@ mac::swapchain::find_queue_families(vk::physical_device& device, vk::surface_khr
 
 	latte::logger::fatal(latte::logger::level::SYSTEM, "no supported vulkan devices found");
 	return queue_family_indices;
-}
-
-void mac::swapchain::set_renderpasses(std::vector<mac::renderpass::state*> renderpasses)
-{
-
-}
-
-void mac::swapchain::set_framebuffers(std::vector<mac::framebuffer::state*> framebuffers)
-{
-
-}
-
-void mac::swapchain::set_semaphores(std::vector<mac::semaphores::state*> semaphores)
-{
-
-}
-
-void mac::swapchain::set_fences(std::vector<mac::fences::state*> fences)
-{
-
 }

@@ -9,6 +9,21 @@ mac::device::state* mac::device::create(bool enable_validation, const std::strin
 		.validation = enable_validation,
 	};
 
+	// VALIDATION DATA
+
+	std::vector<const char*> std_glfw_extensions;
+	vk::debug_utils_messenger_create_info debug_utils_messenger_create_info = {};
+
+	device_state->validation_layers = {
+		{ .name = "VK_LAYER_KHRONOS_validation", .validation_layer_importance = mac::validation_layer::importance::REQUIRED },
+		{ .name = "VK_LAYER_KHRONOS_synchronization2", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL },
+		{ .name = "VK_LAYER_LUNARG_monitor", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL },
+		{ .name = "VK_LAYER_LUNARG_screenshot", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL },
+		{ .name = "VK_LAYER_NV_optimus", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL }
+	};
+
+	// BUILD INSTANCE
+
 	vk::application_info application_info = {};
 	vk::instance_create_info instance_create_info = {};
 
@@ -17,7 +32,7 @@ mac::device::state* mac::device::create(bool enable_validation, const std::strin
 	application_info.applicationVersion	  = VK_MAKE_API_VERSION(0, 0, 0, 0);
 	application_info.pEngineName		  = "No Engine";
 	application_info.engineVersion		  = VK_MAKE_API_VERSION(0, 0, 0, 0);
-	application_info.apiVersion			  = VK_API_VERSION_1_0;
+	application_info.apiVersion			  = VK_API_VERSION_1_2;
 	application_info.pNext				  = nullptr;
 
 	u32 glfw_extension_count = 0;
@@ -29,7 +44,7 @@ mac::device::state* mac::device::create(bool enable_validation, const std::strin
 
 	if (enable_validation)
 	{
-		auto std_glfw_extensions = std::vector<const char*>(glfw_extensions, glfw_extensions + glfw_extension_count);
+		std_glfw_extensions = std::vector<const char*>(glfw_extensions, glfw_extensions + glfw_extension_count);
 		std_glfw_extensions.emplace_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
 
 		instance_create_info.enabledExtensionCount		 = static_cast<u32>(std_glfw_extensions.size());
@@ -43,19 +58,10 @@ mac::device::state* mac::device::create(bool enable_validation, const std::strin
 
 	if (enable_validation)
 	{
-		vk::debug_utils_messenger_create_info debug_utils_messenger_create_info = {};
 		populate_debug_utils_messenger_create_info(debug_utils_messenger_create_info);
 
-		std::vector<mac::validation_layer> validation_layers = {
-			{ .name = "VK_LAYER_NV_optimus", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL },
-			{ .name = "VK_LAYER_KHRONOS_synchronization2", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL },
-			{ .name = "VK_LAYER_KHRONOS_validation", .validation_layer_importance = mac::validation_layer::importance::REQUIRED },
-			{ .name = "VK_LAYER_LUNARG_monitor", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL },
-			{ .name = "VK_LAYER_LUNARG_screenshot", .validation_layer_importance = mac::validation_layer::importance::OPTIONAL }
-		};
-
-		mac::device::shave_validation_layer_support(validation_layers);
-		mac::validation_layer::simplify(validation_layers, device_state->validation_layers_simplified);
+		mac::device::shave_validation_layer_support(device_state->validation_layers);
+		mac::validation_layer::simplify(device_state->validation_layers, device_state->validation_layers_simplified);
 
 		instance_create_info.enabledLayerCount   = static_cast<u32>(device_state->validation_layers_simplified.size());
 		instance_create_info.ppEnabledLayerNames = device_state->validation_layers_simplified.data();
@@ -135,10 +141,10 @@ void mac::device::setup_rendering(mac::device::state* device_state, vk::surface_
 		std::vector<vk::extension_properties> available_extensions(extension_count);
 		vk::enumerate_device_extension_properties(device, nullptr, &extension_count, available_extensions.data());
 
-		for (const auto& extension : available_extensions)
+		for (const auto& required_extension : device_extensions)
 		{
 			bool found_extension = false;
-			for (const auto& required_extension : device_extensions)
+			for (const auto& extension : available_extensions)
 			{
 				if (strcmp(extension.extensionName, required_extension) == 0)
 				{
@@ -252,7 +258,10 @@ bool mac::device::shave_validation_layer_support(std::vector<mac::validation_lay
 				found_validation_layer = true;
 				break;
 			}
+		}
 
+		if (!found_validation_layer)
+		{
 			if (validation_layer.validation_layer_importance == mac::validation_layer::importance::OPTIONAL)
 			{
 				latte::logger::warn(latte::logger::level::SYSTEM, "optional validation layer \"" + validation_layer.name + "\" is not supported");
@@ -264,10 +273,9 @@ bool mac::device::shave_validation_layer_support(std::vector<mac::validation_lay
 				latte::logger::fatal(latte::logger::level::SYSTEM, "required validation layer \"" + validation_layer.name + "\" is not supported");
 				return false;
 			}
-		}
 
-		if (!found_validation_layer)
 			validation_layers.erase(validation_layers.begin() + i--);
+		}
 	}
 
 	return true;

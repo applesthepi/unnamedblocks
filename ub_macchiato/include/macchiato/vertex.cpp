@@ -20,10 +20,12 @@ std::vector<vk::vertex_input_attribute_description> mac::vertex::get_attribute_d
 
 	for (u32 i = 0; i < vertex_offsets.size(); i++)
 	{
-		attribute_descriptions[0].binding  = 0;
-		attribute_descriptions[0].location = i;
-		attribute_descriptions[0].format   = vertex_formats[i];
-		attribute_descriptions[0].offset   = vertex_offsets[i];
+		auto& attribute_description = attribute_descriptions.emplace_back(vk::vertex_input_attribute_description{});
+
+		attribute_description.binding  = 0;
+		attribute_description.location = i;
+		attribute_description.format   = vertex_formats[i];
+		attribute_description.offset   = vertex_offsets[i];
 	}
 
 	return attribute_descriptions;
