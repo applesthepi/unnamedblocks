@@ -10,6 +10,9 @@
 #include "latte/serializer.hpp"
 #include "mocha/handlers/project.hpp"
 
+#include <macchiato/objects/object_color.hpp>
+#include <macchiato/window.hpp>
+
 //#if LINUX
 //#include <dlfcn.h>
 //#else
@@ -32,6 +35,7 @@ static void button_callback_build_debug(void* data)
 }
 
 #include <macchiato/window.hpp>
+#include <macchiato/vertex_std.hpp>
 
 i32 main()
 {
@@ -39,6 +43,45 @@ i32 main()
 
 	mac::window::global_initialization();
 	auto window_state = mac::window::create("unnamedblocks", { 1920, 1080 });
+
+	glm::vec3 position = glm::vec3(0, 0, 0);
+	glm::vec3 look_at = glm::vec3(0, 0, 1);
+
+	auto ubo_cam = new mac::ubo_cam();
+	ubo_cam->uniform_data.view_matrix = glm::lookAt(position, look_at, glm::vec3(0, 1, 0));
+	ubo_cam->uniform_data.projection_matrix = glm::perspective(80.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+	//ubo_cam->projection_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -100.0f, 100.0f);
+	//ubo_cam->projection_matrix = glm::mat4(1.0f);
+
+	auto pipeline_bucket_color = mac::window::get_pipeline_bucket(window_state, "color");
+
+	auto obj = new mac::object_color(window_state, ubo_cam);
+
+	//obj->ubo_obj().model_matrix = glm::ortho(0.0f, 10.0f, 0.0f, 10.0f, -1000.0f, 1000.0f);
+	//obj->ubo_obj().model_matrix = glm::perspective(180.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
+	obj->ubo_obj().model_matrix = glm::translate(glm::mat4(1.0f), { 2.0f, -2.0f, 0.0f });
+
+	obj->ubo_obj().color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	window_state->spawn_objects.emplace_back(obj);
+	pipeline_bucket_color->objects.emplace_back(obj);
+
+	std::vector<mac::vertex_std> vertices = {
+		{ { 0.0f, 0.0f, 3.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
+		{ { 1.0f, 0.0f, 3.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+		{ { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ { 1.0f, 1.0f, 3.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } }
+	};
+
+	std::vector<u32> indices = {
+		0, 1, 2, 1, 2, 3
+	};
+
+	obj->set_data(
+		reinterpret_cast<void*>(vertices.data()), vertices.size(),
+		reinterpret_cast<void*>(indices.data()), indices.size()
+	);
+
 	mac::window::run(window_state);
 
 	return 0;

@@ -11,5 +11,8 @@ class ubo
 public:
 	///
 	virtual u32 size() = 0;
+
+	///
+	virtual void* data() = 0;
 };
 }

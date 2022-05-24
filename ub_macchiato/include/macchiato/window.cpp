@@ -93,15 +93,12 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 
 	// DESCRIPTOR SETS
 
-	u32 binding_idx = 0;
-
 	window_state->descriptor_sets.emplace_back(std::make_pair(
 		"cam",
 		mac::descriptor_set::create(
 			window_state->device_state->logical_device,
 			{ new mac::ubo_cam() },
-			0,
-			&binding_idx
+			0
 		)
 	));
 
@@ -112,8 +109,7 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 		mac::descriptor_set::create(
 			window_state->device_state->logical_device,
 			{ new mac::ubo_obj() },
-			0,
-			&binding_idx
+			0
 		)
 	));
 
@@ -137,7 +133,7 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 		"color",
 		mac::pipeline::create(
 			window_state->device_state->logical_device,
-			{ descriptor_set_cam },
+			{ descriptor_set_cam, descriptor_set_obj_c },
 			renderpass_master,
 			new mac::vertex_std({}, {}),
 			window_state->swapchain_state->extent,
@@ -284,10 +280,6 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 
 		// FRAME UPDATE
 
-		// ZOMBIE OPERATIONS
-
-		// TODO: delete zombie buffers
-
 		// WAIT TO RECORD
 
 		auto command_buffer                = window_state->command_buffers[window_state->command_buffer_idx];
@@ -312,6 +304,10 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 		);
 
 		function_validate_result("failed to reset ready_write_fence");
+
+		// EVENT OPERATIONS
+
+		// TODO: delete zombie buffers
 
 		u32 swapchain_image_idx;
 
@@ -342,8 +338,15 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 		result = vk::begin_command_buffer(command_buffer->command_buffer, &command_buffer_begin_info);
 		function_validate_result("failed to begin command buffer");
 
+		for (auto object : window_state->spawn_objects)
+			object->initial_update_buffers(window_state->vma_allocator, command_buffer->command_buffer);
+
+		window_state->spawn_objects.clear();
+
 		for (auto object : window_state->dirty_objects)
 			object->update_buffers(window_state->vma_allocator, command_buffer->command_buffer);
+
+		window_state->dirty_objects.clear();
 
 		vk::cmd::pipeline_barrier(
 			command_buffer->command_buffer,

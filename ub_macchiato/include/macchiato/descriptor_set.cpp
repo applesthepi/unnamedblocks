@@ -1,6 +1,6 @@
 #include "descriptor_set.hpp"
 
-mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_device, const std::vector<mac::ubo*>& descriptor_buffer_ubos, u32 descriptor_image_count, u32* binding_idx)
+mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_device, const std::vector<mac::ubo*>& descriptor_buffer_ubos, u32 descriptor_image_count)
 {
 	auto descriptor_set_state = new mac::descriptor_set::state {
 		.descriptor_pool = nullptr,
@@ -16,7 +16,7 @@ mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_devi
 		auto& descriptor_set_layout_binding = descriptor_set_layout_bindings.emplace_back();
 		descriptor_set_layout_binding = {};
 
-		descriptor_set_layout_binding.binding = i + *binding_idx;
+		descriptor_set_layout_binding.binding = i;
 		descriptor_set_layout_binding.descriptorCount = 1;
 		descriptor_set_layout_binding.pImmutableSamplers = nullptr;
 
@@ -29,15 +29,13 @@ mac::descriptor_set::state* mac::descriptor_set::create(vk::device& logical_devi
 		auto& descriptor_set_layout_binding = descriptor_set_layout_bindings.emplace_back();
 		descriptor_set_layout_binding = {};
 
-		descriptor_set_layout_binding.binding = i + descriptor_buffer_ubos.size() + *binding_idx;
+		descriptor_set_layout_binding.binding = i + descriptor_buffer_ubos.size();
 		descriptor_set_layout_binding.descriptorCount = 1;
 		descriptor_set_layout_binding.pImmutableSamplers = nullptr;
 
 		descriptor_set_layout_binding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		descriptor_set_layout_binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 	}
-
-	*binding_idx += descriptor_buffer_ubos.size() + descriptor_image_count;
 
 	vk::descriptor_set_layout_create_info descriptor_set_layout_create_info = {};
 
@@ -99,15 +97,12 @@ mac::descriptor_set::instance* mac::descriptor_set::create_instance(
 		return nullptr;
 	}
 
-	std::vector<vk::descriptor_buffer_info> descriptor_buffer_infos;
-	std::vector<vk::descriptor_image_info> descriptor_image_infos;
-
-	descriptor_buffer_infos.reserve(instance->descriptor_buffers.size());
-	descriptor_image_infos.reserve(instance->descriptor_images.size());
+	instance->descriptor_buffer_infos.reserve(instance->descriptor_buffers.size());
+	instance->descriptor_image_infos.reserve(instance->descriptor_images.size());
 
 	for (u32 i = 0; i < instance->descriptor_buffers.size(); i++)
 	{
-		auto& descriptor_buffer_info = descriptor_buffer_infos.emplace_back(vk::descriptor_buffer_info{});
+		auto& descriptor_buffer_info = instance->descriptor_buffer_infos.emplace_back(vk::descriptor_buffer_info{});
 
 		descriptor_buffer_info.buffer = instance->descriptor_buffers[i]->buffer;
 		descriptor_buffer_info.offset = 0;
@@ -116,46 +111,45 @@ mac::descriptor_set::instance* mac::descriptor_set::create_instance(
 
 	for (auto descriptor_image : instance->descriptor_images)
 	{
-		auto& descriptor_image_info = descriptor_image_infos.emplace_back(vk::descriptor_image_info{});
+		auto& descriptor_image_info = instance->descriptor_image_infos.emplace_back(vk::descriptor_image_info{});
 
 		descriptor_image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 		descriptor_image_info.imageView   = descriptor_image->image_view;
 		descriptor_image_info.sampler     = *descriptor_image->image_sampler;
 	}
 
-	std::vector<vk::write_descriptor_set> write_descriptor_sets;
-	write_descriptor_sets.reserve(descriptor_buffer_infos.size() + descriptor_image_infos.size());
+	instance->write_descriptor_sets.reserve(instance->descriptor_buffer_infos.size() + instance->descriptor_image_infos.size());
 
-	for (auto& descriptor_buffer_info : descriptor_buffer_infos)
+	for (u32 i = 0; i < instance->descriptor_buffer_infos.size(); i++)
 	{
-		auto& write_descriptor_set = write_descriptor_sets.emplace_back(vk::write_descriptor_set{});
+		auto& write_descriptor_set = instance->write_descriptor_sets.emplace_back(vk::write_descriptor_set{});
 
 		write_descriptor_set.sType			 = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		write_descriptor_set.dstSet			 = instance->descriptor_set;
-		write_descriptor_set.dstBinding		 = 0;
+		write_descriptor_set.dstBinding		 = i;
 		write_descriptor_set.dstArrayElement = 0;
 		write_descriptor_set.descriptorType	 = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 		write_descriptor_set.descriptorCount = 1;
-		write_descriptor_set.pBufferInfo	 = &descriptor_buffer_info;
+		write_descriptor_set.pBufferInfo	 = &instance->descriptor_buffer_infos[i];
 	}
 
-	for (auto& descriptor_image_info : descriptor_image_infos)
+	for (u32 i = 0; i < instance->descriptor_image_infos.size(); i++)
 	{
-		auto& write_descriptor_set = write_descriptor_sets.emplace_back(vk::write_descriptor_set{});
+		auto& write_descriptor_set = instance->write_descriptor_sets.emplace_back(vk::write_descriptor_set{});
 
 		write_descriptor_set.sType			 = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 		write_descriptor_set.dstSet			 = instance->descriptor_set;
-		write_descriptor_set.dstBinding		 = 1;
+		write_descriptor_set.dstBinding		 = i + instance->descriptor_buffer_infos.size();
 		write_descriptor_set.dstArrayElement = 0;
 		write_descriptor_set.descriptorType	 = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		write_descriptor_set.descriptorCount = 1;
-		write_descriptor_set.pImageInfo		 = &descriptor_image_info;
+		write_descriptor_set.pImageInfo		 = &instance->descriptor_image_infos[i];
 	}
 
 	vk::update_descriptor_sets(
 		logical_device,
-		static_cast<u32>(write_descriptor_sets.size()),
-		write_descriptor_sets.data(),
+		static_cast<u32>(instance->write_descriptor_sets.size()),
+		instance->write_descriptor_sets.data(),
 		0,
 		nullptr
 	);
@@ -208,7 +202,7 @@ mac::descriptor_set::update_descriptor_buffer(mac::descriptor_set::descriptor_bu
 {
 	void* data;
 	vma::map_memory(allocator, descriptor_buffer->allocation, &data);
-	memcpy(data, reinterpret_cast<const void*>(ubo), ubo->size());
+	memcpy(data, ubo->data(), ubo->size());
 	vma::unmap_memory(allocator, descriptor_buffer->allocation);
 }
 

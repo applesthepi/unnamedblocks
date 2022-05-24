@@ -11,10 +11,10 @@ namespace mac
 class object
 {
 public:
-	object(vk::device& logical_device);
+	object(void* window_state, u32 vertex_stride);
 
 	///
-	void set_data(vma::allocator& allocator, vk::command_buffer& command_buffer, std::vector<mac::vertex>* vertices, std::vector<u32>* indices);
+	void set_data(void* vertices, u32 vertex_count, void* indices, u32 index_count);
 
 	///
 	void update_buffers(vma::allocator& allocator, vk::command_buffer& command_buffer);
@@ -29,6 +29,9 @@ protected:
 	virtual void update_ubos(vma::allocator& allocator) = 0;
 
 	///
+	void* m_window_state;
+
+	///
 	vk::device& m_logical_device;
 
 	///
@@ -38,10 +41,15 @@ protected:
 	std::vector<mac::descriptor_set::instance*> m_descriptor_set_instances;
 
 	///
-	std::vector<mac::vertex>* m_vertices;
+	void* m_vertices;
+	void* m_indices;
 
 	///
-	std::vector<u32>* m_indices;
+	u32 m_vertex_count;
+	u32 m_index_count;
+
+	///
+	u32 m_vertex_stride;
 
 	///
 	vk::buffer m_vertex_staging_buffer;

@@ -366,6 +366,7 @@ typedef VkBuffer buffer;
 typedef VkBufferImageCopy buffer_image_copy;
 typedef VkBufferCreateInfo buffer_create_info;
 typedef VkBufferCopy buffer_copy;
+typedef VkBufferUsageFlagBits buffer_usage_flag_bits;
 
 typedef VkMemoryRequirements memory_requirements;
 typedef VkMemoryPropertyFlags memory_property_flags;

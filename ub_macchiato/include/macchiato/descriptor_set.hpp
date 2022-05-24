@@ -38,6 +38,15 @@ struct instance
 
 	///
 	std::vector<mac::descriptor_set::descriptor_image*> descriptor_images;
+
+	///
+	std::vector<vk::descriptor_buffer_info> descriptor_buffer_infos;
+
+	///
+	std::vector<vk::descriptor_image_info> descriptor_image_infos;
+
+	///
+	std::vector<vk::write_descriptor_set> write_descriptor_sets;
 };
 
 ///
@@ -57,7 +66,7 @@ struct state
 };
 
 ///
-mac::descriptor_set::state* create(vk::device& logical_device, const std::vector<mac::ubo*>& descriptor_buffer_ubos, u32 descriptor_image_count, u32* binding_idx);
+mac::descriptor_set::state* create(vk::device& logical_device, const std::vector<mac::ubo*>& descriptor_buffer_ubos, u32 descriptor_image_count);
 
 ///
 void destroy(mac::descriptor_set::state* descriptor_set_state);
