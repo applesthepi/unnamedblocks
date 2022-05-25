@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "vertex.hpp"
+#include "vertices/vertex.hpp"
 #include "descriptor_set.hpp"
 #include "renderpass.hpp"
 
@@ -27,7 +27,7 @@ mac::pipeline::state* create(
 	vk::device& logical_device,
 	const std::vector<mac::descriptor_set::state*>& descriptor_set_states,
 	mac::renderpass::state* renderpass_state,
-	mac::vertex* vertex,
+	mac::vertex::info* vertex_info,
 	vk::extent_2d& extent,
 	const std::string& name,
 	const std::string& shader,
@@ -35,5 +35,5 @@ mac::pipeline::state* create(
 );
 
 ///
-void destroy(mac::pipeline::state* pipeline_state);
+void destroy(mac::pipeline::state* pipeline_state, vk::device& logical_device);
 }

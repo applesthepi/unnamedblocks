@@ -53,7 +53,8 @@ mac::renderpass::state* mac::renderpass::create(vk::device& logical_device, vk::
 	return renderpass_state;
 }
 
-void mac::renderpass::destroy(mac::renderpass::state* renderpass_state)
+void mac::renderpass::destroy(mac::renderpass::state* renderpass_state, vk::device& logical_device)
 {
+	vk::destroy_renderpass(logical_device, renderpass_state->renderpass, nullptr);
 	delete renderpass_state;
 }

@@ -11,7 +11,12 @@
 #include "mocha/handlers/project.hpp"
 
 #include <macchiato/objects/object_color.hpp>
+#include <macchiato/objects/object_texture.hpp>
+#include <macchiato/vertices/vertex_color.hpp>
+#include <macchiato/vertices/vertex_texture.hpp>
 #include <macchiato/window.hpp>
+
+#include <macchiato/shapes/rectangle.hpp>
 
 //#if LINUX
 //#include <dlfcn.h>
@@ -34,57 +39,80 @@ static void button_callback_build_debug(void* data)
 	rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
 }
 
-#include <macchiato/window.hpp>
-#include <macchiato/vertex_std.hpp>
-
 i32 main()
 {
 	latte::logger::initialize();
-
 	mac::window::global_initialization();
+
 	auto window_state = mac::window::create("unnamedblocks", { 1920, 1080 });
+	mac::window::load_image(window_state, "res/deb_resume.png", "debug_resume");
 
-	glm::vec3 position = glm::vec3(0, 0, 0);
-	glm::vec3 look_at = glm::vec3(0, 0, 1);
+	auto rectangle1 = new mac::shape_rectangle(window_state);
+	rectangle1->position = { 100, 100 };
+	rectangle1->color = { 1.0f, 0.5f, 1.0f, 1.0f };
+	rectangle1->update();
 
-	auto ubo_cam = new mac::ubo_cam();
-	ubo_cam->uniform_data.view_matrix = glm::lookAt(position, look_at, glm::vec3(0, 1, 0));
-	ubo_cam->uniform_data.projection_matrix = glm::perspective(80.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-	//ubo_cam->projection_matrix = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, -100.0f, 100.0f);
-	//ubo_cam->projection_matrix = glm::mat4(1.0f);
+	mac::window::run(window_state);
+	mac::window::global_shutdown();
+
+	return 0;
+
+
+
+#if 0
+	auto& image_debug_resume = mac::window::get_image(window_state, "debug_resume");
 
 	auto pipeline_bucket_color = mac::window::get_pipeline_bucket(window_state, "color");
+	auto pipeline_bucket_texture = mac::window::get_pipeline_bucket(window_state, "texture");
 
-	auto obj = new mac::object_color(window_state, ubo_cam);
+	auto obj_color = new mac::object_color(window_state);
+	obj_color->ubo_obj().model_matrix = glm::translate(glm::mat4(1.0f), { 0.0f, 0.0f, 0.0f });
+	obj_color->ubo_obj().color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	//obj->ubo_obj().model_matrix = glm::ortho(0.0f, 10.0f, 0.0f, 10.0f, -1000.0f, 1000.0f);
-	//obj->ubo_obj().model_matrix = glm::perspective(180.0f, 16.0f / 9.0f, 0.1f, 1000.0f);
-	obj->ubo_obj().model_matrix = glm::translate(glm::mat4(1.0f), { 2.0f, -2.0f, 0.0f });
+	auto obj_texture = new mac::object_texture(window_state, image_debug_resume);
+	obj_texture->ubo_obj().model_matrix = glm::translate(glm::mat4(1.0f), { 512.0f, 0.0f, 1.0f });
+	obj_texture->ubo_obj().color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	obj->ubo_obj().color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	window_state->spawn_objects.emplace_back(obj_color);
+	pipeline_bucket_color->objects.emplace_back(obj_color);
 
-	window_state->spawn_objects.emplace_back(obj);
-	pipeline_bucket_color->objects.emplace_back(obj);
+	window_state->spawn_objects.emplace_back(obj_texture);
+	pipeline_bucket_texture->objects.emplace_back(obj_texture);
 
-	std::vector<mac::vertex_std> vertices = {
-		{ { 0.0f, 0.0f, 3.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
-		{ { 1.0f, 0.0f, 3.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
-		{ { 0.0f, 1.0f, 3.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ { 1.0f, 1.0f, 3.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } }
+	std::vector<mac::vertex_color::vertex> vertices_color = {
+		{ { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
+		{ { 512.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
+		{ { 0.0f, 512.0f, 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ { 512.0f, 512.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } }
 	};
 
-	std::vector<u32> indices = {
+	std::vector<u32> indices_color = {
 		0, 1, 2, 1, 2, 3
 	};
 
-	obj->set_data(
-		reinterpret_cast<void*>(vertices.data()), vertices.size(),
-		reinterpret_cast<void*>(indices.data()), indices.size()
+	obj_color->set_data(
+		reinterpret_cast<void*>(vertices_color.data()), vertices_color.size(),
+		reinterpret_cast<void*>(indices_color.data()), indices_color.size()
 	);
 
-	mac::window::run(window_state);
+	std::vector<mac::vertex_texture::vertex> vertices_texture = {
+		{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
+		{ { 512.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
+		{ { 0.0f, 512.0f, 0.0f }, { 0.0f, 1.0f } },
+		{ { 512.0f, 512.0f, 0.0f }, { 1.0f, 1.0f } }
+	};
 
-	return 0;
+	std::vector<u32> indices_texture = {
+		0, 1, 2, 1, 2, 3
+	};
+
+	obj_texture->set_data(
+		reinterpret_cast<void*>(vertices_texture.data()), vertices_texture.size(),
+		reinterpret_cast<void*>(indices_texture.data()), indices_texture.size()
+	);
+#endif
+
+
 
 
 

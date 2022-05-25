@@ -12,6 +12,7 @@
 #include "texture_sampler.hpp"
 #include "command_buffer.hpp"
 #include "objects/object.hpp"
+#include "ubos/ubo_cam.hpp"
 
 #include <latte/utils.hpp>
 
@@ -25,6 +26,22 @@ struct pipeline_bucket
 
 	///
 	std::vector<mac::object*> objects;
+
+	///
+	std::shared_mutex shared_mutex;
+};
+
+///
+struct reg_image
+{
+	///
+	vk::image image;
+
+	///
+	vk::image_view image_view;
+
+	///
+	vma::allocation allocation;
 };
 
 ///
@@ -80,16 +97,36 @@ struct state
 
 	///
 	std::vector<mac::object*> dirty_objects;
+	std::shared_mutex dirty_objects_mutex;
 
 	///
 	std::vector<mac::object*> spawn_objects;
+	std::shared_mutex spawn_objects_mutex;
 
 	///
 	std::thread thread_rendering;
+
+	///
+	std::unordered_map<std::string, reg_image*> registered_images;
+
+	///
+	mac::descriptor_set::instance* cam_instance;
+
+	///
+	mac::ubo_cam* ubo_cam;
+
+	///
+	std::atomic_bool resize_waiting;
+
+	///
+	std::atomic_bool resize_done;
 };
 
 ///
 void global_initialization();
+
+///
+void global_shutdown();
 
 ///
 mac::window::state* create(const std::string& title, glm::vec<2, i32> size);
@@ -120,4 +157,25 @@ mac::texture_sampler::state* get_texture_sampler(mac::window::state* window_stat
 
 ///
 mac::window::pipeline_bucket* get_pipeline_bucket(mac::window::state* window_state, const std::string& name);
+
+///
+void load_image(mac::window::state* window_state, const std::string& path, const std::string& registry_name);
+
+///
+vk::image_view& get_image(mac::window::state* window_state, const std::string& registry_name);
+
+/// Only use before the main render loop begins, and after window initialization.
+vk::command_buffer begin_single_time_command(vk::device& logical_device, vk::command_pool& command_pool);
+
+/// Only use before the main render loop begins, and after window initialization.
+void end_single_time_command(vk::command_buffer& command_buffer, vk::queue& graphics_queue);
+
+///
+void reload_swapchain(mac::window::state* window_state);
+
+///
+void create_swapchain_and_renderpasses(mac::window::state* window_state);
+
+///
+void create_pipeline_and_framebuffers(mac::window::state* window_state);
 }

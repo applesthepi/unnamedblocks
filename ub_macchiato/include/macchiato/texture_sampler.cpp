@@ -41,6 +41,8 @@ mac::texture_sampler::state* mac::texture_sampler::create(
 
 	if (vk::create_sampler(logical_device, &sampler_create_info, nullptr, &texture_sampler_state->texture_sampler) != VK_SUCCESS)
 		latte::logger::fatal(latte::logger::level::SYSTEM, "failed to create texture sampler");
+
+	return texture_sampler_state;
 }
 
 void mac::texture_sampler::destroy(mac::texture_sampler::state* texture_sampler_state)

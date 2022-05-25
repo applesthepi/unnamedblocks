@@ -4,7 +4,7 @@ mac::pipeline::state* mac::pipeline::create(
 	vk::device& logical_device,
 	const std::vector<mac::descriptor_set::state*>& descriptor_set_states,
 	mac::renderpass::state* renderpass_state,
-	mac::vertex* vertex,
+	mac::vertex::info* vertex_info,
 	vk::extent_2d& extent,
 	const std::string& name,
 	const std::string& shader,
@@ -69,8 +69,8 @@ mac::pipeline::state* mac::pipeline::create(
 	std::array<vk::pipeline_shader_stage_create_info, 2> shader_stages = {
 		vert_pipeline_shader_stage_create_info, frag_pipeline_shader_stage_create_info};
 
-	auto binding_description	= vertex->get_binding_description();
-	auto attribute_descriptions = vertex->get_attribute_description();
+	auto binding_description	= vertex_info->get_binding_description();
+	auto attribute_descriptions = vertex_info->get_attribute_description();
 
 	pipeline_vertex_input_state_create_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 	pipeline_vertex_input_state_create_info.vertexBindingDescriptionCount = 1;
@@ -166,7 +166,10 @@ mac::pipeline::state* mac::pipeline::create(
 	return pipeline_state;
 }
 
-void mac::pipeline::destroy(mac::pipeline::state* pipeline_state)
+void mac::pipeline::destroy(mac::pipeline::state* pipeline_state, vk::device& logical_device)
 {
+	vk::destroy_pipeline(logical_device, pipeline_state->pipeline, nullptr);
+	vk::destroy_pipeline_layout(logical_device, pipeline_state->pipeline_layout, nullptr);
+
 	delete pipeline_state;
 }

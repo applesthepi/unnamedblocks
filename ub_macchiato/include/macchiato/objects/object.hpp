@@ -1,7 +1,7 @@
 #pragma once
 #include "config.h"
 
-#include "macchiato/vertex.hpp"
+#include "macchiato/vertices/vertex.hpp"
 #include "macchiato/descriptor_set.hpp"
 
 #include <latte/utils.hpp>

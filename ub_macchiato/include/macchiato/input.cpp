@@ -2,9 +2,15 @@
 
 void mac::input::callback::framebuffer_resize(glfw::window* glfw_window, i32 width, i32 height)
 {
-	auto window = reinterpret_cast<mac::input::state*>(glfw::get_window_user_pointer(glfw_window));
-	// TODO: swapchain recreation flag
-	//window->flag_swapchain_recreation({width, height});
+	auto input_state = reinterpret_cast<mac::input::state*>(glfw::get_window_user_pointer(glfw_window));
+
+	if (width == 0 || height == 0)
+		input_state->size_zero = true;
+	else
+		input_state->size_zero = false;
+
+	input_state->framebuffer_resize = true;
+
 }
 
 void mac::input::callback::key(glfw::window* glfw_window, i32 key, i32 scancode, i32 operation, i32 mode)
@@ -260,6 +266,7 @@ mac::input::state* mac::input::create()
 		.mouse_position = {},
 		.screen_position = {},
 		.focused = true,
+		.framebuffer_resize = false,
 	};
 }
 

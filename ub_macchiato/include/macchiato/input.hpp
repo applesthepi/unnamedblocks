@@ -117,6 +117,12 @@ struct state
 
 	///
 	bool focused;
+
+	///
+	std::atomic_bool framebuffer_resize;
+
+	///
+	std::atomic_bool size_zero;
 };
 
 namespace callback

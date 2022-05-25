@@ -19,10 +19,10 @@ struct state
 };
 
 ///
-void destroy(mac::framebuffer::state* framebuffer_state);
+mac::framebuffer::state* create(vk::device& logical_device, vk::render_pass& renderpass, vk::extent_2d& extent, vk::surface_format_khr& surface_format, vk::image& image);
 
 ///
-mac::framebuffer::state* create(vk::device& logical_device, vk::render_pass& renderpass, vk::extent_2d& extent, vk::surface_format_khr& surface_format, vk::image& image);
+void destroy(mac::framebuffer::state* framebuffer_state, vk::device& logical_device);
 
 ///
 vk::image_view create_image_view(vk::device& logical_device, vk::image& image, vk::format format, vk::image_aspect_flags aspect_flags);

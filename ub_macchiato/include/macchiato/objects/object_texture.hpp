@@ -10,10 +10,10 @@
 
 namespace mac
 {
-class object_color : public mac::object
+class object_texture : public mac::object
 {
 public:
-	object_color(mac::window::state* window_state);
+	object_texture(mac::window::state* window_state, vk::image_view& image_view);
 
 	///
 	mac::ubo_obj::uniform& ubo_obj();
@@ -30,5 +30,8 @@ protected:
 private:
 	///
 	mac::ubo_obj m_ubo_obj;
+
+	///
+	vk::image_view& m_image_view;
 };
 }

@@ -135,8 +135,9 @@ mac::swapchain::state* mac::swapchain::create(vk::device& logical_device, vk::ph
 	return swapchain_state;
 }
 
-void mac::swapchain::destroy(mac::swapchain::state* swapchain_state)
+void mac::swapchain::destroy(mac::swapchain::state* swapchain_state, vk::device& logical_device)
 {
+	vk::destroy_swapchain(logical_device, swapchain_state->swapchain, nullptr);
 	delete swapchain_state;
 }
 

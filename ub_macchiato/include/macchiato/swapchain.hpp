@@ -57,7 +57,7 @@ struct state
 mac::swapchain::state* create(vk::device& logical_device, vk::physical_device& physical_device, vk::surface_khr* surface, glfw::window* glfw_window);
 
 ///
-void destroy(mac::swapchain::state* swapchain_state);
+void destroy(mac::swapchain::state* swapchain_state, vk::device& logical_device);
 
 ///
 mac::swapchain::swap_chain_support_details query_swapchain_support(vk::physical_device& device, vk::surface_khr* surface);

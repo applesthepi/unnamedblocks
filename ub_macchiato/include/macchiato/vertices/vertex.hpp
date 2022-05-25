@@ -3,10 +3,10 @@
 
 #include <latte/utils.hpp>
 
-namespace mac
+namespace mac::vertex
 {
 ///
-class vertex
+class info
 {
 public:
 	///

@@ -1,6 +1,6 @@
 #include "vertex.hpp"
 
-vk::vertex_input_binding_description mac::vertex::get_binding_description()
+vk::vertex_input_binding_description mac::vertex::info::get_binding_description()
 {
 	vk::vertex_input_binding_description vertex_input_binding_description {};
 
@@ -11,7 +11,7 @@ vk::vertex_input_binding_description mac::vertex::get_binding_description()
 	return vertex_input_binding_description;
 }
 
-std::vector<vk::vertex_input_attribute_description> mac::vertex::get_attribute_description()
+std::vector<vk::vertex_input_attribute_description> mac::vertex::info::get_attribute_description()
 {
 	std::vector<vk::vertex_input_attribute_description> attribute_descriptions = {};
 

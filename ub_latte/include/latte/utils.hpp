@@ -28,6 +28,8 @@
 #include <sstream>
 #include <stack>
 
+#include <intrin.h>
+
 #include <stb/stb_image.h>
 #include <zstd.h>
 
@@ -100,6 +102,10 @@ namespace vma
 FF_TMP auto create_buffer(FF_ARG) -> decltype(vmaCreateBuffer(FF_FARG))
 {
 	return vmaCreateBuffer(FF_FARG);
+}
+FF_TMP auto create_image(FF_ARG) -> decltype(vmaCreateImage(FF_FARG))
+{
+	return vmaCreateImage(FF_FARG);
 }
 FF_TMP auto create_allocator(FF_ARG) -> decltype(vmaCreateAllocator(FF_FARG))
 {
@@ -186,6 +192,11 @@ FF_TMP auto create_pipeline_layout(FF_ARG) -> decltype(vkCreatePipelineLayout(FF
 FF_TMP auto create_graphics_pipelines(FF_ARG) -> decltype(vkCreateGraphicsPipelines(FF_FARG))
 {
 	return vkCreateGraphicsPipelines(FF_FARG);
+}
+
+FF_TMP auto create_image_view(FF_ARG) -> decltype(vkCreateImageView(FF_FARG))
+{
+	return vkCreateImageView(FF_FARG);
 }
 
 // API Getters.
@@ -282,6 +293,32 @@ FF_TMP auto update_descriptor_sets(FF_ARG) -> decltype(vkUpdateDescriptorSets(FF
 	return vkUpdateDescriptorSets(FF_FARG);
 }
 
+// API DESTROY
+FF_TMP auto destroy_framebuffer(FF_ARG) -> decltype(vkDestroyFramebuffer(FF_FARG))
+{
+	return vkDestroyFramebuffer(FF_FARG);
+}
+FF_TMP auto destroy_image_view(FF_ARG) -> decltype(vkDestroyImageView(FF_FARG))
+{
+	return vkDestroyImageView(FF_FARG);
+}
+FF_TMP auto destroy_pipeline(FF_ARG) -> decltype(vkDestroyPipeline(FF_FARG))
+{
+	return vkDestroyPipeline(FF_FARG);
+}
+FF_TMP auto destroy_pipeline_layout(FF_ARG) -> decltype(vkDestroyPipelineLayout(FF_FARG))
+{
+	return vkDestroyPipelineLayout(FF_FARG);
+}
+FF_TMP auto destroy_renderpass(FF_ARG) -> decltype(vkDestroyRenderPass(FF_FARG))
+{
+	return vkDestroyRenderPass(FF_FARG);
+}
+FF_TMP auto destroy_swapchain(FF_ARG) -> decltype(vkDestroySwapchainKHR(FF_FARG))
+{
+	return vkDestroySwapchainKHR(FF_FARG);
+}
+
 // API OTHER
 FF_TMP auto wait_for_fences(FF_ARG) -> decltype(vkWaitForFences(FF_FARG))
 {
@@ -302,6 +339,14 @@ FF_TMP auto queue_submit(FF_ARG) -> decltype(vkQueueSubmit(FF_FARG))
 FF_TMP auto queue_present(FF_ARG) -> decltype(vkQueuePresentKHR(FF_FARG))
 {
 	return vkQueuePresentKHR(FF_FARG);
+}
+FF_TMP auto queue_wait_idle(FF_ARG) -> decltype(vkQueueWaitIdle(FF_FARG))
+{
+	return vkQueueWaitIdle(FF_FARG);
+}
+FF_TMP auto device_wait_idle(FF_ARG) -> decltype(vkDeviceWaitIdle(FF_FARG))
+{
+	return vkDeviceWaitIdle(FF_FARG);
 }
 
 namespace cmd
@@ -347,6 +392,10 @@ FF_TMP auto pipeline_barrier(FF_ARG) -> decltype(vkCmdPipelineBarrier(FF_FARG))
 {
 	return vkCmdPipelineBarrier(FF_FARG);
 }
+FF_TMP auto copy_buffer_to_image(FF_ARG) -> decltype(vkCmdCopyBufferToImage(FF_FARG))
+{
+	return vkCmdCopyBufferToImage(FF_FARG);
+}
 } // namespace cmd
 
 typedef VkInstance instance;
@@ -367,6 +416,7 @@ typedef VkBufferImageCopy buffer_image_copy;
 typedef VkBufferCreateInfo buffer_create_info;
 typedef VkBufferCopy buffer_copy;
 typedef VkBufferUsageFlagBits buffer_usage_flag_bits;
+typedef VkBufferUsageFlags buffer_usage_flags;
 
 typedef VkMemoryRequirements memory_requirements;
 typedef VkMemoryPropertyFlags memory_property_flags;
@@ -380,6 +430,7 @@ typedef VkImageUsageFlags image_usage_flags;
 typedef VkImageAspectFlags image_aspect_flags;
 typedef VkImageViewCreateInfo image_view_create_info;
 typedef VkImageMemoryBarrier image_memory_barrier;
+typedef VkImageCreateInfo image_create_info;
 
 typedef VkCommandBufferBeginInfo command_buffer_begin_info;
 typedef VkCommandBuffer command_buffer;

@@ -38,7 +38,10 @@ void mac::object::set_data(void* vertices, u32 vertex_count, void* indices, u32 
 	m_vertex_count = vertex_count;
 	m_index_count = index_count;
 
-	reinterpret_cast<mac::window::state*>(m_window_state)->dirty_objects.emplace_back(this);
+	auto window_state = reinterpret_cast<mac::window::state*>(m_window_state);
+
+	std::unique_lock lock(window_state->dirty_objects_mutex);
+	window_state->dirty_objects.emplace_back(this);
 }
 
 void mac::object::update_buffers(vma::allocator& allocator, vk::command_buffer& command_buffer)

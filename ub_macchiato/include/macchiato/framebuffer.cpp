@@ -26,8 +26,11 @@ mac::framebuffer::state* mac::framebuffer::create(vk::device& logical_device, vk
 	return framebuffer_state;
 }
 
-void mac::framebuffer::destroy(mac::framebuffer::state* framebuffer_state)
+void mac::framebuffer::destroy(mac::framebuffer::state* framebuffer_state, vk::device& logical_device)
 {
+	vk::destroy_framebuffer(logical_device, framebuffer_state->frame_buffer, nullptr);
+	vk::destroy_image_view(logical_device, framebuffer_state->image_view, nullptr);
+
 	delete framebuffer_state;
 }
 
