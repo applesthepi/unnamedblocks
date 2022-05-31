@@ -1,0 +1,115 @@
+#pragma once
+#include "config.h"
+
+#include "utils.hpp"
+#include "shape.hpp"
+#include "macchiato/vertices/vertex_color.hpp"
+#include "macchiato/vertices/vertex_texture.hpp"
+#include "macchiato/objects/object_color.hpp"
+#include "macchiato/objects/object_texture.hpp"
+
+#include <latte/utils.hpp>
+
+namespace traffic
+{
+class shape_lane : public mac::shape
+{
+public:
+	static constexpr u32 points = 5;
+
+	static constexpr u32 vertex_count = points * 2;
+	static constexpr u32 index_count = 6 * (points - 1);
+	static constexpr u32 vertices_size = mac::vertex_color::info::stride_s * vertex_count;
+	static constexpr u32 indices_size = sizeof(u32) * index_count;
+
+	static constexpr glm::vec<4, f32> i_color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	shape_lane(
+		mac::window::state* window_state,
+		glm::vec<2, f32> p1_,
+		glm::vec<2, f32> p2_,
+		glm::vec<2, f32> p3_,
+		glm::vec<2, f32> p4_
+	)
+		: mac::shape(window_state, vertices_size, vertex_count, indices_size, index_count, false)
+		, p1(p1_)
+		, p2(p2_)
+		, p3(p3_)
+		, p4(p4_)
+		, m_object_color(nullptr)
+	{
+		m_object_color = new mac::object_color(m_window_state);
+		set_object(m_object_color);
+
+		auto pipeline_bucket_color = mac::window::get_pipeline_bucket(m_window_state, "color");
+
+		{
+			std::unique_lock lock(m_window_state->spawn_objects_mutex);
+			m_window_state->spawn_objects.emplace_back(m_object_color);
+		}
+
+		{
+			std::unique_lock lock(pipeline_bucket_color->shared_mutex);
+			pipeline_bucket_color->objects.emplace_back(m_object_color);
+		}
+	}
+
+	glm::vec<2, f32> p1, p2, p3, p4;
+private:
+	///
+	mac::object_color* m_object_color;
+protected:
+	void recalculate_buffer_data() override
+	{
+		// VERTICES
+
+		std::vector<glm::vec<2, f32>> out_bezier_points;
+		out_bezier_points.reserve(points);
+		bezier_sample_points(p1, p2, p3, p4, points, out_bezier_points);
+
+		auto vertices = reinterpret_cast<mac::vertex_color::vertex*>(m_vertices);
+		__stosb(reinterpret_cast<u8*>(vertices), 0, vertices_size);
+
+
+
+		vertices[0].color = i_color;
+		vertices[1].color = i_color;
+		vertices[2].color = i_color;
+		vertices[3].color = i_color;
+
+		vertices[1].position.x = static_cast<f32>(size.x);
+		vertices[2].position.y = static_cast<f32>(size.y);
+		vertices[3].position.x = static_cast<f32>(size.x);
+		vertices[3].position.y = static_cast<f32>(size.y);
+
+		// INDICES
+
+		auto indices = reinterpret_cast<u32*>(m_indices);
+		__stosb(reinterpret_cast<u8*>(indices), 0, indices_size);
+
+		indices[0] = 0;
+		indices[1] = 1;
+		indices[2] = 2;
+		indices[3] = 1;
+		indices[4] = 2;
+		indices[5] = 3;
+
+		// MODEL MATRIX
+
+		m_model_matrix = glm::translate(m_model_matrix, glm::vec<3, f32>(position, 0.0f));
+
+		/// UBOs
+
+		if (m_has_image)
+		{
+			m_object_texture->ubo_obj().model_matrix = m_model_matrix;
+			m_object_texture->ubo_obj().color = color;
+		}
+		else
+		{
+			m_object_color->ubo_obj().model_matrix = m_model_matrix;
+			m_object_color->ubo_obj().color = color;
+		}
+	}
+};
+}

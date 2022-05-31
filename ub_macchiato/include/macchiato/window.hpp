@@ -120,6 +120,9 @@ struct state
 
 	///
 	std::atomic_bool resize_done;
+
+	///
+	std::vector<std::function<void(double)>> frame_updates;
 };
 
 ///
@@ -178,4 +181,7 @@ void create_swapchain_and_renderpasses(mac::window::state* window_state);
 
 ///
 void create_pipeline_and_framebuffers(mac::window::state* window_state);
+
+///
+void add_frame_update(mac::window::state* window_state, const std::function<void(double)>& callback);
 }

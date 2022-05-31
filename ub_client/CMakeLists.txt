@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(UB_CLIENT)
 
-set(UB_CLIENT_SRC
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/src/mod_loader.cpp"
-	"${CMAKE_CURRENT_SOURCE_DIR}/src/mod_loader.hpp")
+file(GLOB_RECURSE UB_CLIENT_SRC "src/*/*.cpp" "src/*.cpp")
 
 set(PROJECT_BINARY_DIR ${CMAKE_BINARY_DIR})
 add_executable(UB_CLIENT ${UB_CLIENT_SRC})

@@ -281,11 +281,93 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 		// FRAME UPDATE
 		//
 
+		for (auto& callback : window_state->frame_updates)
+			callback(1.0);
+
 		mac::descriptor_set::update_descriptor_buffer(
 			window_state->cam_instance->descriptor_buffers[0],
 			window_state->vma_allocator,
 			window_state->ubo_cam
 		);
+
+		//
+		// IMGUI
+		//
+#if 0
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		{
+			static bool opt_fullscreen_persistant	  = true;
+			bool opt_fullscreen						  = opt_fullscreen_persistant;
+			static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+			// We are using the ImGuiWindowFlags_NoDocking flag to make the
+			// parent window not dockable into, because it would be confusing to
+			// have two docking targets within each others.
+			ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+			if (opt_fullscreen)
+			{
+				ImGuiViewport* viewport = ImGui::GetMainViewport();
+
+				ImGui::SetNextWindowPos(viewport->Pos);
+				ImGui::SetNextWindowSize(viewport->Size);
+				ImGui::SetNextWindowViewport(viewport->ID);
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+
+				window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+				window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			}
+
+			// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace()
+			// will render our background and handle the pass-thru hole, so we
+			// ask Begin() to not render a background.
+			if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+				window_flags |= ImGuiWindowFlags_NoBackground;
+
+			// Important: note that we proceed even if Begin() returns false
+			// (aka window is collapsed). This is because we want to keep our
+			// DockSpace() active. If a DockSpace() is inactive, all active
+			// windows docked into it will lose their parent and become
+			// undocked. We cannot preserve the docking relationship between an
+			// active window and an inactive docking, otherwise any change of
+			// dockspace/settings would lead to windows being stuck in limbo and
+			// never being visible.
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			static bool p_open = true;
+			ImGui::Begin("###DockSpace", &p_open, window_flags);
+			ImGui::PopStyleVar();
+
+			if (ImGui::Button("run"))
+				latte::logger::info(latte::logger::level::SYSTEM, "button");
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("save"))
+				latte::logger::info(latte::logger::level::SYSTEM, "button");
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("load"))
+				latte::logger::info(latte::logger::level::SYSTEM, "button");
+
+			if (opt_fullscreen)
+				ImGui::PopStyleVar(2);
+
+			// DockSpace
+			ImGuiIO& io = ImGui::GetIO();
+			if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+			{
+				ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+				ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+			}
+
+			ImGui::End();
+		}
+#endif
 
 		//
 		// WAIT TO RECORD
@@ -332,7 +414,6 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 
 			while (window_state->input_state->size_zero)
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
 
 			// UNSIGNAL SEMAPHORE
 
@@ -400,6 +481,8 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 			0, nullptr,
 			0, nullptr
 		);
+
+		//lungo::handler::panel::get()->run_imgui();
 
 		//
 		// RECORD RENDER PASS
@@ -934,4 +1017,9 @@ void mac::window::create_pipeline_and_framebuffers(mac::window::state* window_st
 			)
 		);
 	}
+}
+
+void mac::window::add_frame_update(mac::window::state* window_state, const std::function<void(double)>& callback)
+{
+	window_state->frame_updates.emplace_back(callback);
 }

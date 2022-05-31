@@ -5,8 +5,6 @@
 #include "mocha/handlers/category.hpp"
 #include "lungo/handlers/context.hpp"
 #include "lungo/handlers/panel.hpp"
-#include "lungo/renderer.hpp"
-#include "lungo/tools.hpp"
 #include "latte/serializer.hpp"
 #include "mocha/handlers/project.hpp"
 
@@ -17,6 +15,8 @@
 #include <macchiato/window.hpp>
 
 #include <macchiato/shapes/rectangle.hpp>
+
+#include "traffic/traffic.hpp"
 
 //#if LINUX
 //#include <dlfcn.h>
@@ -41,6 +41,10 @@ static void button_callback_build_debug(void* data)
 
 i32 main()
 {
+	traffic::run();
+	return 0;
+
+#if 0
 	latte::logger::initialize();
 	mac::window::global_initialization();
 
@@ -56,7 +60,7 @@ i32 main()
 	mac::window::global_shutdown();
 
 	return 0;
-
+#endif
 
 
 #if 0
@@ -147,38 +151,41 @@ i32 main()
 	// APPLICATION SETUP
 	//
 
+	mac::window::global_initialization();
 	esp::registry::set(new esp::registry());
 	rhr::registry::char_texture::set(new rhr::registry::char_texture());
-	rhr::render::renderer::set(new rhr::render::renderer());
+	//rhr::render::renderer::set(new rhr::render::renderer());
 
 	latte::logger::initialize();
-	rhr::render::tools::initialize();
+	//rhr::render::tools::initialize();
 
-	rhr::render::renderer::get()->initialize_window(
-		[](i16 p0, i32 p1) {
-			rhr::handler::input::fire_key(p0, p1);
-		},
-		[](i32 p0, i32 p1) {
-			rhr::handler::input::fire_mouse_button(p0, p1);
-		},
-		[](f32 p0) {
-			rhr::handler::input::fire_mouse_scroll(p0);
-		},
-		[](i32 p0, i32 p1) {
-			rhr::handler::input::fire_mouse_move({ p0, p1 });
-		}
-	);
+	//rhr::render::renderer::get()->initialize_window(
+	//	[](i16 p0, i32 p1) {
+	//		rhr::handler::input::fire_key(p0, p1);
+	//	},
+	//	[](i32 p0, i32 p1) {
+	//		rhr::handler::input::fire_mouse_button(p0, p1);
+	//	},
+	//	[](f32 p0) {
+	//		rhr::handler::input::fire_mouse_scroll(p0);
+	//	},
+	//	[](i32 p0, i32 p1) {
+	//		rhr::handler::input::fire_mouse_move({ p0, p1 });
+	//	}
+	//);
 
-	async_setup();
+	//async_setup();
 	lungo::handler::panel::get()->initialize();
 	// std::future<void> asyncSetup = std::async(std::launch::async,
 	// AsyncSetup);
 
-	rhr::handler::input::initialize();
+	//rhr::handler::input::initialize();
 	rhr::handler::build::initialize();
 	rhr::handler::context::initialize();
 	//rhr::registry::block::create_block_registry();
 	// rhr::handler::field::initialize();
+
+	auto window_state = mac::window::create("Unnamed Blocks", { 1920, 1080 });
 
 	//
 	// CREATE PANELS
@@ -192,19 +199,19 @@ i32 main()
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::primary_plane->render();
+			//rhr::stack::plane::primary_plane->render();
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::primary_plane->reload_swap_chain();
+			//rhr::stack::plane::primary_plane->reload_swap_chain();
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::primary_plane->update_buffers();
+			//rhr::stack::plane::primary_plane->update_buffers();
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::primary_plane->render_master_pass();
+			//rhr::stack::plane::primary_plane->render_master_pass();
 		},
 		[](lungo::handler::panel::data& data)
 		{
@@ -225,19 +232,19 @@ i32 main()
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::toolbar_plane->render();
+			//rhr::stack::plane::toolbar_plane->render();
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::toolbar_plane->reload_swap_chain();
+			//rhr::stack::plane::toolbar_plane->reload_swap_chain();
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::toolbar_plane->update_buffers();
+			//rhr::stack::plane::toolbar_plane->update_buffers();
 		},
 		[](lungo::handler::panel::data& data)
 		{
-			rhr::stack::plane::toolbar_plane->render_master_pass();
+			//rhr::stack::plane::toolbar_plane->render_master_pass();
 		},
 		[](lungo::handler::panel::data& data)
 		{
