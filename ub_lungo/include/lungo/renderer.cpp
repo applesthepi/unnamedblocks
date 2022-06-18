@@ -1,3 +1,4 @@
+#if 0
 #include "renderer.hpp"
 
 #include "mocha/handlers/category.hpp"
@@ -606,3 +607,4 @@ u32 rhr::render::renderer::depth_ui_background	  = 50;
 u32 rhr::render::renderer::depth_ui_text		  = 55;
 
 rhr::render::renderer* rhr::render::renderer::m_renderer = nullptr;
+#endif

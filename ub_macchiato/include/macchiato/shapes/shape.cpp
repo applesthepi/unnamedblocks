@@ -26,9 +26,9 @@ mac::shape::shape(
 void mac::shape::update()
 {
 	if (m_lock_vertex_size)
-		__stosb(reinterpret_cast<u8*>(m_vertices), 0, m_lock_vertex_size);
+		memset(reinterpret_cast<u8*>(m_vertices), 0, m_lock_vertex_size);
 	if (m_lock_index_size)
-		__stosb(reinterpret_cast<u8*>(m_indices), 0, m_lock_index_size);
+		memset(reinterpret_cast<u8*>(m_indices), 0, m_lock_index_size);
 	if (!m_persistent_model_matrix)
 		m_model_matrix = glm::mat4(1.0f);
 

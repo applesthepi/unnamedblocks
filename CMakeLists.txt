@@ -8,6 +8,15 @@ set(USE_FOLDERS ON)
 set(CMAKE_BUILD_PARALLEL_LEVEL 12)
 enable_language(C CXX ASM)
 # SET(ASM_OPTIONS "-x assembler-with-cpp")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+
+IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
+  EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+          ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+            )
+            ENDIF()
 
 #set(LLVM_DIR "dependencies/llvm/llvm/build/lib/cmake/llvm")
 #set(Clang_DIR "dependencies/llvm/llvm/build/lib/cmake/clang")
@@ -45,6 +54,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 
 	list(APPEND EXTRA_LIBRARIES ${X11_LIBRARIES})
 	list(APPEND EXTRA_INCLUDES ${X11_INCLUDE_DIRS})
+
+    add_compile_options(-msse2)
 else()
 	set(LINUX False)
 endif()

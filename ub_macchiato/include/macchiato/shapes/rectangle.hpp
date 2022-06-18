@@ -160,7 +160,7 @@ protected:
 		// VERTICES
 
 		auto vertices = reinterpret_cast<mac::vertex_color::vertex*>(m_vertices);
-		__stosb(reinterpret_cast<u8*>(vertices), 0, vertices_size);
+		memset(reinterpret_cast<u8*>(vertices), 0, vertices_size);
 
 		vertices[0].color = i_color;
 		vertices[1].color = i_color;
@@ -175,7 +175,7 @@ protected:
 		// INDICES
 
 		auto indices = reinterpret_cast<u32*>(m_indices);
-		__stosb(reinterpret_cast<u8*>(indices), 0, indices_size);
+		memset(reinterpret_cast<u8*>(indices), 0, indices_size);
 
 		indices[0] = 0;
 		indices[1] = 1;

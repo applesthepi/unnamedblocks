@@ -28,7 +28,7 @@
 #include <sstream>
 #include <stack>
 
-#include <intrin.h>
+#include <x86intrin.h>
 
 #include <stb/stb_image.h>
 #include <zstd.h>

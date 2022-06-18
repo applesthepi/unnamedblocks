@@ -1,6 +1,6 @@
 #include "panel.hpp"
 
-#include "lungo/renderer.hpp"
+//#include "lungo/renderer.hpp"
 #include "lungo/tools.hpp"
 
 lungo::handler::panel* lungo::handler::panel::get()

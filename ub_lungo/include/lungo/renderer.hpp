@@ -1,4 +1,5 @@
 #pragma once
+#if 0
 #include "config.h"
 
 #include "lungo/components/window.hpp"
@@ -149,3 +150,4 @@ private:
 	std::shared_mutex m_dirty_mutex;
 };
 } // namespace rhr::render
+#endif

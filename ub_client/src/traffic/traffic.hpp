@@ -2,6 +2,7 @@
 #include "config.h"
 
 #include "utils.hpp"
+#include "shape_lane.hpp"
 
 #include <latte/utils.hpp>
 #include <macchiato/objects/object_color.hpp>
@@ -24,8 +25,8 @@ struct vehicle_sim
 
 struct lane_sim
 {
-	glm::vec<2, f32> p2;
-	glm::vec<2, f32> p3;
+	f32 p2;
+	f32 p3;
 };
 
 struct band
@@ -44,16 +45,20 @@ struct clip_set
 	std::vector<clip_set*> lane_future_clip_set;
 	std::vector<u8> lane_future_clip_set_index;
 	std::vector<band> bands;
+	std::vector<clip_set*> band_future_clipsets;
+	std::vector<shape_lane*> band_shapes;
 
 	glm::vec<2, f32> position;
 	glm::vec<2, f32> direction;
+
+	f32 lane_width;
 };
 
 struct vehicle_net
 {
 	vehicle_sim sim;
 
-	clip_set* clip_set;
+	clip_set* clip_set_;
 	u8 clip_set_lane_idx;
 };
 
@@ -103,7 +108,7 @@ struct sim_thread_data
 struct future_thread_data
 {
 	TIME_POINT last_simulation_resolved_time;
-	simulation_state* simulation_state;
+	simulation_state* simulation_state_;
 	u32 begin;
 	u32 end;
 	f32 delta_time;
@@ -125,4 +130,28 @@ void thread_future(
 );
 
 void run();
+
+void create_lane(
+	lane_sim* out,
+	f32 p2,
+	f32 p3
+);
+
+void create_clip_set(
+	mac::window::state* window_state,
+	clip_set* out,
+	const std::vector<lane_sim*>& lane_sims,
+	const std::vector<clip_set*>& lane_future_clip_sets,
+	const std::vector<u8>& lane_future_clip_set_indices,
+	const std::vector<band>& bands,
+	const std::vector<clip_set*>& band_future_clipsets,
+	glm::vec<2, f32> position,
+	glm::vec<2, f32> direction,
+	f32 lane_width
+);
+
+void generate_band_shapes(
+	mac::window::state* window_state,
+	clip_set* clipset
+);
 }

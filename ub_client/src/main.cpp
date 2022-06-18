@@ -41,8 +41,8 @@ static void button_callback_build_debug(void* data)
 
 i32 main()
 {
-	traffic::run();
-	return 0;
+	//traffic::run();
+	//return 0;
 
 #if 0
 	latte::logger::initialize();
@@ -144,7 +144,7 @@ i32 main()
 
 #if LINUX
 	// TODO: Proper wayland support
-	XInitThreads();
+	//XInitThreads();
 #endif
 
 	//
@@ -408,11 +408,19 @@ i32 main()
 	rhr::handler::category::populate();
 
 	rhr::stack::plane::primary_plane->set_size_parent(
-		rhr::render::renderer::get()->get_window_primary()->get_window_size(), false);
+		{
+			static_cast<i32>(window_state->swapchain_state->extent.width),
+			static_cast<i32>(window_state->swapchain_state->extent.height),
+		}, false
+	);
 	rhr::stack::plane::primary_plane->set_size_max(true);
 
 	rhr::stack::plane::toolbar_plane->set_size_parent(
-		rhr::render::renderer::get()->get_window_primary()->get_window_size(), false);
+		{
+			static_cast<i32>(window_state->swapchain_state->extent.width),
+			static_cast<i32>(window_state->swapchain_state->extent.height),
+		}, false
+	);
 	rhr::stack::plane::toolbar_plane->set_size_max(true);
 
 	//
@@ -462,6 +470,10 @@ i32 main()
 
 	rhr::handler::project::load_project("save.ub");
 
+	mac::window::run(window_state);
+	mac::window::global_shutdown();
+	return 0;
+#if 0
 	//
 	// LOOP SETUP
 	//
@@ -479,10 +491,10 @@ i32 main()
 
 	static glm::vec<2, i32> last_plane_size		= {0, 0};
 	static glm::vec<2, i32> last_plane_position = {0, 0};
-	static glm::vec<2, i32> window_position		= {0, 0};
+	//static glm::vec<2, i32> window_position		= {0, 0};
 
-	glfwGetWindowPos(rhr::render::renderer::get()->get_window_primary()->get_window(), &window_position.x, &window_position.y);
-	rhr::render::renderer::get()->get_window_primary()->set_window_position(window_position);
+	//glfwGetWindowPos(rhr::render::renderer::get()->get_window_primary()->get_window(), &window_position.x, &window_position.y);
+	//rhr::render::renderer::get()->get_window_primary()->set_window_position(window_position);
 
 	/*rhr::handler::serializer::node child_node_1;
 	child_node_1.data_names = { "name1", "name2" };
@@ -629,4 +641,5 @@ i32 main()
 	}
 
 	return 0;
+#endif
 }

@@ -1,5 +1,6 @@
 #include "traffic.hpp"
 
+#include "glm/ext/matrix_transform.hpp"
 #include "shape_lane.hpp"
 
 constexpr u8 simulation_states_in_flight = 3;
@@ -265,76 +266,195 @@ void traffic::run()
 	rectangle1->color = { 1.0f, 0.5f, 1.0f, 1.0f };
 	rectangle1->update();
 
+#if 1
+	{
+		glm::mat4 rot = glm::lookAt(
+			glm::vec<3, f32>(0.0f),
+			glm::normalize(glm::vec<3, f32>(1.0f, 5.0f, 0.0f)),
+			{ 0.0f, 0.0f, -1.0f }
+		);
+
+		glm::mat4 trans_base  = glm::translate(glm::mat4(1.0f), { 100.0f, 0.0f, 100.0f });
+		glm::mat4 trans_width = glm::translate(glm::mat4(1.0f), { -10.0f, 0.0f, 0.0f });
+
+		glm::vec<4, f32> v4_offset = trans_base * rot * trans_width * glm::vec<4, f32>(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec<2, f32> v_offset = { v4_offset.z, v4_offset.x };
+
+		LOG_DEBUG_VEC2(v_offset);
+		return;
+	}
+#endif
+#if 0
 	auto* lanes = new lane_sim[3];
 	auto* clipsets = new clip_set[4];
 
-	{
-		// L1
+	create_lane(
+		lanes + 0,
+		1.0f,
+		1.0f
+	);
+	
+	create_lane(
+		lanes + 1,
+		1.0f,
+		1.0f
+	);
+	
+	create_lane(
+		lanes + 2,
+		80.0f, 80.0f
+	);
 
-		lanes[0].p1 = { 0.0f, 0.0f };
-		lanes[0].p2 = { 0.0f, 1.0f };
-		lanes[0].p3 = { 0.0f, 49.0f };
-		lanes[0].p4 = { 0.0f, 50.0f };
+	create_clip_set(
+		window_state,
+		clipsets + 2,
+		{},
+		{},
+		{},
+		{},
+		{},
+		{ 0.0f, 100.0f },
+		glm::normalize(glm::vec<2, f32>(0.0f, 1.0f)),
+		20.0f
+	);
+	
+	create_clip_set(
+		window_state,
+		clipsets + 3,
+		{},
+		{},
+		{},
+		{},
+		{},
+		{ 120.0f, 100.0f },
+		glm::normalize(glm::vec<2, f32>(1.0f, 0.0f)),
+		20.0f
+	);
 
-		// L2
-
-		lanes[1].p1 = { 0.0f, 50.0f };
-		lanes[1].p2 = { 0.0f, 51.0f };
-		lanes[1].p3 = { 0.0f, 99.0f };
-		lanes[1].p4 = { 0.0f, 100.0f };
-
-		// L3
-
-		lanes[2].p1 = { 10.0f, 0.0f };
-		lanes[2].p2 = { 10.0f, 50.0f };
-		lanes[2].p3 = { 10.0f, 50.0f };
-		lanes[2].p4 = { 60.0f, 50.0f };
-
-		// A
-
-		clipsets[0].lane_sims = { lanes + 0, lanes + 2 };
-		clipsets[0].lane_future_clip_set = { clipsets + 1, clipsets + 3 };
-		clipsets[0].lane_future_clip_set_index = { 0, 0 };
-		clipsets[0].bands = {
+	create_clip_set(
+		window_state,
+		clipsets + 1,
+		{ lanes + 1 },
+		{ clipsets + 2 },
+		{ 0 },
+		{
+			{ 1, 0, 0, 0, 0 }
+		},
+		{ clipsets + 2 },
+		{ 0.0f, 50.0f },
+		glm::normalize(glm::vec<2, f32>(0.0f, 1.0f)),
+		20.0f
+	);
+	
+	create_clip_set(
+		window_state,
+		clipsets + 0,
+		{ lanes + 0, lanes + 2 },
+		{ clipsets + 1, clipsets + 3 },
+		{ 0, 0 },
+		{
 			{ 1, 0, 0, 0, 0 },
 			{ 1, 1, 1, 0, 0 }
-		};
-		clipsets[0].position = { 0.0f, 0.0f };
-		clipsets[0].direction = glm::normalize(glm::vec<2, f32>(0.0f, 1.0f));
+		},
+		{ clipsets + 1, clipsets + 3 },
+		{ 0.0f, 0.0f },
+		glm::normalize(glm::vec<2, f32>(0.0f, 1.0f)),
+		20.0f
+	);
+#else
+	auto* lanes = new lane_sim[4];
+	auto* clipsets = new clip_set[4];
 
-		// B
+	create_lane(
+		lanes + 0,
+		70.0f, 70.0f
+	);
 
-		clipsets[1].lane_sims = { lanes + 1 };
-		clipsets[1].lane_future_clip_set = { clipsets + 2 };
-		clipsets[1].lane_future_clip_set_index = { 0 };
-		clipsets[1].bands = {
+	create_lane(
+		lanes + 1,
+		70.0f, 70.0f
+	);
+
+	create_lane(
+		lanes + 2,
+		70.0f, 70.0f
+	);
+
+	create_lane(
+		lanes + 3,
+		70.0f, 70.0f
+	);
+
+	create_clip_set(
+		window_state,
+		clipsets + 0,
+		{ lanes + 0 },
+		{ clipsets + 1 },
+		{ 0 },
+		{
 			{ 1, 0, 0, 0, 0 }
-		};
-		clipsets[1].position = { 0.0f, 50.0f };
-		clipsets[1].direction = glm::normalize(glm::vec<2, f32>(0.0f, 1.0f));
+		},
+		{ clipsets + 1 },
+		{ 170.0f, 100.0f },
+		glm::normalize(glm::vec<2, f32>(1.0f, 0.0f)),
+		20.0f
+	);
 
-		// C
+	create_clip_set(
+		window_state,
+		clipsets + 1,
+		{ lanes + 1 },
+		{ clipsets + 2 },
+		{ 0 },
+		{
+			{ 1, 0, 0, 0, 0 }
+		},
+		{ clipsets + 2 },
+		{ 240.0f, 170.0f },
+		glm::normalize(glm::vec<2, f32>(0.0f, -1.0f)),
+		20.0f
+	);
 
-		clipsets[2].lane_sims = {};
-		clipsets[2].lane_future_clip_set = {};
-		clipsets[2].lane_future_clip_set_index = {};
-		clipsets[2].bands = {};
-		clipsets[2].position = { 0.0f, 100.0f };
-		clipsets[2].direction = glm::normalize(glm::vec<2, f32>(0.0f, 1.0f));
+	create_clip_set(
+		window_state,
+		clipsets + 2,
+		{ lanes + 2 },
+		{ clipsets + 3 },
+		{ 0 },
+		{
+			{ 1, 0, 0, 0, 0 }
+		},
+		{ clipsets + 3 },
+		{ 170.0f, 240.0f },
+		glm::normalize(glm::vec<2, f32>(-1.0f, 0.0f)),
+		20.0f
+	);
 
-		// D
+	create_clip_set(
+		window_state,
+		clipsets + 3,
+		{ lanes + 3 },
+		{ clipsets + 0 },
+		{ 0 },
+		{
+			{ 1, 0, 0, 0, 0 }
+		},
+		{ clipsets + 0 },
+		{ 100.0f, 170.0f },
+		glm::normalize(glm::vec<2, f32>(0.0f, 1.0f)),
+		20.0f
+	);
 
-		clipsets[3].lane_sims = {};
-		clipsets[3].lane_future_clip_set = {};
-		clipsets[3].lane_future_clip_set_index = {};
-		clipsets[3].bands = {};
-		clipsets[3].position = { 50.0f, 50.0f };
-		clipsets[3].direction = glm::normalize(glm::vec<2, f32>(1.0f, 0.0f));
-	}
-
+	generate_band_shapes(window_state, clipsets + 0);
+	//generate_band_shapes(window_state, clipsets + 1);
+	//generate_band_shapes(window_state, clipsets + 2);
+	//generate_band_shapes(window_state, clipsets + 3);
+#endif
 	auto network_ro = new network {
 		.spawn_clipsets = { clipsets + 0 }
 	};
+
+
 
 #if 0
 	u8 simulation_state_idx = 0;
@@ -372,4 +492,138 @@ void traffic::run()
 	//	thread_inst_simulation_handler.join();
 
 	mac::window::global_shutdown();
+}
+
+void traffic::create_lane(
+	lane_sim* out,
+	f32 p2,
+	f32 p3)
+{
+	out->p2 = p2;
+	out->p3 = p3;
+}
+
+void traffic::create_clip_set(
+	mac::window::state* window_state,
+	clip_set* out,
+	const std::vector<lane_sim*>& lane_sims,
+	const std::vector<clip_set*>& lane_future_clip_sets,
+	const std::vector<u8>& lane_future_clip_set_indices,
+	const std::vector<band>& bands,
+	const std::vector<clip_set*>& band_future_clipsets,
+	glm::vec<2, f32> position,
+	glm::vec<2, f32> direction,
+	f32 lane_width)
+{
+	out->lane_sims = lane_sims;
+	out->lane_future_clip_set = lane_future_clip_sets;
+	out->lane_future_clip_set_index = lane_future_clip_set_indices;
+	out->bands = bands;
+	out->band_future_clipsets = band_future_clipsets;
+
+	out->position = position;
+	out->direction = direction;
+
+	out->lane_width = lane_width;
+}
+
+void traffic::generate_band_shapes(
+	mac::window::state* window_state,
+	clip_set* clipset
+)
+{
+	if (clipset->bands.empty())
+		return;
+
+	glm::mat4 m_rot_base = glm::lookAt(
+		glm::vec<3, f32>(0.0f),
+		{ clipset->direction.x, clipset->direction.y, 0.0f },
+		{ 0.0f, 0.0f, 1.0f }
+	);
+
+	glm::mat4 m_trans_base = glm::translate(glm::mat4(1.0f), {
+		clipset->position.x, 0.0f, clipset->position.y
+	});
+
+	glm::mat4 m_trans_p1, m_trans_p2, m_trans_p3, m_trans_p4;
+	glm::mat4 m_rot_clip, m_trans_clip;
+
+	for (u16 i = 0; i < clipset->bands.size(); i++)
+	{
+		auto lane = clipset->lane_sims[clipset->bands[i].src_min];
+		auto clip = clipset->band_future_clipsets[i];
+
+		// BAND FUTURE CLIPSET
+
+		m_rot_clip = glm::lookAt(
+			glm::vec<3, f32>(0.0f),
+			{ clip->direction.x, clip->direction.y, 0.0f },
+			{ 0.0f, 0.0f, 1.0f }
+		);
+
+		m_trans_clip = glm::translate(glm::mat4(1.0f), {
+			clip->position.x, 0.0f, clip->position.y
+		});
+
+		// BAND CONTROL POINTS
+
+		m_trans_p1 = glm::translate(glm::mat4(1.0f), {
+			clipset->lane_width * clipset->bands[i].src_min,
+			0.0f, 0.0f
+		});
+
+		m_trans_p2 = glm::translate(glm::mat4(1.0f), {
+			clipset->lane_width * clipset->bands[i].src_min,
+			-lane->p2, 0.0f
+		});
+
+		m_trans_p3 = glm::translate(glm::mat4(1.0f), {
+			clipset->lane_width * clipset->bands[i].dst_min,
+			-lane->p3, 0.0f
+		});
+
+		m_trans_p4 = glm::translate(glm::mat4(1.0f), {
+			clipset->lane_width * clipset->bands[i].dst_min,
+			0.0f, 0.0f
+		});
+
+		glm::vec<4, f32> v4_band_p1 = m_trans_base * m_rot_base * m_trans_p1 * glm::vec<4, f32>(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec<4, f32> v4_band_p2 = m_trans_base * m_rot_base * m_trans_p2 * glm::vec<4, f32>(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec<4, f32> v4_band_p3 = m_trans_clip * m_rot_clip * m_trans_p3 * glm::vec<4, f32>(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec<4, f32> v4_band_p4 = m_trans_clip * m_rot_clip * m_trans_p4 * glm::vec<4, f32>(0.0f, 0.0f, 0.0f, 1.0f);
+
+		//LOG_DEBUG_VEC3(v4_band_p1);
+		//LOG_DEBUG_VEC3(v4_band_p2);
+		
+		//LOG_DEBUG_VEC2(clip->position);
+		//LOG_DEBUG_VEC2(clip->direction);
+
+		std::vector<std::string> messages;
+		
+		messages.emplace_back("p1: " +
+			std::to_string(v4_band_p1.x) + ", " +
+			std::to_string(v4_band_p1.z));
+		messages.emplace_back("p2: " +
+			std::to_string(v4_band_p2.x) + ", " +
+			std::to_string(v4_band_p2.z));
+		messages.emplace_back("p3: " +
+			std::to_string(v4_band_p3.x) + ", " +
+			std::to_string(v4_band_p3.z));
+		messages.emplace_back("p4: " +
+			std::to_string(v4_band_p4.x) + ", " +
+			std::to_string(v4_band_p4.z));
+		messages.emplace_back("");
+
+		latte::logger::info(latte::logger::level::SYSTEM, messages);
+
+		auto shape = clipset->band_shapes.emplace_back(new shape_lane(
+			window_state,
+			{ v4_band_p1.x, v4_band_p1.z },
+			{ v4_band_p2.x, v4_band_p2.z },
+			{ v4_band_p3.x, v4_band_p3.z },
+			{ v4_band_p4.x, v4_band_p4.z }
+		));
+
+		shape->update();
+	}
 }

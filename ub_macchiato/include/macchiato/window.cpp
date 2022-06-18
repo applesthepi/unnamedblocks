@@ -42,7 +42,7 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 
 	// DEVICE
 
-	window_state->device_state = mac::device::create(true, title);
+	window_state->device_state = mac::device::create(false, title);
 
 	if (glfw::create_window_surface(window_state->device_state->instance, window_state->window, nullptr, &window_state->surface) != VK_SUCCESS)
 	{
@@ -185,7 +185,7 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 	glm::vec3 look_at = glm::vec3(0, 0, 1);
 
 	window_state->ubo_cam = new mac::ubo_cam();
-
+	
 	window_state->ubo_cam->uniform_data.projection_matrix = glm::ortho(
 		0.0f,
 		-1920.0f,
@@ -256,6 +256,15 @@ void mac::window::thread_rendering(mac::window::state* window_state)
 	auto function_setup_references = [&renderpass_master, window_state]()
 	{
 		renderpass_master = mac::window::get_renderpass(window_state, "master");
+	
+		window_state->ubo_cam->uniform_data.projection_matrix = glm::ortho(
+			0.0f,
+			-static_cast<f32>(window_state->swapchain_state->extent.width),
+			0.0f,
+			static_cast<f32>(window_state->swapchain_state->extent.height),
+			-1000.0f,
+			1000.0f
+		);
 	};
 
 	function_setup_references();
