@@ -129,7 +129,7 @@ else()
 endif()
 
 set(UB_INCLUDES
-	"${CMAKE_SOURCE_DIR}/ub_lungo/include"
+	# "${CMAKE_SOURCE_DIR}/ub_lungo/include"
 	"${CMAKE_SOURCE_DIR}/ub_mocha/include"
 	"${CMAKE_SOURCE_DIR}/ub_cappuccino/include"
 	"${CMAKE_SOURCE_DIR}/ub_espresso/include"
@@ -153,7 +153,7 @@ set(UB_INCLUDES
 #include(AddLLVM)
 
 add_subdirectory("ub_client")
-add_subdirectory("ub_lungo")
+# add_subdirectory("ub_lungo")
 add_subdirectory("ub_macchiato")
 add_subdirectory("ub_mocha")
 add_subdirectory("ub_latte")

@@ -28,6 +28,7 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 		.command_buffer_idx = 0,
 		.resize_waiting = false,
 		.resize_done = false,
+		.size = { 0, 0 }
 	};
 
 	glfw::set_window_hint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -208,6 +209,7 @@ mac::window::state* mac::window::create(const std::string& title, glm::vec<2, i3
 		{}
 	);
 
+	window_state->size = { window_state->swapchain_state->extent.width, window_state->swapchain_state->extent.height };
 	return window_state;
 }
 
@@ -239,6 +241,8 @@ void mac::window::run(mac::window::state* window_state)
 
 			while (!window_state->resize_done)
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			
+			window_state->size = { window_state->swapchain_state->extent.width, window_state->swapchain_state->extent.height };
 		}
 	}
 

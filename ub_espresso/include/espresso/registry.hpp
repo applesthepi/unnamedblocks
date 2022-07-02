@@ -8,15 +8,15 @@
 
 #include <latte/utils.hpp>
 
-#define REGISTER_TYPE(t) registry->types().emplace_back(new esp::reg::type(t))
-#define REGISTER_ARGUMENT(a) registry->arguments().emplace_back(reinterpret_cast<esp::argument*>(a))
-#define REGISTER_BLOCK(b) registry->blocks().emplace_back(reinterpret_cast<esp::block*>(b))->mod_unlocalized_name = MOD_UNLOCALIZED
-#define REGISTER_CATEGORY(c) registry->categories().emplace_back(reinterpret_cast<esp::category*>(c))
+#define REGISTER_TYPE(t) esp::registry::get()->types().emplace_back(new esp::reg::type(t))
+#define REGISTER_ARGUMENT(a) esp::registry::get()->arguments().emplace_back(reinterpret_cast<esp::argument*>(a))
+#define REGISTER_BLOCK(b) esp::registry::get()->blocks().emplace_back(reinterpret_cast<esp::block*>(b))->mod_unlocalized_name = MOD_UNLOCALIZED
+#define REGISTER_CATEGORY(c) esp::registry::get()->categories().emplace_back(reinterpret_cast<esp::category*>(c))
 
-#define REGISTER_DEFINITION(d) registry->definitions().emplace_back(d)
-#define REGISTER_INITIALIZATION(i) registry->initialization().emplace_back(i)
-#define REGISTER_PARAMETER(p_sender, p_receiver) registry->parameters().emplace_back(std::make_pair(p_sender, p_receiver))
-#define REGISTER_LIBRARY(l) registry->libraries().emplace_back(l)
+#define REGISTER_DEFINITION(d) esp::registry::get()->definitions().emplace_back(d)
+#define REGISTER_INITIALIZATION(i) esp::registry::get()->initialization().emplace_back(i)
+#define REGISTER_PARAMETER(p_sender, p_receiver) esp::registry::get()->parameters().emplace_back(std::make_pair(p_sender, p_receiver))
+#define REGISTER_LIBRARY(l) esp::registry::get()->libraries().emplace_back(l)
 
 namespace esp
 {

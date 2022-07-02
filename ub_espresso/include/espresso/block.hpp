@@ -8,25 +8,21 @@
 namespace esp
 {
 ///
-class block
+struct block
 {
-public:
-	/// How the block will be identified as. Convention example: "mymod_some_block_name".
-	virtual const char* get_unlocalized_name() = 0;
-
-	/// Category of the block.
-	virtual const char* get_category() = 0;
-
-	/// Example: "println!("{}", <<<0>>>);".
-	virtual const char* get_ubbs_instance() = 0;
-
-	/// Does the block start a stack.
-	virtual bool is_topical() = 0;
+	///
+	std::string category;
 
 	///
-	virtual std::vector<esp::argument::initializer> get_arguments() = 0;
+	std::vector<std::string> positions;
 
 	///
-	const char* mod_unlocalized_name;
+	std::vector<esp::argument*> argument_types;
+
+	///
+	std::vector<esp::argument::mode> argument_mode;
+
+	///
+	std::vector<esp::argument::mode_restriction> argument_restriction;
 };
 }

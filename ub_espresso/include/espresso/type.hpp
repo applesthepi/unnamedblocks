@@ -5,20 +5,13 @@
 
 namespace esp
 {
-/// The esp::type is used in ubbs for the rust representation of a ub type.
-class type
+///
+struct type
 {
-public:
-	/// Example: "ub_modname_typename".
-	virtual const char* get_unlocalized_name() = 0;
-
-	/// Example: "bool = <<<>>>".
-	virtual const char* get_ubbs_instance_r() = 0;
-
-	/// Example: "bool = false".
-	virtual const char* get_ubbs_instance_l() = 0;
+	///
+	std::string ubbs_instance;
 
 	///
-	virtual const char* get_ubbs_definition() = 0;
+	std::string ubbs_definition;
 };
 }

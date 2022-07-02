@@ -31,12 +31,12 @@
 
 static void async_setup()
 {
-	rhr::render::renderer::get()->initialize();
+	// rhr::render::renderer::get()->initialize();
 }
 
 static void button_callback_build_debug(void* data)
 {
-	rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
+	// rhr::handler::build::execute(cap::build_system::method::QUICK_BUILD, cap::build_system::type::DEBUG);
 }
 
 i32 main()
@@ -213,10 +213,10 @@ i32 main()
 		{
 			//rhr::stack::plane::primary_plane->render_master_pass();
 		},
-		[](lungo::handler::panel::data& data)
+		[window_state](lungo::handler::panel::data& data)
 		{
 			rhr::stack::plane::primary_plane->set_position_parent_virtual_offset(
-				data.panel_last_position - rhr::render::renderer::get()->get_window_primary()->get_window_position(), true);
+				data.panel_last_position - window_state->size, true);
 		},
 		[](lungo::handler::panel::data& data)
 		{
@@ -246,10 +246,10 @@ i32 main()
 		{
 			//rhr::stack::plane::toolbar_plane->render_master_pass();
 		},
-		[](lungo::handler::panel::data& data)
+		[window_state](lungo::handler::panel::data& data)
 		{
 			rhr::stack::plane::toolbar_plane->set_position_parent_virtual_offset(
-				data.panel_last_position - rhr::render::renderer::get()->get_window_primary()->get_window_position(), true);
+				data.panel_last_position - window_state->size, true);
 		},
 		[](lungo::handler::panel::data& data)
 		{

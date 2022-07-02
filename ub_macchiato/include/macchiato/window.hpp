@@ -122,6 +122,9 @@ struct state
 	std::atomic_bool resize_done;
 
 	///
+	glm::vec<2, i32> size;
+
+	///
 	std::vector<std::function<void(double)>> frame_updates;
 };
 

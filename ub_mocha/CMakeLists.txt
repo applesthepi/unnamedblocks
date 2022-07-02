@@ -11,11 +11,15 @@ if(MSVC)
 endif()
 
 add_dependencies(
-	UB_MOCHA ${UB_DEPENDENCIES} UB_CAPPUCCINO UB_LUNGO)
+	UB_MOCHA ${UB_DEPENDENCIES} UB_CAPPUCCINO
+	# UB_LUNGO
+)
 
 target_link_libraries(
 	UB_MOCHA
-	PUBLIC UB_CAPPUCCINO UB_LUNGO)
+	PUBLIC UB_CAPPUCCINO
+	# UB_LUNGO
+)
 
 target_include_directories(
 	UB_MOCHA
