@@ -1,9 +1,8 @@
 #include "collection.hpp"
 
-#include "lungo/renderer.hpp"
-
-rhr::stack::collection::collection(glm::vec<2, i32>* plane_offset)
-	: m_background(std::make_shared<rhr::render::object::rectangle>())
+rhr::stack::collection::collection(mac::window::state* window_state)
+	: m_background_shape(window_state, { 0, 0 }, { 0, 0 }, { 0.2f, 0.0f, 0.0f, 1.0f})
+	, m_background_entity(&m_background_shape)
 	, m_display_vanity(true)
 {
 	m_function_collection_update = [&]()
@@ -12,8 +11,6 @@ rhr::stack::collection::collection(glm::vec<2, i32>* plane_offset)
 	};
 
 	m_stacks.reserve(5);
-
-	set_static_offset(plane_offset);
 }
 
 void rhr::stack::collection::add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size)

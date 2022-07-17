@@ -1,10 +1,14 @@
 #pragma once
 #include "config.h"
 
-// #include "lungo/interfaces/i_ui.hpp"
 #include "mocha/stacking/stack.hpp"
 
 #include <latte/utils.hpp>
+
+#include <macchiato/interfaces/i_ui.hpp>
+#include <macchiato/window.hpp>
+#include <macchiato/shapes/rectangle.hpp>
+#include <macchiato/entities/shape_entity.hpp>
 
 #define COLLECTION_SERIALIZE { "p_x", "p_y", "s_x", "s_y" }
 
@@ -28,11 +32,11 @@
 namespace rhr::stack
 {
 ///
-class collection : public rhr::render::interfaces::i_ui
+class collection : public mac::i_ui
 {
 public:
 	///
-	collection(glm::vec<2, i32>* plane_offset);
+	collection(mac::window::state* window_state);
 
 	///
 	void add_stack(std::shared_ptr<rhr::stack::stack> stack, bool auto_size = true);
@@ -74,7 +78,8 @@ private:
 	std::vector<std::shared_ptr<rhr::stack::stack>> m_stacks;
 
 	///
-	std::shared_ptr<rhr::render::object::rectangle> m_background;
+	mac::shape_entity m_background_entity;
+	mac::shape_rectangle m_background_shape;
 
 	///
 	bool m_display_vanity;

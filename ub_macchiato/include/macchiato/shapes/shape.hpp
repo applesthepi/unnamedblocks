@@ -19,6 +19,9 @@ public:
 
 	///
 	void update();
+
+	///
+	virtual void set_position(glm::vec<2, f32> position);
 protected:
 	///
 	void set_object(mac::object* object);

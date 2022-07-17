@@ -1,20 +1,33 @@
 #include "mod_loader.hpp"
 
+#include <latte/utils.hpp>
 #include <espresso/mod_data.hpp>
 #include <mocha/handlers/project.hpp>
 
-// TODO temp
-//#include <RHR/config.h>
 #include <filesystem>
 #include <iostream>
+
 #if LINUX
 #include <dlfcn.h>
 #else
 #include <windows.h>
 #endif
 
-// TODO: fix case
+loader::status loader::load_mods()
+{
+	rhr::handler::project::mods.clear();
+	typedef void(*f_initialization)(const esp::mod_push*, esp::mod_pull*);
 
+	std::filesystem::directory_iterator dir_mods("mods");
+
+	for (auto& file : dir_mods)
+	{
+		std::cout << file.path().stem().string() << std::endl;
+	}
+}
+
+// TODO: fix case
+#if 0
 std::vector<RegMod>* mods;
 
 void registerMod(const std::string& fileName, const std::string& fileType)
@@ -140,3 +153,5 @@ ModLoaderStatus run()
 
 	return ModLoaderStatus::ModLoaderStatus_OK;
 }
+
+#endif

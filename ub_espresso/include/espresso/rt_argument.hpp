@@ -7,7 +7,8 @@
 
 #include <latte/utils.hpp>
 #include <latte/serializer.hpp>
-// #include <lungo/interfaces/i_ui.hpp>
+
+#include <macchiato/interfaces/i_ui.hpp>
 
 namespace esp
 {
@@ -27,7 +28,7 @@ public:
 		state();
 
 		///
-		rhr::render::interfaces::i_ui* parent;
+		mac::i_ui* parent;
 
 		///
 		glm::vec<2, i32>* plane_offset;
@@ -54,7 +55,7 @@ public:
 	struct initializer
 	{
 		///
-		esp::rt_argument* argument;
+		esp::argument* argument;
 
 		///
 		esp::argument::mode mode;
@@ -72,11 +73,14 @@ public:
 	/// You can set the argument::state::custom if you want, or do any initialization needed on your end.
 	/// The state's main info has already been set from the initializer except for custom, you would set that
 	/// using the initializer custom.
-	virtual void create(rt_argument::state* state, rt_argument::initializer* initializer) = 0;
+	virtual void create(mac::window::state* window_state, rt_argument::state* state, rt_argument::initializer* initializer) = 0;
 
 	/// Don't deallocate the argument::state. If you allocated something for argument::state::custom, this is the
 	/// place to deallocate that.
 	virtual void destroy(rt_argument::state* state) = 0;
+
+	///
+	virtual void setup_initializer(esp::rt_argument::initializer& initializer, latte::serializer::node& storage) = 0;
 
 	/// Name for registry storage. Convention example: "mymod_some_arg_name".
 	virtual const char* get_unlocalized_name() = 0;
@@ -96,15 +100,15 @@ public:
 
 	/// Padding style for spacing multiple arguments within a block.
 	/// \return Padding style.
-	virtual rt_argument::padding_style get_padding_style() = 0;
+	virtual argument::padding_style get_padding_style() = 0;
 
 	/// Mode that the argument will have by default.
 	/// \return Default mode.
-	virtual rt_argument::mode get_mode() = 0;
+	virtual argument::mode get_mode() = 0;
 
 	/// Restriction of the mode. The user can not change this in the editor.
 	/// \return Mode restriction.
-	virtual rt_argument::mode_restriction get_mode_restriction() = 0;
+	virtual argument::mode_restriction get_mode_restriction() = 0;
 
 	/// Get width for surrounding argument spacing.
 	/// \return Width of argument.
@@ -114,7 +118,7 @@ public:
 	virtual bool capture_mouse() = 0;
 
 	/// Called after any set transform related functions get called during frame update.
-	virtual void ui_transform_update(rt_argument::state* state, rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec) = 0;
+	virtual void ui_transform_update(rt_argument::state* state, mac::i_ui::transform_update_spec transform_update_spec) = 0;
 
 	///
 	virtual void ui_frame_update(rt_argument::state* state, f64 delta_time) = 0;

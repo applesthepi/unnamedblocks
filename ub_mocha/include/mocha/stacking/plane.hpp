@@ -1,16 +1,14 @@
 #pragma once
 #include "config.h"
 
-// #include "lungo/handlers/field.hpp"
-// #include "lungo/handlers/input.hpp"
-// #include "lungo/interfaces/i_ui.hpp"
-// #include "lungo/objects/line.hpp"
-// #include "lungo/objects/rectangle.hpp"
-// #include "lungo/objects/text.hpp"
 #include "mocha/stacking/collection.hpp"
 
-#include <cappuccino/intrinsics.hpp>
 #include <latte/utils.hpp>
+
+#include <macchiato/interfaces/i_ui.hpp>
+#include <macchiato/shapes/rectangle.hpp>
+#include <macchiato/entities/shape_entity.hpp>
+#include <macchiato/window.hpp>
 
 #define SNAP_DISTANCE		30.0f
 #define SNAP_GRAPHIC_HEIGHT 2.0f
@@ -18,11 +16,11 @@
 namespace rhr::stack
 {
 ///
-class plane : public rhr::render::interfaces::i_ui
+class plane : public mac::i_ui
 {
 public:
 	///
-	plane(bool toolbar);
+	plane(mac::window::state* window_state, bool toolbar);
 
 	/// Adds a collection to the plane. displayCollectionVanity should be true on PrimaryPlane and false on ToolbarPlane
 	void add_collection(std::shared_ptr<rhr::stack::collection>& collection, bool displayCollectionVanity);
@@ -40,7 +38,7 @@ public:
 	void delete_contents(bool disable_collections = false);
 
 	///
-	void mouse_button(glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button);
+	mac::input::capture mouse_button(const mac::input::mouse_state& mouse_state);
 
 	///
 	static std::shared_ptr<rhr::stack::plane> primary_plane;
@@ -49,7 +47,7 @@ public:
 	static std::shared_ptr<rhr::stack::plane> toolbar_plane;
 
 	///
-	rhr::handler::field& get_field();
+	// rhr::handler::field& get_field();
 
 	///
 	void render_master_pass();
@@ -141,7 +139,7 @@ private:
 	bool is_snap();
 
 	///
-	rhr::render::object::rectangle m_dragging_shape;
+	// mac::shape_rectangle m_dragging_shape;
 
 	///
 	std::weak_ptr<rhr::stack::collection> m_dragging_snap_collection;
@@ -168,16 +166,17 @@ private:
 	// rhr::render::object::text m_inner_text;
 
 	///
-	std::shared_ptr<rhr::render::object::rectangle> m_background;
+	mac::shape_entity m_background_entity;
+	mac::shape_rectangle m_background_shape;
 
 	///
-	std::shared_ptr<rhr::render::object::line> m_dragging_connecting_line;
+	// std::shared_ptr<rhr::render::object::line> m_dragging_connecting_line;
 
 	///
-	rhr::handler::field m_field;
+	// rhr::handler::field m_field;
 
 	///
-	std::function<void(rhr::handler::input::mouse_button_data)> m_mouse_button;
+	// std::function<void(rhr::handler::input::mouse_button_data)> m_mouse_button;
 
 	///
 	u64 m_mouse_button_idx;

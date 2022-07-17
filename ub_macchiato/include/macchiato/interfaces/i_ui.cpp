@@ -1,8 +1,6 @@
 #include "i_ui.hpp"
 
-#include "lungo/renderer.hpp"
-
-rhr::render::interfaces::i_ui::i_ui()
+mac::i_ui::i_ui()
 	: m_position_local_physical({})
 	, m_position_local_virtual_offset({})
 	, m_position_parent_physical({})
@@ -18,16 +16,16 @@ rhr::render::interfaces::i_ui::i_ui()
 	, m_offset_cap(false)
 {}
 
-void rhr::render::interfaces::i_ui::initialize()
+void mac::i_ui::initialize(mac::window::state* window_state)
 {
 	if (m_initialized)
 		return;
 
 	m_initialized = true;
-	ui_initialize();
+	ui_initialize(window_state);
 }
 
-void rhr::render::interfaces::i_ui::set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child)
+void mac::i_ui::set_position_local_physical(const glm::vec<2, i32>& offset, bool update_child)
 {
 	m_position_local_physical	 = offset;
 	m_position_physical_absolute = m_position_local_physical + m_position_parent_physical;
@@ -46,7 +44,7 @@ void rhr::render::interfaces::i_ui::set_position_local_physical(const glm::vec<2
 	}
 }
 
-void rhr::render::interfaces::i_ui::set_position_local_virtual_offset(const glm::vec<2, i32>& offset, bool update_child)
+void mac::i_ui::set_position_local_virtual_offset(const glm::vec<2, i32>& offset, bool update_child)
 {
 	m_position_local_virtual_offset = offset;
 	m_position_virtual_offset		= m_position_local_virtual_offset + m_position_parent_virtual_offset;
@@ -65,7 +63,7 @@ void rhr::render::interfaces::i_ui::set_position_local_virtual_offset(const glm:
 	}
 }
 
-void rhr::render::interfaces::i_ui::set_position_parent_physical(const glm::vec<2, i32>& offset, bool update_child)
+void mac::i_ui::set_position_parent_physical(const glm::vec<2, i32>& offset, bool update_child)
 {
 	m_position_parent_physical	 = offset;
 	m_position_physical_absolute = m_position_local_physical + m_position_parent_physical;
@@ -84,7 +82,7 @@ void rhr::render::interfaces::i_ui::set_position_parent_physical(const glm::vec<
 	}
 }
 
-void rhr::render::interfaces::i_ui::set_position_parent_virtual_offset(
+void mac::i_ui::set_position_parent_virtual_offset(
 	const glm::vec<2, i32>& offset, bool update_child)
 {
 	m_position_parent_virtual_offset = offset;
@@ -104,7 +102,7 @@ void rhr::render::interfaces::i_ui::set_position_parent_virtual_offset(
 	}
 }
 
-void rhr::render::interfaces::i_ui::set_size_local(const glm::vec<2, i32>& size, bool update_child)
+void mac::i_ui::set_size_local(const glm::vec<2, i32>& size, bool update_child)
 {
 	m_size_local = size;
 
@@ -121,7 +119,7 @@ void rhr::render::interfaces::i_ui::set_size_local(const glm::vec<2, i32>& size,
 	}
 }
 
-void rhr::render::interfaces::i_ui::set_size_parent(const glm::vec<2, i32>& size, bool update_child)
+void mac::i_ui::set_size_parent(const glm::vec<2, i32>& size, bool update_child)
 {
 	m_size_parent = size;
 
@@ -138,7 +136,7 @@ void rhr::render::interfaces::i_ui::set_size_parent(const glm::vec<2, i32>& size
 	}
 }
 
-void rhr::render::interfaces::i_ui::set_size_max(bool update_child)
+void mac::i_ui::set_size_max(bool update_child)
 {
 	m_size_local = m_size_parent;
 
@@ -155,7 +153,7 @@ void rhr::render::interfaces::i_ui::set_size_max(bool update_child)
 	}
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_local_physical()
+const glm::vec<2, i32>& mac::i_ui::get_position_local_physical()
 {
 #ifdef NDEBUG
 	return m_position_local_physical;
@@ -167,7 +165,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_local_physic
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_local_virtual_offset()
+const glm::vec<2, i32>& mac::i_ui::get_position_local_virtual_offset()
 {
 #ifdef NDEBUG
 	return m_position_local_virtual_offset;
@@ -179,7 +177,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_local_virtua
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_parent_physical()
+const glm::vec<2, i32>& mac::i_ui::get_position_parent_physical()
 {
 #ifdef NDEBUG
 	return m_position_parent_physical;
@@ -191,7 +189,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_parent_physi
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_parent_virtual_offset()
+const glm::vec<2, i32>& mac::i_ui::get_position_parent_virtual_offset()
 {
 #ifdef NDEBUG
 	return m_position_parent_virtual_offset;
@@ -203,7 +201,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_parent_virtu
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_physical_absolute()
+const glm::vec<2, i32>& mac::i_ui::get_position_physical_absolute()
 {
 #ifdef NDEBUG
 	return m_position_physical_absolute;
@@ -215,7 +213,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_physical_abs
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_virtual_offset()
+const glm::vec<2, i32>& mac::i_ui::get_position_virtual_offset()
 {
 #ifdef NDEBUG
 	return m_position_virtual_offset;
@@ -227,7 +225,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_virtual_offs
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_virtual_absolute()
+const glm::vec<2, i32>& mac::i_ui::get_position_virtual_absolute()
 {
 #ifdef NDEBUG
 	return m_position_virtual_absolute;
@@ -239,7 +237,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_position_virtual_abso
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_local()
+const glm::vec<2, i32>& mac::i_ui::get_size_local()
 {
 #ifdef NDEBUG
 	return m_size_local;
@@ -251,7 +249,7 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_local()
 #endif
 }
 
-const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_parent()
+const glm::vec<2, i32>& mac::i_ui::get_size_parent()
 {
 #ifdef NDEBUG
 	return m_size_parent;
@@ -263,33 +261,15 @@ const glm::vec<2, i32>& rhr::render::interfaces::i_ui::get_size_parent()
 #endif
 }
 
-void rhr::render::interfaces::i_ui::update_transform(
-	rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec)
+void mac::i_ui::update_transform(
+	mac::i_ui::transform_update_spec transform_update_spec)
 {
 	// This is the only place where it is ok to update the transform of the child before initialization.
 	ui_transform_update(transform_update_spec);
 }
 
-void rhr::render::interfaces::i_ui::update_child_transform(
-	const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, i_ui::transform_update_spec transform_update_spec)
-{
-	ui->set_position_parent_physical(get_position_physical_absolute(), false);
-	ui->set_position_parent_virtual_offset(get_position_virtual_offset(), false);
-	ui->set_size_parent(get_size_local(), false);
-
-	// TODO: for now it says here but move to an initialize style function that adds or creates the child.
-	ui->set_static_offset(get_static_offset());
-
-	// Update transform is called on the child here after the parent information is given to the child. This all happens
-	// before initialization. Once the initializer runs this on the parent with the child, it will run initialize next. That
-	// will unlock the access to the child's transform because now it has the information required from the parent to have
-	// an accurate transform.
-	if (transform_update_spec)
-		ui->update_transform(transform_update_spec);
-}
-
-void rhr::render::interfaces::i_ui::update_child_transform(
-	rhr::render::interfaces::i_ui* ui, rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
+void mac::i_ui::update_child_transform(
+	mac::i_ui* ui, mac::i_ui::transform_update_spec transform_update_spec
 )
 {
 	ui->set_position_parent_physical(get_position_physical_absolute(), false);
@@ -304,10 +284,10 @@ void rhr::render::interfaces::i_ui::update_child_transform(
 		ui->update_transform(transform_update_spec);
 }
 
-void rhr::render::interfaces::i_ui::update_child_transform(
-	const std::shared_ptr<rhr::render::interfaces::i_ui>& ui_parent,
-	const std::shared_ptr<rhr::render::interfaces::i_ui>& ui_child,
-	rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
+void mac::i_ui::update_child_transform(
+	mac::i_ui* ui_parent,
+	mac::i_ui* ui_child,
+	mac::i_ui::transform_update_spec transform_update_spec
 )
 {
 	ui_child->set_position_parent_physical(ui_parent->get_position_physical_absolute(), false);
@@ -322,17 +302,17 @@ void rhr::render::interfaces::i_ui::update_child_transform(
 		ui_child->update_transform(transform_update_spec);
 }
 
-void rhr::render::interfaces::i_ui::set_enabled(bool enabled)
+void mac::i_ui::set_enabled(bool enabled)
 {
 	m_enabled = enabled;
 }
 
-bool rhr::render::interfaces::i_ui::get_enabled()
+bool mac::i_ui::get_enabled()
 {
 	return m_enabled;
 }
 
-void rhr::render::interfaces::i_ui::serialize(latte::serializer::node& node)
+void mac::i_ui::serialize(latte::serializer::node& node)
 {
 #ifdef NDEBUG
 	ui_serialize(node);
@@ -344,7 +324,7 @@ void rhr::render::interfaces::i_ui::serialize(latte::serializer::node& node)
 #endif
 }
 
-void rhr::render::interfaces::i_ui::deserialize(latte::serializer::node& node)
+void mac::i_ui::deserialize(latte::serializer::node& node)
 {
 #ifdef NDEBUG
 	ui_deserialize(node);
@@ -356,7 +336,7 @@ void rhr::render::interfaces::i_ui::deserialize(latte::serializer::node& node)
 #endif
 }
 
-void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
+void mac::i_ui::frame_update(f64 delta_time)
 {
 #ifdef NDEBUG
 	if (m_enabled)
@@ -372,7 +352,7 @@ void rhr::render::interfaces::i_ui::frame_update(f64 delta_time)
 #endif
 }
 
-void rhr::render::interfaces::i_ui::render()
+void mac::i_ui::render()
 {
 #ifdef NDEBUG
 	if (m_enabled)
@@ -388,7 +368,7 @@ void rhr::render::interfaces::i_ui::render()
 #endif
 }
 
-void rhr::render::interfaces::i_ui::reload_swap_chain()
+void mac::i_ui::reload_swap_chain()
 {
 #ifdef NDEBUG
 	ui_reload_swap_chain();
@@ -400,7 +380,7 @@ void rhr::render::interfaces::i_ui::reload_swap_chain()
 #endif
 }
 
-void rhr::render::interfaces::i_ui::update_buffers()
+void mac::i_ui::update_buffers()
 {
 #ifdef NDEBUG
 	if (m_dirty)
@@ -426,23 +406,23 @@ void rhr::render::interfaces::i_ui::update_buffers()
 #endif
 }
 
-void rhr::render::interfaces::i_ui::set_static_offset(glm::vec<2, i32>* offset)
+void mac::i_ui::set_static_offset(glm::vec<2, i32>* offset)
 {
 	m_offset = offset;
 	ui_static_offset_update();
 }
 
-glm::vec<2, i32>* rhr::render::interfaces::i_ui::get_static_offset()
+glm::vec<2, i32>* mac::i_ui::get_static_offset()
 {
 	return m_offset;
 }
 
-void rhr::render::interfaces::i_ui::mark_dirty()
+void mac::i_ui::mark_dirty()
 {
 	m_dirty = true;
 }
 
-void rhr::render::interfaces::i_ui::cap_offset()
+void mac::i_ui::cap_offset()
 {
 	if (m_offset_cap)
 		return;
@@ -452,7 +432,7 @@ void rhr::render::interfaces::i_ui::cap_offset()
 	*m_offset = { 0, 0 };
 }
 
-rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_position =
+mac::i_ui::transform_update_spec mac::i_ui::transform_update_spec_position =
 	0x1;
 
-rhr::render::interfaces::i_ui::transform_update_spec rhr::render::interfaces::i_ui::transform_update_spec_size = 0x2;
+mac::i_ui::transform_update_spec mac::i_ui::transform_update_spec_size = 0x2;

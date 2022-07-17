@@ -1,11 +1,12 @@
 #pragma once
 #include "config.h"
 
-#include "latte/serializer.hpp"
+#include "macchiato/window.hpp"
 
 #include <latte/utils.hpp>
+#include <latte/serializer.hpp>
 
-namespace rhr::render::interfaces
+namespace mac
 {
 ///
 class i_ui
@@ -17,7 +18,7 @@ public:
 	/// Many i_ui objects are appended to a parent after the child's constructor is called. This can lead to issues
 	/// with the child depending on the parent's transform in the constructor. This should be called by the parent
 	/// after it is added as a child. If the element isn't a child, the initializer should call this after the constructor.
-	void initialize();
+	void initialize(mac::window::state* window_state);
 
 	/// Possible buffer update, use flags to make sure you need to call this.
 	/// \param offset This object's physical position (render space). See (TODO: link) for more clarification.
@@ -91,16 +92,7 @@ public:
 	/// \param ui Child element to update from parent this.
 	/// \param transform_update_spec Specification of what parts of the transform is being updated. Use 0x0 to only
 	/// 							 update the transform without updating the child's buffers.
-	void update_child_transform(
-		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui, i_ui::transform_update_spec transform_update_spec);
-
-	/// This parent updates a child based on this transform data. Possible buffer update, use flags to make sure you
-	/// need to call this.
-	/// \param ui Child element to update from parent this.
-	/// \param transform_update_spec Specification of what parts of the transform is being updated. Use 0x0 to only
-	/// 							 update the transform without updating the child's buffers.
-	void update_child_transform(
-		rhr::render::interfaces::i_ui* ui, i_ui::transform_update_spec transform_update_spec);
+	void update_child_transform(mac::i_ui* ui, i_ui::transform_update_spec transform_update_spec);
 
 	/// This parent updates a child based on this transform data. Possible buffer update, use flags to make sure you
 	/// need to call this.
@@ -109,9 +101,10 @@ public:
 	/// \param transform_update_spec Specification of what parts of the transform is being updated. Use 0x0 to only
 	/// 							 update the transform without updating the child's buffers.
 	static void update_child_transform(
-		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui_parent,
-		const std::shared_ptr<rhr::render::interfaces::i_ui>& ui_child,
-		i_ui::transform_update_spec transform_update_spec);
+		mac::i_ui* ui_parent,
+		mac::i_ui* ui_child,
+		i_ui::transform_update_spec transform_update_spec
+	);
 
 	///
 	void set_enabled(bool enabled);
@@ -157,7 +150,7 @@ protected:
 	/// Many i_ui objects are appended to a parent after the child's constructor is called. This can lead to issues
 	/// with the child depending on the parent's transform in the constructor. This should be called by the parent
 	/// after it is added as a child. If the element isn't a child, the initializer should call this after the constructor.
-	virtual void ui_initialize() = 0;
+	virtual void ui_initialize(mac::window::state* window_state) = 0;
 
 	/// Called after any set transform related functions get called during frame update.
 	virtual void ui_transform_update(i_ui::transform_update_spec transform_update_spec) = 0;
@@ -238,4 +231,4 @@ private:
 	///
 	glm::vec<2, i32>* m_offset;
 };
-} // namespace rhr::render::interfaces
+}

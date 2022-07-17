@@ -155,6 +155,11 @@ private:
 	///
 	mac::object_texture* m_object_texture;
 protected:
+	void set_position(glm::vec<2, f32> position) override
+	{
+		this->position = position;
+	}
+
 	void recalculate_buffer_data() override
 	{
 		// VERTICES

@@ -2,16 +2,17 @@
 #include "config.h"
 
 #include "espresso/reg/type.hpp"
-#include "espresso/argument.hpp"
+#include "espresso/rt_argument.hpp"
 #include "espresso/block.hpp"
 #include "espresso/category.hpp"
 
 #include <latte/utils.hpp>
 
-#define REGISTER_TYPE(t) esp::registry::get()->types().emplace_back(new esp::reg::type(t))
-#define REGISTER_ARGUMENT(a) esp::registry::get()->arguments().emplace_back(reinterpret_cast<esp::argument*>(a))
-#define REGISTER_BLOCK(b) esp::registry::get()->blocks().emplace_back(reinterpret_cast<esp::block*>(b))->mod_unlocalized_name = MOD_UNLOCALIZED
-#define REGISTER_CATEGORY(c) esp::registry::get()->categories().emplace_back(reinterpret_cast<esp::category*>(c))
+#define REGISTER_TYPE(name, t) auto r_t = t; esp::registry::get()->hash_types()[name] = r_t; esp::registry::get()->types().emplace_back(r_t)
+#define REGISTER_ARGUMENT(name, a) auto r_a = a; esp::registry::get()->hash_arguments()[name] = r_a; esp::registry::get()->arguments().emplace_back(r_a)
+#define REGISTER_RT_ARGUMENT(name, a) auto r_rta = a; esp::registry::get()->hash_rt_arguments()[name] = r_rta; esp::registry::get()->rt_arguments().emplace_back(r_rta)
+#define REGISTER_BLOCK(name, b) auto r_b = b; esp::registry::get()->hash_blocks()[name] = r_b; esp::registry::get()->blocks().emplace_back(r_b)
+#define REGISTER_CATEGORY(name, c) auto r_c = c; esp::registry::get()->hash_categories()[name] = r_c; esp::registry::get()->categories().emplace_back(r_c)
 
 #define REGISTER_DEFINITION(d) esp::registry::get()->definitions().emplace_back(d)
 #define REGISTER_INITIALIZATION(i) esp::registry::get()->initialization().emplace_back(i)
@@ -31,10 +32,28 @@ public:
 	static void set(registry* reg);
 
 	///
+	std::unordered_map<std::string, esp::reg::type*>& hash_types();
+
+	///
+	std::unordered_map<std::string, esp::argument*>& hash_arguments();
+
+	///
+	std::unordered_map<std::string, esp::rt_argument*>& hash_rt_arguments();
+
+	///
+	std::unordered_map<std::string, esp::block*>& hash_blocks();
+
+	///
+	std::unordered_map<std::string, esp::category*>& hash_categories();
+
+	///
 	std::vector<esp::reg::type*>& types();
 
 	///
 	std::vector<esp::argument*>& arguments();
+
+	///
+	std::vector<esp::rt_argument*>& rt_arguments();
 
 	///
 	std::vector<esp::block*>& blocks();
@@ -67,6 +86,9 @@ public:
 	esp::argument* get_argument(const std::string& unlocalized_name);
 
 	///
+	esp::rt_argument* get_rt_argument(const std::string& unlocalized_name);
+
+	///
 	esp::block* get_block(const char* unlocalized_name);
 
 	///
@@ -77,10 +99,28 @@ private:
 	static registry* m_registry;
 
 	///
+	std::unordered_map<std::string, esp::reg::type*> m_hash_types;
+
+	///
+	std::unordered_map<std::string, esp::argument*> m_hash_arguments;
+
+	///
+	std::unordered_map<std::string, esp::rt_argument*> m_hash_rt_arguments;
+
+	///
+	std::unordered_map<std::string, esp::block*> m_hash_blocks;
+
+	///
+	std::unordered_map<std::string, esp::category*> m_hash_categories;
+
+	///
 	std::vector<esp::reg::type*> m_types;
 
 	///
 	std::vector<esp::argument*> m_arguments;
+
+	///
+	std::vector<esp::rt_argument*> m_rt_arguments;
 
 	///
 	std::vector<esp::block*> m_blocks;

@@ -2,7 +2,6 @@
 
 #include "espresso/block.hpp"
 #include "espresso/registry.hpp"
-#include "lungo/renderer.hpp"
 
 #define BLOCK_SET_DATA_ERROR_MISSING(field)                \
 	("failed to set data for block. " + std::string(field) \
@@ -13,13 +12,14 @@
 
 static void block_update(void* data)
 {
-	rhr::stack::block* block = (rhr::stack::block*)data;
+	mocha::block* block = (mocha::block*)data;
 	block->update_width();
 }
 
-rhr::stack::block::block(const std::string& unlocalized_name)
+mocha::block::block(mac::window::state* window_state, const std::string& unlocalized_name)
 	: m_esp_block(esp::registry::get()->get_block(unlocalized_name.c_str()))
-	, m_background(std::make_shared<rhr::render::object::rectangle>())
+	, m_background_shape(window_state, { 0, 0 }, { 0, 0 }, { 0.2f, 0.0f, 0.0f, 1.0f})
+	, m_background_entity(&m_background_shape)
 	, m_function_stack_update(nullptr)
 {
 	m_function_block_update = [&]()
@@ -28,90 +28,90 @@ rhr::stack::block::block(const std::string& unlocalized_name)
 		(*m_function_stack_update)();
 	};
 
-	m_esp_category = esp::registry::get()->get_category(m_esp_block->get_category());
+	m_esp_category = esp::registry::get()->get_category(m_esp_block->category.c_str());
 }
 
-std::vector<rhr::stack::argument::argument>& rhr::stack::block::get_arguments()
+std::vector<mocha::argument*>& mocha::block::get_arguments()
 {
 	return m_arguments;
 }
 
-u32 rhr::stack::block::get_width()
+u32 mocha::block::get_width()
 {
 	return m_width;
 }
 
-esp::block* rhr::stack::block::get_esp_block()
+esp::block* mocha::block::get_esp_block()
 {
 	return m_esp_block;
 }
 
-esp::category* rhr::stack::block::get_esp_category()
+esp::category* mocha::block::get_esp_category()
 {
 	return m_esp_category;
 }
 
-void rhr::stack::block::ui_initialize()
+void mocha::block::ui_initialize(mac::window::state* window_state)
 {
-	update_child_transform(m_background, 0);
-	m_background->initialize();
-	m_background->set_color(m_esp_category->get_color() /*espresso::color().from_u8({ 200, 200, 200, 0 })*/);
-	m_background->set_depth(rhr::render::renderer::depth_block);
+	update_child_transform(&m_background_entity, 0);
+	m_background_entity.initialize(window_state);
+	m_background_shape.color = m_esp_category->get_color().get_normalized() /*espresso::color().from_u8({ 200, 200, 200, 0 })*/;
+	// m_background_shape (rhr::render::renderer::depth_block);
 
-	set_size_local({100, BLOCK_HEIGHT}, true);
+	set_size_local({ 100, BLOCK_HEIGHT }, true);
 	update_arguments();
 }
 
-void rhr::stack::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
+void mocha::block::ui_transform_update(i_ui::transform_update_spec transform_update_spec)
 {
-	update_child_transform(m_background, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
+	update_child_transform(&m_background_entity, i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
 
-	for (auto& arg : m_arguments)
-		update_child_transform(&arg, i_ui::transform_update_spec_position);
+	for (auto arg : m_arguments)
+		update_child_transform(arg, i_ui::transform_update_spec_position);
 }
 
-void rhr::stack::block::ui_frame_update(f64 delta_time)
+void mocha::block::ui_frame_update(f64 delta_time)
 {
-	for (auto& arg : m_arguments)
-		arg.frame_update(delta_time);
+	for (auto arg : m_arguments)
+		arg->frame_update(delta_time);
 }
 
-void rhr::stack::block::ui_render()
+void mocha::block::ui_render()
 {
-	m_background->render();
+	// m_background->render();
 
-	for (auto& arg : m_arguments)
-		arg.render();
+	// for (auto arg : m_arguments)
+		// arg->render();
 }
 
-void rhr::stack::block::ui_reload_swap_chain()
+void mocha::block::ui_reload_swap_chain()
 {
-	m_background->reload_swap_chain();
+	// m_background->reload_swap_chain();
 
-	for (auto& arg : m_arguments)
-		arg.reload_swap_chain();
+	// for (auto& arg : m_arguments)
+		// arg.reload_swap_chain();
 }
 
-void rhr::stack::block::ui_update_buffers()
+void mocha::block::ui_update_buffers()
 {}
 
-void rhr::stack::block::ui_chain_update_buffers()
+void mocha::block::ui_chain_update_buffers()
 {
-	m_background->update_buffers();
+	// m_background->update_buffers();
 
-	for (auto& arg : m_arguments)
-		arg.update_buffers();
+	// for (auto& arg : m_arguments)
+		// arg.update_buffers();
 }
 
-void rhr::stack::block::ui_static_offset_update()
+void mocha::block::ui_static_offset_update()
 {
-	m_background->set_static_offset(get_static_offset());
+	m_background_entity.set_static_offset(get_static_offset());
 
-	for (auto& argument : m_arguments)
-		argument.set_static_offset(get_static_offset());
+	for (auto argument : m_arguments)
+		argument->set_static_offset(get_static_offset());
 }
 
-void rhr::stack::block::ui_serialize(latte::serializer::node& node)
+void mocha::block::ui_serialize(latte::serializer::node& node)
 {
 	node.data_names.reserve(1);
 	node.data_values.reserve(1);
@@ -119,16 +119,16 @@ void rhr::stack::block::ui_serialize(latte::serializer::node& node)
 
 	// Block does not need the unlocalized name, the stack uses it to spawn it.
 	node.data_names.emplace_back("un");
-	node.data_values.emplace_back(m_esp_block->get_unlocalized_name());
+	node.data_values.emplace_back(m_esp_block->unlocalized_name);
 
-	for (auto& argument : m_arguments)
+	for (auto argument : m_arguments)
 	{
 		auto& child_node = node.children.emplace_back();
-		argument.serialize(child_node);
+		argument->serialize(child_node);
 	}
 }
 
-void rhr::stack::block::ui_deserialize(latte::serializer::node& node)
+void mocha::block::ui_deserialize(latte::serializer::node& node)
 {
 	if (!node.verify_children(m_arguments.size()))
 	{
@@ -137,30 +137,36 @@ void rhr::stack::block::ui_deserialize(latte::serializer::node& node)
 	}
 
 	for (usize i = 0; i < m_arguments.size(); i++)
-		m_arguments[i].deserialize(node.children[i]);
+		m_arguments[i]->deserialize(node.children[i]);
 
 	update_width();
 }
 
-void rhr::stack::block::update_arguments()
+void mocha::block::update_arguments()
 {
-	auto argument_inits = m_esp_block->get_arguments();
+	// auto argument_inits = m_esp_block->argument_types;
 	espresso::color block_color = m_esp_category->get_color();
 
 	m_arguments.clear();
-	m_arguments.reserve(argument_inits.size());
+	m_arguments.reserve(m_esp_block->argument_types.size());
 
-	rhr::stack::argument::argument* last_arg = nullptr;
+	esp::rt_argument* last_arg = nullptr;
 	u32 width = 0;
 
-	for (usize i = 0; i < argument_inits.size(); i++)
+	for (usize i = 0; i < m_esp_block->argument_types.size(); i++)
 	{
-		auto& arg = m_arguments.emplace_back(block_color, &m_function_block_update, get_static_offset(), &argument_inits[i]);
+		auto& arg = m_arguments.emplace_back(
+			block_color, &m_function_block_update, get_static_offset(),
+			esp::registry::get()->get_rt_argument(m_esp_block->argument_types[i]),
+			
+		);
 
-		pad_arguments(width, i, last_arg, &arg, i == argument_inits.size() - 1);
-		last_arg = &arg;
+		// auto arg = m_arguments.emplace_back(esp::registry::get()->get_rt_argument(m_esp_block->argument_types[i]));
 
-		update_child_transform(&arg, 0);
+		pad_arguments(width, i, last_arg, &arg, i == m_esp_block->argument_types.size() - 1);
+		last_arg = arg;
+
+		update_child_transform(arg, 0);
 		arg.initialize();
 		arg.set_position_local_physical({ width, BLOCK_PADDING }, false);
 		arg.update_transform(i_ui::transform_update_spec_position | i_ui::transform_update_spec_size);
@@ -169,7 +175,7 @@ void rhr::stack::block::update_arguments()
 	update_width();
 }
 
-void rhr::stack::block::update_width()
+void mocha::block::update_width()
 {
 	m_width = 0;
 	rhr::stack::argument::argument* last_arg;
@@ -188,10 +194,11 @@ void rhr::stack::block::update_width()
 	pad_arguments(m_width, 0, last_arg, last_arg, true);
 
 	set_size_local(glm::vec<2, i32>(m_width, get_size_local().y), true);
-	m_background->set_size_local(get_size_local(), true);
+	m_background_shape.size = get_size_local();
+	// m_background->set_size_local(get_size_local(), true);
 }
 
-bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
+bool mocha::block::drag_bounds(glm::vec<2, i32> position)
 {
 	for (auto& arg : m_arguments)
 	{
@@ -205,12 +212,12 @@ bool rhr::stack::block::drag_bounds(glm::vec<2, i32> position)
 	return false;
 }
 
-void rhr::stack::block::set_stack_update_function(std::function<void()>* function_stack_update)
+void mocha::block::set_stack_update_function(std::function<void()>* function_stack_update)
 {
 	m_function_stack_update = function_stack_update;
 }
 
-void rhr::stack::block::pad_arguments(
+void mocha::block::pad_arguments(
 	u32& width,
 	usize i,
 	rhr::stack::argument::argument* last_arg,

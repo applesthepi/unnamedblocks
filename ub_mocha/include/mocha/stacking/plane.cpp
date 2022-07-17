@@ -1,35 +1,35 @@
 #include "plane.hpp"
 
-#include "lungo/handlers/context.hpp"
-#include "lungo/renderer.hpp"
+// #include "lungo/handlers/context.hpp"
+// #include "lungo/renderer.hpp"
 
 //static void primary_plane_mouse_button(
-//	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
+//	glm::vec<2, i32> position, f32 scroll, mac::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
 //{
 //	rhr::stack::plane::primary_plane->mouse_button(position, scroll, operation, button);
 //}
 //
 //static void toolbar_plane_mouse_button(
-//	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
+//	glm::vec<2, i32> position, f32 scroll, mac::input::mouse_operation operation, rhr::handler::input::mouse_button button, void* data)
 //{
 //	rhr::stack::plane::toolbar_plane->mouse_button(position, scroll, operation, button);
 //}
 
-rhr::stack::plane::plane(bool toolbar)
+rhr::stack::plane::plane(mac::window::state* window_state, bool toolbar)
 	: m_toolbar(toolbar)
 	, m_selected(false)
 	, m_selected_context(false)
 	, m_dragging_up(false)
 	, m_dragging_snap(false)
-	, m_background(std::make_shared<rhr::render::object::rectangle>())
-	, m_dragging_connecting_line(std::make_shared<rhr::render::object::line>())
+	, m_background_shape(window_state, { 0, 0 }, { 0, 0 }, { 0.2f, 0.0f, 0.0f, 1.0f})
+	, m_background_entity(&m_background_shape)
 	, m_mouse_button_idx(0)
 {
 	cap_offset();
-	m_field.set_static_offset(get_static_offset());
+	// m_field.set_static_offset(get_static_offset());
 
-	m_background->initialize();
-	m_dragging_connecting_line->initialize();
+	// m_background->initialize();
+	// m_dragging_connecting_line->initialize();
 
 	//if (toolbar)
 	//	rhr::handler::input::register_mouse_callback(toolbar_plane_mouse_button, nullptr);
@@ -39,12 +39,18 @@ rhr::stack::plane::plane(bool toolbar)
 	m_collections.reserve(5);
 	m_collection_vanity.reserve(5);
 
+#if 0
 	m_mouse_button = [this](rhr::handler::input::mouse_button_data mouse_button_data)
 	{
 		mouse_button(mouse_button_data.position, mouse_button_data.scroll, mouse_button_data.operation, mouse_button_data.button);
 	};
+#endif
 
-	m_mouse_button_idx = rhr::handler::input::register_mouse_callback(m_mouse_button, nullptr);
+	m_mouse_button_idx = mac::input::register_mouse_callback(window_state->input_state, mac::input::layer_plane, [&](const mac::input::mouse_state& mouse_state){
+		return mouse_button(mouse_state);
+	});
+
+	// m_mouse_button_idx = rhr::handler::input::register_mouse_callback(m_mouse_button, nullptr);
 
 	m_context_callback = [](u8 idx)
 	{
@@ -107,50 +113,51 @@ void rhr::stack::plane::delete_contents(bool disable_collections)
 	m_collections.clear();
 }
 
-void rhr::stack::plane::mouse_button(
-	glm::vec<2, i32> position, f32 scroll, rhr::handler::input::mouse_operation operation, rhr::handler::input::mouse_button button)
+mac::input::capture rhr::stack::plane::mouse_button(const mac::input::mouse_state& mouse_state)
 {
-	if (operation == rhr::handler::input::mouse_operation::SCROLL_VERTICAL)
+	if (mouse_state.operation == mac::input::mouse_operation::SCROLL_VERTICAL)
 	{
 		auto& virtual_position = get_position_virtual_absolute();
 		auto& virtual_size	   = get_size_local();
 
-		if (position.x >= virtual_position.x && position.x < virtual_position.x + virtual_size.x
-			&& position.y >= virtual_position.y && position.y < virtual_position.y + virtual_size.y)
-			get_static_offset()->y += static_cast<i32>(scroll * 100.0f);
+		if (mouse_state.position.x >= virtual_position.x && mouse_state.position.x < virtual_position.x + virtual_size.x
+			&& mouse_state.position.y >= virtual_position.y && mouse_state.position.y < virtual_position.y + virtual_size.y)
+			get_static_offset()->y += static_cast<i32>(mouse_state.scroll * 100.0f);
 	}
-	else if (operation == rhr::handler::input::mouse_operation::SCROLL_HORIZONTAL)
+	else if (mouse_state.operation == mac::input::mouse_operation::SCROLL_HORIZONTAL)
 	{
 		auto& virtual_position = get_position_virtual_absolute();
 		auto& virtual_size	   = get_size_local();
 
-		if (position.x >= virtual_position.x && position.x < virtual_position.x + virtual_size.x
-			&& position.y >= virtual_position.y && position.y < virtual_position.y + virtual_size.y)
-			get_static_offset()->x += static_cast<i32>(scroll * 100.0f);
+		if (mouse_state.position.x >= virtual_position.x && mouse_state.position.x < virtual_position.x + virtual_size.x
+			&& mouse_state.position.y >= virtual_position.y && mouse_state.position.y < virtual_position.y + virtual_size.y)
+			get_static_offset()->x += static_cast<i32>(mouse_state.scroll * 100.0f);
 	}
 
-	if (operation != rhr::handler::input::mouse_operation::PRESS && operation != rhr::handler::input::mouse_operation::RELEASE)
+	if (mouse_state.operation != mac::input::mouse_operation::PRESS && mouse_state.operation != mac::input::mouse_operation::RELEASE)
 		return;
 
 	if ((m_toolbar && rhr::stack::plane::primary_plane->dragging_stack())
 		|| (!m_toolbar && rhr::stack::plane::toolbar_plane->dragging_stack()))
 		return;
 
-	position -= *get_static_offset();
+	glm::vec<2, f32> position = mouse_state.position - *get_static_offset();
 
 	if (dragging_stack())
 	{
-		if (operation == rhr::handler::input::mouse_operation::RELEASE && !m_dragging_up)
+		if (mouse_state.operation == mac::input::mouse_operation::RELEASE && !m_dragging_up)
 		{
 			// dragging and mouse released (used when dragging a stack)
 			undrag(position);
 		}
-		else if (operation == rhr::handler::input::mouse_operation::PRESS && m_dragging_up)
+		else if (mouse_state.operation == mac::input::mouse_operation::PRESS && m_dragging_up)
 		{
 			// dragging and mouse pressed (used when duplicating stack)
 			undrag(position);
 		}
 	}
+
+	// TODO: Sub out into functionals here so there arnt so many indentions.
 
 	i64 collection_max = 0;
 
@@ -190,11 +197,11 @@ void rhr::stack::plane::mouse_button(
 						if (position.x >= block_position.x && position.x < block_position.x + block_size.x
 							&& position.y >= block_position.y && position.y < block_position.y + block_size.y)
 						{
-							if (operation == rhr::handler::input::mouse_operation::PRESS && !dragging_stack())
+							if (mouse_state.operation == mac::input::mouse_operation::PRESS && !dragging_stack())
 							{
 								// not dragging and mouse down
 
-								if (button == rhr::handler::input::mouse_button::LEFT)
+								if (mouse_state.button == mac::input::mouse_button::LEFT)
 								{
 									unselect();
 
@@ -232,7 +239,7 @@ void rhr::stack::plane::mouse_button(
 										{
 											std::shared_ptr<rhr::stack::block> cloned_block =
 												std::make_shared<rhr::stack::block>(
-													block->get_esp_block()->get_unlocalized_name());
+													block->get_esp_block()->unlocalized_name);
 											cloned_block->initialize();
 											cloned_block->set_static_offset(get_static_offset());
 
@@ -279,8 +286,8 @@ void rhr::stack::plane::mouse_button(
 										stack_position - active_collection->get_position_virtual_offset(), true);
 									active_collection->set_size_local(stack_size, true);
 
-									m_dragging_connecting_line->set_color(
-										active_stack->get_blocks().front()->get_esp_category()->get_color());
+									// m_dragging_connecting_line->set_color(
+										// active_stack->get_blocks().front()->get_esp_category()->get_color());
 
 									active_stack->set_position_parent_physical({0, 0}, false);
 									active_stack->set_position_local_physical({0, 0}, true);
@@ -298,7 +305,7 @@ void rhr::stack::plane::mouse_button(
 
 									return;
 								}
-								else if (button == rhr::handler::input::mouse_button::RIGHT)
+								else if (mouse_state.button == mac::input::mouse_button::RIGHT)
 								{
 									unselect();
 
@@ -314,17 +321,18 @@ void rhr::stack::plane::mouse_button(
 									u64 local_stack_idx		 = a;
 									u64 local_block_idx		 = b;
 
+#if 0
 									rhr::handler::context::open(
 										rhr::handler::context::flag::OBJECT_STACKING,
 										[local_collection,
-										 local_stack,
-										 local_block,
-										 local_collection_idx,
-										 local_stack_idx,
-										 local_block_idx,
-										 stack_position,
-										 stack_size,
-										 this](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
+										local_stack,
+										local_block,
+										local_collection_idx,
+										local_stack_idx,
+										local_block_idx,
+										stack_position,
+										stack_size,
+										this](RHR_HANDLER_CONTEXT_FLAG_PREFIX flag, u8 flag_menu_item)
 										{
 											if (flag == rhr::handler::context::flag::OBJECT_STACKING)
 											{
@@ -387,9 +395,9 @@ void rhr::stack::plane::mouse_button(
 														new_collection->set_size_local(stack_size, true);
 
 														m_dragging_connecting_line->set_color(new_stack->get_blocks()
-																								  .front()
-																								  ->get_esp_category()
-																								  ->get_color());
+																								.front()
+																								->get_esp_category()
+																								->get_color());
 
 														new_stack->set_position_parent_physical({0, 0}, false);
 														new_stack->set_position_local_physical({0, 0}, true);
@@ -468,9 +476,9 @@ void rhr::stack::plane::mouse_button(
 														new_collection->set_size_local(stack_size, true);
 
 														m_dragging_connecting_line->set_color(new_stack->get_blocks()
-																								  .front()
-																								  ->get_esp_category()
-																								  ->get_color());
+																								.front()
+																								->get_esp_category()
+																								->get_color());
 
 														new_stack->set_position_parent_physical({0, 0}, false);
 														new_stack->set_position_local_physical({0, 0}, true);
@@ -507,7 +515,9 @@ void rhr::stack::plane::mouse_button(
 												if (flag_delete_collection)
 													delete_collection(local_collection_idx);
 											}
-										});
+										}
+									);
+#endif
 								}
 							}
 
@@ -530,21 +540,23 @@ void rhr::stack::plane::mouse_button(
 	}
 
 	// collection_max returns early
-}
 
+	return mac::input::capture::BLOCK;
+}
+#if 0
 rhr::handler::field& rhr::stack::plane::get_field()
 {
 	return m_field;
 }
-
+#endif
 void rhr::stack::plane::render_master_pass()
 {
 	if (dragging_stack() || dragging_collection())
 	{
 		m_dragging_collection->render();
 
-		if (m_dragging_snap)
-			m_dragging_connecting_line->render();
+		// if (m_dragging_snap)
+			// m_dragging_connecting_line->render();
 	}
 }
 

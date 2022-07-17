@@ -3,7 +3,32 @@
 
 #include <espresso/mod_data.hpp>
 
-// TODO: fix case
+namespace loader
+{
+///
+enum class status
+{
+	OK, ERROR
+};
+
+///
+enum class support
+{
+	WINDOWS, UNIX
+};
+
+///
+struct mod
+{
+	///
+	support mod_support;
+
+	///
+};
+
+///
+status load_mods();
+}
 
 enum class ModLoaderStatus
 {

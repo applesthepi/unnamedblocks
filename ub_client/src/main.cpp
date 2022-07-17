@@ -3,8 +3,8 @@
 #include "mod_loader.hpp"
 #include "mocha/handlers/build.hpp"
 #include "mocha/handlers/category.hpp"
-#include "lungo/handlers/context.hpp"
-#include "lungo/handlers/panel.hpp"
+// #include "lungo/handlers/context.hpp"
+// #include "lungo/handlers/panel.hpp"
 #include "latte/serializer.hpp"
 #include "mocha/handlers/project.hpp"
 
@@ -191,6 +191,7 @@ i32 main()
 	// CREATE PANELS
 	//
 
+#if 0
 	lungo::handler::panel::get()->create_panel(
 		"plane_primary",
 		[](lungo::handler::panel::data& data, double delta_time)
@@ -393,6 +394,8 @@ i32 main()
 		}
 	);
 
+	#endif
+
 	//
 	// EDITOR SETUP
 	//
@@ -404,7 +407,8 @@ i32 main()
 	rhr::stack::plane::primary_plane->initialize();
 	rhr::stack::plane::toolbar_plane->initialize();
 
-	run();// TODO: overhaul mod loader
+	loader::load_mods();
+	// run();// TODO: overhaul mod loader
 	rhr::handler::category::populate();
 
 	rhr::stack::plane::primary_plane->set_size_parent(

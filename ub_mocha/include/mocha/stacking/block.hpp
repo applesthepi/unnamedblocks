@@ -1,27 +1,31 @@
 #pragma once
 #include "config.h"
 
-// #include "lungo/interfaces/i_ui.hpp"
-// #include "lungo/objects/rectangle.hpp"
 #include "mocha/stacking/arguments/argument.hpp"
+
+#include <latte/utils.hpp>
 
 #include <espresso/block.hpp>
 #include <espresso/category.hpp>
-#include <latte/utils.hpp>
+
+#include <macchiato/interfaces/i_ui.hpp>
+#include <macchiato/window.hpp>
+#include <macchiato/shapes/rectangle.hpp>
+#include <macchiato/entities/shape_entity.hpp>
 
 #define BLOCK_SERIALIZE { "un" }
 
-namespace rhr::stack
+namespace mocha
 {
 ///
-class block : public rhr::render::interfaces::i_ui
+class block : public mac::i_ui
 {
 public:
 	///
-	block(const std::string& unlocalized_name);
+	block(mac::window::state* window_state, const std::string& unlocalized_name);
 
 	///
-	std::vector<rhr::stack::argument::argument>& get_arguments();
+	std::vector<mocha::argument*>& get_arguments();
 
 	///
 	u32 get_width();
@@ -45,7 +49,7 @@ public:
 	void set_stack_update_function(std::function<void()>* function_stack_update);
 
 private:
-	void ui_initialize() override;
+	void ui_initialize(mac::window::state* window_state) override;
 	void ui_transform_update(i_ui::transform_update_spec transform_update_spec) override;
 	void ui_frame_update(f64 delta_time) override;
 	void ui_render() override;
@@ -63,15 +67,15 @@ private:
 	static void pad_arguments(
 		u32& width,
 		usize i,
-		rhr::stack::argument::argument* last_arg,
-		rhr::stack::argument::argument* arg,
+		mocha::argument* last_arg,
+		mocha::argument* arg,
 		bool last);
 
 	///
 	u32 m_width;
 
 	///
-	std::vector<rhr::stack::argument::argument> m_arguments;
+	std::vector<mocha::argument> m_arguments;
 
 	///
 	esp::block* m_esp_block;
@@ -80,7 +84,8 @@ private:
 	esp::category* m_esp_category;
 
 	///
-	std::shared_ptr<rhr::render::object::rectangle> m_background;
+	mac::shape_entity m_background_entity;
+	mac::shape_rectangle m_background_shape;
 
 	///
 	std::function<void()>* m_function_stack_update;

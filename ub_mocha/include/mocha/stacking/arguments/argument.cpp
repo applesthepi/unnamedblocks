@@ -2,13 +2,13 @@
 
 #include "mocha/stacking/block.hpp"
 
-rhr::stack::argument::argument::argument(
-	const espresso::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset
-	, esp::argument::initializer* esp_argument_initializer)
-	: m_esp_argument(esp_argument_initializer->argument)
+mocha::argument::argument(
+	const espresso::color& block_color, std::function<void()>* function_collection_update, glm::vec<2, i32>* plane_offset,
+	esp::rt_argument* esp_argument, esp::rt_argument::initializer* esp_argument_initializer)
+	: m_esp_argument(esp_argument)
 	, m_esp_argument_initializer(esp_argument_initializer)
 {
-	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
+	m_esp_argument_state.parent = dynamic_cast<mac::i_ui*>(this);
 	m_esp_argument_state.plane_offset = plane_offset;
 	m_esp_argument_state.function_collection_update = function_collection_update;
 	m_esp_argument_state.block_color = block_color;
@@ -17,99 +17,99 @@ rhr::stack::argument::argument::argument(
 	m_esp_argument_state.custom = esp_argument_initializer->custom;
 }
 
-rhr::stack::argument::argument::argument(const rhr::stack::argument::argument& other)
+mocha::argument::argument(const mocha::argument& other)
 	: i_ui(other)
  {
 	m_esp_argument = other.m_esp_argument;
 	m_esp_argument_state = other.m_esp_argument_state;
 	m_esp_argument_initializer = other.m_esp_argument_initializer;
 
-	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
+	m_esp_argument_state.parent = reinterpret_cast<mac::i_ui*>(this);
 }
 
-rhr::stack::argument::argument::argument(const rhr::stack::argument::argument&& other)
+mocha::argument::argument(const mocha::argument&& other)
 	: i_ui(other)
 {
 	m_esp_argument = other.m_esp_argument;
 	m_esp_argument_state = other.m_esp_argument_state;
 	m_esp_argument_initializer = other.m_esp_argument_initializer;
 
-	m_esp_argument_state.parent = reinterpret_cast<rhr::render::interfaces::i_ui*>(this);
+	m_esp_argument_state.parent = reinterpret_cast<mac::i_ui*>(this);
 }
 
-rhr::stack::argument::argument::~argument()
+mocha::argument::~argument()
 {
 	m_esp_argument->destroy(&m_esp_argument_state);
 }
 
-u32 rhr::stack::argument::argument::get_width()
+u32 mocha::argument::get_width()
 {
 	return m_esp_argument->get_width(&m_esp_argument_state);
 }
 
-esp::argument::padding_style rhr::stack::argument::argument::get_padding_style()
+esp::argument::padding_style mocha::argument::get_padding_style()
 {
 	return m_esp_argument->get_padding_style();
 }
 
-esp::argument* rhr::stack::argument::argument::get_esp_argument()
+esp::rt_argument* mocha::argument::get_esp_argument()
 {
 	return m_esp_argument;
 }
 
-esp::argument::state* rhr::stack::argument::argument::get_esp_argument_state()
+esp::rt_argument::state* mocha::argument::get_esp_argument_state()
 {
 	return &m_esp_argument_state;
 }
 
-void rhr::stack::argument::argument::ui_initialize()
+void mocha::argument::ui_initialize(mac::window::state* window_state)
 {
-	m_esp_argument->create(&m_esp_argument_state, m_esp_argument_initializer);
+	m_esp_argument->create(window_state, &m_esp_argument_state, m_esp_argument_initializer);
 	m_esp_argument->on_set_mode(&m_esp_argument_state);
 
 	// Becomes invalid after the initializer's scope ends, so we make sure we don't use that memory again.
 	m_esp_argument_initializer = nullptr;
 }
 
-void rhr::stack::argument::argument::ui_transform_update(
-	rhr::render::interfaces::i_ui::transform_update_spec transform_update_spec
+void mocha::argument::ui_transform_update(
+	mac::i_ui::transform_update_spec transform_update_spec
 )
 {
 	m_esp_argument->ui_transform_update(&m_esp_argument_state, transform_update_spec);
 }
 
-void rhr::stack::argument::argument::ui_frame_update(f64 delta_time)
+void mocha::argument::ui_frame_update(f64 delta_time)
 {
 	m_esp_argument->ui_frame_update(&m_esp_argument_state, delta_time);
 }
 
-void rhr::stack::argument::argument::ui_render()
+void mocha::argument::ui_render()
 {
 	m_esp_argument->ui_render(&m_esp_argument_state);
 }
 
-void rhr::stack::argument::argument::ui_reload_swap_chain()
+void mocha::argument::ui_reload_swap_chain()
 {
 	m_esp_argument->ui_reload_swap_chain(&m_esp_argument_state);
 }
 
-void rhr::stack::argument::argument::ui_update_buffers()
+void mocha::argument::ui_update_buffers()
 {
 	m_esp_argument->ui_update_buffers(&m_esp_argument_state);
 }
 
-void rhr::stack::argument::argument::ui_chain_update_buffers()
+void mocha::argument::ui_chain_update_buffers()
 {
 	m_esp_argument->ui_chain_update_buffers(&m_esp_argument_state);
 }
 
-void rhr::stack::argument::argument::ui_static_offset_update()
+void mocha::argument::ui_static_offset_update()
 {
 	m_esp_argument_state.plane_offset = get_static_offset();
 	m_esp_argument->ui_static_offset_update(&m_esp_argument_state);
 }
 
-void rhr::stack::argument::argument::ui_serialize(latte::serializer::node& node)
+void mocha::argument::ui_serialize(latte::serializer::node& node)
 {
 	node.data_names.reserve(1);
 	node.data_values.reserve(1);
@@ -138,7 +138,7 @@ void rhr::stack::argument::argument::ui_serialize(latte::serializer::node& node)
 	m_esp_argument->ui_serialize(&m_esp_argument_state, child_node);
 }
 
-void rhr::stack::argument::argument::ui_deserialize(latte::serializer::node& node)
+void mocha::argument::ui_deserialize(latte::serializer::node& node)
 {
 	if (!node.verify_data(ARGUMENT_SERIALIZE) || !node.verify_children(1))
 	{
