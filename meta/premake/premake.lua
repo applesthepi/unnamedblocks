@@ -22,6 +22,9 @@ project "ub_client"
 	includedirs {
 		"../dependencies/vp-engine/include"
 	}
+	libdirs {
+		os.findlib("vulkan-1.lib")
+	}
 	links {
 		"../dependencies/vp-engine/lib/%{cfg.buildcfg}/vpe.lib",
 		-- windows libs for rust vpe static lib
@@ -31,7 +34,12 @@ project "ub_client"
 		"userenv",
 		"psapi",
 		"ntdll",
-		"bcrypt"
+		"bcrypt",
+		"imm32",
+		"winmm",
+		"uxtheme",
+		"dwmapi",
+		"vulkan-1.lib"
 	}
 	filter "configurations:debug"
 		defines {
@@ -41,3 +49,8 @@ project "ub_client"
 	filter "configurations:release"
 		defines { "NDEBUG" }
 		optimize "On"
+	filter { "system:windows" }
+		postbuildcommands {
+			"mkdir ..\\build\\res",
+			"xcopy ..\\dependencies\\vp-engine\\res ..\\build\\res /sy"
+		}
