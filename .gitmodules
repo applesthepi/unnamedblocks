@@ -25,3 +25,5 @@
 [submodule "dependencies/vma"]
 	path = dependencies/vma
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+[submodule "mods/ub_essentials"]
+	url = https://github.com/applesthepi/ub-essentials
