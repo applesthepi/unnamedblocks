@@ -27,3 +27,6 @@
 	url = https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
 [submodule "mods/ub_essentials"]
 	url = https://github.com/applesthepi/ub-essentials
+[submodule "dependencies/vp-engine"]
+	path = dependencies/vp-engine
+	url = https://github.com/applesthepi/vp-engine
