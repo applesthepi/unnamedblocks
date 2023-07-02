@@ -7,7 +7,7 @@ project "ub_client"
 	targetdir "../build/%{cfg.buildcfg}"
 	location "../build"
 	
-	files { "../ub_client/src/**.hpp", "../ub_client/src/**.cpp" }
+	files { "../../ub_client/src/**.hpp", "../../ub_client/src/**.cpp" }
 	filter "configurations:Debug"
 		defines { "DEBUG" }
 		symbols "On"

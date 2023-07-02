@@ -1,1 +1,0 @@
-premake5 vs2022 --file=_premake.lua
