@@ -1,0 +1,11 @@
+https://github.com/skystrife/cpptoml
+https://gitlab.freedesktop.org/freetype/freetype.git
+https://github.com/glfw/glfw
+https://github.com/g-truc/glm
+https://github.com/applesthepi/imgui
+https://github.com/Tencent/rapidjson
+https://github.com/applesthepi/stb
+https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator
+https://github.com/applesthepi/vp-engine
+https://github.com/applesthepi/ub-essentials
+https://github.com/applesthepi/ub-vanilla

@@ -1,0 +1,12 @@
+[submodule "meta/dependencies/vp-engine"]
+	path = meta/dependencies/vp-engine
+	url = https://github.com/applesthepi/vp-engine
+[submodule "meta/mods/ub-essentials"]
+	path = meta/mods/ub-essentials
+	url = https://github.com/applesthepi/ub-essentials
+[submodule "meta/mods/ub-vanilla"]
+	path = meta/mods/ub-vanilla
+	url = https://github.com/applesthepi/ub-vanilla
+[submodule "meta/dependencies/cpptoml"]
+	path = meta/dependencies/cpptoml
+	url = https://github.com/skystrife/cpptoml

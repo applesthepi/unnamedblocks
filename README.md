@@ -6,8 +6,26 @@ Please note that this project isn't setup properly for public use. There are pro
 **stable** - stable releases (major and minor)  
 **nightly** - bleeding edge releases (beta and alpha)  
 
+# Libraries
+### Internal
+**ub_client** - head application
+**ub_latte** - utilities
+**ub_mocha** - editor processing
+**ub_macchiato** - editor rendering
+**ub_espresso** - modding API & ubbs handler
+**ubbs** (hidden) - unnamedblocks build system
+### External
+**vp-engine** - rust vulkan library with bindings used by **ub_macchiato**
+
 You're expected to have cmake, git, vulkan, and clang installed and in your path. Follow these steps for repo setup:
 ### Windows / Visual Studio
+#### CMD
+```bat
+git clone https://github.com/applesthepi/unnamedblocks &
+cd unnamedblocks &
+git submodule update --init --recursive -j 8 &
+
+```
 1. `git clone https://github.com/applesthepi/unnamedblocks`
 2. `cd unnamedblocks/`
 3. `.\initialize.bat`

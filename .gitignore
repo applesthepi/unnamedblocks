@@ -8,6 +8,7 @@
 **.pdb
 **.lo
 **.exp
+meta/premake/unnamedblocks.sln
 .deps
 .dirstamp
 **.vs
