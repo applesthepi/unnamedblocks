@@ -1,1 +1,0 @@
-cat $(find . -type f -name '*.*pp' ) | wc -l | awk '{print $1;}'
