@@ -1,9 +1,5 @@
 #pragma once
-#include "config.h"
 
-// utils.hpp requires logger.hpp
-
-#include <glm/glm.hpp>
 #include <mutex>
 #include <string>
 #include <vector>

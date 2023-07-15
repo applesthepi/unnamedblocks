@@ -1,7 +1,7 @@
 #pragma once
-#include "config.h"
 
 #include "logger.hpp"
+#include "cutils.h"
 
 #include <array>
 #include <atomic>
@@ -28,26 +28,27 @@
 #include <sstream>
 #include <stack>
 
-#include <x86intrin.h>
+#if 0
+//#include <x86intrin.h>
 
-#include <stb/stb_image.h>
-#include <zstd.h>
+//#include <stb/stb_image.h>
+//#include <zstd.h>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+//#define GLM_FORCE_RADIANS
+//#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+//#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+//#include <glm/glm.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 
-#include <rapidjson/document.h>
-#include <rapidjson/prettywriter.h>
-#include <rapidjson/rapidjson.h>
+//#include <rapidjson/document.h>
+//#include <rapidjson/prettywriter.h>
+//#include <rapidjson/rapidjson.h>
 
 //#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_vulkan.h>
+//#include <imgui_impl_glfw.h>
+//#include <imgui_impl_vulkan.h>
 
 //#include "cappuccino/imgui/imgui.h"
 //#include "cappuccino/imgui/imgui_impl_glfw.h"
@@ -56,32 +57,32 @@
 //#define GLFW_INCLUDE_NONE
 //#define GLFW_INCLUDE_VULKAN
 
-#define GLFW_INCLUDE_NONE
-#define GLFW_INCLUDE_VULKAN
+//#define GLFW_INCLUDE_NONE
+//#define GLFW_INCLUDE_VULKAN
 
-#include <vulkan/vulkan.h>
-#define GLFW_INCLUDE_VULKAN
+//#include <vulkan/vulkan.h>
+//#define GLFW_INCLUDE_VULKAN
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+//#include <ft2build.h>
+//#include FT_FREETYPE_H
 
-#include <GLFW/glfw3.h>
-#include <vk_mem_alloc.h>
+//#include <GLFW/glfw3.h>
+//#include <vk_mem_alloc.h>
 
-#if LINUX_TOOLCHAIN
-#define TIME_POINT std::chrono::system_clock::time_point
-#else
-#define TIME_POINT std::chrono::steady_clock::time_point
-#endif
+//#if LINUX_TOOLCHAIN
+//#define TIME_POINT std::chrono::system_clock::time_point
+//#else
+//#define TIME_POINT std::chrono::steady_clock::time_point
+//#endif
 
-#define TIME_POINT_NOW std::chrono::high_resolution_clock::now()
+//#define TIME_POINT_NOW std::chrono::high_resolution_clock::now()
 
 #include "cutils.h"
 
-#define BLOCK_PADDING 2
-#define BLOCK_HEIGHT 20
-#define BLOCK_HEIGHT_CONTENT (BLOCK_HEIGHT - (BLOCK_PADDING * 2))
-#define BLOCK_ARG_DIFF 0.25
+//#define BLOCK_PADDING 2
+//#define BLOCK_HEIGHT 20
+//#define BLOCK_HEIGHT_CONTENT (BLOCK_HEIGHT - (BLOCK_PADDING * 2))
+//#define BLOCK_ARG_DIFF 0.25
 
 //namespace util { template <typename T> std::string to_string(const T& t) {     std::string str{std::to_string (t)};     int offset{1};     if (str.find_last_not_of('0') == str.find('.')) {         offset = 0;     }     str.erase(str.find_last_not_of('0') + offset, std::string::npos);      return str; } }
 
@@ -685,3 +686,4 @@ i64 i64_from_be_bytes(std::array<char, 8> bytes);
 f32 float_from_be_bytes(std::array<char, 4> bytes);
 f64 double_from_be_bytes(std::array<char, 8> bytes);
 } // namespace cap::endianness
+#endif

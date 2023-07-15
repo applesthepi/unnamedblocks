@@ -1,5 +1,5 @@
 #include "utils.hpp"
-
+#if 0
 void STRING_DOUBLE_ZERO(std::string& str)
 {
 	usize offset = 1;
@@ -406,3 +406,4 @@ f64 f64_from_be_bytes(std::array<char, 8> bytes)
 		return (f64) * (reverse<8>(bytes)).data();
 }
 } // namespace cap::endianness
+#endif

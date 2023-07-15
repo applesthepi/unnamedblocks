@@ -1,5 +1,4 @@
 #pragma once
-#include "config.h"
 
 #include <latte/utils.hpp>
 #include <fstream>
